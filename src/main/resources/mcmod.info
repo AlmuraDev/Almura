@@ -1,0 +1,15 @@
+[{
+  "modid": "${modid}",
+  "name": "${name}",
+  "description": "${description}",
+  "version": "${version}-b${buildNumber}",
+  "credits": "",
+  "logoFile": "assets/foo/bar.png",
+  "mcversion": "${mcversion}",
+  "url": "${url}",
+  "updateUrl": "",
+  "authorList": [ "${authorList}" ],
+  "parent": "",
+  "screenshots": [],
+  "dependencies": [ "MinecraftForge" ]
+}]
