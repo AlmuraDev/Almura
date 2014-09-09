@@ -5,11 +5,12 @@
  */
 package com.almuradev.almuramod.blocks;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.Material;
 
-@SideOnly(Side.CLIENT)
 public class Blocks {
-    public static final Block EXAMPLE_BLOCK = new ExampleBlock();
+    public static final Block EXAMPLE_BLOCK = new AlmuraBlock("exampleBlock", new Material(MapColor.adobeColor), 1f, 1f, 1, true);
+
+    public static void fakeStaticLoad() {}
 }
