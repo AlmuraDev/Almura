@@ -1,4 +1,5 @@
 tile.exampleBlock.name=Example Block
+
 itemGroup.act_Building=Almura Building Blocks
 itemGroup.act_Roofing=Almura Roofing
 itemGroup.act_Lighting=Almura Lighting
@@ -18,4 +19,5 @@ itemGroup.act_Drink=Almura Drink Items
 itemGroup.act_Ingredients=Almura Food and Drink Ingredients
 itemGroup.act_Bottles=Almura Bottles
 itemGroup.act_Tools=Almura Tools
+
 item.almuraFoodDockterCookie.name=Dockter Cookie

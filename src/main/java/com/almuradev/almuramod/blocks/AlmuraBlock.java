@@ -27,6 +27,7 @@ public class AlmuraBlock extends Block {
         if (showInCreative) {
             setCreativeTab(AlmuraMod.act_Building);
         }
+        setBlockTextureName("almuramod:"+name);
         GameRegistry.registerBlock(this, AlmuraItemBlock.class, name);
     }
 
