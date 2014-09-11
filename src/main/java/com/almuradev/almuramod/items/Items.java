@@ -29,7 +29,7 @@ public class Items {
     public static final Item ALMURA_TOOLS = new AlmuraItem("almuraTools");
     
     // Almura Food
-    public static final Item ALMURA_FOOD_DOCKTER_COOKIE = new AlmuraItem("almuraFoodDockterCookie", true, AlmuraMod.act_Food, 16);
+    public static final Item ALMURA_FOOD_DOCKTER_COOKIE = new AlmuraItem("almuraFoodDockterCookie", AlmuraMod.act_Food, 16);
     
     public static void fakeStaticLoad() {}
 }

@@ -7,31 +7,37 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.util.IIcon;
 import net.minecraft.item.Item;
 
 public class AlmuraItem extends Item {
    
-    // Fake Item Registry
+    /**
+     * Create fake item for Creative Tabs images
+     */
     public AlmuraItem(String name) {
-        registerAlmuraItem(name, false, null, 1);
+        registerAlmuraItem(name, null, 1);
     }
     
-    // Real Item Registry
-    public AlmuraItem(String name, boolean showInCreativeTab, CreativeTabs creativeTabName, int maxStackSize) {
-        registerAlmuraItem(name, showInCreativeTab, creativeTabName, maxStackSize);
+    /**
+     * Create items with generic parameters
+     */
+    public AlmuraItem(String name, CreativeTabs creativeTabName, int maxStackSize) {
+        registerAlmuraItem(name, creativeTabName, maxStackSize);
     }
     
-    public void registerAlmuraItem(String name, boolean showInCreativeTab, CreativeTabs creativeTabName, int maxStackSize) {
-        if (showInCreativeTab) {
+    public void registerAlmuraItem(String name, CreativeTabs creativeTabName, int maxStackSize) {
+        if (creativeTabName != null) {
             setCreativeTab(creativeTabName);
         }
+
         this.setUnlocalizedName(name);
-        setTextureName(AlmuraMod.MOD_ID + ":" + name);     
+        setTextureName(AlmuraMod.MOD_ID + ":" + name);
         GameRegistry.registerItem(this, name);
-        
     }
    
+    /**
+     * Setup item icon texture.
+     */
     @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister par1IconRegister) {
         this.itemIcon = par1IconRegister.registerIcon("almuramod:"+this.getUnlocalizedName().substring(5));       
