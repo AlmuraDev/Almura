@@ -6,9 +6,13 @@
 package com.almuradev.almuramod;
 
 import com.almuradev.almuramod.blocks.Blocks;
+import com.almuradev.almuramod.client.renderer.BaseOBJRenderer;
+import com.almuradev.almuramod.entities.AlmuraTileEntity;
 import com.almuradev.almuramod.items.Items;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.creativetab.CreativeTabs;
@@ -24,11 +28,20 @@ public class AlmuraMod {
     public void onPreInitialization(FMLPreInitializationEvent event) {
         
         // Setup all Almura Creative Tabs.
-        setupAlmuraTabs();       
+        setupAlmuraTabs();
 
         // Force regirstion of Custom Blocks and Items.
         Blocks.fakeStaticLoad();
         Items.fakeStaticLoad();
+
+        // Test
+        GameRegistry.registerTileEntity(AlmuraTileEntity.class, "almuraTileEntity");
+        setupRenderers();
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void setupRenderers() {
+        ClientRegistry.bindTileEntitySpecialRenderer(AlmuraTileEntity.class, new BaseOBJRenderer("example", "example"));
     }
     
     private void setupAlmuraTabs() {
@@ -36,7 +49,7 @@ public class AlmuraMod {
         act_Building = new CreativeTabs("act_Building") {
             @Override
             @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {                
+            public Item getTabIconItem() {
                 return com.almuradev.almuramod.items.Items.ALMURA_BUILDING;
             }
         };
