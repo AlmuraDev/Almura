@@ -16,11 +16,11 @@ public class AlmuraFood extends ItemFood {
         if (showInCreativeTab) {
             setCreativeTab(creativeTabName);
         }
-        this.setUnlocalizedName(name);
+        setUnlocalizedName(name);
         setTextureName(AlmuraMod.MOD_ID + ":" + name);
         if (alwaysEdidble) {
             setAlwaysEdible();
-        }
+        }        
         GameRegistry.registerItem(this, name);
     }
 }
