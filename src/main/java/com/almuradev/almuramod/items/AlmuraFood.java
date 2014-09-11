@@ -6,28 +6,21 @@
 package com.almuradev.almuramod.items;
 
 import com.almuradev.almuramod.AlmuraMod;
-
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemFood;
 
-public class AlmuraItem extends Item {
-   
-    /**
-     * Create fake item for Creative Tabs images
-     */
-    public AlmuraItem(String name) {
-        this(name, false, null, 1);
-    }
-    
-    // Real Item Registry
-    public AlmuraItem(String name, boolean showInCreativeTab, CreativeTabs creativeTabName, int maxStackSize) {
+public class AlmuraFood extends ItemFood {
+    public AlmuraFood(String name, boolean showInCreativeTab, CreativeTabs creativeTabName, int maxStackSize, int healAmount, float saturationModifier, boolean isWolfsFavorite, boolean alwaysEdidble) {
+        super(healAmount, saturationModifier, isWolfsFavorite);
         if (showInCreativeTab) {
             setCreativeTab(creativeTabName);
         }
-
         this.setUnlocalizedName(name);
         setTextureName(AlmuraMod.MOD_ID + ":" + name);
+        if (alwaysEdidble) {
+            setAlwaysEdible();
+        }
         GameRegistry.registerItem(this, name);
     }
 }

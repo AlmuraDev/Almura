@@ -1,3 +1,8 @@
+/**
+ * This file is part of AlmuraMod, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almuramod.items;
 
 import com.almuradev.almuramod.AlmuraMod;
@@ -29,7 +34,7 @@ public class Items {
     public static final Item ALMURA_TOOLS = new AlmuraItem("almuraTools");
     
     // Almura Food
-    public static final Item ALMURA_FOOD_DOCKTER_COOKIE = new AlmuraItem("almuraFoodDockterCookie", AlmuraMod.act_Food, 16);
+    public static final Item ALMURA_FOOD_DOCKTER_COOKIE = new AlmuraFood("almuraFoodDockterCookie", true, AlmuraMod.act_Food, 16, 5, 10f, false, true);
     
     public static void fakeStaticLoad() {}
 }
