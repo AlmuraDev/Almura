@@ -22,8 +22,8 @@ public class AlmuraItem extends Item {
         if (showInCreativeTab) {
             setCreativeTab(creativeTabName);
         }
-        System.out.println(name);
-        this.setUnlocalizedName(name);        
+        this.setUnlocalizedName(name);
+        setTextureName(AlmuraMod.MOD_ID.toLowerCase() + ":" + name);
         GameRegistry.registerItem(this, name);
     }
 }
