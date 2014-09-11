@@ -5,10 +5,10 @@ import net.minecraft.item.Item;
 public class Items {
 
     // Fake items for Creative Menu Tabs 
+    public static final Item ALMURA_BUILDING = new AlmuraItem("almuraBuilding", false);
     public static final Item ALMURA_ROOFING = new AlmuraItem("almuraRoofing", false);
     public static final Item ALMURA_LIGHTING = new AlmuraItem("almuraLighting", false);
-    public static final Item ALMURA_FURNITURE = new AlmuraItem("almuraFurniture", false);
-    public static final Item ALMURA_BUILDING = new AlmuraItem("almuraBuilding", false);
+    public static final Item ALMURA_FURNITURE = new AlmuraItem("almuraFurniture", false);    
     public static final Item ALMURA_DECORATION = new AlmuraItem("almuraDecoration", false);
     public static final Item ALMURA_STORAGE = new AlmuraItem("almuraStorage", false);
     public static final Item ALMURA_BARRELS = new AlmuraItem("almuraBarrels", false);

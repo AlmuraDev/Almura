@@ -25,7 +25,7 @@ public class AlmuraBlock extends Block {
         setLightLevel(lightLevel);
         setLightOpacity(lightOpacity);
         if (showInCreative) {
-            setCreativeTab(AlmuraMod.CREATIVE_TAB);
+            setCreativeTab(AlmuraMod.act_Building);
         }
         GameRegistry.registerBlock(this, AlmuraItemBlock.class, name);
     }

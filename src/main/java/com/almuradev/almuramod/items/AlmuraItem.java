@@ -7,7 +7,7 @@ import net.minecraft.item.Item;
 public class AlmuraItem extends Item {
     public AlmuraItem(String name, boolean showInCreativeTab) {
         if (showInCreativeTab) {
-            setCreativeTab(AlmuraMod.CREATIVE_TAB);
+            setCreativeTab(AlmuraMod.act_Building);
         }
 
         GameRegistry.registerItem(this, name);
