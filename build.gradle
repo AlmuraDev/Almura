@@ -1,5 +1,5 @@
 // Default tasks
-defaultTasks 'licenseFormat', 'build'
+defaultTasks 'clean', 'build', 'licenseFormat'
 
 // Apply plugin
 apply plugin: 'forge'
@@ -73,9 +73,7 @@ processResources {
     inputs.property "mcversion", project.minecraft.version
 
     // Include in final JAR
-    from(rootProject.rootDir) {
-        include 'LICENSE.txt'
-    }
+    from 'LICENSE.txt'
 
     // Replace variables
     from('src/main/resources/mcmod.info') {
@@ -84,18 +82,13 @@ processResources {
                 'description': project.ext.description,
                 'version': version,
                 'buildNumber': buildNumber,
-                'mcversion': minecraft.version.split("-")[0],
+                'mcversion': minecraft.version,
                 'url': url,
                 'authorList': organization
     }
 }
 
 // License header formatting
-import nl.javadude.gradle.plugins.license.License
-tasks.withType(License).each { licenseTask ->
-    licenseTask.exclude 'assets/**'
-    licenseTask.exclude '**/*.info'
-}
 license {
     ext.name = project.name
     ext.organization = organization
@@ -104,13 +97,15 @@ license {
     header rootProject.file('HEADER.txt')
     ignoreFailures true
     strictCheck true
+    exclude "**/*.info"
+    exclude "assets/**"
 }
 
 // Source compiler configuration
-configure([compileJava, compileTestJava]) {
-    options.compilerArgs << '-Xlint:all'
-    options.compilerArgs << '-Xlint:-path'
+tasks.withType(JavaCompile) {
+    options.compilerArgs += [ '-Xlint:all', '-Xlint:-path' ]
     options.deprecation = true
+    options.encoding = 'utf8'
 }
 
 // JAR manifest configuration
