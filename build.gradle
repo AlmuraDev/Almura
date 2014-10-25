@@ -1,5 +1,5 @@
 // Default tasks
-defaultTasks 'clean', 'build', 'licenseFormat'
+defaultTasks 'build', 'licenseFormat'
 
 // Apply plugin
 apply plugin: 'forge'
@@ -24,6 +24,10 @@ ext.organization = 'AlmuraDev'
 ext.buildNumber = project.hasProperty("buildNumber") ? buildNumber : '0'
 ext.commit = project.hasProperty("commit") ? commit : 'unknown'
 
+// Java version target/source compatibility
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
+
 // Configuration settings
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds' // Always check for new snapshots
@@ -31,7 +35,7 @@ configurations.all {
 
 // MinecraftForge version
 minecraft {
-    version = "1.7.10-10.13.0.1208"
+    version = "1.7.10-10.13.2.1230"
 }
 
 // Gradle repositories and dependencies
@@ -65,7 +69,10 @@ repositories {
 }
 
 // Project dependencies
-dependencies {}
+dependencies {
+    compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
+    compile 'net.malisis:malisiscore:1.7.10-0.9.9:dev'
+}
 
 // Filter, process, and include resources
 processResources {
