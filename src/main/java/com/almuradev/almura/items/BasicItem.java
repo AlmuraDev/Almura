@@ -1,33 +1,32 @@
 /**
- * This file is part of AlmuraMod, All Rights Reserved.
+ * This file is part of Almura, All Rights Reserved.
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almuramod.items;
+package com.almuradev.almura.items;
 
-import com.almuradev.almuramod.AlmuraMod;
-
+import com.almuradev.almura.Almura;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
-public class AlmuraItem extends Item {
-   
+public class BasicItem extends Item {
+
     /**
      * Create fake item for Creative Tabs images
      */
-    public AlmuraItem(String name) {
+    protected BasicItem(String name) {
         this(name, false, null, 1);
     }
-    
-    // Real Item Registry
-    public AlmuraItem(String name, boolean showInCreativeTab, CreativeTabs creativeTabName, int maxStackSize) {
+
+    public BasicItem(String name, boolean showInCreativeTab, CreativeTabs creativeTabName, int maxStackSize) {
         if (showInCreativeTab) {
             setCreativeTab(creativeTabName);
         }
 
-        this.setUnlocalizedName(name);
-        setTextureName(AlmuraMod.MOD_ID + ":" + name);
+        setUnlocalizedName(name);
+        setTextureName(Almura.MOD_ID + ":" + name);
+        setMaxStackSize(maxStackSize);
         GameRegistry.registerItem(this, name);
     }
 }

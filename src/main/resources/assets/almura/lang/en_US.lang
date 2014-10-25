@@ -1,0 +1,26 @@
+# Tabs
+itemGroup.building=Almura Building Blocks
+itemGroup.roofing=Almura Roofing
+itemGroup.lighting=Almura Lighting
+itemGroup.furniture=Almura Furniture
+itemGroup.decoration=Almura Decorations
+itemGroup.storage=Almura Storage Boxes
+itemGroup.barrels=Almura Storage Barrels
+itemGroup.flowers=Almura Flowers
+itemGroup.plants=Almura Plants
+itemGroup.letters=Almura Letters
+itemGroup.crops=Almura Crops
+itemGroup.flags=Almura Flags
+itemGroup.signs=Almura Signs
+itemGroup.ores=Almura Ores
+itemGroup.food=Almura Food
+itemGroup.drink=Almura Drinks
+itemGroup.ingredients=Almura Ingredients
+itemGroup.bottles=Almura Bottles
+itemGroup.tools=Almura Tools
+
+# Blocks
+tile.0-white.name=0 (White)
+
+# Items
+item.dockter_cookie.name=Dockter Cookie

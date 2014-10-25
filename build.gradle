@@ -9,15 +9,15 @@ apply plugin: 'signing'
 
 // Basic project information
 group = 'com.almuradev'
-archivesBaseName = 'almuramod'
-version = '1.7.10-SNAPSHOT'
+archivesBaseName = 'almura'
+version = '10.13.2.1230-SNAPSHOT'
 
 // Extended project information
-ext.projectName = 'AlmuraMod'
+ext.projectName = 'Almura'
 ext.inceptionYear = '2014'
 ext.packaging = 'jar'
 ext.url = 'http://github.com/AlmuraDev'
-ext.description = 'The official mod for Almura'
+ext.description = 'The official mod for the Almura Minecraft Client and Server'
 ext.organization = 'AlmuraDev'
 
 // Define variables
@@ -71,7 +71,6 @@ repositories {
 // Project dependencies
 dependencies {
     compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
-    compile 'net.malisis:malisiscore:1.7.10-0.9.9:dev'
 }
 
 // Filter, process, and include resources
@@ -105,7 +104,7 @@ license {
     ignoreFailures true
     strictCheck true
     exclude "**/*.info"
-    exclude "assets/**"
+    exclude "resources/**"
 }
 
 // Source compiler configuration
