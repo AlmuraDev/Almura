@@ -30,6 +30,7 @@ public class Items {
     public static final Item INGREDIENTS = new BasicItem("ingredient");
     public static final Item BOTTLES = new BasicItem("bottles");
     public static final Item TOOLS = new BasicItem("tools");
+    public static final Item LEGACY = new BasicItem("legacy");
 
     // Food
     public static final Item FOOD_DOCKTER_COOKIE = new BasicFood("dockter_cookie", true, Tabs.FOOD, 16, 5, 10f, false, true);

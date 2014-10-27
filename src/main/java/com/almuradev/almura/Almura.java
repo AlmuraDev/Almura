@@ -7,6 +7,7 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.blocks.Blocks;
 import com.almuradev.almura.items.Items;
+import com.almuradev.almura.lang.LanguageManager;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -15,9 +16,12 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Almura.MOD_ID)
 public class Almura {
-
     public static final String MOD_ID = "Almura";
     public static final Logger LOGGER = LogManager.getLogger("Almura");
+    public static final LanguageManager LANGUAGES = new LanguageManager();
+
+    @Mod.Instance
+    public static Almura INSTANCE;
 
     @EventHandler
     public void onPreInitialization(FMLPreInitializationEvent event) {
@@ -27,5 +31,6 @@ public class Almura {
         Blocks.fakeStaticLoad();
         Items.fakeStaticLoad();
         Tabs.fakeStaticLoad();
+        LANGUAGES.register();
     }
 }
