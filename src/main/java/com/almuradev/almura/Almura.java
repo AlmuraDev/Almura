@@ -21,9 +21,9 @@ public class Almura {
 
     @EventHandler
     public void onPreInitialization(FMLPreInitializationEvent event) {
-        //if (Configuration.IS_DEBUG) {
-        //    LOGGER.info("Debug-mode toggled ON");
-        //}
+        if (Configuration.IS_DEBUG) {
+            LOGGER.info("Debug-mode toggled ON");
+        }
         Blocks.fakeStaticLoad();
         Items.fakeStaticLoad();
         Tabs.fakeStaticLoad();

@@ -29,16 +29,16 @@ public class Filesystem {
         if (Files.notExists(CONFIG_PATH)) {
             try {
                 Files.createDirectories(CONFIG_PATH);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Failed to create configuration directories!");
             }
         }
 
         if (Files.notExists(SETTINGS_PATH)) {
             try {
-                InputStream stream = Configuration.class.getResourceAsStream("config/settings.yml");
+                InputStream stream = Filesystem.class.getResourceAsStream("/config/settings.yml");
                 Files.copy(stream, Filesystem.SETTINGS_PATH);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Failed to copy over configuration files!");
             }
         }
