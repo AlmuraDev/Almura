@@ -58,12 +58,28 @@ public class Filesystem {
         }
 
         if (Configuration.IS_CLIENT) {
-            if (Files.exists(ASSETS_TEXTURES_BLOCKS_SMPS_PATH)) {
-                for (Path path : ASSETS_TEXTURES_BLOCKS_SMPS_PATH) {
+            if (Files.exists(ASSETS_MODELS_BLOCKS_SHAPES_PATH)) {
+                for (Path file : getPaths(ASSETS_MODELS_BLOCKS_SHAPES_PATH, "*.shape")) {
                     try {
-                        Files.deleteIfExists(path);
+                        Files.deleteIfExists(file);
                     } catch (Exception e) {
-                        throw new RuntimeException("Failed to remove " + path + " from " + ASSETS_TEXTURES_BLOCKS_SMPS_PATH, e);
+                        throw new RuntimeException("Failed to remove " + file + " from " + ASSETS_MODELS_BLOCKS_SHAPES_PATH, e);
+                    }
+                }
+            } else {
+                try {
+                    Files.createDirectories(ASSETS_MODELS_BLOCKS_SHAPES_PATH);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to create directory " + ASSETS_MODELS_BLOCKS_SHAPES_PATH, e);
+                }
+            }
+
+            if (Files.exists(ASSETS_TEXTURES_BLOCKS_SMPS_PATH)) {
+                for (Path file : getPaths(ASSETS_TEXTURES_BLOCKS_SMPS_PATH, "*.png")) {
+                    try {
+                        Files.deleteIfExists(file);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to remove " + file + " from " + ASSETS_TEXTURES_BLOCKS_SMPS_PATH, e);
                     }
                 }
             } else {
@@ -75,11 +91,11 @@ public class Filesystem {
             }
 
             if (Files.exists(ASSETS_TEXTURES_ITEMS_SMPS_PATH)) {
-                for (Path path : ASSETS_TEXTURES_ITEMS_SMPS_PATH) {
+                for (Path file : getPaths(ASSETS_TEXTURES_ITEMS_SMPS_PATH, "*.png")) {
                     try {
-                        Files.deleteIfExists(path);
+                        Files.deleteIfExists(file);
                     } catch (Exception e) {
-                        throw new RuntimeException("Failed to remove " + path + " from " + ASSETS_TEXTURES_ITEMS_SMPS_PATH, e);
+                        throw new RuntimeException("Failed to remove " + file + " from " + ASSETS_TEXTURES_ITEMS_SMPS_PATH, e);
                     }
                 }
             } else {

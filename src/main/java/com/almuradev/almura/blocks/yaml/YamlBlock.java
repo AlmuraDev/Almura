@@ -56,7 +56,7 @@ public class YamlBlock extends Block {
         GameRegistry.registerBlock(this, BasicItemBlock.class, identifier);
     }
 
-    public static YamlBlock create(Path file) throws FileNotFoundException, ConfigurationException {
+    public static YamlBlock createFromSMPFile(Path file) throws FileNotFoundException, ConfigurationException {
         if (!file.endsWith(".yml")) {
             if (Configuration.IS_DEBUG) {
                 Almura.LOGGER.warn("Attempted to load a block from file that was not YAML: " + file);
@@ -65,11 +65,11 @@ public class YamlBlock extends Block {
         }
 
         final String fileName = file.toFile().getName().split(".yml")[0];
-        return create(fileName, new FileInputStream(file.toFile()));
+        return createFromSMPStream(fileName, new FileInputStream(file.toFile()));
     }
 
-    public static YamlBlock create(String name, InputStream stream) throws ConfigurationException {
-        final YamlConfiguration reader = new YamlConfiguration(stream);
+    public static YamlBlock createFromSMPStream(String name, InputStream stream) throws ConfigurationException {
+        final YamlConfiguration reader = new YamlConfiguration();
         reader.load();
 
         final String title = reader.getChild("Title").getString(name);
@@ -80,5 +80,10 @@ public class YamlBlock extends Block {
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + name + ".name", title);
 
         return new YamlBlock(name, textureName, hardness, 1f, 0, shapeName);
+    }
+
+    @Override
+    public String toString() {
+        return "YamlBlock {trans_name= " + getLocalizedName() + "}";
     }
 }

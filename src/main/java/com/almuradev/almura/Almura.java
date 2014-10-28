@@ -8,6 +8,7 @@ package com.almuradev.almura;
 import com.almuradev.almura.blocks.Blocks;
 import com.almuradev.almura.items.Items;
 import com.almuradev.almura.lang.LanguageManager;
+import com.almuradev.almura.smp.SMPPack;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -29,6 +30,10 @@ public class Almura {
         Blocks.fakeStaticLoad();
         Items.fakeStaticLoad();
         Tabs.fakeStaticLoad();
+
+        //Load SMPs
+        SMPPack.load();
+
         LANGUAGES.register();
     }
 }

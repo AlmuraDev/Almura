@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura;
 
+import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.common.FMLCommonHandler;
 
@@ -16,6 +17,11 @@ public class Configuration {
 
     static {
         final YamlConfiguration reader = new YamlConfiguration(Filesystem.CONFIG_SETTINGS_PATH.toFile());
-        IS_DEBUG = reader.getChild("debug").getBoolean(false);
+        try {
+            reader.load();
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+        IS_DEBUG = reader.getChild("debug").getBoolean(true);
     }
 }

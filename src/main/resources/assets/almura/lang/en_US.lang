@@ -18,6 +18,7 @@ itemGroup.drink=Almura Drinks
 itemGroup.ingredients=Almura Ingredients
 itemGroup.bottles=Almura Bottles
 itemGroup.tools=Almura Tools
+itemGroup.legacy=Almura SMP Content
 
 # Blocks
 tile.0-white.name=0 (White)

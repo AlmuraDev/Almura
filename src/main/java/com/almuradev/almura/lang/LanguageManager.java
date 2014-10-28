@@ -47,7 +47,7 @@ public class LanguageManager {
             for (Map.Entry<String, String> keyEntry : entry.getValue().entrySet()) {
                 injectMap.put(keyEntry.getKey(), keyEntry.getValue());
                 if (Configuration.IS_DEBUG) {
-                    Almura.LOGGER.info("Registering " + keyEntry.getKey() + "=" + keyEntry.getValue());
+                    Almura.LOGGER.info("Registering language entry {" + keyEntry.getKey() + "=" + keyEntry.getValue() + "}");
                 }
             }
             LanguageRegistry.instance().injectLanguage(entry.getKey().value(), (HashMap<String, String>) injectMap);
