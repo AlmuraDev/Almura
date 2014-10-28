@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.blocks.yaml;
 
 import com.almuradev.almura.Almura;
@@ -20,31 +25,6 @@ import java.nio.file.Path;
  * Represents a block created from a {@link YamlConfiguration}.
  */
 public class YamlBlock extends Block {
-    public static YamlBlock create(Path file) throws FileNotFoundException, ConfigurationException {
-        if (!file.endsWith(".yml")) {
-            if (Configuration.IS_DEBUG) {
-                Almura.LOGGER.warn("Attempted to load a block from file that was not YAML: " + file);
-            }
-            return null;
-        }
-
-        final String fileName = file.toFile().getName().split(".yml")[0];
-        return create(fileName, new FileInputStream(file.toFile()));
-    }
-
-    public static YamlBlock create(String name, InputStream stream) throws ConfigurationException {
-        final YamlConfiguration reader = new YamlConfiguration(stream);
-        reader.load();
-
-        final String title = reader.getChild("Title").getString(name);
-        final String textureName = reader.getChild("Texture").getString(name);
-        final float hardness = reader.getChild("Hardness").getFloat(1f);
-        final String shapeName = reader.getChild("Shape").getString();
-
-        Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + name + ".name", title);
-
-        return new YamlBlock(name, textureName, hardness, 1f, 0, shapeName);
-    }
 
     public final String shapeName;
 
@@ -74,5 +54,31 @@ public class YamlBlock extends Block {
         setCreativeTab(Tabs.LEGACY);
         this.shapeName = shapeName;
         GameRegistry.registerBlock(this, BasicItemBlock.class, identifier);
+    }
+
+    public static YamlBlock create(Path file) throws FileNotFoundException, ConfigurationException {
+        if (!file.endsWith(".yml")) {
+            if (Configuration.IS_DEBUG) {
+                Almura.LOGGER.warn("Attempted to load a block from file that was not YAML: " + file);
+            }
+            return null;
+        }
+
+        final String fileName = file.toFile().getName().split(".yml")[0];
+        return create(fileName, new FileInputStream(file.toFile()));
+    }
+
+    public static YamlBlock create(String name, InputStream stream) throws ConfigurationException {
+        final YamlConfiguration reader = new YamlConfiguration(stream);
+        reader.load();
+
+        final String title = reader.getChild("Title").getString(name);
+        final String textureName = reader.getChild("Texture").getString(name);
+        final float hardness = reader.getChild("Hardness").getFloat(1f);
+        final String shapeName = reader.getChild("Shape").getString();
+
+        Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + name + ".name", title);
+
+        return new YamlBlock(name, textureName, hardness, 1f, 0, shapeName);
     }
 }
