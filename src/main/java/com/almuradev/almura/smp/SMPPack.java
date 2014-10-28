@@ -66,7 +66,11 @@ public class SMPPack {
             } else if (zipEntry.getName().endsWith(".shape") && Configuration.IS_CLIENT) {
                 Filesystem.writeTo(zipEntry.getName(), stream, Filesystem.ASSETS_MODELS_BLOCKS_SHAPES_PATH);
             }
+
+            stream.closeEntry();
         }
+
+        stream.close();
 
         final String smpName = root.toFile().getName().split(".smp")[0];
         final SMPPack pack = new SMPPack(smpName, blocks);
@@ -101,6 +105,6 @@ public class SMPPack {
 
     @Override
     public String toString() {
-        return "SMPPack{name= [" + name + "], blocks= [" + blocks + "]}";
+        return "SMPPack{name= [" + name + "], blocks= " + blocks + "}";
     }
 }

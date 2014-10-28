@@ -69,11 +69,11 @@ public class YamlBlock extends Block {
     }
 
     public static YamlBlock createFromSMPStream(String name, InputStream stream) throws ConfigurationException {
-        final YamlConfiguration reader = new YamlConfiguration();
+        final YamlConfiguration reader = new YamlConfiguration(stream);
         reader.load();
 
         final String title = reader.getChild("Title").getString(name);
-        final String textureName = reader.getChild("Texture").getString(name);
+        final String textureName = reader.getChild("Texture").getString(name.split(".png")[0]);
         final float hardness = reader.getChild("Hardness").getFloat(1f);
         final String shapeName = reader.getChild("Shape").getString();
 
@@ -84,6 +84,6 @@ public class YamlBlock extends Block {
 
     @Override
     public String toString() {
-        return "YamlBlock {trans_name= " + getLocalizedName() + "}";
+        return "YamlBlock {raw_name= " + getUnlocalizedName() + "}";
     }
 }
