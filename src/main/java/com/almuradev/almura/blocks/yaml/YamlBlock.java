@@ -11,13 +11,16 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 /**
  * Represents a block created from a {@link YamlConfiguration}.
  */
 public class YamlBlock extends Block {
-    public static YamlBlock create(Path file) {
+    public static YamlBlock create(Path file) throws FileNotFoundException, ConfigurationException {
         if (!file.endsWith(".yml")) {
             if (Configuration.IS_DEBUG) {
                 Almura.LOGGER.warn("Attempted to load a block from file that was not YAML: " + file);
@@ -26,24 +29,21 @@ public class YamlBlock extends Block {
         }
 
         final String fileName = file.toFile().getName().split(".yml")[0];
-        final YamlConfiguration reader = new YamlConfiguration(file.toFile());
-        try {
-            reader.load();
-        } catch (ConfigurationException e) {
-            if (Configuration.IS_DEBUG) {
-                Almura.LOGGER.warn("Error loading file: " + file);
-            }
-            return null;
-        }
+        return create(fileName, new FileInputStream(file.toFile()));
+    }
 
-        final String title = reader.getChild("Title").getString(fileName);
-        final String textureName = reader.getChild("Texture").getString(fileName);
+    public static YamlBlock create(String name, InputStream stream) throws ConfigurationException {
+        final YamlConfiguration reader = new YamlConfiguration(stream);
+        reader.load();
+
+        final String title = reader.getChild("Title").getString(name);
+        final String textureName = reader.getChild("Texture").getString(name);
         final float hardness = reader.getChild("Hardness").getFloat(1f);
         final String shapeName = reader.getChild("Shape").getString();
 
-        Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + fileName + ".name", title);
+        Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + name + ".name", title);
 
-        return new YamlBlock(fileName, textureName, hardness, 1f, 0, shapeName);
+        return new YamlBlock(name, textureName, hardness, 1f, 0, shapeName);
     }
 
     public final String shapeName;

@@ -20,9 +20,6 @@ public class Almura {
     public static final Logger LOGGER = LogManager.getLogger("Almura");
     public static final LanguageManager LANGUAGES = new LanguageManager();
 
-    @Mod.Instance
-    public static Almura INSTANCE;
-
     @EventHandler
     public void onPreInitialization(FMLPreInitializationEvent event) {
         if (Configuration.IS_DEBUG) {
