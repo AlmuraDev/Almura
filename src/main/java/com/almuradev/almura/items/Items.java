@@ -32,7 +32,7 @@ public class Items {
     public static final Item TOOLS = new BasicItem("tools");
 
     // Food
-    public static final Item FOOD_DOCKTER_COOKIE = new BasicFood("dockter_cookie", true, Tabs.FOOD, 16, 5, 10f, false, true);
+    public static final Item FOOD_DOCKTER_COOKIE = new BasicFood("dockter_cookie", true, Tabs.BUILDING, 16, 5, 10f, false, true);
 
     public static void fakeStaticLoad() {
     }
