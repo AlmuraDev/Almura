@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,7 +20,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 public class Filesystem {
 
@@ -27,7 +33,6 @@ public class Filesystem {
 
     public static final Path ASSETS_MODELS_PATH = Paths.get(ASSETS_PATH.toString(), "models");
     public static final Path ASSETS_MODELS_BLOCKS_PATH = Paths.get(ASSETS_MODELS_PATH.toString(), "blocks");
-    public static final Path ASSETS_MODELS_BLOCKS_SHAPES_PATH = Paths.get(ASSETS_MODELS_BLOCKS_PATH.toString(), "shapes");
 
     public static final Path ASSETS_TEXTURES_PATH = Paths.get(ASSETS_PATH.toString(), "textures");
     public static final Path ASSETS_TEXTURES_BLOCKS_PATH = Paths.get(ASSETS_TEXTURES_PATH.toString(), "blocks");
@@ -58,22 +63,6 @@ public class Filesystem {
         }
 
         if (Configuration.IS_CLIENT) {
-            if (Files.exists(ASSETS_MODELS_BLOCKS_SHAPES_PATH)) {
-                for (Path file : getPaths(ASSETS_MODELS_BLOCKS_SHAPES_PATH, "*.shape")) {
-                    try {
-                        Files.deleteIfExists(file);
-                    } catch (Exception e) {
-                        throw new RuntimeException("Failed to remove " + file + " from " + ASSETS_MODELS_BLOCKS_SHAPES_PATH, e);
-                    }
-                }
-            } else {
-                try {
-                    Files.createDirectories(ASSETS_MODELS_BLOCKS_SHAPES_PATH);
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to create directory " + ASSETS_MODELS_BLOCKS_SHAPES_PATH, e);
-                }
-            }
-
             if (Files.exists(ASSETS_TEXTURES_BLOCKS_SMPS_PATH)) {
                 for (Path file : getPaths(ASSETS_TEXTURES_BLOCKS_SMPS_PATH, "*.png")) {
                     try {
@@ -141,5 +130,24 @@ public class Filesystem {
         final FileOutputStream write = new FileOutputStream(new File(newDir.toFile(), fileName));
         write.getChannel().transferFrom(read, 0, Long.MAX_VALUE);
         write.close();
+    }
+
+    public static Dimension getImageDimension(Path file) throws IOException {
+        Dimension dim = null;
+
+        try (ImageInputStream in = ImageIO.createImageInputStream(file)) {
+            final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
+            if (readers.hasNext()) {
+                ImageReader reader = readers.next();
+                try {
+                    reader.setInput(in);
+                    dim = new Dimension(reader.getWidth(0), reader.getHeight(0));
+                } finally {
+                    reader.dispose();
+                }
+            }
+        }
+
+        return dim;
     }
 }

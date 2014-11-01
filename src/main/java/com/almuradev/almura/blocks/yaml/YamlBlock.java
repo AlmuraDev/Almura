@@ -7,26 +7,32 @@ package com.almuradev.almura.blocks.yaml;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.items.BasicItemBlock;
 import com.almuradev.almura.lang.Languages;
+import com.almuradev.almura.resource.Shape;
+import com.almuradev.almura.smp.SMPPack;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
-import com.google.common.collect.Maps;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
-import net.minecraftforge.common.util.ForgeDirection;
 
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,8 +42,13 @@ import java.util.Map;
  * Represents a block created from a {@link YamlConfiguration}.
  */
 public class YamlBlock extends Block {
+    //TEXTURES
+    private final Map<Integer, List<Integer>> textureCoordinatesByFace;
+    private ClippedIcon[] textureIconsBySide = new ClippedIcon[6];
+
+    //SHAPE
     private final String shapeName;
-    private final Map<ForgeDirection, List<Integer>> coordsByFace;
+    private Shape shape;
 
     public YamlBlock(String identifier) {
         this(identifier, identifier, 1f, 1f, 0, null, null);
@@ -55,7 +66,7 @@ public class YamlBlock extends Block {
         this(identifier, textureName, hardness, lightLevel, 0, null, null);
     }
 
-    public YamlBlock(String identifier, String textureName, float hardness, float lightLevel, int lightOpacity, String shapeName, Map<ForgeDirection, List<Integer>> coordsByFace) {
+    public YamlBlock(String identifier, String textureName, float hardness, float lightLevel, int lightOpacity, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName) {
         super(Material.rock);
         setBlockName(identifier);
         setBlockTextureName(Almura.MOD_ID + ":smps/" + textureName);
@@ -63,8 +74,8 @@ public class YamlBlock extends Block {
         setLightLevel(lightLevel);
         setLightOpacity(lightOpacity);
         setCreativeTab(Tabs.LEGACY);
+        this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.shapeName = shapeName;
-        this.coordsByFace = coordsByFace;
         GameRegistry.registerBlock(this, BasicItemBlock.class, identifier);
     }
 
@@ -90,58 +101,88 @@ public class YamlBlock extends Block {
 
         final float hardness = reader.getChild("Hardness").getFloat(1f);
 
-        String shapeName = reader.getChild("Shape").getString();
-        if (shapeName != null) {
-            shapeName = shapeName.split(".shape")[0];
-        }
-        final List<String> coordList = reader.getChild("Coords").getStringList();
+        final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
 
-        Map<ForgeDirection, List<Integer>> coordsByFace = new HashMap<>();
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = new HashMap<>();
 
-        for (int i = 0; i < coordList.size(); i++) {
-            final String[] coordSplit = coordList.get(i).split(" ");
+        for (int i = 0; i < textureCoordinatesList.size(); i++) {
+            final String[] coordSplit = textureCoordinatesList.get(i).split(" ");
 
             final List<Integer> coords = new LinkedList<>();
             for (String coord : coordSplit) {
                 coords.add(Integer.parseInt(coord));
             }
 
-            coordsByFace.put(ForgeDirection.getOrientation(i), coords);
+            textureCoordinatesByFace.put(i, coords);
+        }
+
+        String shapeName = reader.getChild("Shape").getString();
+        if (shapeName != null) {
+            shapeName = shapeName.split(".shape")[0];
         }
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + name + ".name", title);
 
-        return new YamlBlock(name, textureName, hardness, 1f, 0, shapeName, coordsByFace);
+        return new YamlBlock(name, textureName, hardness, 1f, 0, textureCoordinatesByFace, shapeName);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void onCreate(SMPPack pack) {
+        for (Shape shape : pack.getShapes()) {
+            if (shape.getName().equals(shapeName)) {
+                this.shape = shape;
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void registerBlockIcons(IIconRegister register) {
+        if (textureCoordinatesByFace.isEmpty()) {
+            super.registerBlockIcons(register);
+            return;
+        }
+
+        //Register our core texture
+        blockIcon = new MalisisIcon(getTextureName()).register((TextureMap) register);
+
+        Dimension dimension = null;
+
+        try {
+            final Path imgPath = Paths.get(Filesystem.ASSETS_TEXTURES_BLOCKS_SMPS_PATH.toString(), textureName.split("/")[1] + ".png");
+            dimension = Filesystem.getImageDimension(imgPath);
+        } catch (IOException e) {
+            if (Configuration.IS_DEBUG) {
+                Almura.LOGGER.error("Failed to load texture [" + textureName + "] for dimensions", e);
+            }
+        }
+
+        if (dimension == null) {
+            if (Configuration.IS_DEBUG) {
+                Almura.LOGGER.error("Failed to calculate the dimensions for texture [" + textureName + "]");
+            }
+            return;
+        }
+
+        //Assign our clips
+        for (int i = 0; i < textureCoordinatesByFace.size(); i++) {
+            final List<Integer> coordList = textureCoordinatesByFace.get(i);
+
+            textureIconsBySide[i] = new ClippedIcon((MalisisIcon) blockIcon, (float) (coordList.get(0) / dimension.getWidth()), (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()), (float) (coordList.get(3) / dimension.getHeight()));
+        }
+    }
+
+    @Override
+    public IIcon getIcon(int side, int type) {
+        ClippedIcon sideIcon = textureIconsBySide[side];
+        if (sideIcon == null) {
+            sideIcon = textureIconsBySide[0];
+        }
+        return sideIcon;
     }
 
     @Override
     public String toString() {
         return "YamlBlock {raw_name= " + getUnlocalizedName() + "}";
-    }
-
-    @Override
-    public void registerBlockIcons(IIconRegister register) {
-        if (coordsByFace.isEmpty()) {
-            super.registerBlockIcons(register);
-            return;
-        }
-
-        blockIcon = new MalisisIcon(getTextureName()).register((TextureMap) register);
-    }
-
-    @Override
-    public IIcon getIcon(int side, int type) {
-        if (coordsByFace.isEmpty()) {
-            return super.getIcon(side, type);
-        }
-
-        final List<Integer> coordList;
-        if (coordsByFace.size() - 1 < side) {
-            coordList = coordsByFace.get(ForgeDirection.getOrientation(0));
-        } else {
-            coordList = coordsByFace.get(ForgeDirection.getOrientation(side));
-        }
-
-        return ((MalisisIcon) blockIcon).copy().clip(coordList.get(0), coordList.get(1), coordList.get(2), coordList.get(3));
     }
 }

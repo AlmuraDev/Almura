@@ -9,7 +9,9 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.blocks.yaml.YamlBlock;
+import com.almuradev.almura.resource.Shape;
 import com.flowpowered.cerealization.config.ConfigurationException;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,10 +31,16 @@ public class SMPPack {
     private static final Map<String, SMPPack> PACKS = new HashMap<>();
     private final String name;
     private final List<YamlBlock> blocks;
+    private final List<Shape> shapes;
 
-    public SMPPack(String name, List<YamlBlock> blocks) {
+    public SMPPack(String name, List<YamlBlock> blocks, List<Shape> shapes) {
         this.name = name;
         this.blocks = blocks;
+        this.shapes = shapes;
+    }
+
+    public static SMPPack getPack(String name) {
+        return PACKS.get(name);
     }
 
     public static Map<String, SMPPack> getPacks() {
@@ -55,6 +63,7 @@ public class SMPPack {
         final ZipFile zipFile = new ZipFile(root.toFile());
         final ZipInputStream stream = new ZipInputStream(new FileInputStream(root.toFile()));
         final List<YamlBlock> blocks = new ArrayList<>();
+        final List<Shape> shapes = new ArrayList<>();
 
         for (ZipEntry zipEntry; (zipEntry = stream.getNextEntry()) != null; ) {
             if (zipEntry.getName().endsWith(".yml")) {
@@ -64,7 +73,8 @@ public class SMPPack {
                 //TODO Figure out how to separate block and items pngs
                 Filesystem.writeTo(zipEntry.getName(), stream, Filesystem.ASSETS_TEXTURES_BLOCKS_SMPS_PATH);
             } else if (zipEntry.getName().endsWith(".shape") && Configuration.IS_CLIENT) {
-                Filesystem.writeTo(zipEntry.getName(), stream, Filesystem.ASSETS_MODELS_BLOCKS_SHAPES_PATH);
+                final InputStream entry = zipFile.getInputStream(zipEntry);
+                shapes.add(Shape.createFromSMPStream(zipEntry.getName().split(".shape")[0], entry));
             }
 
             stream.closeEntry();
@@ -73,16 +83,17 @@ public class SMPPack {
         stream.close();
 
         final String smpName = root.toFile().getName().split(".smp")[0];
-        final SMPPack pack = new SMPPack(smpName, blocks);
+        final SMPPack pack = new SMPPack(smpName, blocks, shapes);
         PACKS.put(smpName, pack);
         if (Configuration.IS_DEBUG) {
             Almura.LOGGER.info("Loaded " + pack);
         }
-        return pack;
-    }
 
-    public SMPPack getPack(String name) {
-        return PACKS.get(name);
+        for (YamlBlock block : blocks) {
+            block.onCreate(pack);
+        }
+
+        return pack;
     }
 
     public String getName() {
@@ -91,6 +102,10 @@ public class SMPPack {
 
     public List<YamlBlock> getBlocks() {
         return Collections.unmodifiableList(blocks);
+    }
+
+    public List<Shape> getShapes() {
+        return Collections.unmodifiableList(shapes);
     }
 
     @Override
@@ -105,6 +120,6 @@ public class SMPPack {
 
     @Override
     public String toString() {
-        return "SMPPack{name= [" + name + "], blocks= " + blocks + "}";
+        return "SMPPack{name= [" + name + "], blocks= " + blocks + ", shapes= " + shapes + "}";
     }
 }
