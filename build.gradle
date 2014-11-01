@@ -71,6 +71,7 @@ repositories {
 // Project dependencies
 dependencies {
     compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
+    compile 'net.malisis:malisiscore:1.7.10-0.9.10-SNAPSHOT:dev'
 }
 
 // Filter, process, and include resources

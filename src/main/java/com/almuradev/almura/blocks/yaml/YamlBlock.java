@@ -18,6 +18,7 @@ import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -35,7 +36,6 @@ import java.util.Map;
  * Represents a block created from a {@link YamlConfiguration}.
  */
 public class YamlBlock extends Block {
-
     private final String shapeName;
     private final Map<ForgeDirection, List<Integer>> coordsByFace;
 
@@ -120,17 +120,28 @@ public class YamlBlock extends Block {
     }
 
     @Override
+    public void registerBlockIcons(IIconRegister register) {
+        if (coordsByFace.isEmpty()) {
+            super.registerBlockIcons(register);
+            return;
+        }
+
+        blockIcon = new MalisisIcon(getTextureName()).register((TextureMap) register);
+    }
+
+    @Override
     public IIcon getIcon(int side, int type) {
         if (coordsByFace.isEmpty()) {
             return super.getIcon(side, type);
         }
-        List<Integer> coordList;
+
+        final List<Integer> coordList;
         if (coordsByFace.size() - 1 < side) {
             coordList = coordsByFace.get(ForgeDirection.getOrientation(0));
         } else {
             coordList = coordsByFace.get(ForgeDirection.getOrientation(side));
         }
 
-        return new MalisisIcon().clip(coordList.get(0), coordList.get(1), coordList.get(2), coordList.get(3));
+        return ((MalisisIcon) blockIcon).copy().clip(coordList.get(0), coordList.get(1), coordList.get(2), coordList.get(3));
     }
 }
