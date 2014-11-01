@@ -89,10 +89,12 @@ public class SMPPack {
             Almura.LOGGER.info("Loaded " + pack);
         }
 
-        for (YamlBlock block : blocks) {
-            block.onCreate(pack);
+        if (Configuration.IS_CLIENT) {
+            for (YamlBlock block : blocks) {
+                block.onCreate(pack);
+            }
         }
-
+        
         return pack;
     }
 
