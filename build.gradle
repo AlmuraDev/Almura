@@ -104,8 +104,7 @@ license {
     header rootProject.file('HEADER.txt')
     ignoreFailures true
     strictCheck true
-    exclude "**/*.info"
-    exclude "resources/**"
+    exclude "resources/*"
 }
 
 // Source compiler configuration
