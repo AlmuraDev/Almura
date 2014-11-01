@@ -135,7 +135,8 @@ public class Filesystem {
     public static Dimension getImageDimension(Path file) throws IOException {
         Dimension dim = null;
 
-        try (ImageInputStream in = ImageIO.createImageInputStream(file)) {
+        ImageInputStream in = ImageIO.createImageInputStream(file.toFile());
+        try {
             final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
             if (readers.hasNext()) {
                 ImageReader reader = readers.next();
@@ -146,6 +147,8 @@ public class Filesystem {
                     reader.dispose();
                 }
             }
+        } finally {
+            if (in != null) in.close();
         }
 
         return dim;

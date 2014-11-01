@@ -128,10 +128,12 @@ public class YamlBlock extends Block {
 
     @SideOnly(Side.CLIENT)
     public void onCreate(SMPPack pack) {
-        for (Shape shape : pack.getShapes()) {
-            if (shape.getName().equals(shapeName)) {
-                this.shape = shape;
-                break;
+        if (shapeName != null) {
+            for (Shape shape : pack.getShapes()) {
+                if (shape.getName().equals(shapeName)) {
+                    this.shape = shape;
+                    break;
+                }
             }
         }
     }
@@ -164,7 +166,6 @@ public class YamlBlock extends Block {
             return;
         }
 
-        //Assign our clips
         for (int i = 0; i < textureCoordinatesByFace.size(); i++) {
             final List<Integer> coordList = textureCoordinatesByFace.get(i);
 
