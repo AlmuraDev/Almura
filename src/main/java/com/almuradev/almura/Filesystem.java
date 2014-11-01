@@ -148,7 +148,9 @@ public class Filesystem {
                 }
             }
         } finally {
-            if (in != null) in.close();
+            if (in != null) {
+                in.close();
+            }
         }
 
         return dim;

@@ -11,7 +11,6 @@ import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.blocks.yaml.YamlBlock;
 import com.almuradev.almura.resource.Shape;
 import com.flowpowered.cerealization.config.ConfigurationException;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -94,7 +93,7 @@ public class SMPPack {
                 block.onCreate(pack);
             }
         }
-        
+
         return pack;
     }
 
@@ -122,6 +121,6 @@ public class SMPPack {
 
     @Override
     public String toString() {
-        return "SMPPack{name= [" + name + "], blocks= " + blocks + ", shapes= " + shapes + "}";
+        return "SMPPack {name= [" + name + "], blocks= " + blocks + ", shapes= " + shapes + "}";
     }
 }

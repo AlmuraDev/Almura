@@ -42,12 +42,10 @@ import java.util.Map;
  * Represents a block created from a {@link YamlConfiguration}.
  */
 public class YamlBlock extends Block {
-    //TEXTURES
-    private final Map<Integer, List<Integer>> textureCoordinatesByFace;
-    private ClippedIcon[] textureIconsBySide = new ClippedIcon[6];
 
-    //SHAPE
+    private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
+    private ClippedIcon[] textureIconsBySide = new ClippedIcon[6];
     private Shape shape;
 
     public YamlBlock(String identifier) {
@@ -66,16 +64,17 @@ public class YamlBlock extends Block {
         this(identifier, textureName, hardness, lightLevel, 0, null, null);
     }
 
-    public YamlBlock(String identifier, String textureName, float hardness, float lightLevel, int lightOpacity, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName) {
+    public YamlBlock(String identifier, String textureName, float hardness, float lightLevel, int lightOpacity,
+                     Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName) {
         super(Material.rock);
+        this.textureCoordinatesByFace = textureCoordinatesByFace;
+        this.shapeName = shapeName;
         setBlockName(identifier);
         setBlockTextureName(Almura.MOD_ID + ":smps/" + textureName);
         setHardness(hardness);
         setLightLevel(lightLevel);
         setLightOpacity(lightOpacity);
         setCreativeTab(Tabs.LEGACY);
-        this.textureCoordinatesByFace = textureCoordinatesByFace;
-        this.shapeName = shapeName;
         GameRegistry.registerBlock(this, BasicItemBlock.class, identifier);
     }
 
@@ -127,6 +126,11 @@ public class YamlBlock extends Block {
     }
 
     @SideOnly(Side.CLIENT)
+    public Shape getShape() {
+        return shape;
+    }
+
+    @SideOnly(Side.CLIENT)
     public void onCreate(SMPPack pack) {
         if (shapeName != null) {
             for (Shape shape : pack.getShapes()) {
@@ -145,7 +149,6 @@ public class YamlBlock extends Block {
             return;
         }
 
-        //Register our core texture
         blockIcon = new MalisisIcon(getTextureName()).register((TextureMap) register);
 
         Dimension dimension = null;
@@ -169,7 +172,10 @@ public class YamlBlock extends Block {
         for (int i = 0; i < textureCoordinatesByFace.size(); i++) {
             final List<Integer> coordList = textureCoordinatesByFace.get(i);
 
-            textureIconsBySide[i] = new ClippedIcon((MalisisIcon) blockIcon, (float) (coordList.get(0) / dimension.getWidth()), (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()), (float) (coordList.get(3) / dimension.getHeight()));
+            textureIconsBySide[i] =
+                    new ClippedIcon((MalisisIcon) blockIcon, (float) (coordList.get(0) / dimension.getWidth()),
+                                    (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()),
+                                    (float) (coordList.get(3) / dimension.getHeight()));
         }
     }
 
