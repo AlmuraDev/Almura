@@ -11,6 +11,7 @@ import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.blocks.yaml.YamlBlock;
 import com.almuradev.almura.resource.SMPShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
+import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.element.Shape;
@@ -73,13 +74,19 @@ public class SMPPack {
         for (ZipEntry zipEntry; (zipEntry = stream.getNextEntry()) != null; ) {
             if (zipEntry.getName().endsWith(".yml")) {
                 final InputStream entry = zipFile.getInputStream(zipEntry);
-                blocks.add(YamlBlock.createFromSMPStream(smpName, zipEntry.getName().split(".yml")[0], entry));
+                final YamlConfiguration reader = new YamlConfiguration(entry);
+                reader.load();
+                blocks.add(YamlBlock.createFromReader(smpName, zipEntry.getName().split(".yml")[0], reader));
+                entry.close();
             } else if (zipEntry.getName().endsWith(".png") && Configuration.IS_CLIENT) {
                 //TODO Figure out how to separate block and items pngs
                 Filesystem.writeTo(zipEntry.getName(), stream, Filesystem.ASSETS_TEXTURES_BLOCKS_SMPS_PATH);
             } else if (zipEntry.getName().endsWith(".shape") && Configuration.IS_CLIENT) {
                 final InputStream entry = zipFile.getInputStream(zipEntry);
-                shapes.add(SMPShape.createFromSMPStream(zipEntry.getName().split(".shape")[0], entry));
+                final YamlConfiguration reader = new YamlConfiguration(entry);
+                reader.load();
+                shapes.add(SMPShape.createFromReader(zipEntry.getName().split(".shape")[0], reader));
+                entry.close();
             }
 
             stream.closeEntry();
@@ -95,7 +102,7 @@ public class SMPPack {
 
         if (Configuration.IS_CLIENT) {
             for (YamlBlock block : blocks) {
-                block.applyShapeFromPack(pack);
+                block.setShapeFromPack(pack);
             }
         }
 
@@ -104,6 +111,16 @@ public class SMPPack {
 
     public String getName() {
         return name;
+    }
+
+    public YamlBlock getBlock(String identifier) {
+        for (YamlBlock block : blocks) {
+            if (block.getUnlocalizedName().equals("tile." + getName() + "." + identifier)) {
+                return block;
+            }
+        }
+
+        return null;
     }
 
     public List<YamlBlock> getBlocks() {
@@ -118,11 +135,7 @@ public class SMPPack {
      * Refreshes shape information from the file
      */
     @SideOnly(Side.CLIENT)
-    public void refresh() throws IOException, ConfigurationException {
-        if (Configuration.IS_DEBUG) {
-            Almura.LOGGER.info("Clearing all current shapes and doing a refresh. Please stand-by");
-        }
-
+    public void reloadIconsAndShape() throws IOException, ConfigurationException {
         shapes.clear();
 
         final Path smpFile = Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), name + ".smp");
@@ -130,9 +143,26 @@ public class SMPPack {
         final ZipInputStream stream = new ZipInputStream(new FileInputStream(smpFile.toFile()));
 
         for (ZipEntry zipEntry; (zipEntry = stream.getNextEntry()) != null; ) {
-            if (zipEntry.getName().endsWith(".shape") && Configuration.IS_CLIENT) {
+            if (zipEntry.getName().endsWith(".shape")) {
                 final InputStream entry = zipFile.getInputStream(zipEntry);
-                shapes.add(SMPShape.createFromSMPStream(zipEntry.getName().split(".shape")[0], entry));
+                final YamlConfiguration reader = new YamlConfiguration(entry);
+                reader.load();
+                
+                shapes.add(SMPShape.createFromReader(zipEntry.getName().split(".shape")[0], reader));
+                entry.close();
+            } else if (zipEntry.getName().endsWith(".yml")) {
+                final YamlBlock block = getBlock(zipEntry.getName().split(".yml")[0]);
+                if (block == null) {
+                    continue;
+                }
+
+                final InputStream entry = zipFile.getInputStream(zipEntry);
+                final YamlConfiguration reader = new YamlConfiguration(entry);
+                reader.load();
+
+                final Map<Integer, List<Integer>> texCoords = YamlBlock.extractCoordsFrom(reader);
+                block.applyClippedIconsFromCoords(texCoords);
+                entry.close();
             }
 
             stream.closeEntry();
@@ -147,7 +177,7 @@ public class SMPPack {
         }
 
         for (YamlBlock block : blocks) {
-            block.applyShapeFromPack(this);
+            block.setShapeFromPack(this);
         }
     }
 

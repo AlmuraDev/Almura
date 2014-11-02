@@ -17,8 +17,7 @@ import net.malisis.core.renderer.element.Vertex;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -47,7 +46,7 @@ public class SMPShape extends Shape {
         this.name = name;
     }
 
-    public static SMPShape createFromSMPFile(Path file) throws FileNotFoundException, ConfigurationException {
+    public static SMPShape createFromFile(Path file) throws IOException, ConfigurationException {
         if (!file.endsWith(".shape")) {
             if (Configuration.IS_DEBUG) {
                 Almura.LOGGER.warn("Attempted to load a shape from file that was not a SHAPE: " + file);
@@ -56,13 +55,15 @@ public class SMPShape extends Shape {
         }
 
         final String fileName = file.toFile().getName().split(".shape")[0];
-        return createFromSMPStream(fileName, new FileInputStream(file.toFile()));
-    }
-
-    public static SMPShape createFromSMPStream(String name, InputStream stream) throws ConfigurationException {
+        final FileInputStream stream = new FileInputStream(file.toFile());
         final YamlConfiguration reader = new YamlConfiguration(stream);
         reader.load();
+        final SMPShape shape = createFromReader(fileName, reader);
+        stream.close();
+        return shape;
+    }
 
+    public static SMPShape createFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
         //Shapes:
         final ConfigurationNode shapesNode = reader.getChild("Shapes");
         final List<Face> faces = new LinkedList<>();

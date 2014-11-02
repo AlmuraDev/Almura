@@ -51,14 +51,14 @@ public class ShapeRenderer extends BaseRenderer {
                 return;
             }
 
-            if (((YamlBlock) block).textureIcons == null) {
+            if (((YamlBlock) block).clippedIcons == null) {
                icon = super.getIcon(params);
-            } else if (((SMPFace) f).getTextureId() >= ((YamlBlock) block).textureIcons.length) {
-                icon = ((YamlBlock) block).textureIcons[0];
+            } else if (((SMPFace) f).getTextureId() >= ((YamlBlock) block).clippedIcons.length) {
+                icon = ((YamlBlock) block).clippedIcons[0];
             } else {
-                icon = ((YamlBlock) block).textureIcons[((SMPFace) f).getTextureId()];
+                icon = ((YamlBlock) block).clippedIcons[((SMPFace) f).getTextureId()];
                 if (icon == null) {
-                    icon = ((YamlBlock) block).textureIcons[0];
+                    icon = ((YamlBlock) block).clippedIcons[0];
                 }
             }
 

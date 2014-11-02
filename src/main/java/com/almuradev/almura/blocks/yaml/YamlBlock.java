@@ -28,11 +28,10 @@ import net.minecraft.util.IIcon;
 
 import java.awt.*;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,9 +42,9 @@ import java.util.Map;
  */
 public class YamlBlock extends Block {
     public static int renderId;
+    public ClippedIcon[] clippedIcons;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
-    public ClippedIcon[] textureIcons;
     private SMPShape shape;
 
     public YamlBlock(String packName, String identifier) {
@@ -80,7 +79,7 @@ public class YamlBlock extends Block {
         GameRegistry.registerBlock(this, BasicItemBlock.class, packName + "." + identifier);
     }
 
-    public static YamlBlock createFromSMPFile(String packName, Path file) throws FileNotFoundException, ConfigurationException {
+    public static YamlBlock createFromFile(String packName, Path file) throws IOException, ConfigurationException {
         if (!file.endsWith(".yml")) {
             if (Configuration.IS_DEBUG) {
                 Almura.LOGGER.warn("Attempted to load a block from file that was not YAML: " + file);
@@ -89,13 +88,15 @@ public class YamlBlock extends Block {
         }
 
         final String fileName = file.toFile().getName().split(".yml")[0];
-        return createFromSMPStream(packName, fileName, new FileInputStream(file.toFile()));
-    }
-
-    public static YamlBlock createFromSMPStream(String packName, String name, InputStream stream) throws ConfigurationException {
+        final FileInputStream stream = new FileInputStream(file.toFile());
         final YamlConfiguration reader = new YamlConfiguration(stream);
         reader.load();
+        final YamlBlock block = createFromReader(packName, fileName, reader);
+        stream.close();
+        return block;
+    }
 
+    public static YamlBlock createFromReader(String packName, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild("Title").getString(name);
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
@@ -106,30 +107,72 @@ public class YamlBlock extends Block {
         final boolean showInCreativeTab = reader.getChild("show-in-creative-tab").getBoolean(true);
         final String creativeTabName = reader.getChild("creative-tab-name").getString("legacy");
 
-        final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
-
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = new HashMap<>();
-
-        for (int i = 0; i < textureCoordinatesList.size(); i++) {
-            final String[] coordSplit = textureCoordinatesList.get(i).split(" ");
-
-            final List<Integer> coords = new LinkedList<>();
-            for (String coord : coordSplit) {
-                coords.add(Integer.parseInt(coord));
-            }
-
-            textureCoordinatesByFace.put(i, coords);
-        }
-
         String shapeName = reader.getChild("Shape").getString();
         if (shapeName != null) {
             shapeName = shapeName.split(".shape")[0];
         }
 
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = extractCoordsFrom(reader);
+
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + packName + "." + name + ".name", title);
 
         return new YamlBlock(packName, name, textureName, hardness, lightLevel, lightOpacity, showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName);
     }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getRenderType() {
+        return renderId;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerBlockIcons(IIconRegister register) {
+        if (textureCoordinatesByFace.isEmpty()) {
+            super.registerBlockIcons(register);
+            return;
+        }
+
+        blockIcon = new MalisisIcon(getTextureName()).register((TextureMap) register);
+
+        applyClippedIconsFromCoords(textureCoordinatesByFace);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(int side, int type) {
+        if (clippedIcons == null) {
+            return super.getIcon(side, type);
+        }
+
+        ClippedIcon sideIcon;
+
+        if (side >= clippedIcons.length) {
+            sideIcon = clippedIcons[0];
+        } else {
+            sideIcon = clippedIcons[side];
+
+            if (sideIcon == null) {
+                sideIcon = clippedIcons[0];
+            }
+        }
+
+        return sideIcon;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean renderAsNormalBlock() {
+        return shape == null;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean isOpaqueCube()
+    {
+        return shape == null;
+    }
+
 
     @SideOnly(Side.CLIENT)
     public SMPShape getShape() {
@@ -137,7 +180,7 @@ public class YamlBlock extends Block {
     }
 
     @SideOnly(Side.CLIENT)
-    public void applyShapeFromPack(SMPPack pack) {
+    public void setShapeFromPack(SMPPack pack) {
         this.shape = null;
 
         if (shapeName != null) {
@@ -150,20 +193,8 @@ public class YamlBlock extends Block {
         }
     }
 
-    @Override
-    public int getRenderType() {
-        return renderId;
-    }
-
-    @Override
-    public void registerBlockIcons(IIconRegister register) {
-        if (textureCoordinatesByFace.isEmpty()) {
-            super.registerBlockIcons(register);
-            return;
-        }
-
-        blockIcon = new MalisisIcon(getTextureName()).register((TextureMap) register);
-
+    @SideOnly(Side.CLIENT)
+    public void applyClippedIconsFromCoords(Map<Integer, List<Integer>> texCoords) {
         Dimension dimension = null;
 
         try {
@@ -182,48 +213,36 @@ public class YamlBlock extends Block {
             return;
         }
 
-        textureIcons = new ClippedIcon[textureCoordinatesByFace.size()];
+        clippedIcons = new ClippedIcon[texCoords.size()];
 
-        for (int i = 0; i < textureCoordinatesByFace.size(); i++) {
-            final List<Integer> coordList = textureCoordinatesByFace.get(i);
+        for (int i = 0; i < texCoords.size(); i++) {
+            final List<Integer> coordList = texCoords.get(i);
 
-            textureIcons[i] =
+            clippedIcons[i] =
                     new ClippedIcon((MalisisIcon) blockIcon, (float) (coordList.get(0) / dimension.getWidth()),
                                     (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()),
                                     (float) (coordList.get(3) / dimension.getHeight()));
         }
     }
 
-    @Override
-    public IIcon getIcon(int side, int type) {
-        if (textureIcons == null) {
-            return super.getIcon(side, type);
-        }
+    @SideOnly(Side.CLIENT)
+    public static Map<Integer, List<Integer>> extractCoordsFrom(YamlConfiguration reader) {
+        final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
 
-        ClippedIcon sideIcon;
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = new HashMap<>();
 
-        if (side >= textureIcons.length) {
-            sideIcon = textureIcons[0];
-        } else {
-            sideIcon = textureIcons[side];
+        for (int i = 0; i < textureCoordinatesList.size(); i++) {
+            final String[] coordSplit = textureCoordinatesList.get(i).split(" ");
 
-            if (sideIcon == null) {
-                sideIcon = textureIcons[0];
+            final List<Integer> coords = new LinkedList<>();
+            for (String coord : coordSplit) {
+                coords.add(Integer.parseInt(coord));
             }
+
+            textureCoordinatesByFace.put(i, coords);
         }
 
-        return sideIcon;
-    }
-
-    @Override
-    public boolean renderAsNormalBlock() {
-        return shape == null;
-    }
-
-    @Override
-    public boolean isOpaqueCube()
-    {
-        return shape == null;
+        return textureCoordinatesByFace;
     }
 
     @Override
