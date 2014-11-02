@@ -19,7 +19,7 @@ public class ShapeRenderer extends BaseRenderer {
     private Cube cube;
 
     @Override
-    protected void initShapes() {
+    protected void initialize() {
         cube = new Cube();
     }
 

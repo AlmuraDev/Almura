@@ -5,9 +5,11 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.lang.Languages;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 
 public class Tabs {
@@ -16,165 +18,45 @@ public class Tabs {
             FLAGS, SIGNS, LETTERS, ORES, FOOD, DRINK, INGREDIENTS, BOTTLES, TOOLS, LEGACY;
 
     static {
-        BUILDING = new CreativeTabs("building") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.BUILDING;
-            }
-        };
+        BUILDING = new AlmuraCreativeTabs("building", "Almura Building", com.almuradev.almura.items.Items.BUILDING);
 
-        ROOFING = new CreativeTabs("roofing") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.ROOFING;
-            }
-        };
+        ROOFING = new AlmuraCreativeTabs("roofing", "Almura Roofing", com.almuradev.almura.items.Items.ROOFING);
 
-        LIGHTING = new CreativeTabs("lighting") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.LIGHTING;
-            }
-        };
+        LIGHTING = new AlmuraCreativeTabs("lighting", "Almura Lighting", com.almuradev.almura.items.Items.LIGHTING);
 
-        FURNITURE = new CreativeTabs("furniture") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.FURNITURE;
-            }
-        };
+        FURNITURE = new AlmuraCreativeTabs("furniture", "Almura Furniture", com.almuradev.almura.items.Items.FURNITURE);
 
-        DECORATION = new CreativeTabs("decoration") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.DECORATION;
-            }
-        };
+        DECORATION = new AlmuraCreativeTabs("decoration", "Almura Decoration", com.almuradev.almura.items.Items.DECORATION);
 
-        STORAGE = new CreativeTabs("storage") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.STORAGE;
-            }
-        };
+        STORAGE = new AlmuraCreativeTabs("storage", "Almura Storage", com.almuradev.almura.items.Items.STORAGE);
 
-        BARRELS = new CreativeTabs("barrels") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.BARRELS;
-            }
-        };
+        BARRELS = new AlmuraCreativeTabs("barrels", "Almura Barrels", com.almuradev.almura.items.Items.BARRELS);
 
-        FLOWERS = new CreativeTabs("flowers") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.FLOWERS;
-            }
-        };
+        FLOWERS = new AlmuraCreativeTabs("flowers", "Almura Flowers", com.almuradev.almura.items.Items.FLOWERS);
 
-        PLANTS = new CreativeTabs("plants") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.PLANTS;
-            }
-        };
+        PLANTS = new AlmuraCreativeTabs("plants", "Almura Plants", com.almuradev.almura.items.Items.PLANTS);
 
-        CROPS = new CreativeTabs("crops") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.CROPS;
-            }
-        };
+        CROPS = new AlmuraCreativeTabs("crops", "Almura Crops", com.almuradev.almura.items.Items.CROPS);
 
-        FLAGS = new CreativeTabs("flags") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.FLAGS;
-            }
-        };
+        FLAGS = new AlmuraCreativeTabs("flags", "Almura Flags", com.almuradev.almura.items.Items.FLAGS);
 
-        SIGNS = new CreativeTabs("signs") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.SIGNS;
-            }
-        };
+        SIGNS = new AlmuraCreativeTabs("signs", "Almura Signs", com.almuradev.almura.items.Items.SIGNS);
 
-        LETTERS = new CreativeTabs("letters") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.LETTERS;
-            }
-        };
+        LETTERS = new AlmuraCreativeTabs("letters", "Almura Letters", com.almuradev.almura.items.Items.LETTERS);
 
-        ORES = new CreativeTabs("ores") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.ORES;
-            }
-        };
+        ORES = new AlmuraCreativeTabs("ores", "Almura Ores", com.almuradev.almura.items.Items.ORES);
 
-        FOOD = new CreativeTabs("almuraFood") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.FOOD;
-            }
-        };
+        FOOD = new AlmuraCreativeTabs("food", "Almura Food", com.almuradev.almura.items.Items.FOOD);
 
-        DRINK = new CreativeTabs("drink") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.DRINK;
-            }
-        };
+        DRINK = new AlmuraCreativeTabs("drinks", "Almura Drinks", com.almuradev.almura.items.Items.DRINKS);
 
-        INGREDIENTS = new CreativeTabs("ingredients") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.INGREDIENTS;
-            }
-        };
+        INGREDIENTS = new AlmuraCreativeTabs("ingredients", "Almura Ingredients", com.almuradev.almura.items.Items.INGREDIENTS);
 
-        BOTTLES = new CreativeTabs("bottles") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.BOTTLES;
-            }
-        };
+        BOTTLES = new AlmuraCreativeTabs("bottles", "Almura Bottles", com.almuradev.almura.items.Items.BOTTLES);
 
-        TOOLS = new CreativeTabs("almuraTools") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.TOOLS;
-            }
-        };
+        TOOLS = new AlmuraCreativeTabs("tools", "Almura Tools", com.almuradev.almura.items.Items.TOOLS);
 
-        LEGACY = new CreativeTabs("legacy") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.LEGACY;
-            }
-        };
+        LEGACY = new AlmuraCreativeTabs("legacy", "Almura SMP Content", com.almuradev.almura.items.Items.LEGACY);
     }
 
     public static void fakeStaticLoad() {
@@ -188,5 +70,27 @@ public class Tabs {
         }
 
         return null;
+    }
+
+    public static class AlmuraCreativeTabs extends CreativeTabs {
+        private final Item displayItem;
+
+        public AlmuraCreativeTabs(String unlocalizedName, String displayName, Item displayItem) {
+            super(unlocalizedName);
+            Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, getTabLabel(), displayName);
+            this.displayItem = displayItem;
+        }
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public Item getTabIconItem() {
+            return displayItem == null ? Items.feather : displayItem;
+        }
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public String getTranslatedTabLabel() {
+            return Almura.MOD_ID.toLowerCase() + "itemGroup." + this.getTabLabel();
+        }
     }
 }
