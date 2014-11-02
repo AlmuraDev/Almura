@@ -49,23 +49,23 @@ public class YamlBlock extends Block {
     private SMPShape shape;
 
     public YamlBlock(String packName, String identifier) {
-        this(packName, identifier, identifier, 1f, 0f, 0, null, null);
+        this(packName, identifier, identifier, 1f, 0f, 0, true, "legacy", null, null);
     }
 
     public YamlBlock(String packName, String identifier, String textureName) {
-        this(packName, identifier, textureName, 1f, 0f, 0, null, null);
+        this(packName, identifier, textureName, 1f, 0f, 0, true, "legacy", null, null);
     }
 
     public YamlBlock(String packName, String identifier, String textureName, float hardness) {
-        this(packName, identifier, textureName, hardness, 0f, 0, null, null);
+        this(packName, identifier, textureName, hardness, 0f, 0, true, "legacy", null, null);
     }
 
     public YamlBlock(String packName, String identifier, String textureName, float hardness, float lightLevel) {
-        this(packName, identifier, textureName, hardness, lightLevel, 0, null, null);
+        this(packName, identifier, textureName, hardness, lightLevel, 0, true, "legacy", null, null);
     }
 
     public YamlBlock(String packName, String identifier, String textureName, float hardness, float lightLevel, int lightOpacity,
-                     Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName) {
+                     boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName) {
         super(Material.rock);
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.shapeName = shapeName;
@@ -74,7 +74,9 @@ public class YamlBlock extends Block {
         setHardness(hardness);
         setLightLevel(lightLevel);
         setLightOpacity(lightOpacity);
-        setCreativeTab(Tabs.LEGACY);
+        if (showInCreativeTab) {
+            setCreativeTab(Tabs.getTabByName(creativeTabName));
+        }
         GameRegistry.registerBlock(this, BasicItemBlock.class, packName + "." + identifier);
     }
 
@@ -101,6 +103,8 @@ public class YamlBlock extends Block {
         final float hardness = reader.getChild("Hardness").getFloat(1f);
         final float lightLevel = reader.getChild("LightLevel").getFloat(0f);
         final int lightOpacity = reader.getChild("light-opacity").getInt(0);
+        final boolean showInCreativeTab = reader.getChild("show-in-creative-tab").getBoolean(true);
+        final String creativeTabName = reader.getChild("creative-tab-name").getString("legacy");
 
         final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
 
@@ -124,7 +128,7 @@ public class YamlBlock extends Block {
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + packName + "." + name + ".name", title);
 
-        return new YamlBlock(packName, name, textureName, hardness, lightLevel, lightOpacity, textureCoordinatesByFace, shapeName);
+        return new YamlBlock(packName, name, textureName, hardness, lightLevel, lightOpacity, showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName);
     }
 
     @SideOnly(Side.CLIENT)

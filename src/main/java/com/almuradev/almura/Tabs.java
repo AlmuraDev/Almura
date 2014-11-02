@@ -128,7 +128,7 @@ public class Tabs {
             }
         };
 
-        FOOD = new CreativeTabs("food") {
+        FOOD = new CreativeTabs("almuraFood") {
             @Override
             @SideOnly(Side.CLIENT)
             public Item getTabIconItem() {
@@ -160,7 +160,7 @@ public class Tabs {
             }
         };
 
-        TOOLS = new CreativeTabs("tools") {
+        TOOLS = new CreativeTabs("almuraTools") {
             @Override
             @SideOnly(Side.CLIENT)
             public Item getTabIconItem() {
@@ -178,5 +178,15 @@ public class Tabs {
     }
 
     public static void fakeStaticLoad() {
+    }
+
+    public static CreativeTabs getTabByName(String name) {
+        for (CreativeTabs tab : CreativeTabs.creativeTabArray) {
+            if (tab.getTabLabel().equals(name)) {
+                return tab;
+            }
+        }
+
+        return null;
     }
 }

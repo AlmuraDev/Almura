@@ -13,11 +13,11 @@ itemGroup.crops=Almura Crops
 itemGroup.flags=Almura Flags
 itemGroup.signs=Almura Signs
 itemGroup.ores=Almura Ores
-itemGroup.food=Almura Food
+itemGroup.almuraFood=Almura Food
 itemGroup.drink=Almura Drinks
 itemGroup.ingredients=Almura Ingredients
 itemGroup.bottles=Almura Bottles
-itemGroup.tools=Almura Tools
+itemGroup.almuraTools=Almura Tools
 itemGroup.legacy=Almura SMP Content
 
 # Blocks
