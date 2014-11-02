@@ -45,26 +45,26 @@ public class YamlBlock extends Block {
     public static int renderId;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
-    private ClippedIcon[] textureIconsBySide = new ClippedIcon[6];
+    public ClippedIcon[] textureIcons;
     private SMPShape shape;
 
-    public YamlBlock(String identifier) {
-        this(identifier, identifier, 1f, 1f, 0, null, null);
+    public YamlBlock(String packName, String identifier) {
+        this(packName, identifier, identifier, 1f, 0f, 0, null, null);
     }
 
-    public YamlBlock(String identifier, String textureName) {
-        this(identifier, textureName, 1f, 1f, 0, null, null);
+    public YamlBlock(String packName, String identifier, String textureName) {
+        this(packName, identifier, textureName, 1f, 0f, 0, null, null);
     }
 
-    public YamlBlock(String identifier, String textureName, float hardness) {
-        this(identifier, textureName, hardness, 1f, 0, null, null);
+    public YamlBlock(String packName, String identifier, String textureName, float hardness) {
+        this(packName, identifier, textureName, hardness, 0f, 0, null, null);
     }
 
-    public YamlBlock(String identifier, String textureName, float hardness, float lightLevel) {
-        this(identifier, textureName, hardness, lightLevel, 0, null, null);
+    public YamlBlock(String packName, String identifier, String textureName, float hardness, float lightLevel) {
+        this(packName, identifier, textureName, hardness, lightLevel, 0, null, null);
     }
 
-    public YamlBlock(String identifier, String textureName, float hardness, float lightLevel, int lightOpacity,
+    public YamlBlock(String packName, String identifier, String textureName, float hardness, float lightLevel, int lightOpacity,
                      Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName) {
         super(Material.rock);
         this.textureCoordinatesByFace = textureCoordinatesByFace;
@@ -75,10 +75,10 @@ public class YamlBlock extends Block {
         setLightLevel(lightLevel);
         setLightOpacity(lightOpacity);
         setCreativeTab(Tabs.LEGACY);
-        GameRegistry.registerBlock(this, BasicItemBlock.class, identifier);
+        GameRegistry.registerBlock(this, BasicItemBlock.class, packName + "." + identifier);
     }
 
-    public static YamlBlock createFromSMPFile(Path file) throws FileNotFoundException, ConfigurationException {
+    public static YamlBlock createFromSMPFile(String packName, Path file) throws FileNotFoundException, ConfigurationException {
         if (!file.endsWith(".yml")) {
             if (Configuration.IS_DEBUG) {
                 Almura.LOGGER.warn("Attempted to load a block from file that was not YAML: " + file);
@@ -87,10 +87,10 @@ public class YamlBlock extends Block {
         }
 
         final String fileName = file.toFile().getName().split(".yml")[0];
-        return createFromSMPStream(fileName, new FileInputStream(file.toFile()));
+        return createFromSMPStream(packName, fileName, new FileInputStream(file.toFile()));
     }
 
-    public static YamlBlock createFromSMPStream(String name, InputStream stream) throws ConfigurationException {
+    public static YamlBlock createFromSMPStream(String packName, String name, InputStream stream) throws ConfigurationException {
         final YamlConfiguration reader = new YamlConfiguration(stream);
         reader.load();
 
@@ -120,9 +120,9 @@ public class YamlBlock extends Block {
             shapeName = shapeName.split(".shape")[0];
         }
 
-        Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + name + ".name", title);
+        Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + packName + "." + name + ".name", title);
 
-        return new YamlBlock(name, textureName, hardness, 1f, 0, textureCoordinatesByFace, shapeName);
+        return new YamlBlock(packName, name, textureName, hardness, 1f, 0, textureCoordinatesByFace, shapeName);
     }
 
     @SideOnly(Side.CLIENT)
@@ -133,7 +133,7 @@ public class YamlBlock extends Block {
     @SideOnly(Side.CLIENT)
     public void applyShapeFromPack(SMPPack pack) {
         this.shape = null;
-        
+
         if (shapeName != null) {
             for (SMPShape shape : pack.getShapes()) {
                 if (shape.getName().equals(shapeName)) {
@@ -176,10 +176,12 @@ public class YamlBlock extends Block {
             return;
         }
 
+        textureIcons = new ClippedIcon[textureCoordinatesByFace.size()];
+
         for (int i = 0; i < textureCoordinatesByFace.size(); i++) {
             final List<Integer> coordList = textureCoordinatesByFace.get(i);
 
-            textureIconsBySide[i] =
+            textureIcons[i] =
                     new ClippedIcon((MalisisIcon) blockIcon, (float) (coordList.get(0) / dimension.getWidth()),
                                     (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()),
                                     (float) (coordList.get(3) / dimension.getHeight()));
@@ -188,10 +190,22 @@ public class YamlBlock extends Block {
 
     @Override
     public IIcon getIcon(int side, int type) {
-        ClippedIcon sideIcon = textureIconsBySide[side];
-        if (sideIcon == null) {
-            sideIcon = textureIconsBySide[0];
+        if (textureIcons == null) {
+            return super.getIcon(side, type);
         }
+
+        ClippedIcon sideIcon;
+
+        if (side >= textureIcons.length) {
+            sideIcon = textureIcons[0];
+        } else {
+            sideIcon = textureIcons[side];
+
+            if (sideIcon == null) {
+                sideIcon = textureIcons[0];
+            }
+        }
+
         return sideIcon;
     }
 

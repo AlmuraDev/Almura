@@ -68,10 +68,12 @@ public class SMPPack {
         final List<YamlBlock> blocks = new ArrayList<>();
         final List<SMPShape> shapes = new ArrayList<>();
 
+        final String smpName = root.toFile().getName().split(".smp")[0];
+
         for (ZipEntry zipEntry; (zipEntry = stream.getNextEntry()) != null; ) {
             if (zipEntry.getName().endsWith(".yml")) {
                 final InputStream entry = zipFile.getInputStream(zipEntry);
-                blocks.add(YamlBlock.createFromSMPStream(zipEntry.getName().split(".yml")[0], entry));
+                blocks.add(YamlBlock.createFromSMPStream(smpName, zipEntry.getName().split(".yml")[0], entry));
             } else if (zipEntry.getName().endsWith(".png") && Configuration.IS_CLIENT) {
                 //TODO Figure out how to separate block and items pngs
                 Filesystem.writeTo(zipEntry.getName(), stream, Filesystem.ASSETS_TEXTURES_BLOCKS_SMPS_PATH);
@@ -85,7 +87,6 @@ public class SMPPack {
 
         stream.close();
 
-        final String smpName = root.toFile().getName().split(".smp")[0];
         final SMPPack pack = new SMPPack(smpName, blocks, shapes);
         PACKS.put(smpName, pack);
         if (Configuration.IS_DEBUG) {
