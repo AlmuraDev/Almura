@@ -69,7 +69,7 @@ public class YamlBlock extends Block {
         super(Material.rock);
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.shapeName = shapeName;
-        setBlockName(identifier);
+        setBlockName(packName + "." + identifier);
         setBlockTextureName(Almura.MOD_ID + ":smps/" + textureName);
         setHardness(hardness);
         setLightLevel(lightLevel);
