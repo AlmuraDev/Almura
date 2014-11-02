@@ -19,11 +19,6 @@ public class ShapeRenderer extends BaseRenderer {
     private Cube cube;
 
     @Override
-    public boolean shouldRender3DInInventory(int modelId) {
-        return false;
-    }
-
-    @Override
     protected void initShapes() {
         cube = new Cube();
     }

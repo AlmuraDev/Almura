@@ -99,6 +99,7 @@ public class YamlBlock extends Block {
         textureName = textureName.split(".png")[0];
 
         final float hardness = reader.getChild("Hardness").getFloat(1f);
+        final float lightLevel = reader.getChild("LightLevel").getFloat(0f);
 
         final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
 
@@ -122,7 +123,7 @@ public class YamlBlock extends Block {
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + packName + "." + name + ".name", title);
 
-        return new YamlBlock(packName, name, textureName, hardness, 1f, 0, textureCoordinatesByFace, shapeName);
+        return new YamlBlock(packName, name, textureName, hardness, lightLevel, 0, textureCoordinatesByFace, shapeName);
     }
 
     @SideOnly(Side.CLIENT)
