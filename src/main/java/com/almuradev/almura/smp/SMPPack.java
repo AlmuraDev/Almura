@@ -9,7 +9,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.blocks.yaml.YamlBlock;
-import com.almuradev.almura.resource.Shape;
+import com.almuradev.almura.resource.SMPShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 
 import java.io.FileInputStream;
@@ -30,9 +30,9 @@ public class SMPPack {
     private static final Map<String, SMPPack> PACKS = new HashMap<>();
     private final String name;
     private final List<YamlBlock> blocks;
-    private final List<Shape> shapes;
+    private final List<SMPShape> shapes;
 
-    public SMPPack(String name, List<YamlBlock> blocks, List<Shape> shapes) {
+    public SMPPack(String name, List<YamlBlock> blocks, List<SMPShape> shapes) {
         this.name = name;
         this.blocks = blocks;
         this.shapes = shapes;
@@ -62,7 +62,7 @@ public class SMPPack {
         final ZipFile zipFile = new ZipFile(root.toFile());
         final ZipInputStream stream = new ZipInputStream(new FileInputStream(root.toFile()));
         final List<YamlBlock> blocks = new ArrayList<>();
-        final List<Shape> shapes = new ArrayList<>();
+        final List<SMPShape> shapes = new ArrayList<>();
 
         for (ZipEntry zipEntry; (zipEntry = stream.getNextEntry()) != null; ) {
             if (zipEntry.getName().endsWith(".yml")) {
@@ -73,7 +73,7 @@ public class SMPPack {
                 Filesystem.writeTo(zipEntry.getName(), stream, Filesystem.ASSETS_TEXTURES_BLOCKS_SMPS_PATH);
             } else if (zipEntry.getName().endsWith(".shape") && Configuration.IS_CLIENT) {
                 final InputStream entry = zipFile.getInputStream(zipEntry);
-                shapes.add(Shape.createFromSMPStream(zipEntry.getName().split(".shape")[0], entry));
+                shapes.add(SMPShape.createFromSMPStream(zipEntry.getName().split(".shape")[0], entry));
             }
 
             stream.closeEntry();
@@ -105,7 +105,7 @@ public class SMPPack {
         return Collections.unmodifiableList(blocks);
     }
 
-    public List<Shape> getShapes() {
+    public List<SMPShape> getShapes() {
         return Collections.unmodifiableList(shapes);
     }
 

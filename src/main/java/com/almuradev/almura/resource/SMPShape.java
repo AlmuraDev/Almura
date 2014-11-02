@@ -11,32 +11,41 @@ import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import net.malisis.core.renderer.element.Face;
+import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.Vertex;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-public class Shape {
+public class SMPShape extends Shape {
 
     private final String name;
 
-    // Texture -> Faces
-    private final Map<Integer, List<Face>> facesForTexture;
-
-    public Shape(String name, Map<Integer, List<Face>> facesForTexture) {
+    public SMPShape(String name) {
         this.name = name;
-        this.facesForTexture = facesForTexture;
     }
 
-    public static Shape createFromSMPFile(Path file) throws FileNotFoundException, ConfigurationException {
+    public SMPShape(String name, Face... faces) {
+        super(faces);
+        this.name = name;
+    }
+
+    public SMPShape(String name, List<Face> faces) {
+        super(faces);
+        this.name = name;
+    }
+
+    public SMPShape(String name, Shape s) {
+        super(s);
+        this.name = name;
+    }
+
+    public static SMPShape createFromSMPFile(Path file) throws FileNotFoundException, ConfigurationException {
         if (!file.endsWith(".shape")) {
             if (Configuration.IS_DEBUG) {
                 Almura.LOGGER.warn("Attempted to load a shape from file that was not a SHAPE: " + file);
@@ -48,13 +57,13 @@ public class Shape {
         return createFromSMPStream(fileName, new FileInputStream(file.toFile()));
     }
 
-    public static Shape createFromSMPStream(String name, InputStream stream) throws ConfigurationException {
+    public static SMPShape createFromSMPStream(String name, InputStream stream) throws ConfigurationException {
         final YamlConfiguration reader = new YamlConfiguration(stream);
         reader.load();
 
         //Shapes:
         final ConfigurationNode shapesNode = reader.getChild("Shapes");
-        final Map<Integer, List<Face>> facesForTexture = new HashMap<>();
+        final List<Face> faces = new LinkedList<>();
 
         for (Object obj : shapesNode.getList()) {
             final LinkedHashMap map = (LinkedHashMap) obj;
@@ -77,34 +86,19 @@ public class Shape {
                 vertices.add(new Vertex(parsedCoordinates.get(0), parsedCoordinates.get(1), parsedCoordinates.get(2)));
             }
 
-            List<Face> faces = facesForTexture.get(textureIndex);
-            if (faces == null) {
-                faces = new LinkedList<>();
-                facesForTexture.put(textureIndex, faces);
-            }
-
-            faces.add(new Face(vertices));
+            faces.add(new SMPFace(textureIndex, vertices));
         }
 
-        return new Shape(name, facesForTexture);
+        return new SMPShape(name, faces);
     }
 
     public String getName() {
         return name;
     }
 
-    public List<Face> getFacesFor(ForgeDirection direction) {
-        return getFacesFor(direction.ordinal());
-    }
-
-    public List<Face> getFacesFor(int textureId) {
-        return facesForTexture.get(textureId);
-    }
-
     @Override
     public boolean equals(Object o) {
-        return this == o || !(o == null || getClass() != o.getClass()) && name.equals(((Shape) o).name);
-
+        return this == o || !(o == null || getClass() != o.getClass()) && name.equals(((SMPShape) o).name);
     }
 
     @Override

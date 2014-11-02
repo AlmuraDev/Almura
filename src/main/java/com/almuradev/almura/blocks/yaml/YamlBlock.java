@@ -11,7 +11,7 @@ import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.items.BasicItemBlock;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.resource.Shape;
+import com.almuradev.almura.resource.SMPShape;
 import com.almuradev.almura.smp.SMPPack;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
@@ -42,11 +42,11 @@ import java.util.Map;
  * Represents a block created from a {@link YamlConfiguration}.
  */
 public class YamlBlock extends Block {
-
+    public static int renderId;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
     private ClippedIcon[] textureIconsBySide = new ClippedIcon[6];
-    private Shape shape;
+    private SMPShape shape;
 
     public YamlBlock(String identifier) {
         this(identifier, identifier, 1f, 1f, 0, null, null);
@@ -126,20 +126,25 @@ public class YamlBlock extends Block {
     }
 
     @SideOnly(Side.CLIENT)
-    public Shape getShape() {
+    public SMPShape getShape() {
         return shape;
     }
 
     @SideOnly(Side.CLIENT)
     public void onCreate(SMPPack pack) {
         if (shapeName != null) {
-            for (Shape shape : pack.getShapes()) {
+            for (SMPShape shape : pack.getShapes()) {
                 if (shape.getName().equals(shapeName)) {
                     this.shape = shape;
                     break;
                 }
             }
         }
+    }
+
+    @Override
+    public int getRenderType() {
+        return renderId;
     }
 
     @Override
@@ -186,6 +191,17 @@ public class YamlBlock extends Block {
             sideIcon = textureIconsBySide[0];
         }
         return sideIcon;
+    }
+
+    @Override
+    public boolean renderAsNormalBlock() {
+        return shape == null;
+    }
+
+    @Override
+    public boolean isOpaqueCube()
+    {
+        return shape == null;
     }
 
     @Override
