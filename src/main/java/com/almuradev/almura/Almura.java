@@ -7,6 +7,8 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.blocks.Blocks;
 import com.almuradev.almura.blocks.yaml.YamlBlock;
+import com.almuradev.almura.client.KeyListener;
+import com.almuradev.almura.client.Keybindings;
 import com.almuradev.almura.client.renderer.ShapeRenderer;
 import com.almuradev.almura.items.Items;
 import com.almuradev.almura.lang.LanguageManager;
@@ -17,6 +19,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.settings.KeyBinding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,6 +54,8 @@ public class Almura {
 
     @SideOnly(Side.CLIENT)
     private void onClientInitialization() {
+        Keybindings.fakeStaticLoad();
+        new KeyListener();
         SHAPE_RENDERER.registerFor(YamlBlock.class);
     }
 }

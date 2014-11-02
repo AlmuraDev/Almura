@@ -131,7 +131,9 @@ public class YamlBlock extends Block {
     }
 
     @SideOnly(Side.CLIENT)
-    public void onCreate(SMPPack pack) {
+    public void applyShapeFromPack(SMPPack pack) {
+        this.shape = null;
+        
         if (shapeName != null) {
             for (SMPShape shape : pack.getShapes()) {
                 if (shape.getName().equals(shapeName)) {

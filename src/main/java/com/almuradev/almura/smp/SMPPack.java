@@ -11,11 +11,15 @@ import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.blocks.yaml.YamlBlock;
 import com.almuradev.almura.resource.SMPShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.malisis.core.renderer.element.Shape;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -90,7 +94,7 @@ public class SMPPack {
 
         if (Configuration.IS_CLIENT) {
             for (YamlBlock block : blocks) {
-                block.onCreate(pack);
+                block.applyShapeFromPack(pack);
             }
         }
 
@@ -107,6 +111,43 @@ public class SMPPack {
 
     public List<SMPShape> getShapes() {
         return Collections.unmodifiableList(shapes);
+    }
+
+    /**
+     * Refreshes shape information from the file
+     */
+    @SideOnly(Side.CLIENT)
+    public void refresh() throws IOException, ConfigurationException {
+        if (Configuration.IS_DEBUG) {
+            Almura.LOGGER.info("Clearing all current shapes and doing a refresh. Please stand-by");
+        }
+
+        shapes.clear();
+
+        final Path smpFile = Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), name + ".smp");
+        final ZipFile zipFile = new ZipFile(smpFile.toFile());
+        final ZipInputStream stream = new ZipInputStream(new FileInputStream(smpFile.toFile()));
+
+        for (ZipEntry zipEntry; (zipEntry = stream.getNextEntry()) != null; ) {
+            if (zipEntry.getName().endsWith(".shape") && Configuration.IS_CLIENT) {
+                final InputStream entry = zipFile.getInputStream(zipEntry);
+                shapes.add(SMPShape.createFromSMPStream(zipEntry.getName().split(".shape")[0], entry));
+            }
+
+            stream.closeEntry();
+        }
+
+        stream.close();
+
+        if (Configuration.IS_DEBUG) {
+            for (Shape s : shapes) {
+                Almura.LOGGER.info("Loaded [" + s + "]");
+            }
+        }
+
+        for (YamlBlock block : blocks) {
+            block.applyShapeFromPack(this);
+        }
     }
 
     @Override

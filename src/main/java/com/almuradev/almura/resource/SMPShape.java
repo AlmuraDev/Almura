@@ -10,9 +10,11 @@ import com.almuradev.almura.Configuration;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
+import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.Vertex;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -85,11 +87,17 @@ public class SMPShape extends Shape {
                 //Convert list of coordinates to vertex
                 vertices.add(new Vertex(parsedCoordinates.get(0), parsedCoordinates.get(1), parsedCoordinates.get(2)));
             }
-
-            faces.add(new SMPFace(textureIndex, vertices));
+            final RenderParameters params = new RenderParameters();
+            params.textureSide.set(ForgeDirection.getOrientation(textureIndex));
+            final Face face = new SMPFace(textureIndex, vertices);
+            face.setStandardUV();
+            face.setParameters(params);
+            faces.add(face);
         }
 
-        return new SMPShape(name, faces);
+        final SMPShape shape = new SMPShape(name, faces);
+        shape.storeState();
+        return shape;
     }
 
     public String getName() {

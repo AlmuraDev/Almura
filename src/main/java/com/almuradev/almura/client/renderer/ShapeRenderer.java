@@ -19,6 +19,9 @@ public class ShapeRenderer extends BaseRenderer {
                 renderStandard();
                 return;
             }
+
+
+            rp.interpolateUV.set(false);
             drawShape(shape);
         }
     }
