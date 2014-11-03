@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.blocks.Blocks;
 import com.almuradev.almura.smp.SMPBlock;
 import com.almuradev.almura.client.KeyListener;
 import com.almuradev.almura.client.Keybindings;
@@ -36,7 +35,6 @@ public class Almura {
         if (Configuration.IS_DEBUG) {
             LOGGER.info("Debug-mode toggled ON");
         }
-        Blocks.fakeStaticLoad();
         Items.fakeStaticLoad();
         Tabs.fakeStaticLoad();
 

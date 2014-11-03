@@ -8,12 +8,16 @@ package com.almuradev.almura.smp;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.smp.item.SMPFood;
+import com.almuradev.almura.smp.item.SMPItem;
 import com.almuradev.almura.smp.model.SMPShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.element.Shape;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,7 +37,8 @@ public class SMPPack {
 
     private static final Map<String, SMPPack> PACKS = new HashMap<>();
     private final String name;
-    protected List<SMPBlock> blocks;
+    protected List<Block> blocks;
+    protected List<Item> items;
     protected List<SMPShape> shapes;
 
     public SMPPack(String name) {
@@ -68,7 +73,8 @@ public class SMPPack {
         PACKS.put(smpName, pack);
 
         final ZipInputStream stream = new ZipInputStream(new FileInputStream(root.toFile()));
-        final List<SMPBlock> blocks = new ArrayList<>();
+        final List<Block> blocks = new ArrayList<>();
+        final List<Item> items = new ArrayList<>();
         final List<SMPShape> shapes = new ArrayList<>();
 
         for (ZipEntry zipEntry; (zipEntry = stream.getNextEntry()) != null; ) {
@@ -76,7 +82,27 @@ public class SMPPack {
                 final InputStream entry = zipFile.getInputStream(zipEntry);
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
-                blocks.add(SMPBlock.createFromReader(pack, zipEntry.getName().split(".yml")[0], reader));
+
+                final String type = reader.getChild("Type").getString();
+                if (type == null) {
+                    continue;
+                }
+
+                final String name = zipEntry.getName().split(".yml")[0];
+
+                switch (type) {
+                    case "Item":
+                        items.add(SMPItem.createFromReader(pack, name, reader));
+                        break;
+                    case "Food":
+                        items.add(SMPFood.createFromReader(pack, name, reader));
+                        break;
+                    case "Block":
+                        blocks.add(SMPBlock.createFromReader(pack, name, reader));
+                        break;
+                    default:
+                        continue;
+                }
                 entry.close();
             } else if (zipEntry.getName().endsWith(".shape")) {
                 final InputStream entry = zipFile.getInputStream(zipEntry);
@@ -91,6 +117,7 @@ public class SMPPack {
 
         stream.close();
 
+        pack.items = items;
         pack.blocks = blocks;
         pack.shapes = shapes;
 
@@ -99,8 +126,8 @@ public class SMPPack {
         }
 
         if (Configuration.IS_CLIENT) {
-            for (SMPBlock block : blocks) {
-                block.reloadShape();
+            for (Block block : blocks) {
+                ((SMPBlock) block).reloadShape();
             }
         }
 
@@ -111,8 +138,8 @@ public class SMPPack {
         return name;
     }
 
-    public SMPBlock getBlock(String identifier) {
-        for (SMPBlock block : blocks) {
+    public Block getBlock(String identifier) {
+        for (Block block : blocks) {
             if (block.getUnlocalizedName().equals("tile." + getName() + "." + identifier)) {
                 return block;
             }
@@ -121,7 +148,7 @@ public class SMPPack {
         return null;
     }
 
-    public List<SMPBlock> getBlocks() {
+    public List<Block> getBlocks() {
         return Collections.unmodifiableList(blocks);
     }
 
@@ -149,7 +176,7 @@ public class SMPPack {
                 shapes.add(SMPShape.createFromReader(zipEntry.getName().split(".shape")[0], reader));
                 entry.close();
             } else if (zipEntry.getName().endsWith(".yml")) {
-                final SMPBlock block = getBlock(zipEntry.getName().split(".yml")[0]);
+                final Block block = getBlock(zipEntry.getName().split(".yml")[0]);
                 if (block == null) {
                     continue;
                 }
@@ -159,8 +186,8 @@ public class SMPPack {
                 reader.load();
 
                 final Map<Integer, List<Integer>> texCoords = SMPUtil.extractCoordsFrom(reader);
-                block.clippedIcons = null;
-                block.clippedIcons = SMPUtil.generateClippedIconsFromCoords(block.getPack(), block.getIcon(0, 0), block.getTextureName(), texCoords);
+                ((SMPBlock) block).clippedIcons = null;
+                ((SMPBlock) block).clippedIcons = SMPUtil.generateClippedIconsFromCoords(((SMPBlock) block).getPack(), block.getIcon(0, 0), ((SMPBlock) block).getTextureName(), texCoords);
                 entry.close();
             }
 
@@ -175,8 +202,8 @@ public class SMPPack {
             }
         }
 
-        for (SMPBlock block : blocks) {
-            block.reloadShape();
+        for (Block block : blocks) {
+            ((SMPBlock) block).reloadShape();
         }
     }
 
