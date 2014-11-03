@@ -6,7 +6,7 @@
 package com.almuradev.almura.client.renderer;
 
 import com.almuradev.almura.blocks.yaml.YamlBlock;
-import com.almuradev.almura.resource.SMPFace;
+import com.almuradev.almura.smp.SMPFace;
 import net.malisis.core.renderer.BaseRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;

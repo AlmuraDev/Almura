@@ -11,7 +11,8 @@ import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.items.BasicItemBlock;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.resource.SMPShape;
+import com.almuradev.almura.smp.SMPIcon;
+import com.almuradev.almura.smp.SMPShape;
 import com.almuradev.almura.smp.SMPPack;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
@@ -29,74 +30,59 @@ import net.minecraft.util.IIcon;
 import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
-/**
- * Represents a block created from a {@link YamlConfiguration}.
- */
 public class YamlBlock extends Block {
     public static int renderId;
     public ClippedIcon[] clippedIcons;
+
+    private final SMPPack pack;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
     private SMPShape shape;
 
-    public YamlBlock(String packName, String identifier) {
-        this(packName, identifier, identifier, 1f, 0f, 0, true, "legacy", null, null);
+    public YamlBlock(SMPPack pack, String identifier) {
+        this(pack, identifier, identifier, 1f, 0f, 0, true, "legacy", null, null);
     }
 
-    public YamlBlock(String packName, String identifier, String textureName) {
-        this(packName, identifier, textureName, 1f, 0f, 0, true, "legacy", null, null);
+    public YamlBlock(SMPPack pack, String identifier, String textureName) {
+        this(pack, identifier, textureName, 1f, 0f, 0, true, "legacy", null, null);
     }
 
-    public YamlBlock(String packName, String identifier, String textureName, float hardness) {
-        this(packName, identifier, textureName, hardness, 0f, 0, true, "legacy", null, null);
+    public YamlBlock(SMPPack pack, String identifier, String textureName, float hardness) {
+        this(pack, identifier, textureName, hardness, 0f, 0, true, "legacy", null, null);
     }
 
-    public YamlBlock(String packName, String identifier, String textureName, float hardness, float lightLevel) {
-        this(packName, identifier, textureName, hardness, lightLevel, 0, true, "legacy", null, null);
+    public YamlBlock(SMPPack pack, String identifier, String textureName, float hardness, float lightLevel) {
+        this(pack, identifier, textureName, hardness, lightLevel, 0, true, "legacy", null, null);
     }
 
-    public YamlBlock(String packName, String identifier, String textureName, float hardness, float lightLevel, int lightOpacity,
-                     boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName) {
+    public YamlBlock(SMPPack pack, String identifier, String textureName, float hardness, float lightLevel, int lightOpacity,
+                     boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName) {
         super(Material.rock);
-        this.textureCoordinatesByFace = textureCoordinatesByFace;
+        this.pack = pack;
+        this.textureCoordinatesByFace = textureCoordinates;
         this.shapeName = shapeName;
-        setBlockName(packName + "." + identifier);
-        setBlockTextureName(Almura.MOD_ID + ":smps/" + textureName);
+        setBlockName(pack.getName() + "_" + identifier);
+        setBlockTextureName(textureName);
         setHardness(hardness);
         setLightLevel(lightLevel);
         setLightOpacity(lightOpacity);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
-        GameRegistry.registerBlock(this, BasicItemBlock.class, packName + "." + identifier);
+        GameRegistry.registerBlock(this, BasicItemBlock.class, pack.getName() + "_" + identifier);
     }
 
-    public static YamlBlock createFromFile(String packName, Path file) throws IOException, ConfigurationException {
-        if (!file.endsWith(".yml")) {
-            if (Configuration.IS_DEBUG) {
-                Almura.LOGGER.warn("Attempted to load a block from file that was not YAML: " + file);
-            }
-            return null;
-        }
-
-        final String fileName = file.toFile().getName().split(".yml")[0];
-        final FileInputStream stream = new FileInputStream(file.toFile());
-        final YamlConfiguration reader = new YamlConfiguration(stream);
-        reader.load();
-        final YamlBlock block = createFromReader(packName, fileName, reader);
-        stream.close();
-        return block;
-    }
-
-    public static YamlBlock createFromReader(String packName, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static YamlBlock createFromReader(SMPPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild("Title").getString(name);
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
@@ -114,9 +100,9 @@ public class YamlBlock extends Block {
 
         final Map<Integer, List<Integer>> textureCoordinatesByFace = extractCoordsFrom(reader);
 
-        Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + packName + "." + name + ".name", title);
+        Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new YamlBlock(packName, name, textureName, hardness, lightLevel, lightOpacity, showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName);
+        return new YamlBlock(pack, name, textureName, hardness, lightLevel, lightOpacity, showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName);
     }
 
     @Override
@@ -133,7 +119,7 @@ public class YamlBlock extends Block {
             return;
         }
 
-        blockIcon = new MalisisIcon(getTextureName()).register((TextureMap) register);
+        blockIcon = new SMPIcon(pack, getTextureName()).register((TextureMap) register);
 
         applyClippedIconsFromCoords(textureCoordinatesByFace);
     }
@@ -173,6 +159,9 @@ public class YamlBlock extends Block {
         return shape == null;
     }
 
+    public SMPPack getPack() {
+        return pack;
+    }
 
     @SideOnly(Side.CLIENT)
     public SMPShape getShape() {
@@ -180,7 +169,7 @@ public class YamlBlock extends Block {
     }
 
     @SideOnly(Side.CLIENT)
-    public void setShapeFromPack(SMPPack pack) {
+    public void reloadShape() {
         this.shape = null;
 
         if (shapeName != null) {
@@ -195,14 +184,44 @@ public class YamlBlock extends Block {
 
     @SideOnly(Side.CLIENT)
     public void applyClippedIconsFromCoords(Map<Integer, List<Integer>> texCoords) {
+        ZipFile zipFile = null;
+
+        try {
+            zipFile = new ZipFile(Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), pack.getName() + ".smp").toFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (zipFile == null) {
+            return;
+        }
+
+        InputStream textureStream = null;
+
+        try {
+            textureStream = zipFile.getInputStream(new ZipEntry(textureName + ".png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (textureStream == null) {
+            return;
+        }
+
         Dimension dimension = null;
 
         try {
-            final Path imgPath = Paths.get(Filesystem.ASSETS_TEXTURES_BLOCKS_SMPS_PATH.toString(), textureName.split("/")[1] + ".png");
-            dimension = Filesystem.getImageDimension(imgPath);
+            dimension = Filesystem.getImageDimension(textureStream);
         } catch (IOException e) {
             if (Configuration.IS_DEBUG) {
                 Almura.LOGGER.error("Failed to load texture [" + textureName + "] for dimensions", e);
+            }
+        } finally {
+            try {
+                textureStream.close();
+                zipFile.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
@@ -247,6 +266,6 @@ public class YamlBlock extends Block {
 
     @Override
     public String toString() {
-        return "YamlBlock {raw_name= " + getUnlocalizedName() + "}";
+        return "YamlBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
     }
 }

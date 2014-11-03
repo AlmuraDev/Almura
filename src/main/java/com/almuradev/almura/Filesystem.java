@@ -29,17 +29,6 @@ import javax.imageio.stream.ImageInputStream;
 
 public class Filesystem {
 
-    public static final Path ASSETS_PATH = Paths.get("assets" + File.separator + Almura.MOD_ID.toLowerCase());
-
-    public static final Path ASSETS_MODELS_PATH = Paths.get(ASSETS_PATH.toString(), "models");
-    public static final Path ASSETS_MODELS_BLOCKS_PATH = Paths.get(ASSETS_MODELS_PATH.toString(), "blocks");
-
-    public static final Path ASSETS_TEXTURES_PATH = Paths.get(ASSETS_PATH.toString(), "textures");
-    public static final Path ASSETS_TEXTURES_BLOCKS_PATH = Paths.get(ASSETS_TEXTURES_PATH.toString(), "blocks");
-    public static final Path ASSETS_TEXTURES_ITEMS_PATH = Paths.get(ASSETS_TEXTURES_PATH.toString(), "items");
-    public static final Path ASSETS_TEXTURES_BLOCKS_SMPS_PATH = Paths.get(ASSETS_TEXTURES_BLOCKS_PATH.toString(), "smps");
-    public static final Path ASSETS_TEXTURES_ITEMS_SMPS_PATH = Paths.get(ASSETS_TEXTURES_ITEMS_PATH.toString(), "smps");
-
     public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID.toLowerCase());
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
     public static final Path CONFIG_SMPS_PATH = Paths.get(CONFIG_PATH.toString(), "smps");
@@ -60,40 +49,6 @@ public class Filesystem {
             Files.createDirectories(CONFIG_SMPS_PATH);
         } catch (IOException e) {
             throw new RuntimeException("Failed to create directory " + CONFIG_SMPS_PATH, e);
-        }
-
-        if (Configuration.IS_CLIENT) {
-            if (Files.exists(ASSETS_TEXTURES_BLOCKS_SMPS_PATH)) {
-                for (Path file : getPaths(ASSETS_TEXTURES_BLOCKS_SMPS_PATH, "*.png")) {
-                    try {
-                        Files.deleteIfExists(file);
-                    } catch (Exception e) {
-                        throw new RuntimeException("Failed to remove " + file + " from " + ASSETS_TEXTURES_BLOCKS_SMPS_PATH, e);
-                    }
-                }
-            } else {
-                try {
-                    Files.createDirectories(ASSETS_TEXTURES_BLOCKS_SMPS_PATH);
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to create directory " + ASSETS_TEXTURES_BLOCKS_SMPS_PATH, e);
-                }
-            }
-
-            if (Files.exists(ASSETS_TEXTURES_ITEMS_SMPS_PATH)) {
-                for (Path file : getPaths(ASSETS_TEXTURES_ITEMS_SMPS_PATH, "*.png")) {
-                    try {
-                        Files.deleteIfExists(file);
-                    } catch (Exception e) {
-                        throw new RuntimeException("Failed to remove " + file + " from " + ASSETS_TEXTURES_ITEMS_SMPS_PATH, e);
-                    }
-                }
-            } else {
-                try {
-                    Files.createDirectories(ASSETS_TEXTURES_ITEMS_SMPS_PATH);
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to create directory " + ASSETS_TEXTURES_ITEMS_SMPS_PATH, e);
-                }
-            }
         }
     }
 
@@ -132,24 +87,24 @@ public class Filesystem {
         write.close();
     }
 
-    public static Dimension getImageDimension(Path file) throws IOException {
+    public static Dimension getImageDimension(InputStream stream) throws IOException {
         Dimension dim = null;
 
-        ImageInputStream in = ImageIO.createImageInputStream(file.toFile());
+        ImageInputStream img = ImageIO.createImageInputStream(stream);
         try {
-            final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
+            final Iterator<ImageReader> readers = ImageIO.getImageReaders(img);
             if (readers.hasNext()) {
                 ImageReader reader = readers.next();
                 try {
-                    reader.setInput(in);
+                    reader.setInput(img);
                     dim = new Dimension(reader.getWidth(0), reader.getHeight(0));
                 } finally {
                     reader.dispose();
                 }
             }
         } finally {
-            if (in != null) {
-                in.close();
+            if (img != null) {
+                img.close();
             }
         }
 
