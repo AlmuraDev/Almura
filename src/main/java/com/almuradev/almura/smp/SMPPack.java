@@ -8,7 +8,7 @@ package com.almuradev.almura.smp;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.blocks.yaml.YamlBlock;
+import com.almuradev.almura.smp.model.SMPShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.relauncher.Side;
@@ -33,7 +33,7 @@ public class SMPPack {
 
     private static final Map<String, SMPPack> PACKS = new HashMap<>();
     private final String name;
-    protected List<YamlBlock> blocks;
+    protected List<SMPBlock> blocks;
     protected List<SMPShape> shapes;
 
     public SMPPack(String name) {
@@ -68,7 +68,7 @@ public class SMPPack {
         PACKS.put(smpName, pack);
 
         final ZipInputStream stream = new ZipInputStream(new FileInputStream(root.toFile()));
-        final List<YamlBlock> blocks = new ArrayList<>();
+        final List<SMPBlock> blocks = new ArrayList<>();
         final List<SMPShape> shapes = new ArrayList<>();
 
         for (ZipEntry zipEntry; (zipEntry = stream.getNextEntry()) != null; ) {
@@ -76,7 +76,7 @@ public class SMPPack {
                 final InputStream entry = zipFile.getInputStream(zipEntry);
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
-                blocks.add(YamlBlock.createFromReader(pack, zipEntry.getName().split(".yml")[0], reader));
+                blocks.add(SMPBlock.createFromReader(pack, zipEntry.getName().split(".yml")[0], reader));
                 entry.close();
             } else if (zipEntry.getName().endsWith(".shape")) {
                 final InputStream entry = zipFile.getInputStream(zipEntry);
@@ -99,7 +99,7 @@ public class SMPPack {
         }
 
         if (Configuration.IS_CLIENT) {
-            for (YamlBlock block : blocks) {
+            for (SMPBlock block : blocks) {
                 block.reloadShape();
             }
         }
@@ -111,8 +111,8 @@ public class SMPPack {
         return name;
     }
 
-    public YamlBlock getBlock(String identifier) {
-        for (YamlBlock block : blocks) {
+    public SMPBlock getBlock(String identifier) {
+        for (SMPBlock block : blocks) {
             if (block.getUnlocalizedName().equals("tile." + getName() + "." + identifier)) {
                 return block;
             }
@@ -121,7 +121,7 @@ public class SMPPack {
         return null;
     }
 
-    public List<YamlBlock> getBlocks() {
+    public List<SMPBlock> getBlocks() {
         return Collections.unmodifiableList(blocks);
     }
 
@@ -149,7 +149,7 @@ public class SMPPack {
                 shapes.add(SMPShape.createFromReader(zipEntry.getName().split(".shape")[0], reader));
                 entry.close();
             } else if (zipEntry.getName().endsWith(".yml")) {
-                final YamlBlock block = getBlock(zipEntry.getName().split(".yml")[0]);
+                final SMPBlock block = getBlock(zipEntry.getName().split(".yml")[0]);
                 if (block == null) {
                     continue;
                 }
@@ -158,8 +158,9 @@ public class SMPPack {
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
 
-                final Map<Integer, List<Integer>> texCoords = YamlBlock.extractCoordsFrom(reader);
-                block.applyClippedIconsFromCoords(texCoords);
+                final Map<Integer, List<Integer>> texCoords = SMPUtil.extractCoordsFrom(reader);
+                block.clippedIcons = null;
+                block.clippedIcons = SMPUtil.generateClippedIconsFromCoords(block.getPack(), block.getIcon(0, 0), block.getTextureName(), texCoords);
                 entry.close();
             }
 
@@ -174,7 +175,7 @@ public class SMPPack {
             }
         }
 
-        for (YamlBlock block : blocks) {
+        for (SMPBlock block : blocks) {
             block.reloadShape();
         }
     }

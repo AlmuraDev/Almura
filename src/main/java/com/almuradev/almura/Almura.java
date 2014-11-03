@@ -6,10 +6,10 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.blocks.Blocks;
-import com.almuradev.almura.blocks.yaml.YamlBlock;
+import com.almuradev.almura.smp.SMPBlock;
 import com.almuradev.almura.client.KeyListener;
 import com.almuradev.almura.client.Keybindings;
-import com.almuradev.almura.client.renderer.ShapeRenderer;
+import com.almuradev.almura.smp.client.renderer.ShapeRenderer;
 import com.almuradev.almura.items.Items;
 import com.almuradev.almura.lang.LanguageManager;
 import com.almuradev.almura.smp.SMPPack;
@@ -54,6 +54,6 @@ public class Almura {
     private void onClientInitialization() {
         Keybindings.fakeStaticLoad();
         new KeyListener();
-        SHAPE_RENDERER.registerFor(YamlBlock.class);
+        SHAPE_RENDERER.registerFor(SMPBlock.class);
     }
 }

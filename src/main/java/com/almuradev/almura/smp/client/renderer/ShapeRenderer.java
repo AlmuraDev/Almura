@@ -3,10 +3,10 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.renderer;
+package com.almuradev.almura.smp.client.renderer;
 
-import com.almuradev.almura.blocks.yaml.YamlBlock;
-import com.almuradev.almura.smp.SMPFace;
+import com.almuradev.almura.smp.SMPBlock;
+import com.almuradev.almura.smp.model.SMPFace;
 import net.malisis.core.renderer.BaseRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;
@@ -26,7 +26,7 @@ public class ShapeRenderer extends BaseRenderer {
 
     @Override
     public void render() {
-        final Shape shape = ((YamlBlock) block).getShape();
+        final Shape shape = ((SMPBlock) block).getShape();
         if (shape == null) {
             drawShape(cube);
             return;
@@ -53,14 +53,14 @@ public class ShapeRenderer extends BaseRenderer {
                 return;
             }
 
-            if (((YamlBlock) block).clippedIcons == null) {
+            if (((SMPBlock) block).clippedIcons == null) {
                 icon = super.getIcon(params);
-            } else if (((SMPFace) f).getTextureId() >= ((YamlBlock) block).clippedIcons.length) {
-                icon = ((YamlBlock) block).clippedIcons[0];
+            } else if (((SMPFace) f).getTextureId() >= ((SMPBlock) block).clippedIcons.length) {
+                icon = ((SMPBlock) block).clippedIcons[0];
             } else {
-                icon = ((YamlBlock) block).clippedIcons[((SMPFace) f).getTextureId()];
+                icon = ((SMPBlock) block).clippedIcons[((SMPFace) f).getTextureId()];
                 if (icon == null) {
-                    icon = ((YamlBlock) block).clippedIcons[0];
+                    icon = ((SMPBlock) block).clippedIcons[0];
                 }
             }
 

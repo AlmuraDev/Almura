@@ -3,44 +3,32 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.blocks.yaml;
+package com.almuradev.almura.smp;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Configuration;
-import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.items.BasicItemBlock;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.smp.SMPIcon;
-import com.almuradev.almura.smp.SMPPack;
-import com.almuradev.almura.smp.SMPShape;
+import com.almuradev.almura.smp.model.SMPShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
-import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
-public class YamlBlock extends Block {
+public class SMPBlock extends Block {
 
     public static int renderId;
     private final SMPPack pack;
@@ -57,24 +45,25 @@ public class YamlBlock extends Block {
     private boolean useVanillaWireframe;
     private List<Double> wireframeBounds = new LinkedList<>();
 
-    public YamlBlock(SMPPack pack, String identifier) {
+    public SMPBlock(SMPPack pack, String identifier) {
         this(pack, identifier, identifier, 1f, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
     }
 
-    public YamlBlock(SMPPack pack, String identifier, String textureName) {
+    public SMPBlock(SMPPack pack, String identifier, String textureName) {
         this(pack, identifier, textureName, 1f, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
     }
 
-    public YamlBlock(SMPPack pack, String identifier, String textureName, float hardness) {
+    public SMPBlock(SMPPack pack, String identifier, String textureName, float hardness) {
         this(pack, identifier, textureName, hardness, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
     }
 
-    public YamlBlock(SMPPack pack, String identifier, String textureName, float hardness, float lightLevel) {
+    public SMPBlock(SMPPack pack, String identifier, String textureName, float hardness, float lightLevel) {
         this(pack, identifier, textureName, hardness, 0f, lightLevel, 0, true, "legacy", null, null, true, null, true, null);
     }
 
-    public YamlBlock(SMPPack pack, String identifier, String textureName, float hardness, float resistance, float lightLevel, int lightOpacity,
-                     boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName, boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
+    public SMPBlock(SMPPack pack, String identifier, String textureName, float hardness, float resistance, float lightLevel, int lightOpacity,
+                    boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
+                    boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
         super(Material.rock);
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinates;
@@ -92,10 +81,10 @@ public class YamlBlock extends Block {
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
-        GameRegistry.registerBlock(this, BasicItemBlock.class, pack.getName() + "_" + identifier);
+        GameRegistry.registerBlock(this, ItemBlock.class, pack.getName() + "_" + identifier);
     }
 
-    public static YamlBlock createFromReader(SMPPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static SMPBlock createFromReader(SMPPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild("Title").getString(name);
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
@@ -131,31 +120,12 @@ public class YamlBlock extends Block {
             shapeName = shapeName.split(".shape")[0];
         }
 
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = extractCoordsFrom(reader);
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = SMPUtil.extractCoordsFrom(reader);
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new YamlBlock(pack, name, textureName, hardness, resistance, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
+        return new SMPBlock(pack, name, textureName, hardness, resistance, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
                              textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
-    }
-
-    public static Map<Integer, List<Integer>> extractCoordsFrom(YamlConfiguration reader) {
-        final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
-
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = new HashMap<>();
-
-        for (int i = 0; i < textureCoordinatesList.size(); i++) {
-            final String[] coordSplit = textureCoordinatesList.get(i).split(" ");
-
-            final List<Integer> coords = new LinkedList<>();
-            for (String coord : coordSplit) {
-                coords.add(Integer.parseInt(coord));
-            }
-
-            textureCoordinatesByFace.put(i, coords);
-        }
-
-        return textureCoordinatesByFace;
     }
 
     @Override
@@ -174,7 +144,7 @@ public class YamlBlock extends Block {
 
         blockIcon = new SMPIcon(pack, getTextureName()).register((TextureMap) register);
 
-        applyClippedIconsFromCoords(textureCoordinatesByFace);
+        SMPUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override
@@ -209,6 +179,11 @@ public class YamlBlock extends Block {
     @SideOnly(Side.CLIENT)
     public boolean isOpaqueCube() {
         return shape == null;
+    }
+
+    @Override
+    public String getTextureName() {
+        return super.getTextureName();
     }
 
     /**
@@ -262,69 +237,8 @@ public class YamlBlock extends Block {
         }
     }
 
-    public void applyClippedIconsFromCoords(Map<Integer, List<Integer>> texCoords) {
-        ZipFile zipFile = null;
-
-        try {
-            zipFile = new ZipFile(Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), pack.getName() + ".smp").toFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (zipFile == null) {
-            return;
-        }
-
-        InputStream textureStream = null;
-
-        try {
-            textureStream = zipFile.getInputStream(new ZipEntry(textureName + ".png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (textureStream == null) {
-            return;
-        }
-
-        Dimension dimension = null;
-
-        try {
-            dimension = Filesystem.getImageDimension(textureStream);
-        } catch (IOException e) {
-            if (Configuration.IS_DEBUG) {
-                Almura.LOGGER.error("Failed to load texture [" + textureName + "] for dimensions", e);
-            }
-        } finally {
-            try {
-                textureStream.close();
-                zipFile.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (dimension == null) {
-            if (Configuration.IS_DEBUG) {
-                Almura.LOGGER.error("Failed to calculate the dimensions for texture [" + textureName + "]");
-            }
-            return;
-        }
-
-        clippedIcons = new ClippedIcon[texCoords.size()];
-
-        for (int i = 0; i < texCoords.size(); i++) {
-            final List<Integer> coordList = texCoords.get(i);
-
-            clippedIcons[i] =
-                    new ClippedIcon((MalisisIcon) blockIcon, (float) (coordList.get(0) / dimension.getWidth()),
-                                    (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()),
-                                    (float) (coordList.get(3) / dimension.getHeight()));
-        }
-    }
-
     @Override
     public String toString() {
-        return "YamlBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
+        return "SMPBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
     }
 }
