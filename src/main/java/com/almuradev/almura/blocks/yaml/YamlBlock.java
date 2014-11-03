@@ -58,22 +58,22 @@ public class YamlBlock extends Block {
     private List<Double> wireframeBounds = new LinkedList<>();
 
     public YamlBlock(SMPPack pack, String identifier) {
-        this(pack, identifier, identifier, 1f, 0f, 0, true, "legacy", null, null, true, null, true, null);
+        this(pack, identifier, identifier, 1f, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
     }
 
     public YamlBlock(SMPPack pack, String identifier, String textureName) {
-        this(pack, identifier, textureName, 1f, 0f, 0, true, "legacy", null, null, true, null, true, null);
+        this(pack, identifier, textureName, 1f, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
     }
 
     public YamlBlock(SMPPack pack, String identifier, String textureName, float hardness) {
-        this(pack, identifier, textureName, hardness, 0f, 0, true, "legacy", null, null, true, null, true, null);
+        this(pack, identifier, textureName, hardness, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
     }
 
     public YamlBlock(SMPPack pack, String identifier, String textureName, float hardness, float lightLevel) {
-        this(pack, identifier, textureName, hardness, lightLevel, 0, true, "legacy", null, null, true, null, true, null);
+        this(pack, identifier, textureName, hardness, 0f, lightLevel, 0, true, "legacy", null, null, true, null, true, null);
     }
 
-    public YamlBlock(SMPPack pack, String identifier, String textureName, float hardness, float lightLevel, int lightOpacity,
+    public YamlBlock(SMPPack pack, String identifier, String textureName, float hardness, float resistance, float lightLevel, int lightOpacity,
                      boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName, boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
         super(Material.rock);
         this.pack = pack;
@@ -86,6 +86,7 @@ public class YamlBlock extends Block {
         setBlockName(pack.getName() + "_" + identifier);
         setBlockTextureName(textureName);
         setHardness(hardness);
+        setResistance(resistance);
         setLightLevel(lightLevel);
         setLightOpacity(lightOpacity);
         if (showInCreativeTab) {
@@ -104,7 +105,7 @@ public class YamlBlock extends Block {
         final int lightOpacity = reader.getChild("light-opacity").getInt(0);
         final boolean showInCreativeTab = reader.getChild("show-in-creative-tab").getBoolean(true);
         final String creativeTabName = reader.getChild("creative-tab-name").getString("legacy");
-
+        final float resistance = reader.getChild("resistance").getFloat(0);
         final boolean useVanillaCollision = !reader.hasChild("collision-bounds");
         final List<Double> collisionCoords = new LinkedList<>();
         if (!useVanillaCollision) {
@@ -134,7 +135,7 @@ public class YamlBlock extends Block {
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new YamlBlock(pack, name, textureName, hardness, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
+        return new YamlBlock(pack, name, textureName, hardness, resistance, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
                              textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
     }
 
