@@ -139,7 +139,6 @@ public class YamlBlock extends Block {
                              textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
     }
 
-    @SideOnly(Side.CLIENT)
     public static Map<Integer, List<Integer>> extractCoordsFrom(YamlConfiguration reader) {
         final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
 
@@ -246,12 +245,10 @@ public class YamlBlock extends Block {
         return pack;
     }
 
-    @SideOnly(Side.CLIENT)
     public SMPShape getShape() {
         return shape;
     }
 
-    @SideOnly(Side.CLIENT)
     public void reloadShape() {
         this.shape = null;
 
@@ -265,7 +262,6 @@ public class YamlBlock extends Block {
         }
     }
 
-    @SideOnly(Side.CLIENT)
     public void applyClippedIconsFromCoords(Map<Integer, List<Integer>> texCoords) {
         ZipFile zipFile = null;
 
