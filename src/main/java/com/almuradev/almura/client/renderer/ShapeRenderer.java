@@ -38,6 +38,7 @@ public class ShapeRenderer extends BaseRenderer {
         rp.interpolateUV.set(false);
         rp.flipU.set(true);
         rp.flipV.set(true);
+        rp.renderAllFaces.set(true);
         drawShape(shape, rp);
     }
 
