@@ -73,6 +73,7 @@ public class Tabs {
     }
 
     public static class AlmuraCreativeTabs extends CreativeTabs {
+
         private final Item displayItem;
 
         public AlmuraCreativeTabs(String unlocalizedName, String displayName, Item displayItem) {

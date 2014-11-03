@@ -13,13 +13,11 @@ import com.almuradev.almura.client.renderer.ShapeRenderer;
 import com.almuradev.almura.items.Items;
 import com.almuradev.almura.lang.LanguageManager;
 import com.almuradev.almura.smp.SMPPack;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.settings.KeyBinding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

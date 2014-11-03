@@ -17,6 +17,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import java.util.Map;
 
 public class KeyListener {
+
     public KeyListener() {
         FMLCommonHandler.instance().bus().register(this);
     }

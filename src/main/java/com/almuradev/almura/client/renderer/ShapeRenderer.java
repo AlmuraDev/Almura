@@ -16,6 +16,7 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class ShapeRenderer extends BaseRenderer {
+
     private Cube cube;
 
     @Override
@@ -52,7 +53,7 @@ public class ShapeRenderer extends BaseRenderer {
             }
 
             if (((YamlBlock) block).clippedIcons == null) {
-               icon = super.getIcon(params);
+                icon = super.getIcon(params);
             } else if (((SMPFace) f).getTextureId() >= ((YamlBlock) block).clippedIcons.length) {
                 icon = ((YamlBlock) block).clippedIcons[0];
             } else {
@@ -64,8 +65,9 @@ public class ShapeRenderer extends BaseRenderer {
 
             if (icon != null) {
                 boolean flipU = params.flipU.get();
-                if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST)
+                if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST) {
                     flipU = !flipU;
+                }
                 f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
             }
         }

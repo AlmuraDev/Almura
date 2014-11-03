@@ -10,6 +10,7 @@ import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
 public class Keybindings {
+
     public static final KeyBinding REFRESH_SHAPES = register("Refresh shapes", Keyboard.KEY_K, "Refresh the shapes for rendering");
 
     public static KeyBinding register(String title, int key, String message) {
@@ -18,5 +19,6 @@ public class Keybindings {
         return binding;
     }
 
-    public static void fakeStaticLoad() {}
+    public static void fakeStaticLoad() {
+    }
 }

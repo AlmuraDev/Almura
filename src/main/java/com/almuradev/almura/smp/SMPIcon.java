@@ -21,6 +21,7 @@ import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
 
 public class SMPIcon extends MalisisIcon {
+
     private final SMPPack pack;
 
     public SMPIcon(SMPPack pack, String textureName) {

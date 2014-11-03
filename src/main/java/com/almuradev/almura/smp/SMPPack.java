@@ -145,7 +145,7 @@ public class SMPPack {
                 final InputStream entry = zipFile.getInputStream(zipEntry);
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
-                
+
                 shapes.add(SMPShape.createFromReader(zipEntry.getName().split(".shape")[0], reader));
                 entry.close();
             } else if (zipEntry.getName().endsWith(".yml")) {

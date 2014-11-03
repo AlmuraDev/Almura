@@ -12,8 +12,8 @@ import com.almuradev.almura.Tabs;
 import com.almuradev.almura.items.BasicItemBlock;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.smp.SMPIcon;
-import com.almuradev.almura.smp.SMPShape;
 import com.almuradev.almura.smp.SMPPack;
+import com.almuradev.almura.smp.SMPShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -28,10 +28,8 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 
 import java.awt.*;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -41,12 +39,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class YamlBlock extends Block {
-    public static int renderId;
-    public ClippedIcon[] clippedIcons;
 
+    public static int renderId;
     private final SMPPack pack;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
+    public ClippedIcon[] clippedIcons;
     private SMPShape shape;
 
     public YamlBlock(SMPPack pack, String identifier) {
@@ -102,7 +100,28 @@ public class YamlBlock extends Block {
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new YamlBlock(pack, name, textureName, hardness, lightLevel, lightOpacity, showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName);
+        return new YamlBlock(pack, name, textureName, hardness, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
+                             textureCoordinatesByFace, shapeName);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static Map<Integer, List<Integer>> extractCoordsFrom(YamlConfiguration reader) {
+        final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
+
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = new HashMap<>();
+
+        for (int i = 0; i < textureCoordinatesList.size(); i++) {
+            final String[] coordSplit = textureCoordinatesList.get(i).split(" ");
+
+            final List<Integer> coords = new LinkedList<>();
+            for (String coord : coordSplit) {
+                coords.add(Integer.parseInt(coord));
+            }
+
+            textureCoordinatesByFace.put(i, coords);
+        }
+
+        return textureCoordinatesByFace;
     }
 
     @Override
@@ -154,8 +173,7 @@ public class YamlBlock extends Block {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public boolean isOpaqueCube()
-    {
+    public boolean isOpaqueCube() {
         return shape == null;
     }
 
@@ -242,26 +260,6 @@ public class YamlBlock extends Block {
                                     (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()),
                                     (float) (coordList.get(3) / dimension.getHeight()));
         }
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static Map<Integer, List<Integer>> extractCoordsFrom(YamlConfiguration reader) {
-        final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
-
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = new HashMap<>();
-
-        for (int i = 0; i < textureCoordinatesList.size(); i++) {
-            final String[] coordSplit = textureCoordinatesList.get(i).split(" ");
-
-            final List<Integer> coords = new LinkedList<>();
-            for (String coord : coordSplit) {
-                coords.add(Integer.parseInt(coord));
-            }
-
-            textureCoordinatesByFace.put(i, coords);
-        }
-
-        return textureCoordinatesByFace;
     }
 
     @Override
