@@ -34,10 +34,10 @@ public class SMPBlock extends Block {
     private final SMPPack pack;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
+    private final String shapeName;
     public ClippedIcon[] clippedIcons;
     //SHAPES
     private SMPShape shape;
-    private final String shapeName;
     //COLLISION
     private boolean useVanillaCollision;
     private List<Double> collisionBounds = new LinkedList<>();
@@ -125,7 +125,7 @@ public class SMPBlock extends Block {
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
         return new SMPBlock(pack, name, textureName, hardness, resistance, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
-                             textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
+                            textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
     }
 
     @Override
@@ -196,7 +196,9 @@ public class SMPBlock extends Block {
         if (useVanillaCollision) {
             box = super.getCollisionBoundingBoxFromPool(world, x, y, z);
         } else {
-            box = AxisAlignedBB.getBoundingBox(collisionBounds.get(0), collisionBounds.get(1), collisionBounds.get(2), collisionBounds.get(3), collisionBounds.get(4), collisionBounds.get(5));
+            box =
+                    AxisAlignedBB.getBoundingBox(collisionBounds.get(0), collisionBounds.get(1), collisionBounds.get(2), collisionBounds.get(3),
+                                                 collisionBounds.get(4), collisionBounds.get(5));
         }
         return box;
     }
@@ -211,7 +213,9 @@ public class SMPBlock extends Block {
         if (useVanillaWireframe) {
             box = super.getSelectedBoundingBoxFromPool(world, x, y, z);
         } else {
-            box = AxisAlignedBB.getBoundingBox(x + wireframeBounds.get(0), y + wireframeBounds.get(1), z + wireframeBounds.get(2), x + wireframeBounds.get(3), y + wireframeBounds.get(4), z + wireframeBounds.get(5));
+            box =
+                    AxisAlignedBB.getBoundingBox(x + wireframeBounds.get(0), y + wireframeBounds.get(1), z + wireframeBounds.get(2),
+                                                 x + wireframeBounds.get(3), y + wireframeBounds.get(4), z + wireframeBounds.get(5));
         }
         return box;
     }

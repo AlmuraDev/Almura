@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.smp.item;
 
 import com.almuradev.almura.Almura;
@@ -14,19 +19,22 @@ import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.Item;
+
 import java.util.List;
 import java.util.Map;
 
 public class SMPItem extends Item {
+
     private final SMPPack pack;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
+    private final String shapeName;
     public ClippedIcon[] clippedIcons;
     //SHAPES
     private SMPShape shape;
-    private final String shapeName;
 
-    public SMPItem(SMPPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace, boolean showInCreativeTab, String creativeTabName) {
+    public SMPItem(SMPPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
+                   boolean showInCreativeTab, String creativeTabName) {
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.shapeName = shapeName;

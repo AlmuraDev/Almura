@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.smp;
 
 import com.almuradev.almura.Almura;
@@ -20,6 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class SMPUtil {
+
     public static Map<Integer, List<Integer>> extractCoordsFrom(YamlConfiguration reader) {
         final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
 
@@ -39,7 +45,8 @@ public class SMPUtil {
         return textureCoordinatesByFace;
     }
 
-    public static ClippedIcon[] generateClippedIconsFromCoords(SMPPack pack, IIcon source, String textureName, Map<Integer, List<Integer>> texCoords) {
+    public static ClippedIcon[] generateClippedIconsFromCoords(SMPPack pack, IIcon source, String textureName,
+                                                               Map<Integer, List<Integer>> texCoords) {
         ZipFile zipFile = null;
 
         try {

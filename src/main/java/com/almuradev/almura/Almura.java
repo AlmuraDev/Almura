@@ -5,13 +5,13 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.smp.SMPBlock;
 import com.almuradev.almura.client.KeyListener;
 import com.almuradev.almura.client.Keybindings;
-import com.almuradev.almura.smp.client.renderer.ShapeRenderer;
 import com.almuradev.almura.items.Items;
 import com.almuradev.almura.lang.LanguageManager;
+import com.almuradev.almura.smp.SMPBlock;
 import com.almuradev.almura.smp.SMPPack;
+import com.almuradev.almura.smp.client.renderer.ShapeRenderer;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;

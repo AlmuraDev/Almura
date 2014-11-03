@@ -187,7 +187,9 @@ public class SMPPack {
 
                 final Map<Integer, List<Integer>> texCoords = SMPUtil.extractCoordsFrom(reader);
                 ((SMPBlock) block).clippedIcons = null;
-                ((SMPBlock) block).clippedIcons = SMPUtil.generateClippedIconsFromCoords(((SMPBlock) block).getPack(), block.getIcon(0, 0), ((SMPBlock) block).getTextureName(), texCoords);
+                ((SMPBlock) block).clippedIcons =
+                        SMPUtil.generateClippedIconsFromCoords(((SMPBlock) block).getPack(), block.getIcon(0, 0), ((SMPBlock) block).getTextureName(),
+                                                               texCoords);
                 entry.close();
             }
 

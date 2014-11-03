@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.smp.item;
 
 import com.almuradev.almura.Almura;
@@ -19,15 +24,18 @@ import java.util.List;
 import java.util.Map;
 
 public class SMPFood extends ItemFood {
+
     private final SMPPack pack;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
+    private final String shapeName;
     public ClippedIcon[] clippedIcons;
     //SHAPES
     private SMPShape shape;
-    private final String shapeName;
 
-    public SMPFood(SMPPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace, boolean showInCreativeTab, String creativeTabName, int healAmount, float saturationModifier, boolean isWolfFavorite, boolean alwaysEdible) {
+    public SMPFood(SMPPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
+                   boolean showInCreativeTab, String creativeTabName, int healAmount, float saturationModifier, boolean isWolfFavorite,
+                   boolean alwaysEdible) {
         super(healAmount, saturationModifier, isWolfFavorite);
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
@@ -65,7 +73,8 @@ public class SMPFood extends ItemFood {
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "_" + name + ".name", title);
 
-        return new SMPFood(pack, name, textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName, healAmount, saturationModifier, isWolfFavorite, alwaysEdible);
+        return new SMPFood(pack, name, textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName, healAmount,
+                           saturationModifier, isWolfFavorite, alwaysEdible);
     }
 
     @Override
