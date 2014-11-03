@@ -144,7 +144,7 @@ public class SMPBlock extends Block {
 
         blockIcon = new SMPIcon(pack, getTextureName()).register((TextureMap) register);
 
-        SMPUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = SMPUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override

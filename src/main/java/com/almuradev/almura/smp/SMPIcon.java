@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.smp;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.client.Minecraft;
@@ -68,9 +69,9 @@ public class SMPIcon extends MalisisIcon {
             textures[0] = ImageIO.read(textureStream);
             loadSprite(textures, null, anisotropic);
             return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (RuntimeException e) {
+            Almura.LOGGER.error("Failed to load icon [" + getIconName().split("-")[1] + ".png] in pack [" + pack.getName() + "]", e);
+        } catch (IOException ignored) {}
         return true;
     }
 }

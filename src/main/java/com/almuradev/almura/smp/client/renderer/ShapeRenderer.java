@@ -39,6 +39,10 @@ public class ShapeRenderer extends BaseRenderer {
         rp.flipU.set(true);
         rp.flipV.set(true);
         rp.renderAllFaces.set(true);
+
+        if (renderType == TYPE_ISBRH_INVENTORY) {
+            shape.limit(0, 0, 0, 1, 1, 1);
+        }
         drawShape(shape, rp);
     }
 
