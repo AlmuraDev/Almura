@@ -1,5 +1,7 @@
 package com.almuradev.almura.client.gui;
 
+import java.util.Random;
+
 import com.almuradev.almura.Almura;
 import com.google.common.eventbus.Subscribe;
 
@@ -7,21 +9,29 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.UIContainer;
-import net.malisis.core.client.gui.component.container.UIPanel;
 import net.malisis.core.client.gui.component.container.UIWindow;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;
 
 public class AlmuraMainMenu extends MalisisGui{
     
     public UIWindow window;
     public UIButton singlePlayerButton, multiPlayerButton, optionsButton, logonButton, closeButton;
+    public UIImage almuraMan;
     public int tick = 1;
+    static final int PAN_TIME = 600;
+    static final int EXTRA_PAN_TIME = 150;
+    static final int HEIGHT_PERCENT = 70;
+    static final int WIDTH_PERCENT = 75;    
+    final Random rand = new Random();
+    int maxPanTime = PAN_TIME;
+    int panTime = PAN_TIME;
+    int picture = -1;
+    boolean zoomIn = false;
     
     public AlmuraMainMenu(String title, String message) {
         
@@ -46,7 +56,7 @@ public class AlmuraMainMenu extends MalisisGui{
         panel.setPosition(0, 10, Anchor.LEFT | Anchor.TOP);
         
         GuiTexture almuraGuy = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(),"textures/background/almuraman.jpg"));       
-        UIImage almuraMan = new UIImage(this, almuraGuy, null);
+        almuraMan = new UIImage(this, almuraGuy, null);
         almuraMan.setSize(panel.getWidth(), panel.getHeight());
         panel.add(almuraMan);
         
@@ -121,6 +131,31 @@ public class AlmuraMainMenu extends MalisisGui{
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {        
         renderer.enableBlending();
+        animate();
         super.drawScreen(mouseX, mouseY, partialTicks);        
+    }
+    
+    public void animate() {
+       
+        int adjustedX = ((100 - HEIGHT_PERCENT) / 2) * almuraMan.getHeight() * panTime;
+        adjustedX /= maxPanTime;
+        adjustedX /= 100;
+
+        int adjustedY = ((100 - WIDTH_PERCENT) / 2) * almuraMan.getWidth() * panTime;
+        adjustedY /= maxPanTime;
+        adjustedY /= 100;
+
+        int adjustedHeight = almuraMan.getHeight() - adjustedX;
+        int adjustedWidth = almuraMan.getWidth() - adjustedY;
+        //GL11.glScaled(super.width / (adjustedWidth - adjustedX), super.height / (adjustedHeight - adjustedY), 1D);
+        //GL11.glTranslatef(-adjustedX, -adjustedY, 0F);
+        almuraMan.setPosition(adjustedWidth, adjustedHeight);
+        if (zoomIn && panTime < maxPanTime) {
+            panTime++;
+        } else if (!zoomIn && panTime > 0) {
+            panTime--;
+        } else {
+            //cycleBackground();
+        }
     }
 }
