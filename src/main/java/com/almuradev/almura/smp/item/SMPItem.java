@@ -6,6 +6,7 @@
 package com.almuradev.almura.smp.item;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.smp.SMPIcon;
@@ -44,6 +45,9 @@ public class SMPItem extends Item {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
         GameRegistry.registerItem(this, pack.getName() + "_" + identifier);
+        if (Configuration.IS_CLIENT) {
+            Almura.SHAPE_RENDERER.registerFor(this);
+        }
     }
 
     public static SMPItem createFromReader(SMPPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
