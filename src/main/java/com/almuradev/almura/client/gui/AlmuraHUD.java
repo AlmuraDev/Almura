@@ -26,6 +26,7 @@ public class AlmuraHUD extends MalisisGui {
     public final UILabel almuraTitle, playerTitle;
     public final GuiTexture barTexture, heartTexture, armorTexture, xpTexture, hungerTexture, staminaTexture;
     public final UIImage healthBarTextureImage, heartTextureImage, hungerBarTextureImage, staminaBarTextureImage, xpBarTextureImage, armorBarTextureImage, armorTextureImage, hungerTextureImage, staminaTextureImage, xpTextureImage;
+    public int currentHealth, currentStamina, currentHunger, currentArmor, currentXP;
         
     @SuppressWarnings("rawtypes")
     public AlmuraHUD() {
