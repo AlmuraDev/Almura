@@ -84,7 +84,7 @@ public class AlmuraHUD extends MalisisGui {
         hungerBarTextureImage.setPosition(0, 15, Anchor.CENTER | Anchor.TOP);
         hungerBarTextureImage.setSize(103, 7);        
         hungerBar = new UIContainer(this, 0,0);
-        hungerBar.setPosition(1, 15, Anchor.CENTER | Anchor.TOP);
+        hungerBar.setPosition(0, 15, Anchor.CENTER | Anchor.TOP);
                         
         // Hunger Texture
         hungerTextureImage = new UIImage(this, hungerTexture, null);
@@ -182,12 +182,27 @@ public class AlmuraHUD extends MalisisGui {
     
     public void updateWidgets() {
         int playerHealth = Math.max(0, Math.min( 100, (int) (Minecraft.getMinecraft().thePlayer.getHealth()*5)));
-        int playerArmor = Math.max(0, Math.min( 100, (int) (getArmorLevel()*5)));
+        int playerArmor = getArmorLevel();
         int playerHunger = Math.max(0, Math.min( 100, (Minecraft.getMinecraft().thePlayer.getFoodStats().getFoodLevel()*5)));
-        //System.out.println("Player Armor: " + Minecraft.getMinecraft().thePlayer.inventory.getTotalArmorValue());
+        int playerStamina = (int) Math.max(0, Math.min( 100, (Minecraft.getMinecraft().thePlayer.getFoodStats().getSaturationLevel()*5)));
+        
         healthBar.setSize(playerHealth, 7);
         hungerBar.setSize(playerHunger, 7);
-        armorBar.setSize(playerArmor, 7);
+        staminaBar.setSize(playerStamina,  7);
+        
+        if (playerArmor > 0) {
+            armorBar.setSize(playerArmor, 7);
+            armorBar.setVisible(true);
+        } else {
+            armorBar.setVisible(false);
+        }
+        
+        if (playerStamina > 0) {
+            staminaBar.setSize(playerStamina, 7);
+            staminaBar.setVisible(true);
+        } else {
+            staminaBar.setVisible(false);
+        }
         
         if (playerHealth>66) {
             healthBar.setBackgroundColor(greenBar.getRGB());
@@ -210,9 +225,19 @@ public class AlmuraHUD extends MalisisGui {
           } else if (playerArmor>=33) {
               hungerBar.setBackgroundColor(orangeBar.getRGB());
           } else {
-              hungerBar.setBackgroundColor(redBar.getRGB());
+              hungerBar.setBackgroundColor(redBar.getRGB());              
         }
         
+        if (playerStamina>66) {
+            staminaBar.setBackgroundColor(greenBar.getRGB());
+        } else if (playerArmor>=33) {
+            staminaBar.setBackgroundColor(orangeBar.getRGB());
+        } else {
+            staminaBar.setBackgroundColor(redBar.getRGB());              
+      }
+        
+        hungerBar.setPosition(0-(50-(playerHunger/2)), 15, Anchor.CENTER | Anchor.TOP); //Keep bar from center point rendering
+        staminaBar.setPosition(0-(50-(playerStamina/2)), 25, Anchor.CENTER | Anchor.TOP); //Keep bar from center point rendering
         playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
         
     }
@@ -229,11 +254,18 @@ public class AlmuraHUD extends MalisisGui {
                     int max = armorItem.getMaxDamage();
                     armorTotal = armorTotal+max;
                     int current = armorItem.getItemDamage();
-                    armor = armor + current;
+                    armor = armor + current;                    
                 }
             }
         }
-        return armor;
+        
+        if (armorTotal != 0 && armor != 0) {
+            double par1 = armorTotal - armor;
+            double par2 = par1 / armorTotal;
+            double par3 = par2 * 100;
+            return ((int)par3);
+        } else {
+            return 0;
+        }
     }
-
 }
