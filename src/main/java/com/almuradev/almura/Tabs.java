@@ -12,8 +12,8 @@ import net.minecraft.item.Item;
 
 public class Tabs {
 
-    public static CreativeTabs BUILDING; //, ROOFING, LIGHTING, FURNITURE, DECORATION, STORAGE, BARRELS, FLOWERS, PLANTS, CROPS,
-            //FLAGS, SIGNS, LETTERS, ORES, FOOD, DRINK, INGREDIENTS, BOTTLES, TOOLS;
+    public static CreativeTabs BUILDING, ROOFING, LIGHTING, FURNITURE, DECORATION, STORAGE, BARRELS, FLOWERS, PLANTS, CROPS,
+            FLAGS, SIGNS, LETTERS, ORES, FOOD, DRINK, INGREDIENTS, TOOLS;
 
     static {
         BUILDING = new CreativeTabs("building") {
@@ -23,8 +23,7 @@ public class Tabs {
                 return com.almuradev.almura.items.Items.BUILDING;
             }
         };
-
-        /*
+        
         ROOFING = new CreativeTabs("roofing") {
             @Override
             @SideOnly(Side.CLIENT)
@@ -153,21 +152,13 @@ public class Tabs {
             }
         };
 
-        BOTTLES = new CreativeTabs("bottles") {
-            @Override
-            @SideOnly(Side.CLIENT)
-            public Item getTabIconItem() {
-                return com.almuradev.almura.items.Items.BOTTLES;
-            }
-        };
-
         TOOLS = new CreativeTabs("tools") {
             @Override
             @SideOnly(Side.CLIENT)
             public Item getTabIconItem() {
                 return com.almuradev.almura.items.Items.TOOLS;
             }
-        }; */
+        }; 
     }
 
     public static void fakeStaticLoad() {
