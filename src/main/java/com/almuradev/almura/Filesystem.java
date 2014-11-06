@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura;
 
+import net.minecraft.block.BlockTorch;
+
 import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,6 +34,34 @@ public class Filesystem {
     public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID.toLowerCase());
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
     public static final Path CONFIG_SMPS_PATH = Paths.get(CONFIG_PATH.toString(), "smps");
+
+    public static DirectoryStream.Filter<Path> DIRECTORIES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
+        @Override
+        public boolean accept(Path entry) throws IOException {
+            return Files.isDirectory(entry);
+        }
+    };
+
+    public static DirectoryStream.Filter<Path> FILES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
+        @Override
+        public boolean accept(Path entry) throws IOException {
+            return !Files.isDirectory(entry);
+        }
+    };
+
+    public static DirectoryStream.Filter<Path> ICON_FILES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
+        @Override
+        public boolean accept(Path entry) throws IOException {
+            return entry.getFileName().endsWith(".png") || entry.getFileName().endsWith(".jpg");
+        }
+    };
+
+    public static DirectoryStream.Filter<Path> SMP_FILES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
+        @Override
+        public boolean accept(Path entry) throws IOException {
+            return !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".yml") || entry.getFileName().toString().endsWith(".png") || entry.getFileName().toString().endsWith(".shape"));
+        }
+    };
 
     static {
         if (Files.notExists(CONFIG_SETTINGS_PATH)) {

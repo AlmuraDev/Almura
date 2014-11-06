@@ -13,21 +13,21 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 
 public class SMPIcon extends MalisisIcon {
+    public SMPIcon(String textureName) {
+        super(textureName);
+    }
 
-    private final SMPPack pack;
-
-    public SMPIcon(SMPPack pack, String textureName) {
-        super(pack.getName() + "-" + textureName);
-        this.pack = pack;
+    public SMPIcon(String packName, String textureName) {
+        super("smp/" + packName + "-" +textureName);
     }
 
     @Override
@@ -37,41 +37,27 @@ public class SMPIcon extends MalisisIcon {
 
     @Override
     public boolean load(IResourceManager manager, ResourceLocation location) {
-        ZipFile zipFile = null;
+        if (location.getResourcePath().startsWith("smp")) {
+            //almura:smp/kfood_core/food.png
+            final String[] tokens = location.getResourcePath().split("/")[1].split("-");
+            final String packName = tokens[0];
+            final String textureName = tokens[1];
 
-        try {
-            zipFile = new ZipFile(Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), pack.getName() + ".smp").toFile());
-        } catch (IOException e) {
-            e.printStackTrace();
+            final Path texturePath = Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), packName + File.separator + textureName + ".png");
+
+            int mipmapLevels = Minecraft.getMinecraft().gameSettings.mipmapLevels;
+            boolean anisotropic = Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F;
+
+            try {
+                BufferedImage[] textures = new BufferedImage[1 + mipmapLevels];
+                textures[0] = ImageIO.read(Files.newInputStream(texturePath));
+                loadSprite(textures, null, anisotropic);
+                return false;
+            } catch (RuntimeException e) {
+                Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] in pack [" + packName + "]", e);
+            } catch (IOException ignored) {}
         }
 
-        if (zipFile == null) {
-            return true;
-        }
-
-        InputStream textureStream = null;
-
-        try {
-            textureStream = zipFile.getInputStream(new ZipEntry(getIconName().split("-")[1] + ".png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (textureStream == null) {
-            return true;
-        }
-
-        int mipmapLevels = Minecraft.getMinecraft().gameSettings.mipmapLevels;
-        boolean anisotropic = Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F;
-
-        try {
-            BufferedImage[] textures = new BufferedImage[1 + mipmapLevels];
-            textures[0] = ImageIO.read(textureStream);
-            loadSprite(textures, null, anisotropic);
-            return false;
-        } catch (RuntimeException e) {
-            Almura.LOGGER.error("Failed to load icon [" + getIconName().split("-")[1] + ".png] in pack [" + pack.getName() + "]", e);
-        } catch (IOException ignored) {}
         return true;
     }
 }

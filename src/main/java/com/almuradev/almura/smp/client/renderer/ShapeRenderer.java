@@ -72,7 +72,7 @@ public class ShapeRenderer extends BaseRenderer {
             }
 
             IIcon icon = null;
-            
+
             if (block != null) {
                 if (((SMPBlock) block).clippedIcons == null) {
                     icon = super.getIcon(params);

@@ -34,9 +34,10 @@ public class SMPBlock extends Block {
     private final SMPPack pack;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
-    private final String shapeName;
+    private String textureName;
     public ClippedIcon[] clippedIcons;
     //SHAPES
+    private final String shapeName;
     private SMPShape shape;
     //COLLISION
     private boolean useVanillaCollision;
@@ -67,13 +68,13 @@ public class SMPBlock extends Block {
         super(Material.rock);
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinates;
+        this.textureName = textureName;
         this.shapeName = shapeName;
         this.useVanillaCollision = useVanillaCollision;
         this.collisionBounds = collisionBounds == null ? new LinkedList<Double>() : collisionBounds;
         this.useVanillaWireframe = useVanillaWireframe;
         this.wireframeBounds = wireframeBounds == null ? new LinkedList<Double>() : wireframeBounds;
         setBlockName(pack.getName() + "_" + identifier);
-        setBlockTextureName(textureName);
         setHardness(hardness);
         setResistance(resistance);
         setLightLevel(lightLevel);
@@ -142,7 +143,7 @@ public class SMPBlock extends Block {
             return;
         }
 
-        blockIcon = new SMPIcon(pack, getTextureName()).register((TextureMap) register);
+        blockIcon = new SMPIcon(pack.getName(), textureName).register((TextureMap) register);
 
         clippedIcons = SMPUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
     }

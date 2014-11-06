@@ -28,9 +28,10 @@ public class SMPFood extends ItemFood {
     private final SMPPack pack;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
-    private final String shapeName;
+    private String textureName;
     public ClippedIcon[] clippedIcons;
     //SHAPES
+    private final String shapeName;
     private SMPShape shape;
 
     public SMPFood(SMPPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
@@ -39,9 +40,9 @@ public class SMPFood extends ItemFood {
         super(healAmount, saturationModifier, isWolfFavorite);
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
+        this.textureName = textureName;
         this.shapeName = shapeName;
         setUnlocalizedName(pack.getName() + "_" + identifier);
-        setTextureName(textureName);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
@@ -84,9 +85,9 @@ public class SMPFood extends ItemFood {
             return;
         }
 
-        itemIcon = new SMPIcon(pack, iconString).register((TextureMap) register);
+        itemIcon = new SMPIcon(pack.getName(), textureName).register((TextureMap) register);
 
-        clippedIcons = SMPUtil.generateClippedIconsFromCoords(pack, itemIcon, iconString, textureCoordinatesByFace);
+        clippedIcons = SMPUtil.generateClippedIconsFromCoords(pack, itemIcon, textureName, textureCoordinatesByFace);
     }
 
     public SMPPack getPack() {

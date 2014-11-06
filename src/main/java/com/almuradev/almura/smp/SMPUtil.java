@@ -14,8 +14,10 @@ import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.util.IIcon;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -47,44 +49,13 @@ public class SMPUtil {
 
     public static ClippedIcon[] generateClippedIconsFromCoords(SMPPack pack, IIcon source, String textureName,
                                                                Map<Integer, List<Integer>> texCoords) {
-        ZipFile zipFile = null;
-
-        try {
-            zipFile = new ZipFile(Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), pack.getName() + ".smp").toFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (zipFile == null) {
-            return null;
-        }
-
-        InputStream textureStream = null;
-
-        try {
-            textureStream = zipFile.getInputStream(new ZipEntry(textureName + ".png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (textureStream == null) {
-            return null;
-        }
-
         Dimension dimension = null;
 
         try {
-            dimension = Filesystem.getImageDimension(textureStream);
+            dimension = Filesystem.getImageDimension(Files.newInputStream(Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), pack.getName() + File.separator + textureName + ".png")));
         } catch (IOException e) {
             if (Configuration.IS_DEBUG) {
                 Almura.LOGGER.error("Failed to load texture [" + textureName + "] for dimensions", e);
-            }
-        } finally {
-            try {
-                textureStream.close();
-                zipFile.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
 

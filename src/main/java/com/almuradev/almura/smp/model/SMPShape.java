@@ -46,23 +46,6 @@ public class SMPShape extends Shape {
         this.name = name;
     }
 
-    public static SMPShape createFromFile(Path file) throws IOException, ConfigurationException {
-        if (!file.endsWith(".shape")) {
-            if (Configuration.IS_DEBUG) {
-                Almura.LOGGER.warn("Attempted to load a shape from file that was not a SHAPE: " + file);
-            }
-            return null;
-        }
-
-        final String fileName = file.toFile().getName().split(".shape")[0];
-        final FileInputStream stream = new FileInputStream(file.toFile());
-        final YamlConfiguration reader = new YamlConfiguration(stream);
-        reader.load();
-        final SMPShape shape = createFromReader(fileName, reader);
-        stream.close();
-        return shape;
-    }
-
     public static SMPShape createFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
         //Shapes:
         final ConfigurationNode shapesNode = reader.getChild("Shapes");

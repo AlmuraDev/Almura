@@ -18,10 +18,13 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.element.Shape;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.server.MinecraftServer;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -54,75 +57,76 @@ public class SMPPack {
     }
 
     public static void load() {
-        for (Path path : Filesystem.getPaths(Filesystem.CONFIG_SMPS_PATH, "*.smp")) {
-            try {
-                create(path);
-            } catch (ConfigurationException | IOException e) {
-                if (Configuration.IS_DEBUG) {
-                    Almura.LOGGER.error("Failed to load " + path + " as SMPPack", e);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_SMPS_PATH, Filesystem.DIRECTORIES_ONLY_FILTER)) {
+            for (Path path : stream) {
+                try {
+                    create(path);
+                } catch (ConfigurationException | IOException e) {
+                    if (Configuration.IS_DEBUG) {
+                        Almura.LOGGER.error("Failed to load " + path + " as SMPPack", e);
+                    }
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public static SMPPack create(Path root) throws IOException, ConfigurationException {
-        final ZipFile zipFile = new ZipFile(root.toFile());
-
-        final String smpName = root.toFile().getName().split(".smp")[0];
+        final String smpName = root.getName(root.getNameCount() - 1).toString();
         final SMPPack pack = new SMPPack(smpName);
         PACKS.put(smpName, pack);
 
-        final ZipInputStream stream = new ZipInputStream(new FileInputStream(root.toFile()));
         final List<Block> blocks = new ArrayList<>();
         final List<Item> items = new ArrayList<>();
         final List<SMPShape> shapes = new ArrayList<>();
 
-        for (ZipEntry zipEntry; (zipEntry = stream.getNextEntry()) != null; ) {
-            if (zipEntry.getName().endsWith(".yml")) {
-                final InputStream entry = zipFile.getInputStream(zipEntry);
-                final YamlConfiguration reader = new YamlConfiguration(entry);
-                reader.load();
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, Filesystem.SMP_FILES_ONLY_FILTER)) {
+            for (Path path : stream) {
+                if (path.getFileName().toString().endsWith(".yml")) {
+                    final InputStream entry = Files.newInputStream(path);
+                    final YamlConfiguration reader = new YamlConfiguration(entry);
+                    reader.load();
 
-                final String type = reader.getChild("Type").getString();
-                if (type == null) {
-                    continue;
-                }
-
-                final String name = zipEntry.getName().split(".yml")[0];
-
-                switch (type) {
-                    case "Item":
-                        items.add(SMPItem.createFromReader(pack, name, reader));
-                        break;
-                    case "Food":
-                        items.add(SMPFood.createFromReader(pack, name, reader));
-                        break;
-                    case "Block":
-                        blocks.add(SMPBlock.createFromReader(pack, name, reader));
-                        break;
-                    default:
+                    final String type = reader.getChild("Type").getString();
+                    if (type == null) {
                         continue;
+                    }
+
+                    final String name = path.getFileName().toString().split(".yml")[0];
+
+                    switch (type) {
+                        case "Item":
+                            items.add(SMPItem.createFromReader(pack, name, reader));
+                            break;
+                        case "Food":
+                            items.add(SMPFood.createFromReader(pack, name, reader));
+                            break;
+                        case "Block":
+                            blocks.add(SMPBlock.createFromReader(pack, name, reader));
+                            break;
+                        default:
+                            continue;
+                    }
+                    entry.close();
+                } else if (path.getFileName().toString().endsWith(".shape")) {
+                    final InputStream entry = Files.newInputStream(path);
+                    final YamlConfiguration reader = new YamlConfiguration(entry);
+                    reader.load();
+                    shapes.add(SMPShape.createFromReader(path.getFileName().toString().split(".shape")[0], reader));
+                    entry.close();
                 }
-                entry.close();
-            } else if (zipEntry.getName().endsWith(".shape")) {
-                final InputStream entry = zipFile.getInputStream(zipEntry);
-                final YamlConfiguration reader = new YamlConfiguration(entry);
-                reader.load();
-                shapes.add(SMPShape.createFromReader(zipEntry.getName().split(".shape")[0], reader));
-                entry.close();
             }
-
-            stream.closeEntry();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        stream.close();
 
         pack.items = items;
         pack.blocks = blocks;
         pack.shapes = shapes;
 
         if (Configuration.IS_DEBUG) {
-            Almura.LOGGER.info("Loaded " + pack);
+            Almura.LOGGER.info("Loaded -> " + pack);
         }
 
         if (Configuration.IS_CLIENT) {
@@ -161,52 +165,7 @@ public class SMPPack {
      */
     @SideOnly(Side.CLIENT)
     public void reloadIconsAndShape() throws IOException, ConfigurationException {
-        shapes.clear();
-
-        final Path smpFile = Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), name + ".smp");
-        final ZipFile zipFile = new ZipFile(smpFile.toFile());
-        final ZipInputStream stream = new ZipInputStream(new FileInputStream(smpFile.toFile()));
-
-        for (ZipEntry zipEntry; (zipEntry = stream.getNextEntry()) != null; ) {
-            if (zipEntry.getName().endsWith(".shape")) {
-                final InputStream entry = zipFile.getInputStream(zipEntry);
-                final YamlConfiguration reader = new YamlConfiguration(entry);
-                reader.load();
-
-                shapes.add(SMPShape.createFromReader(zipEntry.getName().split(".shape")[0], reader));
-                entry.close();
-            } else if (zipEntry.getName().endsWith(".yml")) {
-                final Block block = getBlock(zipEntry.getName().split(".yml")[0]);
-                if (block == null) {
-                    continue;
-                }
-
-                final InputStream entry = zipFile.getInputStream(zipEntry);
-                final YamlConfiguration reader = new YamlConfiguration(entry);
-                reader.load();
-
-                final Map<Integer, List<Integer>> texCoords = SMPUtil.extractCoordsFrom(reader);
-                ((SMPBlock) block).clippedIcons = null;
-                ((SMPBlock) block).clippedIcons =
-                        SMPUtil.generateClippedIconsFromCoords(((SMPBlock) block).getPack(), block.getIcon(0, 0), ((SMPBlock) block).getTextureName(),
-                                                               texCoords);
-                entry.close();
-            }
-
-            stream.closeEntry();
-        }
-
-        stream.close();
-
-        if (Configuration.IS_DEBUG) {
-            for (Shape s : shapes) {
-                Almura.LOGGER.info("Loaded [" + s + "]");
-            }
-        }
-
-        for (Block block : blocks) {
-            ((SMPBlock) block).reloadShape();
-        }
+        //TODO Redo this
     }
 
     @Override
@@ -221,6 +180,6 @@ public class SMPPack {
 
     @Override
     public String toString() {
-        return "SMPPack {name= [" + name + "], blocks= " + blocks + ", shapes= " + shapes + "}";
+        return "SMPPack {name= [" + name + "], blocks= " + blocks + ", items= " + items + ", shapes= " + shapes + "}";
     }
 }
