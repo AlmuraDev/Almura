@@ -3,15 +3,15 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.smp.item;
+package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.smp.SMPIcon;
-import com.almuradev.almura.smp.SMPPack;
-import com.almuradev.almura.smp.SMPUtil;
-import com.almuradev.almura.smp.model.SMPShape;
+import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.PackIcon;
+import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -23,20 +23,20 @@ import net.minecraft.item.ItemFood;
 import java.util.List;
 import java.util.Map;
 
-public class SMPFood extends ItemFood {
+public class PackFood extends ItemFood {
 
-    private final SMPPack pack;
+    private final ContentPack pack;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
-    private String textureName;
-    public ClippedIcon[] clippedIcons;
     //SHAPES
     private final String shapeName;
-    private SMPShape shape;
+    public ClippedIcon[] clippedIcons;
+    private String textureName;
+    private PackShape shape;
 
-    public SMPFood(SMPPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
-                   boolean showInCreativeTab, String creativeTabName, int healAmount, float saturationModifier, boolean isWolfFavorite,
-                   boolean alwaysEdible) {
+    public PackFood(ContentPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
+                    boolean showInCreativeTab, String creativeTabName, int healAmount, float saturationModifier, boolean isWolfFavorite,
+                    boolean alwaysEdible) {
         super(healAmount, saturationModifier, isWolfFavorite);
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
@@ -52,7 +52,7 @@ public class SMPFood extends ItemFood {
         GameRegistry.registerItem(this, pack.getName() + "_" + identifier);
     }
 
-    public static SMPFood createFromReader(SMPPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackFood createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild("Title").getString(name);
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
@@ -70,12 +70,12 @@ public class SMPFood extends ItemFood {
             shapeName = shapeName.split(".shape")[0];
         }
 
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = SMPUtil.extractCoordsFrom(reader);
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader);
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "_" + name + ".name", title);
 
-        return new SMPFood(pack, name, textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName, healAmount,
-                           saturationModifier, isWolfFavorite, alwaysEdible);
+        return new PackFood(pack, name, textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName, healAmount,
+                            saturationModifier, isWolfFavorite, alwaysEdible);
     }
 
     @Override
@@ -85,16 +85,16 @@ public class SMPFood extends ItemFood {
             return;
         }
 
-        itemIcon = new SMPIcon(pack.getName(), textureName).register((TextureMap) register);
+        itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
 
-        clippedIcons = SMPUtil.generateClippedIconsFromCoords(pack, itemIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, itemIcon, textureName, textureCoordinatesByFace);
     }
 
-    public SMPPack getPack() {
+    public ContentPack getPack() {
         return pack;
     }
 
-    public SMPShape getShape() {
+    public PackShape getShape() {
         return shape;
     }
 
@@ -102,7 +102,7 @@ public class SMPFood extends ItemFood {
         this.shape = null;
 
         if (shapeName != null) {
-            for (SMPShape shape : pack.getShapes()) {
+            for (PackShape shape : pack.getShapes()) {
                 if (shape.getName().equals(shapeName)) {
                     this.shape = shape;
                     break;
@@ -113,6 +113,6 @@ public class SMPFood extends ItemFood {
 
     @Override
     public String toString() {
-        return "SMPFood {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
+        return "PackFood {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
     }
 }

@@ -3,12 +3,15 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.smp;
+package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.smp.model.SMPShape;
+import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.PackIcon;
+import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -28,17 +31,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class SMPBlock extends Block {
+public class PackBlock extends Block {
 
     public static int renderId;
-    private final SMPPack pack;
+    private final ContentPack pack;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
-    private String textureName;
-    public ClippedIcon[] clippedIcons;
     //SHAPES
     private final String shapeName;
-    private SMPShape shape;
+    public ClippedIcon[] clippedIcons;
+    private String textureName;
+    private PackShape shape;
     //COLLISION
     private boolean useVanillaCollision;
     private List<Double> collisionBounds = new LinkedList<>();
@@ -46,25 +49,25 @@ public class SMPBlock extends Block {
     private boolean useVanillaWireframe;
     private List<Double> wireframeBounds = new LinkedList<>();
 
-    public SMPBlock(SMPPack pack, String identifier) {
+    public PackBlock(ContentPack pack, String identifier) {
         this(pack, identifier, identifier, 1f, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
     }
 
-    public SMPBlock(SMPPack pack, String identifier, String textureName) {
+    public PackBlock(ContentPack pack, String identifier, String textureName) {
         this(pack, identifier, textureName, 1f, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
     }
 
-    public SMPBlock(SMPPack pack, String identifier, String textureName, float hardness) {
+    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness) {
         this(pack, identifier, textureName, hardness, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
     }
 
-    public SMPBlock(SMPPack pack, String identifier, String textureName, float hardness, float lightLevel) {
+    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, float lightLevel) {
         this(pack, identifier, textureName, hardness, 0f, lightLevel, 0, true, "legacy", null, null, true, null, true, null);
     }
 
-    public SMPBlock(SMPPack pack, String identifier, String textureName, float hardness, float resistance, float lightLevel, int lightOpacity,
-                    boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
-                    boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
+    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, float resistance, float lightLevel, int lightOpacity,
+                     boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
+                     boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
         super(Material.rock);
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinates;
@@ -79,13 +82,14 @@ public class SMPBlock extends Block {
         setResistance(resistance);
         setLightLevel(lightLevel);
         setLightOpacity(lightOpacity);
+        setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":packs/" + pack.getName() + "-" + textureName);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
         GameRegistry.registerBlock(this, ItemBlock.class, pack.getName() + "_" + identifier);
     }
 
-    public static SMPBlock createFromReader(SMPPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackBlock createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild("Title").getString(name);
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
@@ -121,12 +125,12 @@ public class SMPBlock extends Block {
             shapeName = shapeName.split(".shape")[0];
         }
 
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = SMPUtil.extractCoordsFrom(reader);
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader);
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new SMPBlock(pack, name, textureName, hardness, resistance, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
-                            textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
+        return new PackBlock(pack, name, textureName, hardness, resistance, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
+                             textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
     }
 
     @Override
@@ -143,9 +147,9 @@ public class SMPBlock extends Block {
             return;
         }
 
-        blockIcon = new SMPIcon(pack.getName(), textureName).register((TextureMap) register);
+        blockIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
 
-        clippedIcons = SMPUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override
@@ -182,11 +186,6 @@ public class SMPBlock extends Block {
         return shape == null;
     }
 
-    @Override
-    public String getTextureName() {
-        return super.getTextureName();
-    }
-
     /**
      * Returns a bounding box from the pool of bounding boxes (this means this box can change after the pool has been
      * cleared to be reused)
@@ -221,11 +220,11 @@ public class SMPBlock extends Block {
         return box;
     }
 
-    public SMPPack getPack() {
+    public ContentPack getPack() {
         return pack;
     }
 
-    public SMPShape getShape() {
+    public PackShape getShape() {
         return shape;
     }
 
@@ -233,7 +232,7 @@ public class SMPBlock extends Block {
         this.shape = null;
 
         if (shapeName != null) {
-            for (SMPShape shape : pack.getShapes()) {
+            for (PackShape shape : pack.getShapes()) {
                 if (shape.getName().equals(shapeName)) {
                     this.shape = shape;
                     break;
@@ -244,6 +243,6 @@ public class SMPBlock extends Block {
 
     @Override
     public String toString() {
-        return "SMPBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
+        return "PackBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
     }
 }

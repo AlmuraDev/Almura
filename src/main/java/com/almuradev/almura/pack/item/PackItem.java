@@ -3,19 +3,21 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.smp.item;
+package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.smp.SMPIcon;
-import com.almuradev.almura.smp.SMPPack;
-import com.almuradev.almura.smp.SMPUtil;
-import com.almuradev.almura.smp.model.SMPShape;
+import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.PackIcon;
+import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -24,25 +26,26 @@ import net.minecraft.item.Item;
 import java.util.List;
 import java.util.Map;
 
-public class SMPItem extends Item {
+public class PackItem extends Item {
 
-    private final SMPPack pack;
+    private final ContentPack pack;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
-    private String textureName;
-    public ClippedIcon[] clippedIcons;
     //SHAPES
     private final String shapeName;
-    private SMPShape shape;
+    public ClippedIcon[] clippedIcons;
+    private String textureName;
+    private PackShape shape;
 
-    public SMPItem(SMPPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
-                   boolean showInCreativeTab, String creativeTabName) {
+    public PackItem(ContentPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
+                    boolean showInCreativeTab, String creativeTabName) {
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.textureName = textureName;
         this.shapeName = shapeName;
 
         setUnlocalizedName(pack.getName() + "_" + identifier);
+        setTextureName(Almura.MOD_ID.toLowerCase() + ":packs/" + pack.getName() + "_" + textureName);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
@@ -54,7 +57,7 @@ public class SMPItem extends Item {
         }
     }
 
-    public static SMPItem createFromReader(SMPPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackItem createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild("Title").getString(name);
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
@@ -67,11 +70,11 @@ public class SMPItem extends Item {
             shapeName = shapeName.split(".shape")[0];
         }
 
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = SMPUtil.extractCoordsFrom(reader);
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader);
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "_" + name + ".name", title);
 
-        return new SMPItem(pack, name, textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName);
+        return new PackItem(pack, name, textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName);
     }
 
     @Override
@@ -81,16 +84,16 @@ public class SMPItem extends Item {
             return;
         }
 
-        itemIcon = new SMPIcon(pack.getName(), textureName).register((TextureMap) register);
+        itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
 
-        clippedIcons = SMPUtil.generateClippedIconsFromCoords(pack, itemIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, itemIcon, textureName, textureCoordinatesByFace);
     }
 
-    public SMPPack getPack() {
+    public ContentPack getPack() {
         return pack;
     }
 
-    public SMPShape getShape() {
+    public PackShape getShape() {
         return shape;
     }
 
@@ -98,7 +101,7 @@ public class SMPItem extends Item {
         this.shape = null;
 
         if (shapeName != null) {
-            for (SMPShape shape : pack.getShapes()) {
+            for (PackShape shape : pack.getShapes()) {
                 if (shape.getName().equals(shapeName)) {
                     this.shape = shape;
                     break;
@@ -109,6 +112,6 @@ public class SMPItem extends Item {
 
     @Override
     public String toString() {
-        return "SMPItem {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
+        return "PackItem {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
     }
 }

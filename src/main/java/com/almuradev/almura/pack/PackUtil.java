@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.smp;
+package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
@@ -16,17 +16,14 @@ import net.minecraft.util.IIcon;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
-public class SMPUtil {
+public class PackUtil {
 
     public static Map<Integer, List<Integer>> extractCoordsFrom(YamlConfiguration reader) {
         final List<String> textureCoordinatesList = reader.getChild("Coords").getStringList();
@@ -47,12 +44,14 @@ public class SMPUtil {
         return textureCoordinatesByFace;
     }
 
-    public static ClippedIcon[] generateClippedIconsFromCoords(SMPPack pack, IIcon source, String textureName,
+    public static ClippedIcon[] generateClippedIconsFromCoords(ContentPack pack, IIcon source, String textureName,
                                                                Map<Integer, List<Integer>> texCoords) {
         Dimension dimension = null;
 
         try {
-            dimension = Filesystem.getImageDimension(Files.newInputStream(Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), pack.getName() + File.separator + textureName + ".png")));
+            dimension =
+                    Filesystem.getImageDimension(Files.newInputStream(
+                            Paths.get(Filesystem.CONFIG_PACKS_PATH.toString(), pack.getName() + File.separator + textureName + ".png")));
         } catch (IOException e) {
             if (Configuration.IS_DEBUG) {
                 Almura.LOGGER.error("Failed to load texture [" + textureName + "] for dimensions", e);

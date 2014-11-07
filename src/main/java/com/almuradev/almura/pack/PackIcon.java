@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.smp;
+package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
@@ -21,13 +21,14 @@ import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
-public class SMPIcon extends MalisisIcon {
-    public SMPIcon(String textureName) {
+public class PackIcon extends MalisisIcon {
+
+    public PackIcon(String textureName) {
         super(textureName);
     }
 
-    public SMPIcon(String packName, String textureName) {
-        super("smp/" + packName + "-" +textureName);
+    public PackIcon(String packName, String textureName) {
+        super(Almura.MOD_ID.toLowerCase() + ":packs/" + packName + "-" + textureName);
     }
 
     @Override
@@ -37,16 +38,16 @@ public class SMPIcon extends MalisisIcon {
 
     @Override
     public boolean load(IResourceManager manager, ResourceLocation location) {
-        if (location.getResourcePath().startsWith("smp")) {
-            //almura:smp/kfood_core/food.png
+        if (location.getResourcePath().startsWith("pack")) {
+            //minecraft:pack/kfood_core/food.png
             final String[] tokens = location.getResourcePath().split("/")[1].split("-");
             final String packName = tokens[0];
             final String textureName = tokens[1];
 
-            final Path texturePath = Paths.get(Filesystem.CONFIG_SMPS_PATH.toString(), packName + File.separator + textureName + ".png");
+            final Path texturePath = Paths.get(Filesystem.CONFIG_PACKS_PATH.toString(), packName + File.separator + textureName + ".png");
 
-            int mipmapLevels = Minecraft.getMinecraft().gameSettings.mipmapLevels;
-            boolean anisotropic = Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F;
+            final int mipmapLevels = Minecraft.getMinecraft().gameSettings.mipmapLevels;
+            final boolean anisotropic = Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F;
 
             try {
                 BufferedImage[] textures = new BufferedImage[1 + mipmapLevels];
@@ -55,7 +56,8 @@ public class SMPIcon extends MalisisIcon {
                 return false;
             } catch (RuntimeException e) {
                 Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] in pack [" + packName + "]", e);
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
 
         return true;

@@ -3,10 +3,8 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.smp.model;
+package com.almuradev.almura.pack.model;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.Configuration;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
@@ -16,37 +14,34 @@ import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.Vertex;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SMPShape extends Shape {
+public class PackShape extends Shape {
 
     private final String name;
 
-    public SMPShape(String name) {
+    public PackShape(String name) {
         this.name = name;
     }
 
-    public SMPShape(String name, Face... faces) {
+    public PackShape(String name, Face... faces) {
         super(faces);
         this.name = name;
     }
 
-    public SMPShape(String name, List<Face> faces) {
+    public PackShape(String name, List<Face> faces) {
         super(faces);
         this.name = name;
     }
 
-    public SMPShape(String name, Shape s) {
+    public PackShape(String name, Shape s) {
         super(s);
         this.name = name;
     }
 
-    public static SMPShape createFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackShape createFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
         //Shapes:
         final ConfigurationNode shapesNode = reader.getChild("Shapes");
         final List<Face> faces = new LinkedList<>();
@@ -73,13 +68,13 @@ public class SMPShape extends Shape {
             }
             final RenderParameters params = new RenderParameters();
             params.textureSide.set(ForgeDirection.getOrientation(textureIndex));
-            final Face face = new SMPFace(textureIndex, vertices);
+            final Face face = new PackFace(textureIndex, vertices);
             face.setStandardUV();
             face.setParameters(params);
             faces.add(face);
         }
 
-        final SMPShape shape = new SMPShape(name, faces);
+        final PackShape shape = new PackShape(name, faces);
         shape.storeState();
         return shape;
     }
@@ -90,7 +85,7 @@ public class SMPShape extends Shape {
 
     @Override
     public boolean equals(Object o) {
-        return this == o || !(o == null || getClass() != o.getClass()) && name.equals(((SMPShape) o).name);
+        return this == o || !(o == null || getClass() != o.getClass()) && name.equals(((PackShape) o).name);
     }
 
     @Override
@@ -100,6 +95,6 @@ public class SMPShape extends Shape {
 
     @Override
     public String toString() {
-        return "Shape {name= " + name + "}";
+        return "PackShape {name= " + name + "}";
     }
 }

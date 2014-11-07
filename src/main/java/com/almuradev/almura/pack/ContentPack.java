@@ -3,67 +3,61 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.smp;
+package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.smp.item.SMPFood;
-import com.almuradev.almura.smp.item.SMPItem;
-import com.almuradev.almura.smp.model.SMPShape;
+import com.almuradev.almura.pack.block.PackBlock;
+import com.almuradev.almura.pack.item.PackFood;
+import com.almuradev.almura.pack.item.PackItem;
+import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.malisis.core.renderer.element.Shape;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.server.MinecraftServer;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
-public class SMPPack {
+public class ContentPack {
 
-    private static final Map<String, SMPPack> PACKS = new HashMap<>();
+    private static final Map<String, ContentPack> PACKS = new HashMap<>();
     private final String name;
     protected List<Block> blocks;
     protected List<Item> items;
-    protected List<SMPShape> shapes;
+    protected List<PackShape> shapes;
 
-    public SMPPack(String name) {
+    public ContentPack(String name) {
         this.name = name;
     }
 
-    public static SMPPack getPack(String name) {
+    public static ContentPack getPack(String name) {
         return PACKS.get(name);
     }
 
-    public static Map<String, SMPPack> getPacks() {
+    public static Map<String, ContentPack> getPacks() {
         return Collections.unmodifiableMap(PACKS);
     }
 
     public static void load() {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_SMPS_PATH, Filesystem.DIRECTORIES_ONLY_FILTER)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_PACKS_PATH, Filesystem.DIRECTORIES_ONLY_FILTER)) {
             for (Path path : stream) {
                 try {
                     create(path);
                 } catch (ConfigurationException | IOException e) {
                     if (Configuration.IS_DEBUG) {
-                        Almura.LOGGER.error("Failed to load " + path + " as SMPPack", e);
+                        Almura.LOGGER.error("Failed to load " + path + " as a content pack", e);
                     }
                 }
             }
@@ -72,16 +66,16 @@ public class SMPPack {
         }
     }
 
-    public static SMPPack create(Path root) throws IOException, ConfigurationException {
+    public static ContentPack create(Path root) throws IOException, ConfigurationException {
         final String smpName = root.getName(root.getNameCount() - 1).toString();
-        final SMPPack pack = new SMPPack(smpName);
+        final ContentPack pack = new ContentPack(smpName);
         PACKS.put(smpName, pack);
 
         final List<Block> blocks = new ArrayList<>();
         final List<Item> items = new ArrayList<>();
-        final List<SMPShape> shapes = new ArrayList<>();
+        final List<PackShape> shapes = new ArrayList<>();
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, Filesystem.SMP_FILES_ONLY_FILTER)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, Filesystem.PACK_FILES_ONLY_FILTER)) {
             for (Path path : stream) {
                 if (path.getFileName().toString().endsWith(".yml")) {
                     final InputStream entry = Files.newInputStream(path);
@@ -97,13 +91,13 @@ public class SMPPack {
 
                     switch (type) {
                         case "Item":
-                            items.add(SMPItem.createFromReader(pack, name, reader));
+                            items.add(PackItem.createFromReader(pack, name, reader));
                             break;
                         case "Food":
-                            items.add(SMPFood.createFromReader(pack, name, reader));
+                            items.add(PackFood.createFromReader(pack, name, reader));
                             break;
                         case "Block":
-                            blocks.add(SMPBlock.createFromReader(pack, name, reader));
+                            blocks.add(PackBlock.createFromReader(pack, name, reader));
                             break;
                         default:
                             continue;
@@ -113,7 +107,7 @@ public class SMPPack {
                     final InputStream entry = Files.newInputStream(path);
                     final YamlConfiguration reader = new YamlConfiguration(entry);
                     reader.load();
-                    shapes.add(SMPShape.createFromReader(path.getFileName().toString().split(".shape")[0], reader));
+                    shapes.add(PackShape.createFromReader(path.getFileName().toString().split(".shape")[0], reader));
                     entry.close();
                 }
             }
@@ -131,7 +125,7 @@ public class SMPPack {
 
         if (Configuration.IS_CLIENT) {
             for (Block block : blocks) {
-                ((SMPBlock) block).reloadShape();
+                ((PackBlock) block).reloadShape();
             }
         }
 
@@ -156,7 +150,7 @@ public class SMPPack {
         return Collections.unmodifiableList(blocks);
     }
 
-    public List<SMPShape> getShapes() {
+    public List<PackShape> getShapes() {
         return Collections.unmodifiableList(shapes);
     }
 
@@ -170,7 +164,7 @@ public class SMPPack {
 
     @Override
     public boolean equals(Object o) {
-        return this == o || !(o == null || getClass() != o.getClass()) && name.equals(((SMPPack) o).name);
+        return this == o || !(o == null || getClass() != o.getClass()) && name.equals(((ContentPack) o).name);
     }
 
     @Override
@@ -180,6 +174,6 @@ public class SMPPack {
 
     @Override
     public String toString() {
-        return "SMPPack {name= [" + name + "], blocks= " + blocks + ", items= " + items + ", shapes= " + shapes + "}";
+        return "ContentPack {name= [" + name + "], blocks= " + blocks + ", items= " + items + ", shapes= " + shapes + "}";
     }
 }
