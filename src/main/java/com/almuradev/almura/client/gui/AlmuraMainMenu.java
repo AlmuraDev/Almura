@@ -2,24 +2,31 @@ package com.almuradev.almura.client.gui;
 
 import com.almuradev.almura.Almura;
 import com.google.common.eventbus.Subscribe;
+
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.container.UIWindow;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UIImage;
+import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.multiplayer.GuiConnecting;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Random;
 
 public class AlmuraMainMenu extends MalisisGui {
 
-    public UIWindow window;
-    public UIButton singlePlayerButton, multiPlayerButton, optionsButton, logonButton, closeButton;
+    public UIBackgroundContainer window;
+    public UIButton singlePlayerButton, optionsButton, liveServerButton, devServerButton, closeButton;
     public UIImage almuraMan;
     public int tick = 1;
     static final int PAN_TIME = 600;
@@ -45,9 +52,12 @@ public class AlmuraMainMenu extends MalisisGui {
         backgroundImage.setSize(0, 0);
 
         // Buttons Window.
-        window = new UIWindow(this, title, 200, 200).setPosition(0, -10, Anchor.CENTER | Anchor.MIDDLE);
-        window.setClipContent(false);
-        window.setTitle("Welcome to Almura Client!");
+        window = new UIBackgroundContainer(this);
+        window.setSize(300, 175);
+        window.setPosition(5, 0, Anchor.CENTER | Anchor.MIDDLE);
+        window.setColor(Integer.MIN_VALUE);
+        window.setTopAlpha(180);
+        window.setBottomAlpha(180);
 
         //Message contents
         @SuppressWarnings("rawtypes")
@@ -59,19 +69,20 @@ public class AlmuraMainMenu extends MalisisGui {
         almuraMan.setSize(panel.getWidth(), panel.getHeight());
         panel.add(almuraMan);
 
-        singlePlayerButton = (new UIButton(this, "SP").setSize(8, 18).setPosition(-60, -25, Anchor.BOTTOM | Anchor.CENTER).register(this));
-        singlePlayerButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(singlePlayerButton.getText() + 25), 18);
+        singlePlayerButton = (new UIButton(this, "Singleplayer").setSize(8, 18).setPosition(-60, -45, Anchor.BOTTOM | Anchor.CENTER).register(this));
+        singlePlayerButton.setSize(60, 10);        
         singlePlayerButton.setName("singlePlayerButton");
         singlePlayerButton.setVisible(true);
 
-        multiPlayerButton = (new UIButton(this, "Multiplayer").setPosition(40, -30, Anchor.BOTTOM | Anchor.CENTER).register(this));
-        multiPlayerButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(multiPlayerButton.getText() + 25), 18);
-        multiPlayerButton.setName("multiPlayerButton");
-        multiPlayerButton.setVisible(false);
+        devServerButton = (new UIButton(this, "Logon to Dev Server").setPosition(0, -30, Anchor.BOTTOM | Anchor.CENTER).register(this));
+        devServerButton.setSize(60, 18);
+        devServerButton.setName("devServerButton");
+        devServerButton.setVisible(false);
 
-        logonButton = (new UIButton(this, "Play Now").setPosition(0, -25, Anchor.CENTER | Anchor.BOTTOM).register(this));
-        logonButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(logonButton.getText() + 25), 20);
-        logonButton.setName("logonButton");
+        liveServerButton = (new UIButton(this, "Logon to Live Server").setPosition(0, -20, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        liveServerButton.setSize(60, 20);
+        liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2.0 Server"));
+        liveServerButton.setName("liveServerButton");
 
         optionsButton = (new UIButton(this, "Options").setPosition(-30, 0, Anchor.CENTER | Anchor.BOTTOM).register(this));
         optionsButton.setSize(50, 16);
@@ -86,8 +97,8 @@ public class AlmuraMainMenu extends MalisisGui {
         main.add(backgroundImage);
         window.add(optionsButton);
         window.add(singlePlayerButton);
-        window.add(multiPlayerButton);
-        window.add(logonButton);
+        window.add(devServerButton);
+        window.add(liveServerButton);
         window.add(closeButton);
 
         window.add(panel);
@@ -116,14 +127,18 @@ public class AlmuraMainMenu extends MalisisGui {
             this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiSelectWorld(this));
         }
 
-        if (event.getComponent().getName().equalsIgnoreCase("multiPlayerButton")) {
-            this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this));
+        if (event.getComponent().getName().equalsIgnoreCase("devServerButton")) {
+            this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, new ServerData("DevServer", "localhost")));
+        }
+        
+        if (event.getComponent().getName().equalsIgnoreCase("liveServerButton")) {
+            this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, new ServerData("LiveServer", "localhost")));
         }
 
         if (event.getComponent().getName().equalsIgnoreCase("optionsButton")) {
             this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiOptions(this, this.mc.gameSettings));
         }
-
+        
         if (event.getComponent().getName().equalsIgnoreCase("closeButton")) {
             this.mc.shutdown();
         }

@@ -35,6 +35,7 @@ public class Almura {
     public static final String MOD_ID = "Almura";
     public static final Logger LOGGER = LogManager.getLogger("Almura");
     public static boolean showDebugGUI = false;
+    public static String versionString = "Almura 2.0 build 1 alpha";
 
     @EventHandler
     public void onPreInitialization(FMLPreInitializationEvent event) {
