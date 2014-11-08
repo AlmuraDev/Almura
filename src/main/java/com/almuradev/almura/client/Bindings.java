@@ -9,5 +9,5 @@ import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
 public class Bindings {
-    public static final KeyBinding MSG_BOX_TEST = new KeyBinding("key.almura.msg_box_test", Keyboard.KEY_F, "key.categories.almura");
+    public static final KeyBinding almuraDebugGUI = new KeyBinding("kye.almura.almuraDebug", Keyboard.KEY_F3, "key.categories.almura");
 }

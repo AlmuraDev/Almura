@@ -7,6 +7,7 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.blocks.Blocks;
 import com.almuradev.almura.client.Bindings;
+import com.almuradev.almura.client.gui.AlmuraMainMenu;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.items.Items;
@@ -21,6 +22,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -32,6 +34,7 @@ public class Almura {
 
     public static final String MOD_ID = "Almura";
     public static final Logger LOGGER = LogManager.getLogger("Almura");
+    public static boolean showDebugGUI = false;
 
     @EventHandler
     public void onPreInitialization(FMLPreInitializationEvent event) {
@@ -59,23 +62,26 @@ public class Almura {
     private void setupClientResources() {
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
-        ClientRegistry.registerKeyBinding(Bindings.MSG_BOX_TEST);       
+        ClientRegistry.registerKeyBinding(Bindings.almuraDebugGUI);
     }
     
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onKeyPress(InputEvent.KeyInputEvent event) {
-        if (Bindings.MSG_BOX_TEST.isPressed()) {
-            //final ScreenMessageBox box = new ScreenMessageBox("Almura - Test", "This is a test of our messagebox!");
-            //box.display();
+
+        if (Bindings.almuraDebugGUI.isPressed()) {
+            if (showDebugGUI) {
+                showDebugGUI = false;
+            } else {
+                showDebugGUI = true;
+            }
         }
     }
        
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
-       /*
         if (event.gui != null) {
             System.out.println("CurrentGUI Screen: " + event.gui.toString());
             if (event.gui instanceof GuiMainMenu) {
@@ -83,6 +89,6 @@ public class Almura {
                 final AlmuraMainMenu box = new AlmuraMainMenu("Almura", "This is a test of our messagebox!");
                 box.display();
             }
-        } */
+        } 
     }    
 }
