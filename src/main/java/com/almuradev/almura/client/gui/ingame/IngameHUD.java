@@ -1,7 +1,9 @@
-package com.almuradev.almura.client.gui;
+package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
+import com.almuradev.almura.client.gui.UIPropertyBar;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -18,7 +20,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import java.awt.*;
 
-public class AlmuraHUD extends MalisisGui {
+public class IngameHUD extends MalisisGui {
 
     public static final GuiTexture BAR_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/barwidget.png"));
     public static final GuiTexture HEART_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/health.png"));
@@ -42,7 +44,7 @@ public class AlmuraHUD extends MalisisGui {
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
 
     @SuppressWarnings("rawtypes")
-    public AlmuraHUD() {
+    public IngameHUD() {
         guiscreenBackground = false;
 
         // Construct Hud with all elements
@@ -191,25 +193,22 @@ public class AlmuraHUD extends MalisisGui {
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
-        //Almura HUD replaces these GUI elements of Vanilla
         switch (event.type) {
             case HEALTH:
-            case FOOD:
             case ARMOR:
+            case FOOD:
             case EXPERIENCE:
-            case DEBUG:
                 event.setCanceled(true);
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPost(RenderGameOverlayEvent.Post event) {
+        setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
         if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
             updateWidgets();
-
-            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }
@@ -281,7 +280,9 @@ public class AlmuraHUD extends MalisisGui {
 
         serverCount.setText(MinecraftServer.getServer().getCurrentPlayerCount() + "/" + MinecraftServer.getServer().getMaxPlayers());
         playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
-        playerCoords.setText(String.format("x: %d,  y: %d,  z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ));
+        playerCoords.setText(
+                String.format("x: %d,  y: %d,  z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
+                              (int) Minecraft.getMinecraft().thePlayer.posZ));
         playerCompass.setText(getCompass());
         mapImage.setPosition(-(playerCoords.getWidth() + 80), 4, Anchor.RIGHT | Anchor.TOP);
         worldDisplay.setText(MinecraftServer.getServer().getWorldName());
