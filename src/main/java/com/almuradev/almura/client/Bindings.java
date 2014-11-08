@@ -1,5 +1,5 @@
 /**
- * This file is part of AlmuraMod, All Rights Reserved.
+ * This file is part of Almura, All Rights Reserved.
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */

@@ -71,6 +71,7 @@ repositories {
 // Project dependencies
 dependencies {
     compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
+    compile 'net.malisis:malisiscore:1.7.10-0.10.1-SNAPSHOT'
 }
 
 // Filter, process, and include resources
@@ -84,13 +85,13 @@ processResources {
     // Replace variables
     from('src/main/resources/mcmod.info') {
         expand 'modid': projectName,
-                'name': projectName,
-                'description': project.ext.description,
-                'version': version,
-                'buildNumber': buildNumber,
-                'mcversion': minecraft.version,
-                'url': url,
-                'authorList': organization
+               'name': projectName,
+               'description': project.ext.description,
+               'version': version,
+               'buildNumber': buildNumber,
+               'mcversion': minecraft.version,
+               'url': url,
+               'authorList': organization
     }
 }
 
@@ -103,8 +104,7 @@ license {
     header rootProject.file('HEADER.txt')
     ignoreFailures true
     strictCheck true
-    exclude "**/*.info"
-    exclude "resources/**"
+    exclude "resources/*"
 }
 
 // Source compiler configuration
@@ -121,3 +121,4 @@ jar.manifest.mainAttributes(
         "Implementation-Title": name,
         "Implementation-Version": version + "-b" + buildNumber + ".git-" + commit,
         "Implementation-Vendor": url)
+
