@@ -14,15 +14,12 @@ import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.container.UIContainer;
-import net.malisis.core.client.gui.component.container.UIWindow;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.ResourceLocation;
@@ -52,7 +49,7 @@ public class AlmuraMainMenu extends MalisisGui {
     boolean zoomIn = true;
     boolean zoomOut = false;    
 
-    public AlmuraMainMenu(String title, String message) {
+    public AlmuraMainMenu() {
 
         guiscreenBackground = false; // prevent full screen black background.       
         screenH = Minecraft.getMinecraft().displayHeight;
@@ -110,7 +107,7 @@ public class AlmuraMainMenu extends MalisisGui {
         closeButton.setSize(50, 15);
         closeButton.setName("closeButton");
         
-        UILabel version = new UILabel(this, ChatColor.WHITE + Almura.versionString);
+        UILabel version = new UILabel(this, ChatColor.WHITE + Almura.VERSION_STRING);
         version.setPosition(0,-5, Anchor.CENTER | Anchor.BOTTOM);
         version.setFontScale(0.75F);
         

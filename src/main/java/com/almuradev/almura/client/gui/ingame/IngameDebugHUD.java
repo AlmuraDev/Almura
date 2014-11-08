@@ -12,10 +12,7 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.container.UIWindow;
-import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Direction;
@@ -25,17 +22,14 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 public class IngameDebugHUD extends MalisisGui {
-    
-    private final UIBackgroundContainer debugPanel;    
     public UILabel fps, memoryDebug, memoryAllocated, xLoc, yLoc, zLoc, directionLoc, biomeName, blockLight, skyLight, rawLight;
-    public boolean renderDebugGUI;
     
     public IngameDebugHUD() {
        
         guiscreenBackground = false; // prevent full screen black background.
 
         // Construct Hud with all elements
-        debugPanel = new UIBackgroundContainer(this);
+        final UIBackgroundContainer debugPanel = new UIBackgroundContainer(this);
         debugPanel.setSize(300, 175);
         debugPanel.setPosition(5, 0, Anchor.LEFT | Anchor.MIDDLE);
         debugPanel.setColor(Integer.MIN_VALUE);
@@ -91,7 +85,7 @@ public class IngameDebugHUD extends MalisisGui {
         rawLight = new UILabel(this, ChatColor.GRAY + "rawLight");
         rawLight.setPosition(60, 140, Anchor.LEFT | Anchor.TOP);
         
-        UILabel version = new UILabel(this, ChatColor.GREEN + Almura.versionString);
+        UILabel version = new UILabel(this, ChatColor.GREEN + Almura.VERSION_STRING);
         version.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
        
                 
@@ -128,14 +122,9 @@ public class IngameDebugHUD extends MalisisGui {
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
         if (event.type == RenderGameOverlayEvent.ElementType.DEBUG) {
             event.setCanceled(true);
-        }
-    }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onRenderGameOverlayPost(RenderGameOverlayEvent.Post event) {
-        setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-        updateWidgets();
-        if (Almura.showDebugGUI) {
+            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+            updateWidgets();
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }

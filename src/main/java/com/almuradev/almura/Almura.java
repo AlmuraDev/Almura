@@ -34,8 +34,7 @@ public class Almura {
 
     public static final String MOD_ID = "Almura";
     public static final Logger LOGGER = LogManager.getLogger("Almura");
-    public static boolean showDebugGUI = false;
-    public static String versionString = "Almura 2.0 build 1 alpha";
+    public static String VERSION_STRING = "Almura 2.0 build 1 alpha";
 
     @EventHandler
     public void onPreInitialization(FMLPreInitializationEvent event) {
@@ -63,31 +62,21 @@ public class Almura {
     private void setupClientResources() {
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
-        ClientRegistry.registerKeyBinding(Bindings.almuraDebugGUI);
     }
     
 
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public void onKeyPress(InputEvent.KeyInputEvent event) {
-
-        if (Bindings.almuraDebugGUI.isPressed()) {
-            if (showDebugGUI) {
-                showDebugGUI = false;
-            } else {
-                showDebugGUI = true;
-            }
-        }
-    }
+//    @SideOnly(Side.CLIENT)
+//    @SubscribeEvent
+//    public void onKeyPress(InputEvent.KeyInputEvent event) {
+//    }
        
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         if (event.gui != null) {
-            System.out.println("CurrentGUI Screen: " + event.gui.toString());
             if (event.gui instanceof GuiMainMenu) {
                 event.setCanceled(true);
-                final AlmuraMainMenu box = new AlmuraMainMenu("Almura", "This is a test of our messagebox!");
+                final AlmuraMainMenu box = new AlmuraMainMenu();
                 box.display();
             }
         } 

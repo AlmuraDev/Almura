@@ -200,7 +200,6 @@ public class IngameHUD extends MalisisGui {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
-        setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
         switch (event.type) {
             case HEALTH:
             case ARMOR:
@@ -210,6 +209,7 @@ public class IngameHUD extends MalisisGui {
         }
 
         if (event.type == RenderGameOverlayEvent.ElementType.HEALTH) {
+            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
             updateWidgets();
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
