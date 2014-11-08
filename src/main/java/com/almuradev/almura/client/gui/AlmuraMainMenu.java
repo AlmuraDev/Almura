@@ -1,10 +1,7 @@
 package com.almuradev.almura.client.gui;
 
-import java.util.Random;
-
 import com.almuradev.almura.Almura;
 import com.google.common.eventbus.Subscribe;
-
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
@@ -17,8 +14,10 @@ import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-public class AlmuraMainMenu extends MalisisGui{
-    
+import java.util.Random;
+
+public class AlmuraMainMenu extends MalisisGui {
+
     public UIWindow window;
     public UIButton singlePlayerButton, multiPlayerButton, optionsButton, logonButton, closeButton;
     public UIImage almuraMan;
@@ -26,117 +25,119 @@ public class AlmuraMainMenu extends MalisisGui{
     static final int PAN_TIME = 600;
     static final int EXTRA_PAN_TIME = 150;
     static final int HEIGHT_PERCENT = 70;
-    static final int WIDTH_PERCENT = 75;    
+    static final int WIDTH_PERCENT = 75;
     final Random rand = new Random();
     int maxPanTime = PAN_TIME;
     int panTime = PAN_TIME;
     int picture = -1;
     boolean zoomIn = false;
-    
+
     public AlmuraMainMenu(String title, String message) {
-        
+
         // Main Container
         @SuppressWarnings("rawtypes")
         UIContainer main = new UIContainer(this);
-        
+
         // Container background image.
-        GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(),"textures/background/background_1.jpg"));       
+        GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/background_1.jpg"));
         UIImage backgroundImage = new UIImage(this, background, null);
         backgroundImage.setZIndex(-1);
-        backgroundImage.setSize(0,0);
-        
+        backgroundImage.setSize(0, 0);
+
         // Buttons Window.
-        window = new UIWindow(this, title, 200, 175).setPosition(0, -10, Anchor.CENTER | Anchor.MIDDLE);
-        window.setClipContent(false);        
-        window.setTitle("Welcome to Almura Client!");        
-        
+        window = new UIWindow(this, title, 200, 200).setPosition(0, -10, Anchor.CENTER | Anchor.MIDDLE);
+        window.setClipContent(false);
+        window.setTitle("Welcome to Almura Client!");
+
         //Message contents
         @SuppressWarnings("rawtypes")
-        UIContainer panel = new UIContainer(this, window.getWidth() - 11, window.getHeight() - 43);
-        panel.setPosition(0, 10, Anchor.LEFT | Anchor.TOP);
-        
-        GuiTexture almuraGuy = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(),"textures/background/almuraman.jpg"));       
+        UIContainer panel = new UIContainer(this, window.getWidth() - 41, window.getHeight() - 73);
+        panel.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);
+
+        GuiTexture almuraGuy = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/almuraman.jpg"));
         almuraMan = new UIImage(this, almuraGuy, null);
         almuraMan.setSize(panel.getWidth(), panel.getHeight());
         panel.add(almuraMan);
-        
-        singlePlayerButton = (new UIButton(this, "Single-Player").setSize(8, 18).setPosition(0, -20, Anchor.MIDDLE | Anchor.CENTER).register(this));
-        singlePlayerButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(singlePlayerButton.getText() + 25),18);
+
+        singlePlayerButton = (new UIButton(this, "SP").setSize(8, 18).setPosition(-60, -25, Anchor.BOTTOM | Anchor.CENTER).register(this));
+        singlePlayerButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(singlePlayerButton.getText() + 25), 18);
         singlePlayerButton.setName("singlePlayerButton");
-        
-        multiPlayerButton = (new UIButton(this, "Multi-Player").setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER).register(this));
-        multiPlayerButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(multiPlayerButton.getText() + 25),18);        
+        singlePlayerButton.setVisible(true);
+
+        multiPlayerButton = (new UIButton(this, "Multiplayer").setPosition(40, -30, Anchor.BOTTOM | Anchor.CENTER).register(this));
+        multiPlayerButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(multiPlayerButton.getText() + 25), 18);
         multiPlayerButton.setName("multiPlayerButton");
-        
-        logonButton = (new UIButton(this, "Logon").setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM).register(this));
-        logonButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(logonButton.getText() + 25),16);        
+        multiPlayerButton.setVisible(false);
+
+        logonButton = (new UIButton(this, "Play Now").setPosition(0, -25, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        logonButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(logonButton.getText() + 25), 20);
         logonButton.setName("logonButton");
-        
-        optionsButton = (new UIButton(this, "Options").setPosition(0, 0, Anchor.LEFT | Anchor.BOTTOM).register(this));        
-        optionsButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(optionsButton.getText() + 25),16);
-        optionsButton.setName("optionsButton");        
-        
-        closeButton = (new UIButton(this, "Quit").setPosition(0, 0, Anchor.RIGHT | Anchor.BOTTOM).register(this));//.setAnchor(Anchor.RIGHT - 25 | Anchor.BOTTOM - 25).register(this));
-        closeButton.setSize(Minecraft.getMinecraft().fontRenderer.getStringWidth(closeButton.getText() + 25),16);
+
+        optionsButton = (new UIButton(this, "Options").setPosition(-30, 0, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        optionsButton.setSize(50, 16);
+        optionsButton.setName("optionsButton");
+
+        closeButton =
+                (new UIButton(this, "Quit").setPosition(30, 0, Anchor.CENTER | Anchor.BOTTOM)
+                         .register(this));//.setAnchor(Anchor.RIGHT - 25 | Anchor.BOTTOM - 25).register(this));
+        closeButton.setSize(50, 16);
         closeButton.setName("closeButton");
-        
-        //panel.add(singlePlayerButton);
-        //panel.add(multiPlayerButton);        
-        
+
         main.add(backgroundImage);
         window.add(optionsButton);
+        window.add(singlePlayerButton);
+        window.add(multiPlayerButton);
         window.add(logonButton);
         window.add(closeButton);
-        
+
         window.add(panel);
-        
-        main.add(window);        
-        
+
+        main.add(window);
+
         new UIMoveHandle(this, window);
-        
-        addToScreen(main);        
+
+        addToScreen(main);
     }
-      
+
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {  //Every Frame
-        
+
     }
-    
+
     @Override
     public void updateScreen() {  //Every Tick
-        
+
     }
-    
+
     @Subscribe  //@EventHandler == Bukkit //Forge or FML, not main class == @SubscribeEvents
     public void onButtonClick(ClickEvent event) {
-        
+
         if (event.getComponent().getName().equalsIgnoreCase("singlePlayerButton")) {
             this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiSelectWorld(this));
         }
-        
+
         if (event.getComponent().getName().equalsIgnoreCase("multiPlayerButton")) {
-            this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this)); 
+            this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this));
         }
-        
+
         if (event.getComponent().getName().equalsIgnoreCase("optionsButton")) {
             this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiOptions(this, this.mc.gameSettings));
         }
-        
+
         if (event.getComponent().getName().equalsIgnoreCase("closeButton")) {
-            this.mc.shutdown();    
+            this.mc.shutdown();
         }
         MalisisGui.currentGui().close();
     }
-    
+
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {        
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         renderer.enableBlending();
-        animate();
-        super.drawScreen(mouseX, mouseY, partialTicks);        
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
-    
+
     public void animate() {
-       
+
         int adjustedX = ((100 - HEIGHT_PERCENT) / 2) * almuraMan.getHeight() * panTime;
         adjustedX /= maxPanTime;
         adjustedX /= 100;
@@ -159,3 +160,4 @@ public class AlmuraMainMenu extends MalisisGui{
         }
     }
 }
+

@@ -155,7 +155,7 @@ public class IngameHUD extends MalisisGui {
 
         // XP Property
         xpProperty = new UIPropertyBar(this, XP_TEXTURE, BAR_TEXTURE);
-        xpProperty.setPosition(-5, 28, Anchor.RIGHT | Anchor.TOP);
+        xpProperty.setPosition(-25, 28, Anchor.RIGHT | Anchor.TOP);
         xpProperty.setSize(118, 7);
 
         // XP Level Label
@@ -182,7 +182,7 @@ public class IngameHUD extends MalisisGui {
         gradientContainer.add(compassImage);
         gradientContainer.add(clockImage);
         gradientContainer.add(worldTime);
-        //gradientContainer.add(xpLevel);
+        gradientContainer.add(xpLevel);
 
         addToScreen(gradientContainer);
     }
@@ -288,7 +288,7 @@ public class IngameHUD extends MalisisGui {
         worldDisplay.setText(MinecraftServer.getServer().getWorldName());
         worldImage.setPosition(-(worldDisplay.getWidth() + 9), 4);
         worldTime.setText(getTime());
-        //xpLevel.setText(Integer.toString(Minecraft.getMinecraft().thePlayer.experienceLevel));
+        xpLevel.setText(Integer.toString(Minecraft.getMinecraft().thePlayer.experienceLevel));
     }
 
     public int getArmorLevel() {
