@@ -9,7 +9,6 @@ import com.almuradev.almura.blocks.Blocks;
 import com.almuradev.almura.client.Bindings;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
-import com.almuradev.almura.client.gui.ScreenMessageBox;
 import com.almuradev.almura.items.Items;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -52,7 +51,7 @@ public class Almura {
     public void onPostInitializationEvent(FMLPostInitializationEvent event) {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
             MinecraftForge.EVENT_BUS.register(new IngameHUD());
-            //MinecraftForge.EVENT_BUS.register(new IngameDebugHUD());
+            MinecraftForge.EVENT_BUS.register(new IngameDebugHUD());
         }
     }
 
@@ -68,8 +67,8 @@ public class Almura {
     @SubscribeEvent
     public void onKeyPress(InputEvent.KeyInputEvent event) {
         if (Bindings.MSG_BOX_TEST.isPressed()) {
-            final ScreenMessageBox box = new ScreenMessageBox("Almura - Test", "This is a test of our messagebox!");
-            box.display();
+            //final ScreenMessageBox box = new ScreenMessageBox("Almura - Test", "This is a test of our messagebox!");
+            //box.display();
         }
     }
        
