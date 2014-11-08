@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.client.gui.ingame;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -26,7 +31,6 @@ public class IngameDebugHUD extends MalisisGui {
         setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
 
         if (event.type == RenderGameOverlayEvent.ElementType.DEBUG) {
-            //updateWidgets();
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }

@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.client.gui;
 
 import com.almuradev.almura.Almura;
@@ -18,17 +23,17 @@ import java.util.Random;
 
 public class AlmuraMainMenu extends MalisisGui {
 
-    public UIWindow window;
-    public UIButton singlePlayerButton, multiPlayerButton, optionsButton, logonButton, closeButton;
-    public UIImage almuraMan;
-    public int tick = 1;
     static final int PAN_TIME = 600;
+    int maxPanTime = PAN_TIME;
+    int panTime = PAN_TIME;
     static final int EXTRA_PAN_TIME = 150;
     static final int HEIGHT_PERCENT = 70;
     static final int WIDTH_PERCENT = 75;
     final Random rand = new Random();
-    int maxPanTime = PAN_TIME;
-    int panTime = PAN_TIME;
+    public UIWindow window;
+    public UIButton singlePlayerButton, multiPlayerButton, optionsButton, logonButton, closeButton;
+    public UIImage almuraMan;
+    public int tick = 1;
     int picture = -1;
     boolean zoomIn = false;
 

@@ -23,7 +23,7 @@ public class Tabs {
                 return com.almuradev.almura.items.Items.BUILDING;
             }
         };
-        
+
         ROOFING = new CreativeTabs("roofing") {
             @Override
             @SideOnly(Side.CLIENT)
@@ -158,7 +158,7 @@ public class Tabs {
             public Item getTabIconItem() {
                 return com.almuradev.almura.items.Items.TOOLS;
             }
-        }; 
+        };
     }
 
     public static void fakeStaticLoad() {

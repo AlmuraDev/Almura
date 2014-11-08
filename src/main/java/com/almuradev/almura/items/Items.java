@@ -27,7 +27,7 @@ public class Items {
     public static final Item ORES = new BasicItem("ores");
     public static final Item FOOD = new BasicItem("food");
     public static final Item DRINK = new BasicItem("drinks");
-    public static final Item INGREDIENTS = new BasicItem("ingredients");    
+    public static final Item INGREDIENTS = new BasicItem("ingredients");
     public static final Item TOOLS = new BasicItem("tools");
 
     // Food

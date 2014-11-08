@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.Almura;
@@ -38,9 +43,14 @@ public class IngameHUD extends MalisisGui {
     private static final Color orangeBar = new Color(0.8039f, 0.6784f, 0f, 1f);
     private static final Color redBar = new Color(0.69f, 0.09f, 0.12f, 1f);
 
-    private final UIBackgroundContainer gradientContainer;
     private final UIImage mapImage, worldImage;
-    private final UILabel almuraTitle, playerTitle, serverCount, playerCoords, playerCompass, worldDisplay, worldTime, xpLevel;
+    private final UILabel playerTitle;
+    private final UILabel serverCount;
+    private final UILabel playerCoords;
+    private final UILabel playerCompass;
+    private final UILabel worldDisplay;
+    private final UILabel worldTime;
+    private final UILabel xpLevel;
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
 
     @SuppressWarnings("rawtypes")
@@ -48,7 +58,7 @@ public class IngameHUD extends MalisisGui {
         guiscreenBackground = false;
 
         // Construct Hud with all elements
-        gradientContainer = new UIBackgroundContainer(this);
+        final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
         gradientContainer.setSize(UIComponent.INHERITED, 40);
         gradientContainer.setColor(Integer.MIN_VALUE);
         gradientContainer.setTopAlpha(180);
@@ -75,7 +85,7 @@ public class IngameHUD extends MalisisGui {
         //////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
         // Almura Title
-        almuraTitle = new UILabel(this, "Almura");
+        final UILabel almuraTitle = new UILabel(this, "Almura");
         almuraTitle.setPosition(-15, 2, Anchor.CENTER | Anchor.TOP);
         almuraTitle.setColor(0xffffffff);
         almuraTitle.setSize(7, 7);

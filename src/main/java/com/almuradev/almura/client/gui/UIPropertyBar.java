@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.client.gui;
 
 import net.malisis.core.client.gui.GuiTexture;
@@ -41,12 +46,12 @@ public class UIPropertyBar extends UIContainer implements ITransformable.Color {
         background.setColor(color);
     }
 
+    public int getAmount() {
+        return background.getWidth();
+    }
+
     public UIPropertyBar setAmount(int amount) {
         background.setSize(amount > getWidth() ? getWidth() : amount, background.getHeight());
         return this;
-    }
-
-    public int getAmount() {
-        return background.getWidth();
     }
 }
