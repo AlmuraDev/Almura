@@ -39,7 +39,7 @@ repositories {
 // Project dependencies
 dependencies {
     compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
-    compile 'net.malisis:malisiscore:1.7.10-0.10.1-SNAPSHOT'
+    compile 'net.malisis:malisiscore:1.7.10-0.10.1-SNAPSHOT:dev'
 }
 
 // Gradle default tasks
