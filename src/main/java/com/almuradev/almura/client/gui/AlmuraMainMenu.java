@@ -28,7 +28,7 @@ import java.util.Random;
 public class AlmuraMainMenu extends MalisisGui {
 
     public UIBackgroundContainer window;
-    public GuiTexture background;
+    //public GuiTexture background;
     public UIButton singlePlayerButton, optionsButton, liveServerButton, devServerButton, closeButton;
     public UIImage almuraMan;
     public int screenH, screenW;
@@ -181,25 +181,26 @@ public class AlmuraMainMenu extends MalisisGui {
             if (timer == 60) {
                 randomBackground();
                 backgroundImage.setPosition(0, 0, Anchor.BOTTOM | Anchor.RIGHT);
+                backgroundImage.setSize(0, 0);
              }
              
              if (timer ==120) {
                  randomBackground();
                  backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
+                 backgroundImage.setSize(0, 0);                 
              }
              
              if (timer ==180) {
                  randomBackground();
                  backgroundImage.setPosition(0, 0, Anchor.BOTTOM | Anchor.LEFT);
+                 backgroundImage.setSize(0, 0);                 
              }
              
              if (timer > 240) {
                  randomBackground();
                  backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.LEFT);
-                 timer = 0;
+                 timer = 0;                 
              }
-
-             backgroundImage.setSize(0, 0);
         }
     }
     
@@ -224,18 +225,24 @@ public class AlmuraMainMenu extends MalisisGui {
     private void randomBackground() {       
         if (getTime().equalsIgnoreCase("night")) {
             GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/night/night"+imageNum+".jpg"));            
+            backgroundImage.setIcon(background,null);
+            backgroundImage.setZIndex(-1);
+            backgroundImage.setSize(0, 0);
         }
 
         if (getTime().equalsIgnoreCase("day")) {
             GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/day/day"+imageNum+".jpg"));            
+            backgroundImage.setIcon(background,null);
+            backgroundImage.setZIndex(-1);
+            backgroundImage.setSize(0, 0);
         }
 
         if (getTime().equalsIgnoreCase("evening")) {
-            GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/evening/evening"+imageNum+".jpg"));
+            GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/evening/evening"+imageNum+".jpg"));            
+            backgroundImage.setIcon(background,null);
+            backgroundImage.setZIndex(-1);
+            backgroundImage.setSize(0, 0);
         }
-        backgroundImage.setIcon(background,null);
-        backgroundImage.setZIndex(-1);
-        backgroundImage.setSize(0, 0);
         backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.LEFT);        
     }    
 }
