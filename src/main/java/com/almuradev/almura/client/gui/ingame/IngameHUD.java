@@ -12,7 +12,6 @@ import com.almuradev.almura.client.gui.UIPropertyBar;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
@@ -21,8 +20,11 @@ import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.command.CommandTime;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.gui.PlayerListComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
@@ -77,18 +79,18 @@ public class IngameHUD extends MalisisGui {
         // Health Property
         healthProperty = new UIPropertyBar(this, HEART_TEXTURE, BAR_TEXTURE);
         healthProperty.setPosition(5, 17, Anchor.LEFT | Anchor.TOP);
-        healthProperty.setSize(118, 7);
+        healthProperty.setSize(105, 7);
 
         // Armor Property
         armorProperty = new UIPropertyBar(this, ARMOR_TEXTURE, BAR_TEXTURE);
         armorProperty.setPosition(5, 28, Anchor.LEFT | Anchor.TOP);
-        armorProperty.setSize(118, 7);
+        armorProperty.setSize(105, 7);
 
         //////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
         // Almura Title
         almuraTitle = new UILabel(this, "Almura");
-        almuraTitle.setPosition(-15, 2, Anchor.CENTER | Anchor.TOP);
+        almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
         almuraTitle.setColor(0xffffffff);
         almuraTitle.setSize(7, 7);
         almuraTitle.setFontScale(1.0F);
@@ -96,12 +98,12 @@ public class IngameHUD extends MalisisGui {
         // Hunger Property
         hungerProperty = new UIPropertyBar(this, HUNGER_TEXTURE, BAR_TEXTURE);
         hungerProperty.setPosition(-2, 17, Anchor.CENTER | Anchor.TOP);
-        hungerProperty.setSize(118, 7);
+        hungerProperty.setSize(105, 7);
 
         // Stamina Property
         staminaProperty = new UIPropertyBar(this, STAMINA_TEXTURE, BAR_TEXTURE);
         staminaProperty.setPosition(-2, 28, Anchor.CENTER | Anchor.TOP);
-        staminaProperty.setSize(118, 7);
+        staminaProperty.setSize(105, 7);
 
         //////////////////////////////// RIGHT COLUMN //////////////////////////////////////
 
@@ -135,10 +137,9 @@ public class IngameHUD extends MalisisGui {
         playerImage.setSize(8, 8);
 
         // Player Count Label
-        serverCount = new UILabel(this, "0 / 50");
-        serverCount.setPosition(-95, 17, Anchor.RIGHT | Anchor.TOP);
+        serverCount = new UILabel(this, "--");
+        serverCount.setPosition(-110, 17, Anchor.RIGHT | Anchor.TOP);
         serverCount.setColor(0xffffffff);
-        serverCount.setSize(15, 7);
         serverCount.setFontScale(0.8F);
 
         // Compass Image
@@ -168,7 +169,7 @@ public class IngameHUD extends MalisisGui {
         // XP Property
         xpProperty = new UIPropertyBar(this, XP_TEXTURE, BAR_TEXTURE);
         xpProperty.setPosition(-25, 28, Anchor.RIGHT | Anchor.TOP);
-        xpProperty.setSize(118, 7);
+        xpProperty.setSize(105, 7);
 
         // XP Level Label
         xpLevel = new UILabel(this, "1");
@@ -296,14 +297,24 @@ public class IngameHUD extends MalisisGui {
             xpProperty.setVisible(false);
         }
 
-        //serverCount.setText(MinecraftServer.getServer().getCurrentPlayerCount() + "/" + MinecraftServer.getServer().getMaxPlayers());
+        if (Minecraft.getMinecraft().isSingleplayer()) {
+            serverCount.setText("--");
+            serverCount.setPosition(-110, serverCount.getY(), serverCount.getAnchor());
+        } else {
+            serverCount.setText(Minecraft.getMinecraft().getNetHandler().playerInfoList.size() + "/" + Minecraft.getMinecraft()
+                    .getNetHandler().currentServerMaxPlayers);
+            serverCount.setPosition(-serverCount.getWidth(), serverCount.getY(), serverCount.getAnchor());
+        }
         playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
         playerCoords.setText(
-                String.format("x: %d,  y: %d,  z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
+                String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
                               (int) Minecraft.getMinecraft().thePlayer.posZ));
         playerCompass.setText(getCompass());
         mapImage.setPosition(-(playerCoords.getWidth() + 80), 4, Anchor.RIGHT | Anchor.TOP);
-        //worldDisplay.setText(MinecraftServer.getServer().getWorldName());
+        //TODO Server never sends Client world name, need a packet orrrr
+        if (Minecraft.getMinecraft().isSingleplayer()) {
+            worldDisplay.setText(MinecraftServer.getServer().getWorldName());
+        }
         worldImage.setPosition(-(worldDisplay.getWidth() + 9), 4);
         worldTime.setText(getTime());
         xpLevel.setText(Integer.toString(Minecraft.getMinecraft().thePlayer.experienceLevel));
@@ -348,19 +359,21 @@ public class IngameHUD extends MalisisGui {
     }
 
     public String getTime() {
-        int hours = (int) ((Minecraft.getMinecraft().thePlayer.worldObj.getWorldInfo().getWorldTime() / 1000L + 6L) % 24L);
-        if (hours == 1) {
+        //Minecraft day is 23000 ticks, we use a 24hr scale, day starts at 6AM
+        int hours = (int) Minecraft.getMinecraft().thePlayer.worldObj.getWorldInfo().getWorldTime() / 1000;
+
+        if (hours >= 0 && hours <= 5) {
+            return (String.format((6 + hours) + "am"));
+        }
+        if (hours == 6) {
+            return (String.format("12pm"));
+        }
+        if (hours >= 7 && hours <= 17) {
+            return (String.format((hours - 6) + "pm"));
+        }
+        if (hours == 18) {
             return (String.format("12am"));
         }
-        if (hours > 1 && hours <= 11) {
-            return (String.format(hours + "am"));
-        }
-        if (hours == 12) {
-            return (String.format(hours + "pm"));
-        }
-        if (hours >= 13) {
-            return (String.format((hours - 12) + "pm"));
-        }
-        return "0pm";
+        return String.format((hours - 18) + "am");
     }
 }

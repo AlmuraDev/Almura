@@ -35,8 +35,8 @@ public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransf
         barImage.setSize(UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED);
         barImage.setPosition(gapBetweenSymbolAndBar, UIComponent.INHERITED);
 
-        background = new UIBackgroundContainer(gui, UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED - 3);
-        background.setPosition(gapBetweenSymbolAndBar, UIComponent.INHERITED + 1);
+        background = new UIBackgroundContainer(gui, UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED - 4);
+        background.setPosition(gapBetweenSymbolAndBar, UIComponent.INHERITED + 2);
 
         add(symbolImage, background, barImage);
     }
@@ -47,7 +47,7 @@ public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransf
     }
 
     public UIPropertyBar setAmount(int amount) {
-        background.setSize(amount > getWidth() ? getWidth() : amount, background.getHeight());
+        background.setSize(amount, background.getHeight());
         return this;
     }
 
