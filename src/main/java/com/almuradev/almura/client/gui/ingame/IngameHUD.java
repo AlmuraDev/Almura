@@ -8,8 +8,11 @@ package com.almuradev.almura.client.gui.ingame;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.UIPropertyBar;
+
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
@@ -47,6 +50,8 @@ public class IngameHUD extends MalisisGui {
     private final UIImage mapImage, worldImage;
     private final UILabel almuraTitle, playerTitle, serverCount, playerCoords, playerCompass, worldDisplay, worldTime, xpLevel;
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
+    
+    private boolean enableUpdates = false;
 
     @SuppressWarnings("rawtypes")
     public IngameHUD() {
@@ -199,6 +204,13 @@ public class IngameHUD extends MalisisGui {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onWorldTick(WorldTickEvent event) {
+        if (enableUpdates) {            
+            updateWidgets();
+        }
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
         switch (event.type) {
             case HEALTH:
@@ -209,13 +221,13 @@ public class IngameHUD extends MalisisGui {
         }
 
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
-            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-            if (event.partialTicks>0.8F) {
-                updateWidgets();
-            }
-            drawScreen(event.mouseX, event.mouseY, event.partialTicks);
+            enableUpdates = true;
+            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());           
+            drawScreen(event.mouseX, event.mouseY, event.partialTicks);            
         }
     }
+    
+    
 
     public void updateWidgets() {
         int playerHealth = Math.max(0, Math.min(100, (int) (Minecraft.getMinecraft().thePlayer.getHealth() * 5)));

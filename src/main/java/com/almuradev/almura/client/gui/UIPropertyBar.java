@@ -57,7 +57,7 @@ public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransf
 
     @Override
     public UIPropertyBar setVisible(boolean visible) {
-        background.setVisible(false);
+        background.setVisible(visible);
         return this;
     }
 }

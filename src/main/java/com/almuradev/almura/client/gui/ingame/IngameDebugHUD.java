@@ -10,6 +10,7 @@ import com.almuradev.almura.client.ChatColor;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -23,6 +24,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 public class IngameDebugHUD extends MalisisGui {
     public UILabel fps, memoryDebug, memoryAllocated, xLoc, yLoc, zLoc, directionLoc, biomeName, blockLight, skyLight, rawLight;
+    public boolean enableUpdates = false;
     
     public IngameDebugHUD() {
        
@@ -113,6 +115,13 @@ public class IngameDebugHUD extends MalisisGui {
         addToScreen(debugPanel);
     }
     
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onWorldTick(WorldTickEvent event) {
+        if (enableUpdates) {            
+            updateWidgets();
+        }
+    }
+    
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         renderer.enableBlending();
@@ -123,11 +132,10 @@ public class IngameDebugHUD extends MalisisGui {
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
         if (event.type == RenderGameOverlayEvent.ElementType.DEBUG) {
             event.setCanceled(true);
+            enableUpdates = true;
             setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());            
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
-            if (event.partialTicks>0.8F) {
-                updateWidgets();                
-            }
+            
         }
     }
     

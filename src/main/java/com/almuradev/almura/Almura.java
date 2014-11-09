@@ -34,7 +34,7 @@ public class Almura {
 
     public static final String MOD_ID = "Almura";
     public static final Logger LOGGER = LogManager.getLogger("Almura");
-    public static String VERSION_STRING = "Almura 2.0 build 1 alpha";
+    public static String VERSION_STRING = "Almura 2.0 build 8 alpha";
 
     @EventHandler
     public void onPreInitialization(FMLPreInitializationEvent event) {
@@ -53,8 +53,12 @@ public class Almura {
     @EventHandler
     public void onPostInitializationEvent(FMLPostInitializationEvent event) {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-            MinecraftForge.EVENT_BUS.register(new IngameHUD());
-            MinecraftForge.EVENT_BUS.register(new IngameDebugHUD());
+            IngameHUD almuraHud = new IngameHUD();
+            IngameDebugHUD almuraDebugHud = new IngameDebugHUD();
+            MinecraftForge.EVENT_BUS.register(almuraHud);
+            MinecraftForge.EVENT_BUS.register(almuraDebugHud);
+            FMLCommonHandler.instance().bus().register(almuraHud);
+            FMLCommonHandler.instance().bus().register(almuraDebugHud);
         }
     }
 
