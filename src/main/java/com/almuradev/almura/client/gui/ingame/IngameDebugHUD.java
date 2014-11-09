@@ -27,7 +27,7 @@ public class IngameDebugHUD extends MalisisGui {
     public IngameDebugHUD() {
        
         guiscreenBackground = false; // prevent full screen black background.
-
+        
         // Construct Hud with all elements
         final UIBackgroundContainer debugPanel = new UIBackgroundContainer(this);
         debugPanel.setSize(300, 175);
@@ -35,6 +35,7 @@ public class IngameDebugHUD extends MalisisGui {
         debugPanel.setColor(Integer.MIN_VALUE);
         debugPanel.setTopAlpha(180);
         debugPanel.setBottomAlpha(180);
+        debugPanel.setClipContent(false);
 
         // Title
         UILabel debugTitle = new UILabel(this, ChatColor.AQUA + "Almura Debug");
@@ -122,10 +123,11 @@ public class IngameDebugHUD extends MalisisGui {
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
         if (event.type == RenderGameOverlayEvent.ElementType.DEBUG) {
             event.setCanceled(true);
-
-            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-            updateWidgets();
+            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());            
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
+            if (event.partialTicks>0.8F) {
+                updateWidgets();                
+            }
         }
     }
     

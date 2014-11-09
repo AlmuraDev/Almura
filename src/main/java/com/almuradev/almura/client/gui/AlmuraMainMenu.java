@@ -209,18 +209,18 @@ public class AlmuraMainMenu extends MalisisGui {
     private static String getTime() {
         int hours = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         if (hours < 6) {
-            imageNum = rand.nextInt((13 - 1)+ 1);
+            imageNum = rand.nextInt(13 - 1)+ 1;
             return "night";
         }
         if (hours < 12) {
-            imageNum = rand.nextInt((29 - 1)+ 1);
+            imageNum = rand.nextInt(29 - 1)+ 1;
             return "day";
         }
         if (hours < 20) {
-            imageNum = rand.nextInt((16 - 1)+ 1);
+            imageNum = rand.nextInt(16 - 1)+ 1;
             return "evening";
         }
-        imageNum = rand.nextInt((13 - 1)+ 1);
+        imageNum = rand.nextInt(13 - 1)+ 1;
         return "night";
     }
     

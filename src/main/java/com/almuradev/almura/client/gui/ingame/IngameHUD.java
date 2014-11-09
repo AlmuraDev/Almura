@@ -210,7 +210,9 @@ public class IngameHUD extends MalisisGui {
 
         if (event.type == RenderGameOverlayEvent.ElementType.HEALTH) {
             setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-            updateWidgets();
+            if (event.partialTicks>0.8F) {
+                updateWidgets();
+            }
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }
