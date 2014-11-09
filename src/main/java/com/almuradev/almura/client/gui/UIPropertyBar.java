@@ -13,7 +13,7 @@ import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.renderer.animation.transformation.ITransformable;
 
-public class UIPropertyBar extends UIContainer implements ITransformable.Color {
+public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransformable.Color {
 
     private final UIBackgroundContainer background;
     private final int gapBetweenSymbolAndBar = 10;
@@ -53,5 +53,11 @@ public class UIPropertyBar extends UIContainer implements ITransformable.Color {
 
     public int getAmount() {
         return background.getWidth();
+    }
+
+    @Override
+    public UIPropertyBar setVisible(boolean visible) {
+        background.setVisible(false);
+        return this;
     }
 }

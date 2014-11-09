@@ -208,7 +208,7 @@ public class IngameHUD extends MalisisGui {
                 event.setCanceled(true);
         }
 
-        if (event.type == RenderGameOverlayEvent.ElementType.HEALTH) {
+        if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
             if (event.partialTicks>0.8F) {
                 updateWidgets();
