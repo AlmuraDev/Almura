@@ -110,7 +110,6 @@ processResources {
 reobf { reobf(file('build/distributions/' + archivesBaseName + '-' + version + '.jar')) {spec ->  spec.classpath = configurations.compile } }
 reobf.dependsOn shadowJar
 
-
 // License header formatting
 license {
     ext.name = project.name
