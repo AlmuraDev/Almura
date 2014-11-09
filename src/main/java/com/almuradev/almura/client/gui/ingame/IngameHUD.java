@@ -11,7 +11,6 @@ import com.almuradev.almura.client.gui.UIPropertyBar;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -41,6 +40,8 @@ public class IngameHUD extends MalisisGui {
     public static final GuiTexture MAP_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/map.png"));
     public static final GuiTexture WORLD_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/world.png"));
     public static final GuiTexture CLOCK_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/clock.png"));
+
+    private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
 
     private static final Color greenBar = new Color(0, 1f, 0, 1f);
     private static final Color orangeBar = new Color(0.8039f, 0.6784f, 0f, 1f);
@@ -334,23 +335,15 @@ public class IngameHUD extends MalisisGui {
     }
 
     public String getCompass() {
-        int angle = (int) (((Minecraft.getMinecraft().thePlayer.rotationYaw + 360 + 11.25) / 22.5) % 16) + 3;
-        // String dirs = "|.|N|.|E|.|S|.|W|.|N|.";
-        String dirs = "|.|S|.|W|.|N|.|E|.|S|."; //Match the compass to the in-game compass.
-        if (angle >= 2) {
-            try {
-                return "" + ChatColor.DARK_GRAY + dirs.charAt(angle - 3)
-                       + ChatColor.DARK_GRAY + dirs.charAt(angle - 2)
-                       + ChatColor.GRAY + dirs.charAt(angle - 1)
-                       + ChatColor.WHITE + dirs.charAt(angle)
-                       + ChatColor.GRAY + dirs.charAt(angle + 1)
-                       + ChatColor.DARK_GRAY + dirs.charAt(angle + 2)
-                       + ChatColor.DARK_GRAY + dirs.charAt(angle + 3);
-            } catch (Exception e) {
-                //ignore exception being thrown for some dumb reason.
-            }
-        }
-        return "";
+        int position = (int) (((Minecraft.getMinecraft().thePlayer.rotationYaw % 360 + 360) % 360) / 360 * 16);
+
+        return "" + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
+            + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
+            + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
+            + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
+            + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
+            + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
+            + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
     }
 
     public String getTime() {
