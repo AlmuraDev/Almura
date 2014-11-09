@@ -51,7 +51,7 @@ public class IngameHUD extends MalisisGui {
     private static final Color redBar = new Color(0.69f, 0.09f, 0.12f, 1f);
 
     private final UIBackgroundContainer gradientContainer;
-    private final UIImage mapImage, worldImage;
+    private final UIImage mapImage, worldImage, playerImage;
     private final UILabel almuraTitle, playerTitle, serverCount, playerCoords, playerCompass, worldDisplay, worldTime, xpLevel;
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
     
@@ -132,7 +132,7 @@ public class IngameHUD extends MalisisGui {
         worldDisplay.setFontScale(0.8F);
 
         // Player Image
-        final UIImage playerImage = new UIImage(this, PLAYER_TEXTURE, null);
+        playerImage = new UIImage(this, PLAYER_TEXTURE, null);
         playerImage.setPosition(-125, 16, Anchor.RIGHT | Anchor.TOP);
         playerImage.setSize(8, 8);
 
@@ -304,7 +304,7 @@ public class IngameHUD extends MalisisGui {
                     .getNetHandler().currentServerMaxPlayers);
         }
 
-        serverCount.setPosition(-(serverCount.getWidth() + 90), serverCount.getY(), serverCount.getAnchor());
+        serverCount.setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
 
         playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
         playerCoords.setText(
