@@ -9,6 +9,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.google.common.eventbus.Subscribe;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
@@ -17,6 +18,7 @@ import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
@@ -86,17 +88,17 @@ public class AlmuraMainMenu extends MalisisGui {
 
         singlePlayerButton = (new UIButton(this, ChatColor.WHITE + "Singleplayer").setPosition(0, -90, Anchor.BOTTOM | Anchor.CENTER).register(this));
         singlePlayerButton.setSize(150, 16);
-        //singlePlayerButton.setTooltip(new UITooltip(this, "Play Singleplayer using Almura 2.0"));
+        singlePlayerButton.setTooltip(new UITooltip(this, "Play Singleplayer using Almura 2.0", 5));
         singlePlayerButton.setName("singlePlayerButton");        
 
         devServerButton = (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "Dev" + ChatColor.WHITE + " Server").setPosition(0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
         devServerButton.setSize(150, 16);
-        //devServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2.0 Dev Server"));
+        devServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2.0 Dev Server", 5));
         devServerButton.setName("devServerButton");        
 
         liveServerButton = (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Live" + ChatColor.WHITE + " Server").setPosition(0, -50, Anchor.CENTER | Anchor.BOTTOM).register(this));
         liveServerButton.setSize(150, 15);
-        //liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2.0 Live Server"));
+        liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2.0 Live Server", 5));
         liveServerButton.setName("liveServerButton");
 
         optionsButton = (new UIButton(this, ChatColor.WHITE + "Options").setPosition(-30, -20, Anchor.CENTER | Anchor.BOTTOM).register(this));
@@ -145,12 +147,14 @@ public class AlmuraMainMenu extends MalisisGui {
             this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiSelectWorld(this));
         }
 
-        if (event.getComponent().getName().equalsIgnoreCase("devServerButton")) {
-            this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, "localhost", 25565));
+        if (event.getComponent().getName().equalsIgnoreCase("devServerButton")) {            
+            FMLClientHandler.instance().setupServerList();
+            FMLClientHandler.instance().connectToServer(this,  new ServerData("DevServer", "obsidianbox.org"));
         }
         
         if (event.getComponent().getName().equalsIgnoreCase("liveServerButton")) {
-            this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, "localhost", 25565));
+            FMLClientHandler.instance().setupServerList();
+            FMLClientHandler.instance().connectToServer(this,  new ServerData("DevServer", "localhost"));
         }
 
         if (event.getComponent().getName().equalsIgnoreCase("optionsButton")) {

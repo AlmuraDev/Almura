@@ -10,6 +10,7 @@ import com.almuradev.almura.client.ChatColor;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
@@ -116,7 +117,7 @@ public class IngameDebugHUD extends MalisisGui {
     }
     
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onWorldTick(WorldTickEvent event) {
+    public void onClientTick(ClientTickEvent event) {
         if (enableUpdates) {            
             updateWidgets();
         }

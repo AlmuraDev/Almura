@@ -11,6 +11,7 @@ import com.almuradev.almura.client.gui.UIPropertyBar;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -130,7 +131,7 @@ public class IngameHUD extends MalisisGui {
 
         // Player Image
         final UIImage playerImage = new UIImage(this, PLAYER_TEXTURE, null);
-        playerImage.setPosition(-115, 16, Anchor.RIGHT | Anchor.TOP);
+        playerImage.setPosition(-125, 16, Anchor.RIGHT | Anchor.TOP);
         playerImage.setSize(8, 8);
 
         // Player Count Label
@@ -205,7 +206,7 @@ public class IngameHUD extends MalisisGui {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onWorldTick(WorldTickEvent event) {
+    public void onClientTick(ClientTickEvent event) {
         if (enableUpdates) {            
             updateWidgets();
         }
@@ -295,14 +296,14 @@ public class IngameHUD extends MalisisGui {
             xpProperty.setVisible(false);
         }
 
-        serverCount.setText(MinecraftServer.getServer().getCurrentPlayerCount() + "/" + MinecraftServer.getServer().getMaxPlayers());
+        //serverCount.setText(MinecraftServer.getServer().getCurrentPlayerCount() + "/" + MinecraftServer.getServer().getMaxPlayers());
         playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
         playerCoords.setText(
                 String.format("x: %d,  y: %d,  z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
                               (int) Minecraft.getMinecraft().thePlayer.posZ));
         playerCompass.setText(getCompass());
         mapImage.setPosition(-(playerCoords.getWidth() + 80), 4, Anchor.RIGHT | Anchor.TOP);
-        worldDisplay.setText(MinecraftServer.getServer().getWorldName());
+        //worldDisplay.setText(MinecraftServer.getServer().getWorldName());
         worldImage.setPosition(-(worldDisplay.getWidth() + 9), 4);
         worldTime.setText(getTime());
         xpLevel.setText(Integer.toString(Minecraft.getMinecraft().thePlayer.experienceLevel));
