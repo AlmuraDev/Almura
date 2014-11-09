@@ -299,12 +299,13 @@ public class IngameHUD extends MalisisGui {
 
         if (Minecraft.getMinecraft().isSingleplayer()) {
             serverCount.setText("--");
-            serverCount.setPosition(-110, serverCount.getY(), serverCount.getAnchor());
         } else {
             serverCount.setText(Minecraft.getMinecraft().getNetHandler().playerInfoList.size() + "/" + Minecraft.getMinecraft()
                     .getNetHandler().currentServerMaxPlayers);
-            serverCount.setPosition(-serverCount.getWidth(), serverCount.getY(), serverCount.getAnchor());
         }
+
+        serverCount.setPosition(-(serverCount.getWidth() + 90), serverCount.getY(), serverCount.getAnchor());
+
         playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
         playerCoords.setText(
                 String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
