@@ -118,7 +118,7 @@ public class IngameDebugHUD extends MalisisGui {
     
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTick(ClientTickEvent event) {
-        if (enableUpdates) {            
+        if (enableUpdates && Minecraft.getMinecraft().thePlayer != null) {
             updateWidgets();
         }
     }

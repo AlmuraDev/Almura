@@ -29,6 +29,8 @@ import net.minecraft.util.ResourceLocation;
 import java.util.Calendar;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
+
 public class AlmuraMainMenu extends MalisisGui {
 
     public UIBackgroundContainer window;
@@ -87,8 +89,7 @@ public class AlmuraMainMenu extends MalisisGui {
         panel.add(almuraMan);
 
         singlePlayerButton = (new UIButton(this, ChatColor.WHITE + "Singleplayer").setPosition(0, -90, Anchor.BOTTOM | Anchor.CENTER).register(this));
-        singlePlayerButton.setSize(150, 16);
-        singlePlayerButton.setTooltip(new UITooltip(this, "Play Singleplayer using Almura 2.0", 5));
+        singlePlayerButton.setSize(150, 16);        
         singlePlayerButton.setName("singlePlayerButton");        
 
         devServerButton = (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "Dev" + ChatColor.WHITE + " Server").setPosition(0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
@@ -146,6 +147,10 @@ public class AlmuraMainMenu extends MalisisGui {
         if (event.getComponent().getName().equalsIgnoreCase("singlePlayerButton")) {
             this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiSelectWorld(this));
         }
+        
+        if (event.getComponent().getName().equalsIgnoreCase("multiPlayerButton")) {
+            this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this));
+        }
 
         if (event.getComponent().getName().equalsIgnoreCase("devServerButton")) {            
             FMLClientHandler.instance().setupServerList();
@@ -177,6 +182,15 @@ public class AlmuraMainMenu extends MalisisGui {
         animate();
         renderer.enableBlending();
         super.drawScreen(mouseX, mouseY, partialTicks);
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
+            singlePlayerButton.setText("Multiplayer");
+            singlePlayerButton.setName("multiPlayerButton");
+            singlePlayerButton.setTooltip(new UITooltip(this, "Play Multiplayer using Almura 2.0", 5));
+        } else {
+            singlePlayerButton.setText("Singleplayer");
+            singlePlayerButton.setName("singlePlayerButton");
+            singlePlayerButton.setTooltip(new UITooltip(this, "Play Singleplayer using Almura 2.0", 5));
+        }
     }
 
     public void animate() {
@@ -250,6 +264,6 @@ public class AlmuraMainMenu extends MalisisGui {
             backgroundImage.setSize(0, 0);
         }
         backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.LEFT);        
-    }    
+    }
 }
 

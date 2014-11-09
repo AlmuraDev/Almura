@@ -91,7 +91,7 @@ public class IngameHUD extends MalisisGui {
         almuraTitle.setPosition(-15, 2, Anchor.CENTER | Anchor.TOP);
         almuraTitle.setColor(0xffffffff);
         almuraTitle.setSize(7, 7);
-        almuraTitle.setFontScale(1.2F);
+        almuraTitle.setFontScale(1.0F);
 
         // Hunger Property
         hungerProperty = new UIPropertyBar(this, HUNGER_TEXTURE, BAR_TEXTURE);
@@ -207,7 +207,7 @@ public class IngameHUD extends MalisisGui {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTick(ClientTickEvent event) {
-        if (enableUpdates) {            
+        if (enableUpdates && Minecraft.getMinecraft().thePlayer != null) {            
             updateWidgets();
         }
     }
