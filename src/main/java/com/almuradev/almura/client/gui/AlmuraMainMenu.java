@@ -146,11 +146,11 @@ public class AlmuraMainMenu extends MalisisGui {
         }
 
         if (event.getComponent().getName().equalsIgnoreCase("devServerButton")) {
-            this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, new ServerData("DevServer", "localhost")));
+            this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, "localhost", 25565));
         }
         
         if (event.getComponent().getName().equalsIgnoreCase("liveServerButton")) {
-            this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, new ServerData("LiveServer", "localhost")));
+            this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, "localhost", 25565));
         }
 
         if (event.getComponent().getName().equalsIgnoreCase("optionsButton")) {
