@@ -20,11 +20,8 @@ import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.command.CommandTime;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.gui.PlayerListComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
@@ -361,7 +358,7 @@ public class IngameHUD extends MalisisGui {
 
     public String getTime() {
         //Minecraft day is 23000 ticks, we use a 24hr scale, day starts at 6AM
-        int hours = (int) Minecraft.getMinecraft().thePlayer.worldObj.getWorldInfo().getWorldTime() / 1000;
+        int hours = (int) (Minecraft.getMinecraft().thePlayer.worldObj.getWorldInfo().getWorldTime() / 1000) % 24;
 
         if (hours >= 0 && hours <= 5) {
             return (String.format((6 + hours) + "am"));
