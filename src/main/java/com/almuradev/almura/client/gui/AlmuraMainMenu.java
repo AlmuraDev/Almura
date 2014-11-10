@@ -88,12 +88,12 @@ public class AlmuraMainMenu extends MalisisGui {
         
         panel.add(almuraMan);
 
-        singlePlayerButton = (new UIButton(this, ChatColor.WHITE + "Singleplayer").setPosition(0, -90, Anchor.BOTTOM | Anchor.CENTER).register(this));
-        singlePlayerButton.setSize(150, 16);        
+        singlePlayerButton = (new UIButton(this, ChatColor.WHITE + "B").setPosition(0, -90, Anchor.BOTTOM | Anchor.CENTER).register(this));
+        singlePlayerButton.setSize(150, 15);        
         singlePlayerButton.setName("singlePlayerButton");        
 
         devServerButton = (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "Dev" + ChatColor.WHITE + " Server").setPosition(0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
-        devServerButton.setSize(150, 16);
+        devServerButton.setSize(150, 15);
         devServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2.0 Dev Server", 5));
         devServerButton.setName("devServerButton");        
 
@@ -186,10 +186,12 @@ public class AlmuraMainMenu extends MalisisGui {
             singlePlayerButton.setText("Multiplayer");
             singlePlayerButton.setName("multiPlayerButton");
             singlePlayerButton.setTooltip(new UITooltip(this, "Play Multiplayer using Almura 2.0", 5));
+            singlePlayerButton.setSize(150, 15);
         } else {
             singlePlayerButton.setText("Singleplayer");
             singlePlayerButton.setName("singlePlayerButton");
             singlePlayerButton.setTooltip(new UITooltip(this, "Play Singleplayer using Almura 2.0", 5));
+            singlePlayerButton.setSize(150, 15);
         }
     }
 
