@@ -39,7 +39,7 @@ repositories {
 // Project dependencies
 dependencies {
     compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
-    compile 'net.malisis:malisiscore:1.7.10-0.10.1-SNAPSHOT'
+    compile 'net.malisis:malisiscore:1.7.10-0.10.1-SNAPSHOT:dev'
 }
 
 // Gradle default tasks
@@ -106,6 +106,10 @@ processResources {
     }
 }
 
+// Obfuscate based on the shaded jars content
+reobf { reobf(file('build/distributions/' + archivesBaseName + '-' + version + '.jar')) {spec ->  spec.classpath = configurations.compile } }
+reobf.dependsOn shadowJar
+
 // License header formatting
 license {
     ext.name = project.name
@@ -115,12 +119,8 @@ license {
     header rootProject.file('HEADER.txt')
     ignoreFailures true
     strictCheck true
-    excludes(["**/*.info", "**/*.jpg", "**/*.lang", "**/*.png", "**/*.yml"])
+    excludes(["**/*.info", "**/*.jpg", "**/*.png", "**/*.yml"])
 }
-
-// Obfuscate based on the shaded jars content
-reobf { reobf(file('build/distributions/' + archivesBaseName + '-' + version + '.jar')) {spec ->  spec.classpath = configurations.compile } }
-reobf.dependsOn shadowJar
 
 // Source compiler configuration
 tasks.withType(JavaCompile) {

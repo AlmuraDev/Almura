@@ -8,8 +8,10 @@ package com.almuradev.almura.client.gui.ingame;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.UIPropertyBar;
+
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
@@ -39,26 +41,25 @@ public class IngameHUD extends MalisisGui {
     public static final GuiTexture WORLD_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/world.png"));
     public static final GuiTexture CLOCK_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/clock.png"));
 
+    private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
+
     private static final Color greenBar = new Color(0, 1f, 0, 1f);
     private static final Color orangeBar = new Color(0.8039f, 0.6784f, 0f, 1f);
     private static final Color redBar = new Color(0.69f, 0.09f, 0.12f, 1f);
 
-    private final UIImage mapImage, worldImage;
-    private final UILabel playerTitle;
-    private final UILabel serverCount;
-    private final UILabel playerCoords;
-    private final UILabel playerCompass;
-    private final UILabel worldDisplay;
-    private final UILabel worldTime;
-    private final UILabel xpLevel;
+    private final UIBackgroundContainer gradientContainer;
+    private final UIImage mapImage, worldImage, playerImage;
+    private final UILabel almuraTitle, playerTitle, serverCount, playerCoords, playerCompass, worldDisplay, worldTime, xpLevel;
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
+    
+    private boolean enableUpdates = false;
 
     @SuppressWarnings("rawtypes")
     public IngameHUD() {
         guiscreenBackground = false;
 
         // Construct Hud with all elements
-        final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
+        gradientContainer = new UIBackgroundContainer(this);
         gradientContainer.setSize(UIComponent.INHERITED, 40);
         gradientContainer.setColor(Integer.MIN_VALUE);
         gradientContainer.setTopAlpha(180);
@@ -75,31 +76,31 @@ public class IngameHUD extends MalisisGui {
         // Health Property
         healthProperty = new UIPropertyBar(this, HEART_TEXTURE, BAR_TEXTURE);
         healthProperty.setPosition(5, 17, Anchor.LEFT | Anchor.TOP);
-        healthProperty.setSize(118, 7);
+        healthProperty.setSize(105, 7);
 
         // Armor Property
         armorProperty = new UIPropertyBar(this, ARMOR_TEXTURE, BAR_TEXTURE);
         armorProperty.setPosition(5, 28, Anchor.LEFT | Anchor.TOP);
-        armorProperty.setSize(118, 7);
+        armorProperty.setSize(105, 7);
 
         //////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
         // Almura Title
-        final UILabel almuraTitle = new UILabel(this, "Almura");
-        almuraTitle.setPosition(-15, 2, Anchor.CENTER | Anchor.TOP);
+        almuraTitle = new UILabel(this, "Almura");
+        almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
         almuraTitle.setColor(0xffffffff);
         almuraTitle.setSize(7, 7);
-        almuraTitle.setFontScale(1.2F);
+        almuraTitle.setFontScale(1.0F);
 
         // Hunger Property
         hungerProperty = new UIPropertyBar(this, HUNGER_TEXTURE, BAR_TEXTURE);
         hungerProperty.setPosition(-2, 17, Anchor.CENTER | Anchor.TOP);
-        hungerProperty.setSize(118, 7);
+        hungerProperty.setSize(105, 7);
 
         // Stamina Property
         staminaProperty = new UIPropertyBar(this, STAMINA_TEXTURE, BAR_TEXTURE);
         staminaProperty.setPosition(-2, 28, Anchor.CENTER | Anchor.TOP);
-        staminaProperty.setSize(118, 7);
+        staminaProperty.setSize(105, 7);
 
         //////////////////////////////// RIGHT COLUMN //////////////////////////////////////
 
@@ -128,15 +129,14 @@ public class IngameHUD extends MalisisGui {
         worldDisplay.setFontScale(0.8F);
 
         // Player Image
-        final UIImage playerImage = new UIImage(this, PLAYER_TEXTURE, null);
-        playerImage.setPosition(-115, 16, Anchor.RIGHT | Anchor.TOP);
+        playerImage = new UIImage(this, PLAYER_TEXTURE, null);
+        playerImage.setPosition(-125, 16, Anchor.RIGHT | Anchor.TOP);
         playerImage.setSize(8, 8);
 
         // Player Count Label
-        serverCount = new UILabel(this, "0 / 50");
-        serverCount.setPosition(-95, 17, Anchor.RIGHT | Anchor.TOP);
+        serverCount = new UILabel(this, "--");
+        serverCount.setPosition(-110, 17, Anchor.RIGHT | Anchor.TOP);
         serverCount.setColor(0xffffffff);
-        serverCount.setSize(15, 7);
         serverCount.setFontScale(0.8F);
 
         // Compass Image
@@ -166,7 +166,7 @@ public class IngameHUD extends MalisisGui {
         // XP Property
         xpProperty = new UIPropertyBar(this, XP_TEXTURE, BAR_TEXTURE);
         xpProperty.setPosition(-25, 28, Anchor.RIGHT | Anchor.TOP);
-        xpProperty.setSize(118, 7);
+        xpProperty.setSize(105, 7);
 
         // XP Level Label
         xpLevel = new UILabel(this, "1");
@@ -204,6 +204,13 @@ public class IngameHUD extends MalisisGui {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onClientTick(ClientTickEvent event) {
+        if (enableUpdates && Minecraft.getMinecraft().thePlayer != null) {            
+            updateWidgets();
+        }
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
         switch (event.type) {
             case HEALTH:
@@ -212,16 +219,15 @@ public class IngameHUD extends MalisisGui {
             case EXPERIENCE:
                 event.setCanceled(true);
         }
-    }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onRenderGameOverlayPost(RenderGameOverlayEvent.Post event) {
-        setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-        if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
-            updateWidgets();
-            drawScreen(event.mouseX, event.mouseY, event.partialTicks);
+        if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
+            enableUpdates = true;
+            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());           
+            drawScreen(event.mouseX, event.mouseY, event.partialTicks);            
         }
     }
+    
+    
 
     public void updateWidgets() {
         int playerHealth = Math.max(0, Math.min(100, (int) (Minecraft.getMinecraft().thePlayer.getHealth() * 5)));
@@ -288,14 +294,25 @@ public class IngameHUD extends MalisisGui {
             xpProperty.setVisible(false);
         }
 
-        serverCount.setText(MinecraftServer.getServer().getCurrentPlayerCount() + "/" + MinecraftServer.getServer().getMaxPlayers());
+        if (Minecraft.getMinecraft().isSingleplayer()) {
+            serverCount.setText("--");
+        } else {
+            serverCount.setText(Minecraft.getMinecraft().getNetHandler().playerInfoList.size() + "/" + Minecraft.getMinecraft()
+                    .getNetHandler().currentServerMaxPlayers);
+        }
+
+        serverCount.setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
+
         playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
         playerCoords.setText(
-                String.format("x: %d,  y: %d,  z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
+                String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
                               (int) Minecraft.getMinecraft().thePlayer.posZ));
         playerCompass.setText(getCompass());
         mapImage.setPosition(-(playerCoords.getWidth() + 80), 4, Anchor.RIGHT | Anchor.TOP);
-        worldDisplay.setText(MinecraftServer.getServer().getWorldName());
+        //TODO Server never sends Client world name, need a packet orrrr
+        if (Minecraft.getMinecraft().isSingleplayer()) {
+            worldDisplay.setText(MinecraftServer.getServer().getWorldName());
+        }
         worldImage.setPosition(-(worldDisplay.getWidth() + 9), 4);
         worldTime.setText(getTime());
         xpLevel.setText(Integer.toString(Minecraft.getMinecraft().thePlayer.experienceLevel));
@@ -328,39 +345,33 @@ public class IngameHUD extends MalisisGui {
     }
 
     public String getCompass() {
-        int angle = (int) (((Minecraft.getMinecraft().thePlayer.rotationYaw + 360 + 11.25) / 22.5) % 16) + 3;
-        // String dirs = "|.|N|.|E|.|S|.|W|.|N|.";
-        String dirs = "|.|S|.|W|.|N|.|E|.|S|."; //Match the compass to the in-game compass.
-        if (angle >= 2) {
-            try {
-                return "" + ChatColor.DARK_GRAY + dirs.charAt(angle - 3)
-                       + ChatColor.DARK_GRAY + dirs.charAt(angle - 2)
-                       + ChatColor.GRAY + dirs.charAt(angle - 1)
-                       + ChatColor.WHITE + dirs.charAt(angle)
-                       + ChatColor.GRAY + dirs.charAt(angle + 1)
-                       + ChatColor.DARK_GRAY + dirs.charAt(angle + 2)
-                       + ChatColor.DARK_GRAY + dirs.charAt(angle + 3);
-            } catch (Exception e) {
-                //ignore exception being thrown for some dumb reason.
-            }
-        }
-        return "";
+        int position = (int) (((Minecraft.getMinecraft().thePlayer.rotationYaw % 360 + 360) % 360) / 360 * 16);
+
+        return "" + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
+            + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
+            + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
+            + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
+            + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
+            + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
+            + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
     }
 
     public String getTime() {
-        int hours = (int) ((Minecraft.getMinecraft().thePlayer.worldObj.getWorldInfo().getWorldTime() / 1000L + 6L) % 24L);
-        if (hours == 1) {
+        //Minecraft day is 23000 ticks, we use a 24hr scale, day starts at 6AM
+        int hours = (int) (Minecraft.getMinecraft().thePlayer.worldObj.getWorldInfo().getWorldTime() / 1000) % 24;
+
+        if (hours >= 0 && hours <= 5) {
+            return (String.format((6 + hours) + "am"));
+        }
+        if (hours == 6) {
+            return (String.format("12pm"));
+        }
+        if (hours >= 7 && hours <= 17) {
+            return (String.format((hours - 6) + "pm"));
+        }
+        if (hours == 18) {
             return (String.format("12am"));
         }
-        if (hours > 1 && hours <= 11) {
-            return (String.format(hours + "am"));
-        }
-        if (hours == 12) {
-            return (String.format(hours + "pm"));
-        }
-        if (hours >= 13) {
-            return (String.format((hours - 12) + "pm"));
-        }
-        return "0pm";
+        return String.format((hours - 18) + "am");
     }
 }

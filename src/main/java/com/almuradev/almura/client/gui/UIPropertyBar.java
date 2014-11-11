@@ -13,7 +13,7 @@ import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.renderer.animation.transformation.ITransformable;
 
-public class UIPropertyBar extends UIContainer implements ITransformable.Color {
+public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransformable.Color {
 
     private final UIBackgroundContainer background;
     private final int gapBetweenSymbolAndBar = 10;
@@ -35,8 +35,8 @@ public class UIPropertyBar extends UIContainer implements ITransformable.Color {
         barImage.setSize(UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED);
         barImage.setPosition(gapBetweenSymbolAndBar, UIComponent.INHERITED);
 
-        background = new UIBackgroundContainer(gui, UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED - 3);
-        background.setPosition(gapBetweenSymbolAndBar, UIComponent.INHERITED + 1);
+        background = new UIBackgroundContainer(gui, UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED - 4);
+        background.setPosition(gapBetweenSymbolAndBar, UIComponent.INHERITED + 2);
 
         add(symbolImage, background, barImage);
     }
@@ -46,12 +46,18 @@ public class UIPropertyBar extends UIContainer implements ITransformable.Color {
         background.setColor(color);
     }
 
+    public UIPropertyBar setAmount(int amount) {
+        background.setSize(amount, background.getHeight());
+        return this;
+    }
+
     public int getAmount() {
         return background.getWidth();
     }
 
-    public UIPropertyBar setAmount(int amount) {
-        background.setSize(amount > getWidth() ? getWidth() : amount, background.getHeight());
+    @Override
+    public UIPropertyBar setVisible(boolean visible) {
+        background.setVisible(visible);
         return this;
     }
 }
