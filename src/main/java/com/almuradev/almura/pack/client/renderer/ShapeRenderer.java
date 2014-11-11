@@ -13,6 +13,8 @@ import net.malisis.core.renderer.BaseRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
+import net.malisis.core.renderer.element.face.BottomFace;
+import net.malisis.core.renderer.element.face.TopFace;
 import net.malisis.core.renderer.element.shape.Cube;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
@@ -43,7 +45,11 @@ public class ShapeRenderer extends BaseRenderer {
         }
 
         if (shape == null) {
-            drawShape(cube);
+            if (block != null) {
+                drawShape(cube);
+            } else {
+                drawShape(new Shape(), params);
+            }
             return;
         }
 
@@ -66,15 +72,10 @@ public class ShapeRenderer extends BaseRenderer {
         for (Face f : shape.getFaces()) {
             final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
 
-            if (!(f instanceof PackFace)) {
-                super.applyTexture(shape, parameters);
-                return;
-            }
-
             IIcon icon = null;
 
             if (block != null) {
-                if (((PackBlock) block).clippedIcons == null) {
+                if (isEmpty(((PackBlock) block).clippedIcons)) {
                     icon = super.getIcon(params);
                 } else if (((PackFace) f).getTextureId() >= ((PackBlock) block).clippedIcons.length) {
                     icon = ((PackBlock) block).clippedIcons[0];
@@ -87,7 +88,8 @@ public class ShapeRenderer extends BaseRenderer {
             } else if (itemStack != null) {
                 final Item item = itemStack.getItem();
                 if (item instanceof PackItem) {
-                    if (((PackItem) item).clippedIcons == null) {
+                    if ((isEmpty(((PackItem) item).clippedIcons))) {
+                        params.icon.set(item.getIcon(itemStack, 0));
                         icon = super.getIcon(params);
                     } else if (((PackFace) f).getTextureId() >= ((PackItem) item).clippedIcons.length) {
                         icon = ((PackItem) item).clippedIcons[0];
@@ -98,7 +100,8 @@ public class ShapeRenderer extends BaseRenderer {
                         }
                     }
                 } else if (item instanceof PackFood) {
-                    if (((PackFood) item).clippedIcons == null) {
+                    if (isEmpty(((PackFood) item).clippedIcons)) {
+                        params.icon.set(item.getIcon(itemStack, 0));
                         icon = super.getIcon(params);
                     } else if (((PackFace) f).getTextureId() >= ((PackFood) item).clippedIcons.length) {
                         icon = ((PackFood) item).clippedIcons[0];
@@ -119,5 +122,19 @@ public class ShapeRenderer extends BaseRenderer {
                 f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
             }
         }
+    }
+
+    private boolean isEmpty(Object[] objs) {
+        boolean isEmpty = true;
+
+        if (objs != null) {
+            for (Object obj : objs) {
+                if (obj != null) {
+                    isEmpty = false;
+                    break;
+                }
+            }
+        }
+        return isEmpty;
     }
 }

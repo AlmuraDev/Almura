@@ -22,13 +22,8 @@ import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
 public class PackIcon extends MalisisIcon {
-
-    public PackIcon(String textureName) {
-        super(textureName);
-    }
-
     public PackIcon(String packName, String textureName) {
-        super(Almura.MOD_ID.toLowerCase() + ":packs/" + packName + "-" + textureName);
+        super(Almura.MOD_ID.toLowerCase() + ":packs/" + packName + "/" + textureName);
     }
 
     @Override
@@ -38,11 +33,19 @@ public class PackIcon extends MalisisIcon {
 
     @Override
     public boolean load(IResourceManager manager, ResourceLocation location) {
-        if (location.getResourcePath().startsWith("pack")) {
-            //minecraft:pack/kfood_core/food.png
-            final String[] tokens = location.getResourcePath().split("/")[1].split("-");
-            final String packName = tokens[0];
-            final String textureName = tokens[1];
+        String path = location.getResourcePath();
+        //Hack to remove forced item prefix
+        //TODO Figure out how to make this un-necessary one day...
+        String[] split = location.getResourcePath().split("textures/items/");
+        if (split.length > 1) {
+            path = split[1];
+        }
+
+        if (path.startsWith("packs")) {
+            //almura:packs/kfood_core/food.png
+            final String[] tokens = path.split("/");
+            final String packName = tokens[1];
+            final String textureName = tokens[2];
 
             final Path texturePath = Paths.get(Filesystem.CONFIG_PACKS_PATH.toString(), packName + File.separator + textureName + ".png");
 

@@ -79,12 +79,11 @@ public class PackItem extends Item {
 
     @Override
     public void registerIcons(IIconRegister register) {
+        itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
+
         if (textureCoordinatesByFace.isEmpty()) {
-            super.registerIcons(register);
             return;
         }
-
-        itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
 
         clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, itemIcon, textureName, textureCoordinatesByFace);
     }

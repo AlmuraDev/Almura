@@ -23,8 +23,8 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = Almura.MOD_ID)
 public class Almura {
 
-    public static final String MOD_ID = "Almura";
-    public static final Logger LOGGER = LogManager.getLogger("Almura");
+    public static final String MOD_ID = "almura";
+    public static final Logger LOGGER = LogManager.getLogger("almura");
     public static final LanguageManager LANGUAGES = new LanguageManager();
 
     @SideOnly(Side.CLIENT)
