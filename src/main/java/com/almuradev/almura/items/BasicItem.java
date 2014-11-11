@@ -30,3 +30,4 @@ public class BasicItem extends Item {
         GameRegistry.registerItem(this, name);
     }
 }
+

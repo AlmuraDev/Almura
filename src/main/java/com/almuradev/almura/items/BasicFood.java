@@ -27,3 +27,4 @@ public class BasicFood extends ItemFood {
         GameRegistry.registerItem(this, name);
     }
 }
+
