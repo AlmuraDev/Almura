@@ -6,15 +6,19 @@
 package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackIcon;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -23,7 +27,7 @@ import net.minecraft.item.ItemFood;
 import java.util.List;
 import java.util.Map;
 
-public class PackFood extends ItemFood {
+public class PackFood extends ItemFood implements IClipContainer, IShapeContainer {
 
     private final ContentPack pack;
     //TEXTURES
@@ -49,7 +53,8 @@ public class PackFood extends ItemFood {
         if (alwaysEdible) {
             setAlwaysEdible();
         }
-        GameRegistry.registerItem(this, pack.getName() + "_" + identifier);
+
+        Almura.PROXY.onNewItemInstance(this);
     }
 
     public static PackFood createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -58,7 +63,7 @@ public class PackFood extends ItemFood {
         textureName = textureName.split(".png")[0];
 
         final boolean showInCreativeTab = reader.getChild("show-in-creative-tab").getBoolean(true);
-        final String creativeTabName = reader.getChild("creative-tab-name").getString("legacy");
+        final String creativeTabName = reader.getChild("creative-tab-name").getString("other");
 
         final int healAmount = reader.getChild("heal-amount").getInt(1);
         final float saturationModifier = reader.getChild("saturation-modifier").getFloat(1);
@@ -80,22 +85,27 @@ public class PackFood extends ItemFood {
 
     @Override
     public void registerIcons(IIconRegister register) {
+        itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
+
         if (textureCoordinatesByFace.isEmpty()) {
-            super.registerIcons(register);
             return;
         }
-
-        itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
 
         clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, itemIcon, textureName, textureCoordinatesByFace);
     }
 
-    public ContentPack getPack() {
-        return pack;
+    @Override
+    public Shape getShape() {
+        return shape;
     }
 
-    public PackShape getShape() {
-        return shape;
+    @Override
+    public ClippedIcon[] getClipIcons() {
+        return new ClippedIcon[0];
+    }
+
+    public ContentPack getPack() {
+        return pack;
     }
 
     public void reloadShape() {

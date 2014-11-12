@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.items.BasicItem;
 import com.almuradev.almura.lang.Languages;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -14,58 +15,60 @@ import net.minecraft.item.Item;
 
 public class Tabs {
 
-    public static CreativeTabs BUILDING, ROOFING, LIGHTING, FURNITURE, DECORATION, STORAGE, BARRELS, FLOWERS, PLANTS, CROPS,
-            FLAGS, SIGNS, LETTERS, ORES, FOOD, DRINK, INGREDIENTS, BOTTLES, TOOLS, LEGACY;
+    private static final Item ITEM_BUILDING = new BasicItem("building");
+    private static final Item ITEM_ROOFING = new BasicItem("roofing");
+    private static final Item ITEM_LIGHTING = new BasicItem("lighting");
+    private static final Item ITEM_FURNITURE = new BasicItem("furniture");
+    private static final Item ITEM_DECORATION = new BasicItem("decoration");
+    private static final Item ITEM_STORAGE = new BasicItem("storage");
+    private static final Item ITEM_BARRELS = new BasicItem("barrels");
+    private static final Item ITEM_FLOWERS = new BasicItem("flowers");
+    private static final Item ITEM_PLANTS = new BasicItem("plants");
+    private static final Item ITEM_CROPS = new BasicItem("crops");
+    private static final Item ITEM_FLAGS = new BasicItem("flags");
+    private static final Item ITEM_SIGNS = new BasicItem("signs");
+    private static final Item ITEM_LETTERS = new BasicItem("letters");
+    private static final Item ITEM_ORES = new BasicItem("ores");
+    private static final Item ITEM_FOOD = new BasicItem("food");
+    private static final Item ITEM_DRINKS = new BasicItem("drinks");
+    private static final Item ITEM_INGREDIENTS = new BasicItem("ingredients");
+    private static final Item ITEM_TOOLS = new BasicItem("tools");
+    //private static final Item ITEM_OTHER = new BasicItem("other");
 
-    static {
-//        BUILDING = new AlmuraCreativeTabs("building", "Almura Building", com.almuradev.almura.items.Items.BUILDING);
-//
-//        ROOFING = new AlmuraCreativeTabs("roofing", "Almura Roofing", com.almuradev.almura.items.Items.ROOFING);
-//
-//        LIGHTING = new AlmuraCreativeTabs("lighting", "Almura Lighting", com.almuradev.almura.items.Items.LIGHTING);
-//
-//        FURNITURE = new AlmuraCreativeTabs("furniture", "Almura Furniture", com.almuradev.almura.items.Items.FURNITURE);
-//
-//        DECORATION = new AlmuraCreativeTabs("decoration", "Almura Decoration", com.almuradev.almura.items.Items.DECORATION);
-//
-//        STORAGE = new AlmuraCreativeTabs("storage", "Almura Storage", com.almuradev.almura.items.Items.STORAGE);
-//
-//        BARRELS = new AlmuraCreativeTabs("barrels", "Almura Barrels", com.almuradev.almura.items.Items.BARRELS);
-//
-//        FLOWERS = new AlmuraCreativeTabs("flowers", "Almura Flowers", com.almuradev.almura.items.Items.FLOWERS);
-//
-//        PLANTS = new AlmuraCreativeTabs("plants", "Almura Plants", com.almuradev.almura.items.Items.PLANTS);
-//
-//        CROPS = new AlmuraCreativeTabs("crops", "Almura Crops", com.almuradev.almura.items.Items.CROPS);
-//
-//        FLAGS = new AlmuraCreativeTabs("flags", "Almura Flags", com.almuradev.almura.items.Items.FLAGS);
-//
-//        SIGNS = new AlmuraCreativeTabs("signs", "Almura Signs", com.almuradev.almura.items.Items.SIGNS);
-//
-//        LETTERS = new AlmuraCreativeTabs("letters", "Almura Letters", com.almuradev.almura.items.Items.LETTERS);
-//
-//        ORES = new AlmuraCreativeTabs("ores", "Almura Ores", com.almuradev.almura.items.Items.ORES);
-//
-//        FOOD = new AlmuraCreativeTabs("food", "Almura Food", com.almuradev.almura.items.Items.FOOD);
-//
-//        DRINK = new AlmuraCreativeTabs("drinks", "Almura Drinks", com.almuradev.almura.items.Items.DRINKS);
-//
-//        INGREDIENTS = new AlmuraCreativeTabs("ingredients", "Almura Ingredients", com.almuradev.almura.items.Items.INGREDIENTS);
-//
-//        BOTTLES = new AlmuraCreativeTabs("bottles", "Almura Bottles", com.almuradev.almura.items.Items.BOTTLES);
-//
-//        TOOLS = new AlmuraCreativeTabs("tools", "Almura Tools", com.almuradev.almura.items.Items.TOOLS);
-
-        LEGACY = new AlmuraCreativeTabs("legacy", "Almura SMP Content", com.almuradev.almura.items.Items.LEGACY);
-    }
+    public static CreativeTabs TAB_BUILDING = new AlmuraCreativeTabs("building", "Almura Building", ITEM_BUILDING);
+    public static CreativeTabs TAB_ROOFING = new AlmuraCreativeTabs("roofing", "Almura Roofing", ITEM_ROOFING);
+    public static CreativeTabs TAB_LIGHTING = new AlmuraCreativeTabs("lighting", "Almura Lighting", ITEM_LIGHTING);
+    public static CreativeTabs TAB_FURNITURE = new AlmuraCreativeTabs("furniture", "Almura Furniture", ITEM_FURNITURE);
+    public static CreativeTabs TAB_DECORATION = new AlmuraCreativeTabs("decoration", "Almura Decoration", ITEM_DECORATION);
+    public static CreativeTabs TAB_STORAGE = new AlmuraCreativeTabs("storage", "Almura Storage", ITEM_STORAGE);
+    public static CreativeTabs TAB_BARRELS = new AlmuraCreativeTabs("barrels", "Almura Barrels", ITEM_BARRELS);
+    public static CreativeTabs TAB_FLOWERS = new AlmuraCreativeTabs("flowers", "Almura Flowers", ITEM_FLOWERS);
+    public static CreativeTabs TAB_PLANTS = new AlmuraCreativeTabs("plants", "Almura Plants", ITEM_PLANTS);
+    public static CreativeTabs TAB_CROPS = new AlmuraCreativeTabs("crops", "Almura Crops", ITEM_CROPS);
+    public static CreativeTabs TAB_FLAGS = new AlmuraCreativeTabs("flags", "Almura Flags", ITEM_FLAGS);
+    public static CreativeTabs TAB_SIGNS = new AlmuraCreativeTabs("signs", "Almura Signs", ITEM_SIGNS);
+    public static CreativeTabs TAB_LETTERS = new AlmuraCreativeTabs("letters", "Almura Letters", ITEM_LETTERS);
+    public static CreativeTabs TAB_ORES = new AlmuraCreativeTabs("ores", "Almura Ores", ITEM_ORES);
+    public static CreativeTabs TAB_FOOD = new AlmuraCreativeTabs("food", "Almura Food", ITEM_FOOD);
+    public static CreativeTabs TAB_DRINK = new AlmuraCreativeTabs("drinks", "Almura Drinks", ITEM_DRINKS);
+    public static CreativeTabs TAB_INGREDIENTS = new AlmuraCreativeTabs("ingredients", "Almura Ingredients", ITEM_INGREDIENTS);
+    public static CreativeTabs TAB_TOOLS = new AlmuraCreativeTabs("tools", "Almura Tools", ITEM_TOOLS);
+    public static CreativeTabs TAB_OTHER = new AlmuraCreativeTabs("other", "Almura Other Content", null);
 
     public static void fakeStaticLoad() {
     }
 
     public static CreativeTabs getTabByName(String name) {
         for (CreativeTabs tab : CreativeTabs.creativeTabArray) {
-            if (tab.getTabLabel().equals(name)) {
-                return tab;
+            if (tab instanceof AlmuraCreativeTabs) {
+                if (tab.getTabLabel().equals(Almura.MOD_ID + name)) {
+                    return tab;
+                }
+            } else {
+                if (tab.getTabLabel().equals(name)) {
+                    return tab;
+                }
+
             }
         }
 
@@ -73,11 +76,12 @@ public class Tabs {
     }
 
     public static class AlmuraCreativeTabs extends CreativeTabs {
+
         private final Item displayItem;
 
         public AlmuraCreativeTabs(String unlocalizedName, String displayName, Item displayItem) {
-            super(unlocalizedName);
-            Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "itemGroup." + getTabLabel(), displayName);
+            super(Almura.MOD_ID + unlocalizedName);
+            Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "itemGroup" + unlocalizedName, displayName);
             this.displayItem = displayItem;
         }
 

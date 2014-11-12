@@ -46,13 +46,13 @@ public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransf
         background.setColor(color);
     }
 
+    public int getAmount() {
+        return background.getWidth();
+    }
+
     public UIPropertyBar setAmount(int amount) {
         background.setSize(amount, background.getHeight());
         return this;
-    }
-
-    public int getAmount() {
-        return background.getWidth();
     }
 
     @Override

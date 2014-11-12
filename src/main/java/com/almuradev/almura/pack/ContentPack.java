@@ -50,7 +50,7 @@ public class ContentPack {
         return Collections.unmodifiableMap(PACKS);
     }
 
-    public static void load() {
+    public static void loadAllContent() {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_PACKS_PATH, Filesystem.DIRECTORIES_ONLY_FILTER)) {
             for (Path path : stream) {
                 try {

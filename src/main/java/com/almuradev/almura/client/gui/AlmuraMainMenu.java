@@ -8,7 +8,6 @@ package com.almuradev.almura.client.gui;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.google.common.eventbus.Subscribe;
-
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -22,17 +21,23 @@ import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 
 import java.util.Calendar;
 import java.util.Random;
 
-import org.lwjgl.input.Keyboard;
-
 public class AlmuraMainMenu extends MalisisGui {
 
+    static final int PAN_TIME = 600;
+    int maxPanTime = PAN_TIME;
+    int panTime = PAN_TIME;
+    static final int EXTRA_PAN_TIME = 150;
+    static final int HEIGHT_PERCENT = 70;
+    static final int WIDTH_PERCENT = 75;
+    final static Random rand = new Random();
+    public static int imageNum = 0;
     public UIBackgroundContainer window;
     //public GuiTexture background;
     public UIButton singlePlayerButton, optionsButton, liveServerButton, devServerButton, closeButton;
@@ -40,18 +45,10 @@ public class AlmuraMainMenu extends MalisisGui {
     public int screenH, screenW;
     public UIImage backgroundImage;
     public int tick = 1;
-    static final int PAN_TIME = 600;
-    static final int EXTRA_PAN_TIME = 150;
-    static final int HEIGHT_PERCENT = 70;
-    static final int WIDTH_PERCENT = 75;
-    final static Random rand = new Random();
-    int maxPanTime = PAN_TIME;
-    int panTime = PAN_TIME;
     int picture = -1;
     int timer = 1;
-    public static int imageNum = 0;
     boolean zoomIn = true;
-    boolean zoomOut = false;    
+    boolean zoomOut = false;
 
     public AlmuraMainMenu() {
 
@@ -64,7 +61,7 @@ public class AlmuraMainMenu extends MalisisGui {
 
         // Container background image.
         GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/evening/evening1.jpg"));
-        backgroundImage = new UIImage(this, background, null);        
+        backgroundImage = new UIImage(this, background, null);
         backgroundImage.setZIndex(-1);
         backgroundImage.setSize(0, 0);
         randomBackground();
@@ -85,19 +82,23 @@ public class AlmuraMainMenu extends MalisisGui {
         GuiTexture almuraGuy = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/almura2b.png"));
         almuraMan = new UIImage(this, almuraGuy, null);
         almuraMan.setSize(panel.getWidth(), panel.getHeight());
-        
+
         panel.add(almuraMan);
 
         singlePlayerButton = (new UIButton(this, ChatColor.WHITE + "B").setPosition(0, -90, Anchor.BOTTOM | Anchor.CENTER).register(this));
-        singlePlayerButton.setSize(150, 15);        
-        singlePlayerButton.setName("singlePlayerButton");        
+        singlePlayerButton.setSize(150, 15);
+        singlePlayerButton.setName("singlePlayerButton");
 
-        devServerButton = (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "Dev" + ChatColor.WHITE + " Server").setPosition(0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
+        devServerButton =
+                (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "Dev" + ChatColor.WHITE + " Server")
+                         .setPosition(0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
         devServerButton.setSize(150, 15);
         devServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2.0 Dev Server", 5));
-        devServerButton.setName("devServerButton");        
+        devServerButton.setName("devServerButton");
 
-        liveServerButton = (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Live" + ChatColor.WHITE + " Server").setPosition(0, -50, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        liveServerButton =
+                (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Live" + ChatColor.WHITE + " Server")
+                         .setPosition(0, -50, Anchor.CENTER | Anchor.BOTTOM).register(this));
         liveServerButton.setSize(150, 15);
         liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2.0 Live Server", 5));
         liveServerButton.setName("liveServerButton");
@@ -109,11 +110,11 @@ public class AlmuraMainMenu extends MalisisGui {
         closeButton = (new UIButton(this, ChatColor.WHITE + "Quit").setPosition(30, -20, Anchor.CENTER | Anchor.BOTTOM).register(this));
         closeButton.setSize(50, 15);
         closeButton.setName("closeButton");
-        
-        UILabel version = new UILabel(this, ChatColor.WHITE + Almura.VERSION_STRING);
-        version.setPosition(0,-5, Anchor.CENTER | Anchor.BOTTOM);
+
+        UILabel version = new UILabel(this, ChatColor.WHITE + Almura.VERSION);
+        version.setPosition(0, -5, Anchor.CENTER | Anchor.BOTTOM);
         version.setFontScale(0.75F);
-        
+
         main.add(backgroundImage);
         window.add(optionsButton);
         window.add(singlePlayerButton);
@@ -131,6 +132,24 @@ public class AlmuraMainMenu extends MalisisGui {
         addToScreen(main);
     }
 
+    private static String getTime() {
+        int hours = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if (hours < 6) {
+            imageNum = rand.nextInt(13 - 1) + 1;
+            return "night";
+        }
+        if (hours < 12) {
+            imageNum = rand.nextInt(29 - 1) + 1;
+            return "day";
+        }
+        if (hours < 20) {
+            imageNum = rand.nextInt(16 - 1) + 1;
+            return "evening";
+        }
+        imageNum = rand.nextInt(13 - 1) + 1;
+        return "night";
+    }
+
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {  //Every Frame
 
@@ -138,7 +157,7 @@ public class AlmuraMainMenu extends MalisisGui {
 
     @Override
     public void updateScreen() {  //Every Tick
-        
+
     }
 
     @Subscribe  //@EventHandler == Bukkit //Forge or FML, not main class == @SubscribeEvents
@@ -147,25 +166,25 @@ public class AlmuraMainMenu extends MalisisGui {
         if (event.getComponent().getName().equalsIgnoreCase("singlePlayerButton")) {
             this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiSelectWorld(this));
         }
-        
+
         if (event.getComponent().getName().equalsIgnoreCase("multiPlayerButton")) {
             this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this));
         }
 
-        if (event.getComponent().getName().equalsIgnoreCase("devServerButton")) {            
+        if (event.getComponent().getName().equalsIgnoreCase("devServerButton")) {
             FMLClientHandler.instance().setupServerList();
-            FMLClientHandler.instance().connectToServer(this,  new ServerData("DevServer", "obsidianbox.org"));
+            FMLClientHandler.instance().connectToServer(this, new ServerData("DevServer", "obsidianbox.org"));
         }
-        
+
         if (event.getComponent().getName().equalsIgnoreCase("liveServerButton")) {
             FMLClientHandler.instance().setupServerList();
-            FMLClientHandler.instance().connectToServer(this,  new ServerData("DevServer", "localhost"));
+            FMLClientHandler.instance().connectToServer(this, new ServerData("DevServer", "localhost"));
         }
 
         if (event.getComponent().getName().equalsIgnoreCase("optionsButton")) {
             this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiOptions(this, this.mc.gameSettings));
         }
-        
+
         if (event.getComponent().getName().equalsIgnoreCase("closeButton")) {
             this.mc.shutdown();
         }
@@ -173,7 +192,7 @@ public class AlmuraMainMenu extends MalisisGui {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {        
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (screenH != Minecraft.getMinecraft().currentScreen.height || screenW != Minecraft.getMinecraft().currentScreen.width) {
             randomBackground();
             screenH = Minecraft.getMinecraft().currentScreen.height;
@@ -182,7 +201,7 @@ public class AlmuraMainMenu extends MalisisGui {
         animate();
         renderer.enableBlending();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             singlePlayerButton.setText("Multiplayer");
             singlePlayerButton.setName("multiPlayerButton");
             singlePlayerButton.setTooltip(new UITooltip(this, "Play Multiplayer using Almura 2.0", 5));
@@ -196,76 +215,64 @@ public class AlmuraMainMenu extends MalisisGui {
     }
 
     public void animate() {
-        if (tick++ % 2 == 0) {       
-            backgroundImage.setSize(backgroundImage.getWidth()+1, backgroundImage.getHeight()+1);
-            timer++;            
-            
+        if (tick++ % 2 == 0) {
+            backgroundImage.setSize(backgroundImage.getWidth() + 1, backgroundImage.getHeight() + 1);
+            timer++;
+
             if (timer == 60) {
                 randomBackground();
                 backgroundImage.setPosition(0, 0, Anchor.BOTTOM | Anchor.RIGHT);
                 backgroundImage.setSize(0, 0);
-             }
-             
-             if (timer ==120) {
-                 randomBackground();
-                 backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
-                 backgroundImage.setSize(0, 0);                 
-             }
-             
-             if (timer ==180) {
-                 randomBackground();
-                 backgroundImage.setPosition(0, 0, Anchor.BOTTOM | Anchor.LEFT);
-                 backgroundImage.setSize(0, 0);                 
-             }
-             
-             if (timer > 240) {
-                 randomBackground();
-                 backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.LEFT);
-                 timer = 0;                 
-             }
+            }
+
+            if (timer == 120) {
+                randomBackground();
+                backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
+                backgroundImage.setSize(0, 0);
+            }
+
+            if (timer == 180) {
+                randomBackground();
+                backgroundImage.setPosition(0, 0, Anchor.BOTTOM | Anchor.LEFT);
+                backgroundImage.setSize(0, 0);
+            }
+
+            if (timer > 240) {
+                randomBackground();
+                backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.LEFT);
+                timer = 0;
+            }
         }
     }
-    
-    private static String getTime() {
-        int hours = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if (hours < 6) {
-            imageNum = rand.nextInt(13 - 1)+ 1;
-            return "night";
-        }
-        if (hours < 12) {
-            imageNum = rand.nextInt(29 - 1)+ 1;
-            return "day";
-        }
-        if (hours < 20) {
-            imageNum = rand.nextInt(16 - 1)+ 1;
-            return "evening";
-        }
-        imageNum = rand.nextInt(13 - 1)+ 1;
-        return "night";
-    }
-    
-    private void randomBackground() {       
+
+    private void randomBackground() {
         if (getTime().equalsIgnoreCase("night")) {
-            GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/night/night"+imageNum+".jpg"));            
-            backgroundImage.setIcon(background,null);
+            GuiTexture
+                    background =
+                    new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/night/night" + imageNum + ".jpg"));
+            backgroundImage.setIcon(background, null);
             backgroundImage.setZIndex(-1);
             backgroundImage.setSize(0, 0);
         }
 
         if (getTime().equalsIgnoreCase("day")) {
-            GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/day/day"+imageNum+".jpg"));            
-            backgroundImage.setIcon(background,null);
+            GuiTexture
+                    background =
+                    new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/day/day" + imageNum + ".jpg"));
+            backgroundImage.setIcon(background, null);
             backgroundImage.setZIndex(-1);
             backgroundImage.setSize(0, 0);
         }
 
         if (getTime().equalsIgnoreCase("evening")) {
-            GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/evening/evening"+imageNum+".jpg"));            
-            backgroundImage.setIcon(background,null);
+            GuiTexture
+                    background =
+                    new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/evening/evening" + imageNum + ".jpg"));
+            backgroundImage.setIcon(background, null);
             backgroundImage.setZIndex(-1);
             backgroundImage.setSize(0, 0);
         }
-        backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.LEFT);        
+        backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.LEFT);
     }
 }
 

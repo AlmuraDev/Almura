@@ -11,11 +11,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
 public class BasicItem extends Item {
-
-    /**
-     * Create fake item for Creative Tabs images
-     */
-    protected BasicItem(String name) {
+    public BasicItem(String name) {
         this(name, false, null, 1);
     }
 

@@ -41,7 +41,7 @@ public class LanguageManager {
         return Collections.unmodifiableMap(languageMap.get(lang));
     }
 
-    public void register() {
+    public void injectIntoForge() {
         for (Map.Entry<Languages, Map<String, String>> entry : languageMap.entrySet()) {
             Map<String, String> injectMap = new HashMap<>();
             for (Map.Entry<String, String> keyEntry : entry.getValue().entrySet()) {

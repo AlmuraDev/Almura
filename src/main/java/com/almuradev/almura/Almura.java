@@ -5,22 +5,17 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.client.KeyListener;
-import com.almuradev.almura.client.Keybindings;
+import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.AlmuraMainMenu;
-import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
-import com.almuradev.almura.client.gui.ingame.IngameHUD;
-import com.almuradev.almura.items.Items;
 import com.almuradev.almura.lang.LanguageManager;
-import com.almuradev.almura.pack.ContentPack;
-import com.almuradev.almura.pack.block.PackBlock;
-import com.almuradev.almura.pack.client.renderer.ShapeRenderer;
+import com.almuradev.almura.server.ServerProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -31,79 +26,22 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Almura.MOD_ID)
 public class Almura {
-    public static final String MOD_ID = "Almura";
-    public static final Logger LOGGER = LogManager.getLogger("Almura");
-    public static String VERSION_STRING = "Almura 2.0 build 10 alpha";
+
+    public static final String MOD_ID = "almura";
+    public static final Logger LOGGER = LogManager.getLogger("almura");
     public static final LanguageManager LANGUAGES = new LanguageManager();
+    public static String VERSION = "Almura 2.0 build 10 alpha";
 
-    @SideOnly(Side.CLIENT)
-    public static final ShapeRenderer SHAPE_RENDERER = new ShapeRenderer();
+    @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
+    public static CommonProxy PROXY;
 
-    @Mod.EventHandler
+    @EventHandler
     public void onPreInitialization(FMLPreInitializationEvent event) {
-        if (Configuration.IS_DEBUG) {
-            LOGGER.info("Debug-mode toggled ON");
-        }
-        Items.fakeStaticLoad();
-        Tabs.fakeStaticLoad();
-
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-            setupClientResources();
-        }
-        //Load SMPs
-        ContentPack.load();
-
-        LANGUAGES.register();
-
-        if (Configuration.IS_CLIENT) {
-            onClientInitialization();
-        }
+        PROXY.onPreInitialization(event);
     }
 
-    @SideOnly(Side.CLIENT)
-    private void onClientInitialization() {
-        Keybindings.fakeStaticLoad();
-        new KeyListener();
-        SHAPE_RENDERER.registerFor(PackBlock.class);
-    }
-
-    @Mod.EventHandler
+    @EventHandler
     public void onPostInitializationEvent(FMLPostInitializationEvent event) {
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-            IngameHUD almuraHud = new IngameHUD();
-            IngameDebugHUD almuraDebugHud = new IngameDebugHUD();
-            MinecraftForge.EVENT_BUS.register(almuraHud);
-            MinecraftForge.EVENT_BUS.register(almuraDebugHud);
-            FMLCommonHandler.instance().bus().register(almuraHud);
-            FMLCommonHandler.instance().bus().register(almuraDebugHud);
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void setupClientResources() {
-        FMLCommonHandler.instance().bus().register(this);
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public void onKeyPress(InputEvent.KeyInputEvent event) {  // Only works in-game.
-        //System.out.println("Hi3");
-        //if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-        //    System.out.println("Hi");    
-       // }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public void onGuiOpen(GuiOpenEvent event) {
-        if (event.gui != null) {
-            if (event.gui instanceof GuiMainMenu) {
-                event.setCanceled(true);
-                final AlmuraMainMenu box = new AlmuraMainMenu();
-                box.display();
-            }
-        }
+        PROXY.onPostInitialization(event);
     }
 }

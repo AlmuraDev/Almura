@@ -78,4 +78,18 @@ public class PackUtil {
 
         return clippedIcons;
     }
+
+    public static boolean isEmpty(IClipContainer container) {
+        boolean isEmpty = true;
+
+        if (container.getClipIcons() != null) {
+            for (ClippedIcon icon : container.getClipIcons()) {
+                if (icon != null) {
+                    isEmpty = false;
+                    break;
+                }
+            }
+        }
+        return isEmpty;
+    }
 }

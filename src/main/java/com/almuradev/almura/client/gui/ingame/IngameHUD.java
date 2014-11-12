@@ -8,7 +8,6 @@ package com.almuradev.almura.client.gui.ingame;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.UIPropertyBar;
-
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -47,11 +46,16 @@ public class IngameHUD extends MalisisGui {
     private static final Color orangeBar = new Color(0.8039f, 0.6784f, 0f, 1f);
     private static final Color redBar = new Color(0.69f, 0.09f, 0.12f, 1f);
 
-    private final UIBackgroundContainer gradientContainer;
     private final UIImage mapImage, worldImage, playerImage;
-    private final UILabel almuraTitle, playerTitle, serverCount, playerCoords, playerCompass, worldDisplay, worldTime, xpLevel;
+    private final UILabel playerTitle;
+    private final UILabel serverCount;
+    private final UILabel playerCoords;
+    private final UILabel playerCompass;
+    private final UILabel worldDisplay;
+    private final UILabel worldTime;
+    private final UILabel xpLevel;
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
-    
+
     private boolean enableUpdates = false;
 
     @SuppressWarnings("rawtypes")
@@ -59,7 +63,7 @@ public class IngameHUD extends MalisisGui {
         guiscreenBackground = false;
 
         // Construct Hud with all elements
-        gradientContainer = new UIBackgroundContainer(this);
+        final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
         gradientContainer.setSize(UIComponent.INHERITED, 40);
         gradientContainer.setColor(Integer.MIN_VALUE);
         gradientContainer.setTopAlpha(180);
@@ -86,7 +90,7 @@ public class IngameHUD extends MalisisGui {
         //////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
         // Almura Title
-        almuraTitle = new UILabel(this, "Almura");
+        final UILabel almuraTitle = new UILabel(this, "Almura");
         almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
         almuraTitle.setColor(0xffffffff);
         almuraTitle.setSize(7, 7);
@@ -205,11 +209,11 @@ public class IngameHUD extends MalisisGui {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTick(ClientTickEvent event) {
-        if (enableUpdates && Minecraft.getMinecraft().thePlayer != null) {            
+        if (enableUpdates && Minecraft.getMinecraft().thePlayer != null) {
             updateWidgets();
         }
     }
-    
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
         switch (event.type) {
@@ -222,12 +226,11 @@ public class IngameHUD extends MalisisGui {
 
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             enableUpdates = true;
-            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());           
-            drawScreen(event.mouseX, event.mouseY, event.partialTicks);            
+            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+            drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }
-    
-    
+
 
     public void updateWidgets() {
         int playerHealth = Math.max(0, Math.min(100, (int) (Minecraft.getMinecraft().thePlayer.getHealth() * 5)));
@@ -301,7 +304,8 @@ public class IngameHUD extends MalisisGui {
                     .getNetHandler().currentServerMaxPlayers);
         }
 
-        serverCount.setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
+        serverCount
+                .setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
 
         playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
         playerCoords.setText(
@@ -348,12 +352,12 @@ public class IngameHUD extends MalisisGui {
         int position = (int) (((Minecraft.getMinecraft().thePlayer.rotationYaw % 360 + 360) % 360) / 360 * 16);
 
         return "" + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
-            + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
-            + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
-            + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
-            + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
-            + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
-            + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
+               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
+               + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
+               + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
+               + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
+               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
+               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
     }
 
     public String getTime() {

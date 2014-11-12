@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
 public class PackIcon extends MalisisIcon {
+
     public PackIcon(String packName, String textureName) {
         super(Almura.MOD_ID.toLowerCase() + ":packs/" + packName + "/" + textureName);
     }

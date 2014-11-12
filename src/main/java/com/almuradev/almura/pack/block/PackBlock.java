@@ -9,6 +9,8 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackIcon;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
@@ -17,6 +19,7 @@ import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -31,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class PackBlock extends Block {
+public class PackBlock extends Block implements IClipContainer, IShapeContainer {
 
     public static int renderId;
     private final ContentPack pack;
@@ -39,7 +42,7 @@ public class PackBlock extends Block {
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     //SHAPES
     private final String shapeName;
-    public ClippedIcon[] clippedIcons;
+    private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
     //COLLISION
@@ -98,7 +101,7 @@ public class PackBlock extends Block {
         final float lightLevel = reader.getChild("LightLevel").getFloat(0f);
         final int lightOpacity = reader.getChild("light-opacity").getInt(0);
         final boolean showInCreativeTab = reader.getChild("show-in-creative-tab").getBoolean(true);
-        final String creativeTabName = reader.getChild("creative-tab-name").getString("legacy");
+        final String creativeTabName = reader.getChild("creative-tab-name").getString("other");
         final float resistance = reader.getChild("resistance").getFloat(0);
         final boolean useVanillaCollision = !reader.hasChild("collision-bounds");
         final List<Double> collisionCoords = new LinkedList<>();
@@ -142,12 +145,11 @@ public class PackBlock extends Block {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
+        blockIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
+
         if (textureCoordinatesByFace.isEmpty()) {
-            super.registerBlockIcons(register);
             return;
         }
-
-        blockIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
 
         clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
     }
@@ -155,10 +157,6 @@ public class PackBlock extends Block {
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int type) {
-        if (clippedIcons == null) {
-            return super.getIcon(side, type);
-        }
-
         ClippedIcon sideIcon;
 
         if (side >= clippedIcons.length) {
@@ -220,12 +218,18 @@ public class PackBlock extends Block {
         return box;
     }
 
-    public ContentPack getPack() {
-        return pack;
+    @Override
+    public ClippedIcon[] getClipIcons() {
+        return clippedIcons;
     }
 
-    public PackShape getShape() {
+    @Override
+    public Shape getShape() {
         return shape;
+    }
+
+    public ContentPack getPack() {
+        return pack;
     }
 
     public void reloadShape() {

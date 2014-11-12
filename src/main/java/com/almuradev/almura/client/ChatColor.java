@@ -218,6 +218,7 @@ public enum ChatColor {
 
         return result;
     }
+
     static {
         for (ChatColor color : values()) {
             BY_ID.put(color.intCode, color);
