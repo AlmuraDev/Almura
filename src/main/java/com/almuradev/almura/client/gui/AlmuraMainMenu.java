@@ -111,7 +111,7 @@ public class AlmuraMainMenu extends MalisisGui {
         closeButton.setSize(50, 15);
         closeButton.setName("closeButton");
 
-        UILabel version = new UILabel(this, ChatColor.WHITE + Almura.VERSION);
+        UILabel version = new UILabel(this, ChatColor.WHITE + Almura.GUI_VERSION);
         version.setPosition(0, -5, Anchor.CENTER | Anchor.BOTTOM);
         version.setFontScale(0.75F);
 

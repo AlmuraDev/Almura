@@ -14,7 +14,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 
 public class Tabs {
-
     private static final Item ITEM_BUILDING = new AlmuraTabItem("building");
     private static final Item ITEM_ROOFING = new AlmuraTabItem("roofing");
     private static final Item ITEM_LIGHTING = new AlmuraTabItem("lighting");
@@ -61,7 +60,7 @@ public class Tabs {
     public static CreativeTabs getTabByName(String name) {
         for (CreativeTabs tab : CreativeTabs.creativeTabArray) {
             if (tab instanceof AlmuraCreativeTabs) {
-                if (tab.getTabLabel().equals(Almura.MOD_ID + name)) {
+                if (tab.getTabLabel().equals(Almura.MOD_ID + "_" + name)) {
                     return tab;
                 }
             } else {
@@ -80,8 +79,8 @@ public class Tabs {
         private final Item displayItem;
 
         public AlmuraCreativeTabs(String unlocalizedName, String displayName, Item displayItem) {
-            super(Almura.MOD_ID + unlocalizedName);
-            Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "itemGroup" + unlocalizedName, displayName);
+            super(Almura.MOD_ID + "_" + unlocalizedName);
+            Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "itemGroup." + getTabLabel(), displayName);
             this.displayItem = displayItem;
         }
 

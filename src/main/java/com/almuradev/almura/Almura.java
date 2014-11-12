@@ -27,12 +27,11 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Almura.MOD_ID)
 public class Almura {
-
     public static final String MOD_ID = "almura";
     public static final Logger LOGGER = LogManager.getLogger("almura");
     public static final LanguageManager LANGUAGES = new LanguageManager();
     public static final SimpleNetworkWrapper NETWORK = new SimpleNetworkWrapper(Almura.MOD_ID);
-    public static String VERSION = "Almura 2.0 build 10 alpha";
+    public static String GUI_VERSION = "Almura 2.0 build 10 alpha";
 
     @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
     public static CommonProxy PROXY;

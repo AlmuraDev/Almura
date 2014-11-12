@@ -88,7 +88,7 @@ public class IngameDebugHUD extends MalisisGui {
         rawLight = new UILabel(this, ChatColor.GRAY + "rawLight");
         rawLight.setPosition(60, 140, Anchor.LEFT | Anchor.TOP);
 
-        UILabel version = new UILabel(this, ChatColor.GREEN + Almura.VERSION);
+        UILabel version = new UILabel(this, ChatColor.GREEN + Almura.GUI_VERSION);
         version.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
 
         debugPanel.add(debugTitle);

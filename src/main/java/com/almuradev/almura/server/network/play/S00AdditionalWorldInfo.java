@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.server.network.play;
 
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
@@ -10,6 +15,9 @@ import io.netty.buffer.ByteBuf;
 
 public class S00AdditionalWorldInfo implements IMessage, IMessageHandler<S00AdditionalWorldInfo, IMessage> {
     public String worldName;
+
+    public S00AdditionalWorldInfo() {
+    }
 
     public S00AdditionalWorldInfo(String worldName) {
         this.worldName = worldName;
