@@ -85,7 +85,10 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         textureName = textureName.split(".png")[0];
 
         final float hardness = reader.getChild("Hardness").getFloat(1f);
-        final float lightLevel = reader.getChild("LightLevel").getFloat(0f) / 15f;
+        float lightLevel = reader.getChild("LightLevel").getFloat(0f);
+        if (lightLevel > 1f) {
+            lightLevel = lightLevel / 15;
+        }
         final int lightOpacity = reader.getChild("light-opacity").getInt(0);
         final int dropAmount = reader.getChild("ItemDropAmount").getInt(0);
         final boolean showInCreativeTab = reader.getChild("show-in-creative-tab").getBoolean(true);
