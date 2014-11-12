@@ -16,6 +16,7 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -30,6 +31,7 @@ public class Almura {
     public static final String MOD_ID = "almura";
     public static final Logger LOGGER = LogManager.getLogger("almura");
     public static final LanguageManager LANGUAGES = new LanguageManager();
+    public static final SimpleNetworkWrapper NETWORK = new SimpleNetworkWrapper(Almura.MOD_ID);
     public static String VERSION = "Almura 2.0 build 10 alpha";
 
     @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)

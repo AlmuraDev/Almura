@@ -40,6 +40,8 @@ public class IngameHUD extends MalisisGui {
     public static final GuiTexture WORLD_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/world.png"));
     public static final GuiTexture CLOCK_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/clock.png"));
 
+    public static IngameHUD INSTANCE;
+
     private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
 
     private static final Color greenBar = new Color(0, 1f, 0, 1f);
@@ -51,7 +53,7 @@ public class IngameHUD extends MalisisGui {
     private final UILabel serverCount;
     private final UILabel playerCoords;
     private final UILabel playerCompass;
-    private final UILabel worldDisplay;
+    public final UILabel worldDisplay;
     private final UILabel worldTime;
     private final UILabel xpLevel;
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
@@ -60,6 +62,7 @@ public class IngameHUD extends MalisisGui {
 
     @SuppressWarnings("rawtypes")
     public IngameHUD() {
+        INSTANCE = this;
         guiscreenBackground = false;
 
         // Construct Hud with all elements

@@ -1,8 +1,10 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 
@@ -12,6 +14,8 @@ public class CommonProxy {
         if (Configuration.IS_DEBUG) {
             Almura.LOGGER.info("Debug-mode toggled ON");
         }
+
+        Almura.NETWORK.registerMessage(S00AdditionalWorldInfo.class, S00AdditionalWorldInfo.class, 0, Side.CLIENT);
 
         Tabs.fakeStaticLoad();
 
