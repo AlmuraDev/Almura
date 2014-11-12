@@ -33,6 +33,7 @@ import net.minecraft.world.World;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class PackBlock extends Block implements IClipContainer, IShapeContainer {
 
@@ -51,24 +52,9 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     //WIREFRAME
     private boolean useVanillaWireframe;
     private List<Double> wireframeBounds = new LinkedList<>();
+    private final int dropAmount;
 
-    public PackBlock(ContentPack pack, String identifier) {
-        this(pack, identifier, identifier, 1f, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
-    }
-
-    public PackBlock(ContentPack pack, String identifier, String textureName) {
-        this(pack, identifier, textureName, 1f, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
-    }
-
-    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness) {
-        this(pack, identifier, textureName, hardness, 0f, 0f, 0, true, "legacy", null, null, true, null, true, null);
-    }
-
-    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, float lightLevel) {
-        this(pack, identifier, textureName, hardness, 0f, lightLevel, 0, true, "legacy", null, null, true, null, true, null);
-    }
-
-    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, float resistance, float lightLevel, int lightOpacity,
+    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, float lightLevel, int lightOpacity,
                      boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
                      boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
         super(Material.rock);
@@ -80,6 +66,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         this.collisionBounds = collisionBounds == null ? new LinkedList<Double>() : collisionBounds;
         this.useVanillaWireframe = useVanillaWireframe;
         this.wireframeBounds = wireframeBounds == null ? new LinkedList<Double>() : wireframeBounds;
+        this.dropAmount = dropAmount;
         setBlockName(pack.getName() + "_" + identifier);
         setHardness(hardness);
         setResistance(resistance);
@@ -98,8 +85,9 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         textureName = textureName.split(".png")[0];
 
         final float hardness = reader.getChild("Hardness").getFloat(1f);
-        final float lightLevel = reader.getChild("LightLevel").getFloat(0f);
+        final float lightLevel = reader.getChild("LightLevel").getFloat(0f) / 15f;
         final int lightOpacity = reader.getChild("light-opacity").getInt(0);
+        final int dropAmount = reader.getChild("ItemDropAmount").getInt(0);
         final boolean showInCreativeTab = reader.getChild("show-in-creative-tab").getBoolean(true);
         final String creativeTabName = reader.getChild("creative-tab-name").getString("other");
         final float resistance = reader.getChild("resistance").getFloat(0);
@@ -132,7 +120,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new PackBlock(pack, name, textureName, hardness, resistance, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
+        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
                              textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
     }
 
@@ -182,6 +170,11 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     @SideOnly(Side.CLIENT)
     public boolean isOpaqueCube() {
         return shape == null;
+    }
+
+    @Override
+    public int quantityDropped(Random p_149745_1_) {
+        return dropAmount;
     }
 
     /**
