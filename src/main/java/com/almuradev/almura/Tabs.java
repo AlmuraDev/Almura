@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.items.BasicItem;
 import com.almuradev.almura.lang.Languages;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.creativetab.CreativeTabs;
@@ -15,25 +15,25 @@ import net.minecraft.item.Item;
 
 public class Tabs {
 
-    private static final Item ITEM_BUILDING = new BasicItem("building");
-    private static final Item ITEM_ROOFING = new BasicItem("roofing");
-    private static final Item ITEM_LIGHTING = new BasicItem("lighting");
-    private static final Item ITEM_FURNITURE = new BasicItem("furniture");
-    private static final Item ITEM_DECORATION = new BasicItem("decoration");
-    private static final Item ITEM_STORAGE = new BasicItem("storage");
-    private static final Item ITEM_BARRELS = new BasicItem("barrels");
-    private static final Item ITEM_FLOWERS = new BasicItem("flowers");
-    private static final Item ITEM_PLANTS = new BasicItem("plants");
-    private static final Item ITEM_CROPS = new BasicItem("crops");
-    private static final Item ITEM_FLAGS = new BasicItem("flags");
-    private static final Item ITEM_SIGNS = new BasicItem("signs");
-    private static final Item ITEM_LETTERS = new BasicItem("letters");
-    private static final Item ITEM_ORES = new BasicItem("ores");
-    private static final Item ITEM_FOOD = new BasicItem("food");
-    private static final Item ITEM_DRINKS = new BasicItem("drinks");
-    private static final Item ITEM_INGREDIENTS = new BasicItem("ingredients");
-    private static final Item ITEM_TOOLS = new BasicItem("tools");
-    //private static final Item ITEM_OTHER = new BasicItem("other");
+    private static final Item ITEM_BUILDING = new AlmuraTabItem("building");
+    private static final Item ITEM_ROOFING = new AlmuraTabItem("roofing");
+    private static final Item ITEM_LIGHTING = new AlmuraTabItem("lighting");
+    private static final Item ITEM_FURNITURE = new AlmuraTabItem("furniture");
+    private static final Item ITEM_DECORATION = new AlmuraTabItem("decoration");
+    private static final Item ITEM_STORAGE = new AlmuraTabItem("storage");
+    private static final Item ITEM_BARRELS = new AlmuraTabItem("barrels");
+    private static final Item ITEM_FLOWERS = new AlmuraTabItem("flowers");
+    private static final Item ITEM_PLANTS = new AlmuraTabItem("plants");
+    private static final Item ITEM_CROPS = new AlmuraTabItem("crops");
+    private static final Item ITEM_FLAGS = new AlmuraTabItem("flags");
+    private static final Item ITEM_SIGNS = new AlmuraTabItem("signs");
+    private static final Item ITEM_LETTERS = new AlmuraTabItem("letters");
+    private static final Item ITEM_ORES = new AlmuraTabItem("ores");
+    private static final Item ITEM_FOOD = new AlmuraTabItem("food");
+    private static final Item ITEM_DRINKS = new AlmuraTabItem("drinks");
+    private static final Item ITEM_INGREDIENTS = new AlmuraTabItem("ingredients");
+    private static final Item ITEM_TOOLS = new AlmuraTabItem("tools");
+    //private static final Item ITEM_OTHER = new AlmuraTabItem("other");
 
     public static CreativeTabs TAB_BUILDING = new AlmuraCreativeTabs("building", "Almura Building", ITEM_BUILDING);
     public static CreativeTabs TAB_ROOFING = new AlmuraCreativeTabs("roofing", "Almura Roofing", ITEM_ROOFING);
@@ -89,6 +89,24 @@ public class Tabs {
         @SideOnly(Side.CLIENT)
         public Item getTabIconItem() {
             return displayItem == null ? Items.feather : displayItem;
+        }
+    }
+
+    private static class AlmuraTabItem extends Item {
+
+        public AlmuraTabItem(String name) {
+            this(name, false, null, 1);
+        }
+
+        public AlmuraTabItem(String name, boolean showInCreativeTab, CreativeTabs creativeTabName, int maxStackSize) {
+            if (showInCreativeTab) {
+                setCreativeTab(creativeTabName);
+            }
+
+            setUnlocalizedName(name);
+            setTextureName(Almura.MOD_ID + ":" + name);
+            setMaxStackSize(maxStackSize);
+            GameRegistry.registerItem(this, name);
         }
     }
 }
