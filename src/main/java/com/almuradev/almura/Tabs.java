@@ -60,11 +60,11 @@ public class Tabs {
     public static CreativeTabs getTabByName(String name) {
         for (CreativeTabs tab : CreativeTabs.creativeTabArray) {
             if (tab instanceof AlmuraCreativeTabs) {
-                if (tab.getTabLabel().equals(Almura.MOD_ID + "_" + name)) {
+                if (tab.tabLabel.equals(Almura.MOD_ID + "_" + name)) {
                     return tab;
                 }
             } else {
-                if (tab.getTabLabel().equals(name)) {
+                if (tab.tabLabel.equals(name)) {
                     return tab;
                 }
 
@@ -80,7 +80,7 @@ public class Tabs {
 
         public AlmuraCreativeTabs(String unlocalizedName, String displayName, Item displayItem) {
             super(Almura.MOD_ID + "_" + unlocalizedName);
-            Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "itemGroup." + getTabLabel(), displayName);
+            Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "itemGroup." + tabLabel, displayName);
             this.displayItem = displayItem;
         }
 
