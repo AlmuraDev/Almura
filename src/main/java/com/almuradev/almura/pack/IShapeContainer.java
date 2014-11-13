@@ -7,7 +7,9 @@ package com.almuradev.almura.pack;
 
 import net.malisis.core.renderer.element.Shape;
 
-public interface IShapeContainer {
+public interface IShapeContainer extends IPackObject {
 
     Shape getShape();
+
+    void setShapeFromPack();
 }

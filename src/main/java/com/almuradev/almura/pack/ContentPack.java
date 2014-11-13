@@ -91,13 +91,19 @@ public class ContentPack {
 
                     switch (type) {
                         case "Item":
-                            items.add(PackItem.createFromReader(pack, name, reader));
+                            final PackItem item = PackItem.createFromReader(pack, name, reader);
+                            items.add(item);
+                            Almura.PROXY.onCreate(item);
                             break;
                         case "Food":
-                            items.add(PackFood.createFromReader(pack, name, reader));
+                            final PackFood food = PackFood.createFromReader(pack, name, reader);
+                            items.add(food);
+                            Almura.PROXY.onCreate(food);
                             break;
                         case "Block":
-                            blocks.add(PackBlock.createFromReader(pack, name, reader));
+                            final PackBlock block = PackBlock.createFromReader(pack, name, reader);
+                            blocks.add(block);
+                            Almura.PROXY.onCreate(block);
                             break;
                         default:
                             continue;
@@ -123,10 +129,12 @@ public class ContentPack {
             Almura.LOGGER.info("Loaded -> " + pack);
         }
 
-        if (Configuration.IS_CLIENT) {
-            for (Block block : blocks) {
-                ((PackBlock) block).reloadShape();
-            }
+        for (Block block : blocks) {
+            Almura.PROXY.onPostCreate(block);
+        }
+
+        for (Item item : items) {
+            Almura.PROXY.onPostCreate(item);
         }
 
         return pack;

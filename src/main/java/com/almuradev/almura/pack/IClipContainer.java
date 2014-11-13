@@ -7,7 +7,7 @@ package com.almuradev.almura.pack;
 
 import net.malisis.core.renderer.icon.ClippedIcon;
 
-public interface IClipContainer {
+public interface IClipContainer extends IPackObject {
 
     ClippedIcon[] getClipIcons();
 }

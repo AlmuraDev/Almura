@@ -9,6 +9,7 @@ import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.client.gui.AlmuraMainMenu;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
+import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.client.renderer.PackBlockRenderer;
 import com.almuradev.almura.pack.client.renderer.PackItemRenderer;
@@ -16,8 +17,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -50,8 +50,22 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void onNewItemInstance(Item item) {
-        PACK_ITEM_RENDERER.registerFor(item);
+    public void onPostCreate(Block block) {
+        super.onPostCreate(block);
+        if (block instanceof IShapeContainer) {
+            ((IShapeContainer) block).setShapeFromPack();
+        }
+    }
+
+    @Override
+    public void onPostCreate(Item item) {
+        super.onPostCreate(item);
+        if (item instanceof IShapeContainer) {
+            ((IShapeContainer) item).setShapeFromPack();
+            if (((IShapeContainer) item).getShape() != null) {
+                PACK_ITEM_RENDERER.registerFor(item);
+            }
+        }
     }
 
     @SubscribeEvent

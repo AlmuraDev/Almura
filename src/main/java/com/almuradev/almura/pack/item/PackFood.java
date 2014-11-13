@@ -6,7 +6,6 @@
 package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
@@ -17,7 +16,6 @@ import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
-import cpw.mods.fml.common.registry.GameRegistry;
 import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -53,12 +51,10 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
         if (alwaysEdible) {
             setAlwaysEdible();
         }
-
-        Almura.PROXY.onNewItemInstance(this);
     }
 
     public static PackFood createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
-        final String title = reader.getChild("Title").getString(name);
+        final String title = reader.getChild("Title").getString(name).split("\n")[0];
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
 
@@ -86,12 +82,17 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
     @Override
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
-
-        if (textureCoordinatesByFace.isEmpty()) {
-            return;
-        }
-
         clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, itemIcon, textureName, textureCoordinatesByFace);
+    }
+
+    @Override
+    public ContentPack getPack() {
+        return pack;
+    }
+
+    @Override
+    public ClippedIcon[] getClipIcons() {
+        return clippedIcons;
     }
 
     @Override
@@ -100,15 +101,7 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
     }
 
     @Override
-    public ClippedIcon[] getClipIcons() {
-        return new ClippedIcon[0];
-    }
-
-    public ContentPack getPack() {
-        return pack;
-    }
-
-    public void reloadShape() {
+    public void setShapeFromPack() {
         this.shape = null;
 
         if (shapeName != null) {

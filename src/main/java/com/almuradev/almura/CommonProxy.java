@@ -9,6 +9,7 @@ import com.almuradev.almura.pack.ContentPack;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -32,9 +33,17 @@ public class CommonProxy {
     public void onPostInitialization(FMLPostInitializationEvent event) {
     }
 
-    public void onNewBlockInstance(Block block) {
+    public void onCreate(Block block) {
     }
 
-    public void onNewItemInstance(Item item) {
+    public void onCreate(Item item) {
+    }
+
+    public void onPostCreate(Block block) {
+        GameRegistry.registerBlock(block, block.getUnlocalizedName());
+    }
+
+    public void onPostCreate(Item item) {
+        GameRegistry.registerItem(item, item.getUnlocalizedName());
     }
 }

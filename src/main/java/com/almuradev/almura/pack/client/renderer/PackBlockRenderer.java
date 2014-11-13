@@ -15,34 +15,41 @@ import net.malisis.core.renderer.BaseRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
+import net.malisis.core.renderer.element.shape.Cube;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
+import org.lwjgl.opengl.GL11;
 
 public class PackBlockRenderer extends BaseRenderer {
+    private Cube vanillaShape;
+
+    @Override
+    protected void initialize() {
+        vanillaShape = new Cube();
+    }
 
     @Override
     public void render() {
         final Shape shape = ((IShapeContainer) block).getShape();
 
         if (shape == null) {
-            super.render();
+            vanillaShape.resetState();
+            super.drawShape(vanillaShape);
             return;
         }
 
         shape.resetState();
         enableBlending();
-        rp.useNormals.set(true);
         rp.interpolateUV.set(false);
         rp.flipU.set(true);
         rp.flipV.set(true);
-        rp.renderAllFaces.set(true);
-
         if (renderType == TYPE_ISBRH_INVENTORY) {
             shape.scale(1, 1, 1);
         }
-
         drawShape(shape, rp);
     }
 

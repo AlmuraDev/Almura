@@ -29,18 +29,11 @@ public class PackItemRenderer extends BaseRenderer {
     @Override
     public void render() {
         final Shape shape = ((IShapeContainer) itemStack.getItem()).getShape();
-        if (shape == null) {
-            super.render();
-            return;
-        }
-
         shape.resetState();
         enableBlending();
-        rp.useNormals.set(true);
         rp.interpolateUV.set(false);
         rp.flipU.set(true);
         rp.flipV.set(true);
-        rp.renderAllFaces.set(true);
 
         if (renderType == TYPE_ITEM_INVENTORY) {
             shape.scale(1, 1, 1);
@@ -51,11 +44,6 @@ public class PackItemRenderer extends BaseRenderer {
 
     @Override
     public void applyTexture(Shape shape, RenderParameters parameters) {
-        if (!(shape instanceof PackShape)) {
-            super.applyTexture(shape, parameters);
-            return;
-        }
-
         for (Face f : shape.getFaces()) {
             final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
             final IClipContainer clipContainer = (IClipContainer) itemStack.getItem();
@@ -86,7 +74,7 @@ public class PackItemRenderer extends BaseRenderer {
     @Override
     @SuppressWarnings("unchecked")
     public void registerFor(Class... listClass) {
-        throw new UnsupportedOperationException("PackBlockRenderer is only meant for blocks!");
+        throw new UnsupportedOperationException("PackItemRenderer is only meant for items!");
     }
 
     @Override

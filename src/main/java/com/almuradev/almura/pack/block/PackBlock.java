@@ -76,11 +76,10 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
-        GameRegistry.registerBlock(this, ItemBlock.class, pack.getName() + "_" + identifier);
     }
 
     public static PackBlock createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
-        final String title = reader.getChild("Title").getString(name);
+        final String title = reader.getChild("Title").getString(name).split("\n")[0];
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
 
@@ -137,17 +136,15 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
-
-        if (textureCoordinatesByFace.isEmpty()) {
-            return;
-        }
-
         clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int type) {
+        if (clippedIcons.length == 0) {
+            return super.getIcon(side, type);
+        }
         ClippedIcon sideIcon;
 
         if (side >= clippedIcons.length) {
@@ -215,6 +212,11 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     }
 
     @Override
+    public ContentPack getPack() {
+        return pack;
+    }
+
+    @Override
     public ClippedIcon[] getClipIcons() {
         return clippedIcons;
     }
@@ -224,11 +226,8 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         return shape;
     }
 
-    public ContentPack getPack() {
-        return pack;
-    }
-
-    public void reloadShape() {
+    @Override
+    public void setShapeFromPack() {
         this.shape = null;
 
         if (shapeName != null) {

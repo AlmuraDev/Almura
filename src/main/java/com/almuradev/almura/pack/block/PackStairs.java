@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.pack.block;
 
+import com.almuradev.almura.pack.ContentPack;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IShapeContainer;
 import cpw.mods.fml.relauncher.Side;
@@ -32,16 +33,26 @@ public class PackStairs extends BlockStairs implements IClipContainer, IShapeCon
 
     @Override
     public ClippedIcon[] getClipIcons() {
-        return wrapped.getClipIcons();
+        return new ClippedIcon[0];
     }
 
     @Override
     public Shape getShape() {
-        return wrapped.getShape();
+        return null;
+    }
+
+    @Override
+    public void setShapeFromPack() {
+
+    }
+
+    @Override
+    public ContentPack getPack() {
+        return null;
     }
 
     @Override
     public String toString() {
-        return "PackBlock {pack= " + wrapped.getPack().getName() + ", raw_name= " + getUnlocalizedName() + "}";
+        return "PackStairs {pack= " + wrapped.getPack().getName() + ", raw_name= " + getUnlocalizedName() + ", source_block= " + wrapped + "}";
     }
 }

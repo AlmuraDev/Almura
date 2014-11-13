@@ -156,6 +156,10 @@ public class AlmuraMainMenu extends MalisisGui {
     }
 
     @Override
+    public void close() {
+    }
+
+    @Override
     public void updateScreen() {  //Every Tick
 
     }

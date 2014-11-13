@@ -148,12 +148,12 @@ public class IngameHUD extends MalisisGui {
 
         // Compass Image
         final UIImage compassImage = new UIImage(this, COMPASS_TEXTURE, null);
-        compassImage.setPosition(-67, 16, Anchor.RIGHT | Anchor.TOP);
+        compassImage.setPosition(-73, 16, Anchor.RIGHT | Anchor.TOP);
         compassImage.setSize(8, 8);
 
         // Player Compass Label
         playerCompass = new UILabel(this, "");
-        playerCompass.setPosition(-47, 17, Anchor.RIGHT | Anchor.TOP);
+        playerCompass.setPosition(-51, 17, Anchor.RIGHT | Anchor.TOP);
         playerCompass.setColor(0xffffffff);
         playerCompass.setSize(35, 7);
         playerCompass.setFontScale(0.8F);
@@ -172,34 +172,18 @@ public class IngameHUD extends MalisisGui {
 
         // XP Property
         xpProperty = new UIPropertyBar(this, XP_TEXTURE, BAR_TEXTURE);
-        xpProperty.setPosition(-25, 28, Anchor.RIGHT | Anchor.TOP);
+        xpProperty.setPosition(-27, 28, Anchor.RIGHT | Anchor.TOP);
         xpProperty.setSize(105, 7);
 
         // XP Level Label
         xpLevel = new UILabel(this, "1");
-        xpLevel.setPosition(-15, 27, Anchor.RIGHT | Anchor.TOP);
+        xpLevel.setPosition(-5, 27, Anchor.RIGHT | Anchor.TOP);
         xpLevel.setColor(0xffffffff);
         xpLevel.setSize(15, 7);
         xpLevel.setFontScale(0.8F);
 
-        gradientContainer.add(playerTitle);
-        gradientContainer.add(healthProperty);
-        gradientContainer.add(armorProperty);
-        gradientContainer.add(almuraTitle);
-        gradientContainer.add(hungerProperty);
-        gradientContainer.add(staminaProperty);
-        gradientContainer.add(xpProperty);
-        gradientContainer.add(mapImage);
-        gradientContainer.add(playerCoords);
-        gradientContainer.add(worldImage);
-        gradientContainer.add(worldDisplay);
-        gradientContainer.add(playerImage);
-        gradientContainer.add(serverCount);
-        gradientContainer.add(playerCompass);
-        gradientContainer.add(compassImage);
-        gradientContainer.add(clockImage);
-        gradientContainer.add(worldTime);
-        gradientContainer.add(xpLevel);
+        gradientContainer.add(playerTitle, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty, mapImage, playerCoords,
+                              worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
 
         addToScreen(gradientContainer);
     }
@@ -300,6 +284,8 @@ public class IngameHUD extends MalisisGui {
             xpProperty.setVisible(false);
         }
 
+        playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
+
         if (Minecraft.getMinecraft().isSingleplayer()) {
             serverCount.setText("--");
         } else {
@@ -310,17 +296,14 @@ public class IngameHUD extends MalisisGui {
         serverCount
                 .setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
 
-        playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
-        playerCoords.setText(
-                String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
-                              (int) Minecraft.getMinecraft().thePlayer.posZ));
-        playerCompass.setText(getCompass());
-        mapImage.setPosition(-(playerCoords.getWidth() + 80), 4, Anchor.RIGHT | Anchor.TOP);
-        //TODO Server never sends Client world name, need a packet orrrr
         if (Minecraft.getMinecraft().isSingleplayer()) {
             worldDisplay.setText(MinecraftServer.getServer().getWorldName());
         }
-        worldImage.setPosition(-(worldDisplay.getWidth() + 9), 4);
+        worldImage.setPosition(-(worldDisplay.getWidth() + 9), worldImage.getY(), Anchor.RIGHT | Anchor.TOP);
+        playerCoords.setText(String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ));
+        playerCoords.setPosition(-(-worldImage.getX() + worldImage.getWidth() + 12), playerCoords.getY(), Anchor.RIGHT | Anchor.TOP);
+        mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT | Anchor.TOP);
+        playerCompass.setText(getCompass());
         worldTime.setText(getTime());
         xpLevel.setText(Integer.toString(Minecraft.getMinecraft().thePlayer.experienceLevel));
     }

@@ -32,7 +32,7 @@ public class IngameDebugHUD extends MalisisGui {
 
         // Construct Hud with all elements
         final UIBackgroundContainer debugPanel = new UIBackgroundContainer(this);
-        debugPanel.setSize(300, 175);
+        debugPanel.setSize(285, 175);
         debugPanel.setPosition(5, 0, Anchor.LEFT | Anchor.MIDDLE);
         debugPanel.setColor(Integer.MIN_VALUE);
         debugPanel.setTopAlpha(180);
@@ -90,26 +90,10 @@ public class IngameDebugHUD extends MalisisGui {
 
         UILabel version = new UILabel(this, ChatColor.GREEN + Almura.GUI_VERSION);
         version.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
+        version.setFontScale(0.7f);
 
-        debugPanel.add(debugTitle);
-        debugPanel.add(fpsLabel);
-        debugPanel.add(fps);
-        debugPanel.add(memoryLabel);
-        debugPanel.add(memoryDebug);
-        debugPanel.add(memoryAllocated);
-        debugPanel.add(directionLabel);
-        debugPanel.add(xLoc);
-        debugPanel.add(yLoc);
-        debugPanel.add(zLoc);
-        debugPanel.add(facingLabel);
-        debugPanel.add(directionLoc);
-        debugPanel.add(biomeLabel);
-        debugPanel.add(biomeName);
-        debugPanel.add(lightLabel);
-        debugPanel.add(blockLight);
-        debugPanel.add(skyLight);
-        debugPanel.add(rawLight);
-        debugPanel.add(version);
+        debugPanel.add(debugTitle, fpsLabel, fps, memoryLabel, memoryDebug, memoryAllocated, directionLabel, xLoc, yLoc, zLoc, facingLabel, directionLoc,
+                       biomeLabel, biomeName, lightLabel, blockLight, skyLight, rawLight, version);
 
         addToScreen(debugPanel);
     }

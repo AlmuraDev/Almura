@@ -6,7 +6,6 @@
 package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
@@ -22,8 +21,12 @@ import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -37,27 +40,26 @@ public class PackItem extends Item implements IClipContainer, IShapeContainer {
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
+    private String[] tooltip;
 
-    public PackItem(ContentPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
+    public PackItem(ContentPack pack, String identifier, String[] tooltip, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
                     boolean showInCreativeTab, String creativeTabName) {
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.textureName = textureName;
         this.shapeName = shapeName;
-
+        this.tooltip = tooltip;
         setUnlocalizedName(pack.getName() + "_" + identifier);
         setTextureName(Almura.MOD_ID.toLowerCase() + ":packs/" + pack.getName() + "_" + textureName);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
-
-        GameRegistry.registerItem(this, pack.getName() + "_" + identifier);
-
-        Almura.PROXY.onNewItemInstance(this);
     }
 
     public static PackItem createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
-        final String title = reader.getChild("Title").getString(name);
+        final String combinedTitleTooltips = reader.getChild("Title").getString(name);
+        final String[] titleLines = combinedTitleTooltips.split("\\n");
+        final String title = titleLines[0];
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
 
@@ -73,18 +75,30 @@ public class PackItem extends Item implements IClipContainer, IShapeContainer {
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "_" + name + ".name", title);
 
-        return new PackItem(pack, name, textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName);
+        return new PackItem(pack, name, titleLines.length == 1 ? null : Arrays.copyOfRange(titleLines, 1, titleLines.length), textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName);
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
+        if (tooltip != null) {
+            Collections.addAll(list, tooltip);
+        }
     }
 
     @Override
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
-
-        if (textureCoordinatesByFace.isEmpty()) {
-            return;
-        }
-
         clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, itemIcon, textureName, textureCoordinatesByFace);
+    }
+
+    @Override
+    public ContentPack getPack() {
+        return pack;
+    }
+
+    @Override
+    public ClippedIcon[] getClipIcons() {
+        return clippedIcons;
     }
 
     @Override
@@ -93,15 +107,7 @@ public class PackItem extends Item implements IClipContainer, IShapeContainer {
     }
 
     @Override
-    public ClippedIcon[] getClipIcons() {
-        return clippedIcons;
-    }
-
-    public ContentPack getPack() {
-        return pack;
-    }
-
-    public void reloadShape() {
+    public void setShapeFromPack() {
         this.shape = null;
 
         if (shapeName != null) {
