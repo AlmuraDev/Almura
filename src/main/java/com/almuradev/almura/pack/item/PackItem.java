@@ -80,7 +80,7 @@ public class PackItem extends Item implements IClipContainer, IShapeContainer {
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-        if (tooltip != null) {
+        if (tooltip != null && tooltip.length > 0) {
             Collections.addAll(list, tooltip);
         }
     }

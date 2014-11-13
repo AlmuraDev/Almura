@@ -20,8 +20,12 @@ import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +39,9 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
     public ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
+    private String[] tooltip;
 
-    public PackFood(ContentPack pack, String identifier, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
+    public PackFood(ContentPack pack, String identifier, String[] tooltip, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
                     boolean showInCreativeTab, String creativeTabName, int healAmount, float saturationModifier, boolean isWolfFavorite,
                     boolean alwaysEdible) {
         super(healAmount, saturationModifier, isWolfFavorite);
@@ -54,7 +59,9 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
     }
 
     public static PackFood createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
-        final String title = reader.getChild("Title").getString(name).split("\n")[0];
+        final String combinedTitleTooltips = reader.getChild("Title").getString(name);
+        final String[] titleLines = combinedTitleTooltips.split("\\n");
+        final String title = titleLines[0];
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
 
@@ -75,8 +82,15 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "_" + name + ".name", title);
 
-        return new PackFood(pack, name, textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName, healAmount,
+        return new PackFood(pack, name, titleLines.length == 1 ? null : Arrays.copyOfRange(titleLines, 1, titleLines.length), textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName, healAmount,
                             saturationModifier, isWolfFavorite, alwaysEdible);
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
+        if (tooltip != null && tooltip.length > 0) {
+            Collections.addAll(list, tooltip);
+        }
     }
 
     @Override
