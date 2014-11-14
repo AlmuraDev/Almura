@@ -71,6 +71,10 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         setHardness(hardness);
         setResistance(resistance);
         setLightLevel(lightLevel);
+        
+        if (!useVanillaCollision) {
+            setBlockBounds(collisionBounds.get(0).floatValue(), collisionBounds.get(1).floatValue(), collisionBounds.get(2).floatValue(), collisionBounds.get(3).floatValue(), collisionBounds.get(4).floatValue(), collisionBounds.get(5).floatValue());
+        }
         setLightOpacity(lightOpacity);
         setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":packs/" + pack.getName() + "-" + textureName);
         if (showInCreativeTab) {
@@ -88,25 +92,25 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         if (lightLevel > 1f) {
             lightLevel = lightLevel / 15;
         }
-        final int lightOpacity = reader.getChild("light-opacity").getInt(0);
+        final int lightOpacity = reader.getChild("Light-Opacity").getInt(0);
         final int dropAmount = reader.getChild("ItemDropAmount").getInt(0);
-        final boolean showInCreativeTab = reader.getChild("show-in-creative-tab").getBoolean(true);
-        final String creativeTabName = reader.getChild("creative-tab-name").getString("other");
-        final float resistance = reader.getChild("resistance").getFloat(0);
-        final boolean useVanillaCollision = !reader.hasChild("collision-bounds");
+        final boolean showInCreativeTab = reader.getChild("Show-In-Creative-Tab").getBoolean(true);
+        final String creativeTabName = reader.getChild("Creative-Tab-Name").getString("other");
+        final float resistance = reader.getChild("Resistance").getFloat(0);
+        final boolean useVanillaCollision = !reader.hasChild("Collision-Bounds");
         final List<Double> collisionCoords = new LinkedList<>();
         if (!useVanillaCollision) {
-            final String rawCoords = reader.getChild("collision-bounds").getString();
+            final String rawCoords = reader.getChild("Collision-Bounds").getString();
             final String[] splitRawCoords = rawCoords.split(" ");
             for (String coord : splitRawCoords) {
                 collisionCoords.add(Double.parseDouble(coord));
             }
         }
 
-        final boolean useVanillaWireframe = !reader.hasChild("wireframe-bounds");
+        final boolean useVanillaWireframe = !reader.hasChild("Wireframe-Bounds");
         final List<Double> wireframeCoords = new LinkedList<>();
         if (!useVanillaWireframe) {
-            final String rawCoords = reader.getChild("wireframe-bounds").getString();
+            final String rawCoords = reader.getChild("Wireframe-Bounds").getString();
             final String[] splitRawCoords = rawCoords.split(" ");
             for (String coord : splitRawCoords) {
                 wireframeCoords.add(Double.parseDouble(coord));
@@ -188,8 +192,8 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
             box = super.getCollisionBoundingBoxFromPool(world, x, y, z);
         } else {
             box =
-                    AxisAlignedBB.getBoundingBox(collisionBounds.get(0), collisionBounds.get(1), collisionBounds.get(2), collisionBounds.get(3),
-                                                 collisionBounds.get(4), collisionBounds.get(5));
+                    AxisAlignedBB.getBoundingBox(x + collisionBounds.get(0), y + collisionBounds.get(1), z + collisionBounds.get(2), 
+                                                 x + collisionBounds.get(3), y + collisionBounds.get(4), z + collisionBounds.get(5));
         }
         return box;
     }
