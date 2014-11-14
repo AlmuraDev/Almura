@@ -6,22 +6,14 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.client.gui.AlmuraMainMenu;
 import com.almuradev.almura.lang.LanguageManager;
 import com.almuradev.almura.server.ServerProxy;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,6 +24,7 @@ public class Almura {
     public static final LanguageManager LANGUAGES = new LanguageManager();
     public static final SimpleNetworkWrapper NETWORK = new SimpleNetworkWrapper(Almura.MOD_ID);
     public static String GUI_VERSION = "Almura 2.0 build 14 alpha";
+    public static String PACK_VERSION = "Content Pack 1";
 
     @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
     public static CommonProxy PROXY;
