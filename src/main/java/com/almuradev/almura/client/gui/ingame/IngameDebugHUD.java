@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
+
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -121,6 +122,7 @@ public class IngameDebugHUD extends MalisisGui {
         }
     }
 
+    @SuppressWarnings("static-access")
     public void updateWidgets() {
         long maxMemory = Runtime.getRuntime().maxMemory();
         long totalMemory = Runtime.getRuntime().totalMemory();
@@ -133,11 +135,11 @@ public class IngameDebugHUD extends MalisisGui {
         int yaw = MathHelper.floor_double((double) (this.mc.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
         Chunk chunk = this.mc.theWorld.getChunkFromBlockCoords(x, z);
 
-        final String displayFps = mc.debug.split("fps")[0];
+        final int displayFps = Minecraft.getMinecraft().debugFPS;
         final String direction = Direction.directions[yaw];
         final String cleanDirection = direction.substring(0, 1).toUpperCase() + direction.substring(1).toLowerCase();
 
-        fps.setText(ChatColor.GOLD + displayFps);
+        fps.setText(ChatColor.GOLD + "" + displayFps);
         memoryDebug.setText(ChatColor.GRAY + "Used: " + usedMemory * 100L / maxMemory + "% (" + usedMemory / 1024L / 1024L + "MB) of " + maxMemory / 1024L / 1024L + "MB");
         memoryAllocated.setText(ChatColor.GRAY + "Allocated memory: " + totalMemory * 100L / maxMemory + "% (" + totalMemory / 1024L / 1024L + "MB)");
         xLoc.setText(ChatColor.GRAY + String.format("- x: %.5f (%d) // chunk: %d (%d)", this.mc.thePlayer.posX, x, x >> 4, x & 15));
