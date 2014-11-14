@@ -15,6 +15,7 @@ import net.malisis.core.renderer.animation.transformation.ITransformable;
 
 public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransformable.Color {
 
+    private final UIImage barImage;
     private final UIBackgroundContainer background;
     private final int gapBetweenSymbolAndBar = 10;
     private final int symbolWidth = 7;
@@ -31,12 +32,12 @@ public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransf
         symbolImage.setSize(symbolWidth, symbolHeight);
         symbolImage.setPosition(UIComponent.INHERITED, UIComponent.INHERITED);
 
-        final UIImage barImage = new UIImage(gui, barTexture, null);
+        barImage = new UIImage(gui, barTexture, null);
         barImage.setSize(UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED);
         barImage.setPosition(gapBetweenSymbolAndBar, UIComponent.INHERITED);
 
-        background = new UIBackgroundContainer(gui, UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED - 4);
-        background.setPosition(gapBetweenSymbolAndBar, UIComponent.INHERITED + 2);
+        background = new UIBackgroundContainer(gui, UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED - 3);
+        background.setPosition(gapBetweenSymbolAndBar + 1, UIComponent.INHERITED + 1);
 
         add(symbolImage, background, barImage);
     }
@@ -50,8 +51,8 @@ public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransf
         return background.getWidth();
     }
 
-    public UIPropertyBar setAmount(int amount) {
-        background.setSize(amount, background.getHeight());
+    public UIPropertyBar setAmount(float percentage) {
+        background.setSize((int) (percentage * (getWidth() - gapBetweenSymbolAndBar)), background.getHeight());
         return this;
     }
 

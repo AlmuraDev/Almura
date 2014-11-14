@@ -18,7 +18,9 @@ import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.minecraft.block.BlockLever;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
@@ -174,6 +176,7 @@ public class IngameHUD extends MalisisGui {
         xpProperty = new UIPropertyBar(this, XP_TEXTURE, BAR_TEXTURE);
         xpProperty.setPosition(-27, 28, Anchor.RIGHT | Anchor.TOP);
         xpProperty.setSize(105, 7);
+        xpProperty.setColor(greenBar.getRGB());
 
         // XP Level Label
         xpLevel = new UILabel(this, "1");
@@ -220,28 +223,26 @@ public class IngameHUD extends MalisisGui {
 
 
     public void updateWidgets() {
-        int playerHealth = Math.max(0, Math.min(100, (int) (Minecraft.getMinecraft().thePlayer.getHealth() * 5)));
-        int playerArmor = getArmorLevel();
-        int playerHunger = Math.max(0, Math.min(100, (Minecraft.getMinecraft().thePlayer.getFoodStats().getFoodLevel() * 5)));
-        int playerStamina = (int) Math.max(0, Math.min(100, (Minecraft.getMinecraft().thePlayer.getFoodStats().getSaturationLevel() * 5)));
-        int currentExp = Math.max(0, Math.min(100, (int) (Minecraft.getMinecraft().thePlayer.experience * 100)));
+        float playerHealth = Minecraft.getMinecraft().thePlayer.getHealth() / Minecraft.getMinecraft().thePlayer.getMaxHealth();
+        float playerArmor = getArmorLevel();
+        float playerHunger = Minecraft.getMinecraft().thePlayer.getFoodStats().getFoodLevel() / (float) 20;
+        float playerStamina = Minecraft.getMinecraft().thePlayer.getFoodStats().getSaturationLevel() / (float) 20;
+        float playerExperience = Minecraft.getMinecraft().thePlayer.experience;
         healthProperty.setAmount(playerHealth);
         hungerProperty.setAmount(playerHunger);
         staminaProperty.setAmount(playerStamina);
 
-        xpProperty.setColor(greenBar.getRGB());
-
-        if (playerHealth > 66) {
+        if (playerHealth > 0.6) {
             healthProperty.setColor(greenBar.getRGB());
-        } else if (playerHealth >= 33) {
+        } else if (playerHealth >= 0.3) {
             healthProperty.setColor(orangeBar.getRGB());
         } else {
             healthProperty.setColor(redBar.getRGB());
         }
 
-        if (playerHunger > 66) {
+        if (playerHunger >= 0.6) {
             hungerProperty.setColor(greenBar.getRGB());
-        } else if (playerArmor >= 33) {
+        } else if (playerArmor >= 0.3) {
             hungerProperty.setColor(orangeBar.getRGB());
         } else {
             hungerProperty.setColor(redBar.getRGB());
@@ -254,9 +255,9 @@ public class IngameHUD extends MalisisGui {
             staminaProperty.setVisible(false);
         }
 
-        if (playerStamina > 66) {
+        if (playerStamina >= 0.6) {
             staminaProperty.setColor(greenBar.getRGB());
-        } else if (playerArmor >= 33) {
+        } else if (playerArmor >= 0.3) {
             staminaProperty.setColor(orangeBar.getRGB());
         } else {
             staminaProperty.setColor(redBar.getRGB());
@@ -269,16 +270,16 @@ public class IngameHUD extends MalisisGui {
             armorProperty.setVisible(false);
         }
 
-        if (playerArmor > 66) {
+        if (playerArmor > 0.6) {
             armorProperty.setColor(greenBar.getRGB());
-        } else if (playerArmor >= 33) {
+        } else if (playerArmor >= 0.3) {
             armorProperty.setColor(orangeBar.getRGB());
         } else {
             armorProperty.setColor(redBar.getRGB());
         }
 
-        if (currentExp > 0) {
-            xpProperty.setAmount(currentExp);
+        if (playerExperience > 0) {
+            xpProperty.setAmount(playerExperience);
             xpProperty.setVisible(true);
         } else {
             xpProperty.setVisible(false);
@@ -308,30 +309,25 @@ public class IngameHUD extends MalisisGui {
         xpLevel.setText(Integer.toString(Minecraft.getMinecraft().thePlayer.experienceLevel));
     }
 
-    public int getArmorLevel() {
-        int armor = 0;
+    public float getArmorLevel() {
+        int armorDamage = 0;
         int armorTotal = 0;
-        final net.minecraft.item.ItemStack[] inv = Minecraft.getMinecraft().thePlayer.inventory.armorInventory;
+        final ItemStack[] inv = Minecraft.getMinecraft().thePlayer.inventory.armorInventory;
 
         if (inv != null) {
-            for (final ItemStack armorItem : inv) {
+            for (ItemStack armorItem : inv) {
                 if (armorItem != null) {
-                    int max = armorItem.getMaxDamage();
-                    armorTotal = armorTotal + max;
-                    int current = armorItem.getItemDamage();
-                    armor = armor + current;
+                    armorTotal += armorItem.getMaxDamage();
+                    armorDamage += armorItem.getItemDamage();
                 }
             }
         }
 
-        if (armorTotal != 0 && armor != 0) {
-            double par1 = armorTotal - armor;
-            double par2 = par1 / armorTotal;
-            double par3 = par2 * 100;
-            return ((int) par3);
-        } else {
+        if (armorTotal == 0) {
             return 0;
         }
+
+        return (armorTotal - armorDamage) / (float) armorTotal;
     }
 
     public String getCompass() {
