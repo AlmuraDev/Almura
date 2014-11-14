@@ -122,7 +122,6 @@ public class IngameDebugHUD extends MalisisGui {
         }
     }
 
-    @SuppressWarnings("static-access")
     public void updateWidgets() {
         long maxMemory = Runtime.getRuntime().maxMemory();
         long totalMemory = Runtime.getRuntime().totalMemory();
@@ -135,7 +134,7 @@ public class IngameDebugHUD extends MalisisGui {
         int yaw = MathHelper.floor_double((double) (this.mc.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
         Chunk chunk = this.mc.theWorld.getChunkFromBlockCoords(x, z);
 
-        final int displayFps = Minecraft.getMinecraft().debugFPS;
+        final int displayFps = Minecraft.debugFPS;
         final String direction = Direction.directions[yaw];
         final String cleanDirection = direction.substring(0, 1).toUpperCase() + direction.substring(1).toLowerCase();
 
