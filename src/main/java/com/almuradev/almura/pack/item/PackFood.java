@@ -49,6 +49,7 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.textureName = textureName;
         this.shapeName = shapeName;
+        this.tooltip = tooltip;
         setUnlocalizedName(pack.getName() + "_" + identifier);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));

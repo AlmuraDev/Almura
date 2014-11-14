@@ -56,7 +56,7 @@ public class ContentPack {
                 try {
                     create(path);
                 } catch (ConfigurationException | IOException e) {
-                    if (Configuration.IS_DEBUG) {
+                    if (Configuration.DEBUG_MODE) {
                         Almura.LOGGER.error("Failed to load " + path + " as a content pack", e);
                     }
                 }
@@ -125,7 +125,7 @@ public class ContentPack {
         pack.blocks = blocks;
         pack.shapes = shapes;
 
-        if (Configuration.IS_DEBUG) {
+        if (Configuration.DEBUG_MODE) {
             Almura.LOGGER.info("Loaded -> " + pack);
         }
 
@@ -160,14 +160,6 @@ public class ContentPack {
 
     public List<PackShape> getShapes() {
         return Collections.unmodifiableList(shapes);
-    }
-
-    /**
-     * Refreshes shape information from the file
-     */
-    @SideOnly(Side.CLIENT)
-    public void reloadIconsAndShape() throws IOException, ConfigurationException {
-        //TODO Redo this
     }
 
     @Override

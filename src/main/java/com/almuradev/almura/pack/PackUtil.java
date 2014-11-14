@@ -53,13 +53,13 @@ public class PackUtil {
                     Filesystem.getImageDimension(Files.newInputStream(
                             Paths.get(Filesystem.CONFIG_PACKS_PATH.toString(), pack.getName() + File.separator + textureName + ".png")));
         } catch (IOException e) {
-            if (Configuration.IS_DEBUG) {
+            if (Configuration.DEBUG_MODE) {
                 Almura.LOGGER.error("Failed to load texture [" + textureName + "] for dimensions", e);
             }
         }
 
         if (dimension == null) {
-            if (Configuration.IS_DEBUG) {
+            if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                 Almura.LOGGER.error("Failed to calculate the dimensions for texture [" + textureName + "]");
             }
             return null;

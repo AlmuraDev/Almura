@@ -1,1 +1,5 @@
-debug: true
+
+debug:
+    all: false
+    language: false
+    pack: true

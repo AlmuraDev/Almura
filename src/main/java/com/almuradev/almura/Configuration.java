@@ -11,7 +11,9 @@ import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Configuration {
 
-    public static final boolean IS_DEBUG;
+    public static final boolean DEBUG_MODE;
+    public static final boolean DEBUG_LANGUAGES_MODE;
+    public static final boolean DEBUG_PACKS_MODE;
     public static final boolean IS_SERVER = FMLCommonHandler.instance().getEffectiveSide().isServer();
     public static final boolean IS_CLIENT = FMLCommonHandler.instance().getEffectiveSide().isClient();
 
@@ -22,6 +24,8 @@ public class Configuration {
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
-        IS_DEBUG = reader.getChild("debug").getBoolean(true);
+        DEBUG_MODE = reader.getChild("debug").getChild("all", true).getBoolean(false);
+        DEBUG_LANGUAGES_MODE = reader.getChild("debug").getChild("language", true).getBoolean(false);
+        DEBUG_PACKS_MODE = reader.getChild("debug").getChild("debug").getChild("pack", true).getBoolean(false);
     }
 }

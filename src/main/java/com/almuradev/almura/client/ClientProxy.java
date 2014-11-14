@@ -32,9 +32,6 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onPreInitialization(FMLPreInitializationEvent event) {
         super.onPreInitialization(event);
-
-        Keybindings.fakeStaticLoad();
-        FMLCommonHandler.instance().bus().register(new KeyListener());
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
     }
 
