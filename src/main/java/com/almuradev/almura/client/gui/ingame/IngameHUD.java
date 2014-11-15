@@ -25,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -195,6 +196,9 @@ public class IngameHUD extends MalisisGui {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         renderer.enableBlending();
         super.drawScreen(mouseX, mouseY, partialTicks);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

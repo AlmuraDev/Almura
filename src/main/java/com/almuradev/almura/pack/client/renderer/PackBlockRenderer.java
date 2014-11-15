@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.client.renderer;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.client.gui.AlmuraMainMenu;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
@@ -27,6 +28,8 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Random;
+
 public class PackBlockRenderer extends BaseRenderer {
     private Cube vanillaShape;
 
@@ -44,7 +47,6 @@ public class PackBlockRenderer extends BaseRenderer {
             super.drawShape(vanillaShape);
             return;
         }
-
         shape.resetState();
         enableBlending();
         rp.interpolateUV.set(false);
@@ -55,6 +57,12 @@ public class PackBlockRenderer extends BaseRenderer {
             RenderHelper.enableStandardItemLighting();
         }
         rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
+        if (renderType == TYPE_ISBRH_WORLD) {
+            final ForgeDirection direction = ForgeDirection.getOrientation(blockMetadata);
+            if (direction == ForgeDirection.NORTH) {
+                shape.rotate(-90f, 1, 0, 0);
+            }
+        }
         drawShape(shape, rp);
         if (renderType == TYPE_ISBRH_INVENTORY) {
             RenderHelper.disableStandardItemLighting();
