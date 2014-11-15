@@ -52,9 +52,13 @@ public class PackBlockRenderer extends BaseRenderer {
         rp.flipV.set(true);
         if (renderType == TYPE_ISBRH_INVENTORY) {
             shape.scale(1, 1, 1);
-        }        
+            RenderHelper.enableStandardItemLighting();
+        }
         rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
         drawShape(shape, rp);
+        if (renderType == TYPE_ISBRH_INVENTORY) {
+            RenderHelper.disableStandardItemLighting();
+        }
     }
 
     @Override

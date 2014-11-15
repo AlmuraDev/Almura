@@ -15,6 +15,7 @@ import net.malisis.core.renderer.BaseRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -37,9 +38,14 @@ public class PackItemRenderer extends BaseRenderer {
 
         if (renderType == TYPE_ITEM_INVENTORY) {
             shape.scale(1, 1, 1);
+            RenderHelper.enableStandardItemLighting();
         }
 
         drawShape(shape, rp);
+
+        if (renderType == TYPE_ITEM_INVENTORY) {
+            RenderHelper.disableStandardItemLighting();
+        }
     }
 
     @Override
