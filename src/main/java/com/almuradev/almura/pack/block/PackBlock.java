@@ -21,14 +21,19 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.icon.ClippedIcon;
+import net.malisis.core.util.EntityUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -179,6 +184,12 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     @Override
     public int quantityDropped(Random p_149745_1_) {
         return dropAmount;
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack item) {
+        final ForgeDirection dir = EntityUtils.getEntityFacing(entity, true);
+        world.setBlockMetadataWithNotify(x, y, z, dir.getOpposite().ordinal(), 3);
     }
 
     /**
