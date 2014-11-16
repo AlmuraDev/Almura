@@ -65,7 +65,7 @@ public class IngameHUD extends MalisisGui {
         gradientContainer.setBottomAlpha(180);
 
         // Player Display Name
-        playerTitle = new UILabel(this, "PlayerName");
+        playerTitle = new UILabel(this, "");
         playerTitle.setPosition(6, 2, Anchor.LEFT | Anchor.TOP);
         playerTitle.setColor(0xffffffff);
         playerTitle.setSize(7, 7);
@@ -278,8 +278,11 @@ public class IngameHUD extends MalisisGui {
             xpProperty.setVisible(false);
         }
 
-        if (Minecraft.getMinecraft().isSingleplayer()) {
+        if (playerTitle.getText().isEmpty()) {
             playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
+        }
+        
+        if (Minecraft.getMinecraft().isSingleplayer()) {
             serverCount.setText("--");
         } else {
             serverCount.setText(Minecraft.getMinecraft().getNetHandler().playerInfoList.size() + "/" + Minecraft.getMinecraft()
