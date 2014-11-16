@@ -30,25 +30,15 @@ import java.util.Random;
 
 public class AlmuraMainMenu extends MalisisGui {
 
-    static final int PAN_TIME = 600;
-    int maxPanTime = PAN_TIME;
-    int panTime = PAN_TIME;
-    static final int EXTRA_PAN_TIME = 150;
-    static final int HEIGHT_PERCENT = 70;
-    static final int WIDTH_PERCENT = 75;
-    final static Random rand = new Random();
+    private static final GuiTexture ALMURA_2_LOGO = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/almura2b.png"));
+    private static final Random RANDOM = new Random();
     public static int imageNum = 0;
     public UIBackgroundContainer window;
-    //public GuiTexture background;
     public UIButton singlePlayerButton, optionsButton, liveServerButton, devServerButton, closeButton;
-    public UIImage almuraMan;
     public int screenH, screenW;
     public UIImage backgroundImage;
     public int tick = 1;
-    int picture = -1;
     int timer = 1;
-    boolean zoomIn = true;
-    boolean zoomOut = false;
 
     public AlmuraMainMenu() {
 
@@ -79,53 +69,43 @@ public class AlmuraMainMenu extends MalisisGui {
         UIContainer panel = new UIContainer(this, 75, 100);
         panel.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);
 
-        GuiTexture almuraGuy = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/almura2b.png"));
-        almuraMan = new UIImage(this, almuraGuy, null);
-        almuraMan.setSize(panel.getWidth(), panel.getHeight());
-
-        panel.add(almuraMan);
+        final UIImage almuraLogo = new UIImage(this, ALMURA_2_LOGO, null);
+        almuraLogo.setSize(panel.getWidth(), panel.getHeight());
 
         singlePlayerButton = (new UIButton(this, ChatColor.WHITE + "B").setPosition(0, -90, Anchor.BOTTOM | Anchor.CENTER).register(this));
         singlePlayerButton.setSize(150, 15);
-        singlePlayerButton.setName("singlePlayerButton");
+        singlePlayerButton.setName("BTNSINGLEPLAYER");
 
         devServerButton =
                 (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "Dev" + ChatColor.WHITE + " Server")
-                         .setPosition(0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
+                        .setPosition(0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
         devServerButton.setSize(150, 15);
-        devServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2.0 Dev Server", 5));
-        devServerButton.setName("devServerButton");
+        devServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Dev Server", 5));
+        devServerButton.setName("BTNDEVSERVER");
 
         liveServerButton =
                 (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Live" + ChatColor.WHITE + " Server")
-                         .setPosition(0, -50, Anchor.CENTER | Anchor.BOTTOM).register(this));
+                        .setPosition(0, -50, Anchor.CENTER | Anchor.BOTTOM).register(this));
         liveServerButton.setSize(150, 15);
-        liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2.0 Live Server", 5));
-        liveServerButton.setName("liveServerButton");
+        liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 5));
+        liveServerButton.setName("BTNLIVESERVER");
 
         optionsButton = (new UIButton(this, ChatColor.WHITE + "Options").setPosition(-30, -20, Anchor.CENTER | Anchor.BOTTOM).register(this));
         optionsButton.setSize(50, 15);
-        optionsButton.setName("optionsButton");
+        optionsButton.setName("BTNOPTIONS");
 
         closeButton = (new UIButton(this, ChatColor.WHITE + "Quit").setPosition(30, -20, Anchor.CENTER | Anchor.BOTTOM).register(this));
         closeButton.setSize(50, 15);
-        closeButton.setName("closeButton");
+        closeButton.setName("BTNCLOSE");
 
-        UILabel version = new UILabel(this, ChatColor.WHITE + Almura.GUI_VERSION);
+        final UILabel version = new UILabel(this, ChatColor.WHITE + Almura.GUI_VERSION);
         version.setPosition(0, -5, Anchor.CENTER | Anchor.BOTTOM);
         version.setFontScale(0.75F);
 
-        main.add(backgroundImage);
-        window.add(optionsButton);
-        window.add(singlePlayerButton);
-        window.add(devServerButton);
-        window.add(liveServerButton);
-        window.add(closeButton);
-        window.add(version);
+        panel.add(almuraLogo);
+        window.add(panel, singlePlayerButton, devServerButton, liveServerButton, optionsButton, closeButton, version);
 
-        window.add(panel);
-
-        main.add(window);
+        main.add(backgroundImage, window);
 
         new UIMoveHandle(this, window);
 
@@ -135,64 +115,50 @@ public class AlmuraMainMenu extends MalisisGui {
     private static String getTime() {
         int hours = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         if (hours < 6) {
-            imageNum = rand.nextInt(13 - 1) + 1;
+            imageNum = RANDOM.nextInt(13 - 1) + 1;
             return "night";
         }
         if (hours < 12) {
-            imageNum = rand.nextInt(29 - 1) + 1;
+            imageNum = RANDOM.nextInt(29 - 1) + 1;
             return "day";
         }
         if (hours < 20) {
-            imageNum = rand.nextInt(16 - 1) + 1;
+            imageNum = RANDOM.nextInt(16 - 1) + 1;
             return "evening";
         }
-        imageNum = rand.nextInt(13 - 1) + 1;
+        imageNum = RANDOM.nextInt(13 - 1) + 1;
         return "night";
-    }
-
-    @Override
-    public void update(int mouseX, int mouseY, float partialTick) {  //Every Frame
-
     }
 
     @Override
     public void close() {
     }
 
-    @Override
-    public void updateScreen() {  //Every Tick
-
-    }
-
-    @Subscribe  //@EventHandler == Bukkit //Forge or FML, not main class == @SubscribeEvents
+    @Subscribe
     public void onButtonClick(ClickEvent event) {
+        switch (event.getComponent().getName().toUpperCase()) {
+            case "BTNSINGLEPLAYER":
+                this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiSelectWorld(this));
+                break;
+            case "BTNMULTIPLAYER":
+                this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this));
+                break;
+            case "BTNDEVSERVER":
+                FMLClientHandler.instance().setupServerList();
+                FMLClientHandler.instance().connectToServer(this, new ServerData("DevServer", "obsidianbox.org"));
+                break;
+            case "BTNLIVESERVER":
+                FMLClientHandler.instance().setupServerList();
+                FMLClientHandler.instance().connectToServer(this, new ServerData("DevServer", "localhost"));
+                break;
+            case "BTNOPTIONS":
+                this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiOptions(this, this.mc.gameSettings));
+                break;
+            case "BTNCLOSE":
+                this.mc.shutdown();
+                break;
 
-        if (event.getComponent().getName().equalsIgnoreCase("singlePlayerButton")) {
-            this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiSelectWorld(this));
         }
-
-        if (event.getComponent().getName().equalsIgnoreCase("multiPlayerButton")) {
-            this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this));
-        }
-
-        if (event.getComponent().getName().equalsIgnoreCase("devServerButton")) {
-            FMLClientHandler.instance().setupServerList();
-            FMLClientHandler.instance().connectToServer(this, new ServerData("DevServer", "obsidianbox.org"));
-        }
-
-        if (event.getComponent().getName().equalsIgnoreCase("liveServerButton")) {
-            FMLClientHandler.instance().setupServerList();
-            FMLClientHandler.instance().connectToServer(this, new ServerData("DevServer", "localhost"));
-        }
-
-        if (event.getComponent().getName().equalsIgnoreCase("optionsButton")) {
-            this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiOptions(this, this.mc.gameSettings));
-        }
-
-        if (event.getComponent().getName().equalsIgnoreCase("closeButton")) {
-            this.mc.shutdown();
-        }
-        MalisisGui.currentGui().close();
     }
 
     @Override
@@ -207,14 +173,14 @@ public class AlmuraMainMenu extends MalisisGui {
         super.drawScreen(mouseX, mouseY, partialTicks);
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             singlePlayerButton.setText("Multiplayer");
-            singlePlayerButton.setName("multiPlayerButton");
-            singlePlayerButton.setTooltip(new UITooltip(this, "Play Multiplayer using Almura 2.0", 5));
+            singlePlayerButton.setName("BTNMULTIPLAYER");
             singlePlayerButton.setSize(150, 15);
+            singlePlayerButton.setTooltip(new UITooltip(this, "Play Multiplayer using Almura 2", 5));
         } else {
             singlePlayerButton.setText("Singleplayer");
-            singlePlayerButton.setName("singlePlayerButton");
-            singlePlayerButton.setTooltip(new UITooltip(this, "Play Singleplayer using Almura 2.0", 5));
+            singlePlayerButton.setName("BTNSINGLEPLAYER");
             singlePlayerButton.setSize(150, 15);
+            singlePlayerButton.setTooltip(new UITooltip(this, "Play Singleplayer using Almura 2", 5));
         }
     }
 
