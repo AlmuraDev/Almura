@@ -13,6 +13,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.common.MinecraftForge;
 
 public class ServerProxy extends CommonProxy {
 
@@ -23,17 +24,18 @@ public class ServerProxy extends CommonProxy {
         super.onPreInitialization(event);
 
         FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        Almura.NETWORK.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName()), (EntityPlayerMP) event.player);
+        Almura.NETWORK_FORGE.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName()), (EntityPlayerMP) event.player);
     }
 
     @SubscribeEvent
     public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.fromDim != event.toDim) {
-            Almura.NETWORK.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName()), (EntityPlayerMP) event.player);
+            Almura.NETWORK_FORGE.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName()), (EntityPlayerMP) event.player);
         }
     }
 }

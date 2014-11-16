@@ -8,6 +8,8 @@ package com.almuradev.almura;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
+import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
+import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -20,7 +22,9 @@ import java.util.Map;
 public class CommonProxy {
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
-        Almura.NETWORK.registerMessage(S00AdditionalWorldInfo.class, S00AdditionalWorldInfo.class, 0, Side.CLIENT);
+        Almura.NETWORK_FORGE.registerMessage(S00AdditionalWorldInfo.class, S00AdditionalWorldInfo.class, 0, Side.CLIENT);
+        Almura.NETWORK_BUKKIT.registerMessage(B00PlayerDisplayName.class, B00PlayerDisplayName.class, 1, Side.CLIENT);
+        Almura.NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 2, Side.CLIENT);
 
         Tabs.fakeStaticLoad();
 

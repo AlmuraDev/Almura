@@ -20,9 +20,10 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = Almura.MOD_ID)
 public class Almura {
     public static final String MOD_ID = "almura";
-    public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID.toUpperCase());
+    public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID);
     public static final LanguageManager LANGUAGES = new LanguageManager();
-    public static final SimpleNetworkWrapper NETWORK = new SimpleNetworkWrapper(Almura.MOD_ID);
+    public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
+    public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
     public static String GUI_VERSION = "Almura 2.0 build 16 alpha";
     public static String PACK_VERSION = "Content Pack 1";
 
