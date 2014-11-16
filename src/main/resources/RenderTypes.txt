@@ -1,3 +1,9 @@
+====
+    This file is part of Almura, All Rights Reserved.
+
+    Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+====
+
 -1 - No render (used for signs, pure tile entities /End Portal Block /moving piston / skull)
 0 - Standard blocks / trap door
 1 - "Crossed Squares" (Flowers, reeds, web)

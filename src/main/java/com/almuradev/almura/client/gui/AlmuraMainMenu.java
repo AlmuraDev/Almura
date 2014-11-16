@@ -242,7 +242,7 @@ public class AlmuraMainMenu extends MalisisGui {
 
     private void randomBackground() {
         String qualifier = getTime().toLowerCase();
-        GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/" + qualifier + "//" + qualifier + imageNum + ".jpg"));
+        GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/" + qualifier + "/" + qualifier + imageNum + ".jpg"));
         backgroundImage.setIcon(background, null);
         backgroundImage.setZIndex(-1);
         backgroundImage.setSize(0, 0);
