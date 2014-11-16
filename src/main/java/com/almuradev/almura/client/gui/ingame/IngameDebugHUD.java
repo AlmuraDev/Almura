@@ -7,7 +7,6 @@ package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
-
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -94,7 +93,7 @@ public class IngameDebugHUD extends MalisisGui {
         version.setFontScale(0.7f);
 
         debugPanel.add(debugTitle, fpsLabel, fps, memoryLabel, memoryDebug, memoryAllocated, directionLabel, xLoc, yLoc, zLoc, facingLabel, directionLoc,
-                       biomeLabel, biomeName, lightLabel, blockLight, skyLight, rawLight, version);
+                biomeLabel, biomeName, lightLabel, blockLight, skyLight, rawLight, version);
 
         addToScreen(debugPanel);
     }

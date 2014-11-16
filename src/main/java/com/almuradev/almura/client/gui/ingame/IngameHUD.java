@@ -18,9 +18,7 @@ import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.minecraft.block.BlockLever;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
@@ -42,21 +40,17 @@ public class IngameHUD extends MalisisGui {
     public static final GuiTexture MAP_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/map.png"));
     public static final GuiTexture WORLD_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/world.png"));
     public static final GuiTexture CLOCK_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/clock.png"));
-
-    public static IngameHUD INSTANCE;
-
     private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
-
     private static final Color greenBar = new Color(0, 1f, 0, 1f);
     private static final Color orangeBar = new Color(0.8039f, 0.6784f, 0f, 1f);
     private static final Color redBar = new Color(0.69f, 0.09f, 0.12f, 1f);
-
+    public static IngameHUD INSTANCE;
+    public final UILabel worldDisplay;
     private final UIImage mapImage, worldImage, playerImage;
     private final UILabel playerTitle;
     private final UILabel serverCount;
     private final UILabel playerCoords;
     private final UILabel playerCompass;
-    public final UILabel worldDisplay;
     private final UILabel worldTime;
     private final UILabel xpLevel;
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
@@ -187,7 +181,7 @@ public class IngameHUD extends MalisisGui {
         xpLevel.setFontScale(0.8F);
 
         gradientContainer.add(playerTitle, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty, mapImage, playerCoords,
-                              worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
+                worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
 
         addToScreen(gradientContainer);
     }
@@ -338,12 +332,12 @@ public class IngameHUD extends MalisisGui {
         int position = (int) (((Minecraft.getMinecraft().thePlayer.rotationYaw % 360 + 360) % 360) / 360 * 16);
 
         return "" + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
-               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
-               + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
-               + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
-               + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
-               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
-               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
+                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
+                + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
+                + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
+                + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
+                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
+                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
     }
 
     public String getTime() {

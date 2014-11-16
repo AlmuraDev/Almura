@@ -47,7 +47,7 @@ public class AlmuraMainMenu extends MalisisGui {
         guiscreenBackground = false; // prevent full screen black background.       
         screenH = Minecraft.getMinecraft().displayHeight;
         screenW = Minecraft.getMinecraft().displayWidth;
-        
+
         // Main Container
         UIContainer main = new UIContainer(this);
 

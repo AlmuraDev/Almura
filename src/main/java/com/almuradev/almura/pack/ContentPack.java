@@ -9,13 +9,14 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.block.PackBlock;
+import com.almuradev.almura.pack.block.PackModelBlock;
 import com.almuradev.almura.pack.item.PackFood;
 import com.almuradev.almura.pack.item.PackItem;
+import com.almuradev.almura.pack.model.PackModel;
 import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.malisis.core.renderer.model.MalisisModel;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 
@@ -24,11 +25,7 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ContentPack {
 
@@ -37,6 +34,7 @@ public class ContentPack {
     protected List<Block> blocks;
     protected List<Item> items;
     protected List<PackShape> shapes;
+    protected List<PackModel> models;
 
     public ContentPack(String name) {
         this.name = name;
@@ -71,9 +69,10 @@ public class ContentPack {
         final ContentPack pack = new ContentPack(smpName);
         PACKS.put(smpName, pack);
 
-        final List<Block> blocks = new ArrayList<>();
-        final List<Item> items = new ArrayList<>();
+        final List<Block> blocks = new LinkedList<>();
+        final List<Item> items = new LinkedList<>();
         final List<PackShape> shapes = new ArrayList<>();
+        final List<PackModel> models = new ArrayList<>();
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, Filesystem.PACK_FILES_ONLY_FILTER)) {
             for (Path path : stream) {
@@ -101,7 +100,12 @@ public class ContentPack {
                             Almura.PROXY.onCreate(food);
                             break;
                         case "Block":
-                            final PackBlock block = PackBlock.createFromReader(pack, name, reader);
+                            final Block block;
+                            if (reader.hasChild("model")) {
+                                block = PackModelBlock.createFromReader(pack, name, reader);
+                            } else {
+                                block = PackBlock.createFromReader(pack, name, reader);
+                            }
                             blocks.add(block);
                             Almura.PROXY.onCreate(block);
                             break;
@@ -115,6 +119,8 @@ public class ContentPack {
                     reader.load();
                     shapes.add(PackShape.createFromReader(path.getFileName().toString().split(".shape")[0], reader));
                     entry.close();
+                } else if (path.getFileName().toString().endsWith(".obj")) {
+                    models.add(PackModel.createFromReader(pack, path.getFileName().toString().split(".obj")[0]));
                 }
             }
         } catch (IOException e) {
@@ -124,6 +130,7 @@ public class ContentPack {
         pack.items = items;
         pack.blocks = blocks;
         pack.shapes = shapes;
+        pack.models = models;
 
         if (Configuration.DEBUG_MODE) {
             Almura.LOGGER.info("Loaded -> " + pack);
@@ -160,6 +167,10 @@ public class ContentPack {
 
     public List<PackShape> getShapes() {
         return Collections.unmodifiableList(shapes);
+    }
+
+    public List<PackModel> getModels() {
+        return Collections.unmodifiableList(models);
     }
 
     @Override

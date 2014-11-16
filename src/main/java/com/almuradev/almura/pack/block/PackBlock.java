@@ -12,23 +12,19 @@ import com.almuradev.almura.pack.*;
 import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.util.EntityUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -45,6 +41,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     //SHAPES
     private final String shapeName;
+    private final int dropAmount;
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
@@ -54,7 +51,6 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     //WIREFRAME
     private boolean useVanillaWireframe;
     private List<Double> wireframeBounds = new LinkedList<>();
-    private final int dropAmount;
 
     public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, float lightLevel, int lightOpacity,
                      boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
@@ -73,7 +69,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         setHardness(hardness);
         setResistance(resistance);
         setLightLevel(lightLevel);
-        
+
         if (!useVanillaCollision) {
             setBlockBounds(collisionBounds.get(0).floatValue(), collisionBounds.get(1).floatValue(), collisionBounds.get(2).floatValue(), collisionBounds.get(3).floatValue(), collisionBounds.get(4).floatValue(), collisionBounds.get(5).floatValue());
         }
@@ -129,7 +125,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
         return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
-                             textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
+                textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
     }
 
     @Override
@@ -201,8 +197,8 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
             box = super.getCollisionBoundingBoxFromPool(world, x, y, z);
         } else {
             box =
-                    AxisAlignedBB.getBoundingBox(x + collisionBounds.get(0), y + collisionBounds.get(1), z + collisionBounds.get(2), 
-                                                 x + collisionBounds.get(3), y + collisionBounds.get(4), z + collisionBounds.get(5));
+                    AxisAlignedBB.getBoundingBox(x + collisionBounds.get(0), y + collisionBounds.get(1), z + collisionBounds.get(2),
+                            x + collisionBounds.get(3), y + collisionBounds.get(4), z + collisionBounds.get(5));
         }
         return box;
     }
@@ -219,7 +215,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         } else {
             box =
                     AxisAlignedBB.getBoundingBox(x + wireframeBounds.get(0), y + wireframeBounds.get(1), z + wireframeBounds.get(2),
-                                                 x + wireframeBounds.get(3), y + wireframeBounds.get(4), z + wireframeBounds.get(5));
+                            x + wireframeBounds.get(3), y + wireframeBounds.get(4), z + wireframeBounds.get(5));
         }
         return box;
     }

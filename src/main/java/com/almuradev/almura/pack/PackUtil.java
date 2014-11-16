@@ -12,7 +12,6 @@ import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.util.IIcon;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.awt.*;
 import java.io.File;
@@ -73,8 +72,8 @@ public class PackUtil {
 
             clippedIcons[i] =
                     new ClippedIcon((MalisisIcon) source, (float) (coordList.get(0) / dimension.getWidth()),
-                                    (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()),
-                                    (float) (coordList.get(3) / dimension.getHeight()));
+                            (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()),
+                            (float) (coordList.get(3) / dimension.getHeight()));
         }
 
         return clippedIcons;

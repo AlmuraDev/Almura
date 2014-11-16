@@ -11,8 +11,11 @@ import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.block.PackBlock;
+import com.almuradev.almura.pack.block.PackModelBlock;
 import com.almuradev.almura.pack.client.renderer.PackBlockRenderer;
 import com.almuradev.almura.pack.client.renderer.PackItemRenderer;
+import com.almuradev.almura.pack.client.renderer.PackModelRenderer;
+import com.almuradev.almura.pack.model.PackModel;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -28,11 +31,13 @@ public class ClientProxy extends CommonProxy {
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
     public static final PackBlockRenderer PACK_BLOCK_RENDERER = new PackBlockRenderer();
     public static final PackItemRenderer PACK_ITEM_RENDERER = new PackItemRenderer();
+    public static final PackModelRenderer PACK_MODEL_RENDERER = new PackModelRenderer();
 
     @Override
     public void onPreInitialization(FMLPreInitializationEvent event) {
         super.onPreInitialization(event);
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
+        PACK_MODEL_RENDERER.registerFor(PackModelBlock.class);
     }
 
     @Override

@@ -23,20 +23,6 @@ import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 
-/**
- * 0 -> North
- * 1 -> South
- * 2 -> West
- * 3 -> East
- * 4 -> Down-North
- * 5 -> Down-South
- * 6 -> Down-West
- * 7 -> Down-East
- * 8 -> Up-North
- * 9 -> Up-South
- * 10 -> Up-West
- * 11 -> Up-East
- */
 public class PackBlockRenderer extends BaseRenderer {
     private Cube vanillaShape;
 

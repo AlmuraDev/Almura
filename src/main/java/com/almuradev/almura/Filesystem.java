@@ -5,6 +5,9 @@
  */
 package com.almuradev.almura;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,15 +20,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 public class Filesystem {
 
@@ -58,7 +54,7 @@ public class Filesystem {
         @Override
         public boolean accept(Path entry) throws IOException {
             return !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".yml") || entry.getFileName().toString().endsWith(".png")
-                                                 || entry.getFileName().toString().endsWith(".shape"));
+                    || entry.getFileName().toString().endsWith(".shape") || entry.getFileName().toString().endsWith(".obj"));
         }
     };
 

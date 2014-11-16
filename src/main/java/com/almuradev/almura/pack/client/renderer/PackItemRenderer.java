@@ -10,7 +10,6 @@ import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackFace;
-import com.almuradev.almura.pack.model.PackShape;
 import net.malisis.core.renderer.BaseRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;
