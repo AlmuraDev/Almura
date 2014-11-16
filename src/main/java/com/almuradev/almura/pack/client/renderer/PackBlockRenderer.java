@@ -59,8 +59,23 @@ public class PackBlockRenderer extends BaseRenderer {
         rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
         if (renderType == TYPE_ISBRH_WORLD) {
             final ForgeDirection direction = ForgeDirection.getOrientation(blockMetadata);
-            if (direction == ForgeDirection.NORTH) {
-                shape.rotate(-90f, 1, 0, 0);
+            if (direction == ForgeDirection.UNKNOWN) {
+                System.out.println("Unknown facing!");
+                System.out.println("Player facing: " + ((blockMetadata & 0x0F) >> 4));
+                System.out.println("Camera facing: " + (blockMetadata & 0xF0));
+            }
+            switch (direction) {
+                case NORTH:
+                    shape.rotate(180f, 0, -1, 0);
+                    break;
+                case SOUTH:
+                    break;
+                case EAST:
+                    shape.rotate(90f, 0, 1, 0);
+                    break;
+                case WEST:
+                    shape.rotate(90f, 0, -1, 0);
+                    break;
             }
         }
         drawShape(shape, rp);

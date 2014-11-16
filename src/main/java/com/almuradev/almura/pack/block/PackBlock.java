@@ -32,6 +32,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -188,8 +189,14 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack item) {
-        final ForgeDirection dir = EntityUtils.getEntityFacing(entity, true);
-        world.setBlockMetadataWithNotify(x, y, z, dir.getOpposite().ordinal(), 3);
+        final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
+        int metadata = cameraDir.getOpposite().ordinal();
+
+        if (cameraDir == ForgeDirection.UP || cameraDir == ForgeDirection.DOWN) {
+            final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
+            metadata = ((playerDir.getOpposite().ordinal() << 4) & 0xF0) | (cameraDir.getOpposite().ordinal() & 0x0F);
+        }
+        world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
     }
 
     /**
