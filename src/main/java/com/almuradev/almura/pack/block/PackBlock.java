@@ -8,11 +8,7 @@ package com.almuradev.almura.pack.block;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.ContentPack;
-import com.almuradev.almura.pack.IClipContainer;
-import com.almuradev.almura.pack.IShapeContainer;
-import com.almuradev.almura.pack.PackIcon;
-import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.*;
 import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
@@ -190,13 +186,8 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack item) {
         final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
-        int metadata = cameraDir.getOpposite().ordinal();
-
-        if (cameraDir == ForgeDirection.UP || cameraDir == ForgeDirection.DOWN) {
-            final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
-            metadata = ((playerDir.getOpposite().ordinal() << 4) & 0xF0) | (cameraDir.getOpposite().ordinal() & 0x0F);
-        }
-        world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
+        final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
+        world.setBlockMetadataWithNotify(x, y, z, RotationMeta.getRotationMeta(cameraDir, playerDir).ordinal(), 3);
     }
 
     /**

@@ -12,6 +12,7 @@ import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.util.IIcon;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.awt.*;
 import java.io.File;
