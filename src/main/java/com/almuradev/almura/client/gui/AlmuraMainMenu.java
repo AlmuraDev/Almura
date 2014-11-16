@@ -8,7 +8,9 @@ package com.almuradev.almura.client.gui;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.google.common.eventbus.Subscribe;
+
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
@@ -24,6 +26,7 @@ import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.input.Keyboard;
 
 import java.util.Calendar;
@@ -63,8 +66,8 @@ public class AlmuraMainMenu extends MalisisGui {
         window.setSize(200, 225);
         window.setPosition(5, 0, Anchor.CENTER | Anchor.MIDDLE);
         window.setColor(Integer.MIN_VALUE);
-        window.setTopAlpha(75);
-        window.setBottomAlpha(75);
+        window.setTopAlpha(100);
+        window.setBottomAlpha(100);
 
         //Message contents
         UIContainer panel = new UIContainer(this, 75, 100);
@@ -74,20 +77,16 @@ public class AlmuraMainMenu extends MalisisGui {
         almuraLogo.setSize(panel.getWidth(), panel.getHeight());
 
         singlePlayerButton = (new UIButton(this, ChatColor.WHITE + "B").setPosition(0, -90, Anchor.BOTTOM | Anchor.CENTER).register(this));
-        singlePlayerButton.setSize(150, 15);
+        singlePlayerButton.setSize(180, 15);
         singlePlayerButton.setName("BTNSINGLEPLAYER");
 
-        devServerButton =
-                (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "Dev" + ChatColor.WHITE + " Server")
-                        .setPosition(0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
-        devServerButton.setSize(150, 15);
-        devServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Dev Server", 5));
+        devServerButton = (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "ObsidianBox" + ChatColor.WHITE + " Server").setPosition(0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
+        devServerButton.setSize(180, 15);
+        devServerButton.setTooltip(new UITooltip(this, "Logon to ObsidianBox Server", 5));
         devServerButton.setName("BTNDEVSERVER");
 
-        liveServerButton =
-                (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Live" + ChatColor.WHITE + " Server")
-                        .setPosition(0, -50, Anchor.CENTER | Anchor.BOTTOM).register(this));
-        liveServerButton.setSize(150, 15);
+        liveServerButton = (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Almura Test" + ChatColor.WHITE + " Server").setPosition(0, -50, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        liveServerButton.setSize(180, 15);
         liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 5));
         liveServerButton.setName("BTNLIVESERVER");
 
@@ -128,14 +127,21 @@ public class AlmuraMainMenu extends MalisisGui {
                 break;
             case "BTNDEVSERVER":
                 FMLClientHandler.instance().setupServerList();
-                FMLClientHandler.instance().connectToServer(this, new ServerData("DevServer", "obsidianbox.org"));
+                FMLClientHandler.instance().connectToServer(this, new ServerData("ObsidianBox", "obsidianbox.org"));
                 break;
             case "BTNLIVESERVER":
                 FMLClientHandler.instance().setupServerList();
-                FMLClientHandler.instance().connectToServer(this, new ServerData("DevServer", "localhost"));
+                FMLClientHandler.instance().connectToServer(this, new ServerData("LocalHost", "69.4.96.139"));
+                break;
+            case "BTNLOCALHOSTSERVER":
+                FMLClientHandler.instance().setupServerList();
+                FMLClientHandler.instance().connectToServer(this, new ServerData("LocalHost", "localhost"));
                 break;
             case "BTNOPTIONS":
                 this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiOptions(this, this.mc.gameSettings));
+                break;
+            case "BTNMODS":                
+                this.mc.displayGuiScreen(new GuiModList(this));
                 break;
             case "BTNCLOSE":
                 this.mc.shutdown();
@@ -157,13 +163,33 @@ public class AlmuraMainMenu extends MalisisGui {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             singlePlayerButton.setText("Multiplayer");
             singlePlayerButton.setName("BTNMULTIPLAYER");
-            singlePlayerButton.setSize(150, 15);
+            singlePlayerButton.setSize(180, 15);
             singlePlayerButton.setTooltip(new UITooltip(this, "Play Multiplayer using Almura 2", 5));
+            
+            liveServerButton.setText("Localhost");
+            liveServerButton.setName("BTNLOCALHOSTSERVER");
+            liveServerButton.setSize(180, 15);
+            liveServerButton.setTooltip(new UITooltip(this, "Logon to localhost server", 5));
+            
+            optionsButton.setText("Mods");
+            optionsButton.setSize(50, 15);
+            optionsButton.setName("BTNMODS");
+            
+            
         } else {
             singlePlayerButton.setText("Singleplayer");
             singlePlayerButton.setName("BTNSINGLEPLAYER");
-            singlePlayerButton.setSize(150, 15);
+            singlePlayerButton.setSize(180, 15);
             singlePlayerButton.setTooltip(new UITooltip(this, "Play Singleplayer using Almura 2", 5));
+            
+            liveServerButton.setText(ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Almura Test" + ChatColor.WHITE + " Server");
+            liveServerButton.setSize(180, 15);
+            liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Test Server", 5));
+            liveServerButton.setName("BTNLIVESERVER");
+            
+            optionsButton.setText("Options");
+            optionsButton.setSize(50, 15);
+            optionsButton.setName("BTNOPTIONS");
         }
     }
 

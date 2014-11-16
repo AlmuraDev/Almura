@@ -296,7 +296,7 @@ public class IngameHUD extends MalisisGui {
                 .setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
 
         if (Minecraft.getMinecraft().isSingleplayer()) {
-            worldDisplay.setText(MinecraftServer.getServer().getWorldName());
+            worldDisplay.setText(Character.toUpperCase(MinecraftServer.getServer().getWorldName().charAt(0)) + MinecraftServer.getServer().getWorldName().substring(1));
         }
         worldImage.setPosition(-(worldDisplay.getWidth() + 9), worldImage.getY(), Anchor.RIGHT | Anchor.TOP);
         playerCoords.setText(String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ));
