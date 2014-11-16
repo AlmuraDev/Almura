@@ -29,4 +29,11 @@ public class ServerProxy extends CommonProxy {
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Almura.NETWORK.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName()), (EntityPlayerMP) event.player);
     }
+
+    @SubscribeEvent
+    public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.fromDim != event.toDim) {
+            Almura.NETWORK.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName()), (EntityPlayerMP) event.player);
+        }
+    }
 }
