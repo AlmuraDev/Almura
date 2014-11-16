@@ -12,6 +12,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
@@ -32,7 +33,7 @@ public class AlmuraMainMenu extends MalisisGui {
 
     private static final GuiTexture ALMURA_2_LOGO = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/almura2b.png"));
     private static final Random RANDOM = new Random();
-    public static int imageNum = 0;
+    private static int imageNum = 0;
     public UIBackgroundContainer window;
     public UIButton singlePlayerButton, optionsButton, liveServerButton, devServerButton, closeButton;
     public int screenH, screenW;
@@ -40,13 +41,14 @@ public class AlmuraMainMenu extends MalisisGui {
     public int tick = 1;
     int timer = 1;
 
+    @SuppressWarnings("rawtypes")
     public AlmuraMainMenu() {
 
         guiscreenBackground = false; // prevent full screen black background.       
         screenH = Minecraft.getMinecraft().displayHeight;
         screenW = Minecraft.getMinecraft().displayWidth;
+        
         // Main Container
-        @SuppressWarnings("rawtypes")
         UIContainer main = new UIContainer(this);
 
         // Container background image.
@@ -65,7 +67,6 @@ public class AlmuraMainMenu extends MalisisGui {
         window.setBottomAlpha(75);
 
         //Message contents
-        @SuppressWarnings("rawtypes")
         UIContainer panel = new UIContainer(this, 75, 100);
         panel.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);
 
@@ -110,24 +111,6 @@ public class AlmuraMainMenu extends MalisisGui {
         new UIMoveHandle(this, window);
 
         addToScreen(main);
-    }
-
-    private static String getTime() {
-        int hours = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if (hours < 6) {
-            imageNum = RANDOM.nextInt(13 - 1) + 1;
-            return "night";
-        }
-        if (hours < 12) {
-            imageNum = RANDOM.nextInt(29 - 1) + 1;
-            return "day";
-        }
-        if (hours < 20) {
-            imageNum = RANDOM.nextInt(16 - 1) + 1;
-            return "evening";
-        }
-        imageNum = RANDOM.nextInt(13 - 1) + 1;
-        return "night";
     }
 
     @Override
@@ -189,6 +172,7 @@ public class AlmuraMainMenu extends MalisisGui {
             backgroundImage.setSize(backgroundImage.getWidth() + 1, backgroundImage.getHeight() + 1);
             timer++;
 
+
             if (timer == 60) {
                 randomBackground();
                 backgroundImage.setPosition(0, 0, Anchor.BOTTOM | Anchor.RIGHT);
@@ -215,33 +199,27 @@ public class AlmuraMainMenu extends MalisisGui {
         }
     }
 
+    private String getTime() {
+        int hours = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+
+        if (hours < 12) {
+            imageNum = RANDOM.nextInt(29 - 1) + 1;
+            return "day";
+        } else if (hours < 20) {
+            imageNum = RANDOM.nextInt(16 - 1) + 1;
+            return "evening";
+        } else {
+            imageNum = RANDOM.nextInt(13 - 1) + 1;
+            return "night";
+        }
+    }
+
     private void randomBackground() {
-        if (getTime().equalsIgnoreCase("night")) {
-            GuiTexture
-                    background =
-                    new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/night/night" + imageNum + ".jpg"));
-            backgroundImage.setIcon(background, null);
-            backgroundImage.setZIndex(-1);
-            backgroundImage.setSize(0, 0);
-        }
-
-        if (getTime().equalsIgnoreCase("day")) {
-            GuiTexture
-                    background =
-                    new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/day/day" + imageNum + ".jpg"));
-            backgroundImage.setIcon(background, null);
-            backgroundImage.setZIndex(-1);
-            backgroundImage.setSize(0, 0);
-        }
-
-        if (getTime().equalsIgnoreCase("evening")) {
-            GuiTexture
-                    background =
-                    new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/evening/evening" + imageNum + ".jpg"));
-            backgroundImage.setIcon(background, null);
-            backgroundImage.setZIndex(-1);
-            backgroundImage.setSize(0, 0);
-        }
+        String qualifier = getTime().toLowerCase();
+        GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/" + qualifier + "//" + qualifier + imageNum + ".jpg"));
+        backgroundImage.setIcon(background, null);
+        backgroundImage.setZIndex(-1);
+        backgroundImage.setSize(0, 0);
         backgroundImage.setPosition(0, 0, Anchor.TOP | Anchor.LEFT);
     }
 }
