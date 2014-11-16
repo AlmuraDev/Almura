@@ -23,7 +23,7 @@ public class Almura {
     public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID.toUpperCase());
     public static final LanguageManager LANGUAGES = new LanguageManager();
     public static final SimpleNetworkWrapper NETWORK = new SimpleNetworkWrapper(Almura.MOD_ID);
-    public static String GUI_VERSION = "Almura 2.0 build 15 alpha";
+    public static String GUI_VERSION = "Almura 2.0 build 16 alpha";
     public static String PACK_VERSION = "Content Pack 1";
 
     @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)

@@ -5,7 +5,10 @@
  */
 package com.almuradev.almura.server.network.play;
 
+import net.minecraft.server.MinecraftServer;
+
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
+
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -36,7 +39,7 @@ public class S00AdditionalWorldInfo implements IMessage, IMessageHandler<S00Addi
     @Override
     public IMessage onMessage(S00AdditionalWorldInfo message, MessageContext ctx) {
         if (ctx.side == Side.CLIENT) {
-            IngameHUD.INSTANCE.worldDisplay.setText(message.worldName);
+            IngameHUD.INSTANCE.worldDisplay.setText(Character.toUpperCase(message.worldName.charAt(0)) + message.worldName.substring(1));            
         }
         return null;
     }
