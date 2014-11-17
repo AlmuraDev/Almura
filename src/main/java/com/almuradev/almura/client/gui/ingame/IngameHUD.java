@@ -328,7 +328,7 @@ public class IngameHUD extends MalisisGui {
     }
 
     public String getCompass() {
-        int position = (int) (((Minecraft.getMinecraft().thePlayer.rotationYaw % 360 + 360) % 360) / 360 * 16);
+        int position = (int) ((((Minecraft.getMinecraft().thePlayer.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 16);
 
         return "" + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
                 + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
