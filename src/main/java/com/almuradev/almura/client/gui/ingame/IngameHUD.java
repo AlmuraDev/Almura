@@ -253,9 +253,9 @@ public class IngameHUD extends MalisisGui {
         if (playerStamina >= 0.6) {
             staminaProperty.setColor(greenBar.getRGB());
         } else if (playerStamina >= 0.3) {
-                staminaProperty.setColor(orangeBar.getRGB());
-            } else {
-                staminaProperty.setColor(redBar.getRGB());
+            staminaProperty.setColor(orangeBar.getRGB());
+        } else {
+            staminaProperty.setColor(redBar.getRGB());
         }
 
         if (playerArmor > 0) {
