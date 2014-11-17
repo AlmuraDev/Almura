@@ -237,7 +237,7 @@ public class IngameHUD extends MalisisGui {
 
         if (playerHunger >= 0.6) {
             hungerProperty.setColor(greenBar.getRGB());
-        } else if (playerArmor >= 0.3) {
+        } else if (playerHunger >= 0.3) {
             hungerProperty.setColor(orangeBar.getRGB());
         } else {
             hungerProperty.setColor(redBar.getRGB());
@@ -252,7 +252,7 @@ public class IngameHUD extends MalisisGui {
 
         if (playerStamina >= 0.6) {
             staminaProperty.setColor(greenBar.getRGB());
-        } else if (playerArmor >= 0.3) {
+        } else if (playerStamina >= 0.3) {
             staminaProperty.setColor(orangeBar.getRGB());
         } else {
             staminaProperty.setColor(redBar.getRGB());
