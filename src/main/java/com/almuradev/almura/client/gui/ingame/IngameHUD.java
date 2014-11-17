@@ -49,6 +49,10 @@ public class IngameHUD extends MalisisGui {
     private final UIImage mapImage, worldImage, playerImage;
     private final UILabel serverCount, playerCoords, playerCompass, worldTime, xpLevel;
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
+    
+    private float playerHealth, playerFood, playerArmor, playerHunger, playerStamina, playerExperience, playerExperienceLevel =  0.0F;
+    private String serverTime, playerLocation, playerComp;
+    private boolean firstPass;
 
     private boolean enableUpdates = false;
 
@@ -56,6 +60,7 @@ public class IngameHUD extends MalisisGui {
     public IngameHUD() {
         INSTANCE = this;
         guiscreenBackground = false;
+        firstPass = true;
 
         // Construct Hud with all elements
         final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
@@ -176,10 +181,28 @@ public class IngameHUD extends MalisisGui {
         xpLevel.setSize(15, 7);
         xpLevel.setFontScale(0.8F);
 
-        gradientContainer.add(playerTitle, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty, mapImage, playerCoords,
-                worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
-
-        addToScreen(gradientContainer);
+        
+        //gradientContainer.add(playerTitle, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty, mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
+        
+        addToScreen(playerTitle);
+        addToScreen(healthProperty);
+        addToScreen(armorProperty);
+        addToScreen(almuraTitle);
+        addToScreen(hungerProperty);
+        addToScreen(staminaProperty);
+        addToScreen(xpProperty);
+        addToScreen(mapImage);
+        addToScreen(playerCoords);
+        addToScreen(worldImage);
+        addToScreen(worldDisplay);
+        addToScreen(playerImage);
+        addToScreen(serverCount);
+        addToScreen(playerCompass);
+        addToScreen(compassImage);
+        addToScreen(clockImage);
+        addToScreen(worldTime);
+        addToScreen(xpLevel);
+        
     }
 
     @Override
@@ -217,93 +240,123 @@ public class IngameHUD extends MalisisGui {
     }
 
 
-    public void updateWidgets() {
-        float playerHealth = Minecraft.getMinecraft().thePlayer.getHealth() / Minecraft.getMinecraft().thePlayer.getMaxHealth();
-        float playerArmor = getArmorLevel();
-        float playerHunger = Minecraft.getMinecraft().thePlayer.getFoodStats().getFoodLevel() / (float) 20;
-        float playerStamina = Minecraft.getMinecraft().thePlayer.getFoodStats().getSaturationLevel() / (float) 20;
-        float playerExperience = Minecraft.getMinecraft().thePlayer.experience;
-        healthProperty.setAmount(playerHealth);
-        hungerProperty.setAmount(playerHunger);
-        staminaProperty.setAmount(playerStamina);
-
-        if (playerHealth > 0.6) {
-            healthProperty.setColor(greenBar.getRGB());
-        } else if (playerHealth >= 0.3) {
-            healthProperty.setColor(orangeBar.getRGB());
-        } else {
-            healthProperty.setColor(redBar.getRGB());
+    public void updateWidgets() {        
+        // Player Health
+        if (playerHealth != Minecraft.getMinecraft().thePlayer.getHealth() / Minecraft.getMinecraft().thePlayer.getMaxHealth()|| firstPass) {
+            playerHealth = Minecraft.getMinecraft().thePlayer.getHealth() / Minecraft.getMinecraft().thePlayer.getMaxHealth();
+            if (playerHealth > 0.6) {
+                healthProperty.setColor(greenBar.getRGB());
+            } else if (playerHealth >= 0.3) {
+                healthProperty.setColor(orangeBar.getRGB());
+            } else {
+                healthProperty.setColor(redBar.getRGB());
+            }
+            healthProperty.setAmount(playerHealth);
         }
-
-        if (playerHunger >= 0.6) {
-            hungerProperty.setColor(greenBar.getRGB());
-        } else if (playerHunger >= 0.3) {
-            hungerProperty.setColor(orangeBar.getRGB());
-        } else {
-            hungerProperty.setColor(redBar.getRGB());
-        }
-
-        if (playerStamina > 0) {
-            staminaProperty.setAmount(playerStamina);
-            staminaProperty.setVisible(true);
-        } else {
-            staminaProperty.setVisible(false);
-        }
-
-        if (playerStamina >= 0.6) {
-            staminaProperty.setColor(greenBar.getRGB());
-        } else if (playerStamina >= 0.3) {
-            staminaProperty.setColor(orangeBar.getRGB());
-        } else {
-            staminaProperty.setColor(redBar.getRGB());
-        }
-
-        if (playerArmor > 0) {
+        // Player Armor
+        if (playerArmor != getArmorLevel() || firstPass) {
+            playerArmor = getArmorLevel();
+            if (playerArmor > 0) {
+                armorProperty.setAmount(playerArmor);
+                armorProperty.setVisible(true);
+            } else {
+                armorProperty.setVisible(false);
+            }
+            if (playerArmor > 0.6) {
+                armorProperty.setColor(greenBar.getRGB());
+            } else if (playerArmor >= 0.3) {
+                armorProperty.setColor(orangeBar.getRGB());
+            } else {
+                armorProperty.setColor(redBar.getRGB());
+            }
             armorProperty.setAmount(playerArmor);
-            armorProperty.setVisible(true);
-        } else {
-            armorProperty.setVisible(false);
         }
-
-        if (playerArmor > 0.6) {
-            armorProperty.setColor(greenBar.getRGB());
-        } else if (playerArmor >= 0.3) {
-            armorProperty.setColor(orangeBar.getRGB());
-        } else {
-            armorProperty.setColor(redBar.getRGB());
+        // Player Hunger
+        if (playerHunger != Minecraft.getMinecraft().thePlayer.getFoodStats().getFoodLevel() / (float) 20 || firstPass) {
+            playerHunger = Minecraft.getMinecraft().thePlayer.getFoodStats().getFoodLevel() / (float) 20;
+            if (playerHunger > 0) {
+                hungerProperty.setAmount(playerHunger);
+                hungerProperty.setVisible(true);
+            } else {
+                hungerProperty.setVisible(false);
+            }
+            if (playerHunger >= 0.6) {
+                hungerProperty.setColor(greenBar.getRGB());
+            } else if (playerHunger >= 0.3) {
+                hungerProperty.setColor(orangeBar.getRGB());
+            } else {
+                hungerProperty.setColor(redBar.getRGB());
+            }
+            hungerProperty.setAmount(playerHunger);
         }
+        // Player Stamina
+        if (playerStamina != Minecraft.getMinecraft().thePlayer.getFoodStats().getSaturationLevel() / (float) 20 || firstPass) {
+            playerStamina = Minecraft.getMinecraft().thePlayer.getFoodStats().getSaturationLevel() / (float) 20;
+            if (playerStamina > 0) {
+                staminaProperty.setAmount(playerStamina);
+                staminaProperty.setVisible(true);
+            } else {
+                staminaProperty.setVisible(false);
+            }
 
-        if (playerExperience > 0) {
-            xpProperty.setAmount(playerExperience);
-            xpProperty.setVisible(true);
-        } else {
-            xpProperty.setVisible(false);
+            if (playerStamina >= 0.6) {
+                staminaProperty.setColor(greenBar.getRGB());
+            } else if (playerStamina >= 0.3) {
+                staminaProperty.setColor(orangeBar.getRGB());
+            } else {
+                staminaProperty.setColor(redBar.getRGB());
+            }
+            staminaProperty.setAmount(playerStamina);
         }
-
+        // Player Experience
+        if (playerExperience != Minecraft.getMinecraft().thePlayer.experience || firstPass) {
+            playerExperience = Minecraft.getMinecraft().thePlayer.experience;
+            if (playerExperience > 0) {
+                xpProperty.setAmount(playerExperience);
+                xpProperty.setVisible(true);
+            } else {
+                xpProperty.setVisible(false);
+            }
+        }        
+        // Player Experience level 
+        if (playerExperienceLevel != Minecraft.getMinecraft().thePlayer.experienceLevel || firstPass) {
+            playerExperienceLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
+            xpLevel.setText(Integer.toString(Minecraft.getMinecraft().thePlayer.experienceLevel));
+        }       
+        // Server Time
+        if (serverTime != getTime() || firstPass) {
+            serverTime = getTime();
+            worldTime.setText(getTime());
+        }
+        // Player Coordinates
+        if (playerLocation != String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ) || firstPass) {
+            playerLocation = String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ);
+            playerCoords.setText(String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ));            
+        }
+        // Player Compass
+        if (playerComp != getCompass() || firstPass) {
+            playerComp = getCompass();
+            playerCompass.setText(getCompass());
+        }
+        // Player Name
         if (playerTitle.getText().isEmpty()) {
             playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
         }
-        
-        if (Minecraft.getMinecraft().isSingleplayer()) {
-            serverCount.setText("--");
-        } else {
-            serverCount.setText(Minecraft.getMinecraft().getNetHandler().playerInfoList.size() + "/" + Minecraft.getMinecraft()
-                    .getNetHandler().currentServerMaxPlayers);
-        }
-
-        serverCount
-                .setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
-
         if (Minecraft.getMinecraft().isSingleplayer()) {
             worldDisplay.setText(Character.toUpperCase(MinecraftServer.getServer().getWorldName().charAt(0)) + MinecraftServer.getServer().getWorldName().substring(1));
         }
+        // Server Player Count
+        if (Minecraft.getMinecraft().isSingleplayer()) {
+            serverCount.setText("--");
+        } else {
+            serverCount.setText(Minecraft.getMinecraft().getNetHandler().playerInfoList.size() + "/" + Minecraft.getMinecraft().getNetHandler().currentServerMaxPlayers);
+        }
+        // Alignment
+        serverCount.setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
         worldImage.setPosition(-(worldDisplay.getWidth() + 9), worldImage.getY(), Anchor.RIGHT | Anchor.TOP);
-        playerCoords.setText(String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ));
         playerCoords.setPosition(-(-worldImage.getX() + worldImage.getWidth() + 12), playerCoords.getY(), Anchor.RIGHT | Anchor.TOP);
         mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT | Anchor.TOP);
-        playerCompass.setText(getCompass());
-        worldTime.setText(getTime());
-        xpLevel.setText(Integer.toString(Minecraft.getMinecraft().thePlayer.experienceLevel));
+        firstPass = false;
     }
 
     public float getArmorLevel() {
