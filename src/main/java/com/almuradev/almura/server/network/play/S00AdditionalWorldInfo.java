@@ -5,8 +5,6 @@
  */
 package com.almuradev.almura.server.network.play;
 
-import net.minecraft.server.MinecraftServer;
-
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
