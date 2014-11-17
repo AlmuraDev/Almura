@@ -37,7 +37,7 @@ public class IngameDebugHUD extends MalisisGui {
         debugPanel.setColor(Integer.MIN_VALUE);
         debugPanel.setTopAlpha(180);
         debugPanel.setBottomAlpha(180);
-        debugPanel.setClipContent(false);
+        debugPanel.setClipContent(false);        
 
         // Title
         UILabel debugTitle = new UILabel(this, ChatColor.AQUA + "Almura Debug");
@@ -57,7 +57,7 @@ public class IngameDebugHUD extends MalisisGui {
         memoryDebug.setPosition(60, 30, Anchor.LEFT | Anchor.TOP);
         memoryAllocated = new UILabel(this, ChatColor.GRAY + "memoryDebug");
         memoryAllocated.setPosition(60, 40, Anchor.LEFT | Anchor.TOP);
-
+        
         // Location Stats
         UILabel directionLabel = new UILabel(this, ChatColor.WHITE + "Directions:");
         directionLabel.setPosition(5, 50, Anchor.LEFT | Anchor.TOP);
@@ -101,7 +101,7 @@ public class IngameDebugHUD extends MalisisGui {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTick(ClientTickEvent event) {
         if (enableUpdates && Minecraft.getMinecraft().thePlayer != null) {
-            updateWidgets();
+            //updateWidgets();
         }
     }
 
@@ -114,10 +114,10 @@ public class IngameDebugHUD extends MalisisGui {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
         if (event.type == RenderGameOverlayEvent.ElementType.DEBUG) {
-            event.setCanceled(true);
-            enableUpdates = true;
-            setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-            drawScreen(event.mouseX, event.mouseY, event.partialTicks);
+            //event.setCanceled(true);
+            //enableUpdates = true;
+            //setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+            //drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }
 

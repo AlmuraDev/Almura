@@ -68,6 +68,7 @@ public class IngameHUD extends MalisisGui {
         gradientContainer.setColor(Integer.MIN_VALUE);
         gradientContainer.setTopAlpha(180);
         gradientContainer.setBottomAlpha(180);
+        gradientContainer.setClipContent(false);
 
         // Player Display Name
         playerTitle = new UILabel(this, "PlayerName");
@@ -146,7 +147,7 @@ public class IngameHUD extends MalisisGui {
         // Compass Image
         final UIImage compassImage = new UIImage(this, COMPASS_TEXTURE, null);
         compassImage.setPosition(-73, 16, Anchor.RIGHT | Anchor.TOP);
-        compassImage.setSize(8, 8);
+        compassImage.setSize(8, 8);        
 
         // Player Compass Label
         playerCompass = new UILabel(this, "");
@@ -215,6 +216,7 @@ public class IngameHUD extends MalisisGui {
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             enableUpdates = true;
             setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+            
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }

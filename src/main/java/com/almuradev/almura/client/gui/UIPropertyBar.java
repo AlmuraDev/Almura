@@ -38,6 +38,7 @@ public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransf
 
         background = new UIBackgroundContainer(gui, UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED - 3);
         background.setPosition(gapBetweenSymbolAndBar + 1, UIComponent.INHERITED + 1);
+        background.setClipContent(false);
 
         add(symbolImage, background, barImage);
     }
