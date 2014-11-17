@@ -44,12 +44,12 @@ __For [IntelliJ]__
 
 __Client__
 
-|     Property      | Value                                     |
-|:-----------------:|:------------------------------------------|
-|    Main class     | GradleStart                               |
-|    VM options     | -Djava.library.path="../../build/natives" |
-| Working directory | ~/run/client (Included in project)                                                                      |
-| Module classpath  | Almura (IntelliJ Only)                                                                                |
+|     Property      | Value                                                      |
+|:-----------------:|:-----------------------------------------------------------|
+|    Main class     | GradleStart                                                |
+|    VM options     | -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin |
+| Working directory | ~/run/client (Included in project)                         |
+| Module classpath  | Almura (IntelliJ Only)                                     |
 
 __Server__
 
@@ -57,7 +57,7 @@ __Server__
 |:-----------------:|:-----------------------------------|
 |    Main class     | GradleStartServer                  |
 | Working directory | ~/run/server (Included in project) |
-| Module classpath  | Almura (IntelliJ Only)           |
+| Module classpath  | Almura (IntelliJ Only)             |
 
 
 ## Building
