@@ -73,17 +73,17 @@ public class IngameHUD extends MalisisGui {
 
         //////////////////////////////// LEFT COLUMN //////////////////////////////////////
 
-        // Player Display Mode
-        playerMode = new UILabel(this, "");
-        playerMode.setPosition(6, 2, Anchor.LEFT | Anchor.TOP);
-        playerMode.setColor(0xffffffff);
-        playerMode.setSize(7, 7);
-
         // Player Display Name
         playerTitle = new UILabel(this, "");
-        playerTitle.setPosition(25, 2, Anchor.LEFT | Anchor.TOP);
+        playerTitle.setPosition(6, 2, Anchor.LEFT | Anchor.TOP);
         playerTitle.setColor(0xffffffff);
         playerTitle.setSize(7, 7);
+
+        // Player Display Mode
+        playerMode = new UILabel(this, "");
+        playerMode.setPosition(25, 2, Anchor.LEFT | Anchor.TOP);
+        playerMode.setColor(0xffffffff);
+        playerMode.setSize(7, 7);
 
         // Health Property
         healthProperty = new UIPropertyBar(this, HEART_TEXTURE, BAR_TEXTURE);
@@ -369,6 +369,7 @@ public class IngameHUD extends MalisisGui {
             serverCount.setText(Minecraft.getMinecraft().getNetHandler().playerInfoList.size() + "/" + Minecraft.getMinecraft().getNetHandler().currentServerMaxPlayers);
         }
         // Alignment
+        playerMode.setPosition((playerTitle.getX() + playerTitle.getWidth() + 6), playerMode.getY(), playerMode.getAnchor());
         serverCount.setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
         worldImage.setPosition(-(worldDisplay.getWidth() + 9), worldImage.getY(), Anchor.RIGHT | Anchor.TOP);
         playerCoords.setPosition(-(-worldImage.getX() + worldImage.getWidth() + 12), playerCoords.getY(), Anchor.RIGHT | Anchor.TOP);
