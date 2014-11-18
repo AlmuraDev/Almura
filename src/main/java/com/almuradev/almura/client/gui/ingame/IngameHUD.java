@@ -45,14 +45,14 @@ public class IngameHUD extends MalisisGui {
     private static final Color orangeBar = new Color(0.8039f, 0.6784f, 0f, 1f);
     private static final Color redBar = new Color(0.69f, 0.09f, 0.12f, 1f);
     public static IngameHUD INSTANCE;
-    public final UILabel worldDisplay, playerTitle;
+    public final UILabel worldDisplay, playerTitle, playerMode;
     private final UIImage mapImage, worldImage, playerImage;
     private final UILabel serverCount, playerCoords, playerCompass, worldTime, xpLevel;
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
     
-    private float playerHealth, playerFood, playerArmor, playerHunger, playerStamina, playerExperience, playerExperienceLevel =  0.0F;
+    private float playerHealth, playerArmor, playerHunger, playerStamina, playerExperience, playerExperienceLevel =  0.0F;
     private String serverTime, playerLocation, playerComp;
-    private boolean firstPass;
+    private boolean firstPass, playerIsCreative;
 
     private boolean enableUpdates = false;
 
@@ -61,6 +61,7 @@ public class IngameHUD extends MalisisGui {
         INSTANCE = this;
         guiscreenBackground = false;
         firstPass = true;
+        playerIsCreative = false;
 
         // Construct Hud with all elements
         final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
@@ -70,13 +71,19 @@ public class IngameHUD extends MalisisGui {
         gradientContainer.setBottomAlpha(180);
         gradientContainer.setClipContent(false);
 
+        //////////////////////////////// LEFT COLUMN //////////////////////////////////////
+
+        // Player Display Mode
+        playerMode = new UILabel(this, "");
+        playerMode.setPosition(6, 2, Anchor.LEFT | Anchor.TOP);
+        playerMode.setColor(0xffffffff);
+        playerMode.setSize(7, 7);
+
         // Player Display Name
         playerTitle = new UILabel(this, "");
-        playerTitle.setPosition(6, 2, Anchor.LEFT | Anchor.TOP);
+        playerTitle.setPosition(25, 2, Anchor.LEFT | Anchor.TOP);
         playerTitle.setColor(0xffffffff);
         playerTitle.setSize(7, 7);
-
-        //////////////////////////////// LEFT COLUMN //////////////////////////////////////
 
         // Health Property
         healthProperty = new UIPropertyBar(this, HEART_TEXTURE, BAR_TEXTURE);
@@ -184,6 +191,7 @@ public class IngameHUD extends MalisisGui {
         
         //gradientContainer.add(playerTitle, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty, mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
         
+        addToScreen(playerMode);
         addToScreen(playerTitle);
         addToScreen(healthProperty);
         addToScreen(armorProperty);
@@ -322,7 +330,16 @@ public class IngameHUD extends MalisisGui {
         if (playerExperienceLevel != Minecraft.getMinecraft().thePlayer.experienceLevel || firstPass) {
             playerExperienceLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
             xpLevel.setText(Integer.toString(Minecraft.getMinecraft().thePlayer.experienceLevel));
-        }       
+        }
+        // Player Mode
+        if (playerIsCreative != Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode || firstPass) {
+            playerIsCreative = Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode;
+            if (playerIsCreative) {
+                playerMode.setText("(C)");
+            } else {
+                playerMode.setText("");
+            }
+        }
         // Server Time
         if (serverTime != getTime() || firstPass) {
             serverTime = getTime();
