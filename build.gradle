@@ -39,7 +39,7 @@ repositories {
 // Project dependencies
 dependencies {
     compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
-    compile 'net.malisis:malisiscore:1.7.10-0.10.1-SNAPSHOT:dev'
+    compile 'net.malisis:malisiscore:1.7.10-0.10.3-SNAPSHOT:dev'
 }
 
 // Gradle default tasks
@@ -48,7 +48,7 @@ defaultTasks 'licenseFormat', 'build', 'shadowJar'
 // Basic project information
 group = 'com.almuradev'
 archivesBaseName = 'almura'
-version = '1.7.10-10.13.2.1230-SNAPSHOT'
+version = '1.7.10-SNAPSHOT'
 
 // Extended project information
 ext.projectName = 'Almura'
@@ -73,7 +73,7 @@ configurations.all {
 
 // MinecraftForge version
 minecraft {
-    version = "1.7.10-10.13.2.1230"
+    version = "1.7.10-10.13.2.1236"
 }
 
 // Include dependencies in the final JAR
@@ -83,12 +83,6 @@ shadowJar {
     dependencies {
         include(dependency('com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'))
     }
-}
-
-// Project dependencies
-dependencies {
-    compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
-    compile 'net.malisis:malisiscore:1.7.10-0.10.1:dev'
 }
 
 // Filter, process, and include resources
