@@ -5,6 +5,9 @@
  */
 package com.almuradev.almura;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -134,5 +137,13 @@ public class Filesystem {
         }
 
         return dim;
+    }
+
+    public static Dimension getImageDimension(Path path) throws IOException {
+        return getImageDimension(Files.newInputStream(path));
+    }
+
+    public static Dimension getImageDimension(ResourceLocation location) throws IOException {
+        return getImageDimension(Minecraft.getMinecraft().getResourceManager().getResource(location).getInputStream());
     }
 }
