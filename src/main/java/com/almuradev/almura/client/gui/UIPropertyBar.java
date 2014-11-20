@@ -11,6 +11,7 @@ import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
+import net.malisis.core.client.gui.icon.GuiIcon;
 import net.malisis.core.renderer.animation.transformation.ITransformable;
 
 public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransformable.Color {
@@ -21,18 +22,18 @@ public class UIPropertyBar extends UIContainer<UIPropertyBar> implements ITransf
     private final int symbolWidth = 7;
     private final int symbolHeight = 7;
 
-    public UIPropertyBar(MalisisGui gui, GuiTexture symbolTexture, GuiTexture barTexture) {
-        this(gui, symbolTexture, barTexture, UIComponent.INHERITED, UIComponent.INHERITED);
+    public UIPropertyBar(MalisisGui gui, GuiTexture spriteSheet, GuiIcon symbolIcon, GuiIcon barIcon) {
+        this(gui, spriteSheet, symbolIcon, barIcon, UIComponent.INHERITED, UIComponent.INHERITED);
     }
 
-    public UIPropertyBar(MalisisGui gui, GuiTexture symbolTexture, GuiTexture barTexture, int width, int height) {
+    public UIPropertyBar(MalisisGui gui, GuiTexture spriteSheet, GuiIcon symbolIcon, GuiIcon barIcon, int width, int height) {
         super(gui, width, height);
 
-        final UIImage symbolImage = new UIImage(gui, symbolTexture, null);
+        final UIImage symbolImage = new UIImage(gui, spriteSheet, symbolIcon);
         symbolImage.setSize(symbolWidth, symbolHeight);
         symbolImage.setPosition(UIComponent.INHERITED, UIComponent.INHERITED);
 
-        barImage = new UIImage(gui, barTexture, null);
+        barImage = new UIImage(gui, spriteSheet, barIcon);
         barImage.setSize(UIComponent.INHERITED - gapBetweenSymbolAndBar, UIComponent.INHERITED);
         barImage.setPosition(gapBetweenSymbolAndBar, UIComponent.INHERITED);
 

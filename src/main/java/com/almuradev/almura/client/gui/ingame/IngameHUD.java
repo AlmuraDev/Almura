@@ -5,41 +5,39 @@
  */
 package com.almuradev.almura.client.gui.ingame;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
+import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.UIPropertyBar;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.GuiTexture;
-import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.icon.GuiIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-public class IngameHUD extends MalisisGui {
+public class IngameHUD extends AlmuraGui {
+    private static final GuiIcon ICON_BAR = getIcon(0, 126, 256, 14);
+    private static final GuiIcon ICON_HEART = getIcon(149, 62, 26, 26);
+    private static final GuiIcon ICON_ARMOR = getIcon(64, 63, 20, 27);
+    private static final GuiIcon ICON_HUNGER = getIcon(198, 96, 28, 29);
+    private static final GuiIcon ICON_STAMINA = getIcon(99, 93, 32, 31);
+    private static final GuiIcon ICON_XP = getIcon(169, 98, 24, 24);
+    private static final GuiIcon ICON_PLAYER = getIcon(67, 92, 28, 32);
+    private static final GuiIcon ICON_COMPASS = getIcon(118, 66, 30, 26);
+    private static final GuiIcon ICON_MAP = getIcon(0, 95, 32, 26);
+    private static final GuiIcon ICON_WORLD = getIcon(133, 93, 32, 32);
+    private static final GuiIcon ICON_CLOCK = getIcon(86, 64, 28, 26);
 
-    public static final GuiTexture BAR_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/barwidget.png"));
-    public static final GuiTexture HEART_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/health.png"));
-    public static final GuiTexture ARMOR_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/armor.png"));
-    public static final GuiTexture HUNGER_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/hunger.png"));
-    public static final GuiTexture STAMINA_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/stamina.png"));
-    public static final GuiTexture XP_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/xp.png"));
-    public static final GuiTexture PLAYER_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/player.png"));
-    public static final GuiTexture COMPASS_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/compass.png"));
-    public static final GuiTexture MAP_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/map.png"));
-    public static final GuiTexture WORLD_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/world.png"));
-    public static final GuiTexture CLOCK_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/gui/clock.png"));
     private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
     private static final Color greenBar = new Color(0f, 1f, 0f, 1f);
     private static final Color orangeBar = new Color(0.8039f, 0.6784f, 0f, 1f);
@@ -52,9 +50,7 @@ public class IngameHUD extends MalisisGui {
     
     private float playerHealth, playerArmor, playerHunger, playerStamina, playerExperience, playerExperienceLevel =  0.0F;
     private String serverTime, playerLocation, playerComp;
-    private boolean firstPass, playerIsCreative;
-
-    private boolean enableUpdates = false;
+    private boolean firstPass, playerIsCreative, enableUpdates = false;
 
     @SuppressWarnings("rawtypes")
     public IngameHUD() {
@@ -86,12 +82,12 @@ public class IngameHUD extends MalisisGui {
         playerMode.setSize(7, 7);
 
         // Health Property
-        healthProperty = new UIPropertyBar(this, HEART_TEXTURE, BAR_TEXTURE);
+        healthProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_HEART, ICON_BAR);
         healthProperty.setPosition(5, 17, Anchor.LEFT | Anchor.TOP);
         healthProperty.setSize(105, 7);
 
         // Armor Property
-        armorProperty = new UIPropertyBar(this, ARMOR_TEXTURE, BAR_TEXTURE);
+        armorProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_ARMOR, ICON_BAR);
         armorProperty.setPosition(5, 28, Anchor.LEFT | Anchor.TOP);
         armorProperty.setSize(105, 7);
 
@@ -105,20 +101,20 @@ public class IngameHUD extends MalisisGui {
         almuraTitle.setFontScale(1.0F);
 
         // Hunger Property
-        hungerProperty = new UIPropertyBar(this, HUNGER_TEXTURE, BAR_TEXTURE);
+        hungerProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_HUNGER, ICON_BAR);
         hungerProperty.setPosition(-2, 17, Anchor.CENTER | Anchor.TOP);
         hungerProperty.setSize(105, 7);
 
         // Stamina Property
-        staminaProperty = new UIPropertyBar(this, STAMINA_TEXTURE, BAR_TEXTURE);
+        staminaProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_STAMINA, ICON_BAR);
         staminaProperty.setPosition(-2, 28, Anchor.CENTER | Anchor.TOP);
         staminaProperty.setSize(105, 7);
 
         //////////////////////////////// RIGHT COLUMN //////////////////////////////////////
 
         // Map Image
-        mapImage = new UIImage(this, MAP_TEXTURE, null);
-        mapImage.setPosition(-205, 5, Anchor.RIGHT | Anchor.TOP);
+        mapImage = new UIImage(this, TEXTURE_DEFAULT, ICON_MAP);
+        mapImage.setPosition(-205, 4, Anchor.RIGHT | Anchor.TOP);
         mapImage.setSize(8, 8);
 
         // Player Coordinates Label
@@ -129,8 +125,8 @@ public class IngameHUD extends MalisisGui {
         playerCoords.setFontScale(0.8F);
 
         // World Image
-        worldImage = new UIImage(this, WORLD_TEXTURE, null);
-        worldImage.setPosition(-45, 5, Anchor.RIGHT | Anchor.TOP);
+        worldImage = new UIImage(this, TEXTURE_DEFAULT, ICON_WORLD);
+        worldImage.setPosition(-45, 4, Anchor.RIGHT | Anchor.TOP);
         worldImage.setSize(8, 8);
 
         // World Display Label
@@ -141,7 +137,7 @@ public class IngameHUD extends MalisisGui {
         worldDisplay.setFontScale(0.8F);
 
         // Player Image
-        playerImage = new UIImage(this, PLAYER_TEXTURE, null);
+        playerImage = new UIImage(this, TEXTURE_DEFAULT, ICON_PLAYER);
         playerImage.setPosition(-125, 16, Anchor.RIGHT | Anchor.TOP);
         playerImage.setSize(8, 8);
 
@@ -152,7 +148,7 @@ public class IngameHUD extends MalisisGui {
         serverCount.setFontScale(0.8F);
 
         // Compass Image
-        final UIImage compassImage = new UIImage(this, COMPASS_TEXTURE, null);
+        final UIImage compassImage = new UIImage(this, TEXTURE_DEFAULT, ICON_COMPASS);
         compassImage.setPosition(-73, 16, Anchor.RIGHT | Anchor.TOP);
         compassImage.setSize(8, 8);        
 
@@ -164,8 +160,8 @@ public class IngameHUD extends MalisisGui {
         playerCompass.setFontScale(0.8F);
 
         // Clock Image
-        final UIImage clockImage = new UIImage(this, CLOCK_TEXTURE, null);
-        clockImage.setPosition(-25, 16, Anchor.RIGHT | Anchor.TOP);
+        final UIImage clockImage = new UIImage(this, TEXTURE_DEFAULT, ICON_CLOCK);
+        clockImage.setPosition(-25, 15, Anchor.RIGHT | Anchor.TOP);
         clockImage.setSize(7, 7);
 
         // World Time Label
@@ -176,41 +172,21 @@ public class IngameHUD extends MalisisGui {
         worldTime.setFontScale(0.8F);
 
         // XP Property
-        xpProperty = new UIPropertyBar(this, XP_TEXTURE, BAR_TEXTURE);
+        xpProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_XP, ICON_BAR);
         xpProperty.setPosition(-27, 28, Anchor.RIGHT | Anchor.TOP);
         xpProperty.setSize(105, 7);
         xpProperty.setColor(greenBar.getRGB());
 
         // XP Level Label
         xpLevel = new UILabel(this, "1");
-        xpLevel.setPosition(-5, 27, Anchor.RIGHT | Anchor.TOP);
+        xpLevel.setPosition(-5, 28, Anchor.RIGHT | Anchor.TOP);
         xpLevel.setColor(0xffffffff);
         xpLevel.setSize(15, 7);
         xpLevel.setFontScale(0.8F);
 
-        
-        //gradientContainer.add(playerTitle, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty, mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
-        
-        addToScreen(playerMode);
-        addToScreen(playerTitle);
-        addToScreen(healthProperty);
-        addToScreen(armorProperty);
-        addToScreen(almuraTitle);
-        addToScreen(hungerProperty);
-        addToScreen(staminaProperty);
-        addToScreen(xpProperty);
-        addToScreen(mapImage);
-        addToScreen(playerCoords);
-        addToScreen(worldImage);
-        addToScreen(worldDisplay);
-        addToScreen(playerImage);
-        addToScreen(serverCount);
-        addToScreen(playerCompass);
-        addToScreen(compassImage);
-        addToScreen(clockImage);
-        addToScreen(worldTime);
-        addToScreen(xpLevel);
-        
+        gradientContainer.add(playerTitle, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty, mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
+
+        addToScreen(gradientContainer);
     }
 
     @Override
