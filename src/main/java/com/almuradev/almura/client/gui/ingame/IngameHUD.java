@@ -184,7 +184,7 @@ public class IngameHUD extends AlmuraGui {
         xpLevel.setSize(15, 7);
         xpLevel.setFontScale(0.8F);
 
-        gradientContainer.add(playerTitle, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty, mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
+        gradientContainer.add(playerTitle, playerMode, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty, mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
 
         addToScreen(gradientContainer);
     }
