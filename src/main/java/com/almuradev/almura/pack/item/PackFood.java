@@ -62,13 +62,13 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
 
-        final boolean showInCreativeTab = reader.getChild("show-in-creative-tab").getBoolean(true);
-        final String creativeTabName = reader.getChild("creative-tab-name").getString("other");
+        final boolean showInCreativeTab = reader.getChild("Show-In-Creative-Tab").getBoolean(true);
+        final String creativeTabName = reader.getChild("Creative-Tab-Name").getString("other");
 
-        final int healAmount = reader.getChild("heal-amount").getInt(1);
-        final float saturationModifier = reader.getChild("saturation-modifier").getFloat(1);
-        final boolean isWolfFavorite = reader.getChild("is-wolf-favorite").getBoolean(true);
-        final boolean alwaysEdible = reader.getChild("always-edible").getBoolean(false);
+        final int healAmount = reader.getChild("Heal-Amount").getInt(1);
+        final float saturationModifier = reader.getChild("Saturation-Modifier").getFloat(1);
+        final boolean isWolfFavorite = reader.getChild("Is-Wolf-Favorite").getBoolean(true);
+        final boolean alwaysEdible = reader.getChild("Always-Edible").getBoolean(false);
 
         String shapeName = reader.getChild("Shape").getString();
         if (shapeName != null) {

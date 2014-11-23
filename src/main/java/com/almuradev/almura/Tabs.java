@@ -28,7 +28,7 @@ public class Tabs {
     private static final Item ITEM_SIGNS = new AlmuraTabItem("signs");
     private static final Item ITEM_LETTERS = new AlmuraTabItem("letters");
     private static final Item ITEM_ORES = new AlmuraTabItem("ores");
-    private static final Item ITEM_FOOD = new AlmuraTabItem("food");
+    private static final Item ITEM_FOODS = new AlmuraTabItem("foods");
     private static final Item ITEM_DRINKS = new AlmuraTabItem("drinks");
     private static final Item ITEM_INGREDIENTS = new AlmuraTabItem("ingredients");
     private static final Item ITEM_TOOLS = new AlmuraTabItem("tools");
@@ -48,7 +48,7 @@ public class Tabs {
     public static CreativeTabs TAB_SIGNS = new AlmuraCreativeTabs("signs", "Almura Signs", ITEM_SIGNS);
     public static CreativeTabs TAB_LETTERS = new AlmuraCreativeTabs("letters", "Almura Letters", ITEM_LETTERS);
     public static CreativeTabs TAB_ORES = new AlmuraCreativeTabs("ores", "Almura Ores", ITEM_ORES);
-    public static CreativeTabs TAB_FOOD = new AlmuraCreativeTabs("food", "Almura Food", ITEM_FOOD);
+    public static CreativeTabs TAB_FOOD = new AlmuraCreativeTabs("foods", "Almura Food", ITEM_FOODS);
     public static CreativeTabs TAB_DRINK = new AlmuraCreativeTabs("drinks", "Almura Drinks", ITEM_DRINKS);
     public static CreativeTabs TAB_INGREDIENTS = new AlmuraCreativeTabs("ingredients", "Almura Ingredients", ITEM_INGREDIENTS);
     public static CreativeTabs TAB_TOOLS = new AlmuraCreativeTabs("tools", "Almura Tools", ITEM_TOOLS);

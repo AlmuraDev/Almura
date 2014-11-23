@@ -58,8 +58,8 @@ public class PackItem extends Item implements IClipContainer, IShapeContainer {
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
 
-        final boolean showInCreativeTab = reader.getChild("show-in-creative-tab").getBoolean(true);
-        final String creativeTabName = reader.getChild("creative-tab-name").getString("other");
+        final boolean showInCreativeTab = reader.getChild("Show-In-Creative-tab").getBoolean(true);
+        final String creativeTabName = reader.getChild("Creative-Tab-Name").getString("other");
 
         String shapeName = reader.getChild("Shape").getString();
         if (shapeName != null) {

@@ -24,7 +24,7 @@ public class Almura {
     public static final LanguageManager LANGUAGES = new LanguageManager();
     public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
     public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
-    public static String GUI_VERSION = "Almura 2.0 build 17";
+    public static String GUI_VERSION = "Almura 2.0 build 18";
     public static String PACK_VERSION = "Content Pack 1";
 
     @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
