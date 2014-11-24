@@ -1,0 +1,7 @@
+To make additional core mod changes to forge, this is how it is done.
+
+1. Once you've done, gradlew genPatch, run gradlew build
+2. It will create some new files at: /projects/minecraftforge/build/distributions/forge-1.7.10-10.13.2.0-universal.jar
+3. Within that jar file, pull out binepatches.pack.lzma, put that in the Almura version of modpack.jar
+
+BAM, core mod changes...Sorry Zidane.
