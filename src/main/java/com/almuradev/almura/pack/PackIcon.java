@@ -46,8 +46,7 @@ public class PackIcon extends MalisisIcon {
             final String[] tokens = path.split("/");
             final String packName = tokens[1];
             final String textureName = tokens[2];
-
-            final Path texturePath = Paths.get(Filesystem.CONFIG_PACKS_PATH.toString(), packName + File.separator + textureName + ".png");
+            final Path texturePath = Paths.get(Filesystem.CONFIG_PATH.toString(), "images" + File.separator + textureName + ".png");
 
             final int mipmapLevels = Minecraft.getMinecraft().gameSettings.mipmapLevels;
             final boolean anisotropic = Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F;

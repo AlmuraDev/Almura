@@ -74,7 +74,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
             setBlockBounds(collisionBounds.get(0).floatValue(), collisionBounds.get(1).floatValue(), collisionBounds.get(2).floatValue(), collisionBounds.get(3).floatValue(), collisionBounds.get(4).floatValue(), collisionBounds.get(5).floatValue());
         }
         setLightOpacity(lightOpacity);
-        setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":packs/" + pack.getName() + "-" + textureName);
+        setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
