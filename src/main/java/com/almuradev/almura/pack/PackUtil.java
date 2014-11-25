@@ -44,8 +44,8 @@ public class PackUtil {
         return textureCoordinatesByFace;
     }
 
-    public static ClippedIcon[] generateClippedIconsFromCoords(ContentPack pack, IIcon source, String textureName,
-                                                               Map<Integer, List<Integer>> texCoords) {
+    public static ClippedIcon[] generateClippedIconsFromCoords(ContentPack pack, IIcon source, String textureName, Map<Integer, List<Integer>> texCoords) {
+        final ClippedIcon[] clippedIcons = new ClippedIcon[texCoords.size()];
         Dimension dimension = null;
 
         try {
@@ -62,20 +62,18 @@ public class PackUtil {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                 Almura.LOGGER.error("Failed to calculate the dimensions for texture [" + textureName + "]");
             }
-            return null;
         }
 
-        ClippedIcon[] clippedIcons = new ClippedIcon[texCoords.size()];
+        if (dimension != null) {
+            for (int i = 0; i < texCoords.size(); i++) {
+                final List<Integer> coordList = texCoords.get(i);
 
-        for (int i = 0; i < texCoords.size(); i++) {
-            final List<Integer> coordList = texCoords.get(i);
-
-            clippedIcons[i] =
-                    new ClippedIcon((MalisisIcon) source, (float) (coordList.get(0) / dimension.getWidth()),
-                            (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()),
-                            (float) (coordList.get(3) / dimension.getHeight()));
+                clippedIcons[i] =
+                        new ClippedIcon((MalisisIcon) source, (float) (coordList.get(0) / dimension.getWidth()),
+                                (float) (coordList.get(1) / dimension.getHeight()), (float) (coordList.get(2) / dimension.getWidth()),
+                                (float) (coordList.get(3) / dimension.getHeight()));
+            }
         }
-
         return clippedIcons;
     }
 
