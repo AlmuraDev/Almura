@@ -26,3 +26,5 @@ Build Patch Files and binpatches.pack:
 3. Within that jar file, pull out binepatches.pack.lzma, put that in the Almura version of modpack.jar
 
 BAM, core mod changes...Sorry Zidane.
+
+http://mcpold.ocean-labs.de/index.php/MCPBot_Reborn
