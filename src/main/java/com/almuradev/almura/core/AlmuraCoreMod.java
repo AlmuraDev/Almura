@@ -1,18 +1,24 @@
 package com.almuradev.almura.core;
 
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraft.launchwrapper.Launch;
 
 import java.util.Map;
 
 public class AlmuraCoreMod implements IFMLLoadingPlugin {
+    public AlmuraCoreMod() {
+        Launch.classLoader.addClassLoaderExclusion("com.almuradev.almura.core.mixin.transformer.");
+    }
     @Override
     public String[] getASMTransformerClass() {
-        return new String[0];
+        return new String[]{
+                "com.almuradev.almura.core.mixin.transformer.MixinTransformer"
+        };
     }
 
     @Override
     public String getModContainerClass() {
-        return "com.almuradev.almura.Almura";
+        return null;
     }
 
     @Override
@@ -27,6 +33,6 @@ public class AlmuraCoreMod implements IFMLLoadingPlugin {
 
     @Override
     public String getAccessTransformerClass() {
-        return null;
+        return "com.almuradev.almura.core.AlmuraAccessTransformer";
     }
 }
