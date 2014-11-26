@@ -66,7 +66,7 @@ public class PackModelBlock extends Block implements IClipContainer, IModelConta
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int type) {
-        if (clippedIcons.length == 0) {
+        if (PackUtil.isEmpty(clippedIcons)) {
             return super.getIcon(side, type);
         }
         ClippedIcon sideIcon;

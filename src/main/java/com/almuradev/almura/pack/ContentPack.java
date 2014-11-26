@@ -54,13 +54,11 @@ public class ContentPack {
                 try {
                     create(path);
                 } catch (ConfigurationException | IOException e) {
-                    if (Configuration.DEBUG_MODE) {
-                        Almura.LOGGER.error("Failed to load " + path + " as a content pack", e);
-                    }
+                    Almura.LOGGER.error("Failed to load " + path + " as a content pack", e);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Almura.LOGGER.error("Failed in filtering out pack files. This could mean a critical filesystem error!", e);
         }
     }
 
@@ -124,7 +122,7 @@ public class ContentPack {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Almura.LOGGER.error("Failed in filtering out pack files. This could mean a critical filesystem error!", e);
         }
 
         pack.items = items;
@@ -132,9 +130,7 @@ public class ContentPack {
         pack.shapes = shapes;
         pack.models = models;
 
-        if (Configuration.DEBUG_MODE) {
-            Almura.LOGGER.info("Loaded -> " + pack);
-        }
+        Almura.LOGGER.info("Loaded -> " + pack);
 
         for (Block block : blocks) {
             Almura.PROXY.onPostCreate(block);

@@ -11,7 +11,9 @@ import com.almuradev.almura.Filesystem;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 import java.io.File;
@@ -77,11 +79,11 @@ public class PackUtil {
         return clippedIcons;
     }
 
-    public static boolean isEmpty(IClipContainer container) {
+    public static boolean isEmpty(ClippedIcon[] value) {
         boolean isEmpty = true;
 
-        if (container.getClipIcons() != null) {
-            for (ClippedIcon icon : container.getClipIcons()) {
+        if (value != null) {
+            for (ClippedIcon icon : value) {
                 if (icon != null) {
                     isEmpty = false;
                     break;
@@ -89,5 +91,9 @@ public class PackUtil {
             }
         }
         return isEmpty;
+    }
+
+    public static boolean isEmpty(IClipContainer container) {
+        return isEmpty(container.getClipIcons());
     }
 }

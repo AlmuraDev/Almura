@@ -42,7 +42,6 @@ public class PackIcon extends MalisisIcon {
         }
 
         if (path.startsWith("packs")) {
-            //almura:packs/kfood_core/food.png
             final String[] tokens = path.split("/");
             final String packName = tokens[1];
             final String textureName = tokens[2];
@@ -56,9 +55,9 @@ public class PackIcon extends MalisisIcon {
                 textures[0] = ImageIO.read(Files.newInputStream(texturePath));
                 loadSprite(textures, null, anisotropic);
                 return false;
-            } catch (RuntimeException e) {
-                Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] in pack [" + packName + "]", e);
-            } catch (IOException ignored) {
+            } catch (RuntimeException ignored) {
+            } catch (IOException e) {
+                Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] requested by pack [" + packName + "]", e);
             }
         }
 
