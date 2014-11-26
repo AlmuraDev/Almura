@@ -32,7 +32,7 @@ import org.lwjgl.input.Keyboard;
 import java.util.Calendar;
 import java.util.Random;
 
-public class AlmuraMainMenu extends MalisisGui {
+public class AlmuraMainMenu extends AlmuraGui {
 
     private static final GuiTexture ALMURA_2_LOGO = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/almura2b.png"));
     private static final Random RANDOM = new Random();

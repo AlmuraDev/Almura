@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
+import com.almuradev.almura.client.gui.AlmuraGui;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -21,7 +22,7 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
-public class IngameDebugHUD extends MalisisGui {
+public class IngameDebugHUD extends AlmuraGui {
 
     public UILabel fps, memoryDebug, memoryAllocated, xLoc, yLoc, zLoc, directionLoc, biomeName, blockLight, skyLight, rawLight;
     public boolean enableUpdates = false;
