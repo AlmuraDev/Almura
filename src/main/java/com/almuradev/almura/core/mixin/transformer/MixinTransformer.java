@@ -27,6 +27,8 @@ package com.almuradev.almura.core.mixin.transformer;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.core.mixin.*;
 import com.almuradev.almura.core.mixin.util.ASMHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -51,6 +53,7 @@ public class MixinTransformer extends TreeTransformer {
      */
     private final MixinConfig config;
 
+    private final Logger logger = LogManager.getLogger("almura");
     /**
      * ctor 
      */
@@ -93,7 +96,7 @@ public class MixinTransformer extends TreeTransformer {
             try {
                 return this.applyMixins(transformedName, basicClass);
             } catch (InvalidMixinException th) {
-                Almura.LOGGER.warn(String.format("Class mixin failed: %s %s", th.getClass().getName(), th.getMessage()), th);
+                logger.warn(String.format("Class mixin failed: %s %s", th.getClass().getName(), th.getMessage()), th);
                 th.printStackTrace();
             }
         }
@@ -117,7 +120,7 @@ public class MixinTransformer extends TreeTransformer {
         Collections.sort(mixins);
 
         for (MixinInfo mixin : mixins) {
-            Almura.LOGGER.info("Applying mixin {} to {}", mixin.getClassName(), transformedName);
+            logger.info("Applying mixin {} to {}", mixin.getClassName(), transformedName);
             this.applyMixin(targetClass, mixin.getData());
         }
 

@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.texture.TextureUtil;
 import org.lwjgl.opengl.GL11;
 
 @Mixin(TextureUtil.class)
-public abstract class MixinTextureUtil extends TextureUtil {
+public abstract class MixinTextureUtil {
     private static int cachedId;
 
     @Overwrite
