@@ -1,6 +1,6 @@
 {
   "package": "com.almuradev.almura.core.mixin.impl",
   "mixins": [
-    "MixinTextureUtil"
+    "MixinGL11"
   ]
 }
