@@ -45,6 +45,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
+    private boolean mirrorRotation;
     //COLLISION
     private boolean useVanillaCollision;
     private List<Double> collisionBounds = new LinkedList<>();
@@ -52,7 +53,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     private boolean useVanillaWireframe;
     private List<Double> wireframeBounds = new LinkedList<>();
 
-    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, float lightLevel, int lightOpacity,
+    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean mirrorRotation, float lightLevel, int lightOpacity,
                      boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
                      boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
         super(Material.rock);
@@ -65,10 +66,11 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         this.useVanillaWireframe = useVanillaWireframe;
         this.wireframeBounds = wireframeBounds == null ? new LinkedList<Double>() : wireframeBounds;
         this.dropAmount = dropAmount;
+        this.mirrorRotation = mirrorRotation;
         setBlockName(pack.getName() + "_" + identifier);
         setHardness(hardness);
         setResistance(resistance);
-        setLightLevel(lightLevel);
+        setLightLevel(lightLevel);        
 
         if (!useVanillaCollision) {
             setBlockBounds(collisionBounds.get(0).floatValue(), collisionBounds.get(1).floatValue(), collisionBounds.get(2).floatValue(), collisionBounds.get(3).floatValue(), collisionBounds.get(4).floatValue(), collisionBounds.get(5).floatValue());
@@ -95,6 +97,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         final boolean showInCreativeTab = reader.getChild("Show-In-Creative-Tab").getBoolean(true);
         final String creativeTabName = reader.getChild("Creative-Tab-Name").getString("other");
         final float resistance = reader.getChild("Resistance").getFloat(0);
+        final boolean mirrorRotation = reader.getChild("MirrorRotate").getBoolean(false);
         final boolean useVanillaCollision = !reader.hasChild("Collision-Bounds");
         final List<Double> collisionCoords = new LinkedList<>();
         if (!useVanillaCollision) {
@@ -124,7 +127,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
+        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, mirrorRotation, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
                 textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
     }
 
@@ -252,5 +255,9 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     @Override
     public String toString() {
         return "PackBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
+    }
+    
+    public boolean canMirrorRotate() {
+        return mirrorRotation;
     }
 }
