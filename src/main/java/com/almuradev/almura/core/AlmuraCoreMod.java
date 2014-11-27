@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class AlmuraCoreMod implements IFMLLoadingPlugin {
+
+    @SuppressWarnings("unchecked")
     public AlmuraCoreMod() {
         Launch.classLoader.addClassLoaderExclusion("com.almuradev.almura.core.mixin.transformer.");
         try {
