@@ -16,30 +16,28 @@ import java.lang.reflect.Method;
 public abstract class MixinGL11 {
 	private static Field f;
 	private static int cachedId;
+	private static long function_pointer;
 
 	@Shadow
 	static native void nglBindTexture(int target, int texture, long function_pointer);
 
 	@Overwrite
 	public static void glBindTexture(int target, int texture) {
+		ContextCapabilities caps = GLContext.getCapabilities();
+
 		if (f == null) {
 			try {
 				f = ContextCapabilities.class.getDeclaredField("glBindTexture");
-			} catch (NoSuchFieldException e) {
+				f.setAccessible(true);
+				function_pointer = f.getLong(caps);
+			} catch (NoSuchFieldException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
 		if (texture != cachedId) {
-			ContextCapabilities caps = GLContext.getCapabilities();
-			f.setAccessible(true);
-			try {
-				long function_pointer = f.getLong(caps);
-				BufferChecks.checkFunctionAddress(function_pointer);
-				nglBindTexture(target, texture, function_pointer);
-				cachedId = texture;
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
+			BufferChecks.checkFunctionAddress(function_pointer);
+			nglBindTexture(target, texture, function_pointer);
+			cachedId = texture;
 		}
 	}
 }
