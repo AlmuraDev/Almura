@@ -34,10 +34,14 @@ public abstract class MixinGL11 {
 				e.printStackTrace();
 			}
 		}
-		if (texture != cachedId) {
+		
+		if (texture != cachedId && target == GL11.GL_TEXTURE_2D) {
 			BufferChecks.checkFunctionAddress(function_pointer);
 			nglBindTexture(target, texture, function_pointer);
 			cachedId = texture;
-		}
+		} else {
+			BufferChecks.checkFunctionAddress(function_pointer);
+			nglBindTexture(target, texture, function_pointer);
+		}			
 	}
 }
