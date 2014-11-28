@@ -14,6 +14,7 @@ import cpw.mods.fml.relauncher.Side;
 import io.netty.buffer.ByteBuf;
 
 public class B00PlayerDisplayName implements IMessage, IMessageHandler<B00PlayerDisplayName, IMessage> {
+
     public String displayName;
 
     public B00PlayerDisplayName() {

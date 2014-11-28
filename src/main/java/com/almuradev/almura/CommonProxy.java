@@ -6,7 +6,7 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.module.pack.ContentPack;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;

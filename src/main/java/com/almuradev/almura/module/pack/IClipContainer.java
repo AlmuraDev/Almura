@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack;
+package com.almuradev.almura.module.pack;
 
 import net.malisis.core.renderer.icon.ClippedIcon;
 

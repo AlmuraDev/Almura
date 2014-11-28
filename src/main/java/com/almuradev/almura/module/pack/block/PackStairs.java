@@ -3,11 +3,11 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.block;
+package com.almuradev.almura.module.pack.block;
 
-import com.almuradev.almura.pack.ContentPack;
-import com.almuradev.almura.pack.IClipContainer;
-import com.almuradev.almura.pack.IShapeContainer;
+import com.almuradev.almura.module.pack.ContentPack;
+import com.almuradev.almura.module.pack.IClipContainer;
+import com.almuradev.almura.module.pack.IShapeContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.element.Shape;
@@ -15,6 +15,7 @@ import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.block.BlockStairs;
 
 public class PackStairs extends BlockStairs implements IClipContainer, IShapeContainer {
+
     public static int renderId = 10;
     private final PackBlock wrapped;
 

@@ -3,13 +3,18 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.block;
+package com.almuradev.almura.module.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.*;
-import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.module.pack.ContentPack;
+import com.almuradev.almura.module.pack.IClipContainer;
+import com.almuradev.almura.module.pack.IShapeContainer;
+import com.almuradev.almura.module.pack.renderer.PackIcon;
+import com.almuradev.almura.module.pack.PackUtil;
+import com.almuradev.almura.module.pack.RotationMeta;
+import com.almuradev.almura.module.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.relauncher.Side;
@@ -53,7 +58,8 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     private boolean useVanillaWireframe;
     private List<Double> wireframeBounds = new LinkedList<>();
 
-    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean mirrorRotation, float lightLevel, int lightOpacity,
+    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance,
+                     boolean mirrorRotation, float lightLevel, int lightOpacity,
                      boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
                      boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
         super(Material.rock);
@@ -70,10 +76,11 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         setBlockName(pack.getName() + "_" + identifier);
         setHardness(hardness);
         setResistance(resistance);
-        setLightLevel(lightLevel);        
+        setLightLevel(lightLevel);
 
         if (!useVanillaCollision) {
-            setBlockBounds(collisionBounds.get(0).floatValue(), collisionBounds.get(1).floatValue(), collisionBounds.get(2).floatValue(), collisionBounds.get(3).floatValue(), collisionBounds.get(4).floatValue(), collisionBounds.get(5).floatValue());
+            setBlockBounds(collisionBounds.get(0).floatValue(), collisionBounds.get(1).floatValue(), collisionBounds.get(2).floatValue(),
+                           collisionBounds.get(3).floatValue(), collisionBounds.get(4).floatValue(), collisionBounds.get(5).floatValue());
         }
         setLightOpacity(lightOpacity);
         setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
@@ -127,8 +134,9 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
 
         Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, mirrorRotation, lightLevel, lightOpacity, showInCreativeTab, creativeTabName,
-                textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
+        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, mirrorRotation, lightLevel, lightOpacity, showInCreativeTab,
+                             creativeTabName,
+                             textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
     }
 
     @Override
@@ -201,7 +209,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         } else {
             box =
                     AxisAlignedBB.getBoundingBox(x + collisionBounds.get(0), y + collisionBounds.get(1), z + collisionBounds.get(2),
-                            x + collisionBounds.get(3), y + collisionBounds.get(4), z + collisionBounds.get(5));
+                                                 x + collisionBounds.get(3), y + collisionBounds.get(4), z + collisionBounds.get(5));
         }
         return box;
     }
@@ -218,7 +226,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         } else {
             box =
                     AxisAlignedBB.getBoundingBox(x + wireframeBounds.get(0), y + wireframeBounds.get(1), z + wireframeBounds.get(2),
-                            x + wireframeBounds.get(3), y + wireframeBounds.get(4), z + wireframeBounds.get(5));
+                                                 x + wireframeBounds.get(3), y + wireframeBounds.get(4), z + wireframeBounds.get(5));
         }
         return box;
     }
@@ -256,7 +264,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     public String toString() {
         return "PackBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
     }
-    
+
     public boolean canMirrorRotate() {
         return mirrorRotation;
     }

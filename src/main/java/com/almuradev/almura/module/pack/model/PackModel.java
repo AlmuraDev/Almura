@@ -3,10 +3,10 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.model;
+package com.almuradev.almura.module.pack.model;
 
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.module.pack.ContentPack;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import net.malisis.core.renderer.model.MalisisModel;
 import net.malisis.core.renderer.model.loader.ObjFileImporter;
@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class PackModel extends MalisisModel {
+
     private final String name;
 
     public PackModel(String name, InputStream stream) {
@@ -26,7 +27,8 @@ public class PackModel extends MalisisModel {
     }
 
     public static PackModel createFromReader(ContentPack pack, String name) throws ConfigurationException, IOException {
-        return new PackModel(name, Files.newInputStream(Paths.get(Filesystem.CONFIG_PACKS_PATH.toString(), pack.getName() + File.separator + name + ".obj")));
+        return new PackModel(name, Files.newInputStream(
+                Paths.get(Filesystem.CONFIG_PACKS_PATH.toString(), pack.getName() + File.separator + name + ".obj")));
     }
 
     public String getName() {

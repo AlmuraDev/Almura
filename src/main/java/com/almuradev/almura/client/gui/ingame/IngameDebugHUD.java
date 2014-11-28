@@ -12,7 +12,6 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.minecraft.client.Minecraft;
@@ -38,7 +37,7 @@ public class IngameDebugHUD extends AlmuraGui {
         debugPanel.setColor(Integer.MIN_VALUE);
         debugPanel.setTopAlpha(180);
         debugPanel.setBottomAlpha(180);
-        debugPanel.setClipContent(false);        
+        debugPanel.setClipContent(false);
 
         // Title
         UILabel debugTitle = new UILabel(this, ChatColor.AQUA + "Almura Debug");
@@ -58,7 +57,7 @@ public class IngameDebugHUD extends AlmuraGui {
         memoryDebug.setPosition(60, 30, Anchor.LEFT | Anchor.TOP);
         memoryAllocated = new UILabel(this, ChatColor.GRAY + "memoryDebug");
         memoryAllocated.setPosition(60, 40, Anchor.LEFT | Anchor.TOP);
-        
+
         // Location Stats
         UILabel directionLabel = new UILabel(this, ChatColor.WHITE + "Directions:");
         directionLabel.setPosition(5, 50, Anchor.LEFT | Anchor.TOP);
@@ -93,8 +92,9 @@ public class IngameDebugHUD extends AlmuraGui {
         version.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
         version.setFontScale(0.7f);
 
-        debugPanel.add(debugTitle, fpsLabel, fps, memoryLabel, memoryDebug, memoryAllocated, directionLabel, xLoc, yLoc, zLoc, facingLabel, directionLoc,
-                biomeLabel, biomeName, lightLabel, blockLight, skyLight, rawLight, version);
+        debugPanel.add(debugTitle, fpsLabel, fps, memoryLabel, memoryDebug, memoryAllocated, directionLabel, xLoc, yLoc, zLoc, facingLabel,
+                       directionLoc,
+                       biomeLabel, biomeName, lightLabel, blockLight, skyLight, rawLight, version);
 
         addToScreen(debugPanel);
     }
@@ -139,7 +139,9 @@ public class IngameDebugHUD extends AlmuraGui {
         final String cleanDirection = direction.substring(0, 1).toUpperCase() + direction.substring(1).toLowerCase();
 
         fps.setText(ChatColor.GOLD + "" + displayFps);
-        memoryDebug.setText(ChatColor.GRAY + "Used: " + usedMemory * 100L / maxMemory + "% (" + usedMemory / 1024L / 1024L + "MB) of " + maxMemory / 1024L / 1024L + "MB");
+        memoryDebug.setText(
+                ChatColor.GRAY + "Used: " + usedMemory * 100L / maxMemory + "% (" + usedMemory / 1024L / 1024L + "MB) of " + maxMemory / 1024L / 1024L
+                + "MB");
         memoryAllocated.setText(ChatColor.GRAY + "Allocated memory: " + totalMemory * 100L / maxMemory + "% (" + totalMemory / 1024L / 1024L + "MB)");
         xLoc.setText(ChatColor.GRAY + String.format("- x: %.5f (%d) // chunk: %d (%d)", this.mc.thePlayer.posX, x, x >> 4, x & 15));
         yLoc.setText(ChatColor.GRAY + String.format("- y: %.3f ", this.mc.thePlayer.posY));

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.model;
+package com.almuradev.almura.module.pack.model;
 
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;

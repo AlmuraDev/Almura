@@ -8,13 +8,10 @@ package com.almuradev.almura.client.gui;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.google.common.eventbus.Subscribe;
-
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
-import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
@@ -26,7 +23,6 @@ import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.input.Keyboard;
 
 import java.util.Calendar;
@@ -34,7 +30,9 @@ import java.util.Random;
 
 public class AlmuraMainMenu extends AlmuraGui {
 
-    private static final GuiTexture ALMURA_2_LOGO = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/almura2b.png"));
+    private static final GuiTexture
+            ALMURA_2_LOGO =
+            new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/almura2b.png"));
     private static final Random RANDOM = new Random();
     private static int imageNum = 0;
     public UIBackgroundContainer window;
@@ -80,12 +78,16 @@ public class AlmuraMainMenu extends AlmuraGui {
         singlePlayerButton.setSize(180, 15);
         singlePlayerButton.setName("BTNSINGLEPLAYER");
 
-        devServerButton = (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "ObsidianBox" + ChatColor.WHITE + " Server").setPosition(0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
+        devServerButton =
+                (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "ObsidianBox" + ChatColor.WHITE + " Server").setPosition(
+                        0, -70, Anchor.BOTTOM | Anchor.CENTER).register(this));
         devServerButton.setSize(180, 15);
         devServerButton.setTooltip(new UITooltip(this, "Logon to ObsidianBox Server", 5));
         devServerButton.setName("BTNDEVSERVER");
 
-        liveServerButton = (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Almura Test" + ChatColor.WHITE + " Server").setPosition(0, -50, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        liveServerButton =
+                (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Almura Test" + ChatColor.WHITE + " Server").setPosition(
+                        0, -50, Anchor.CENTER | Anchor.BOTTOM).register(this));
         liveServerButton.setSize(180, 15);
         liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 5));
         liveServerButton.setName("BTNLIVESERVER");
@@ -140,7 +142,7 @@ public class AlmuraMainMenu extends AlmuraGui {
             case "BTNOPTIONS":
                 this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiOptions(this, this.mc.gameSettings));
                 break;
-            case "BTNMODS":                
+            case "BTNMODS":
                 this.mc.displayGuiScreen(new GuiModList(this));
                 break;
             case "BTNCLOSE":
@@ -165,28 +167,28 @@ public class AlmuraMainMenu extends AlmuraGui {
             singlePlayerButton.setName("BTNMULTIPLAYER");
             singlePlayerButton.setSize(180, 15);
             singlePlayerButton.setTooltip(new UITooltip(this, "Play Multiplayer using Almura 2", 5));
-            
+
             liveServerButton.setText("Localhost");
             liveServerButton.setName("BTNLOCALHOSTSERVER");
             liveServerButton.setSize(180, 15);
             liveServerButton.setTooltip(new UITooltip(this, "Logon to localhost server", 5));
-            
+
             optionsButton.setText("Mods");
             optionsButton.setSize(50, 15);
             optionsButton.setName("BTNMODS");
-            
-            
+
+
         } else {
             singlePlayerButton.setText("Singleplayer");
             singlePlayerButton.setName("BTNSINGLEPLAYER");
             singlePlayerButton.setSize(180, 15);
             singlePlayerButton.setTooltip(new UITooltip(this, "Play Singleplayer using Almura 2", 5));
-            
+
             liveServerButton.setText(ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Almura Test" + ChatColor.WHITE + " Server");
             liveServerButton.setSize(180, 15);
             liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Test Server", 5));
             liveServerButton.setName("BTNLIVESERVER");
-            
+
             optionsButton.setText("Options");
             optionsButton.setSize(50, 15);
             optionsButton.setName("BTNOPTIONS");
@@ -197,7 +199,6 @@ public class AlmuraMainMenu extends AlmuraGui {
         if (tick++ % 2 == 0) {
             backgroundImage.setSize(backgroundImage.getWidth() + 1, backgroundImage.getHeight() + 1);
             timer++;
-
 
             if (timer == 60) {
                 randomBackground();
@@ -242,7 +243,10 @@ public class AlmuraMainMenu extends AlmuraGui {
 
     private void randomBackground() {
         String qualifier = getTime().toLowerCase();
-        GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/" + qualifier + "/" + qualifier + imageNum + ".jpg"));
+        GuiTexture
+                background =
+                new GuiTexture(
+                        new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/" + qualifier + "/" + qualifier + imageNum + ".jpg"));
         backgroundImage.setIcon(background, null);
         backgroundImage.setZIndex(-1);
         backgroundImage.setSize(0, 0);

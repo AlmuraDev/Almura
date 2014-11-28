@@ -14,6 +14,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 
 public class Tabs {
+
     private static final Item ITEM_BUILDING = new AlmuraTabItem("building");
     private static final Item ITEM_ROOFING = new AlmuraTabItem("roofing");
     private static final Item ITEM_LIGHTING = new AlmuraTabItem("lighting");
