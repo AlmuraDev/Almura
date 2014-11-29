@@ -1,4 +1,4 @@
-package com.almuradev.almura.module.pack.chest;
+package com.almuradev.almura.pack.chest;
 
 import static net.minecraftforge.common.util.ForgeDirection.DOWN;
 

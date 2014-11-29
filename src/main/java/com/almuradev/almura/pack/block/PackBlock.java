@@ -3,18 +3,19 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.module.pack.block;
+package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
+import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.module.pack.ContentPack;
-import com.almuradev.almura.module.pack.IClipContainer;
-import com.almuradev.almura.module.pack.IShapeContainer;
-import com.almuradev.almura.module.pack.renderer.PackIcon;
-import com.almuradev.almura.module.pack.PackUtil;
-import com.almuradev.almura.module.pack.RotationMeta;
-import com.almuradev.almura.module.pack.model.PackShape;
+import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IShapeContainer;
+import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.RotationMeta;
+import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.renderer.PackIcon;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.relauncher.Side;
@@ -132,7 +133,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
 
         final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader);
 
-        Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
         return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, mirrorRotation, lightLevel, lightOpacity, showInCreativeTab,
                              creativeTabName,

@@ -3,15 +3,15 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.module.pack.block;
+package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.module.pack.ContentPack;
-import com.almuradev.almura.module.pack.IClipContainer;
-import com.almuradev.almura.module.pack.IModelContainer;
-import com.almuradev.almura.module.pack.renderer.PackIcon;
-import com.almuradev.almura.module.pack.PackUtil;
-import com.almuradev.almura.module.pack.model.PackModel;
+import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IModelContainer;
+import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.model.PackModel;
+import com.almuradev.almura.pack.renderer.PackIcon;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.relauncher.Side;

@@ -3,11 +3,11 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.module.pack.block;
+package com.almuradev.almura.pack.block;
 
-import com.almuradev.almura.module.pack.ContentPack;
-import com.almuradev.almura.module.pack.IClipContainer;
-import com.almuradev.almura.module.pack.IShapeContainer;
+import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IShapeContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.element.Shape;

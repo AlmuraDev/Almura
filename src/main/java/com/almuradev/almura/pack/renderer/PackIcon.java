@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.module.pack.renderer;
+package com.almuradev.almura.pack.renderer;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;

@@ -3,10 +3,10 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.module.pack.model;
+package com.almuradev.almura.pack.model;
 
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.module.pack.ContentPack;
+import com.almuradev.almura.pack.ContentPack;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import net.malisis.core.renderer.model.MalisisModel;
 import net.malisis.core.renderer.model.loader.ObjFileImporter;

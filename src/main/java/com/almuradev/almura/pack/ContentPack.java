@@ -3,16 +3,16 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.module.pack;
+package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.module.pack.block.PackBlock;
-import com.almuradev.almura.module.pack.block.PackModelBlock;
-import com.almuradev.almura.module.pack.item.PackFood;
-import com.almuradev.almura.module.pack.item.PackItem;
-import com.almuradev.almura.module.pack.model.PackModel;
-import com.almuradev.almura.module.pack.model.PackShape;
+import com.almuradev.almura.pack.block.PackBlock;
+import com.almuradev.almura.pack.block.PackModelBlock;
+import com.almuradev.almura.pack.item.PackFood;
+import com.almuradev.almura.pack.item.PackItem;
+import com.almuradev.almura.pack.model.PackModel;
+import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import net.minecraft.block.Block;

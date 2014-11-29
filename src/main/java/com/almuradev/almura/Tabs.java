@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -81,7 +82,7 @@ public class Tabs {
 
         public AlmuraCreativeTabs(String unlocalizedName, String displayName, Item displayItem) {
             super(Almura.MOD_ID + "_" + unlocalizedName);
-            Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "itemGroup." + tabLabel, displayName);
+            LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "itemGroup." + tabLabel, displayName);
             this.displayItem = displayItem;
         }
 
