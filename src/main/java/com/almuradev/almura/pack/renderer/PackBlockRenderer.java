@@ -10,6 +10,7 @@ import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
+import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackShape;
 import net.malisis.core.renderer.MalisisRenderer;
@@ -66,31 +67,45 @@ public class PackBlockRenderer extends MalisisRenderer {
                     shape.rotate(90f, 0, 1, 0);
                     break;
                 case DOWN_NORTH:
-                    shape.rotate(90f, -1, 0, 0);
-                    shape.rotate(180f, 0, -1, 0);
+                    if (((PackBlock) block).canMirrorRotate()) {
+                        shape.rotate(90f, -1, 0, 0);
+                        shape.rotate(180f, 0, -1, 0);
+                    }
                     break;
                 case DOWN_SOUTH:
-                    shape.rotate(180f, -1, 0, 0);
-                    shape.rotate(90f, -1, 0, 0);
+                    if (((PackBlock) block).canMirrorRotate()) {
+                        shape.rotate(180f, -1, 0, 0);
+                        shape.rotate(90f, -1, 0, 0);
+                    }
                     break;
                 case DOWN_WEST:
-                    shape.rotate(180f, -1, 0, 0);
-                    shape.rotate(90f, 0, -1, 0);
+                    if (((PackBlock) block).canMirrorRotate()) {
+                        shape.rotate(180f, -1, 0, 0);
+                        shape.rotate(90f, 0, -1, 0);
+                    }
                     break;
                 case DOWN_EAST:
-                    shape.rotate(180f, -1, 0, 0);
-                    shape.rotate(90f, 0, 1, 0);
+                    if (((PackBlock) block).canMirrorRotate()) {
+                        shape.rotate(180f, -1, 0, 0);
+                        shape.rotate(90f, 0, 1, 0);
+                    }
                     break;
                 case UP_NORTH:
-                    shape.rotate(180f, 0, -1, 0);
+                    if (((PackBlock) block).canMirrorRotate()) {
+                        shape.rotate(180f, 0, -1, 0);
+                    }
                     break;
                 case UP_SOUTH:
                     break;
                 case UP_WEST:
-                    shape.rotate(90f, 0, -1, 0);
+                    if (((PackBlock) block).canMirrorRotate()) {
+                        shape.rotate(90f, 0, -1, 0);
+                    }
                     break;
                 case UP_EAST:
-                    shape.rotate(90f, 0, 1, 0);
+                    if (((PackBlock) block).canMirrorRotate()) {
+                        shape.rotate(90f, 0, 1, 0);
+                    }
                     break;
             }
         }
