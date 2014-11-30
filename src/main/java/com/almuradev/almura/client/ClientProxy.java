@@ -6,8 +6,8 @@
 package com.almuradev.almura.client;
 
 import com.almuradev.almura.CommonProxy;
-import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.gui.AlmuraMainMenu;
+import com.almuradev.almura.client.gui.ingame.IngameConfig;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.pack.IShapeContainer;
@@ -17,10 +17,13 @@ import com.almuradev.almura.pack.renderer.PackBlockRenderer;
 import com.almuradev.almura.pack.renderer.PackItemRenderer;
 import com.almuradev.almura.pack.renderer.PackModelRenderer;
 
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.InputEvent;
+import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.item.Item;
@@ -39,6 +42,7 @@ public class ClientProxy extends CommonProxy {
         super.onPreInitialization(event);
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
         PACK_MODEL_RENDERER.registerFor(PackModelBlock.class);
+        ClientRegistry.registerKeyBinding(Bindings.almuraConfigGUI);
     }
 
     @Override
@@ -74,9 +78,7 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         if (event.gui instanceof GuiMainMenu) {
-            if (Configuration.ALMURA_GUI) {
-                event.gui = new AlmuraMainMenu();
-            }
+            event.gui = new AlmuraMainMenu();
         }
     }
 }

@@ -5,9 +5,13 @@
  */
 package com.almuradev.almura.client.gui.ingame;
 
+import com.almuradev.almura.Configuration;
+import com.almuradev.almura.client.Bindings;
 import com.almuradev.almura.client.ChatColor;
+import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.UIPropertyBar;
+
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -21,6 +25,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -203,13 +208,16 @@ public class IngameHUD extends AlmuraGui {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTick(ClientTickEvent event) {
-        if (enableUpdates && Minecraft.getMinecraft().thePlayer != null) {
+        if (enableUpdates && Minecraft.getMinecraft().thePlayer != null && Configuration.ALMURA_GUI) {
             updateWidgets();
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
+        if (!Configuration.ALMURA_GUI) {
+            return;
+        }
         switch (event.type) {
             case HEALTH:
             case ARMOR:
@@ -221,7 +229,6 @@ public class IngameHUD extends AlmuraGui {
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             enableUpdates = true;
             setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }
@@ -417,5 +424,15 @@ public class IngameHUD extends AlmuraGui {
             return (String.format("12am"));
         }
         return String.format((hours - 18) + "am");
+    }
+    
+    @Override
+    protected void keyTyped(char keyChar, int keyInt) {
+        super.keyTyped(keyChar, keyInt);
+        System.out.println("Hi");
+        if (keyInt == Bindings.almuraConfigGUI.getKeyCode()) {
+            System.out.println("Should have opened config GUI");
+            new IngameConfig();
+        }
     }
 }

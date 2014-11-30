@@ -36,7 +36,5 @@ public class Configuration {
         DEBUG_MODE = reader.getChild("debug").getChild("all", true).getBoolean(false);
         DEBUG_LANGUAGES_MODE = reader.getChild("debug").getChild("language", true).getBoolean(false);
         DEBUG_PACKS_MODE = reader.getChild("debug").getChild("debug").getChild("pack", true).getBoolean(false);
-        
-        System.out.println("Almura GUI Enabled: " + ALMURA_GUI);
     }
 }
