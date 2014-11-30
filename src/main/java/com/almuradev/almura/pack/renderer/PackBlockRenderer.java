@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.client.renderer;
+package com.almuradev.almura.pack.renderer;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IClipContainer;
@@ -12,8 +12,9 @@ import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackShape;
-import net.malisis.core.renderer.BaseRenderer;
+import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderParameters;
+import net.malisis.core.renderer.RenderType;
 import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.shape.Cube;
@@ -23,7 +24,8 @@ import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class PackBlockRenderer extends BaseRenderer {
+public class PackBlockRenderer extends MalisisRenderer {
+
     private Cube vanillaShape;
 
     @Override
@@ -45,12 +47,12 @@ public class PackBlockRenderer extends BaseRenderer {
         rp.interpolateUV.set(false);
         rp.flipU.set(true);
         rp.flipV.set(true);
-        if (renderType == TYPE_ISBRH_INVENTORY) {
+        if (renderType == RenderType.ISBRH_INVENTORY) {
             shape.scale(1, 1, 1);
             RenderHelper.enableStandardItemLighting();
         }
         rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
-        if (renderType == TYPE_ISBRH_WORLD) {
+        if (renderType == RenderType.ISBRH_WORLD) {
             switch (RotationMeta.getRotationFromMeta(blockMetadata)) {
                 case NORTH:
                     shape.rotate(180f, 0, -1, 0);
@@ -93,7 +95,7 @@ public class PackBlockRenderer extends BaseRenderer {
             }
         }
         drawShape(shape, rp);
-        if (renderType == TYPE_ISBRH_INVENTORY) {
+        if (renderType == RenderType.ISBRH_INVENTORY) {
             RenderHelper.disableStandardItemLighting();
         }
     }
@@ -136,7 +138,8 @@ public class PackBlockRenderer extends BaseRenderer {
     @SuppressWarnings("unchecked")
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
-            if (Block.class.isAssignableFrom(clazz) && IClipContainer.class.isAssignableFrom(clazz) && IShapeContainer.class.isAssignableFrom(clazz)) {
+            if (Block.class.isAssignableFrom(clazz) && IClipContainer.class.isAssignableFrom(clazz) && IShapeContainer.class
+                    .isAssignableFrom(clazz)) {
                 super.registerFor(clazz);
             } else {
                 Almura.LOGGER.error("Cannot register " + clazz.getSimpleName() + " for PackBlockRenderer!");

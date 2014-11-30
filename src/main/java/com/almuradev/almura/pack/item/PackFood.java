@@ -5,11 +5,15 @@
  */
 package com.almuradev.almura.pack.item;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
+import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.*;
+import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IShapeContainer;
+import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.renderer.PackIcon;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import net.malisis.core.renderer.element.Shape;
@@ -37,7 +41,8 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
     private PackShape shape;
     private String[] tooltip;
 
-    public PackFood(ContentPack pack, String identifier, String[] tooltip, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinatesByFace,
+    public PackFood(ContentPack pack, String identifier, String[] tooltip, String textureName, String shapeName,
+                    Map<Integer, List<Integer>> textureCoordinatesByFace,
                     boolean showInCreativeTab, String creativeTabName, int healAmount, float saturationModifier, boolean isWolfFavorite,
                     boolean alwaysEdible) {
         super(healAmount, saturationModifier, isWolfFavorite);
@@ -77,10 +82,11 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
 
         final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader);
 
-        Almura.LANGUAGES.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "_" + name + ".name", title);
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "_" + name + ".name", title);
 
-        return new PackFood(pack, name, titleLines.length == 1 ? null : Arrays.copyOfRange(titleLines, 1, titleLines.length), textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName, healAmount,
-                saturationModifier, isWolfFavorite, alwaysEdible);
+        return new PackFood(pack, name, titleLines.length == 1 ? null : Arrays.copyOfRange(titleLines, 1, titleLines.length), textureName, shapeName,
+                            textureCoordinatesByFace, showInCreativeTab, creativeTabName, healAmount,
+                            saturationModifier, isWolfFavorite, alwaysEdible);
     }
 
     @Override

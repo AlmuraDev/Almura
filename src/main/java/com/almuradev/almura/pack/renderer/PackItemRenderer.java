@@ -3,15 +3,16 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.client.renderer;
+package com.almuradev.almura.pack.renderer;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackFace;
-import net.malisis.core.renderer.BaseRenderer;
+import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderParameters;
+import net.malisis.core.renderer.RenderType;
 import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
 import net.minecraft.client.renderer.RenderHelper;
@@ -19,7 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class PackItemRenderer extends BaseRenderer {
+public class PackItemRenderer extends MalisisRenderer {
 
     @Override
     public boolean shouldRender3DInInventory(int modelId) {
@@ -35,14 +36,14 @@ public class PackItemRenderer extends BaseRenderer {
         rp.flipU.set(true);
         rp.flipV.set(true);
 
-        if (renderType == TYPE_ITEM_INVENTORY) {
+        if (renderType == RenderType.ITEM_INVENTORY) {
             shape.scale(1, 1, 1);
             RenderHelper.enableStandardItemLighting();
         }
 
         drawShape(shape, rp);
 
-        if (renderType == TYPE_ITEM_INVENTORY) {
+        if (renderType == RenderType.ITEM_INVENTORY) {
             RenderHelper.disableStandardItemLighting();
         }
     }
@@ -84,7 +85,9 @@ public class PackItemRenderer extends BaseRenderer {
 
     @Override
     public void registerFor(Item item) {
-        if (Item.class.isAssignableFrom(item.getClass()) && IClipContainer.class.isAssignableFrom(item.getClass()) && IShapeContainer.class.isAssignableFrom(item.getClass())) {
+        if (Item.class.isAssignableFrom(item.getClass()) && IClipContainer.class.isAssignableFrom(item.getClass()) && IShapeContainer.class
+                .isAssignableFrom(
+                        item.getClass())) {
             super.registerFor(item);
         } else {
             Almura.LOGGER.error("Cannot register " + item.getClass().getSimpleName() + " for PackItemRenderer!");

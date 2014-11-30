@@ -35,7 +35,8 @@ public class ServerProxy extends CommonProxy {
     @SubscribeEvent
     public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.fromDim != event.toDim) {
-            Almura.NETWORK_FORGE.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName()), (EntityPlayerMP) event.player);
+            Almura.NETWORK_FORGE.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName()),
+                                        (EntityPlayerMP) event.player);
         }
     }
 }

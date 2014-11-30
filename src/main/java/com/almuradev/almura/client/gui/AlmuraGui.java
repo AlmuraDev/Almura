@@ -16,6 +16,7 @@ import java.awt.*;
 import java.io.IOException;
 
 public class AlmuraGui extends MalisisGui {
+
     protected static final GuiTexture TEXTURE_DEFAULT;
 
     static {

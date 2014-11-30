@@ -12,6 +12,7 @@ import cpw.mods.fml.relauncher.Side;
 import io.netty.buffer.ByteBuf;
 
 public class B01PlayerCurrency implements IMessage, IMessageHandler<B01PlayerCurrency, IMessage> {
+
     public double amount;
 
     @Override

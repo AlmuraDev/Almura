@@ -26,6 +26,7 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 
 public class IngameHUD extends AlmuraGui {
+
     private static final GuiIcon ICON_BAR = getIcon(0, 126, 256, 14);
     private static final GuiIcon ICON_HEART = getIcon(149, 62, 26, 26);
     private static final GuiIcon ICON_ARMOR = getIcon(64, 63, 20, 27);
@@ -47,8 +48,8 @@ public class IngameHUD extends AlmuraGui {
     private final UIImage mapImage, worldImage, playerImage;
     private final UILabel serverCount, playerCoords, playerCompass, worldTime, xpLevel;
     private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
-    
-    private float playerHealth, playerArmor, playerHunger, playerStamina, playerExperience, playerExperienceLevel =  0.0F;
+
+    private float playerHealth, playerArmor, playerHunger, playerStamina, playerExperience, playerExperienceLevel = 0.0F;
     private String serverTime, playerLocation, playerComp;
     private boolean firstPass, playerIsCreative, enableUpdates = false;
 
@@ -150,7 +151,7 @@ public class IngameHUD extends AlmuraGui {
         // Compass Image
         final UIImage compassImage = new UIImage(this, TEXTURE_DEFAULT, ICON_COMPASS);
         compassImage.setPosition(-73, 16, Anchor.RIGHT | Anchor.TOP);
-        compassImage.setSize(8, 8);        
+        compassImage.setSize(8, 8);
 
         // Player Compass Label
         playerCompass = new UILabel(this, "");
@@ -184,7 +185,9 @@ public class IngameHUD extends AlmuraGui {
         xpLevel.setSize(15, 7);
         xpLevel.setFontScale(0.8F);
 
-        gradientContainer.add(playerTitle, playerMode, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty, mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage, worldTime, xpLevel);
+        gradientContainer.add(playerTitle, playerMode, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty,
+                              mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage,
+                              worldTime, xpLevel);
 
         addToScreen(gradientContainer);
     }
@@ -218,15 +221,15 @@ public class IngameHUD extends AlmuraGui {
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             enableUpdates = true;
             setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-            
+
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }
 
 
-    public void updateWidgets() {        
+    public void updateWidgets() {
         // Player Health
-        if (playerHealth != Minecraft.getMinecraft().thePlayer.getHealth() / Minecraft.getMinecraft().thePlayer.getMaxHealth()|| firstPass) {
+        if (playerHealth != Minecraft.getMinecraft().thePlayer.getHealth() / Minecraft.getMinecraft().thePlayer.getMaxHealth() || firstPass) {
             playerHealth = Minecraft.getMinecraft().thePlayer.getHealth() / Minecraft.getMinecraft().thePlayer.getMaxHealth();
             if (playerHealth > 0.6) {
                 healthProperty.setColor(greenBar.getRGB());
@@ -301,7 +304,7 @@ public class IngameHUD extends AlmuraGui {
             } else {
                 xpProperty.setVisible(false);
             }
-        }        
+        }
         // Player Experience level 
         if (playerExperienceLevel != Minecraft.getMinecraft().thePlayer.experienceLevel || firstPass) {
             playerExperienceLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
@@ -322,9 +325,15 @@ public class IngameHUD extends AlmuraGui {
             worldTime.setText(getTime());
         }
         // Player Coordinates
-        if (playerLocation != String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ) || firstPass) {
-            playerLocation = String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ);
-            playerCoords.setText(String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ));            
+        if (playerLocation != String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX,
+                                            (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ)
+            || firstPass) {
+            playerLocation =
+                    String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
+                                  (int) Minecraft.getMinecraft().thePlayer.posZ);
+            playerCoords.setText(
+                    String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
+                                  (int) Minecraft.getMinecraft().thePlayer.posZ));
         }
         // Player Compass
         if (playerComp != getCompass() || firstPass) {
@@ -336,17 +345,22 @@ public class IngameHUD extends AlmuraGui {
             playerTitle.setText(Minecraft.getMinecraft().thePlayer.getDisplayName());
         }
         if (Minecraft.getMinecraft().isSingleplayer()) {
-            worldDisplay.setText(Character.toUpperCase(MinecraftServer.getServer().getWorldName().charAt(0)) + MinecraftServer.getServer().getWorldName().substring(1));
+            worldDisplay.setText(
+                    Character.toUpperCase(MinecraftServer.getServer().getWorldName().charAt(0)) + MinecraftServer.getServer().getWorldName()
+                            .substring(
+                                    1));
         }
         // Server Player Count
         if (Minecraft.getMinecraft().isSingleplayer()) {
             serverCount.setText("--");
         } else {
-            serverCount.setText(Minecraft.getMinecraft().getNetHandler().playerInfoList.size() + "/" + Minecraft.getMinecraft().getNetHandler().currentServerMaxPlayers);
+            serverCount.setText(Minecraft.getMinecraft().getNetHandler().playerInfoList.size() + "/" + Minecraft.getMinecraft()
+                    .getNetHandler().currentServerMaxPlayers);
         }
         // Alignment
         playerMode.setPosition((playerTitle.getX() + playerTitle.getWidth() + 6), playerMode.getY(), playerMode.getAnchor());
-        serverCount.setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
+        serverCount
+                .setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
         worldImage.setPosition(-(worldDisplay.getWidth() + 9), worldImage.getY(), Anchor.RIGHT | Anchor.TOP);
         playerCoords.setPosition(-(-worldImage.getX() + worldImage.getWidth() + 12), playerCoords.getY(), Anchor.RIGHT | Anchor.TOP);
         mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT | Anchor.TOP);
@@ -378,12 +392,12 @@ public class IngameHUD extends AlmuraGui {
         int position = (int) ((((Minecraft.getMinecraft().thePlayer.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 16);
 
         return "" + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
-                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
-                + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
-                + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
-                + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
-                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
-                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
+               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
+               + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
+               + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
+               + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
+               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
+               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
     }
 
     public String getTime() {

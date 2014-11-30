@@ -1,0 +1,79 @@
+Type: Crop
+Title: Corn 
+Creative-Tab-Name: crops
+Show-In-Creative-Tab: false
+Date: 11-23-2014
+RenderId: 6
+Texture: "food.png"
+Rotation: FALSE
+Hardness: 0
+item-source: MoreMaterials\KFood_Core\alfalfa_seed
+block-source: MoreMaterials\KFood_Core\flatseed
+fertilizer-source: bonemeal
+fertilizer-amount: 1
+min-light-level: 7
+max-light-level: 15
+bonus-chance: 10
+minimum-level-required: 18
+allow-fertilization: true;
+damage-player: false
+drop-item-source-on-grass-break: true
+ignore-light: false
+stages:
+    1:
+        Coords:
+        - 256 384 32 32 #0
+        fertilizer-source: bonemeal
+        fertilizer-amount: 1
+        min-light-level: 7
+        max-light-level: 15
+        growth-required: 60
+        growth-chance: 5
+    2:
+        Coords:
+        - 256 384 32 32 #0
+        fertilizer-source: bonemeal
+        fertilizer-amount: 1
+        min-light-level: 7
+        max-light-level: 15
+        growth-required: 120
+        growth-chance: 5
+    3:
+        Coords:
+        - 256 384 32 32 #0
+        fertilizer-source: bonemeal
+        fertilizer-amount: 1
+        min-light-level: 7
+        max-light-level: 15
+        growth-required: 180
+        growth-chance: 5
+    4:
+        Coords:
+        - 256 384 32 32 #0
+        fertilizer-source: bonemeal
+        fertilizer-amount: 1
+        min-light-level: 7
+        max-light-level: 15
+        growth-required: 240
+        growth-chance: 5
+        drops:        
+            packs\crops\alfalfa:
+                amount: 1
+                bonus:
+            packs\crops\alfalfa:
+                amount: 2   
+        tools:
+            packs\tools\gold_sickle:
+                required: true
+                bonus: true
+                bonus-amount: 10
+            packs\tools\gold_sickle:
+                required: true 
+                bonus: true
+                bonus-amount: 5                    
+            packs\tools\iron_sickle:
+                required: true            
+            packs\tools\stone_sickle:
+                required: true            
+            packs\tools\wooden_sickle:
+                required: true

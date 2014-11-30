@@ -6,7 +6,6 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.lang.LanguageManager;
 import com.almuradev.almura.server.ServerProxy;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -19,9 +18,9 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Almura.MOD_ID)
 public class Almura {
+
     public static final String MOD_ID = "almura";
     public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID);
-    public static final LanguageManager LANGUAGES = new LanguageManager();
     public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
     public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
     public static String GUI_VERSION = "Almura 2.0 build 18";

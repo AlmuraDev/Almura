@@ -6,7 +6,6 @@
 package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.block.PackModelBlock;
@@ -16,7 +15,6 @@ import com.almuradev.almura.pack.model.PackModel;
 import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
-import net.malisis.core.renderer.model.MalisisModel;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 
@@ -25,7 +23,12 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ContentPack {
 

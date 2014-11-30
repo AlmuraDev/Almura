@@ -15,6 +15,7 @@ import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.block.BlockStairs;
 
 public class PackStairs extends BlockStairs implements IClipContainer, IShapeContainer {
+
     public static int renderId = 10;
     private final PackBlock wrapped;
 

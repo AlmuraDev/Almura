@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
@@ -30,10 +31,10 @@ public class CommonProxy {
 
         ContentPack.loadAllContent();
 
-        Almura.LANGUAGES.injectIntoForge();
+        LanguageRegistry.injectIntoForge();
 
         for (Languages entry : Languages.values()) {
-            final Map<String, String> value = Almura.LANGUAGES.get(entry);
+            final Map<String, String> value = LanguageRegistry.get(entry);
             if (!value.isEmpty()) {
                 Almura.LOGGER.info("Registered [" + value.size() + "] entries for language [" + entry.name() + "]");
             }
