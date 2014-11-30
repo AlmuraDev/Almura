@@ -6,6 +6,7 @@
 package com.almuradev.almura.client;
 
 import com.almuradev.almura.CommonProxy;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.gui.AlmuraMainMenu;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
@@ -15,6 +16,7 @@ import com.almuradev.almura.pack.block.PackModelBlock;
 import com.almuradev.almura.pack.renderer.PackBlockRenderer;
 import com.almuradev.almura.pack.renderer.PackItemRenderer;
 import com.almuradev.almura.pack.renderer.PackModelRenderer;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -72,7 +74,9 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         if (event.gui instanceof GuiMainMenu) {
-            event.gui = new AlmuraMainMenu();
+            if (Configuration.ALMURA_GUI) {
+                event.gui = new AlmuraMainMenu();
+            }
         }
     }
 }

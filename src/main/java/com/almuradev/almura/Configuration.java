@@ -11,21 +11,32 @@ import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Configuration {
 
-    public static final boolean DEBUG_MODE;
-    public static final boolean DEBUG_LANGUAGES_MODE;
-    public static final boolean DEBUG_PACKS_MODE;
+    public static boolean DEBUG_MODE;
+    public static boolean DEBUG_LANGUAGES_MODE;
+    public static boolean DEBUG_PACKS_MODE;
     public static final boolean IS_SERVER = FMLCommonHandler.instance().getEffectiveSide().isServer();
     public static final boolean IS_CLIENT = FMLCommonHandler.instance().getEffectiveSide().isClient();
+    public static boolean ALMURA_GUI;    
 
     static {
+        DEBUG_LANGUAGES_MODE = false;
+        DEBUG_PACKS_MODE = false;
+        ALMURA_GUI = true;
+        reloadConfig();
+    }
+    
+    public static void reloadConfig() {
         final YamlConfiguration reader = new YamlConfiguration(Filesystem.CONFIG_SETTINGS_PATH.toFile());
         try {
             reader.load();
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
+        ALMURA_GUI = reader.getChild("almura_gui").getBoolean(true);
         DEBUG_MODE = reader.getChild("debug").getChild("all", true).getBoolean(false);
         DEBUG_LANGUAGES_MODE = reader.getChild("debug").getChild("language", true).getBoolean(false);
         DEBUG_PACKS_MODE = reader.getChild("debug").getChild("debug").getChild("pack", true).getBoolean(false);
+        
+        System.out.println("Almura GUI Enabled: " + ALMURA_GUI);
     }
 }
