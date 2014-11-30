@@ -153,8 +153,7 @@ public class PackBlockRenderer extends MalisisRenderer {
     @SuppressWarnings("unchecked")
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
-            if (Block.class.isAssignableFrom(clazz) && IClipContainer.class.isAssignableFrom(clazz) && IShapeContainer.class
-                    .isAssignableFrom(clazz)) {
+            if (clazz == PackBlock.class) {
                 super.registerFor(clazz);
             } else {
                 Almura.LOGGER.error("Cannot register " + clazz.getSimpleName() + " for PackBlockRenderer!");
