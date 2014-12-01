@@ -94,6 +94,8 @@ public class ClientProxy extends CommonProxy {
         if (BINDING_CONFIG_GUI.isPressed()) {
             final IngameConfig form = new IngameConfig();
             form.display();
+        } else if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
+            IngameDebugHUD.UPDATES_ENABLED = !IngameDebugHUD.UPDATES_ENABLED;
         }
     }
 }

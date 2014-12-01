@@ -20,12 +20,15 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import scala.collection.parallel.ParIterableLike;
 
 public class IngameDebugHUD extends AlmuraGui {
-    public static boolean UPDATES_ENABLED = true;
+    public static boolean UPDATES_ENABLED = false;
     public static Minecraft MINECRAFT = Minecraft.getMinecraft();
     public static Runtime RUNTIME = Runtime.getRuntime();
     public UILabel fps, memoryDebug, memoryAllocated, xLoc, yLoc, zLoc, directionLoc, biomeName, blockLight, skyLight, rawLight;
+    private Chunk chunk;
+    private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE, yaw = Integer.MIN_VALUE;
 
     public IngameDebugHUD() {
 
@@ -116,7 +119,7 @@ public class IngameDebugHUD extends AlmuraGui {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
         if (event.type == RenderGameOverlayEvent.ElementType.DEBUG) {
-            if (UPDATES_ENABLED) {
+            if (UPDATES_ENABLED && MINECRAFT.thePlayer != null) {
                 event.setCanceled(true);
 
                 if (MINECRAFT.currentScreen == null) {
@@ -133,28 +136,48 @@ public class IngameDebugHUD extends AlmuraGui {
         long freeMemory = RUNTIME.freeMemory();
         long usedMemory = totalMemory - freeMemory;
 
-        int x = MathHelper.floor_double(MINECRAFT.thePlayer.posX);
-        int y = MathHelper.floor_double(MINECRAFT.thePlayer.posY);
-        int z = MathHelper.floor_double(MINECRAFT.thePlayer.posZ);
-        int yaw = MathHelper.floor_double((double) (MINECRAFT.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-        Chunk chunk = MINECRAFT.theWorld.getChunkFromBlockCoords(x, z);
+        boolean dirtyCoords = false;
+
+        if (x == Integer.MIN_VALUE || MINECRAFT.thePlayer.posX != MINECRAFT.thePlayer.prevPosX) {
+            x = MathHelper.floor_double(MINECRAFT.thePlayer.posX);
+            xLoc.setText(ChatColor.GRAY + String.format("- x: %.5f (%d) // chunk: %d (%d)", MINECRAFT.thePlayer.posX, x, MINECRAFT.thePlayer.chunkCoordX, x & 15));
+            dirtyCoords = true;
+        }
+
+        if (y == Integer.MIN_VALUE || MINECRAFT.thePlayer.posY != MINECRAFT.thePlayer.prevPosY) {
+            y = MathHelper.floor_double(MINECRAFT.thePlayer.posY);
+            yLoc.setText(ChatColor.GRAY + String.format("- y: %.3f (%d) ", MINECRAFT.thePlayer.posY, y));
+            dirtyCoords = true;
+        }
+
+        if (z == Integer.MIN_VALUE || MINECRAFT.thePlayer.posZ != MINECRAFT.thePlayer.prevPosZ) {
+            z = MathHelper.floor_double(MINECRAFT.thePlayer.posZ);
+            zLoc.setText(ChatColor.GRAY + String.format("- z: %.5f (%d) // chunk: %d (%d)", MINECRAFT.thePlayer.posZ, z, MINECRAFT.thePlayer.chunkCoordZ, z & 15));
+            dirtyCoords = true;
+        }
+
+        if (yaw == Integer.MIN_VALUE || MINECRAFT.thePlayer.rotationYawHead != MINECRAFT.thePlayer.prevRotationYawHead) {
+            yaw = MathHelper.floor_double((double) (MINECRAFT.thePlayer.rotationYawHead * 4.0F / 360.0F) + 0.5D) & 3;
+            final String direction = Direction.directions[yaw];
+            directionLoc.setText(ChatColor.GRAY + direction.substring(0, 1).toUpperCase() + direction.substring(1).toLowerCase());
+        }
+
+        if (dirtyCoords) {
+            if (chunk == null || x != (int) MINECRAFT.thePlayer.prevPosX || z != MINECRAFT.thePlayer.prevPosZ) {
+                chunk = MINECRAFT.thePlayer.worldObj.getChunkFromChunkCoords(MINECRAFT.thePlayer.chunkCoordX, MINECRAFT.thePlayer.chunkCoordZ);
+            }
+
+            biomeName.setText(ChatColor.GRAY + chunk.getBiomeGenForWorldCoords(x & 15, z & 15, MINECRAFT.theWorld.getWorldChunkManager()).biomeName);
+            blockLight.setText(ChatColor.GRAY + "- block: " + chunk.getSavedLightValue(EnumSkyBlock.Block, x & 15, y, z & 15));
+            skyLight.setText(ChatColor.GRAY + "- sky: " + chunk.getSavedLightValue(EnumSkyBlock.Sky, x & 15, y, z & 15));
+            rawLight.setText(ChatColor.GRAY + "- raw: " + chunk.getBlockLightValue(x & 15, y, z & 15, 0));
+        }
 
         final int displayFps = Minecraft.debugFPS;
-        final String direction = Direction.directions[yaw];
-        final String cleanDirection = direction.substring(0, 1).toUpperCase() + direction.substring(1).toLowerCase();
-
         fps.setText(ChatColor.GOLD + "" + displayFps);
         memoryDebug.setText(
                 ChatColor.GRAY + "Used: " + usedMemory * 100L / maxMemory + "% (" + usedMemory / 1024L / 1024L + "MB) of " + maxMemory / 1024L / 1024L
                 + "MB");
         memoryAllocated.setText(ChatColor.GRAY + "Allocated memory: " + totalMemory * 100L / maxMemory + "% (" + totalMemory / 1024L / 1024L + "MB)");
-        xLoc.setText(ChatColor.GRAY + String.format("- x: %.5f (%d) // chunk: %d (%d)", MINECRAFT.thePlayer.posX, x, x >> 4, x & 15));
-        yLoc.setText(ChatColor.GRAY + String.format("- y: %.3f ", Minecraft.getMinecraft().thePlayer.posY));
-        zLoc.setText(ChatColor.GRAY + String.format("- z: %.5f (%d) // chunk: %d (%d)", MINECRAFT.thePlayer.posZ, z, z >> 4, z & 15));
-        directionLoc.setText(ChatColor.GRAY + cleanDirection);
-        biomeName.setText(ChatColor.GRAY + chunk.getBiomeGenForWorldCoords(x & 15, z & 15, MINECRAFT.theWorld.getWorldChunkManager()).biomeName);
-        blockLight.setText(ChatColor.GRAY + "- block: " + chunk.getSavedLightValue(EnumSkyBlock.Block, x & 15, y, z & 15));
-        skyLight.setText(ChatColor.GRAY + "- sky: " + chunk.getSavedLightValue(EnumSkyBlock.Sky, x & 15, y, z & 15));
-        rawLight.setText(ChatColor.GRAY + "- raw: " + chunk.getBlockLightValue(x & 15, y, z & 15, 0));
     }
 }
