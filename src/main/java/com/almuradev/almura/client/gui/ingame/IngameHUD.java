@@ -6,9 +6,7 @@
 package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.client.Bindings;
 import com.almuradev.almura.client.ChatColor;
-import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.UIPropertyBar;
 
@@ -29,6 +27,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.util.Objects;
 
 public class IngameHUD extends AlmuraGui {
 
@@ -49,6 +48,7 @@ public class IngameHUD extends AlmuraGui {
     private static final Color orangeBar = new Color(0.8039f, 0.6784f, 0f, 1f);
     private static final Color redBar = new Color(0.69f, 0.09f, 0.12f, 1f);
     public static IngameHUD INSTANCE;
+    public static boolean UPDATES_ENABLED = false;
     public final UILabel worldDisplay, playerTitle, playerMode;
     private final UIImage mapImage, worldImage, playerImage;
     private final UILabel serverCount, playerCoords, playerCompass, worldTime, xpLevel;
@@ -56,7 +56,7 @@ public class IngameHUD extends AlmuraGui {
 
     private float playerHealth, playerArmor, playerHunger, playerStamina, playerExperience, playerExperienceLevel = 0.0F;
     private String serverTime, playerLocation, playerComp;
-    private boolean firstPass, playerIsCreative, enableUpdates = false;
+    private boolean firstPass, playerIsCreative;
 
     @SuppressWarnings("rawtypes")
     public IngameHUD() {
@@ -208,7 +208,7 @@ public class IngameHUD extends AlmuraGui {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTick(ClientTickEvent event) {
-        if (enableUpdates && Minecraft.getMinecraft().thePlayer != null && Configuration.ALMURA_GUI) {
+        if (UPDATES_ENABLED && Minecraft.getMinecraft().thePlayer != null && Configuration.ALMURA_GUI) {
             updateWidgets();
         }
     }
@@ -227,7 +227,7 @@ public class IngameHUD extends AlmuraGui {
         }
 
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
-            enableUpdates = true;
+            UPDATES_ENABLED = true;
             setWorldAndResolution(Minecraft.getMinecraft(), event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
@@ -319,7 +319,6 @@ public class IngameHUD extends AlmuraGui {
         }
         // Player Mode
         if (playerIsCreative != Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode || firstPass) {
-            playerIsCreative = Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode;
             if (playerIsCreative) {
                 playerMode.setText("(C)");
             } else {
@@ -327,13 +326,14 @@ public class IngameHUD extends AlmuraGui {
             }
         }
         // Server Time
-        if (serverTime != getTime() || firstPass) {
+        if (!Objects.equals(serverTime, getTime()) || firstPass) {
             serverTime = getTime();
             worldTime.setText(getTime());
         }
         // Player Coordinates
-        if (playerLocation != String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX,
-                                            (int) Minecraft.getMinecraft().thePlayer.posY, (int) Minecraft.getMinecraft().thePlayer.posZ)
+        if (!Objects.equals(playerLocation, String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX,
+                                                          (int) Minecraft.getMinecraft().thePlayer.posY,
+                                                          (int) Minecraft.getMinecraft().thePlayer.posZ))
             || firstPass) {
             playerLocation =
                     String.format("x: %d y: %d z: %d", (int) Minecraft.getMinecraft().thePlayer.posX, (int) Minecraft.getMinecraft().thePlayer.posY,
@@ -343,7 +343,7 @@ public class IngameHUD extends AlmuraGui {
                                   (int) Minecraft.getMinecraft().thePlayer.posZ));
         }
         // Player Compass
-        if (playerComp != getCompass() || firstPass) {
+        if (!Objects.equals(playerComp, getCompass()) || firstPass) {
             playerComp = getCompass();
             playerCompass.setText(getCompass());
         }
@@ -424,15 +424,5 @@ public class IngameHUD extends AlmuraGui {
             return (String.format("12am"));
         }
         return String.format((hours - 18) + "am");
-    }
-    
-    @Override
-    protected void keyTyped(char keyChar, int keyInt) {
-        super.keyTyped(keyChar, keyInt);
-        System.out.println("Hi");
-        if (keyInt == Bindings.almuraConfigGUI.getKeyCode()) {
-            System.out.println("Should have opened config GUI");
-            new IngameConfig();
-        }
     }
 }

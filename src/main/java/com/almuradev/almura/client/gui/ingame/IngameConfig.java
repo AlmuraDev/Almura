@@ -6,18 +6,14 @@
 package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.client.ChatColor;
+import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 
 public class IngameConfig extends AlmuraGui {
-
-    public UILabel fps, memoryDebug, memoryAllocated, xLoc, yLoc, zLoc, directionLoc, biomeName, blockLight, skyLight, rawLight;
-    public boolean enableUpdates = false;
-
     public IngameConfig() {
-
         guiscreenBackground = false; // prevent full screen black background.
 
         // Construct Hud with all elements
@@ -40,8 +36,9 @@ public class IngameConfig extends AlmuraGui {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        renderer.enableBlending();
-        super.drawScreen(mouseX, mouseY, partialTicks);
-    }  
+    protected void keyTyped(char keyChar, int keyCode) {
+        if (ClientProxy.BINDING_CONFIG_GUI.getKeyCode() == keyCode) {
+            close();
+        }
+    }
 }
