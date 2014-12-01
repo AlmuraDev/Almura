@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
@@ -34,6 +35,8 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import java.nio.file.FileSystem;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -150,7 +153,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoords(blockIcon, Paths.get(Filesystem.CONFIG_IMAGES_PATH.toString(), textureName + ".png"), textureName, textureCoordinatesByFace);
     }
 
     @Override

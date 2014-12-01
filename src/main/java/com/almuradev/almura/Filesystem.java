@@ -33,6 +33,7 @@ import javax.imageio.stream.ImageInputStream;
 public class Filesystem {
 
     public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID.toLowerCase());
+    public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_PATH.toString(), "images");
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
     public static final Path CONFIG_PACKS_PATH = Paths.get(CONFIG_PATH.toString(), "packs");
 
