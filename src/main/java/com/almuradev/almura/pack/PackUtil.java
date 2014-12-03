@@ -95,4 +95,12 @@ public class PackUtil {
     public static boolean isEmpty(IClipContainer container) {
         return isEmpty(container.getClipIcons());
     }
+
+    public static List<Double> parseStringToDoubleList(String raw) {
+        final List<Double> parsedDoubles = new LinkedList<>();
+        for (String coordinate : raw.split(" ")) {
+            parsedDoubles.add(Double.parseDouble(coordinate));
+        }
+        return parsedDoubles;
+    }
 }

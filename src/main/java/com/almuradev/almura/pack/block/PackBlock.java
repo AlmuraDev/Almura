@@ -52,27 +52,13 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     private PackShape shape;
     private boolean rotation;
     private boolean mirrorRotation;
-    //COLLISION
-    private boolean useVanillaCollision;
-    private List<Double> collisionBounds = new LinkedList<>();
-    //WIREFRAME
-    private boolean useVanillaWireframe;
-    private List<Double> wireframeBounds = new LinkedList<>();
 
-    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance,
-                     boolean rotation,
-                     boolean mirrorRotation, float lightLevel, int lightOpacity,
-                     boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
-                     boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
+    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation, boolean mirrorRotation, float lightLevel, int lightOpacity, boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName) {
         super(Material.rock);
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinates;
         this.textureName = textureName;
         this.shapeName = shapeName;
-        this.useVanillaCollision = useVanillaCollision;
-        this.collisionBounds = collisionBounds == null ? new LinkedList<Double>() : collisionBounds;
-        this.useVanillaWireframe = useVanillaWireframe;
-        this.wireframeBounds = wireframeBounds == null ? new LinkedList<Double>() : wireframeBounds;
         this.dropAmount = dropAmount;
         this.rotation = rotation;
         this.mirrorRotation = mirrorRotation;
@@ -81,10 +67,6 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         setResistance(resistance);
         setLightLevel(lightLevel);
 
-        if (!useVanillaCollision) {
-            setBlockBounds(collisionBounds.get(0).floatValue(), collisionBounds.get(1).floatValue(), collisionBounds.get(2).floatValue(),
-                           collisionBounds.get(3).floatValue(), collisionBounds.get(4).floatValue(), collisionBounds.get(5).floatValue());
-        }
         setLightOpacity(lightOpacity);
         setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
         if (showInCreativeTab) {
@@ -109,25 +91,6 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         final float resistance = reader.getChild("Resistance").getFloat(0);
         final boolean rotation = reader.getChild("Rotation").getBoolean(true);
         final boolean mirrorRotation = reader.getChild("MirrorRotate").getBoolean(false);
-        final boolean useVanillaCollision = !reader.hasChild("Collision-Bounds");
-        final List<Double> collisionCoords = new LinkedList<>();
-        if (!useVanillaCollision) {
-            final String rawCoords = reader.getChild("Collision-Bounds").getString();
-            final String[] splitRawCoords = rawCoords.split(" ");
-            for (String coord : splitRawCoords) {
-                collisionCoords.add(Double.parseDouble(coord));
-            }
-        }
-
-        final boolean useVanillaWireframe = !reader.hasChild("Wireframe-Bounds");
-        final List<Double> wireframeCoords = new LinkedList<>();
-        if (!useVanillaWireframe) {
-            final String rawCoords = reader.getChild("Wireframe-Bounds").getString();
-            final String[] splitRawCoords = rawCoords.split(" ");
-            for (String coord : splitRawCoords) {
-                wireframeCoords.add(Double.parseDouble(coord));
-            }
-        }
 
         String shapeName = reader.getChild("Shape").getString();
         if (shapeName != null) {
@@ -138,9 +101,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, rotation, mirrorRotation, lightLevel, lightOpacity, showInCreativeTab,
-                             creativeTabName,
-                             textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
+        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, rotation, mirrorRotation, lightLevel, lightOpacity, showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName);
     }
 
     @Override
@@ -207,15 +168,11 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
      */
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-        AxisAlignedBB box;
-        if (useVanillaCollision) {
-            box = super.getCollisionBoundingBoxFromPool(world, x, y, z);
-        } else {
-            box =
-                    AxisAlignedBB.getBoundingBox(x + collisionBounds.get(0), y + collisionBounds.get(1), z + collisionBounds.get(2),
-                                                 x + collisionBounds.get(3), y + collisionBounds.get(4), z + collisionBounds.get(5));
+        final AxisAlignedBB vanillaBB = super.getCollisionBoundingBoxFromPool(world, x, y, z);
+        if (shape == null) {
+            return vanillaBB;
         }
-        return box;
+        return shape.getCollisionBoundingBoxFromPool(vanillaBB, world, x, y, z);
     }
 
     /**
@@ -224,15 +181,11 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     @SideOnly(Side.CLIENT)
     @Override
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
-        AxisAlignedBB box;
-        if (useVanillaWireframe) {
-            box = super.getSelectedBoundingBoxFromPool(world, x, y, z);
-        } else {
-            box =
-                    AxisAlignedBB.getBoundingBox(x + wireframeBounds.get(0), y + wireframeBounds.get(1), z + wireframeBounds.get(2),
-                                                 x + wireframeBounds.get(3), y + wireframeBounds.get(4), z + wireframeBounds.get(5));
+        final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
+        if (shape == null) {
+            return vanillaBB;
         }
-        return box;
+        return shape.getSelectedBoundingBoxFromPool(vanillaBB, world, x, y, z);
     }
 
     @Override
