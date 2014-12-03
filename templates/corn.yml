@@ -1,7 +1,7 @@
-Date: 12-2-2014
+Date: 12-3-2014
 Type: Crop
 Title: Corn
-Texture: "crops.png"
+Texture: crops.png
 level-required: 18
 seed:
     Title: Corn Seeds
@@ -11,7 +11,7 @@ seed:
     drop-on-grass-break: true
 soil:
     source: minecraft\farmland
-    biome:        
+    biome:
         enabled: disabled
         sources:
             plains:
@@ -21,8 +21,8 @@ stages:
     0:
         Coords: 256 384 32 32
         shape: crop-dirt.shape
-        Hardness: 0
-        Resistance: 0        
+        Hardness: 1
+        Resistance: 1
         hydration:
             enabled: true
             sources:
@@ -33,23 +33,22 @@ stages:
             sources:
                 minecraft\bonemeal:
                      amount: 5
-        light:            
+        light:
             emission: 0
             opacity: 150
-            required: 
+            required:
                 enabled: false
                 min: 1
                 max: 3
         growth:
-            required: 250
-            step-chance: 20-30
-            step-amount: 10-15
+            chance: 20-30
         collision:
             enabled: false
-            player:
-                health-change: 0
-            skeleton:
-                health-change: 0
+            sources:
+                player:
+                    health-change: 0
+                skeleton:
+                    health-change: 0
     1:
         Coords: 256 384 32 32
         shape: crop-1h.shape
@@ -68,14 +67,14 @@ stages:
                 min: 1
                 max: 3
         growth:
-            required: 250
-            step-chance: 20-30
-            step-amount: 10-15
+            chance: 20-30
         collision:
-            player:
-                health-change: 0
-            skeleton:
-                health-change: 0
+            enabled: false
+            sources:
+                player:
+                    health-change: 0
+                skeleton:
+                    health-change: 0
     2:
         Coords: 256 384 32 32
         shape: crop-2h.shape
@@ -94,15 +93,14 @@ stages:
                 min: 1
                 max: 3
         growth:
-            required: 250
-            step-chance: 20-30
-            step-amount: 10-15
+            chance: 20-30
         collision:
             enabled: false
-            player:
-                health-change: 0
-            skeleton:
-                health-change: 0
+            sources:
+                player:
+                    health-change: 0
+                skeleton:
+                    health-change: 0
     3:
         Coords: 256 384 32 32
         shape: crop-3h.shape
@@ -121,15 +119,14 @@ stages:
                 min: 1
                 max: 3
         growth:
-            required: 250
-            step-chance: 20-30
-            step-amount: 10-15
+            chance: 20-30
         collision:
             enabled: false
-            player:
-                health-change: 0
-            skeleton:
-                health-change: 0
+            sources:
+                player:
+                    health-change: 0
+                skeleton:
+                    health-change: 0
         harvest:
             tools:
                 none:
@@ -148,4 +145,3 @@ stages:
                                 enabled: true
                                 amount: 4-5
                                 chance: 45-75
-

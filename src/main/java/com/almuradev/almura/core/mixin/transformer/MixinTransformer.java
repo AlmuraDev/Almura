@@ -5,8 +5,9 @@
  */
 package com.almuradev.almura.core.mixin.transformer;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.core.mixin.*;
+import com.almuradev.almura.core.mixin.InvalidMixinException;
+import com.almuradev.almura.core.mixin.Overwrite;
+import com.almuradev.almura.core.mixin.Shadow;
 import com.almuradev.almura.core.mixin.util.ASMHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +36,7 @@ public class MixinTransformer extends TreeTransformer {
     private final MixinConfig config;
 
     private final Logger logger = LogManager.getLogger("almura");
+
     /**
      * ctor 
      */
@@ -235,8 +237,8 @@ public class MixinTransformer extends TreeTransformer {
                 }
             } else if (!mixinMethod.name.startsWith("<")) {
                 if (MixinTransformer.hasFlag(mixinMethod, Opcodes.ACC_STATIC)
-                        && !MixinTransformer.hasFlag(mixinMethod, Opcodes.ACC_PRIVATE)
-                        && !isOverwrite) {
+                    && !MixinTransformer.hasFlag(mixinMethod, Opcodes.ACC_PRIVATE)
+                    && !isOverwrite) {
                     throw new InvalidMixinException(
                             String.format("Mixin classes cannot contain visible static methods or fields, found %s", mixinMethod.name));
                 }

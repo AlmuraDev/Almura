@@ -13,6 +13,7 @@ import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 
 public class IngameConfig extends AlmuraGui {
+
     public IngameConfig() {
         guiscreenBackground = false; // prevent full screen black background.
 

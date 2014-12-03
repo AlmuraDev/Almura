@@ -16,7 +16,7 @@ public class Configuration {
     public static boolean DEBUG_PACKS_MODE;
     public static final boolean IS_SERVER = FMLCommonHandler.instance().getEffectiveSide().isServer();
     public static final boolean IS_CLIENT = FMLCommonHandler.instance().getEffectiveSide().isClient();
-    public static boolean ALMURA_GUI;    
+    public static boolean ALMURA_GUI;
 
     static {
         DEBUG_LANGUAGES_MODE = false;
@@ -24,7 +24,7 @@ public class Configuration {
         ALMURA_GUI = true;
         reloadConfig();
     }
-    
+
     public static void reloadConfig() {
         final YamlConfiguration reader = new YamlConfiguration(Filesystem.CONFIG_SETTINGS_PATH.toFile());
         try {

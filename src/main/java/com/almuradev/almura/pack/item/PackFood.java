@@ -16,7 +16,6 @@ import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
-import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;

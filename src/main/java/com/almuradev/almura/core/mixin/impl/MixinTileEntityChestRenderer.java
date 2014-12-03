@@ -72,7 +72,8 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
                 try {
                     ((BlockChest) block).func_149954_e(p_147500_1_.getWorldObj(), p_147500_1_.xCoord, p_147500_1_.yCoord, p_147500_1_.zCoord);
                 } catch (ClassCastException e) {
-                    FMLLog.severe("Attempted to render a chest at %d,  %d, %d that was not a chest", p_147500_1_.xCoord, p_147500_1_.yCoord, p_147500_1_.zCoord);
+                    FMLLog.severe("Attempted to render a chest at %d,  %d, %d that was not a chest", p_147500_1_.xCoord, p_147500_1_.yCoord,
+                                  p_147500_1_.zCoord);
                 }
                 i = p_147500_1_.getBlockMetadata();
             }
@@ -143,7 +144,9 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
             float f2;
 
             if (p_147500_1_.adjacentChestZNeg != null) {
-                f2 = p_147500_1_.adjacentChestZNeg.prevLidAngle + (p_147500_1_.adjacentChestZNeg.lidAngle - p_147500_1_.adjacentChestZNeg.prevLidAngle) * p_147500_8_;
+                f2 =
+                        p_147500_1_.adjacentChestZNeg.prevLidAngle
+                        + (p_147500_1_.adjacentChestZNeg.lidAngle - p_147500_1_.adjacentChestZNeg.prevLidAngle) * p_147500_8_;
 
                 if (f2 > f1) {
                     f1 = f2;
@@ -151,7 +154,9 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
             }
 
             if (p_147500_1_.adjacentChestXNeg != null) {
-                f2 = p_147500_1_.adjacentChestXNeg.prevLidAngle + (p_147500_1_.adjacentChestXNeg.lidAngle - p_147500_1_.adjacentChestXNeg.prevLidAngle) * p_147500_8_;
+                f2 =
+                        p_147500_1_.adjacentChestXNeg.prevLidAngle
+                        + (p_147500_1_.adjacentChestXNeg.lidAngle - p_147500_1_.adjacentChestXNeg.prevLidAngle) * p_147500_8_;
 
                 if (f2 > f1) {
                     f1 = f2;

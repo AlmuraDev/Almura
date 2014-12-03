@@ -30,7 +30,8 @@ public class PackShape extends Shape {
     private final boolean useVanillaCollision, useVanillaWireframe;
     private final List<Double> collisionCoordinates, wireframeCoordinates;
 
-    public PackShape(String name, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe, List<Double> wireframeCoordinates) {
+    public PackShape(String name, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
+                     List<Double> wireframeCoordinates) {
         this.name = name;
         this.useVanillaCollision = useVanillaCollision;
         this.useVanillaWireframe = useVanillaWireframe;
@@ -38,7 +39,8 @@ public class PackShape extends Shape {
         this.wireframeCoordinates = wireframeCoordinates == null ? Lists.<Double>newArrayList() : wireframeCoordinates;
     }
 
-    public PackShape(String name, List<Face> faces, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe, List<Double> wireframeCoordinates) {
+    public PackShape(String name, List<Face> faces, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
+                     List<Double> wireframeCoordinates) {
         super(faces);
         this.name = name;
         this.useVanillaCollision = useVanillaCollision;
@@ -47,7 +49,8 @@ public class PackShape extends Shape {
         this.wireframeCoordinates = wireframeCoordinates == null ? Lists.<Double>newArrayList() : wireframeCoordinates;
     }
 
-    public PackShape(String name, PackShape s, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe, List<Double> wireframeCoordinates) {
+    public PackShape(String name, PackShape s, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
+                     List<Double> wireframeCoordinates) {
         super(s);
         this.name = name;
         this.useVanillaCollision = useVanillaCollision;
@@ -106,12 +109,16 @@ public class PackShape extends Shape {
 
             final PackShape s = new PackShape(shape.getName(), useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates);
             s.addFaces(shape.getFaces());
-            final PackShape scaled = new PackShape(shape.getName(), shape, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates);
+            final PackShape
+                    scaled =
+                    new PackShape(shape.getName(), shape, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates);
             scaled.scale(-1, 1, -1);
             scaled.applyMatrix();
             //Scaled returns non PackFaces, OOP demands a fix
             for (int i = 0; i < 4 - scaled.getFaces().length; i++) {
-                s.addFaces(new PackMirrorFace[]{new PackMirrorFace(((PackFace) s.getFaces()[i]).getTextureId(), scaled.getFaces()[i >= scaled.getFaces().length ? scaled.getFaces().length - 1 : i])});
+                s.addFaces(new PackMirrorFace[]{new PackMirrorFace(((PackFace) s.getFaces()[i]).getTextureId(),
+                                                                   scaled.getFaces()[i >= scaled.getFaces().length ? scaled.getFaces().length - 1
+                                                                                                                   : i])});
             }
             shape = s;
         }
@@ -129,7 +136,7 @@ public class PackShape extends Shape {
         }
 
         return AxisAlignedBB.getBoundingBox(x + collisionCoordinates.get(0), y + collisionCoordinates.get(1), z + collisionCoordinates.get(2),
-                                     x + collisionCoordinates.get(3), y + collisionCoordinates.get(4), z + collisionCoordinates.get(5));
+                                            x + collisionCoordinates.get(3), y + collisionCoordinates.get(4), z + collisionCoordinates.get(5));
     }
 
     @SideOnly(Side.CLIENT)
@@ -139,7 +146,7 @@ public class PackShape extends Shape {
         }
 
         return AxisAlignedBB.getBoundingBox(x + wireframeCoordinates.get(0), y + wireframeCoordinates.get(1), z + wireframeCoordinates.get(2),
-                                     x + wireframeCoordinates.get(3), y + wireframeCoordinates.get(4), z + wireframeCoordinates.get(5));
+                                            x + wireframeCoordinates.get(3), y + wireframeCoordinates.get(4), z + wireframeCoordinates.get(5));
     }
 
     @Override

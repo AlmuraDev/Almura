@@ -18,7 +18,6 @@ import com.almuradev.almura.pack.block.PackModelBlock;
 import com.almuradev.almura.pack.renderer.PackBlockRenderer;
 import com.almuradev.almura.pack.renderer.PackItemRenderer;
 import com.almuradev.almura.pack.renderer.PackModelRenderer;
-
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -40,7 +39,9 @@ public class ClientProxy extends CommonProxy {
     public static final PackItemRenderer PACK_ITEM_RENDERER = new PackItemRenderer();
     public static final PackModelRenderer PACK_MODEL_RENDERER = new PackModelRenderer();
 
-    public static final KeyBinding BINDING_CONFIG_GUI = new AlmuraBinding("key.almura.config", "Config", Keyboard.KEY_F4, "key.categories.almura", "Almura");
+    public static final KeyBinding
+            BINDING_CONFIG_GUI =
+            new AlmuraBinding("key.almura.config", "Config", Keyboard.KEY_F4, "key.categories.almura", "Almura");
 
     @Override
     public void onPreInitialization(FMLPreInitializationEvent event) {
@@ -98,6 +99,7 @@ public class ClientProxy extends CommonProxy {
         }
     }
 }
+
 final class AlmuraBinding extends KeyBinding {
 
     public AlmuraBinding(String unlocalizedIdentifier, String name, int keycode, String unlocalizedCategory, String category) {

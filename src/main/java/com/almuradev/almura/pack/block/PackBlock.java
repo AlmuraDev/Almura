@@ -33,7 +33,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -53,7 +52,9 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     private boolean rotation;
     private boolean mirrorRotation;
 
-    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation, boolean mirrorRotation, float lightLevel, int lightOpacity, boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName) {
+    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation,
+                     boolean mirrorRotation, float lightLevel, int lightOpacity, boolean showInCreativeTab, String creativeTabName,
+                     Map<Integer, List<Integer>> textureCoordinates, String shapeName) {
         super(Material.rock);
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinates;
@@ -101,7 +102,8 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, rotation, mirrorRotation, lightLevel, lightOpacity, showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName);
+        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, rotation, mirrorRotation, lightLevel, lightOpacity,
+                             showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName);
     }
 
     @Override

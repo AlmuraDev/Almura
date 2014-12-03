@@ -27,6 +27,7 @@ public class AlmuraCoreMod implements IFMLLoadingPlugin {
             e.printStackTrace();
         }
     }
+
     @Override
     public String[] getASMTransformerClass() {
         return new String[]{

@@ -20,9 +20,9 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import scala.collection.parallel.ParIterableLike;
 
 public class IngameDebugHUD extends AlmuraGui {
+
     public static boolean UPDATES_ENABLED = false;
     public static Minecraft MINECRAFT = Minecraft.getMinecraft();
     public static Runtime RUNTIME = Runtime.getRuntime();
@@ -140,7 +140,8 @@ public class IngameDebugHUD extends AlmuraGui {
 
         if (x == Integer.MIN_VALUE || MINECRAFT.thePlayer.posX != MINECRAFT.thePlayer.prevPosX) {
             x = MathHelper.floor_double(MINECRAFT.thePlayer.posX);
-            xLoc.setText(ChatColor.GRAY + String.format("- x: %.5f (%d) // chunk: %d (%d)", MINECRAFT.thePlayer.posX, x, MINECRAFT.thePlayer.chunkCoordX, x & 15));
+            xLoc.setText(ChatColor.GRAY + String
+                    .format("- x: %.5f (%d) // chunk: %d (%d)", MINECRAFT.thePlayer.posX, x, MINECRAFT.thePlayer.chunkCoordX, x & 15));
             dirtyCoords = true;
         }
 
@@ -152,7 +153,8 @@ public class IngameDebugHUD extends AlmuraGui {
 
         if (z == Integer.MIN_VALUE || MINECRAFT.thePlayer.posZ != MINECRAFT.thePlayer.prevPosZ) {
             z = MathHelper.floor_double(MINECRAFT.thePlayer.posZ);
-            zLoc.setText(ChatColor.GRAY + String.format("- z: %.5f (%d) // chunk: %d (%d)", MINECRAFT.thePlayer.posZ, z, MINECRAFT.thePlayer.chunkCoordZ, z & 15));
+            zLoc.setText(ChatColor.GRAY + String
+                    .format("- z: %.5f (%d) // chunk: %d (%d)", MINECRAFT.thePlayer.posZ, z, MINECRAFT.thePlayer.chunkCoordZ, z & 15));
             dirtyCoords = true;
         }
 

@@ -9,7 +9,6 @@ import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.UIPropertyBar;
-
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -24,13 +23,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.Objects;
 
 public class IngameHUD extends AlmuraGui {
+
     public static Minecraft MINECRAFT = Minecraft.getMinecraft();
     public static IngameHUD INSTANCE;
     public static boolean UPDATES_ENABLED = true;
@@ -385,7 +384,8 @@ public class IngameHUD extends AlmuraGui {
         if (MINECRAFT.isSingleplayer() && firstPass) {
             serverCount.setText("--");
         } else {
-            if ((MINECRAFT.getIntegratedServer().getPublic() || !MINECRAFT.isSingleplayer()) && playerCount != MINECRAFT.getNetHandler().playerInfoList.size()) {
+            if ((MINECRAFT.getIntegratedServer().getPublic() || !MINECRAFT.isSingleplayer()) && playerCount != MINECRAFT
+                    .getNetHandler().playerInfoList.size()) {
                 playerCount = MINECRAFT.getNetHandler().playerInfoList.size();
 
                 serverCount.setText(playerCount + "/" + MINECRAFT.getNetHandler().currentServerMaxPlayers);

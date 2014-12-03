@@ -54,19 +54,19 @@ public class PackBlockRenderer extends MalisisRenderer {
             rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
             switch (RotationMeta.getRotationFromMeta(blockMetadata)) {
                 case NORTH:
-                    if (((PackBlock)block).canRotate()) {
+                    if (((PackBlock) block).canRotate()) {
                         shape.rotate(180f, 0, -1, 0);
                         break;
                     }
                 case SOUTH:
                     break;
                 case WEST:
-                    if (((PackBlock)block).canRotate()) {
+                    if (((PackBlock) block).canRotate()) {
                         shape.rotate(90f, 0, -1, 0);
                         break;
                     }
                 case EAST:
-                    if (((PackBlock)block).canRotate()) {
+                    if (((PackBlock) block).canRotate()) {
                         shape.rotate(90f, 0, 1, 0);
                         break;
                     }

@@ -98,8 +98,8 @@ public class ASMHelper {
      */
     public static void generateStaticForwardingMethod(ClassNode clazz, String name, String forwardname, Type rettype, Type argtype) {
         MethodNode method = new MethodNode(Opcodes.ASM5,
-                Opcodes.ACC_STATIC | Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC, name,
-                "()" + rettype.getDescriptor(), null, null);
+                                           Opcodes.ACC_STATIC | Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC, name,
+                                           "()" + rettype.getDescriptor(), null, null);
 
         populateSelfForwardingMethod(method, forwardname, rettype, argtype);
 
@@ -117,7 +117,7 @@ public class ASMHelper {
      */
     public static void generateForwardingToStaticMethod(ClassNode clazz, String name, String forwardname, Type rettype, Type fowardtype) {
         MethodNode method = new MethodNode(Opcodes.ASM5, Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC, name,
-                "()" + rettype.getDescriptor(), null, null);
+                                           "()" + rettype.getDescriptor(), null, null);
 
         populateForwardingToStaticMethod(method, forwardname, rettype, Type.getObjectType(clazz.name), fowardtype);
 
@@ -212,7 +212,7 @@ public class ASMHelper {
 
         code.add(new VarInsnNode(thistype.getOpcode(Opcodes.ILOAD), 0));
         code.add(new MethodInsnNode(Opcodes.INVOKESTATIC, forwardtype.getInternalName(), forwardname, Type.getMethodDescriptor(rettype, thistype),
-                false));
+                                    false));
         code.add(new InsnNode(rettype.getOpcode(Opcodes.IRETURN)));
     }
 
