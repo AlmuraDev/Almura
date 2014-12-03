@@ -1,79 +1,148 @@
+Date: 12-2-2014
 Type: Crop
-Title: Corn 
-Creative-Tab-Name: crops
-Show-In-Creative-Tab: false
-Date: 11-23-2014
+Title: Corn
 RenderId: 6
-Texture: "food.png"
-Rotation: FALSE
-Hardness: 0
-item-source: MoreMaterials\KFood_Core\alfalfa_seed
-block-source: MoreMaterials\KFood_Core\flatseed
-fertilizer-source: bonemeal
-fertilizer-amount: 1
-min-light-level: 7
-max-light-level: 15
-bonus-chance: 10
-minimum-level-required: 18
-allow-fertilization: true;
-damage-player: false
-drop-item-source-on-grass-break: true
-ignore-light: false
+Texture: "crops.png"
+level-required: 18
+seed:
+    Title: Corn Seeds    
+    Coords: 256 384 32 32
+    Creative-Tab-Name: crops
+    Show-In-Creative-Tab: true
+    drop-on-grass-break: true
+soil:
+    source: minecraft\farmland
+    biome:        
+        enabled: disabled
+        sources:
+            plains:
+                temperature-required: 50-75.5
+                humidity-required: 50-60
 stages:
+    0:
+        Coords: 256 384 32 32
+        Hardness: 0
+        Resistance: 0        
+        hydration:
+            enabled: true
+            sources:
+                minecraft\water:
+                    needed-promixity: 5
+        fertilizer:
+            enabled: true
+            sources:
+                minecraft\bonemeal:
+                     amount: 5
+        light:
+            enabled: true
+            emission: 0
+            opacity: 150
+            required: 
+                min-required: 1
+                max-required: 3
+        growth:
+            required: 250
+            step-chance: 20-30
+            step-amount: 10-15
+        collision:
+            enabled: false
+            player:
+                health-change: 0
+            skeleton:
+                health-change: 0
     1:
-        Coords:
-        - 256 384 32 32 #0
-        fertilizer-source: bonemeal
-        fertilizer-amount: 1
-        min-light-level: 7
-        max-light-level: 15
-        growth-required: 60
-        growth-chance: 5
+        Coords: 256 384 32 32
+        Hardness: 0
+        Resistance: 0        
+        fertilizer:
+            enabled: true
+            sources:
+                minecraft\bonemeal:
+                     amount: 5
+        light:
+            enabled: true
+            emission: 0
+            opacity: 150
+            required: 
+                min-required: 1
+                max-required: 3
+        growth:
+            required: 250
+            step-chance: 20-30
+            step-amount: 10-15
+        collision:
+            player:
+                health-change: -5 //Hurts 5 hearts
+            skeleton:
+                health-change: 2 //Gives skeleton 2 hearts
     2:
-        Coords:
-        - 256 384 32 32 #0
-        fertilizer-source: bonemeal
-        fertilizer-amount: 1
-        min-light-level: 7
-        max-light-level: 15
-        growth-required: 120
-        growth-chance: 5
+        Coords: 256 384 32 32
+        Hardness: 0
+        Resistance: 0        
+        fertilizer:
+            enabled: true
+            sources:
+                minecraft\bonemeal:
+                     amount: 5
+        light:
+            enabled: true
+            emission: 0
+            opacity: 150
+            required: 
+                min-required: 1
+                max-required: 3
+        growth:
+            required: 250
+            step-chance: 20-30
+            step-amount: 10-15
+        collision:
+            enabled: false
+            player:
+                health-change: 0
+            skeleton:
+                health-change: 0
     3:
-        Coords:
-        - 256 384 32 32 #0
-        fertilizer-source: bonemeal
-        fertilizer-amount: 1
-        min-light-level: 7
-        max-light-level: 15
-        growth-required: 180
-        growth-chance: 5
-    4:
-        Coords:
-        - 256 384 32 32 #0
-        fertilizer-source: bonemeal
-        fertilizer-amount: 1
-        min-light-level: 7
-        max-light-level: 15
-        growth-required: 240
-        growth-chance: 5
-        drops:        
-            packs\crops\alfalfa:
-                amount: 1
-                bonus:
-            packs\crops\alfalfa:
-                amount: 2   
-        tools:
-            packs\tools\gold_sickle:
-                required: true
-                bonus: true
-                bonus-amount: 10
-            packs\tools\gold_sickle:
-                required: true 
-                bonus: true
-                bonus-amount: 5                    
-            packs\tools\iron_sickle:
-                required: true            
-            packs\tools\stone_sickle:
-                required: true            
-            packs\tools\wooden_sickle:
-                required: true
+        Coords: 256 384 32 32
+        Hardness: 0
+        Resistance: 0        
+        fertilizer:
+            enabled: true
+            sources:
+                minecraft\bonemeal:
+                     amount: 5
+        light:
+            enabled: true
+            emission: 0
+            opacity: 150
+            required: 
+                min-required: 1
+                max-required: 3
+        growth:
+            required: 250
+            step-chance: 20-30
+            step-amount: 10-15
+        collision:
+            enabled: false
+            player:
+                health-change: 0
+            skeleton:
+                health-change: 0
+        harvest:
+            tools:
+                none:
+                    drops:
+                        almura\crops\alfalfa:
+                            amount: 1-2
+                            bonus:
+                                enabled: false
+                                amount: 1-5
+                                chance: 10-15
+                almura\tools\diamond_sickle:
+                    drops:
+                        almura\crops\alfalfa:
+                            amount: 3-4
+                            bonus:
+                                enabled: true
+                                amount: 4-5
+                                chance: 45-75
+
