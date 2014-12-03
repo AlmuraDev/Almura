@@ -17,7 +17,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -45,14 +44,15 @@ public class PackUtil {
         return textureCoordinatesByFace;
     }
 
-    public static ClippedIcon[] generateClippedIconsFromCoords(IIcon source, Path path, String textureName,
+    public static ClippedIcon[] generateClippedIconsFromCoords(ContentPack pack, IIcon source, String textureName,
                                                                Map<Integer, List<Integer>> texCoords) {
         final ClippedIcon[] clippedIcons = new ClippedIcon[texCoords.size()];
         Dimension dimension = null;
 
         try {
             dimension =
-                    Filesystem.getImageDimension(Files.newInputStream(path));
+                    Filesystem.getImageDimension(Files.newInputStream(
+                            Paths.get(Filesystem.CONFIG_PATH.toString(), "images" + File.separator + textureName + ".png")));
         } catch (IOException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                 Almura.LOGGER.error("Failed to load texture [" + textureName + "] for dimensions", e);
