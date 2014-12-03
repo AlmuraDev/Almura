@@ -109,6 +109,9 @@ public class PackBlockRenderer extends MalisisRenderer {
                     break;
             }
         }
+        if (shape.getFaces().length == 2 && renderType == RenderType.ISBRH_WORLD) {
+            shape.scale(-1, 0, -1);
+        }
         drawShape(shape, rp);
         if (renderType == RenderType.ISBRH_INVENTORY) {
             RenderHelper.disableStandardItemLighting();
