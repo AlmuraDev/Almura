@@ -33,13 +33,13 @@ stages:
             sources:
                 minecraft\bonemeal:
                      amount: 5
-        light:
-            enabled: true
+        light:            
             emission: 0
             opacity: 150
             required: 
-                min-required: 1
-                max-required: 3
+                enabled: false
+                min: 1
+                max: 3
         growth:
             required: 250
             step-chance: 20-30
@@ -59,22 +59,22 @@ stages:
             sources:
                 minecraft\bonemeal:
                      amount: 5
-        light:
-            enabled: true
+        light:            
             emission: 0
             opacity: 150
             required: 
-                min-required: 1
-                max-required: 3
+                enabled: false
+                min: 1
+                max: 3
         growth:
             required: 250
             step-chance: 20-30
             step-amount: 10-15
         collision:
             player:
-                health-change: -5 //Hurts 5 hearts
+                health-change: 0
             skeleton:
-                health-change: 2 //Gives skeleton 2 hearts
+                health-change: 0
     2:
         Coords: 256 384 32 32
         Hardness: 0
@@ -84,13 +84,13 @@ stages:
             sources:
                 minecraft\bonemeal:
                      amount: 5
-        light:
-            enabled: true
+        light:            
             emission: 0
             opacity: 150
             required: 
-                min-required: 1
-                max-required: 3
+                enabled: false
+                min: 1
+                max: 3
         growth:
             required: 250
             step-chance: 20-30
@@ -110,13 +110,13 @@ stages:
             sources:
                 minecraft\bonemeal:
                      amount: 5
-        light:
-            enabled: true
+        light:            
             emission: 0
             opacity: 150
             required: 
-                min-required: 1
-                max-required: 3
+                enabled: false
+                min: 1
+                max: 3
         growth:
             required: 250
             step-chance: 20-30
