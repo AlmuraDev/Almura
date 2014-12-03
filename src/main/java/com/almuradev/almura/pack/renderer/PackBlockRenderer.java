@@ -19,9 +19,9 @@ import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.RenderType;
 import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
+import net.malisis.core.renderer.element.Vertex;
 import net.malisis.core.renderer.element.shape.Cube;
 import net.malisis.core.renderer.icon.MalisisIcon;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
@@ -50,12 +50,8 @@ public class PackBlockRenderer extends MalisisRenderer {
         rp.flipU.set(true);
         rp.flipV.set(true);
         rp.interpolateUV.set(false);
-        if (renderType == RenderType.ISBRH_INVENTORY) {
-            shape.scale(1, 1, 1);
-            RenderHelper.enableStandardItemLighting();
-        }
-        rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
         if (renderType == RenderType.ISBRH_WORLD) {
+            rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
             switch (RotationMeta.getRotationFromMeta(blockMetadata)) {
                 case NORTH:
                     if (((PackBlock)block).canRotate()) {
@@ -116,6 +112,18 @@ public class PackBlockRenderer extends MalisisRenderer {
                     }
                     break;
             }
+        }
+        if (renderType == RenderType.ISBRH_INVENTORY) {
+            double max = Double.MIN_VALUE;
+            for (Face fe : shape.getFaces()) {
+                for (Vertex vt : shape.getVertexes(fe)) {
+                    max = Math.max(vt.getX(), max);
+                    max = Math.max(vt.getY(), max);
+                    max = Math.max(vt.getZ(), max);
+                }
+            }
+            shape.scale((float) (1 / max));
+            RenderHelper.enableStandardItemLighting();
         }
         drawShape(shape, rp);
         if (renderType == RenderType.ISBRH_INVENTORY) {

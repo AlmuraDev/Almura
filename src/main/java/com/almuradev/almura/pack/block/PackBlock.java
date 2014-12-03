@@ -20,7 +20,6 @@ import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.util.EntityUtils;
 import net.minecraft.block.Block;
@@ -60,7 +59,8 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     private boolean useVanillaWireframe;
     private List<Double> wireframeBounds = new LinkedList<>();
 
-    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation,
+    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance,
+                     boolean rotation,
                      boolean mirrorRotation, float lightLevel, int lightOpacity,
                      boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
                      boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
@@ -74,6 +74,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         this.useVanillaWireframe = useVanillaWireframe;
         this.wireframeBounds = wireframeBounds == null ? new LinkedList<Double>() : wireframeBounds;
         this.dropAmount = dropAmount;
+        this.rotation = rotation;
         this.mirrorRotation = mirrorRotation;
         setBlockName(pack.getName() + "_" + identifier);
         setHardness(hardness);

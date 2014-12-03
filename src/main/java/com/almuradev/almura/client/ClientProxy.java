@@ -24,7 +24,6 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiMainMenu;
