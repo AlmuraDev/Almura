@@ -5,11 +5,11 @@
  */
 package com.almuradev.almura.pack;
 
-import net.malisis.core.renderer.element.Shape;
+import com.almuradev.almura.pack.model.PackShape;
 
 public interface IShapeContainer extends IPackObject {
 
-    Shape getShape();
+    PackShape getShape();
 
     void setShapeFromPack();
 }

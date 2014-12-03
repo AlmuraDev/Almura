@@ -104,7 +104,7 @@ public class PackItem extends Item implements IClipContainer, IShapeContainer {
     }
 
     @Override
-    public Shape getShape() {
+    public PackShape getShape() {
         return shape;
     }
 

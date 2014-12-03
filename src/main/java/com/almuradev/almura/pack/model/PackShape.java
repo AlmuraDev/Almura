@@ -36,7 +36,7 @@ public class PackShape extends Shape {
         this.name = name;
     }
 
-    public PackShape(String name, Shape s) {
+    public PackShape(String name, PackShape s) {
         super(s);
         this.name = name;
     }

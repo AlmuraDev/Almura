@@ -113,7 +113,7 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
     }
 
     @Override
-    public Shape getShape() {
+    public PackShape getShape() {
         return shape;
     }
 

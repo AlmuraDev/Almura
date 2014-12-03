@@ -36,7 +36,7 @@ public class PackBlockRenderer extends MalisisRenderer {
 
     @Override
     public void render() {
-        final Shape shape = ((IShapeContainer) block).getShape();
+        PackShape shape = ((IShapeContainer) block).getShape();
 
         if (shape == null) {
             vanillaShape.resetState();
@@ -110,7 +110,17 @@ public class PackBlockRenderer extends MalisisRenderer {
             }
         }
         if (shape.getFaces().length == 2 && renderType == RenderType.ISBRH_WORLD) {
-            shape.scale(-1, 0, -1);
+            final PackShape scaled = new PackShape(shape.getName(), shape);
+            scaled.scale(-1, 1, -1);
+            final PackShape s = new PackShape(shape.getName());
+            shape.applyMatrix();
+            s.addFaces(shape.getFaces());
+            scaled.applyMatrix();
+            //Scaled returns non PackFaces, OOP demands a fix
+            for (Face f : scaled.getFaces()) {
+                s.addFaces(new PackFace[]{new PackFace(0, f)});
+            }
+            shape = s;
         }
         drawShape(shape, rp);
         if (renderType == RenderType.ISBRH_INVENTORY) {
@@ -120,11 +130,6 @@ public class PackBlockRenderer extends MalisisRenderer {
 
     @Override
     public void applyTexture(Shape shape, RenderParameters parameters) {
-        if (!(shape instanceof PackShape)) {
-            super.applyTexture(shape, parameters);
-            return;
-        }
-
         for (Face f : shape.getFaces()) {
             final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
             final IClipContainer clipContainer = (IClipContainer) block;
@@ -143,11 +148,13 @@ public class PackBlockRenderer extends MalisisRenderer {
             }
 
             if (icon != null) {
+                boolean flipV = params.flipV.get();
                 boolean flipU = params.flipU.get();
                 if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST) {
                     flipU = !flipU;
+                    flipV = !flipV;
                 }
-                f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
+                f.setTexture(icon, flipU, flipV, params.interpolateUV.get());
             }
         }
     }
