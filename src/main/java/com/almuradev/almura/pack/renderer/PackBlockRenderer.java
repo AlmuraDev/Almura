@@ -12,6 +12,7 @@ import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.model.PackFace;
+import com.almuradev.almura.pack.model.PackMirrorFace;
 import com.almuradev.almura.pack.model.PackShape;
 import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderParameters;
@@ -19,6 +20,7 @@ import net.malisis.core.renderer.RenderType;
 import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.shape.Cube;
+import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
@@ -45,9 +47,9 @@ public class PackBlockRenderer extends MalisisRenderer {
         }
         shape.resetState();
         enableBlending();
-        rp.interpolateUV.set(false);
         rp.flipU.set(true);
         rp.flipV.set(true);
+        rp.interpolateUV.set(false);
         if (renderType == RenderType.ISBRH_INVENTORY) {
             shape.scale(1, 1, 1);
             RenderHelper.enableStandardItemLighting();
@@ -109,19 +111,6 @@ public class PackBlockRenderer extends MalisisRenderer {
                     break;
             }
         }
-        if (shape.getFaces().length == 2 && renderType == RenderType.ISBRH_WORLD) {
-            final PackShape scaled = new PackShape(shape.getName(), shape);
-            scaled.scale(-1, 1, -1);
-            final PackShape s = new PackShape(shape.getName());
-            shape.applyMatrix();
-            s.addFaces(shape.getFaces());
-            scaled.applyMatrix();
-            //Scaled returns non PackFaces, OOP demands a fix
-            for (Face f : scaled.getFaces()) {
-                s.addFaces(new PackFace[]{new PackFace(0, f)});
-            }
-            shape = s;
-        }
         drawShape(shape, rp);
         if (renderType == RenderType.ISBRH_INVENTORY) {
             RenderHelper.disableStandardItemLighting();
@@ -147,14 +136,15 @@ public class PackBlockRenderer extends MalisisRenderer {
                 }
             }
 
+            if (f instanceof PackMirrorFace) {
+                icon = ((MalisisIcon) icon).copy().flip(true, false);
+            }
             if (icon != null) {
-                boolean flipV = params.flipV.get();
                 boolean flipU = params.flipU.get();
                 if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST) {
                     flipU = !flipU;
-                    flipV = !flipV;
                 }
-                f.setTexture(icon, flipU, flipV, params.interpolateUV.get());
+                f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
             }
         }
     }

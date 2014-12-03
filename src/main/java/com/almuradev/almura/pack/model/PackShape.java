@@ -74,7 +74,23 @@ public class PackShape extends Shape {
             faces.add(face);
         }
 
-        final PackShape shape = new PackShape(name, faces);
+        PackShape shape = new PackShape(name, faces);
+
+        //Handle shapes that don't have at least 4 faces
+        if (shape.getFaces().length < 4) {
+            shape.applyMatrix();
+
+            final PackShape s = new PackShape(shape.getName());
+            s.addFaces(shape.getFaces());
+            final PackShape scaled = new PackShape(shape.getName(), shape);
+            scaled.scale(-1, 1, -1);
+            scaled.applyMatrix();
+            //Scaled returns non PackFaces, OOP demands a fix
+            for (int i = 0; i < 4 - scaled.getFaces().length; i++) {
+                s.addFaces(new PackMirrorFace[]{new PackMirrorFace(((PackFace) s.getFaces()[i]).getTextureId(), scaled.getFaces()[i >= scaled.getFaces().length ? scaled.getFaces().length - 1 : i])});
+            }
+            shape = s;
+        }
         shape.storeState();
         return shape;
     }
