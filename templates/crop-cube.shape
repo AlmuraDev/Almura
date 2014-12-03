@@ -1,0 +1,38 @@
+BoundingBox: "0 0 0 1 1 1"
+Shapes:
+  - Texture: 0 #Front
+    Coords: |
+      1 0 1
+      1 1 1
+      0 1 1
+      0 0 1
+  - Texture: 0 #Back
+    Coords: |
+      0 0 0
+      0 1 0
+      1 1 0
+      1 0 0
+  - Texture: 1 #Top
+    Coords: |
+      1 1 1
+      1 1 0
+      0 1 0
+      0 1 1
+  - Texture: 0 #OuterRight
+    Coords: |
+      1 0 0
+      1 1 0
+      1 1 1
+      1 0 1
+  - Texture: 0 #OuterLeft
+    Coords: |
+      0 0 1
+      0 1 1
+      0 1 0
+      0 0 0
+  - Texture: 1 #Bottom
+    Coords: |
+      0 0 1
+      0 0 0
+      1 0 0
+      1 0 1

@@ -1,11 +1,10 @@
 Date: 12-2-2014
 Type: Crop
 Title: Corn
-RenderId: 6
 Texture: "crops.png"
 level-required: 18
 seed:
-    Title: Corn Seeds    
+    Title: Corn Seeds
     Coords: 256 384 32 32
     Creative-Tab-Name: crops
     Show-In-Creative-Tab: true
@@ -21,6 +20,7 @@ soil:
 stages:
     0:
         Coords: 256 384 32 32
+        shape: crop-dirt.shape
         Hardness: 0
         Resistance: 0        
         hydration:
@@ -52,6 +52,7 @@ stages:
                 health-change: 0
     1:
         Coords: 256 384 32 32
+        shape: crop-1h.shape
         Hardness: 0
         Resistance: 0        
         fertilizer:
@@ -77,6 +78,7 @@ stages:
                 health-change: 0
     2:
         Coords: 256 384 32 32
+        shape: crop-2h.shape
         Hardness: 0
         Resistance: 0        
         fertilizer:
@@ -103,6 +105,7 @@ stages:
                 health-change: 0
     3:
         Coords: 256 384 32 32
+        shape: crop-3h.shape
         Hardness: 0
         Resistance: 0        
         fertilizer:
@@ -131,7 +134,7 @@ stages:
             tools:
                 none:
                     drops:
-                        almura\crops\alfalfa:
+                        almura\food\alfalfa:
                             amount: 1-2
                             bonus:
                                 enabled: false
@@ -139,7 +142,7 @@ stages:
                                 chance: 10-15
                 almura\tools\diamond_sickle:
                     drops:
-                        almura\crops\alfalfa:
+                        almura\food\alfalfa:
                             amount: 3-4
                             bonus:
                                 enabled: true

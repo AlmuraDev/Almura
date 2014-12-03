@@ -1,0 +1,14 @@
+BoundingBox: "0 0 0 0 0 0"
+Shapes:
+  - Coords: |
+      1 0 1 
+      1 1 1
+      0 1 0
+      0 0 0
+    Texture: 0
+  - Coords: |
+      1 0 0
+      1 1 0
+      0 1 1
+      0 0 1
+    Texture: 0
