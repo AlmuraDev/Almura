@@ -1,4 +1,8 @@
-BoundingBox: "0 0 0 1 1 1"
+Physics:
+    Use-Vanilla-Collision: false
+    CollisionBox: "0 0 0 0 0 0"
+    Use-Vanilla-Wireframe: false
+    WireframeBox: "0 0 0 1 .20 1"
 Shapes:
   - Texture: 1
     Coords: |
