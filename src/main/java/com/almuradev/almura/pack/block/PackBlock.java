@@ -51,6 +51,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
+    private boolean rotation;
     private boolean mirrorRotation;
     //COLLISION
     private boolean useVanillaCollision;
@@ -59,7 +60,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     private boolean useVanillaWireframe;
     private List<Double> wireframeBounds = new LinkedList<>();
 
-    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance,
+    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation,
                      boolean mirrorRotation, float lightLevel, int lightOpacity,
                      boolean showInCreativeTab, String creativeTabName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
                      boolean useVanillaCollision, List<Double> collisionBounds, boolean useVanillaWireframe, List<Double> wireframeBounds) {
@@ -105,6 +106,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         final boolean showInCreativeTab = reader.getChild("Show-In-Creative-Tab").getBoolean(true);
         final String creativeTabName = reader.getChild("Creative-Tab-Name").getString("other");
         final float resistance = reader.getChild("Resistance").getFloat(0);
+        final boolean rotation = reader.getChild("Rotation").getBoolean(true);
         final boolean mirrorRotation = reader.getChild("MirrorRotate").getBoolean(false);
         final boolean useVanillaCollision = !reader.hasChild("Collision-Bounds");
         final List<Double> collisionCoords = new LinkedList<>();
@@ -135,7 +137,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
-        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, mirrorRotation, lightLevel, lightOpacity, showInCreativeTab,
+        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, rotation, mirrorRotation, lightLevel, lightOpacity, showInCreativeTab,
                              creativeTabName,
                              textureCoordinatesByFace, shapeName, useVanillaCollision, collisionCoords, useVanillaWireframe, wireframeCoords);
     }
@@ -268,5 +270,9 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
 
     public boolean canMirrorRotate() {
         return mirrorRotation;
+    }
+
+    public boolean canRotate() {
+        return rotation;
     }
 }

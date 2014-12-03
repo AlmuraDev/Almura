@@ -58,16 +58,22 @@ public class PackBlockRenderer extends MalisisRenderer {
         if (renderType == RenderType.ISBRH_WORLD) {
             switch (RotationMeta.getRotationFromMeta(blockMetadata)) {
                 case NORTH:
-                    shape.rotate(180f, 0, -1, 0);
-                    break;
+                    if (((PackBlock)block).canRotate()) {
+                        shape.rotate(180f, 0, -1, 0);
+                        break;
+                    }
                 case SOUTH:
                     break;
                 case WEST:
-                    shape.rotate(90f, 0, -1, 0);
-                    break;
+                    if (((PackBlock)block).canRotate()) {
+                        shape.rotate(90f, 0, -1, 0);
+                        break;
+                    }
                 case EAST:
-                    shape.rotate(90f, 0, 1, 0);
-                    break;
+                    if (((PackBlock)block).canRotate()) {
+                        shape.rotate(90f, 0, 1, 0);
+                        break;
+                    }
                 case DOWN_NORTH:
                     if (((PackBlock) block).canMirrorRotate()) {
                         shape.rotate(90f, -1, 0, 0);
