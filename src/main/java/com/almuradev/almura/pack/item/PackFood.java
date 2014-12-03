@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -107,12 +108,12 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
     }
 
     @Override
-    public ClippedIcon[] getClipIcons() {
+    public ClippedIcon[] getClipIcons(World world, int x, int y, int z) {
         return clippedIcons;
     }
 
     @Override
-    public PackShape getShape() {
+    public PackShape getShape(World world, int x, int y, int z) {
         return shape;
     }
 

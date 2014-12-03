@@ -11,6 +11,7 @@ import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
 import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IRotatable;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
@@ -37,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class PackBlock extends Block implements IClipContainer, IShapeContainer {
+public class PackBlock extends Block implements IClipContainer, IShapeContainer, IRotatable {
 
     public static int renderId;
     private final ContentPack pack;
@@ -196,12 +197,12 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     }
 
     @Override
-    public ClippedIcon[] getClipIcons() {
+    public ClippedIcon[] getClipIcons(World world, int x, int y, int z, int metadata) {
         return clippedIcons;
     }
 
     @Override
-    public PackShape getShape() {
+    public PackShape getShape(World world, int x, int y, int z, int metadata) {
         return shape;
     }
 
@@ -231,11 +232,14 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         return "PackBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
     }
 
-    public boolean canMirrorRotate() {
+
+    @Override
+    public boolean canMirrorRotate(World world, int x, int y, int z, int metadata) {
         return mirrorRotation;
     }
 
-    public boolean canRotate() {
+    @Override
+    public boolean canRotate(World world, int x, int y, int z, int metadata) {
         return rotation;
     }
 }
