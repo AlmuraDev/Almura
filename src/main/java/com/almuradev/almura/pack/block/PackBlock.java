@@ -217,6 +217,13 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
                 }
             }
         }
+        if (shape != null) {
+            if (!shape.useVanillaCollision) {
+                setBlockBounds(shape.collisionCoordinates.get(0).floatValue(), shape.collisionCoordinates.get(1).floatValue(),
+                               shape.collisionCoordinates.get(2).floatValue(), shape.collisionCoordinates.get(3).floatValue(),
+                               shape.collisionCoordinates.get(4).floatValue(), shape.collisionCoordinates.get(5).floatValue());
+            }
+        }
     }
 
     @Override

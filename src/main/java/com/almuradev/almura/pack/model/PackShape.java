@@ -27,8 +27,8 @@ import java.util.List;
 public class PackShape extends Shape {
 
     private final String name;
-    private final boolean useVanillaCollision, useVanillaWireframe;
-    private final List<Double> collisionCoordinates, wireframeCoordinates;
+    public final boolean useVanillaCollision, useVanillaWireframe;
+    public final List<Double> collisionCoordinates, wireframeCoordinates;
 
     public PackShape(String name, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
                      List<Double> wireframeCoordinates) {
