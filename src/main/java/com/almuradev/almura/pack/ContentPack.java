@@ -8,13 +8,12 @@ package com.almuradev.almura.pack;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.block.PackBlock;
-import com.almuradev.almura.pack.block.PackModelBlock;
 import com.almuradev.almura.pack.item.PackFood;
 import com.almuradev.almura.pack.item.PackItem;
-import com.almuradev.almura.pack.model.PackModel;
 import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
+import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 
@@ -23,28 +22,22 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class ContentPack {
 
     private static final Map<String, ContentPack> PACKS = new HashMap<>();
+    //TODO Better home for this
+    protected static final List<PackShape> SHAPES = Lists.newArrayList();
+    protected final List<Block> blocks = Lists.newArrayList();
+    protected final List<Item> items = Lists.newArrayList();
     private final String name;
-    protected List<Block> blocks;
-    protected List<Item> items;
-    protected List<PackShape> shapes;
-    protected List<PackModel> models;
 
     public ContentPack(String name) {
         this.name = name;
-    }
-
-    public static ContentPack getPack(String name) {
-        return PACKS.get(name);
     }
 
     public static Map<String, ContentPack> getPacks() {
@@ -52,95 +45,93 @@ public class ContentPack {
     }
 
     public static void loadAllContent() {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_PACKS_PATH, Filesystem.DIRECTORIES_ONLY_FILTER)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_MODELS_PATH, Filesystem.MODEL_FILES_ONLY_FILTER)) {
             for (Path path : stream) {
                 try {
-                    create(path);
-                } catch (ConfigurationException | IOException e) {
-                    Almura.LOGGER.error("Failed to load " + path + " as a content pack", e);
+                    loadModel(path);
+                } catch (ConfigurationException e) {
+                    Almura.LOGGER.error("Failed to load model [" + path + "] in [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
                 }
             }
         } catch (IOException e) {
-            Almura.LOGGER.error("Failed in filtering out pack files. This could mean a critical filesystem error!", e);
+            throw new RuntimeException("Failed filtering model files from [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
+        }
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_YML_PATH, Filesystem.DIRECTORIES_ONLY_FILTER)) {
+            for (Path path : stream) {
+                loadPack(path);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed filtering folders from [" + Filesystem.CONFIG_YML_PATH + "].", e);
+        }
+
+        for (ContentPack pack : PACKS.values()) {
+            for (Block block : pack.blocks) {
+                Almura.PROXY.onPostCreate(block);
+            }
+
+            for (Item item : pack.items) {
+                Almura.PROXY.onPostCreate(item);
+            }
+
+            Almura.LOGGER.info("Loaded -> " + pack);
         }
     }
 
-    public static ContentPack create(Path root) throws IOException, ConfigurationException {
+    public static void loadModel(Path root) throws ConfigurationException, IOException {
+        final InputStream entry = Files.newInputStream(root);
+        final YamlConfiguration reader = new YamlConfiguration(entry);
+        reader.load();
+        SHAPES.add(PackShape.createFromReader(root.getFileName().toString().split(".shape")[0], reader));
+    }
+
+    public static ContentPack loadPack(Path root) {
         final String smpName = root.getName(root.getNameCount() - 1).toString();
         final ContentPack pack = new ContentPack(smpName);
         PACKS.put(smpName, pack);
 
-        final List<Block> blocks = new LinkedList<>();
-        final List<Item> items = new LinkedList<>();
-        final List<PackShape> shapes = new ArrayList<>();
-        final List<PackModel> models = new ArrayList<>();
-
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, Filesystem.PACK_FILES_ONLY_FILTER)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, Filesystem.YML_FILES_ONLY_FILTER)) {
             for (Path path : stream) {
-                if (path.getFileName().toString().endsWith(".yml")) {
-                    final InputStream entry = Files.newInputStream(path);
-                    final YamlConfiguration reader = new YamlConfiguration(entry);
-                    reader.load();
+                try {
+                    if (path.getFileName().toString().endsWith(".yml")) {
+                        final InputStream entry = Files.newInputStream(path);
+                        final YamlConfiguration reader = new YamlConfiguration(entry);
+                        reader.load();
 
-                    final String type = reader.getChild("Type").getString();
-                    if (type == null) {
-                        continue;
-                    }
-
-                    final String name = path.getFileName().toString().split(".yml")[0];
-
-                    switch (type) {
-                        case "Item":
-                            final PackItem item = PackItem.createFromReader(pack, name, reader);
-                            items.add(item);
-                            Almura.PROXY.onCreate(item);
-                            break;
-                        case "Food":
-                            final PackFood food = PackFood.createFromReader(pack, name, reader);
-                            items.add(food);
-                            Almura.PROXY.onCreate(food);
-                            break;
-                        case "Block":
-                            final Block block;
-                            if (reader.hasChild("model")) {
-                                block = PackModelBlock.createFromReader(pack, name, reader);
-                            } else {
-                                block = PackBlock.createFromReader(pack, name, reader);
-                            }
-                            blocks.add(block);
-                            Almura.PROXY.onCreate(block);
-                            break;
-                        default:
+                        final String type = reader.getChild("Type").getString();
+                        if (type == null) {
                             continue;
+                        }
+
+                        final String name = path.getFileName().toString().split(".yml")[0];
+
+                        switch (type) {
+                            case "Item":
+                                final PackItem item = PackItem.createFromReader(pack, name, reader);
+                                pack.items.add(item);
+                                Almura.PROXY.onCreate(item);
+                                break;
+                            case "Food":
+                                final PackFood food = PackFood.createFromReader(pack, name, reader);
+                                pack.items.add(food);
+                                Almura.PROXY.onCreate(food);
+                                break;
+                            case "Block":
+                                final Block block = PackBlock.createFromReader(pack, name, reader);
+                                pack.blocks.add(block);
+                                Almura.PROXY.onCreate(block);
+                                break;
+                            default:
+                                continue;
+                        }
+                        entry.close();
                     }
-                    entry.close();
-                } else if (path.getFileName().toString().endsWith(".shape")) {
-                    final InputStream entry = Files.newInputStream(path);
-                    final YamlConfiguration reader = new YamlConfiguration(entry);
-                    reader.load();
-                    shapes.add(PackShape.createFromReader(path.getFileName().toString().split(".shape")[0], reader));
-                    entry.close();
-                } else if (path.getFileName().toString().endsWith(".obj")) {
-                    models.add(PackModel.createFromReader(pack, path.getFileName().toString().split(".obj")[0]));
+                } catch (ConfigurationException e) {
+                    Almura.LOGGER.error("Failed to load yml [" + path + "] for pack [" + pack.getName() + "]", e);
                 }
             }
         } catch (IOException e) {
-            Almura.LOGGER.error("Failed in filtering out pack files. This could mean a critical filesystem error!", e);
-        }
-
-        pack.items = items;
-        pack.blocks = blocks;
-        pack.shapes = shapes;
-        pack.models = models;
-
-        Almura.LOGGER.info("Loaded -> " + pack);
-
-        for (Block block : blocks) {
-            Almura.PROXY.onPostCreate(block);
-        }
-
-        for (Item item : items) {
-            Almura.PROXY.onPostCreate(item);
+            throw new RuntimeException("Failed in filtering out yml files. This could mean a critical filesystem error!", e);
         }
 
         return pack;
@@ -164,12 +155,8 @@ public class ContentPack {
         return Collections.unmodifiableList(blocks);
     }
 
-    public List<PackShape> getShapes() {
-        return Collections.unmodifiableList(shapes);
-    }
-
-    public List<PackModel> getModels() {
-        return Collections.unmodifiableList(models);
+    public static List<PackShape> getShapes() {
+        return Collections.unmodifiableList(SHAPES);
     }
 
     @Override
@@ -184,6 +171,6 @@ public class ContentPack {
 
     @Override
     public String toString() {
-        return "ContentPack {name= [" + name + "], blocks= " + blocks + ", items= " + items + ", shapes= " + shapes + "}";
+        return "ContentPack {name= [" + name + "], blocks= " + blocks + ", items= " + items + "}";
     }
 }

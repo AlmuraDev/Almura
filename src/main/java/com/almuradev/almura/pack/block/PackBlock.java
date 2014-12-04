@@ -10,10 +10,11 @@ import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
-import com.almuradev.almura.pack.IClipContainer;
-import com.almuradev.almura.pack.IShapeContainer;
+import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.IPackObject;
+import com.almuradev.almura.pack.IRotatable;
 import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.flowpowered.cerealization.config.ConfigurationException;
@@ -30,6 +31,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -37,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class PackBlock extends Block implements IClipContainer, IShapeContainer {
+public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, IRotatable {
 
     public static int renderId;
     private final ContentPack pack;
@@ -97,13 +99,13 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         final boolean rotation = reader.getChild("Rotation").getBoolean(true);
         final boolean mirrorRotation = reader.getChild("MirrorRotate").getBoolean(false);
         final boolean renderAsNormalBlock = reader.getChild("Render-As-Normal-Block").getBoolean(true);
-        final boolean renderAsOpaque = reader.getChild("Render-As-Opaque").getBoolean(true);
+        final boolean renderAsOpaque = reader.getChild("Render-As-Opaque").getBoolean(false);
         String shapeName = reader.getChild("Shape").getString();
         if (shapeName != null) {
             shapeName = shapeName.split(".shape")[0];
         }
 
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader);
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader.getChild("Coords"));
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
@@ -121,7 +123,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoords(blockIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override
@@ -152,12 +154,6 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public boolean isOpaqueCube() {
-        return shape == null && renderAsOpaque;
-    }
-
-    @Override
     public int quantityDropped(Random p_149745_1_) {
         return dropAmount;
     }
@@ -166,7 +162,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack item) {
         final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
         final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
-        world.setBlockMetadataWithNotify(x, y, z, RotationMeta.getRotationMeta(cameraDir, playerDir).ordinal(), 3);
+        world.setBlockMetadataWithNotify(x, y, z, Rotation.getState(cameraDir, playerDir).getId(), 3);
     }
 
     /**
@@ -196,8 +192,18 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     }
 
     @Override
+    public boolean isOpaqueCube() {
+        return opaque;
+    }
+
+    @Override
     public ContentPack getPack() {
         return pack;
+    }
+
+    @Override
+    public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
+        return clippedIcons;
     }
 
     @Override
@@ -206,16 +212,21 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     }
 
     @Override
+    public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
+        return shape;
+    }
+
+    @Override
     public PackShape getShape() {
         return shape;
     }
 
     @Override
-    public void setShapeFromPack() {
-        this.shape = null;
+    public void refreshShape() {
+        shape = null;
 
         if (shapeName != null) {
-            for (PackShape shape : pack.getShapes()) {
+            for (PackShape shape : ContentPack.getShapes()) {
                 if (shape.getName().equalsIgnoreCase(shapeName)) {
                     this.shape = shape;
                     break;
@@ -228,19 +239,24 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
                                shape.collisionCoordinates.get(2).floatValue(), shape.collisionCoordinates.get(3).floatValue(),
                                shape.collisionCoordinates.get(4).floatValue(), shape.collisionCoordinates.get(5).floatValue());
             }
+            opaque = false;
+        } else {
+            opaque = renderAsOpaque;
         }
+    }
+
+    @Override
+    public boolean canMirrorRotate(IBlockAccess access, int x, int y, int z, int metadata) {
+        return mirrorRotation;
+    }
+
+    @Override
+    public boolean canRotate(IBlockAccess access, int x, int y, int z, int metadata) {
+        return rotation;
     }
 
     @Override
     public String toString() {
         return "PackBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
-    }
-
-    public boolean canMirrorRotate() {
-        return mirrorRotation;
-    }
-
-    public boolean canRotate() {
-        return rotation;
     }
 }

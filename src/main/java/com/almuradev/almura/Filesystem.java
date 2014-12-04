@@ -34,7 +34,9 @@ public class Filesystem {
 
     public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID.toLowerCase());
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
-    public static final Path CONFIG_PACKS_PATH = Paths.get(CONFIG_PATH.toString(), "packs");
+    public static final Path CONFIG_YML_PATH = Paths.get(CONFIG_PATH.toString(), "packs");
+    public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_PATH.toString(), "images");
+    public static final Path CONFIG_MODELS_PATH = Paths.get(CONFIG_PATH.toString(), "models");
 
     public static DirectoryStream.Filter<Path> DIRECTORIES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
         @Override
@@ -57,12 +59,17 @@ public class Filesystem {
         }
     };
 
-    public static DirectoryStream.Filter<Path> PACK_FILES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
+    public static DirectoryStream.Filter<Path> YML_FILES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
         @Override
         public boolean accept(Path entry) throws IOException {
-            return !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".yml") || entry.getFileName().toString().endsWith(".png")
-                                                 || entry.getFileName().toString().endsWith(".shape") || entry.getFileName().toString()
-                    .endsWith(".obj"));
+            return !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".yml"));
+        }
+    };
+
+    public static DirectoryStream.Filter<Path> MODEL_FILES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
+        @Override
+        public boolean accept(Path entry) throws IOException {
+            return !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".shape"));
         }
     };
 
@@ -79,9 +86,21 @@ public class Filesystem {
         }
 
         try {
-            Files.createDirectories(CONFIG_PACKS_PATH);
+            Files.createDirectories(CONFIG_YML_PATH);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to create directory " + CONFIG_PACKS_PATH, e);
+            throw new RuntimeException("Failed to create directory [" + CONFIG_YML_PATH + "].", e);
+        }
+
+        try {
+            Files.createDirectories(CONFIG_IMAGES_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create directory [" + CONFIG_IMAGES_PATH + "].", e);
+        }
+
+        try {
+            Files.createDirectories(CONFIG_MODELS_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create directory [" + CONFIG_MODELS_PATH + "].", e);
         }
     }
 

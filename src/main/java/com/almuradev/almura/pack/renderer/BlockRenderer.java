@@ -6,11 +6,10 @@
 package com.almuradev.almura.pack.renderer;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.pack.IClipContainer;
-import com.almuradev.almura.pack.IShapeContainer;
+import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.IRotatable;
 import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.RotationMeta;
-import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackMirrorFace;
 import com.almuradev.almura.pack.model.PackShape;
@@ -21,13 +20,15 @@ import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.Vertex;
 import net.malisis.core.renderer.element.shape.Cube;
+import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class PackBlockRenderer extends MalisisRenderer {
+public class BlockRenderer extends MalisisRenderer {
 
     private Cube vanillaShape;
 
@@ -39,83 +40,86 @@ public class PackBlockRenderer extends MalisisRenderer {
     @Override
     public void render() {
         enableBlending();
-        PackShape shape = ((IShapeContainer) block).getShape();
+        Shape shape = ((IBlockShapeContainer) block).getShape(world, x, y, z, blockMetadata);
 
         if (shape == null) {
-            rp.renderAllFaces.set(block.renderAsNormalBlock());
-            rp.useBlockBounds.set(true);
-            rp.interpolateUV.set(true);
-            vanillaShape.resetState();
-            super.drawShape(vanillaShape, rp);
-            return;
-        } else {
+            shape = vanillaShape;
+        }
+        rp.useBlockBounds.set(true);
+        if (shape instanceof PackShape) {
             rp.renderAllFaces.set(true);
-            rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
+            rp.flipU.set(true);
+            rp.flipV.set(true);
+            rp.interpolateUV.set(false);
+        } else {
+            rp.flipU.set(false);
+            rp.flipV.set(false);
+            rp.interpolateUV.set(true);
         }
 
-        rp.flipU.set(true);
-        rp.flipV.set(true);
-        rp.interpolateUV.set(false);
 
         shape.resetState();
 
-        if (renderType == RenderType.ISBRH_WORLD) {
-            switch (RotationMeta.getRotationFromMeta(blockMetadata)) {
+        if (renderType == RenderType.ISBRH_WORLD && block instanceof IRotatable) {
+            final boolean canRotate = ((IRotatable) block).canRotate(world, x, y, z, blockMetadata);
+            final boolean canMirrorRotate = ((IRotatable) block).canMirrorRotate(world, x, y, z, blockMetadata);
+
+            switch (IRotatable.Rotation.getState(blockMetadata)) {
                 case NORTH:
-                    if (((PackBlock) block).canRotate()) {
+                    if (canRotate) {
                         shape.rotate(180f, 0, -1, 0);
                         break;
                     }
                 case SOUTH:
                     break;
                 case WEST:
-                    if (((PackBlock) block).canRotate()) {
+                    if (canRotate) {
                         shape.rotate(90f, 0, -1, 0);
                         break;
                     }
                 case EAST:
-                    if (((PackBlock) block).canRotate()) {
+                    if (canRotate) {
                         shape.rotate(90f, 0, 1, 0);
                         break;
                     }
                 case DOWN_NORTH:
-                    if (((PackBlock) block).canMirrorRotate()) {
+                    if (canMirrorRotate) {
                         shape.rotate(90f, -1, 0, 0);
                         shape.rotate(180f, 0, -1, 0);
                     }
                     break;
                 case DOWN_SOUTH:
-                    if (((PackBlock) block).canMirrorRotate()) {
+                    if (canMirrorRotate) {
                         shape.rotate(180f, -1, 0, 0);
                         shape.rotate(90f, -1, 0, 0);
                     }
                     break;
                 case DOWN_WEST:
-                    if (((PackBlock) block).canMirrorRotate()) {
+                    if (canMirrorRotate) {
                         shape.rotate(180f, -1, 0, 0);
                         shape.rotate(90f, 0, -1, 0);
                     }
                     break;
                 case DOWN_EAST:
-                    if (((PackBlock) block).canMirrorRotate()) {
+                    if (canMirrorRotate) {
                         shape.rotate(180f, -1, 0, 0);
                         shape.rotate(90f, 0, 1, 0);
                     }
                     break;
                 case UP_NORTH:
-                    if (((PackBlock) block).canMirrorRotate()) {
+                    if (canMirrorRotate) {
                         shape.rotate(180f, 0, -1, 0);
                     }
                     break;
                 case UP_SOUTH:
                     break;
                 case UP_WEST:
-                    if (((PackBlock) block).canMirrorRotate()) {
+                    if (canMirrorRotate) {
                         shape.rotate(90f, 0, -1, 0);
                     }
                     break;
                 case UP_EAST:
-                    if (((PackBlock) block).canMirrorRotate()) {
+                    if (canMirrorRotate) {
                         shape.rotate(90f, 0, 1, 0);
                     }
                     break;
@@ -145,28 +149,29 @@ public class PackBlockRenderer extends MalisisRenderer {
             super.applyTexture(shape, parameters);
             return;
         }
-        
+
         for (Face f : shape.getFaces()) {
             final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
-            final IClipContainer clipContainer = (IClipContainer) block;
             final PackFace face = (PackFace) f;
+            final ClippedIcon[] clippedIcons = ((IBlockClipContainer) block).getClipIcons(world, x, y, z, blockMetadata);
             IIcon icon;
 
-            if (PackUtil.isEmpty(clipContainer)) {
+            if (PackUtil.isEmpty(clippedIcons)) {
                 icon = super.getIcon(params);
-            } else if (face.getTextureId() >= clipContainer.getClipIcons().length) {
-                icon = clipContainer.getClipIcons()[0];
+            } else if (face.getTextureId() >= clippedIcons.length) {
+                icon = clippedIcons[0];
             } else {
-                icon = clipContainer.getClipIcons()[face.getTextureId()];
+                icon = clippedIcons[face.getTextureId()];
                 if (icon == null) {
-                    icon = clipContainer.getClipIcons()[0];
+                    icon = clippedIcons[0];
                 }
             }
 
-            if (f instanceof PackMirrorFace) {
-                icon = ((MalisisIcon) icon).copy().flip(true, false);
-            }
             if (icon != null) {
+                if (f instanceof PackMirrorFace) {
+                    icon = ((MalisisIcon) icon).copy().flip(true, false);
+                }
+
                 boolean flipU = params.flipU.get();
                 if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST) {
                     flipU = !flipU;
@@ -180,16 +185,17 @@ public class PackBlockRenderer extends MalisisRenderer {
     @SuppressWarnings("unchecked")
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
-            if (clazz == PackBlock.class) {
+            if (Block.class.isAssignableFrom(clazz) && IBlockClipContainer.class.isAssignableFrom(clazz) && IBlockShapeContainer.class
+                    .isAssignableFrom(clazz)) {
                 super.registerFor(clazz);
             } else {
-                Almura.LOGGER.error("Cannot register " + clazz.getSimpleName() + " for PackBlockRenderer!");
+                Almura.LOGGER.error("Cannot register " + clazz.getSimpleName() + " for " + BlockRenderer.class.getSimpleName());
             }
         }
     }
 
     @Override
     public void registerFor(Item item) {
-        throw new UnsupportedOperationException("PackBlockRenderer is only meant for blocks!");
+        throw new UnsupportedOperationException(BlockRenderer.class.getSimpleName() + " is only meant for blocks!");
     }
 }

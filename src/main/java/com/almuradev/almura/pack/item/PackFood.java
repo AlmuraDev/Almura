@@ -10,6 +10,7 @@ import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
 import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
@@ -28,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class PackFood extends ItemFood implements IClipContainer, IShapeContainer {
+public class PackFood extends ItemFood implements IPackObject, IClipContainer, IShapeContainer {
 
     private final ContentPack pack;
     //TEXTURES
@@ -79,7 +80,7 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
             shapeName = shapeName.split(".shape")[0];
         }
 
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader);
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader.getChild("Coords"));
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "_" + name + ".name", title);
 
@@ -98,7 +99,7 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
     @Override
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, itemIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoords(itemIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override
@@ -117,11 +118,11 @@ public class PackFood extends ItemFood implements IClipContainer, IShapeContaine
     }
 
     @Override
-    public void setShapeFromPack() {
+    public void refreshShape() {
         this.shape = null;
 
         if (shapeName != null) {
-            for (PackShape shape : pack.getShapes()) {
+            for (PackShape shape : ContentPack.getShapes()) {
                 if (shape.getName().equals(shapeName)) {
                     this.shape = shape;
                     break;

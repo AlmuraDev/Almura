@@ -7,9 +7,9 @@ package com.almuradev.almura.pack;
 
 import com.almuradev.almura.pack.model.PackShape;
 
-public interface IShapeContainer extends IPackObject {
+public interface IShapeContainer {
 
     PackShape getShape();
 
-    void setShapeFromPack();
+    void refreshShape();
 }

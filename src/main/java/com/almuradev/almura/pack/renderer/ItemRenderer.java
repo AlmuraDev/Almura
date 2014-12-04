@@ -20,7 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class PackItemRenderer extends MalisisRenderer {
+public class ItemRenderer extends MalisisRenderer {
 
     @Override
     public boolean shouldRender3DInInventory(int modelId) {
@@ -56,7 +56,7 @@ public class PackItemRenderer extends MalisisRenderer {
             final PackFace face = (PackFace) f;
             IIcon icon;
 
-            if (PackUtil.isEmpty(clipContainer)) {
+            if (PackUtil.isEmpty(clipContainer.getClipIcons())) {
                 icon = super.getIcon(params);
             } else if (face.getTextureId() >= clipContainer.getClipIcons().length) {
                 icon = clipContainer.getClipIcons()[0];
@@ -80,17 +80,18 @@ public class PackItemRenderer extends MalisisRenderer {
     @Override
     @SuppressWarnings("unchecked")
     public void registerFor(Class... listClass) {
-        throw new UnsupportedOperationException("PackItemRenderer is only meant for items!");
+        for (Class clazz : listClass) {
+            if (Item.class.isAssignableFrom(clazz) && IClipContainer.class.isAssignableFrom(clazz) && IShapeContainer.class
+                    .isAssignableFrom(clazz)) {
+                super.registerFor(clazz);
+            } else {
+                Almura.LOGGER.error("Cannot register " + clazz.getSimpleName() + " for " + BlockRenderer.class.getSimpleName());
+            }
+        }
     }
 
     @Override
     public void registerFor(Item item) {
-        if (Item.class.isAssignableFrom(item.getClass()) && IClipContainer.class.isAssignableFrom(item.getClass()) && IShapeContainer.class
-                .isAssignableFrom(
-                        item.getClass())) {
-            super.registerFor(item);
-        } else {
-            Almura.LOGGER.error("Cannot register " + item.getClass().getSimpleName() + " for PackItemRenderer!");
-        }
+        throw new UnsupportedOperationException(BlockRenderer.class.getSimpleName() + " is only meant for blocks!");
     }
 }

@@ -12,12 +12,11 @@ import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
+import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.block.PackBlock;
-import com.almuradev.almura.pack.block.PackModelBlock;
-import com.almuradev.almura.pack.renderer.PackBlockRenderer;
-import com.almuradev.almura.pack.renderer.PackItemRenderer;
-import com.almuradev.almura.pack.renderer.PackModelRenderer;
+import com.almuradev.almura.pack.renderer.BlockRenderer;
+import com.almuradev.almura.pack.renderer.ItemRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -35,9 +34,8 @@ import org.lwjgl.input.Keyboard;
 public class ClientProxy extends CommonProxy {
 
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
-    public static final PackBlockRenderer PACK_BLOCK_RENDERER = new PackBlockRenderer();
-    public static final PackItemRenderer PACK_ITEM_RENDERER = new PackItemRenderer();
-    public static final PackModelRenderer PACK_MODEL_RENDERER = new PackModelRenderer();
+    public static final BlockRenderer PACK_BLOCK_RENDERER = new BlockRenderer();
+    public static final ItemRenderer PACK_ITEM_RENDERER = new ItemRenderer();
 
     public static final KeyBinding
             BINDING_CONFIG_GUI =
@@ -47,7 +45,6 @@ public class ClientProxy extends CommonProxy {
     public void onPreInitialization(FMLPreInitializationEvent event) {
         super.onPreInitialization(event);
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
-        PACK_MODEL_RENDERER.registerFor(PackModelBlock.class);
         ClientRegistry.registerKeyBinding(BINDING_CONFIG_GUI);
         FMLCommonHandler.instance().bus().register(this);
     }
@@ -66,8 +63,8 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onPostCreate(Block block) {
         super.onPostCreate(block);
-        if (block instanceof IShapeContainer) {
-            ((IShapeContainer) block).setShapeFromPack();
+        if (block instanceof IBlockShapeContainer) {
+            ((IBlockShapeContainer) block).refreshShape();
         }
     }
 
@@ -75,7 +72,7 @@ public class ClientProxy extends CommonProxy {
     public void onPostCreate(Item item) {
         super.onPostCreate(item);
         if (item instanceof IShapeContainer) {
-            ((IShapeContainer) item).setShapeFromPack();
+            ((IShapeContainer) item).refreshShape();
             if (((IShapeContainer) item).getShape() != null) {
                 PACK_ITEM_RENDERER.registerFor(item);
             }
