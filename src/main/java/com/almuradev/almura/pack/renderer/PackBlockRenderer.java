@@ -51,6 +51,7 @@ public class PackBlockRenderer extends MalisisRenderer {
         rp.flipV.set(true);
         rp.interpolateUV.set(false);
         if (renderType == RenderType.ISBRH_WORLD) {
+            rp.renderAllFaces.set(true);
             rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
             switch (RotationMeta.getRotationFromMeta(blockMetadata)) {
                 case NORTH:
