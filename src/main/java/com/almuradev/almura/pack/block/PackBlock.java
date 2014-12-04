@@ -96,8 +96,8 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         final float resistance = reader.getChild("Resistance").getFloat(0);
         final boolean rotation = reader.getChild("Rotation").getBoolean(true);
         final boolean mirrorRotation = reader.getChild("MirrorRotate").getBoolean(false);
-        final boolean renderAsNormalBlock = reader.getChild("Render-As-Normal-Block").getBoolean(false);
-        final boolean renderAsOpaque = reader.getChild("Render-As-Opaque").getBoolean(false);
+        final boolean renderAsNormalBlock = reader.getChild("Render-As-Normal-Block").getBoolean(true);
+        final boolean renderAsOpaque = reader.getChild("Render-As-Opaque").getBoolean(true);
         String shapeName = reader.getChild("Shape").getString();
         if (shapeName != null) {
             shapeName = shapeName.split(".shape")[0];
