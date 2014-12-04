@@ -216,7 +216,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
 
         if (shapeName != null) {
             for (PackShape shape : pack.getShapes()) {
-                if (shape.getName().equals(shapeName)) {
+                if (shape.getName().equalsIgnoreCase(shapeName)) {
                     this.shape = shape;
                     break;
                 }
