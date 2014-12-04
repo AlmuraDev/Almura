@@ -10,11 +10,11 @@ import com.almuradev.almura.Tabs;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
-import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IRotatable;
-import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.flowpowered.cerealization.config.ConfigurationException;
@@ -31,6 +31,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -38,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class PackBlock extends Block implements IClipContainer, IShapeContainer, IRotatable {
+public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, IRotatable {
 
     public static int renderId;
     private final ContentPack pack;
@@ -104,7 +105,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer,
             shapeName = shapeName.split(".shape")[0];
         }
 
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader);
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader.getChild("Coords"));
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
@@ -122,7 +123,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer,
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoords(pack, blockIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoords(blockIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override
@@ -167,7 +168,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer,
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack item) {
         final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
         final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
-        world.setBlockMetadataWithNotify(x, y, z, RotationMeta.getRotationMeta(cameraDir, playerDir).ordinal(), 3);
+        world.setBlockMetadataWithNotify(x, y, z, Rotation.getState(cameraDir, playerDir).getId(), 3);
     }
 
     /**
@@ -202,17 +203,27 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer,
     }
 
     @Override
-    public ClippedIcon[] getClipIcons(World world, int x, int y, int z, int metadata) {
+    public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
         return clippedIcons;
     }
 
     @Override
-    public PackShape getShape(World world, int x, int y, int z, int metadata) {
+    public ClippedIcon[] getClipIcons() {
+        return clippedIcons;
+    }
+
+    @Override
+    public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
         return shape;
     }
 
     @Override
-    public void setShapeFromPack() {
+    public PackShape getShape() {
+        return shape;
+    }
+
+    @Override
+    public void refreshShape() {
         this.shape = null;
 
         if (shapeName != null) {
@@ -233,18 +244,17 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer,
     }
 
     @Override
-    public String toString() {
-        return "PackBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
-    }
-
-
-    @Override
-    public boolean canMirrorRotate(World world, int x, int y, int z, int metadata) {
+    public boolean canMirrorRotate(IBlockAccess access, int x, int y, int z, int metadata) {
         return mirrorRotation;
     }
 
     @Override
-    public boolean canRotate(World world, int x, int y, int z, int metadata) {
+    public boolean canRotate(IBlockAccess access, int x, int y, int z, int metadata) {
         return rotation;
+    }
+
+    @Override
+    public String toString() {
+        return "PackBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
     }
 }

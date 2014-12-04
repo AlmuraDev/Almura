@@ -6,9 +6,8 @@
 package com.almuradev.almura.pack;
 
 import net.malisis.core.renderer.icon.ClippedIcon;
-import net.minecraft.world.World;
 
-public interface IClipContainer extends IPackObject {
+public interface IClipContainer {
 
-    ClippedIcon[] getClipIcons(World world, int x, int y, int z, int metadata);
+    ClippedIcon[] getClipIcons();
 }

@@ -8,7 +8,6 @@ package com.almuradev.almura.pack;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.block.PackBlock;
-import com.almuradev.almura.pack.block.PackModelBlock;
 import com.almuradev.almura.pack.item.PackFood;
 import com.almuradev.almura.pack.item.PackItem;
 import com.almuradev.almura.pack.model.PackModel;
@@ -37,7 +36,6 @@ public class ContentPack {
     protected List<Block> blocks;
     protected List<Item> items;
     protected List<PackShape> shapes;
-    protected List<PackModel> models;
 
     public ContentPack(String name) {
         this.name = name;
@@ -73,7 +71,6 @@ public class ContentPack {
         final List<Block> blocks = new LinkedList<>();
         final List<Item> items = new LinkedList<>();
         final List<PackShape> shapes = new ArrayList<>();
-        final List<PackModel> models = new ArrayList<>();
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, Filesystem.PACK_FILES_ONLY_FILTER)) {
             for (Path path : stream) {
@@ -101,12 +98,7 @@ public class ContentPack {
                             Almura.PROXY.onCreate(food);
                             break;
                         case "Block":
-                            final Block block;
-                            if (reader.hasChild("model")) {
-                                block = PackModelBlock.createFromReader(pack, name, reader);
-                            } else {
-                                block = PackBlock.createFromReader(pack, name, reader);
-                            }
+                            final Block block = PackBlock.createFromReader(pack, name, reader);
                             blocks.add(block);
                             Almura.PROXY.onCreate(block);
                             break;
@@ -120,8 +112,6 @@ public class ContentPack {
                     reader.load();
                     shapes.add(PackShape.createFromReader(path.getFileName().toString().split(".shape")[0], reader));
                     entry.close();
-                } else if (path.getFileName().toString().endsWith(".obj")) {
-                    models.add(PackModel.createFromReader(pack, path.getFileName().toString().split(".obj")[0]));
                 }
             }
         } catch (IOException e) {
@@ -131,7 +121,6 @@ public class ContentPack {
         pack.items = items;
         pack.blocks = blocks;
         pack.shapes = shapes;
-        pack.models = models;
 
         Almura.LOGGER.info("Loaded -> " + pack);
 
@@ -166,10 +155,6 @@ public class ContentPack {
 
     public List<PackShape> getShapes() {
         return Collections.unmodifiableList(shapes);
-    }
-
-    public List<PackModel> getModels() {
-        return Collections.unmodifiableList(models);
     }
 
     @Override

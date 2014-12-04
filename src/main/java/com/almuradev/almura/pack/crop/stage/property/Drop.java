@@ -9,6 +9,7 @@ import com.almuradev.almura.pack.crop.stage.IProperty;
 import net.minecraft.item.Item;
 
 public class Drop implements IProperty {
+
     public final Item item;
     public final int amount;
     public final int damage;

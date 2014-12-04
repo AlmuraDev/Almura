@@ -6,8 +6,10 @@
 package com.almuradev.almura.pack.crop.stage;
 
 import com.almuradev.almura.pack.ContentPack;
-import com.almuradev.almura.pack.IClipContainer;
-import com.almuradev.almura.pack.IShapeContainer;
+import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.IPackObject;
+import com.almuradev.almura.pack.IState;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.stage.property.Growth;
@@ -19,6 +21,7 @@ import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -26,7 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class Stage implements IClipContainer, IShapeContainer {
+public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockShapeContainer {
+
     private final PackCrops block;
     public final int id;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
@@ -45,17 +49,37 @@ public class Stage implements IClipContainer, IShapeContainer {
     }
 
     @Override
-    public ClippedIcon[] getClipIcons(World world, int x, int y, int z, int metadata) {
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public ContentPack getPack() {
+        return block.getPack();
+    }
+
+    @Override
+    public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
         return clippedIcons;
     }
 
     @Override
-    public PackShape getShape(World world, int x, int y, int z, int metadata) {
+    public ClippedIcon[] getClipIcons() {
+        return clippedIcons;
+    }
+
+    @Override
+    public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
         return shape;
     }
 
     @Override
-    public void setShapeFromPack() {
+    public PackShape getShape() {
+        return shape;
+    }
+
+    @Override
+    public void refreshShape() {
         this.shape = null;
 
         if (shapeName != null) {
@@ -75,14 +99,9 @@ public class Stage implements IClipContainer, IShapeContainer {
         }
     }
 
-    @Override
-    public ContentPack getPack() {
-        return block.getPack();
-    }
-
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIcon blockIcon, String textureName, IIconRegister register) {
-        clippedIcons = PackUtil.generateClippedIconsFromCoords(block.getPack(), blockIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoords(blockIcon, textureName, textureCoordinatesByFace);
     }
 
     @SideOnly(Side.CLIENT)

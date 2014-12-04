@@ -6,11 +6,10 @@
 package com.almuradev.almura.pack;
 
 import com.almuradev.almura.pack.model.PackShape;
-import net.minecraft.world.World;
 
-public interface IShapeContainer extends IPackObject {
+public interface IShapeContainer {
 
-    PackShape getShape(World world, int x, int y, int z, int metadata);
+    PackShape getShape();
 
-    void setShapeFromPack();
+    void refreshShape();
 }

@@ -7,10 +7,9 @@ package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.ContentPack;
-import com.almuradev.almura.pack.IClipContainer;
-import com.almuradev.almura.pack.IRotatable;
-import com.almuradev.almura.pack.IShapeContainer;
-import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.crop.stage.Stage;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.renderer.PackIcon;
@@ -19,25 +18,21 @@ import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
-import net.minecraft.block.IGrowable;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
-public class PackCrops extends BlockCrops implements IClipContainer, IShapeContainer {
+public class PackCrops extends BlockCrops implements IPackObject, IBlockClipContainer, IBlockShapeContainer {
+
     public static int renderId;
     private final ContentPack pack;
     private final int levelRequired;
@@ -143,33 +138,45 @@ public class PackCrops extends BlockCrops implements IClipContainer, IShapeConta
     }
 
     @Override
-    public PackShape getShape(World world, int x, int y, int z, int metadata) {
-        final Stage stage = stages.get(metadata);
-        if (stage != null) {
-            return stage.getShape(world, x, y, z, metadata);
-        }
-        return null;
-    }
-
-    @Override
-    public void setShapeFromPack() {
-        for (Stage stage : stages.values()) {
-            stage.setShapeFromPack();
-        }
-    }
-
-    @Override
     public ContentPack getPack() {
         return pack;
     }
 
     @Override
-    public ClippedIcon[] getClipIcons(World world, int x, int y, int z, int metadata) {
+    public ClippedIcon[] getClipIcons() {
+        final Stage stage = stages.get(0);
+        return stage == null ? null : stage.getClipIcons();
+    }
+
+    @Override
+    public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
         final Stage stage = stages.get(metadata);
         if (stage != null) {
-            return stage.getClipIcons(world, x, y, z, metadata);
+            return stage.getClipIcons(access, x, y, z, metadata);
         }
         return new ClippedIcon[0];
+    }
+
+    @Override
+    public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
+        final Stage stage = stages.get(metadata);
+        if (stage != null) {
+            return stage.getShape(access, x, y, z, metadata);
+        }
+        return null;
+    }
+
+    @Override
+    public PackShape getShape() {
+        final Stage stage = stages.get(0);
+        return stage == null ? null : stage.getShape();
+    }
+
+    @Override
+    public void refreshShape() {
+        for (Stage stage : stages.values()) {
+            stage.refreshShape();
+        }
     }
 
     public int getLevelRequired() {
