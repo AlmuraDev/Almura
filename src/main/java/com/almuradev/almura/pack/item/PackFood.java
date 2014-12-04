@@ -122,7 +122,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
         this.shape = null;
 
         if (shapeName != null) {
-            for (PackShape shape : pack.getShapes()) {
+            for (PackShape shape : ContentPack.getShapes()) {
                 if (shape.getName().equals(shapeName)) {
                     this.shape = shape;
                     break;

@@ -99,7 +99,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         final boolean rotation = reader.getChild("Rotation").getBoolean(true);
         final boolean mirrorRotation = reader.getChild("MirrorRotate").getBoolean(false);
         final boolean renderAsNormalBlock = reader.getChild("Render-As-Normal-Block").getBoolean(true);
-        final boolean renderAsOpaque = reader.getChild("Render-As-Opaque").getBoolean(true);
+        final boolean renderAsOpaque = reader.getChild("Render-As-Opaque").getBoolean(false);
         String shapeName = reader.getChild("Shape").getString();
         if (shapeName != null) {
             shapeName = shapeName.split(".shape")[0];
@@ -192,6 +192,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
+    public boolean isOpaqueCube() {
+        return opaque;
+    }
+
+    @Override
     public ContentPack getPack() {
         return pack;
     }
@@ -221,7 +226,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         shape = null;
 
         if (shapeName != null) {
-            for (PackShape shape : pack.getShapes()) {
+            for (PackShape shape : ContentPack.getShapes()) {
                 if (shape.getName().equalsIgnoreCase(shapeName)) {
                     this.shape = shape;
                     break;
@@ -234,8 +239,10 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
                                shape.collisionCoordinates.get(2).floatValue(), shape.collisionCoordinates.get(3).floatValue(),
                                shape.collisionCoordinates.get(4).floatValue(), shape.collisionCoordinates.get(5).floatValue());
             }
+            opaque = false;
+        } else {
+            opaque = renderAsOpaque;
         }
-        opaque = shape == null && renderAsOpaque;
     }
 
     @Override

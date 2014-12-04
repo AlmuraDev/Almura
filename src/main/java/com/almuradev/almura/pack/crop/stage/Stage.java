@@ -83,7 +83,7 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
         this.shape = null;
 
         if (shapeName != null) {
-            for (PackShape shape : block.getPack().getShapes()) {
+            for (PackShape shape : ContentPack.getShapes()) {
                 if (shape.getName().equals(shapeName)) {
                     this.shape = shape;
                     break;
