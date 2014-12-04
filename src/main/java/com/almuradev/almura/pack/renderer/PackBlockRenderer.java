@@ -38,10 +38,6 @@ public class PackBlockRenderer extends MalisisRenderer {
 
     @Override
     public void render() {
-        enableBlending();
-        rp.flipU.set(true);
-        rp.flipV.set(true);
-        rp.interpolateUV.set(false);
         PackShape shape = ((IShapeContainer) block).getShape();
 
         if (shape == null) {
@@ -54,6 +50,11 @@ public class PackBlockRenderer extends MalisisRenderer {
             rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
         }
 
+        enableBlending();
+        rp.flipU.set(true);
+        rp.flipV.set(true);
+        rp.interpolateUV.set(false);
+        
         shape.resetState();
 
         if (renderType == RenderType.ISBRH_WORLD) {
