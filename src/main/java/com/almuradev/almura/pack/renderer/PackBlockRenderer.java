@@ -133,6 +133,11 @@ public class PackBlockRenderer extends MalisisRenderer {
 
     @Override
     public void applyTexture(Shape shape, RenderParameters parameters) {
+        if (!(shape instanceof PackShape)) {
+            super.applyTexture(shape, parameters);
+            return;
+        }
+        
         for (Face f : shape.getFaces()) {
             final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
             final IClipContainer clipContainer = (IClipContainer) block;
