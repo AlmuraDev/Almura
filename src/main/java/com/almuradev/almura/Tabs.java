@@ -18,13 +18,14 @@ public class Tabs {
 
     private static final Item ITEM_BUILDING = new AlmuraTabItem("building");
     private static final Item ITEM_ROOFING = new AlmuraTabItem("roofing");
+    private static final Item ITEM_FLOORING = new AlmuraTabItem("flooring");
     private static final Item ITEM_LIGHTING = new AlmuraTabItem("lighting");
     private static final Item ITEM_FURNITURE = new AlmuraTabItem("furniture");
     private static final Item ITEM_DECORATION = new AlmuraTabItem("decoration");
     private static final Item ITEM_STORAGE = new AlmuraTabItem("storage");
     private static final Item ITEM_BARRELS = new AlmuraTabItem("barrels");
     private static final Item ITEM_FLOWERS = new AlmuraTabItem("flowers");
-    private static final Item ITEM_PLANTS = new AlmuraTabItem("plants");
+    private static final Item ITEM_COMPONENTS = new AlmuraTabItem("components");
     private static final Item ITEM_CROPS = new AlmuraTabItem("crops");
     private static final Item ITEM_FLAGS = new AlmuraTabItem("flags");
     private static final Item ITEM_SIGNS = new AlmuraTabItem("signs");
@@ -38,13 +39,14 @@ public class Tabs {
 
     public static CreativeTabs TAB_BUILDING = new AlmuraCreativeTabs("building", "Almura Building", ITEM_BUILDING);
     public static CreativeTabs TAB_ROOFING = new AlmuraCreativeTabs("roofing", "Almura Roofing", ITEM_ROOFING);
+    public static CreativeTabs TAB_FLOORING = new AlmuraCreativeTabs("flooring", "Almura Flooring", ITEM_FLOORING);
     public static CreativeTabs TAB_LIGHTING = new AlmuraCreativeTabs("lighting", "Almura Lighting", ITEM_LIGHTING);
     public static CreativeTabs TAB_FURNITURE = new AlmuraCreativeTabs("furniture", "Almura Furniture", ITEM_FURNITURE);
     public static CreativeTabs TAB_DECORATION = new AlmuraCreativeTabs("decoration", "Almura Decoration", ITEM_DECORATION);
     public static CreativeTabs TAB_STORAGE = new AlmuraCreativeTabs("storage", "Almura Storage", ITEM_STORAGE);
     public static CreativeTabs TAB_BARRELS = new AlmuraCreativeTabs("barrels", "Almura Barrels", ITEM_BARRELS);
     public static CreativeTabs TAB_FLOWERS = new AlmuraCreativeTabs("flowers", "Almura Flowers", ITEM_FLOWERS);
-    public static CreativeTabs TAB_PLANTS = new AlmuraCreativeTabs("plants", "Almura Plants", ITEM_PLANTS);
+    public static CreativeTabs TAB_COMPONENTS = new AlmuraCreativeTabs("plants", "Almura Plants", ITEM_COMPONENTS);
     public static CreativeTabs TAB_CROPS = new AlmuraCreativeTabs("crops", "Almura Crops", ITEM_CROPS);
     public static CreativeTabs TAB_FLAGS = new AlmuraCreativeTabs("flags", "Almura Flags", ITEM_FLAGS);
     public static CreativeTabs TAB_SIGNS = new AlmuraCreativeTabs("signs", "Almura Signs", ITEM_SIGNS);
