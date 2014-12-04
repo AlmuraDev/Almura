@@ -1,10 +1,10 @@
 Date: 12-3-2014
 Type: Crop
-Title: Corn
+Title: Turnip
 Texture: crops.png
 level-required: 18
 seed:
-    Title: Corn Seed
+    Title: Turnip Seed
     Coords: 256 384 32 32
     Creative-Tab-Name: crops
     Show-In-Creative-Tab: true
@@ -54,6 +54,11 @@ stages:
         shape: crop-1h.shape
         Hardness: 0
         Resistance: 0        
+        hydration:
+            enabled: false
+            sources:
+                minecraft\water:
+                    needed-promixity: 5
         fertilizer:
             enabled: true
             sources:
@@ -79,12 +84,12 @@ stages:
         Coords: 256 384 32 32
         shape: crop-2h.shape
         Hardness: 0
-        Resistance: 0
+        Resistance: 0        
         hydration:
             enabled: false
             sources:
                 minecraft\water:
-                    needed-promixity: 5        
+                    needed-promixity: 5
         fertilizer:
             enabled: true
             sources:
@@ -108,9 +113,9 @@ stages:
                     health-change: 0
     3:
         Coords: 256 384 32 32
-        shape: crop-3h.shape
-        hardness: 0
-        resistance: 0        
+        shape: crop-2h.shape
+        Hardness: 0
+        Resistance: 0        
         hydration:
             enabled: false
             sources:
@@ -141,7 +146,7 @@ stages:
             tools:
                 none:
                     drops:
-                        almura\food\corn:
+                        almura\food\turnip:
                             amount: 1-2
                             bonus:
                                 enabled: false
@@ -149,7 +154,7 @@ stages:
                                 chance: 10-15
                 almura\tools\diamond_sickle:
                     drops:
-                        almura\food\corn:
+                        almura\food\turnip:
                             amount: 3-4
                             bonus:
                                 enabled: true

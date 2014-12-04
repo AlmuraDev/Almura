@@ -1,0 +1,39 @@
+Crops currently on Almura 1.0
+
+1. Alfalfa - mesh
+2. Barley - 1h
+3. Bellpepper - 1h
+4. Blackberry - 1h /2h/2h
+5. Bambooshoot - mesh
+6. Broccoli - 1h
+7. Butterbean - 1h
+8. Cabbage - 1h
+9. Celery - 1h
+10. Chilipepper - 1h
+11. Corn - 1/2/3h
+12. Cotton - 1h
+13. Cucumber - 1h
+14. Daikon - 1h
+15. Eggplant - 1h
+16. Fargreens - 1h
+17. Garlic - 1h
+18. Grape - 1h/2h/2h/2h
+19. Leek - 1h
+20. Lettuce - 1h
+21. Lotusroot - 1h
+22. Luffa - 1h
+23. Olive - 1h
+24. Oat - mesh
+25. Onion - 1h
+26. Peanut - mesh
+27. Radish - 1h
+28. Raspberry - 1h/1h/2h/2h
+29. Rice - mesh
+30. Strawberry - 1h/1h/2h/2h
+31. Soybean - mesh [needs image change]
+32. Spinach - 1h
+33. Sweetpepper - 1h
+34. Sweetpotato - 1h
+35. Tobacco - 1h
+36. Tomato
+37. Turnip
