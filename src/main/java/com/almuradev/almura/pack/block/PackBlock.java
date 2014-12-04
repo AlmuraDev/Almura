@@ -224,7 +224,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
 
     @Override
     public void refreshShape() {
-        this.shape = null;
+        shape = null;
 
         if (shapeName != null) {
             for (PackShape shape : pack.getShapes()) {
