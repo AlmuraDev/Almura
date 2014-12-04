@@ -49,12 +49,14 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
-    private boolean rotation;
-    private boolean mirrorRotation;
+    private final boolean rotation;
+    private final boolean mirrorRotation;
+    private final boolean renderAsNormalBlock;
+    private final boolean renderAsOpaque;
 
     public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation,
                      boolean mirrorRotation, float lightLevel, int lightOpacity, boolean showInCreativeTab, String creativeTabName,
-                     Map<Integer, List<Integer>> textureCoordinates, String shapeName) {
+                     Map<Integer, List<Integer>> textureCoordinates, String shapeName, boolean renderAsNormalBlock, boolean renderAsOpaque) {
         super(Material.rock);
         this.pack = pack;
         this.textureCoordinatesByFace = textureCoordinates;
@@ -63,6 +65,8 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         this.dropAmount = dropAmount;
         this.rotation = rotation;
         this.mirrorRotation = mirrorRotation;
+        this.renderAsNormalBlock = renderAsNormalBlock;
+        this.renderAsOpaque = renderAsOpaque;
         setBlockName(pack.getName() + "_" + identifier);
         setHardness(hardness);
         setResistance(resistance);
@@ -92,7 +96,8 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         final float resistance = reader.getChild("Resistance").getFloat(0);
         final boolean rotation = reader.getChild("Rotation").getBoolean(true);
         final boolean mirrorRotation = reader.getChild("MirrorRotate").getBoolean(false);
-
+        final boolean renderAsNormalBlock = reader.getChild("Render-As-Normal-Block").getBoolean(false);
+        final boolean renderAsOpaque = reader.getChild("Render-As-Opaque").getBoolean(false);
         String shapeName = reader.getChild("Shape").getString();
         if (shapeName != null) {
             shapeName = shapeName.split(".shape")[0];
@@ -103,7 +108,7 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
 
         return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, rotation, mirrorRotation, lightLevel, lightOpacity,
-                             showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName);
+                             showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName, renderAsNormalBlock, renderAsOpaque);
     }
 
     @Override
@@ -143,13 +148,13 @@ public class PackBlock extends Block implements IClipContainer, IShapeContainer 
     @Override
     @SideOnly(Side.CLIENT)
     public boolean renderAsNormalBlock() {
-        return shape == null;
+        return shape == null && renderAsNormalBlock;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public boolean isOpaqueCube() {
-        return shape == null;
+        return shape == null && renderAsOpaque;
     }
 
     @Override
