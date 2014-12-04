@@ -38,10 +38,13 @@ public class PackBlockRenderer extends MalisisRenderer {
 
     @Override
     public void render() {
+        enableBlending();
         PackShape shape = ((IShapeContainer) block).getShape();
 
         if (shape == null) {
             rp.renderAllFaces.set(block.renderAsNormalBlock());
+            rp.useBlockBounds.set(true);
+            rp.interpolateUV.set(true);
             vanillaShape.resetState();
             super.drawShape(vanillaShape, rp);
             return;
@@ -54,7 +57,7 @@ public class PackBlockRenderer extends MalisisRenderer {
         rp.flipU.set(true);
         rp.flipV.set(true);
         rp.interpolateUV.set(false);
-        
+
         shape.resetState();
 
         if (renderType == RenderType.ISBRH_WORLD) {

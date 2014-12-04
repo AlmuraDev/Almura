@@ -70,7 +70,7 @@ public class PackShape extends Shape {
         }
         final boolean useVanillaWireframe = physicsNode.getChild("Use-Vanilla-Wireframe").getBoolean(true);
         final List<Double> wireframeCoordinates;
-        if (!useVanillaCollision) {
+        if (!useVanillaWireframe) {
             wireframeCoordinates = PackUtil.parseStringToDoubleList(physicsNode.getChild("WireframeBox").getString(""));
         } else {
             wireframeCoordinates = null;
