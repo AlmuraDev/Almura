@@ -38,20 +38,28 @@ public class PackBlockRenderer extends MalisisRenderer {
 
     @Override
     public void render() {
+        enableBlending();
         PackShape shape = ((IShapeContainer) block).getShape();
 
         if (shape == null) {
+            rp.renderAllFaces.set(block.renderAsNormalBlock());
+            rp.useBlockBounds.set(true);
+            rp.interpolateUV.set(true);
             vanillaShape.resetState();
-            super.drawShape(vanillaShape);
+            super.drawShape(vanillaShape, rp);
             return;
+        } else {
+            rp.renderAllFaces.set(true);
+            rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
         }
-        shape.resetState();
-        enableBlending();
+
         rp.flipU.set(true);
         rp.flipV.set(true);
         rp.interpolateUV.set(false);
+
+        shape.resetState();
+
         if (renderType == RenderType.ISBRH_WORLD) {
-            rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
             switch (RotationMeta.getRotationFromMeta(blockMetadata)) {
                 case NORTH:
                     if (((PackBlock) block).canRotate()) {
@@ -133,6 +141,11 @@ public class PackBlockRenderer extends MalisisRenderer {
 
     @Override
     public void applyTexture(Shape shape, RenderParameters parameters) {
+        if (!(shape instanceof PackShape)) {
+            super.applyTexture(shape, parameters);
+            return;
+        }
+        
         for (Face f : shape.getFaces()) {
             final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
             final IClipContainer clipContainer = (IClipContainer) block;
