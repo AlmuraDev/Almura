@@ -26,7 +26,6 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockRenderer extends MalisisRenderer {
@@ -41,23 +40,23 @@ public class BlockRenderer extends MalisisRenderer {
     @Override
     public void render() {
         enableBlending();
-        PackShape shape = ((IBlockShapeContainer) block).getShape(world, x, y, z, blockMetadata);
+        Shape shape = ((IBlockShapeContainer) block).getShape(world, x, y, z, blockMetadata);
 
         if (shape == null) {
-            rp.renderAllFaces.set(block.renderAsNormalBlock());
-            rp.useBlockBounds.set(true);
-            rp.interpolateUV.set(true);
-            vanillaShape.resetState();
-            super.drawShape(vanillaShape, rp);
-            return;
+            shape = vanillaShape;
+        }
+        rp.renderAllFaces.set(!block.renderAsNormalBlock());
+        rp.useBlockBounds.set(true);
+        if (shape instanceof PackShape) {
+            rp.flipU.set(true);
+            rp.flipV.set(true);
+            rp.interpolateUV.set(false);
         } else {
-            rp.renderAllFaces.set(true);
-            rp.useBlockBounds.set(false); //fixes custom lights rendering the collision box, may be a problem in the future.
+            rp.flipU.set(false);
+            rp.flipV.set(false);
+            rp.interpolateUV.set(true);
         }
 
-        rp.flipU.set(true);
-        rp.flipV.set(true);
-        rp.interpolateUV.set(false);
 
         shape.resetState();
 

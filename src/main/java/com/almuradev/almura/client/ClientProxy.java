@@ -12,6 +12,7 @@ import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
+import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
@@ -62,8 +63,8 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onPostCreate(Block block) {
         super.onPostCreate(block);
-        if (block instanceof IShapeContainer) {
-            ((IShapeContainer) block).refreshShape();
+        if (block instanceof IBlockShapeContainer) {
+            ((IBlockShapeContainer) block).refreshShape();
         }
     }
 

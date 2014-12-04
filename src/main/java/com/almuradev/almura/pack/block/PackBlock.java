@@ -154,12 +154,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public boolean isOpaqueCube() {
-        return shape == null && renderAsOpaque;
-    }
-
-    @Override
     public int quantityDropped(Random p_149745_1_) {
         return dropAmount;
     }
@@ -241,6 +235,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
                                shape.collisionCoordinates.get(4).floatValue(), shape.collisionCoordinates.get(5).floatValue());
             }
         }
+        opaque = shape == null && renderAsOpaque;
     }
 
     @Override
