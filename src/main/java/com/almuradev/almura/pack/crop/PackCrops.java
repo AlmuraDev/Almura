@@ -10,6 +10,7 @@ import com.almuradev.almura.pack.ContentPack;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IRotatable;
 import com.almuradev.almura.pack.IShapeContainer;
+import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.crop.stage.Stage;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.renderer.PackIcon;
@@ -47,7 +48,6 @@ public class PackCrops extends BlockCrops implements IClipContainer, IShapeConta
         this.levelRequired = levelRequired;
         setBlockName(pack.getName() + "_" + identifier);
         setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
-        setCreativeTab(null);
         setTickRandomly(true);
     }
 
@@ -55,7 +55,7 @@ public class PackCrops extends BlockCrops implements IClipContainer, IShapeConta
     public void updateTick(World world, int x, int y, int z, Random random) {
         final int metadata = world.getBlockMetadata(x, y, z);
         //TODO Needs serious testing
-        if (metadata >= stages.values().size()) {
+        if (metadata >= stages.values().size() - 1) {
             setTickRandomly(false);
             return;
         }
@@ -95,6 +95,15 @@ public class PackCrops extends BlockCrops implements IClipContainer, IShapeConta
         for (Stage stage : stages.values()) {
             stage.registerBlockIcons(blockIcon, textureName, register);
         }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(int side, int type) {
+        final Stage stage = stages.get(type);
+        final IIcon icon = super.getIcon(side, type);
+
+        return stage != null ? stage.getIcon(icon, side, type) : icon;
     }
 
     /**

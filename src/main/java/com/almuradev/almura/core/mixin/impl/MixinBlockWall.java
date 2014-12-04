@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.core.mixin.impl;
 
 import com.almuradev.almura.core.mixin.Mixin;
@@ -6,7 +11,7 @@ import net.minecraft.block.BlockWall;
 import net.minecraft.world.IBlockAccess;
 
 @Mixin(BlockWall.class)
-public class MixinBlockWall {
+public abstract class MixinBlockWall {
     /**
      * Return whether an adjacent block can connect to a wall.
      */
