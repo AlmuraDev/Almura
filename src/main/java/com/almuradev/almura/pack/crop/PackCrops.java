@@ -58,7 +58,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         if (stage != null) {
             stage.onTick(world, x, y, z, random);
             //Get within range
-            final double chance = stage.growth.minChance + (stage.growth.maxChance - stage.growth.minChance) * random.nextDouble();
+            final double chance = stage.growth.getValue().getMin() + (stage.growth.getValue().getMax() - stage.growth.getValue().getMin()) * random.nextDouble();
 
             if (random.nextDouble() <= 100 / chance) {
                 stage.onGrowth(world, x, y, z, random);

@@ -154,6 +154,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
+    public boolean isOpaqueCube() {
+        return opaque;
+    }
+
+    @Override
     public int quantityDropped(Random p_149745_1_) {
         return dropAmount;
     }
@@ -189,11 +194,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
             return vanillaBB;
         }
         return shape.getSelectedBoundingBoxFromPool(vanillaBB, world, x, y, z);
-    }
-
-    @Override
-    public boolean isOpaqueCube() {
-        return opaque;
     }
 
     @Override

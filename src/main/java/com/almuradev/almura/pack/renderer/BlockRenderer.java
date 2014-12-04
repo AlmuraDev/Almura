@@ -57,7 +57,6 @@ public class BlockRenderer extends MalisisRenderer {
             rp.interpolateUV.set(true);
         }
 
-
         shape.resetState();
 
         if (renderType == RenderType.ISBRH_WORLD && block instanceof IRotatable) {

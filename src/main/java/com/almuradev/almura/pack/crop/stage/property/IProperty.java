@@ -3,11 +3,9 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.crop.stage;
+package com.almuradev.almura.pack.crop.stage.property;
 
-/**
- * Created by csanders on 12/3/2014.
- */
-public interface IProperty {
+public interface IProperty<T> {
 
+    T getValue();
 }

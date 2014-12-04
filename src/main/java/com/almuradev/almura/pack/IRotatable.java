@@ -7,7 +7,6 @@ package com.almuradev.almura.pack;
 
 import com.google.common.collect.Maps;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Map;
