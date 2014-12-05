@@ -5,11 +5,9 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.client.AlmuraIcon;
+import com.almuradev.almura.client.ExternalIcon;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.renderer.PackIcon;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -40,7 +38,6 @@ public class Tabs {
     private static final Item ITEM_DRINKS = new AlmuraTabItem("drinks");
     private static final Item ITEM_INGREDIENTS = new AlmuraTabItem("ingredients");
     private static final Item ITEM_TOOL = new AlmuraTabItem("tool");
-    //private static final Item ITEM_OTHER = new AlmuraTabItem("other");
 
     public static CreativeTabs TAB_BUILDING = new AlmuraCreativeTabs("building", "Almura Building", ITEM_BUILDING);
     public static CreativeTabs TAB_ROOFING = new AlmuraCreativeTabs("roofing", "Almura Roofing", ITEM_ROOFING);
@@ -110,7 +107,7 @@ public class Tabs {
 
         @Override
         public void registerIcons(IIconRegister register) {
-            itemIcon = new AlmuraIcon(iconString).register((TextureMap) register);
+            itemIcon = new ExternalIcon(iconString).register((TextureMap) register);
         }
     }
 }

@@ -59,7 +59,7 @@ public class PackIcon extends MalisisIcon {
                 return false;
             } catch (RuntimeException ignored) {
             } catch (IOException e) {
-                if (Configuration.DEBUG_MODE) {
+                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                     Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] requested by pack [" + packName + "]", e);
                 } else {
                     Almura.LOGGER.warn("Failed to load icon [" + textureName + ".png] requested by pack [" + packName + "]");

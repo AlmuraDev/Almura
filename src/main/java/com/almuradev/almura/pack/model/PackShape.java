@@ -98,7 +98,7 @@ public class PackShape extends Shape {
                 try {
                     coordinates.addAll(PackUtil.parseStringToDoubleList(rawCoordinate, 3));
                 } catch (NumberFormatException nfe) {
-                    if (Configuration.DEBUG_PACKS_MODE) {
+                    if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                         Almura.LOGGER.error("Could not parse vertex in shape [" + name + "]. Value: [" + rawCoordinate + "]", nfe);
                     } else {
                         Almura.LOGGER.warn("Could not parse vertex in shape [" + name + "]. Value: [" + rawCoordinate + "]");
@@ -186,7 +186,7 @@ public class PackShape extends Shape {
             try {
                 list.addAll(PackUtil.parseStringToDoubleList(coordinatesRaw, 6));
             } catch (NumberFormatException nfe) {
-                if (Configuration.DEBUG_PACKS_MODE) {
+                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                     Almura.LOGGER.error("Invalid " + type + " bounds provided for shape [" + name + "]. Value: [" + coordinatesRaw + "]", nfe);
                 } else {
                     Almura.LOGGER.warn("Invalid " + type + " bounds provided for shape [" + name + "]. Value: [" + coordinatesRaw + "]");

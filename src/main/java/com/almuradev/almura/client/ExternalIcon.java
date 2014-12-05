@@ -22,8 +22,8 @@ import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
-public class AlmuraIcon extends MalisisIcon {
-    public AlmuraIcon(String texturePath) {
+public class ExternalIcon extends MalisisIcon {
+    public ExternalIcon(String texturePath) {
         super(texturePath);
     }
 
@@ -54,7 +54,7 @@ public class AlmuraIcon extends MalisisIcon {
             return false;
         } catch (RuntimeException ignored) {
         } catch (IOException e) {
-            if (Configuration.DEBUG_MODE) {
+            if (Configuration.DEBUG_MODE || Configuration.DEBUG_MODE) {
                 Almura.LOGGER.error("Failed to load icon [" + textureName + ".png]", e);
             } else {
                 Almura.LOGGER.warn("Failed to load icon [" + textureName + ".png]");
