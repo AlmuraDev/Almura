@@ -27,53 +27,66 @@ import java.util.List;
 public class PackShape extends Shape {
 
     private final String name;
-    public final boolean useVanillaCollision, useVanillaWireframe;
-    public final List<Double> collisionCoordinates, wireframeCoordinates;
+    public final boolean useVanillaCollision, useVanillaWireframe, useVanillaBlockBounds;
+    public final List<Double> collisionCoordinates, wireframeCoordinates, blockBoundsCoordinates;
 
     public PackShape(String name, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
-                     List<Double> wireframeCoordinates) {
+                     List<Double> wireframeCoordinates, boolean useVanillaBlockBounds, List<Double> blockBoundsCoordinates) {
         this.name = name;
         this.useVanillaCollision = useVanillaCollision;
         this.useVanillaWireframe = useVanillaWireframe;
+        this.useVanillaBlockBounds = useVanillaBlockBounds;
         this.collisionCoordinates = collisionCoordinates == null ? Lists.<Double>newArrayList() : collisionCoordinates;
         this.wireframeCoordinates = wireframeCoordinates == null ? Lists.<Double>newArrayList() : wireframeCoordinates;
+        this.blockBoundsCoordinates = blockBoundsCoordinates == null ? Lists.<Double>newArrayList() : blockBoundsCoordinates;
     }
 
     public PackShape(String name, List<Face> faces, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
-                     List<Double> wireframeCoordinates) {
+                     List<Double> wireframeCoordinates, boolean useVanillaBlockBounds, List<Double> blockBoundsCoordinates) {
         super(faces);
         this.name = name;
         this.useVanillaCollision = useVanillaCollision;
         this.useVanillaWireframe = useVanillaWireframe;
+        this.useVanillaBlockBounds = useVanillaBlockBounds;
         this.collisionCoordinates = collisionCoordinates == null ? Lists.<Double>newArrayList() : collisionCoordinates;
         this.wireframeCoordinates = wireframeCoordinates == null ? Lists.<Double>newArrayList() : wireframeCoordinates;
+        this.blockBoundsCoordinates = blockBoundsCoordinates == null ? Lists.<Double>newArrayList() : blockBoundsCoordinates;
     }
 
     public PackShape(String name, PackShape s, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
-                     List<Double> wireframeCoordinates) {
+                     List<Double> wireframeCoordinates, boolean useVanillaBlockBounds, List<Double> blockBoundsCoordinates) {
         super(s);
         this.name = name;
         this.useVanillaCollision = useVanillaCollision;
         this.useVanillaWireframe = useVanillaWireframe;
+        this.useVanillaBlockBounds = useVanillaBlockBounds;
         this.collisionCoordinates = collisionCoordinates == null ? Lists.<Double>newArrayList() : collisionCoordinates;
         this.wireframeCoordinates = wireframeCoordinates == null ? Lists.<Double>newArrayList() : wireframeCoordinates;
+        this.blockBoundsCoordinates = blockBoundsCoordinates == null ? Lists.<Double>newArrayList() : blockBoundsCoordinates;
     }
 
     public static PackShape createFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
-        final ConfigurationNode physicsNode = reader.getChild("Physics");
-        final boolean useVanillaCollision = physicsNode.getChild("Use-Vanilla-Collision").getBoolean(true);
+        final ConfigurationNode boundsNode = reader.getChild("Bounds");
+        final boolean useVanillaCollision = boundsNode.getChild("Use-Vanilla-Collision").getBoolean(true);
         final List<Double> collisionCoordinates;
         if (!useVanillaCollision) {
-            collisionCoordinates = PackUtil.parseStringToDoubleList(physicsNode.getChild("CollisionBox").getString(""));
+            collisionCoordinates = PackUtil.parseStringToDoubleList(boundsNode.getChild("CollisionBox").getString(""));
         } else {
             collisionCoordinates = null;
         }
-        final boolean useVanillaWireframe = physicsNode.getChild("Use-Vanilla-Wireframe").getBoolean(true);
+        final boolean useVanillaWireframe = boundsNode.getChild("Use-Vanilla-Wireframe").getBoolean(true);
         final List<Double> wireframeCoordinates;
         if (!useVanillaWireframe) {
-            wireframeCoordinates = PackUtil.parseStringToDoubleList(physicsNode.getChild("WireframeBox").getString(""));
+            wireframeCoordinates = PackUtil.parseStringToDoubleList(boundsNode.getChild("WireframeBox").getString(""));
         } else {
             wireframeCoordinates = null;
+        }
+        final boolean useVanillaBlockBounds = boundsNode.getChild("Use-Vanilla-Block-Bounds").getBoolean(true);
+        final List<Double> blockBoundCoordinates;
+        if (!useVanillaBlockBounds) {
+            blockBoundCoordinates = PackUtil.parseStringToDoubleList(boundsNode.getChild("BlockBounds").getString(""));
+        } else {
+            blockBoundCoordinates = null;
         }
 
         final ConfigurationNode shapesNode = reader.getChild("Shapes");
@@ -101,17 +114,17 @@ public class PackShape extends Shape {
             faces.add(face);
         }
 
-        PackShape shape = new PackShape(name, faces, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates);
+        PackShape shape = new PackShape(name, faces, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates, useVanillaBlockBounds, blockBoundCoordinates);
 
         //Handle shapes that don't have at least 4 faces
         if (shape.getFaces().length < 4) {
             shape.applyMatrix();
 
-            final PackShape s = new PackShape(shape.getName(), useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates);
+            final PackShape s = new PackShape(shape.getName(), useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates, useVanillaBlockBounds, blockBoundCoordinates);
             s.addFaces(shape.getFaces());
             final PackShape
                     scaled =
-                    new PackShape(shape.getName(), shape, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates);
+                    new PackShape(shape.getName(), shape, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates, useVanillaBlockBounds, blockBoundCoordinates);
             scaled.scale(-1, 1, -1);
             scaled.applyMatrix();
             //Scaled returns non PackFaces, OOP demands a fix

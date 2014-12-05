@@ -234,10 +234,10 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
             }
         }
         if (shape != null) {
-            if (!shape.useVanillaCollision) {
-                setBlockBounds(shape.collisionCoordinates.get(0).floatValue(), shape.collisionCoordinates.get(1).floatValue(),
-                               shape.collisionCoordinates.get(2).floatValue(), shape.collisionCoordinates.get(3).floatValue(),
-                               shape.collisionCoordinates.get(4).floatValue(), shape.collisionCoordinates.get(5).floatValue());
+            if (!shape.useVanillaBlockBounds) {
+                setBlockBounds(shape.blockBoundsCoordinates.get(0).floatValue(), shape.blockBoundsCoordinates.get(1).floatValue(),
+                               shape.blockBoundsCoordinates.get(2).floatValue(), shape.blockBoundsCoordinates.get(3).floatValue(),
+                               shape.blockBoundsCoordinates.get(4).floatValue(), shape.blockBoundsCoordinates.get(5).floatValue());
             }
             opaque = false;
         } else {
