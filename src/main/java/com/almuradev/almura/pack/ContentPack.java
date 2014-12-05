@@ -7,15 +7,13 @@ package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.pack.block.PackBlock;
-import com.almuradev.almura.pack.item.PackFood;
-import com.almuradev.almura.pack.item.PackItem;
 import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemFood;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,17 +105,17 @@ public class ContentPack {
 
                         switch (type) {
                             case "Item":
-                                final PackItem item = PackItem.createFromReader(pack, name, reader);
+                                final Item item = PackCreator.createItemFromReader(pack, name, reader);
                                 pack.items.add(item);
                                 Almura.PROXY.onCreate(item);
                                 break;
                             case "Food":
-                                final PackFood food = PackFood.createFromReader(pack, name, reader);
+                                final ItemFood food = PackCreator.createFoodFromReader(pack, name, reader);
                                 pack.items.add(food);
                                 Almura.PROXY.onCreate(food);
                                 break;
                             case "Block":
-                                final Block block = PackBlock.createFromReader(pack, name, reader);
+                                final Block block = PackCreator.createBlockFromReader(pack, name, reader);
                                 pack.blocks.add(block);
                                 Almura.PROXY.onCreate(block);
                                 break;

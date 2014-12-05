@@ -69,7 +69,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         this.mirrorRotation = mirrorRotation;
         this.renderAsNormalBlock = renderAsNormalBlock;
         this.renderAsOpaque = renderAsOpaque;
-        setBlockName(pack.getName() + "_" + identifier);
+        setBlockName(pack.getName() + "\\" + identifier);
         setHardness(hardness);
         setResistance(resistance);
         setLightLevel(lightLevel);
@@ -79,38 +79,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
-    }
-
-    public static PackBlock createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
-        final String title = reader.getChild("Title").getString(name).split("\n")[0];
-        String textureName = reader.getChild("Texture").getString(name);
-        textureName = textureName.split(".png")[0];
-
-        final float hardness = reader.getChild("Hardness").getFloat(1f);
-        float lightLevel = reader.getChild("LightLevel").getFloat(0f);
-        if (lightLevel > 1f) {
-            lightLevel = lightLevel / 15;
-        }
-        final int lightOpacity = reader.getChild("Light-Opacity").getInt(0);
-        final int dropAmount = reader.getChild("ItemDropAmount").getInt(0);
-        final boolean showInCreativeTab = reader.getChild("Show-In-Creative-Tab").getBoolean(true);
-        final String creativeTabName = reader.getChild("Creative-Tab-Name").getString("other");
-        final float resistance = reader.getChild("Resistance").getFloat(0);
-        final boolean rotation = reader.getChild("Rotation").getBoolean(true);
-        final boolean mirrorRotation = reader.getChild("MirrorRotate").getBoolean(false);
-        final boolean renderAsNormalBlock = reader.getChild("Render-As-Normal-Block").getBoolean(true);
-        final boolean renderAsOpaque = reader.getChild("Render-As-Opaque").getBoolean(false);
-        String shapeName = reader.getChild("Shape").getString();
-        if (shapeName != null) {
-            shapeName = shapeName.split(".shape")[0];
-        }
-
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader.getChild("Coords"));
-
-        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "_" + name + ".name", title);
-
-        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, rotation, mirrorRotation, lightLevel, lightOpacity,
-                             showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName, renderAsNormalBlock, renderAsOpaque);
     }
 
     @Override

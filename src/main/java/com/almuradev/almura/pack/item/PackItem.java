@@ -50,34 +50,11 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
         this.textureName = textureName;
         this.shapeName = shapeName;
         this.tooltip = tooltip;
-        setUnlocalizedName(pack.getName() + "_" + identifier);
+        setUnlocalizedName(pack.getName() + "\\" + identifier);
         setTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
-    }
-
-    public static PackItem createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
-        final String combinedTitleTooltips = reader.getChild("Title").getString(name);
-        final String[] titleLines = combinedTitleTooltips.split("\\n");
-        final String title = titleLines[0];
-        String textureName = reader.getChild("Texture").getString(name);
-        textureName = textureName.split(".png")[0];
-
-        final boolean showInCreativeTab = reader.getChild("Show-In-Creative-tab").getBoolean(true);
-        final String creativeTabName = reader.getChild("Creative-Tab-Name").getString("other");
-
-        String shapeName = reader.getChild("Shape").getString();
-        if (shapeName != null) {
-            shapeName = shapeName.split(".shape")[0];
-        }
-
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader.getChild("Coords"));
-
-        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "_" + name + ".name", title);
-
-        return new PackItem(pack, name, titleLines.length == 1 ? null : Arrays.copyOfRange(titleLines, 1, titleLines.length), textureName, shapeName,
-                            textureCoordinatesByFace, showInCreativeTab, creativeTabName);
     }
 
     @Override

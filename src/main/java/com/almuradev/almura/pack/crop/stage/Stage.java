@@ -13,8 +13,12 @@ import com.almuradev.almura.pack.IState;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.stage.property.GrowthProperty;
+import com.almuradev.almura.pack.crop.stage.property.HydrationProperty;
+import com.almuradev.almura.pack.crop.stage.property.source.HydrationSource;
 import com.almuradev.almura.pack.model.PackShape;
+import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.google.common.collect.Lists;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -32,7 +36,7 @@ import java.util.Random;
 public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockShapeContainer {
 
     private final PackCrops block;
-    public final int id;
+    private final int id;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
     private PackShape shape;

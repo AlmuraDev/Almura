@@ -51,42 +51,13 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
         this.textureName = textureName;
         this.shapeName = shapeName;
         this.tooltip = tooltip;
-        setUnlocalizedName(pack.getName() + "_" + identifier);
+        setUnlocalizedName(pack.getName() + "\\" + identifier);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
         if (alwaysEdible) {
             setAlwaysEdible();
         }
-    }
-
-    public static PackFood createFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
-        final String combinedTitleTooltips = reader.getChild("Title").getString(name);
-        final String[] titleLines = combinedTitleTooltips.split("\\n");
-        final String title = titleLines[0];
-        String textureName = reader.getChild("Texture").getString(name);
-        textureName = textureName.split(".png")[0];
-
-        final boolean showInCreativeTab = reader.getChild("Show-In-Creative-Tab").getBoolean(true);
-        final String creativeTabName = reader.getChild("Creative-Tab-Name").getString("other");
-
-        final int healAmount = reader.getChild("Heal-Amount").getInt(1);
-        final float saturationModifier = reader.getChild("Saturation-Modifier").getFloat(1);
-        final boolean isWolfFavorite = reader.getChild("Is-Wolf-Favorite").getBoolean(true);
-        final boolean alwaysEdible = reader.getChild("Always-Edible").getBoolean(false);
-
-        String shapeName = reader.getChild("Shape").getString();
-        if (shapeName != null) {
-            shapeName = shapeName.split(".shape")[0];
-        }
-
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader.getChild("Coords"));
-
-        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "_" + name + ".name", title);
-
-        return new PackFood(pack, name, titleLines.length == 1 ? null : Arrays.copyOfRange(titleLines, 1, titleLines.length), textureName, shapeName,
-                            textureCoordinatesByFace, showInCreativeTab, creativeTabName, healAmount,
-                            saturationModifier, isWolfFavorite, alwaysEdible);
     }
 
     @Override
