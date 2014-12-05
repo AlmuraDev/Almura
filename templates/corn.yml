@@ -18,7 +18,7 @@ seed:
             Ingredients:
                 - dirt dirt dirt
                 - air air air
-                - almura:AlmuraCustom1\sand sand sand
+                - almura\AlmuraCustom1\sand sand sand
         1:
             Type: Shapeless
             Amount: 2
@@ -26,9 +26,9 @@ seed:
             Ingredients:
                 - dirt dirt dirt
                 - air air air
-                - almura:AlmuraCustom1\sand sand sand
+                - almura\AlmuraCustom1\sand sand sand
 soil:
-    source: minecraft\farmland
+    source: farmland
     biome:
         enabled: disabled
         sources:
@@ -45,12 +45,12 @@ stages:
         hydration:
             enabled: false
             sources:
-                minecraft\water:
+                water:
                     needed-promixity: 5
         fertilizer:
             enabled: true
             sources:
-                minecraft\bonemeal:
+                bonemeal:
                      amount: 5
         light:
             emission: 0
@@ -77,7 +77,7 @@ stages:
         fertilizer:
             enabled: true
             sources:
-                minecraft\bonemeal:
+                bonemeal:
                      amount: 5
         light:            
             emission: 0
@@ -104,12 +104,12 @@ stages:
         hydration:
             enabled: false
             sources:
-                minecraft\water:
+                water:
                     needed-promixity: 5        
         fertilizer:
             enabled: true
             sources:
-                minecraft\bonemeal:
+                bonemeal:
                      amount: 5
         light:            
             emission: 0
@@ -136,12 +136,12 @@ stages:
         hydration:
             enabled: false
             sources:
-                minecraft\water:
+                water:
                     needed-promixity: 5
         fertilizer:
             enabled: true
             sources:
-                minecraft\bonemeal:
+                bonemeal:
                      amount: 5
         light:            
             emission: 0
