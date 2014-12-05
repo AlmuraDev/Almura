@@ -18,4 +18,8 @@ public class HydrationSource extends BlockSource {
     public int getNeededPromixity() {
         return neededPromixity;
     }
+
+    public boolean isInRange(int radius) {
+        return radius <= neededPromixity;
+    }
 }

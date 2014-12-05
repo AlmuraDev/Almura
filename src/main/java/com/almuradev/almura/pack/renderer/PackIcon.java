@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.renderer;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.client.Minecraft;
@@ -58,7 +59,11 @@ public class PackIcon extends MalisisIcon {
                 return false;
             } catch (RuntimeException ignored) {
             } catch (IOException e) {
-                Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] requested by pack [" + packName + "]"                    );
+                if (Configuration.DEBUG_MODE) {
+                    Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] requested by pack [" + packName + "]", e);
+                } else {
+                    Almura.LOGGER.warn("Failed to load icon [" + textureName + ".png] requested by pack [" + packName + "]");
+                }
             }
         }
 

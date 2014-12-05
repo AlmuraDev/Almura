@@ -91,8 +91,12 @@ public class PackUtil {
         return isEmpty;
     }
 
-    public static List<Double> parseStringToDoubleList(String raw) {
+    public static List<Double> parseStringToDoubleList(String raw, int expectedSize) throws NumberFormatException {
         final List<Double> parsedDoubles = new LinkedList<>();
+        final String[] split = raw.split(" ");
+        if (expectedSize != Integer.MIN_VALUE && split.length != expectedSize) {
+            throw new NumberFormatException("Expected size [" + expectedSize + "] but actual size was [" + split.length + "]");
+        }
         for (String coordinate : raw.split(" ")) {
             parsedDoubles.add(Double.parseDouble(coordinate));
         }

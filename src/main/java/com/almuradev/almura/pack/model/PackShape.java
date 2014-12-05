@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.pack.model;
 
+import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.pack.PackUtil;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
@@ -67,27 +69,18 @@ public class PackShape extends Shape {
 
     public static PackShape createFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
         final ConfigurationNode boundsNode = reader.getChild("Bounds");
+
         final boolean useVanillaCollision = boundsNode.getChild("Use-Vanilla-Collision").getBoolean(true);
-        final List<Double> collisionCoordinates;
-        if (!useVanillaCollision) {
-            collisionCoordinates = PackUtil.parseStringToDoubleList(boundsNode.getChild("CollisionBox").getString(""));
-        } else {
-            collisionCoordinates = null;
-        }
+        final List<Double> collisionCoordinates = Lists.newArrayList();
+        readCoordinatesIntoList(name, boundsNode, "CollisionBox", "collision", useVanillaCollision, collisionCoordinates);
+
         final boolean useVanillaWireframe = boundsNode.getChild("Use-Vanilla-Wireframe").getBoolean(true);
-        final List<Double> wireframeCoordinates;
-        if (!useVanillaWireframe) {
-            wireframeCoordinates = PackUtil.parseStringToDoubleList(boundsNode.getChild("WireframeBox").getString(""));
-        } else {
-            wireframeCoordinates = null;
-        }
+        final List<Double> wireframeCoordinates = Lists.newArrayList();
+        readCoordinatesIntoList(name, boundsNode, "WireframeBox", "wireframe", useVanillaWireframe, wireframeCoordinates);
+
         final boolean useVanillaBlockBounds = boundsNode.getChild("Use-Vanilla-Block-Bounds").getBoolean(true);
-        final List<Double> blockBoundCoordinates;
-        if (!useVanillaBlockBounds) {
-            blockBoundCoordinates = PackUtil.parseStringToDoubleList(boundsNode.getChild("BlockBounds").getString(""));
-        } else {
-            blockBoundCoordinates = null;
-        }
+        final List<Double> blockBoundCoordinates = Lists.newArrayList();
+        readCoordinatesIntoList(name, boundsNode, "BlockBounds", "block", useVanillaBlockBounds, blockBoundCoordinates);
 
         final ConfigurationNode shapesNode = reader.getChild("Shapes");
         final List<Face> faces = new LinkedList<>();
@@ -101,7 +94,17 @@ public class PackShape extends Shape {
             //Convert String coordinates to vertices
             final List<Vertex> vertices = new LinkedList<>();
             for (String rawCoordinate : rawCoordinateString.substring(0, rawCoordinateString.length() - 1).split("\n")) {
-                final List<Double> coordinates = PackUtil.parseStringToDoubleList(rawCoordinate);
+                final List<Double> coordinates = Lists.newArrayList();
+                try {
+                    coordinates.addAll(PackUtil.parseStringToDoubleList(rawCoordinate, 3));
+                } catch (NumberFormatException nfe) {
+                    if (Configuration.DEBUG_PACKS_MODE) {
+                        Almura.LOGGER.error("Could not parse vertex in shape [" + name + "]. Value: [" + rawCoordinate + "]", nfe);
+                    } else {
+                        Almura.LOGGER.warn("Could not parse vertex in shape [" + name + "]. Value: [" + rawCoordinate + "]");
+                    }
+                    continue;
+                }
 
                 //Convert list of coordinates to vertex
                 vertices.add(new Vertex(coordinates.get(0), coordinates.get(1), coordinates.get(2)));
@@ -175,5 +178,20 @@ public class PackShape extends Shape {
     @Override
     public String toString() {
         return "PackShape {name= " + name + "}";
+    }
+
+    private static void readCoordinatesIntoList(String name, ConfigurationNode node, String element, String type, boolean flag, List<Double> list) {
+        if (!flag) {
+            final String coordinatesRaw = node.getChild(element).getString("");
+            try {
+                list.addAll(PackUtil.parseStringToDoubleList(coordinatesRaw, 6));
+            } catch (NumberFormatException nfe) {
+                if (Configuration.DEBUG_PACKS_MODE) {
+                    Almura.LOGGER.error("Invalid " + type + " bounds provided for shape [" + name + "]. Value: [" + coordinatesRaw + "]", nfe);
+                } else {
+                    Almura.LOGGER.warn("Invalid " + type + " bounds provided for shape [" + name + "]. Value: [" + coordinatesRaw + "]");
+                }
+            }
+        }
     }
 }

@@ -5,11 +5,16 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.client.AlmuraIcon;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
+import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.renderer.PackIcon;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -96,20 +101,16 @@ public class Tabs {
     }
 
     private static class AlmuraTabItem extends Item {
-
         public AlmuraTabItem(String name) {
-            this(name, false, null, 1);
-        }
-
-        public AlmuraTabItem(String name, boolean showInCreativeTab, CreativeTabs creativeTabName, int maxStackSize) {
-            if (showInCreativeTab) {
-                setCreativeTab(creativeTabName);
-            }
-
             setUnlocalizedName(name);
             setTextureName(Almura.MOD_ID + ":" + name);
-            setMaxStackSize(maxStackSize);
+            setMaxStackSize(1);
             GameRegistry.registerItem(this, name);
+        }
+
+        @Override
+        public void registerIcons(IIconRegister register) {
+            itemIcon = new AlmuraIcon(iconString).register((TextureMap) register);
         }
     }
 }
