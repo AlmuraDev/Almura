@@ -23,7 +23,10 @@ seed:
             Type: Shapeless
             Amount: 2
             Damage: 1
-            Ingredients: dirt dirt dirt air air air almura:AlmuraCustom1\sand sand sand
+            Ingredients:
+                - dirt dirt dirt
+                - air air air
+                - almura:AlmuraCustom1\sand sand sand
 soil:
     source: minecraft\farmland
     biome:
