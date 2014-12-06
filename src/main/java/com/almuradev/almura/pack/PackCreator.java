@@ -126,7 +126,8 @@ public class PackCreator {
         return null;
     }
 
-    public static PackSeeds createSeedFromNode(ContentPack pack, Block soil, PackCrops crop, String textureName, ConfigurationNode node) throws ConfigurationException {
+    public static PackSeeds createSeedFromNode(ContentPack pack, Block soil, PackCrops crop, String textureName, ConfigurationNode node)
+            throws ConfigurationException {
         final String identifier = node.getChild("identifier").getString();
         if (identifier.isEmpty()) {
             throw new ConfigurationException("Providing an empty identifier for crop [" + crop + "] seed is not allowed!");
@@ -169,7 +170,8 @@ public class PackCreator {
                 }
                 final Block block = GameRegistry.findBlock(split[0], identifier);
                 if (block == null) {
-                    Almura.LOGGER.warn("Could not find block [" + identifier + "] provided by mod [" + split[0] + "] for stage [" + id + "] in crop [" + name + "].");
+                    Almura.LOGGER.warn("Could not find block [" + identifier + "] provided by mod [" + split[0] + "] for stage [" + id + "] in crop ["
+                                       + name + "].");
                     continue;
                 }
                 final int neededProximity = entry.getValue().getChild("needed-proximity").getInt(6);

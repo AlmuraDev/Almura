@@ -7,8 +7,6 @@ package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.lang.LanguageRegistry;
-import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
@@ -17,8 +15,6 @@ import com.almuradev.almura.pack.IRotatable;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.renderer.PackIcon;
-import com.flowpowered.cerealization.config.ConfigurationException;
-import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -49,13 +45,13 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     //SHAPES
     private final String shapeName;
     private final int dropAmount;
-    private ClippedIcon[] clippedIcons;
-    private String textureName;
-    private PackShape shape;
     private final boolean rotation;
     private final boolean mirrorRotation;
     private final boolean renderAsNormalBlock;
     private final boolean renderAsOpaque;
+    private ClippedIcon[] clippedIcons;
+    private String textureName;
+    private PackShape shape;
 
     public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation,
                      boolean mirrorRotation, float lightLevel, int lightOpacity, boolean showInCreativeTab, String creativeTabName,

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.List;
 
 public class HydrationProperty implements ToggleableProperty<List<HydrationSource>> {
+
     private final boolean enabled;
     private final List<HydrationSource> value = Lists.newArrayList();
 

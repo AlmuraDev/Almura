@@ -30,22 +30,16 @@ public interface IRotatable {
         UP_SOUTH(9),
         UP_WEST(10),
         UP_EAST(11);
-        private final int id;
         private static final Map<Integer, Rotation> map = Maps.newHashMap();
-
         static {
             for (Rotation r : Rotation.values()) {
                 map.put(r.getId(), r);
             }
         }
+        private final int id;
 
         Rotation(int id) {
             this.id = id;
-        }
-
-        @Override
-        public int getId() {
-            return id;
         }
 
         public static Rotation getState(ForgeDirection camera, ForgeDirection player) {
@@ -64,6 +58,11 @@ public interface IRotatable {
         public static Rotation getState(int id) {
             final Rotation rotation = map.get(id);
             return rotation == null ? Rotation.NORTH : rotation;
+        }
+
+        @Override
+        public int getId() {
+            return id;
         }
     }
 }

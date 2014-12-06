@@ -7,8 +7,6 @@ package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.lang.LanguageRegistry;
-import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.ContentPack;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -16,8 +14,6 @@ import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.renderer.PackIcon;
-import com.flowpowered.cerealization.config.ConfigurationException;
-import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -25,7 +21,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

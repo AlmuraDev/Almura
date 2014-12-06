@@ -34,6 +34,7 @@ import java.util.Map;
 
 @Mixin(FMLClientHandler.class)
 public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
+
     @Shadow
     private MissingModsException modsMissing;
 
@@ -59,25 +60,18 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
     private boolean loading = true;
 
     @Overwrite
-    @SuppressWarnings({ "deprecation", "unchecked" })
-    public void finishMinecraftLoading()
-    {
-        if (modsMissing != null || wrongMC != null || customError!=null || dupesFound!=null || modSorting!=null)
-        {
+    @SuppressWarnings({"deprecation", "unchecked"})
+    public void finishMinecraftLoading() {
+        if (modsMissing != null || wrongMC != null || customError != null || dupesFound != null || modSorting != null) {
             return;
         }
-        try
-        {
+        try {
             Loader.instance().initializeMods();
-        }
-        catch (CustomModLoadingErrorDisplayException custom)
-        {
+        } catch (CustomModLoadingErrorDisplayException custom) {
             FMLLog.log(Level.ERROR, custom, "A custom exception was thrown by a mod, the game will now halt");
             customError = custom;
             return;
-        }
-        catch (LoaderException le)
-        {
+        } catch (LoaderException le) {
             haltGame("There was a severe problem during mod loading that has caused the game to fail", le);
             return;
         }
@@ -88,22 +82,18 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
 
         RenderingRegistry.instance().loadEntityRenderers((Map<Class<? extends Entity>, Render>) RenderManager.instance.entityRenderMap);
         guiFactories = HashBiMap.create();
-        for (ModContainer mc : Loader.instance().getActiveModList())
-        {
+        for (ModContainer mc : Loader.instance().getActiveModList()) {
             String className = mc.getGuiClassName();
-            if (Strings.isNullOrEmpty(className))
-            {
+            if (Strings.isNullOrEmpty(className)) {
                 continue;
             }
-            try
-            {
+            try {
                 Class<?> clazz = Class.forName(className, true, Loader.instance().getModClassLoader());
                 Class<? extends IModGuiFactory> guiClassFactory = clazz.asSubclass(IModGuiFactory.class);
                 IModGuiFactory guiFactory = guiClassFactory.newInstance();
                 guiFactory.initialize(client);
                 guiFactories.put(mc, guiFactory);
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 FMLLog.log(Level.ERROR, e, "A critical error occurred instantiating the gui factory for mod %s", mc.getModId());
             }
         }

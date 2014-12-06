@@ -14,7 +14,6 @@ import com.almuradev.almura.pack.crop.stage.Stage;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -28,7 +27,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Random;
 
 public class PackCrops extends BlockCrops implements IPackObject, IBlockClipContainer, IBlockShapeContainer {
@@ -61,7 +59,9 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         if (stage != null) {
             stage.onTick(world, x, y, z, random);
             //Get within range
-            final double chance = stage.growth.getValue().getMin() + (stage.growth.getValue().getMax() - stage.growth.getValue().getMin()) * random.nextDouble();
+            final double
+                    chance =
+                    stage.growth.getValue().getMin() + (stage.growth.getValue().getMax() - stage.growth.getValue().getMin()) * random.nextDouble();
 
             if (random.nextDouble() <= 100 / chance) {
                 stage.onGrowth(world, x, y, z, random);

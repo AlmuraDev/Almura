@@ -5,12 +5,7 @@
  */
 package com.almuradev.almura.pack.crop.stage.property;
 
-import com.almuradev.almura.pack.crop.stage.property.source.BiomeSource;
-import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.List;
 
 public class SoilProperty implements IProperty<BiomeProperty> {
 

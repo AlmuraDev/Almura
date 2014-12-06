@@ -12,6 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.List;
 
 public class FertilizerProperty implements ToggleableProperty<List<FertilizerSource>> {
+
     private final boolean enabled;
     private final List<FertilizerSource> value = Lists.newArrayList();
 

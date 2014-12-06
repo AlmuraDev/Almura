@@ -30,10 +30,6 @@ import java.util.Objects;
 
 public class IngameHUD extends AlmuraGui {
 
-    public static Minecraft MINECRAFT = Minecraft.getMinecraft();
-    public static IngameHUD INSTANCE;
-    public static boolean UPDATES_ENABLED = true;
-
     private static final GuiIcon ICON_BAR = getIcon(0, 126, 256, 14);
     private static final GuiIcon ICON_HEART = getIcon(149, 62, 26, 26);
     private static final GuiIcon ICON_ARMOR = getIcon(64, 63, 20, 27);
@@ -45,11 +41,13 @@ public class IngameHUD extends AlmuraGui {
     private static final GuiIcon ICON_MAP = getIcon(0, 95, 32, 26);
     private static final GuiIcon ICON_WORLD = getIcon(133, 93, 32, 32);
     private static final GuiIcon ICON_CLOCK = getIcon(86, 64, 28, 26);
-
     private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
     private static final Color greenBar = new Color(0f, 1f, 0f, 1f);
     private static final Color orangeBar = new Color(0.8039f, 0.6784f, 0f, 1f);
     private static final Color redBar = new Color(0.69f, 0.09f, 0.12f, 1f);
+    public static Minecraft MINECRAFT = Minecraft.getMinecraft();
+    public static IngameHUD INSTANCE;
+    public static boolean UPDATES_ENABLED = true;
     public final UILabel worldDisplay, playerTitle, playerMode;
     private final UIImage mapImage, worldImage, playerImage;
     private final UILabel serverCount, playerCoords, playerCompass, worldTime, xpLevel;

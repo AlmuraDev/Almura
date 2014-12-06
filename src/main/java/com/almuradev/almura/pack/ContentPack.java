@@ -27,9 +27,9 @@ import java.util.Map;
 
 public class ContentPack {
 
-    private static final Map<String, ContentPack> PACKS = new HashMap<>();
     //TODO Better home for this
     protected static final List<PackShape> SHAPES = Lists.newArrayList();
+    private static final Map<String, ContentPack> PACKS = new HashMap<>();
     protected final List<Block> blocks = Lists.newArrayList();
     protected final List<Item> items = Lists.newArrayList();
     private final String name;
@@ -135,6 +135,10 @@ public class ContentPack {
         return pack;
     }
 
+    public static List<PackShape> getShapes() {
+        return Collections.unmodifiableList(SHAPES);
+    }
+
     public String getName() {
         return name;
     }
@@ -151,10 +155,6 @@ public class ContentPack {
 
     public List<Block> getBlocks() {
         return Collections.unmodifiableList(blocks);
-    }
-
-    public static List<PackShape> getShapes() {
-        return Collections.unmodifiableList(SHAPES);
     }
 
     @Override

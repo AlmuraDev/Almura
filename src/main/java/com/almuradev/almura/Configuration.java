@@ -11,11 +11,11 @@ import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Configuration {
 
+    public static final boolean IS_SERVER = FMLCommonHandler.instance().getEffectiveSide().isServer();
+    public static final boolean IS_CLIENT = FMLCommonHandler.instance().getEffectiveSide().isClient();
     public static boolean DEBUG_MODE;
     public static boolean DEBUG_LANGUAGES_MODE;
     public static boolean DEBUG_PACKS_MODE;
-    public static final boolean IS_SERVER = FMLCommonHandler.instance().getEffectiveSide().isServer();
-    public static final boolean IS_CLIENT = FMLCommonHandler.instance().getEffectiveSide().isClient();
     public static boolean ALMURA_GUI;
 
     static {
@@ -33,8 +33,8 @@ public class Configuration {
             throw new RuntimeException(e);
         }
         ALMURA_GUI = reader.getChild("almura_gui").getBoolean(true);
-        DEBUG_MODE = reader.getChild("debug").getChild("all", true).getBoolean(false);
-        DEBUG_LANGUAGES_MODE = reader.getChild("debug").getChild("language", true).getBoolean(false);
-        DEBUG_PACKS_MODE = reader.getChild("debug").getChild("debug").getChild("pack", true).getBoolean(false);
+        DEBUG_MODE = reader.getChild("debug", true).getChild("all", true).getBoolean(false);
+        DEBUG_LANGUAGES_MODE = reader.getChild("debug", true).getChild("language", true).getBoolean(false);
+        DEBUG_PACKS_MODE = reader.getChild("debug", true).getChild("pack", true).getBoolean(false);
     }
 }

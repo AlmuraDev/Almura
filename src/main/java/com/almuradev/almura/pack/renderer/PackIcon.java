@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
 public class PackIcon extends MalisisIcon {
+
     private final IPackObject object;
 
     public PackIcon(IPackObject object, String textureName) {
@@ -60,13 +61,37 @@ public class PackIcon extends MalisisIcon {
                 textures[0] = ImageIO.read(Files.newInputStream(texturePath));
                 loadSprite(textures, null, anisotropic);
                 return false;
-            } catch (RuntimeException ignored) {
-            } catch (IOException e) {
+            } catch (RuntimeException e) {
+                if (e.getMessage().equalsIgnoreCase("broken aspect ratio and not an animation")) {
+                    if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                        Almura.LOGGER
+                                .error("Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack ["
+                                       + packName + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.",
+                                       e);
+                    } else {
+                        Almura.LOGGER.warn(
+                                "Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack ["
+                                + packName + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
+                    }
+                } else {
+                    if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                        Almura.LOGGER
+                                .error("Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack ["
+                                       + packName + "]", e);
+                    } else {
+                        Almura.LOGGER.warn(
+                                "Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack ["
+                                + packName + "]");
+                    }
+                }
+            } catch (IOException e1) {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                    Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack [" + packName + "]", e);
+                    Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack ["
+                                        + packName + "]", e1);
                 } else {
                     Almura.LOGGER.warn(
-                            "Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack [" + packName + "]");
+                            "Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack [" + packName
+                            + "]");
                 }
             }
         }

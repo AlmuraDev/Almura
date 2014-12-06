@@ -6,5 +6,6 @@
 package com.almuradev.almura.pack.crop.stage.property;
 
 public interface ToggleableProperty<T> extends IProperty<T> {
+
     boolean isEnabled();
 }

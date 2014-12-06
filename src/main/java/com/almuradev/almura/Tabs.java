@@ -98,6 +98,7 @@ public class Tabs {
     }
 
     private static class AlmuraTabItem extends Item {
+
         public AlmuraTabItem(String name) {
             setUnlocalizedName(name);
             setTextureName(Almura.MOD_ID + ":" + name);

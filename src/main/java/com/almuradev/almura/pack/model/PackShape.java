@@ -28,9 +28,9 @@ import java.util.List;
 
 public class PackShape extends Shape {
 
-    private final String name;
     public final boolean useVanillaCollision, useVanillaWireframe, useVanillaBlockBounds;
     public final List<Double> collisionCoordinates, wireframeCoordinates, blockBoundsCoordinates;
+    private final String name;
 
     public PackShape(String name, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
                      List<Double> wireframeCoordinates, boolean useVanillaBlockBounds, List<Double> blockBoundsCoordinates) {
@@ -117,17 +117,24 @@ public class PackShape extends Shape {
             faces.add(face);
         }
 
-        PackShape shape = new PackShape(name, faces, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates, useVanillaBlockBounds, blockBoundCoordinates);
+        PackShape
+                shape =
+                new PackShape(name, faces, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
+                              useVanillaBlockBounds, blockBoundCoordinates);
 
         //Handle shapes that don't have at least 4 faces
         if (shape.getFaces().length < 4) {
             shape.applyMatrix();
 
-            final PackShape s = new PackShape(shape.getName(), useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates, useVanillaBlockBounds, blockBoundCoordinates);
+            final PackShape
+                    s =
+                    new PackShape(shape.getName(), useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
+                                  useVanillaBlockBounds, blockBoundCoordinates);
             s.addFaces(shape.getFaces());
             final PackShape
                     scaled =
-                    new PackShape(shape.getName(), shape, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates, useVanillaBlockBounds, blockBoundCoordinates);
+                    new PackShape(shape.getName(), shape, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
+                                  useVanillaBlockBounds, blockBoundCoordinates);
             scaled.scale(-1, 1, -1);
             scaled.applyMatrix();
             //Scaled returns non PackFaces, OOP demands a fix
@@ -140,6 +147,21 @@ public class PackShape extends Shape {
         }
         shape.storeState();
         return shape;
+    }
+
+    private static void readCoordinatesIntoList(String name, ConfigurationNode node, String element, String type, boolean flag, List<Double> list) {
+        if (!flag) {
+            final String coordinatesRaw = node.getChild(element).getString("");
+            try {
+                list.addAll(PackUtil.parseStringToDoubleList(coordinatesRaw, 6));
+            } catch (NumberFormatException nfe) {
+                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                    Almura.LOGGER.error("Invalid " + type + " bounds provided for shape [" + name + "]. Value: [" + coordinatesRaw + "]", nfe);
+                } else {
+                    Almura.LOGGER.warn("Invalid " + type + " bounds provided for shape [" + name + "]. Value: [" + coordinatesRaw + "]");
+                }
+            }
+        }
     }
 
     public String getName() {
@@ -178,20 +200,5 @@ public class PackShape extends Shape {
     @Override
     public String toString() {
         return "PackShape {name= " + name + "}";
-    }
-
-    private static void readCoordinatesIntoList(String name, ConfigurationNode node, String element, String type, boolean flag, List<Double> list) {
-        if (!flag) {
-            final String coordinatesRaw = node.getChild(element).getString("");
-            try {
-                list.addAll(PackUtil.parseStringToDoubleList(coordinatesRaw, 6));
-            } catch (NumberFormatException nfe) {
-                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                    Almura.LOGGER.error("Invalid " + type + " bounds provided for shape [" + name + "]. Value: [" + coordinatesRaw + "]", nfe);
-                } else {
-                    Almura.LOGGER.warn("Invalid " + type + " bounds provided for shape [" + name + "]. Value: [" + coordinatesRaw + "]");
-                }
-            }
-        }
     }
 }
