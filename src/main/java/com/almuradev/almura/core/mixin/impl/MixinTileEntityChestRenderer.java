@@ -60,6 +60,7 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
         if (viewer == null) {
             viewer = Minecraft.getMinecraft().thePlayer;
         }
+        //TODO Almura Start
         drawModel = viewer != null && p_147500_1_.getDistanceFrom(viewer.posX, viewer.posY, viewer.posZ) < 200 || !p_147500_1_.hasWorldObj();
 
         if (!p_147500_1_.hasWorldObj()) {

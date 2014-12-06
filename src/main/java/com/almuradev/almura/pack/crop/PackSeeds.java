@@ -17,16 +17,23 @@ import net.minecraft.item.ItemSeeds;
 public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer, IShapeContainer {
 
     private final ContentPack pack;
+    private final String identifier;
 
     public PackSeeds(ContentPack pack, String identifier, String textureName, boolean showInCreativeTab,
                      String creativeTabName, Block crop, Block soil) {
         super(crop, soil);
         this.pack = pack;
+        this.identifier = identifier;
     }
 
     @Override
     public ContentPack getPack() {
         return pack;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return identifier;
     }
 
     @Override

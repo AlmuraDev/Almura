@@ -8,6 +8,7 @@ package com.almuradev.almura.pack.renderer;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.pack.IPackObject;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourceManager;
@@ -23,9 +24,11 @@ import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
 public class PackIcon extends MalisisIcon {
+    private final IPackObject object;
 
-    public PackIcon(String packName, String textureName) {
-        super(Almura.MOD_ID.toLowerCase() + ":packs/" + packName + "/" + textureName);
+    public PackIcon(IPackObject object, String textureName) {
+        super(Almura.MOD_ID.toLowerCase() + ":packs/" + object.getPack().getName() + "/" + textureName);
+        this.object = object;
     }
 
     @Override
@@ -60,9 +63,10 @@ public class PackIcon extends MalisisIcon {
             } catch (RuntimeException ignored) {
             } catch (IOException e) {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                    Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] requested by pack [" + packName + "]", e);
+                    Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack [" + packName + "]", e);
                 } else {
-                    Almura.LOGGER.warn("Failed to load icon [" + textureName + ".png] requested by pack [" + packName + "]");
+                    Almura.LOGGER.warn(
+                            "Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack [" + packName + "]");
                 }
             }
         }

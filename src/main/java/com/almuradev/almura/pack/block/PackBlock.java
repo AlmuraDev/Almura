@@ -43,6 +43,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
 
     public static int renderId;
     private final ContentPack pack;
+    private final String identifier;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     //SHAPES
@@ -61,6 +62,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
                      Map<Integer, List<Integer>> textureCoordinates, String shapeName, boolean renderAsNormalBlock, boolean renderAsOpaque) {
         super(Material.rock);
         this.pack = pack;
+        this.identifier = identifier;
         this.textureCoordinatesByFace = textureCoordinates;
         this.textureName = textureName;
         this.shapeName = shapeName;
@@ -90,7 +92,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
-        blockIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
+        blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
         clippedIcons = PackUtil.generateClippedIconsFromCoords(blockIcon, textureName, textureCoordinatesByFace);
     }
 
@@ -167,6 +169,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public ContentPack getPack() {
         return pack;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return identifier;
     }
 
     @Override

@@ -32,6 +32,7 @@ import java.util.Map;
 public class PackFood extends ItemFood implements IPackObject, IClipContainer, IShapeContainer {
 
     private final ContentPack pack;
+    private final String identifier;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     //SHAPES
@@ -47,6 +48,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
                     boolean alwaysEdible) {
         super(healAmount, saturationModifier, isWolfFavorite);
         this.pack = pack;
+        this.identifier = identifier;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.textureName = textureName;
         this.shapeName = shapeName;
@@ -69,13 +71,18 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
 
     @Override
     public void registerIcons(IIconRegister register) {
-        itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
+        itemIcon = new PackIcon(this, textureName).register((TextureMap) register);
         clippedIcons = PackUtil.generateClippedIconsFromCoords(itemIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override
     public ContentPack getPack() {
         return pack;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return identifier;
     }
 
     @Override

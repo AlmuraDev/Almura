@@ -10,6 +10,7 @@ import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
+import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.stage.Stage;
 import com.almuradev.almura.pack.crop.stage.property.HydrationProperty;
 import com.almuradev.almura.pack.crop.stage.property.source.HydrationSource;
@@ -21,13 +22,11 @@ import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class PackCreator {
 
@@ -115,15 +114,43 @@ public class PackCreator {
                             saturationModifier, isWolfFavorite, alwaysEdible);
     }
 
-    public static Stage createStageFromNode(int id, PackCrops crop, ConfigurationNode node) {
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(node.getChild("Coords"));
-        String shapeName = node.getChild("Shape").getString();
+    public static PackCrops createCropFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+        final String title = reader.getChild("title").getString(name).split("\\n")[0];
+        String textureName = reader.getChild("texture").getString(name);
+        textureName = textureName.split(".png")[0];
+
+        final int levelRequired = reader.getChild("level-required").getInt(Integer.MIN_VALUE);
+
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
+
+        return null;
+    }
+
+    public static PackSeeds createSeedFromNode(ContentPack pack, Block soil, PackCrops crop, String textureName, ConfigurationNode node) throws ConfigurationException {
+        final String identifier = node.getChild("identifier").getString();
+        if (identifier.isEmpty()) {
+            throw new ConfigurationException("Providing an empty identifier for crop [" + crop + "] seed is not allowed!");
+        }
+        final String title = node.getChild("title").getString(crop.getLocalizedName()).split("\\n")[0];
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(node.getChild("coords"));
+        final boolean showInCreativeTab = node.getChild("show-in-creative-tab").getBoolean(true);
+        final String creativeTabName = node.getChild("creative-tab-name").getString("other");
+        final boolean dropOnGrassBreak = node.getChild("drop-on-grass-break").getBoolean(true);
+
+        //LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + crop.getLocalizedName() + )
+
+        return new PackSeeds(pack, crop.getUnlocalizedName() + "\\", textureName, showInCreativeTab, creativeTabName, crop, soil);
+    }
+
+    public static Stage createStageFromNode(int id, String name, ConfigurationNode node) {
+        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(node.getChild("coords"));
+        String shapeName = node.getChild("shape").getString();
         if (shapeName != null) {
             shapeName = shapeName.split(".shape")[0];
         }
-        final ConfigurationNode hydrationNode = node.getNode("Hydration");
-        final boolean hydrationEnabled = hydrationNode.getChild("Enabled").getBoolean(false);
-        final ConfigurationNode hydrationSourcesNode = hydrationNode.getNode("Sources");
+        final ConfigurationNode hydrationNode = node.getNode("hydration");
+        final boolean hydrationEnabled = hydrationNode.getChild("enabled").getBoolean(false);
+        final ConfigurationNode hydrationSourcesNode = hydrationNode.getNode("sources");
         final List<HydrationSource> hydrationSources = Lists.newArrayList();
         final HydrationProperty hydrationProperty;
 
@@ -142,10 +169,10 @@ public class PackCreator {
                 }
                 final Block block = GameRegistry.findBlock(split[0], identifier);
                 if (block == null) {
-                    Almura.LOGGER.warn("Could not find block [" + identifier + "] provided by mod [" + split[0] + "] for stage [" + id + "] in crop [" + crop + "].");
+                    Almura.LOGGER.warn("Could not find block [" + identifier + "] provided by mod [" + split[0] + "] for stage [" + id + "] in crop [" + name + "].");
                     continue;
                 }
-                final int neededProximity = entry.getValue().getChild("Needed-Proximity").getInt(6);
+                final int neededProximity = entry.getValue().getChild("needed-proximity").getInt(6);
                 hydrationSources.add(new HydrationSource(block, neededProximity));
             }
             hydrationProperty = new HydrationProperty(hydrationEnabled, hydrationSources.toArray(new HydrationSource[hydrationSources.size()]));

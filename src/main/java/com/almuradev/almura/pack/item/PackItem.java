@@ -33,6 +33,7 @@ import java.util.Map;
 public class PackItem extends Item implements IPackObject, IClipContainer, IShapeContainer {
 
     private final ContentPack pack;
+    private final String identifier;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     //SHAPES
@@ -46,6 +47,7 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
                     Map<Integer, List<Integer>> textureCoordinatesByFace,
                     boolean showInCreativeTab, String creativeTabName) {
         this.pack = pack;
+        this.identifier = identifier;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.textureName = textureName;
         this.shapeName = shapeName;
@@ -66,13 +68,18 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
 
     @Override
     public void registerIcons(IIconRegister register) {
-        itemIcon = new PackIcon(pack.getName(), textureName).register((TextureMap) register);
+        itemIcon = new PackIcon(this, textureName).register((TextureMap) register);
         clippedIcons = PackUtil.generateClippedIconsFromCoords(itemIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override
     public ContentPack getPack() {
         return pack;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return identifier;
     }
 
     @Override

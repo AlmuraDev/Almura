@@ -63,6 +63,11 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     }
 
     @Override
+    public String getIdentifier() {
+        return block.getIdentifier() + "_stage_" + id;
+    }
+
+    @Override
     public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
         return clippedIcons;
     }
@@ -166,5 +171,17 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
 
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
         return Lists.newArrayList();
+    }
+
+    public int getLightOpacity(IBlockAccess world, int x, int y, int z) {
+        return Integer.MIN_VALUE;
+    }
+
+    public int getExpDrop(IBlockAccess world, int metadata, int fortune) {
+        return Integer.MIN_VALUE;
+    }
+
+    public int getLightValue(IBlockAccess world, int x, int y, int z) {
+        return Integer.MIN_VALUE;
     }
 }
