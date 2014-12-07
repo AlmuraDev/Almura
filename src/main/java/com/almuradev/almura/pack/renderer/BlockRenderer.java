@@ -23,6 +23,7 @@ import net.malisis.core.renderer.element.shape.Cube;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
@@ -137,6 +138,9 @@ public class BlockRenderer extends MalisisRenderer {
             RenderHelper.enableStandardItemLighting();
         }
         drawShape(shape, rp);
+        if (Minecraft.getMinecraft().currentScreen == null) {
+            RenderHelper.disableStandardItemLighting();
+        }
     }
 
     @Override
