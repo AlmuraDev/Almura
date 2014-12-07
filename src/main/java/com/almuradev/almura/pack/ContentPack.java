@@ -157,6 +157,15 @@ public class ContentPack {
         return Collections.unmodifiableList(SHAPES);
     }
 
+    private static void sort(List<Path> toSort) {
+        Collections.sort(toSort, new Comparator<Path>() {
+            @Override
+            public int compare(Path o1, Path o2) {
+                return o1.getFileName().toString().compareTo(o2.getFileName().toString());
+            }
+        });
+    }
+
     public String getName() {
         return name;
     }
@@ -188,14 +197,5 @@ public class ContentPack {
     @Override
     public String toString() {
         return "ContentPack {name= [" + name + "], blocks= " + blocks + ", items= " + items + "}";
-    }
-
-    private static void sort(List<Path> toSort) {
-        Collections.sort(toSort, new Comparator<Path>() {
-            @Override
-            public int compare(Path o1, Path o2) {
-                return o1.getFileName().toString().compareTo(o2.getFileName().toString());
-            }
-        });
     }
 }

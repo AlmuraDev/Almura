@@ -31,11 +31,13 @@ public interface IRotatable {
         UP_WEST(10),
         UP_EAST(11);
         private static final Map<Integer, Rotation> map = Maps.newHashMap();
+
         static {
             for (Rotation r : Rotation.values()) {
                 map.put(r.getId(), r);
             }
         }
+
         private final int id;
 
         Rotation(int id) {

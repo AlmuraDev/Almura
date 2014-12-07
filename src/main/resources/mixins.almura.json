@@ -4,6 +4,7 @@
     "MixinGL11",
     "MixinTileEntityChestRenderer",
     "MixinBlockWall",
-    "MixinSimpleReloadableResourceManager"
+    "MixinSimpleReloadableResourceManager",
+    "MixinStitcher"
   ]
 }

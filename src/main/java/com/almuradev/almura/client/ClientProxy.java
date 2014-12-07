@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.client;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.client.gui.AlmuraMainMenu;
 import com.almuradev.almura.client.gui.ingame.IngameConfig;
@@ -24,10 +25,12 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 
@@ -47,6 +50,7 @@ public class ClientProxy extends CommonProxy {
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
         ClientRegistry.registerKeyBinding(BINDING_CONFIG_GUI);
         FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
@@ -94,6 +98,13 @@ public class ClientProxy extends CommonProxy {
         } else if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
             IngameDebugHUD.UPDATES_ENABLED = !IngameDebugHUD.UPDATES_ENABLED;
         }
+    }
+
+    @SubscribeEvent
+    public void onTextureStitchEventPre(TextureStitchEvent.Pre event) {
+        Almura.LOGGER
+                .info("This computer can handle a maximum stitched texture size of width [" + Minecraft.getGLMaximumTextureSize() + "] and length ["
+                      + Minecraft.getGLMaximumTextureSize() + "].");
     }
 }
 

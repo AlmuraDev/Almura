@@ -56,12 +56,14 @@ public class PackIcon extends MalisisIcon {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                     Almura.LOGGER
                             .error("Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack ["
-                                   + object.getPack().getName() + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.",
+                                   + object.getPack().getName()
+                                   + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.",
                                    e);
                 } else {
                     Almura.LOGGER.warn(
                             "Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack ["
-                            + object.getPack().getName() + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
+                            + object.getPack().getName()
+                            + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
                 }
             } else {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
@@ -80,7 +82,8 @@ public class PackIcon extends MalisisIcon {
                                     + object.getPack().getName() + "]", e1);
             } else {
                 Almura.LOGGER.warn(
-                        "Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack [" + object.getPack().getName()
+                        "Failed to load icon [" + textureName + ".png] used by [" + object.getIdentifier() + "] requested by pack [" + object
+                                .getPack().getName()
                         + "]");
             }
 

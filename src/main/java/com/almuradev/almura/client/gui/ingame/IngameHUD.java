@@ -382,7 +382,8 @@ public class IngameHUD extends AlmuraGui {
         if (MINECRAFT.isSingleplayer() && firstPass) {
             serverCount.setText("--");
         } else {
-            if (((MINECRAFT.getIntegratedServer() != null && MINECRAFT.getIntegratedServer().getPublic()) || !MINECRAFT.isSingleplayer()) && playerCount != MINECRAFT
+            if (((MINECRAFT.getIntegratedServer() != null && MINECRAFT.getIntegratedServer().getPublic()) || !MINECRAFT.isSingleplayer())
+                && playerCount != MINECRAFT
                     .getNetHandler().playerInfoList.size()) {
                 playerCount = MINECRAFT.getNetHandler().playerInfoList.size();
 

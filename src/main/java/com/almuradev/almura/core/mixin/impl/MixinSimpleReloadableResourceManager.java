@@ -20,20 +20,19 @@ import java.util.List;
 
 @Mixin(SimpleReloadableResourceManager.class)
 public abstract class MixinSimpleReloadableResourceManager implements IReloadableResourceManager {
-    private boolean reload = false;
 
     @Shadow
     public List reloadListeners;
+    private boolean reload = false;
 
     @Overwrite
-    private void notifyReloadListeners()
-    {
+    private void notifyReloadListeners() {
         Iterator iterator = reloadListeners.iterator();
 
-        while (iterator.hasNext())
-        {
-            IResourceManagerReloadListener iresourcemanagerreloadlistener = (IResourceManagerReloadListener)iterator.next();
-            if (iresourcemanagerreloadlistener.getClass() == TextureManager.class && Loader.instance().hasReachedState(LoaderState.AVAILABLE) && !reload) {
+        while (iterator.hasNext()) {
+            IResourceManagerReloadListener iresourcemanagerreloadlistener = (IResourceManagerReloadListener) iterator.next();
+            if (iresourcemanagerreloadlistener.getClass() == TextureManager.class && Loader.instance().hasReachedState(LoaderState.AVAILABLE)
+                && !reload) {
                 reload = true;
                 continue;
             }

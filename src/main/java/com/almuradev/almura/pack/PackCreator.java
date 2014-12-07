@@ -24,7 +24,6 @@ import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
-import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -181,7 +180,9 @@ public class PackCreator {
                 hydrationSources.add(new HydrationSource(hydrationSource, neededProximity));
             }
         }
-        final HydrationProperty hydrationProperty = new HydrationProperty(hydrationEnabled, hydrationSources.toArray(new HydrationSource[hydrationSources.size()]));
+        final HydrationProperty
+                hydrationProperty =
+                new HydrationProperty(hydrationEnabled, hydrationSources.toArray(new HydrationSource[hydrationSources.size()]));
 
         //LIGHT
         final ConfigurationNode lightNode = node.getNode("light");
@@ -191,7 +192,9 @@ public class PackCreator {
         final boolean lightRequiredEnabled = lightRequiredNode.getBoolean(true);
         final int lightRequiredMin = lightRequiredNode.getChild("min").getInt(0);
         final int lightRequiredMax = lightRequiredNode.getChild("max").getInt(15);
-        final LightProperty lightProperty = new LightProperty(lightLevel, lightOpacity, new RangeSource(lightRequiredEnabled, lightRequiredMin, lightRequiredMax));
+        final LightProperty
+                lightProperty =
+                new LightProperty(lightLevel, lightOpacity, new RangeSource(lightRequiredEnabled, lightRequiredMin, lightRequiredMax));
 
         //COLLISION
         final ConfigurationNode collisionNode = node.getNode("collision");
@@ -216,7 +219,9 @@ public class PackCreator {
                 collisionSources.add(new CollisionSource(entityClazz, healthChange));
             }
         }
-        final CollisionProperty collisionProperty = new CollisionProperty(collisionEnabled, collisionSources.toArray(new CollisionSource[collisionSources.size()]));
+        final CollisionProperty
+                collisionProperty =
+                new CollisionProperty(collisionEnabled, collisionSources.toArray(new CollisionSource[collisionSources.size()]));
 
         return null;
     }
