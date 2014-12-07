@@ -21,6 +21,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class ContentPack {
             for (Path path : stream) {
                 try {
                     loadModel(path);
-                } catch (ConfigurationException e) {
+                } catch (IOException | ConfigurationException e) {
                     Almura.LOGGER.error("Failed to load model [" + path + "] in [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
                 }
             }
@@ -55,12 +56,20 @@ public class ContentPack {
             throw new RuntimeException("Failed filtering model files from [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
         }
 
+        List<Path> streamed = Lists.newArrayList();
+
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_YML_PATH, Filesystem.DIRECTORIES_ONLY_FILTER)) {
             for (Path path : stream) {
-                loadPack(path);
+                streamed.add(path);
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed filtering folders from [" + Filesystem.CONFIG_YML_PATH + "].", e);
+        }
+
+        sort(streamed);
+
+        for (Path path : streamed) {
+            loadPack(path);
         }
 
         for (ContentPack pack : PACKS.values()) {
@@ -88,50 +97,58 @@ public class ContentPack {
         final ContentPack pack = new ContentPack(smpName);
         PACKS.put(smpName, pack);
 
+        List<Path> streamed = Lists.newArrayList();
+
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, Filesystem.YML_FILES_ONLY_FILTER)) {
             for (Path path : stream) {
-                try {
-                    if (path.getFileName().toString().endsWith(".yml")) {
-                        final InputStream entry = Files.newInputStream(path);
-                        final YamlConfiguration reader = new YamlConfiguration(entry);
-                        reader.load();
-
-                        final String type = reader.getChild("Type").getString();
-                        if (type == null) {
-                            continue;
-                        }
-
-                        final String name = path.getFileName().toString().split(".yml")[0];
-
-                        switch (type) {
-                            case "Item":
-                                final Item item = PackCreator.createItemFromReader(pack, name, reader);
-                                pack.items.add(item);
-                                Almura.PROXY.onCreate(item);
-                                break;
-                            case "Food":
-                                final ItemFood food = PackCreator.createFoodFromReader(pack, name, reader);
-                                pack.items.add(food);
-                                Almura.PROXY.onCreate(food);
-                                break;
-                            case "Block":
-                                final Block block = PackCreator.createBlockFromReader(pack, name, reader);
-                                pack.blocks.add(block);
-                                Almura.PROXY.onCreate(block);
-                                break;
-                            default:
-                                continue;
-                        }
-                        entry.close();
-                    }
-                } catch (ConfigurationException e) {
-                    Almura.LOGGER.error("Failed to load yml [" + path + "] for pack [" + pack.getName() + "]", e);
-                }
+                streamed.add(path);
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed in filtering out yml files. This could mean a critical filesystem error!", e);
         }
 
+        sort(streamed);
+
+        for (Path path : streamed) {
+            System.out.println(path);
+            try {
+                if (path.getFileName().toString().endsWith(".yml")) {
+                    final InputStream entry = Files.newInputStream(path);
+                    final YamlConfiguration reader = new YamlConfiguration(entry);
+                    reader.load();
+
+                    final String type = reader.getChild("Type").getString();
+                    if (type == null) {
+                        continue;
+                    }
+
+                    final String name = path.getFileName().toString().split(".yml")[0];
+
+                    switch (type) {
+                        case "Item":
+                            final Item item = PackCreator.createItemFromReader(pack, name, reader);
+                            pack.items.add(item);
+                            Almura.PROXY.onCreate(item);
+                            break;
+                        case "Food":
+                            final ItemFood food = PackCreator.createFoodFromReader(pack, name, reader);
+                            pack.items.add(food);
+                            Almura.PROXY.onCreate(food);
+                            break;
+                        case "Block":
+                            final Block block = PackCreator.createBlockFromReader(pack, name, reader);
+                            pack.blocks.add(block);
+                            Almura.PROXY.onCreate(block);
+                            break;
+                        default:
+                            continue;
+                    }
+                    entry.close();
+                }
+            } catch (IOException | ConfigurationException e) {
+                Almura.LOGGER.error("Failed to load yml [" + path + "] for pack [" + pack.getName() + "]", e);
+            }
+        }
         return pack;
     }
 
@@ -170,5 +187,14 @@ public class ContentPack {
     @Override
     public String toString() {
         return "ContentPack {name= [" + name + "], blocks= " + blocks + ", items= " + items + "}";
+    }
+
+    private static void sort(List<Path> toSort) {
+        Collections.sort(toSort, new Comparator<Path>() {
+            @Override
+            public int compare(Path o1, Path o2) {
+                return o1.getFileName().toString().compareTo(o2.getFileName().toString());
+            }
+        });
     }
 }
