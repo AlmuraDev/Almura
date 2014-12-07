@@ -2,6 +2,7 @@
   "package": "com.almuradev.almura.core.mixin.impl",
   "mixins": [
     "MixinGL11",
-    "MixinTileEntityChestRenderer"
+    "MixinTileEntityChestRenderer",
+    "MixinTextureManager"
   ]
 }
