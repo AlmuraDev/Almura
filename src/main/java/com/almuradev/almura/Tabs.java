@@ -48,7 +48,7 @@ public class Tabs {
     public static CreativeTabs TAB_STORAGE = new AlmuraCreativeTabs("storage", "Almura Storage", ITEM_STORAGE);
     public static CreativeTabs TAB_BARRELS = new AlmuraCreativeTabs("barrels", "Almura Barrels", ITEM_BARRELS);
     public static CreativeTabs TAB_FLOWERS = new AlmuraCreativeTabs("flowers", "Almura Flowers", ITEM_FLOWERS);
-    public static CreativeTabs TAB_COMPONENTS = new AlmuraCreativeTabs("plants", "Almura Plants", ITEM_COMPONENTS);
+    public static CreativeTabs TAB_COMPONENTS = new AlmuraCreativeTabs("components", "Almura Components", ITEM_COMPONENTS);
     public static CreativeTabs TAB_CROPS = new AlmuraCreativeTabs("crops", "Almura Crops", ITEM_CROPS);
     public static CreativeTabs TAB_FLAGS = new AlmuraCreativeTabs("flags", "Almura Flags", ITEM_FLAGS);
     public static CreativeTabs TAB_SIGNS = new AlmuraCreativeTabs("signs", "Almura Signs", ITEM_SIGNS);
