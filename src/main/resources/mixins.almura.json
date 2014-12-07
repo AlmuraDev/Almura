@@ -3,6 +3,7 @@
   "mixins": [
     "MixinGL11",
     "MixinTileEntityChestRenderer",
+    "MixinBlockWall",
     "MixinSimpleReloadableResourceManager"
   ]
 }
