@@ -28,11 +28,9 @@ public abstract class MixinTextureManager implements ITickable, IResourceManager
     @Overwrite
     public void onResourceManagerReload(IResourceManager p_110549_1_)
     {
-        if (Loader.instance().activeModContainer() != null) {
-            if (Loader.instance().isInState(LoaderState.AVAILABLE) && !reload) {
-                reload = true;
-                return;
-            }
+        if (Loader.instance().hasReachedState(LoaderState.AVAILABLE) && !reload) {
+            reload = true;
+            return;
         }
 
         Iterator iterator = this.mapTextureObjects.entrySet().iterator();
