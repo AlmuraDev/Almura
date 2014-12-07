@@ -137,9 +137,6 @@ public class BlockRenderer extends MalisisRenderer {
             RenderHelper.enableStandardItemLighting();
         }
         drawShape(shape, rp);
-        if (shape instanceof PackShape && renderType == RenderType.ISBRH_INVENTORY) {
-            RenderHelper.disableStandardItemLighting();
-        }
     }
 
     @Override
