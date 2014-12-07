@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
@@ -44,18 +45,19 @@ public class ContentPack {
     }
 
     public static void loadAllContent() {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_MODELS_PATH, Filesystem.MODEL_FILES_ONLY_FILTER)) {
-            for (Path path : stream) {
-                try {
-                    loadModel(path);
-                } catch (IOException | ConfigurationException e) {
-                    Almura.LOGGER.error("Failed to load model [" + path + "] in [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
+        if (Configuration.IS_CLIENT) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_MODELS_PATH, Filesystem.MODEL_FILES_ONLY_FILTER)) {
+                for (Path path : stream) {
+                    try {
+                        loadModel(path);
+                    } catch (IOException | ConfigurationException e) {
+                        Almura.LOGGER.error("Failed to load model [" + path + "] in [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
+                    }
                 }
+            } catch (IOException e) {
+                throw new RuntimeException("Failed filtering model files from [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed filtering model files from [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
         }
-
         List<Path> streamed = Lists.newArrayList();
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_YML_PATH, Filesystem.DIRECTORIES_ONLY_FILTER)) {
