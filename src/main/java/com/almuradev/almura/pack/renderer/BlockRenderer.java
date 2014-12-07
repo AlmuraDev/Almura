@@ -59,7 +59,7 @@ public class BlockRenderer extends MalisisRenderer {
 
         shape.resetState();
 
-        if (renderType == RenderType.ISBRH_WORLD && block instanceof IRotatable) {
+        if (renderType == RenderType.ISBRH_WORLD && block instanceof IRotatable && shape instanceof PackShape) {
             final boolean canRotate = ((IRotatable) block).canRotate(world, x, y, z, blockMetadata);
             final boolean canMirrorRotate = ((IRotatable) block).canMirrorRotate(world, x, y, z, blockMetadata);
 
@@ -137,7 +137,7 @@ public class BlockRenderer extends MalisisRenderer {
             RenderHelper.enableStandardItemLighting();
         }
         drawShape(shape, rp);
-        if (renderType == RenderType.ISBRH_INVENTORY) {
+        if (shape instanceof PackShape && renderType == RenderType.ISBRH_INVENTORY) {
             RenderHelper.disableStandardItemLighting();
         }
     }

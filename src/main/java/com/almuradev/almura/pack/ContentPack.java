@@ -110,7 +110,6 @@ public class ContentPack {
         sort(streamed);
 
         for (Path path : streamed) {
-            System.out.println(path);
             try {
                 if (path.getFileName().toString().endsWith(".yml")) {
                     final InputStream entry = Files.newInputStream(path);
