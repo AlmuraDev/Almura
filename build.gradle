@@ -73,7 +73,7 @@ configurations.all {
 
 // MinecraftForge version
 minecraft {
-    version = "1.7.10-10.13.2.1236"
+    version = "1.7.10-10.13.2.1258"
 }
 
 // Include dependencies in the final JAR
@@ -136,6 +136,7 @@ jar.manifest.mainAttributes(
         "Implementation-Title": name,
         "Implementation-Version": version + "-b" + buildNumber + ".git-" + commit,
         "Implementation-Vendor": url,
-        "FMLCorePluginContainsFMLMod": 'true')
+        "FMLCorePluginContainsFMLMod": 'true',
+        "FMLCorePlugin": 'com.almuradev.almura.core.AlmuraCoreMod')
 
 
