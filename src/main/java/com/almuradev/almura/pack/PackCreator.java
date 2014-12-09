@@ -37,6 +37,7 @@ import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -172,11 +173,19 @@ public class PackCreator {
                 final String modid = separated[0].toLowerCase();
                 String identifier;
                 if (separated.length > 1) {
-                    identifier = identifierCombined.split(modid + StringEscapeUtils.escapeJava("\\"))[1].toLowerCase();
+                    identifier = identifierCombined.split(modid + StringEscapeUtils.escapeJava("\\"))[1];
                 } else {
                     identifier = modid;
                 }
-                boolean minecraft = modid.equalsIgnoreCase("Minecraft") || modid.equals(identifier);
+                boolean minecraft = false;
+                //Air -> air
+                if (identifier.equalsIgnoreCase(modid)) {
+                    identifier = identifier.toLowerCase();
+                    minecraft = true;
+                }
+                if (!minecraft) {
+                    minecraft = modid.equalsIgnoreCase("Minecraft");
+                };
                 final Block block = GameRegistry.findBlock(minecraft ? "minecraft" : modid, identifier);
                 if (block == null) {
                     final Item item = GameRegistry.findItem(minecraft ? "minecraft" : modid, identifier);
@@ -193,36 +202,34 @@ public class PackCreator {
         }
 
         if (!params.isEmpty()) {
-            int index = 0;
-            final Map<Object, Character> objectViaParamMap = Maps.newHashMap();
-
-            final List<Object> combinedParams = Lists.newArrayList();
-
-            StringBuilder lineMatrixBuilder = new StringBuilder();
-            for (Object param : params) {
-                if (param.getClass() != BlockAir.class) {
-                    Character c = objectViaParamMap.get(param);
-                    if (c == null) {
-                        c = RECIPE_MATRIX_PLACEHOLDER[index];
-                        objectViaParamMap.put(param, c);
-                        index++;
-                    }
-                    lineMatrixBuilder.append(c);
-                }
-                else {
-                    lineMatrixBuilder.append(" ");
-                }
-                if (lineMatrixBuilder.length() == 3) {
-                    combinedParams.add(lineMatrixBuilder.toString());
-                    lineMatrixBuilder = new StringBuilder();
-                }
-            }
-            for (Map.Entry<Object, Character> entry : objectViaParamMap.entrySet()) {
-                combinedParams.add(entry.getValue());
-                combinedParams.add(entry.getKey());
-            }
-
             if (shaped) {
+                int index = 0;
+                final Map<Object, Character> objectViaParamMap = Maps.newHashMap();
+
+                final List<Object> combinedParams = Lists.newArrayList();
+
+                StringBuilder lineMatrixBuilder = new StringBuilder();
+                for (Object param : params) {
+                    if (param.getClass() != BlockAir.class) {
+                        Character c = objectViaParamMap.get(param);
+                        if (c == null) {
+                            c = RECIPE_MATRIX_PLACEHOLDER[index];
+                            objectViaParamMap.put(param, c);
+                            index++;
+                        }
+                        lineMatrixBuilder.append(c);
+                    } else {
+                        lineMatrixBuilder.append(" ");
+                    }
+                    if (lineMatrixBuilder.length() == 3) {
+                        combinedParams.add(lineMatrixBuilder.toString());
+                        lineMatrixBuilder = new StringBuilder();
+                    }
+                }
+                for (Map.Entry<Object, Character> entry : objectViaParamMap.entrySet()) {
+                    combinedParams.add(entry.getValue());
+                    combinedParams.add(entry.getKey());
+                }
                 if (itemResult) {
                     GameRegistry.addShapedRecipe(new ItemStack(GameRegistry.findItem("almura", pack.getName() + "\\" + name), amount, damage), combinedParams.toArray());
                 } else {
@@ -230,10 +237,17 @@ public class PackCreator {
                     GameRegistry.addShapedRecipe(new ItemStack(block, amount, damage), combinedParams.toArray());
                 }
             } else {
+                final Iterator<Object> iter = params.iterator();
+                while (iter.hasNext()) {
+                    if (iter.next().getClass().equals(BlockAir.class)) {
+                        iter.remove();
+                    }
+                }
+
                 if (itemResult) {
-                    GameRegistry.addShapelessRecipe(new ItemStack(GameRegistry.findItem("almura", pack.getName() + "\\" + name), amount, damage), combinedParams.toArray());
+                    GameRegistry.addShapelessRecipe(new ItemStack(GameRegistry.findItem("almura", pack.getName() + "\\" + name), amount, damage), params.toArray());
                 } else {
-                    GameRegistry.addShapelessRecipe(new ItemStack(GameRegistry.findBlock("almura", pack.getName() + "\\" + name), amount, damage), combinedParams.toArray());
+                    GameRegistry.addShapelessRecipe(new ItemStack(GameRegistry.findBlock("almura", pack.getName() + "\\" + name), amount, damage), params.toArray());
                 }
             }
         }
