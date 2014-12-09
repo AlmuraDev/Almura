@@ -43,7 +43,7 @@ public class ExternalIcon extends MalisisIcon {
             return super.load(manager, location);
         }
         final String textureName = location.getResourcePath();
-        final Path texturePath = Paths.get(Filesystem.CONFIG_PATH.toString(), "images" + File.separator + textureName + ".png");
+        final Path texturePath = Paths.get(Filesystem.CONFIG_VERSION_PATH.toString(), "images" + File.separator + textureName + ".png");
 
         final int mipmapLevels = Minecraft.getMinecraft().gameSettings.mipmapLevels;
         final boolean anisotropic = Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F;
@@ -58,27 +58,27 @@ public class ExternalIcon extends MalisisIcon {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                     Almura.LOGGER
                             .error("Failed to load icon [" + textureName
-                                   + ".png]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.",
+                                   + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.",
                                    e);
                 } else {
                     Almura.LOGGER.warn(
                             "Failed to load icon [" + textureName
-                            + ".png]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
+                            + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
                 }
             } else {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                    Almura.LOGGER.error("Failed to load icon [" + textureName + ".png].", e);
+                    Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "].", e);
                 } else {
                     Almura.LOGGER.warn(
-                            "Failed to load icon [" + textureName + ".png].");
+                            "Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "].");
                 }
             }
         } catch (IOException e1) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                Almura.LOGGER.error("Failed to load icon [" + textureName + ".png].", e1);
+                Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "].", e1);
             } else {
                 Almura.LOGGER.warn(
-                        "Failed to load icon [" + textureName + ".png].");
+                        "Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "].");
             }
         }
 

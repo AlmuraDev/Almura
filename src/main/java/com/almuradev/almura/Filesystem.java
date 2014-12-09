@@ -34,9 +34,10 @@ public class Filesystem {
 
     public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID.toLowerCase());
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
-    public static final Path CONFIG_YML_PATH = Paths.get(CONFIG_PATH.toString(), "packs");
-    public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_PATH.toString(), "images");
-    public static final Path CONFIG_MODELS_PATH = Paths.get(CONFIG_PATH.toString(), "models");
+    public static final Path CONFIG_VERSION_PATH = Paths.get(CONFIG_PATH.toString(), Almura.PACK_VERSION);
+    public static final Path CONFIG_YML_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "packs");
+    public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "images");
+    public static final Path CONFIG_MODELS_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "models");
 
     public static DirectoryStream.Filter<Path> DIRECTORIES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
         @Override
@@ -84,7 +85,6 @@ public class Filesystem {
                 throw new RuntimeException("Failed to copy over configuration files!", e);
             }
         }
-
         try {
             Files.createDirectories(CONFIG_YML_PATH);
         } catch (IOException e) {
