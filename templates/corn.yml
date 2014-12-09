@@ -1,29 +1,29 @@
-Date: 12-5-2014
-Type: Crop
-Title: Corn
-Texture: crops.png
+date: 12-5-2014
+type: Crop
+title: Corn
+texture: crops.png
 level-required: 18
 seed:
-    Title: Corn Seed
-    Coords:
+    title: Corn Seed
+    coords:
         - 256 384 32 32
-    Creative-Tab-Name: crops
-    Show-In-Creative-Tab: true
+    creative-tab-name: crops
+    show-in-creative-tab: true
     drop-on-grass-break: true
-    Recipes:
+    recipes:
         0:
-            Type: Shaped
-            Amount: 2
-            Damage: 1
-            Ingredients:
+            type: Shaped
+            amount: 2
+            damage: 1
+            ingredients:
                 - dirt dirt dirt
                 - air air air
                 - almura\AlmuraCustom1\sand sand sand
         1:
-            Type: Shapeless
-            Amount: 2
-            Damage: 1
-            Ingredients:
+            type: Shapeless
+            amount: 2
+            damage: 1
+            ingredients:
                 - dirt dirt dirt
                 - air air air
                 - almura\AlmuraCustom1\sand sand sand
@@ -37,11 +37,11 @@ soil:
                 humidity-required: 50-60
 stages:
     0:
-        Coords:
+        coords:
             - 256 384 32 32
         shape: crop-dirt.shape
-        Hardness: 1
-        Resistance: 1
+        hardness: 1
+        resistance: 1
         hydration:
             enabled: false
             sources:
@@ -69,11 +69,11 @@ stages:
                 skeleton:
                     health-change: 0
     1:
-        Coords:
+        coords:
             - 256 384 32 32
         shape: crop-1h.shape
-        Hardness: 0
-        Resistance: 0        
+        hardness: 0
+        resistance: 0        
         fertilizer:
             enabled: true
             sources:
@@ -96,11 +96,11 @@ stages:
                 skeleton:
                     health-change: 0
     2:
-        Coords:
+        coords:
             - 256 384 32 32
         shape: crop-2h.shape
-        Hardness: 0
-        Resistance: 0
+        hardness: 0
+        resistance: 0
         hydration:
             enabled: false
             sources:
@@ -128,7 +128,7 @@ stages:
                 skeleton:
                     health-change: 0
     3:
-        Coords:
+        coords:
             - 256 384 32 32
         shape: crop-3h.shape
         hardness: 0
@@ -159,7 +159,7 @@ stages:
                     health-change: 0
                 skeleton:
                     health-change: 0
-        harvest:
+        break:
             tools:
                 none:
                     drops:
