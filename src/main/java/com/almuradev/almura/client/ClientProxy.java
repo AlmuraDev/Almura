@@ -56,6 +56,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void onPostInitialization(FMLPostInitializationEvent event) {
+        super.onPostInitialization(event);
         MinecraftForge.EVENT_BUS.register(this);
         final IngameHUD almuraHud = new IngameHUD();
         final IngameDebugHUD almuraDebugHud = new IngameDebugHUD();

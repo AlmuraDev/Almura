@@ -7,6 +7,7 @@ package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
+import com.almuradev.almura.pack.IRecipeContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -25,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class PackItem extends Item implements IPackObject, IClipContainer, IShapeContainer {
+public class PackItem extends Item implements IPackObject, IClipContainer, IShapeContainer, IRecipeContainer {
 
     private final Pack pack;
     private final String identifier;
@@ -37,16 +38,18 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     private String textureName;
     private PackShape shape;
     private String[] tooltip;
+    private final boolean hasRecipe;
 
     public PackItem(Pack pack, String identifier, String[] tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinatesByFace,
-                    boolean showInCreativeTab, String creativeTabName) {
+                    boolean showInCreativeTab, String creativeTabName, boolean hasRecipe) {
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.textureName = textureName;
         this.shapeName = shapeName;
         this.tooltip = tooltip;
+        this.hasRecipe = hasRecipe;
         setUnlocalizedName(pack.getName() + "\\" + identifier);
         setTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
         if (showInCreativeTab) {
@@ -99,6 +102,11 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
 
     @Override
     public String toString() {
-        return "PackItem {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
+        return "PackItem {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
+    }
+
+    @Override
+    public boolean hasRecipe() {
+        return hasRecipe;
     }
 }

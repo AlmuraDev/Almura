@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
@@ -24,11 +25,14 @@ import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.malisis.core.renderer.model.loader.ObjFileImporter;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.Arrays;
@@ -36,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PackCreator {
+    private static final char[] RECIPE_MATRIX_PLACEHOLDER = new char[] {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'};
 
     public static PackBlock createBlockFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild("Title").getString(name).split("\\n")[0];
@@ -63,10 +68,12 @@ public class PackCreator {
 
         final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader.getChild("Coords"));
 
+        final boolean hasRecipe = reader.hasChild("recipes");
+
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
         return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, rotation, mirrorRotation, lightLevel, lightOpacity,
-                             showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName, renderAsNormalBlock, renderAsOpaque);
+                             showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName, renderAsNormalBlock, renderAsOpaque, hasRecipe);
     }
 
     public static PackItem createItemFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -86,10 +93,12 @@ public class PackCreator {
 
         final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader.getChild("Coords"));
 
+        final boolean hasRecipe = reader.hasChild("recipes");
+
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", title);
 
         return new PackItem(pack, name, titleLines.length == 1 ? null : Arrays.copyOfRange(titleLines, 1, titleLines.length), textureName, shapeName,
-                            textureCoordinatesByFace, showInCreativeTab, creativeTabName);
+                            textureCoordinatesByFace, showInCreativeTab, creativeTabName, hasRecipe);
     }
 
     public static PackFood createFoodFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -114,11 +123,111 @@ public class PackCreator {
 
         final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(reader.getChild("Coords"));
 
+        final boolean hasRecipe = reader.hasChild("recipes");
+
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", title);
 
         return new PackFood(pack, name, titleLines.length == 1 ? null : Arrays.copyOfRange(titleLines, 1, titleLines.length), textureName, shapeName,
                             textureCoordinatesByFace, showInCreativeTab, creativeTabName, healAmount,
-                            saturationModifier, isWolfFavorite, alwaysEdible);
+                            saturationModifier, isWolfFavorite, alwaysEdible, hasRecipe);
+    }
+
+    public static void createRecipeFromNode(Pack pack, String name, boolean isItem, ConfigurationNode node) {
+        for (Map.Entry<String, ConfigurationNode> entry : node.getChildren().entrySet()) {
+            int id;
+            try {
+                id = Integer.parseInt(entry.getKey());
+            } catch (NumberFormatException e) {
+                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                    Almura.LOGGER.error("Illegal id [" + entry.getKey() + "] for recipe specified in [" + name + "] for pack [" + pack.getName() + "]", e);
+                } else {
+                    Almura.LOGGER.warn("Illegal id [" + entry.getKey() + "] for recipe specified in [" + name + "] for pack [" + pack.getName() + "]");
+                }
+                continue;
+            }
+            final String type = entry.getValue().getChild("type").getString("").toUpperCase();
+            switch(type) {
+                case "SHAPED":
+                    addMinecraftRecipe(pack, name, id, true, isItem, entry.getValue());
+                    break;
+                case "SHAPELESS":
+                    addMinecraftRecipe(pack, name, id, false, isItem, entry.getValue());
+                    break;
+                default:
+                    Almura.LOGGER.error("Illegal type [" + type + "] for recipe id [" + id + "] specified in [" + name + "] for pack [" + pack.getName() + "]. Valid types are [SHAPED, SHAPELESS].");
+            }
+        }
+    }
+
+    private static void addMinecraftRecipe(Pack pack, String name, int id, boolean shaped, boolean itemResult, ConfigurationNode node) {
+        final int amount = node.getChild("amount").getInt(1);
+        final int damage = node.getChild("damage").getInt(0);
+        final List<Object> params = Lists.newArrayList();
+
+        for (String itemsRaw : node.getChild("ingredients").getStringList()) {
+            final String[] itemsSplit = itemsRaw.split(" ");
+            for (String identifierCombined : itemsSplit) {
+                final String[] separated = identifierCombined.split(StringEscapeUtils.escapeJava("\\"));
+                final String modid = separated[0].toLowerCase();
+                String identifier;
+                if (separated.length > 1) {
+                    identifier = identifierCombined.split(modid + StringEscapeUtils.escapeJava("\\"))[1].toLowerCase();
+                } else {
+                    identifier = modid;
+                }
+                boolean minecraft = modid.equalsIgnoreCase("Minecraft") || modid.equals(identifier);
+                final Block block = GameRegistry.findBlock(minecraft ? "minecraft" : modid, identifier);
+                if (block == null) {
+                    final Item item = GameRegistry.findItem(minecraft ? "minecraft" : modid, identifier);
+                    if (item == null) {
+                        Almura.LOGGER.warn("Could not add recipe id [" + id + "] in [" + name + "] requested by pack [" + pack.getName() + "]. The ingredient [" + identifierCombined + "] was not found in the GameRegistry!");
+                        return;
+                    } else {
+                        params.add(item);
+                    }
+                } else {
+                    params.add(block);
+                }
+            }
+        }
+
+        if (!params.isEmpty()) {
+            int index = 0;
+            final Map<Object, Character> objectViaParamMap = Maps.newHashMap();
+
+            final List<Object> combinedParams = Lists.newArrayList();
+
+            //aaa
+            //bbb
+            //ccc
+            for (int i = 0; i < params.size(); i++) {
+                Character c = objectViaParamMap.get(param);
+                if (c == null) {
+                    c = RECIPE_MATRIX_PLACEHOLDER[index];
+                    objectViaParamMap.put(param, c);
+                    index++;
+                }
+                combinedParams.add(c);
+            }
+            for (Map.Entry<Object, Character> entry : objectViaParamMap.entrySet()) {
+                combinedParams.add(entry.getValue());
+                combinedParams.add(entry.getKey());
+            }
+
+            if (shaped) {
+                if (itemResult) {
+                    GameRegistry.addShapedRecipe(new ItemStack(GameRegistry.findItem("almura", pack.getName() + "\\" + name), amount, damage), combinedParams.toArray());
+                } else {
+                    GameRegistry.addShapedRecipe(new ItemStack(GameRegistry.findBlock("almura", pack.getName() + "\\" + name), amount, damage), combinedParams.toArray());
+                }
+            } else {
+                if (itemResult) {
+                    GameRegistry.addShapelessRecipe(new ItemStack(GameRegistry.findItem("almura", pack.getName() + "\\" + name), amount, damage), combinedParams.toArray());
+                } else {
+                    GameRegistry.addShapelessRecipe(new ItemStack(GameRegistry.findBlock("almura", pack.getName() + "\\" + name), amount, damage), combinedParams.toArray());
+                }
+            }
+        }
     }
 
     public static PackCrops createCropFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {

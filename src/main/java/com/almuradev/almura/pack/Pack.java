@@ -9,6 +9,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.crop.PackCrops;
+import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.model.PackShape;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
@@ -22,6 +23,7 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -31,7 +33,7 @@ import java.util.Map;
 public class Pack {
 
     //TODO Better home for this
-    protected static final List<PackShape> SHAPES = Lists.newArrayList();
+    private static final List<PackShape> SHAPES = Lists.newArrayList();
     private static final Map<String, Pack> PACKS = new HashMap<>();
     protected final List<Block> blocks = Lists.newArrayList();
     protected final List<Item> items = Lists.newArrayList();
@@ -188,6 +190,34 @@ public class Pack {
                 }
                 if (shape != null) {
                     ((IShapeContainer) item).setShape(shape);
+                }
+            }
+        }
+    }
+
+    public void onPostInitialization() throws IOException, ConfigurationException {
+        //Order is important
+        for (Block block : blocks) {
+            if (block instanceof IRecipeContainer && block instanceof IPackObject) {
+                if (((IRecipeContainer) block).hasRecipe()) {
+                    final InputStream entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(), ((IPackObject) block).getIdentifier() + ".yml"));
+                    final YamlConfiguration reader = new YamlConfiguration(entry);
+                    reader.load();
+                    PackCreator.createRecipeFromNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), false, reader.getNode("recipes"));
+                    entry.close();
+                }
+            }
+        }
+
+        //Order is important
+        for (Item item : items) {
+            if (item instanceof IRecipeContainer && item instanceof IPackObject) {
+                if (((IRecipeContainer) item).hasRecipe()) {
+                    final InputStream entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((IPackObject) item).getIdentifier() + ".yml"));
+                    final YamlConfiguration reader = new YamlConfiguration(entry);
+                    reader.load();
+                    PackCreator.createRecipeFromNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), true, reader.getNode("recipes"));
+                    entry.close();
                 }
             }
         }

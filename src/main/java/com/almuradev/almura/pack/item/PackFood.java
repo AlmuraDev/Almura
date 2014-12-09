@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Tabs;
+import com.almuradev.almura.pack.IRecipeContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -24,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class PackFood extends ItemFood implements IPackObject, IClipContainer, IShapeContainer {
+public class PackFood extends ItemFood implements IPackObject, IClipContainer, IShapeContainer, IRecipeContainer {
 
     private final Pack pack;
     private final String identifier;
@@ -36,11 +37,12 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     private String textureName;
     private PackShape shape;
     private String[] tooltip;
+    private final boolean hasRecipe;
 
     public PackFood(Pack pack, String identifier, String[] tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinatesByFace,
                     boolean showInCreativeTab, String creativeTabName, int healAmount, float saturationModifier, boolean isWolfFavorite,
-                    boolean alwaysEdible) {
+                    boolean alwaysEdible, boolean hasRecipe) {
         super(healAmount, saturationModifier, isWolfFavorite);
         this.pack = pack;
         this.identifier = identifier;
@@ -48,6 +50,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
         this.textureName = textureName;
         this.shapeName = shapeName;
         this.tooltip = tooltip;
+        this.hasRecipe = hasRecipe;
         setUnlocalizedName(pack.getName() + "\\" + identifier);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
@@ -102,6 +105,11 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
 
     @Override
     public String toString() {
-        return "PackFood {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
+        return "PackFood {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
+    }
+
+    @Override
+    public boolean hasRecipe() {
+        return hasRecipe;
     }
 }

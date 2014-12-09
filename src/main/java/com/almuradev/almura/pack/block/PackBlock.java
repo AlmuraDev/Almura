@@ -7,6 +7,7 @@ package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
+import com.almuradev.almura.pack.IRecipeContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, IRotatable {
+public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, IRotatable, IRecipeContainer {
 
     public static int renderId;
     private final Pack pack;
@@ -49,13 +50,14 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private final boolean mirrorRotation;
     private final boolean renderAsNormalBlock;
     private final boolean renderAsOpaque;
+    private final boolean hasRecipe;
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
 
     public PackBlock(Pack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation,
                      boolean mirrorRotation, float lightLevel, int lightOpacity, boolean showInCreativeTab, String creativeTabName,
-                     Map<Integer, List<Integer>> textureCoordinates, String shapeName, boolean renderAsNormalBlock, boolean renderAsOpaque) {
+                     Map<Integer, List<Integer>> textureCoordinates, String shapeName, boolean renderAsNormalBlock, boolean renderAsOpaque, boolean hasRecipe) {
         super(Material.rock);
         this.pack = pack;
         this.identifier = identifier;
@@ -67,6 +69,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         this.mirrorRotation = mirrorRotation;
         this.renderAsNormalBlock = renderAsNormalBlock;
         this.renderAsOpaque = renderAsOpaque;
+        this.hasRecipe = hasRecipe;
         setBlockName(pack.getName() + "\\" + identifier);
         setHardness(hardness);
         setResistance(resistance);
@@ -208,6 +211,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
+    public boolean hasRecipe() {
+        return hasRecipe;
+    }
+
+    @Override
     public String getShapeName() {
         return shapeName;
     }
@@ -224,6 +232,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
 
     @Override
     public String toString() {
-        return "PackBlock {pack= " + pack.getName() + ", raw_name= " + getUnlocalizedName() + "}";
+        return "PackBlock {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
     }
 }
