@@ -29,6 +29,7 @@ import com.google.common.collect.Maps;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.malisis.core.renderer.model.loader.ObjFileImporter;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.item.Item;
@@ -197,17 +198,24 @@ public class PackCreator {
 
             final List<Object> combinedParams = Lists.newArrayList();
 
-            //aaa
-            //bbb
-            //ccc
-            for (int i = 0; i < params.size(); i++) {
-                Character c = objectViaParamMap.get(param);
-                if (c == null) {
-                    c = RECIPE_MATRIX_PLACEHOLDER[index];
-                    objectViaParamMap.put(param, c);
-                    index++;
+            StringBuilder lineMatrixBuilder = new StringBuilder();
+            for (Object param : params) {
+                if (param.getClass() != BlockAir.class) {
+                    Character c = objectViaParamMap.get(param);
+                    if (c == null) {
+                        c = RECIPE_MATRIX_PLACEHOLDER[index];
+                        objectViaParamMap.put(param, c);
+                        index++;
+                    }
+                    lineMatrixBuilder.append(c);
                 }
-                combinedParams.add(c);
+                else {
+                    lineMatrixBuilder.append(" ");
+                }
+                if (lineMatrixBuilder.length() == 3) {
+                    combinedParams.add(lineMatrixBuilder.toString());
+                    lineMatrixBuilder = new StringBuilder();
+                }
             }
             for (Map.Entry<Object, Character> entry : objectViaParamMap.entrySet()) {
                 combinedParams.add(entry.getValue());
@@ -218,7 +226,8 @@ public class PackCreator {
                 if (itemResult) {
                     GameRegistry.addShapedRecipe(new ItemStack(GameRegistry.findItem("almura", pack.getName() + "\\" + name), amount, damage), combinedParams.toArray());
                 } else {
-                    GameRegistry.addShapedRecipe(new ItemStack(GameRegistry.findBlock("almura", pack.getName() + "\\" + name), amount, damage), combinedParams.toArray());
+                    final Block block = GameRegistry.findBlock("almura", pack.getName() + "\\" + name);
+                    GameRegistry.addShapedRecipe(new ItemStack(block, amount, damage), combinedParams.toArray());
                 }
             } else {
                 if (itemResult) {
