@@ -6,7 +6,7 @@
 package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IShapeContainer;
@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class PackFood extends ItemFood implements IPackObject, IClipContainer, IShapeContainer {
 
-    private final ContentPack pack;
+    private final Pack pack;
     private final String identifier;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
@@ -37,7 +37,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     private PackShape shape;
     private String[] tooltip;
 
-    public PackFood(ContentPack pack, String identifier, String[] tooltip, String textureName, String shapeName,
+    public PackFood(Pack pack, String identifier, String[] tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinatesByFace,
                     boolean showInCreativeTab, String creativeTabName, int healAmount, float saturationModifier, boolean isWolfFavorite,
                     boolean alwaysEdible) {
@@ -71,7 +71,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
-    public ContentPack getPack() {
+    public Pack getPack() {
         return pack;
     }
 
@@ -91,17 +91,13 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
-    public void refreshShape() {
-        this.shape = null;
+    public void setShape(PackShape shape) {
+        this.shape = shape;
+    }
 
-        if (shapeName != null) {
-            for (PackShape shape : ContentPack.getShapes()) {
-                if (shape.getName().equals(shapeName)) {
-                    this.shape = shape;
-                    break;
-                }
-            }
-        }
+    @Override
+    public String getShapeName() {
+        return shapeName;
     }
 
     @Override

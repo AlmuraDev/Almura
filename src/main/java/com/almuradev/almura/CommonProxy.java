@@ -7,7 +7,7 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
@@ -29,7 +29,7 @@ public class CommonProxy {
 
         Tabs.fakeStaticLoad();
 
-        ContentPack.loadAllContent();
+        Pack.loadAllContent();
 
         LanguageRegistry.injectIntoForge();
 
@@ -44,17 +44,19 @@ public class CommonProxy {
     public void onPostInitialization(FMLPostInitializationEvent event) {
     }
 
-    public void onCreate(Block block) {
+    public void onCreate(Pack pack) {
+        for (Block block : pack.getBlocks()) {
+            GameRegistry.registerBlock(block, block.getUnlocalizedName());
+        }
+
+        for (Item item : pack.getItems()) {
+            GameRegistry.registerItem(item, item.getUnlocalizedName());
+        }
+
+        Almura.LOGGER.info("Loaded -> " + pack);
     }
 
-    public void onCreate(Item item) {
+    public void onPostCreate(Pack pack) {
     }
 
-    public void onPostCreate(Block block) {
-        GameRegistry.registerBlock(block, block.getUnlocalizedName());
-    }
-
-    public void onPostCreate(Item item) {
-        GameRegistry.registerItem(item, item.getUnlocalizedName());
-    }
 }

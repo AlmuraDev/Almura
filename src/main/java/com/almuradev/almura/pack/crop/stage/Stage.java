@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.pack.crop.stage;
 
-import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -54,7 +54,7 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     }
 
     @Override
-    public ContentPack getPack() {
+    public Pack getPack() {
         return block.getPack();
     }
 
@@ -84,24 +84,25 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     }
 
     @Override
-    public void refreshShape() {
-        this.shape = null;
-
-        if (shapeName != null) {
-            for (PackShape shape : ContentPack.getShapes()) {
-                if (shape.getName().equals(shapeName)) {
-                    this.shape = shape;
-                    break;
-                }
+    public void setShape(PackShape shape) {
+        for (PackShape s : Pack.getShapes()) {
+            if (s.getName().equalsIgnoreCase(shapeName)) {
+                this.shape = s;
+                break;
             }
         }
         if (shape != null) {
-            if (!shape.useVanillaCollision) {
-                block.setBlockBounds(shape.collisionCoordinates.get(0).floatValue(), shape.collisionCoordinates.get(1).floatValue(),
-                                     shape.collisionCoordinates.get(2).floatValue(), shape.collisionCoordinates.get(3).floatValue(),
-                                     shape.collisionCoordinates.get(4).floatValue(), shape.collisionCoordinates.get(5).floatValue());
+            if (!shape.useVanillaBlockBounds) {
+                block.setBlockBounds(shape.blockBoundsCoordinates.get(0).floatValue(), shape.blockBoundsCoordinates.get(1).floatValue(),
+                                     shape.blockBoundsCoordinates.get(2).floatValue(), shape.blockBoundsCoordinates.get(3).floatValue(),
+                                     shape.blockBoundsCoordinates.get(4).floatValue(), shape.blockBoundsCoordinates.get(5).floatValue());
             }
         }
+    }
+
+    @Override
+    public String getShapeName() {
+        return shapeName;
     }
 
     @SideOnly(Side.CLIENT)

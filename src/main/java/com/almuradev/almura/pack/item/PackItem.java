@@ -7,7 +7,7 @@ package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IShapeContainer;
@@ -27,7 +27,7 @@ import java.util.Map;
 
 public class PackItem extends Item implements IPackObject, IClipContainer, IShapeContainer {
 
-    private final ContentPack pack;
+    private final Pack pack;
     private final String identifier;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
@@ -38,7 +38,7 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     private PackShape shape;
     private String[] tooltip;
 
-    public PackItem(ContentPack pack, String identifier, String[] tooltip, String textureName, String shapeName,
+    public PackItem(Pack pack, String identifier, String[] tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinatesByFace,
                     boolean showInCreativeTab, String creativeTabName) {
         this.pack = pack;
@@ -68,7 +68,7 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     }
 
     @Override
-    public ContentPack getPack() {
+    public Pack getPack() {
         return pack;
     }
 
@@ -88,17 +88,13 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     }
 
     @Override
-    public void refreshShape() {
-        this.shape = null;
+    public void setShape(PackShape shape) {
+        this.shape = shape;
+    }
 
-        if (shapeName != null) {
-            for (PackShape shape : ContentPack.getShapes()) {
-                if (shape.getName().equals(shapeName)) {
-                    this.shape = shape;
-                    break;
-                }
-            }
-        }
+    @Override
+    public String getShapeName() {
+        return shapeName;
     }
 
     @Override

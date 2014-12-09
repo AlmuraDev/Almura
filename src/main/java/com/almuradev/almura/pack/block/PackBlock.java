@@ -7,7 +7,7 @@ package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -38,7 +38,7 @@ import java.util.Random;
 public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, IRotatable {
 
     public static int renderId;
-    private final ContentPack pack;
+    private final Pack pack;
     private final String identifier;
     //TEXTURES
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
@@ -53,7 +53,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private String textureName;
     private PackShape shape;
 
-    public PackBlock(ContentPack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation,
+    public PackBlock(Pack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation,
                      boolean mirrorRotation, float lightLevel, int lightOpacity, boolean showInCreativeTab, String creativeTabName,
                      Map<Integer, List<Integer>> textureCoordinates, String shapeName, boolean renderAsNormalBlock, boolean renderAsOpaque) {
         super(Material.rock);
@@ -163,7 +163,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
-    public ContentPack getPack() {
+    public Pack getPack() {
         return pack;
     }
 
@@ -193,17 +193,8 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
-    public void refreshShape() {
-        shape = null;
-
-        if (shapeName != null) {
-            for (PackShape shape : ContentPack.getShapes()) {
-                if (shape.getName().equalsIgnoreCase(shapeName)) {
-                    this.shape = shape;
-                    break;
-                }
-            }
-        }
+    public void setShape(PackShape shape) {
+        this.shape = shape;
         if (shape != null) {
             if (!shape.useVanillaBlockBounds) {
                 setBlockBounds(shape.blockBoundsCoordinates.get(0).floatValue(), shape.blockBoundsCoordinates.get(1).floatValue(),
@@ -214,6 +205,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         } else {
             opaque = renderAsOpaque;
         }
+    }
+
+    @Override
+    public String getShapeName() {
+        return shapeName;
     }
 
     @Override

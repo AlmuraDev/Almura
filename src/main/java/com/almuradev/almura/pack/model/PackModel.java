@@ -6,7 +6,7 @@
 package com.almuradev.almura.pack.model;
 
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.Pack;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import net.malisis.core.renderer.model.MalisisModel;
 import net.malisis.core.renderer.model.loader.ObjFileImporter;
@@ -26,7 +26,7 @@ public class PackModel extends MalisisModel {
         this.name = name;
     }
 
-    public static PackModel createFromReader(ContentPack pack, String name) throws ConfigurationException, IOException {
+    public static PackModel createFromReader(Pack pack, String name) throws ConfigurationException, IOException {
         return new PackModel(name, Files.newInputStream(
                 Paths.get(Filesystem.CONFIG_YML_PATH.toString(), pack.getName() + File.separator + name + ".obj")));
     }

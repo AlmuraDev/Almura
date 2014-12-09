@@ -6,7 +6,7 @@
 package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -32,12 +32,12 @@ import java.util.Random;
 public class PackCrops extends BlockCrops implements IPackObject, IBlockClipContainer, IBlockShapeContainer {
 
     public static int renderId;
-    private final ContentPack pack;
+    private final Pack pack;
     private final String identifier;
     private final int levelRequired;
     private final Stage[] stages;
 
-    public PackCrops(ContentPack pack, String identifier, String textureName, int levelRequired, Stage[] stages) {
+    public PackCrops(Pack pack, String identifier, String textureName, int levelRequired, Stage[] stages) {
         this.pack = pack;
         this.identifier = identifier;
         this.levelRequired = levelRequired;
@@ -159,7 +159,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     }
 
     @Override
-    public ContentPack getPack() {
+    public Pack getPack() {
         return pack;
     }
 
@@ -199,10 +199,15 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     }
 
     @Override
-    public void refreshShape() {
+    public void setShape(PackShape shape) {
         for (Stage stage : stages) {
-            stage.refreshShape();
+            stage.setShape(shape);
         }
+    }
+
+    @Override
+    public String getShapeName() {
+        return "";
     }
 
     public int getLevelRequired() {

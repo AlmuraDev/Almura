@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.pack.crop;
 
-import com.almuradev.almura.pack.ContentPack;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IShapeContainer;
@@ -16,10 +16,10 @@ import net.minecraft.item.ItemSeeds;
 
 public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer, IShapeContainer {
 
-    private final ContentPack pack;
+    private final Pack pack;
     private final String identifier;
 
-    public PackSeeds(ContentPack pack, String identifier, String textureName, boolean showInCreativeTab,
+    public PackSeeds(Pack pack, String identifier, String textureName, boolean showInCreativeTab,
                      String creativeTabName, Block crop, Block soil) {
         super(crop, soil);
         this.pack = pack;
@@ -27,7 +27,7 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
-    public ContentPack getPack() {
+    public Pack getPack() {
         return pack;
     }
 
@@ -47,7 +47,12 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
-    public void refreshShape() {
+    public void setShape(PackShape shape) {
 
+    }
+
+    @Override
+    public String getShapeName() {
+        return null;
     }
 }

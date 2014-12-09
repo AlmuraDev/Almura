@@ -15,6 +15,7 @@ import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IShapeContainer;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
@@ -65,22 +66,9 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void onPostCreate(Block block) {
-        super.onPostCreate(block);
-        if (block instanceof IBlockShapeContainer) {
-            ((IBlockShapeContainer) block).refreshShape();
-        }
-    }
-
-    @Override
-    public void onPostCreate(Item item) {
-        super.onPostCreate(item);
-        if (item instanceof IShapeContainer) {
-            ((IShapeContainer) item).refreshShape();
-            if (((IShapeContainer) item).getShape() != null) {
-                PACK_ITEM_RENDERER.registerFor(item);
-            }
-        }
+    public void onCreate(Pack pack) {
+        pack.injectShapes();
+        super.onCreate(pack);
     }
 
     @SubscribeEvent

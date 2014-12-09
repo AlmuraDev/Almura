@@ -11,5 +11,7 @@ public interface IShapeContainer {
 
     PackShape getShape();
 
-    void refreshShape();
+    void setShape(PackShape shape);
+
+    String getShapeName();
 }

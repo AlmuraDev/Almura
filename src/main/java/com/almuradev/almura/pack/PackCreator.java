@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class PackCreator {
 
-    public static PackBlock createBlockFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackBlock createBlockFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild("Title").getString(name).split("\\n")[0];
         String textureName = reader.getChild("Texture").getString(name);
         textureName = textureName.split(".png")[0];
@@ -69,7 +69,7 @@ public class PackCreator {
                              showInCreativeTab, creativeTabName, textureCoordinatesByFace, shapeName, renderAsNormalBlock, renderAsOpaque);
     }
 
-    public static PackItem createItemFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackItem createItemFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String combinedTitleTooltips = reader.getChild("Title").getString(name);
         final String[] titleLines = combinedTitleTooltips.split("\\n");
         final String title = titleLines[0];
@@ -92,7 +92,7 @@ public class PackCreator {
                             textureCoordinatesByFace, showInCreativeTab, creativeTabName);
     }
 
-    public static PackFood createFoodFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackFood createFoodFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String combinedTitleTooltips = reader.getChild("Title").getString(name);
         final String[] titleLines = combinedTitleTooltips.split("\\n");
         final String title = titleLines[0];
@@ -121,7 +121,7 @@ public class PackCreator {
                             saturationModifier, isWolfFavorite, alwaysEdible);
     }
 
-    public static PackCrops createCropFromReader(ContentPack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackCrops createCropFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild("title").getString(name).split("\\n")[0];
         String textureName = reader.getChild("texture").getString(name);
         textureName = textureName.split(".png")[0];
@@ -133,7 +133,7 @@ public class PackCreator {
         return null;
     }
 
-    public static PackSeeds createSeedFromNode(ContentPack pack, Block soil, PackCrops crop, String textureName, ConfigurationNode node)
+    public static PackSeeds createSeedFromNode(Pack pack, Block soil, PackCrops crop, String textureName, ConfigurationNode node)
             throws ConfigurationException {
         final String identifier = node.getChild("identifier").getString();
         if (identifier.isEmpty()) {
@@ -150,7 +150,7 @@ public class PackCreator {
         return new PackSeeds(pack, crop.getUnlocalizedName() + "\\", textureName, showInCreativeTab, creativeTabName, crop, soil);
     }
 
-    public static Stage createStageFromNode(ContentPack pack, PackCrops crop, int id, ConfigurationNode node) {
+    public static Stage createStageFromNode(Pack pack, PackCrops crop, int id, ConfigurationNode node) {
         final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.extractCoordsFrom(node.getChild("coords"));
         String shapeName = node.getChild("shape").getString();
         if (shapeName != null) {
