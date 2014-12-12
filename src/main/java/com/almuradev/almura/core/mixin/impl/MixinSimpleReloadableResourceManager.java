@@ -27,10 +27,9 @@ public abstract class MixinSimpleReloadableResourceManager implements IReloadabl
 
     @Overwrite
     private void notifyReloadListeners() {
-        Iterator iterator = reloadListeners.iterator();
 
-        while (iterator.hasNext()) {
-            IResourceManagerReloadListener iresourcemanagerreloadlistener = (IResourceManagerReloadListener) iterator.next();
+        for (Object reloadListener : reloadListeners) {
+            IResourceManagerReloadListener iresourcemanagerreloadlistener = (IResourceManagerReloadListener) reloadListener;
             if (iresourcemanagerreloadlistener.getClass() == TextureManager.class && Loader.instance().hasReachedState(LoaderState.AVAILABLE)
                 && !reload) {
                 reload = true;

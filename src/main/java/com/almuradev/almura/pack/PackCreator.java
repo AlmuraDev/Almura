@@ -120,8 +120,8 @@ public class PackCreator {
         final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
 
         final ConfigurationNode consumptionNode = reader.getNode(PackKeys.NODE_CONSUMPTION.getKey());
-        final float heal = consumptionNode.getChild(PackKeys.HEAL.getKey()).getFloat(PackKeys.HEAL.getDefaultValue());
-        final float saturation = consumptionNode.getChild(PackKeys.SATURATION.getKey()).getFloat(PackKeys.SATURATION.getDefaultValue());
+        final float heal = consumptionNode.getChild(PackKeys.HEALTH_CHANGE.getKey()).getFloat(PackKeys.HEALTH_CHANGE.getDefaultValue());
+        final float saturation = consumptionNode.getChild(PackKeys.SATURATION_CHANGE.getKey()).getFloat(PackKeys.SATURATION_CHANGE.getDefaultValue());
         final boolean wolfFavorite = consumptionNode.getChild(PackKeys.WOLF_FAVORITE.getKey()).getBoolean(PackKeys.WOLF_FAVORITE.getDefaultValue());
         final boolean alwaysEdible = consumptionNode.getChild(PackKeys.ALWAYS_EDIBLE.getKey()).getBoolean(PackKeys.ALWAYS_EDIBLE.getDefaultValue());
         final ConsumptionProperty consumptionProperty = new ConsumptionProperty(true, heal, saturation, alwaysEdible, wolfFavorite);

@@ -14,9 +14,11 @@ import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IRotatable;
 import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.property.BreakProperty;
 import com.almuradev.almura.pack.property.LightProperty;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.property.RenderProperty;
+import com.almuradev.almura.pack.property.ToolsProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -27,6 +29,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
@@ -34,6 +37,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -47,28 +51,28 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     //SHAPES
     private final String shapeName;
-    private final int dropAmount;
     private final boolean rotation;
     private final boolean mirrorRotation;
     private final RenderProperty renderProperty;
+    private final BreakProperty breakProperty;
     private final boolean hasRecipe;
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
 
-    public PackBlock(Pack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation,
+    public PackBlock(Pack pack, String identifier, String textureName, float hardness, float resistance, boolean rotation,
                      boolean mirrorRotation, LightProperty lightProperty, boolean showInCreativeTab, String creativeTabName,
-                     Map<Integer, List<Integer>> textureCoordinates, String shapeName, RenderProperty renderProperty, boolean hasRecipe) {
+                     Map<Integer, List<Integer>> textureCoordinates, String shapeName, RenderProperty renderProperty, BreakProperty breakProperty, boolean hasRecipe) {
         super(Material.rock);
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinatesByFace = textureCoordinates;
         this.textureName = textureName;
         this.shapeName = shapeName;
-        this.dropAmount = dropAmount;
         this.rotation = rotation;
         this.mirrorRotation = mirrorRotation;
         this.renderProperty = renderProperty;
+        this.breakProperty = breakProperty;
         this.hasRecipe = hasRecipe;
         setBlockName(pack.getName() + "\\" + identifier);
         setHardness(hardness);
@@ -128,15 +132,15 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
-    public int quantityDropped(Random p_149745_1_) {
-        return dropAmount;
-    }
-
-    @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack item) {
         final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
         final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
         world.setBlockMetadataWithNotify(x, y, z, Rotation.getState(cameraDir, playerDir).getId(), 3);
+    }
+
+    @Override
+    public void onBlockHarvested(World p_149681_1_, int p_149681_2_, int p_149681_3_, int p_149681_4_, int p_149681_5_, EntityPlayer p_149681_6_) {
+        super.onBlockHarvested(p_149681_1_, p_149681_2_, p_149681_3_, p_149681_4_, p_149681_5_, p_149681_6_);
     }
 
     /**

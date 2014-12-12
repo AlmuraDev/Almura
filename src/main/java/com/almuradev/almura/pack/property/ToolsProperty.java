@@ -11,11 +11,16 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.List;
 
 public class ToolsProperty implements IProperty<List<DropsProperty>> {
-
+    private final Object tool;
     private final List<DropsProperty> value = Lists.newArrayList();
 
-    public ToolsProperty(DropsProperty... value) {
+    public ToolsProperty(Object tool, DropsProperty... value) {
+        this.tool = tool;
         ArrayUtils.addAll(value, this.value);
+    }
+
+    public Object getTool() {
+        return tool;
     }
 
     @Override

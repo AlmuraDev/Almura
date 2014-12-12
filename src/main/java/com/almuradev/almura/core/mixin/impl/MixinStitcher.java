@@ -31,6 +31,7 @@ public abstract class MixinStitcher {
     @Shadow
     private int maxHeight;
 
+    @SuppressWarnings("unchecked")
     @Overwrite
     private boolean expandAndAllocateSlot(Stitcher.Holder p_94311_1_) {
         int i = Math.min(p_94311_1_.getWidth(), p_94311_1_.getHeight());
