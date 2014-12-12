@@ -1,4 +1,4 @@
-date: 12-6-2014
+date: 12-12-2014
 type: block
 title: Block
 texture: block.png
@@ -22,6 +22,13 @@ mirror-rotate: false
 light:
     emission: 1
     opacity: 200
+collision:
+     enabled: false
+     sources:
+         player:
+             health-change: 1
+         skeleton:
+             health-change: 1
 break:
     tools:
         none:

@@ -25,10 +25,10 @@ public class PackKeys {
     public static final DefaultedKey<Float> FLOAT_DAMAGE = new DefaultedKey<>("damage", Float.MIN_VALUE);
     public static final DefaultedKey<Integer> LEVEL_REQUIRED = new DefaultedKey<>("level-required", Integer.MIN_VALUE);
     public static final DefaultedKey<Boolean> ENABLED = new DefaultedKey<>("enabled", Boolean.FALSE);
+    public static final DefaultedKey<Float> HEALTH_CHANGE = new DefaultedKey<>("health-change", Float.MIN_VALUE);
     //CONSUMPTION NODE
     public static final DefaultedKey<String> NODE_CONSUMPTION = new DefaultedKey<>("consumption", "");
-    public static final DefaultedKey<Float> HEAL = new DefaultedKey<>("heal", Float.MIN_VALUE);
-    public static final DefaultedKey<Float> SATURATION = new DefaultedKey<>("saturation", Float.MIN_VALUE);
+    public static final DefaultedKey<Float> SATURATION_CHANGE = new DefaultedKey<>("saturation-change", Float.MIN_VALUE);
     public static final DefaultedKey<Boolean> ALWAYS_EDIBLE = new DefaultedKey<>("always-edible", Boolean.FALSE);
     public static final DefaultedKey<Boolean> WOLF_FAVORITE = new DefaultedKey<>("wolf-favorite", Boolean.FALSE);
     //RENDER NODE

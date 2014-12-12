@@ -1,5 +1,5 @@
-date: 12-5-2014
-type: Crop
+date: 12-12-2014
+type: crop
 title: Crop
 texture: crops.png
 level-required: 18
@@ -51,7 +51,7 @@ stages:
             enabled: true
             sources:
                 bonemeal:
-                     amount: 5
+                     amount: 5-6
         light:
             emission: 0
             opacity: 150
@@ -78,7 +78,7 @@ stages:
             enabled: true
             sources:
                 bonemeal:
-                     amount: 5
+                     amount: 5-6
         light:            
             emission: 0
             opacity: 150
@@ -110,7 +110,7 @@ stages:
             enabled: true
             sources:
                 bonemeal:
-                     amount: 5
+                     amount: 5-6
         light:            
             emission: 0
             opacity: 150
@@ -142,7 +142,7 @@ stages:
             enabled: true
             sources:
                 bonemeal:
-                     amount: 5
+                     amount: 5-6
         light:            
             emission: 0
             opacity: 150
