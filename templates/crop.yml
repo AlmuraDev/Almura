@@ -1,0 +1,181 @@
+date: 12-5-2014
+type: Crop
+title: Crop
+texture: crops.png
+level-required: 18
+seed:
+    title: Crop Seed
+    coordinates:
+        - 256 384 32 32
+    creative-tab: crops
+    show-in-creative-tab: true
+    drop-on-grass-break: true
+    recipes:
+        0:
+            type: shaped
+            amount: 2
+            damage: 1
+            ingredients:
+                - dirt dirt dirt
+                - air air air
+                - almura\AlmuraCustom1\sand sand sand
+        1:
+            type: shapeless
+            amount: 2
+            damage: 1
+            ingredients:
+                - dirt dirt dirt
+                - air air air
+                - almura\AlmuraCustom1\sand sand sand
+soil:
+    source: farmland
+    biome:
+        enabled: disabled
+        sources:
+            plains:
+                temperature-required: 50-75.5
+                humidity-required: 50-60
+stages:
+    0:
+        coordinates:
+            - 256 384 32 32
+        shape: crop-dirt.shape
+        hardness: 1
+        resistance: 1
+        hydration:
+            enabled: false
+            sources:
+                water:
+                    needed-promixity: 5
+        fertilizer:
+            enabled: true
+            sources:
+                bonemeal:
+                     amount: 5
+        light:
+            emission: 0
+            opacity: 150
+            required:
+                enabled: false
+                min: 1
+                max: 3
+        growth:
+            chance: 20-30
+        collision:
+            enabled: false
+            sources:
+                player:
+                    health-change: 0
+                skeleton:
+                    health-change: 0
+    1:
+        coordinates:
+            - 256 384 32 32
+        shape: crop-1h.shape
+        hardness: 0
+        resistance: 0        
+        fertilizer:
+            enabled: true
+            sources:
+                bonemeal:
+                     amount: 5
+        light:            
+            emission: 0
+            opacity: 150
+            required: 
+                enabled: false
+                min: 1
+                max: 3
+        growth:
+            chance: 20-30
+        collision:
+            enabled: false
+            sources:
+                player:
+                    health-change: 0
+                skeleton:
+                    health-change: 0
+    2:
+        coordinates:
+            - 256 384 32 32
+        shape: crop-2h.shape
+        hardness: 0
+        resistance: 0
+        hydration:
+            enabled: false
+            sources:
+                water:
+                    needed-promixity: 5        
+        fertilizer:
+            enabled: true
+            sources:
+                bonemeal:
+                     amount: 5
+        light:            
+            emission: 0
+            opacity: 150
+            required: 
+                enabled: false
+                min: 1
+                max: 3
+        growth:
+            chance: 20-30
+        collision:
+            enabled: false
+            sources:
+                player:
+                    health-change: 0
+                skeleton:
+                    health-change: 0
+    3:
+        coordinates:
+            - 256 384 32 32
+        shape: crop-3h.shape
+        hardness: 0
+        resistance: 0        
+        hydration:
+            enabled: false
+            sources:
+                water:
+                    needed-promixity: 5
+        fertilizer:
+            enabled: true
+            sources:
+                bonemeal:
+                     amount: 5
+        light:            
+            emission: 0
+            opacity: 150
+            required: 
+                enabled: false
+                min: 1
+                max: 3
+        growth:
+            chance: 20-30
+        collision:
+            enabled: false
+            sources:
+                player:
+                    health-change: 0
+                skeleton:
+                    health-change: 0
+        break:
+            tools:
+                none:
+                    experience: 10-15
+                    drops:
+                        almura\food\corn:
+                            amount: 1-2
+                            bonus:
+                                enabled: false
+                                amount: 1-5
+                                chance: 10-15
+                almura\tools\diamond_sickle:
+                    experience: 10-15
+                    drops:
+                        almura\food\corn:
+                            amount: 3-4
+                            bonus:
+                                enabled: true
+                                amount: 4-5
+                                chance: 45-75

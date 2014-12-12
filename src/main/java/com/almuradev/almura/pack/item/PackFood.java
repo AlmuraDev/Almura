@@ -13,6 +13,7 @@ import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.property.ConsumptionProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -36,14 +37,13 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     public ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
-    private String[] tooltip;
+    private List<String> tooltip;
     private final boolean hasRecipe;
 
-    public PackFood(Pack pack, String identifier, String[] tooltip, String textureName, String shapeName,
+    public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinatesByFace,
-                    boolean showInCreativeTab, String creativeTabName, int healAmount, float saturationModifier, boolean isWolfFavorite,
-                    boolean alwaysEdible, boolean hasRecipe) {
-        super(healAmount, saturationModifier, isWolfFavorite);
+                    boolean showInCreativeTab, String creativeTabName, ConsumptionProperty consumptionProperty, boolean hasRecipe) {
+        super((int) consumptionProperty.getHeal(), consumptionProperty.getSaturation(), consumptionProperty.isWolfFavorite());
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
@@ -55,22 +55,20 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
-        if (alwaysEdible) {
+        if (consumptionProperty.isAlwaysEdible()) {
             setAlwaysEdible();
         }
     }
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-        if (tooltip != null && tooltip.length > 0) {
-            Collections.addAll(list, tooltip);
-        }
+        Collections.addAll(list, tooltip);
     }
 
     @Override
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(this, textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoords(itemIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(itemIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override

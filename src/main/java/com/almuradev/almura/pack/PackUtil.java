@@ -25,13 +25,11 @@ import java.util.Map;
 
 public class PackUtil {
 
-    public static Map<Integer, List<Integer>> extractCoordsFrom(ConfigurationNode node) {
-        final List<String> textureCoordinatesList = node.getStringList();
-
+    public static Map<Integer, List<Integer>> parseCoordinatesFrom(List<String> value) {
         final Map<Integer, List<Integer>> textureCoordinatesByFace = new HashMap<>();
 
-        for (int i = 0; i < textureCoordinatesList.size(); i++) {
-            final String[] coordSplit = textureCoordinatesList.get(i).split(" ");
+        for (int i = 0; i < value.size(); i++) {
+            final String[] coordSplit = value.get(i).split(" ");
 
             final List<Integer> coords = new LinkedList<>();
             for (String coord : coordSplit) {
@@ -44,8 +42,8 @@ public class PackUtil {
         return textureCoordinatesByFace;
     }
 
-    public static ClippedIcon[] generateClippedIconsFromCoords(IIcon source, String textureName, Map<Integer, List<Integer>> texCoords) {
-        final ClippedIcon[] clippedIcons = new ClippedIcon[texCoords.size()];
+    public static ClippedIcon[] generateClippedIconsFromCoordinates(IIcon source, String textureName, Map<Integer, List<Integer>> textureCoordinates) {
+        final ClippedIcon[] clippedIcons = new ClippedIcon[textureCoordinates.size()];
         Dimension dimension = null;
 
         try {
@@ -65,8 +63,8 @@ public class PackUtil {
         }
 
         if (dimension != null) {
-            for (int i = 0; i < texCoords.size(); i++) {
-                final List<Integer> coordList = texCoords.get(i);
+            for (int i = 0; i < textureCoordinates.size(); i++) {
+                final List<Integer> coordList = textureCoordinates.get(i);
 
                 clippedIcons[i] =
                         new ClippedIcon((MalisisIcon) source, (float) (coordList.get(0) / dimension.getWidth()),

@@ -3,16 +3,17 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.crop.stage.property;
+package com.almuradev.almura.pack.property;
 
-import com.almuradev.almura.pack.crop.stage.property.source.RangeSource;
+import com.almuradev.almura.pack.property.source.RangeSource;
 
 public class LightProperty implements IProperty<RangeSource> {
 
-    private final int emission, opacity;
+    private final float emission;
+    private final int opacity;
     private final RangeSource value;
 
-    public LightProperty(int emission, int opacity, RangeSource value) {
+    public LightProperty(float emission, int opacity, RangeSource value) {
         this.emission = emission;
         this.opacity = opacity;
         this.value = value;
@@ -23,7 +24,7 @@ public class LightProperty implements IProperty<RangeSource> {
         return value;
     }
 
-    public int getEmission() {
+    public float getEmission() {
         return emission;
     }
 

@@ -99,7 +99,7 @@ public class Pack {
                 streamed.add(path);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed in filtering out yml files. This could mean a critical filesystem error!", e);
+            throw new RuntimeException("Failed filtering yml files from [" + Filesystem.CONFIG_YML_PATH + "].", e);
         }
 
         Collections.sort(streamed, new Comparator<Path>() {
@@ -115,7 +115,7 @@ public class Pack {
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
 
-                final String type = reader.getChild("Type").getString("").toUpperCase();
+                final String type = reader.getChild(PackKeys.TYPE.getKey()).getString(PackKeys.TYPE.getDefaultValue()).toUpperCase();
 
                 final String name = path.getFileName().toString().split(".yml")[0];
 

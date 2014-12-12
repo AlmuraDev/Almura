@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.crop.stage.property;
+package com.almuradev.almura.pack.property;
 
 public interface IProperty<T> {
 

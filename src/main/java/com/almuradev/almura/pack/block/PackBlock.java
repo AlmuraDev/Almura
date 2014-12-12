@@ -14,7 +14,9 @@ import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IRotatable;
 import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.property.LightProperty;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.property.RenderProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -48,16 +50,15 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private final int dropAmount;
     private final boolean rotation;
     private final boolean mirrorRotation;
-    private final boolean renderAsNormalBlock;
-    private final boolean renderAsOpaque;
+    private final RenderProperty renderProperty;
     private final boolean hasRecipe;
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
 
     public PackBlock(Pack pack, String identifier, String textureName, float hardness, int dropAmount, float resistance, boolean rotation,
-                     boolean mirrorRotation, float lightLevel, int lightOpacity, boolean showInCreativeTab, String creativeTabName,
-                     Map<Integer, List<Integer>> textureCoordinates, String shapeName, boolean renderAsNormalBlock, boolean renderAsOpaque, boolean hasRecipe) {
+                     boolean mirrorRotation, LightProperty lightProperty, boolean showInCreativeTab, String creativeTabName,
+                     Map<Integer, List<Integer>> textureCoordinates, String shapeName, RenderProperty renderProperty, boolean hasRecipe) {
         super(Material.rock);
         this.pack = pack;
         this.identifier = identifier;
@@ -67,15 +68,14 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         this.dropAmount = dropAmount;
         this.rotation = rotation;
         this.mirrorRotation = mirrorRotation;
-        this.renderAsNormalBlock = renderAsNormalBlock;
-        this.renderAsOpaque = renderAsOpaque;
+        this.renderProperty = renderProperty;
         this.hasRecipe = hasRecipe;
         setBlockName(pack.getName() + "\\" + identifier);
         setHardness(hardness);
         setResistance(resistance);
-        setLightLevel(lightLevel);
+        setLightLevel(lightProperty.getEmission());
 
-        setLightOpacity(lightOpacity);
+        setLightOpacity(lightProperty.getOpacity());
         setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
@@ -92,7 +92,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoords(blockIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     @SideOnly(Side.CLIENT)
     public boolean renderAsNormalBlock() {
-        return shape == null && renderAsNormalBlock;
+        return shape == null && renderProperty.getValue();
     }
 
     @Override
@@ -206,7 +206,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
             }
             opaque = false;
         } else {
-            opaque = renderAsOpaque;
+            opaque = renderProperty.isOpaque();
         }
     }
 

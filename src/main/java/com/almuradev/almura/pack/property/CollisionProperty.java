@@ -3,27 +3,20 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.crop.stage.property;
+package com.almuradev.almura.pack.property;
 
-import com.almuradev.almura.pack.crop.stage.property.source.CollisionSource;
+import com.almuradev.almura.pack.property.source.CollisionSource;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 
-public class CollisionProperty implements ToggleableProperty<List<CollisionSource>> {
-
-    private final boolean enabled;
+public class CollisionProperty extends ToggleableProperty<List<CollisionSource>> {
     private final List<CollisionSource> value = Lists.newArrayList();
 
-    public CollisionProperty(boolean enabled, CollisionSource... value) {
-        this.enabled = enabled;
+    public CollisionProperty(boolean isEnabled, CollisionSource... value) {
+        super(isEnabled);
         ArrayUtils.add(value, this.value);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
     @Override

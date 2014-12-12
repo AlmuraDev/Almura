@@ -37,10 +37,10 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
-    private String[] tooltip;
+    private List<String> tooltip;
     private final boolean hasRecipe;
 
-    public PackItem(Pack pack, String identifier, String[] tooltip, String textureName, String shapeName,
+    public PackItem(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinatesByFace,
                     boolean showInCreativeTab, String creativeTabName, boolean hasRecipe) {
         this.pack = pack;
@@ -59,15 +59,13 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-        if (tooltip != null && tooltip.length > 0) {
-            Collections.addAll(list, tooltip);
-        }
+        Collections.addAll(list, tooltip);
     }
 
     @Override
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(this, textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoords(itemIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(itemIcon, textureName, textureCoordinatesByFace);
     }
 
     @Override

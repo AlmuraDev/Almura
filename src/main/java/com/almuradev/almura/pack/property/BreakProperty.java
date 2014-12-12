@@ -3,26 +3,20 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.crop.stage.property;
+package com.almuradev.almura.pack.property;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 
-public class HarvestProperty implements ToggleableProperty<List<ToolsProperty>> {
+public class BreakProperty extends ToggleableProperty<List<ToolsProperty>> {
 
-    private final boolean enabled;
     private final List<ToolsProperty> value = Lists.newArrayList();
 
-    public HarvestProperty(boolean enabled, ToolsProperty... value) {
-        this.enabled = enabled;
+    public BreakProperty(boolean isEnabled, ToolsProperty... value) {
+        super(isEnabled);
         ArrayUtils.add(value, this.value);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
     @Override

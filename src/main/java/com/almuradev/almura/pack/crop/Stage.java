@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.crop.stage;
+package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IBlockClipContainer;
@@ -12,7 +12,7 @@ import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IState;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.crop.PackCrops;
-import com.almuradev.almura.pack.crop.stage.property.GrowthProperty;
+import com.almuradev.almura.pack.property.GrowthProperty;
 import com.almuradev.almura.pack.model.PackShape;
 import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
@@ -107,7 +107,7 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
 
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIcon blockIcon, String textureName, IIconRegister register) {
-        clippedIcons = PackUtil.generateClippedIconsFromCoords(blockIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinatesByFace);
     }
 
     @SideOnly(Side.CLIENT)

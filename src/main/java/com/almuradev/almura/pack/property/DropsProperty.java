@@ -3,9 +3,9 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.crop.stage.property;
+package com.almuradev.almura.pack.property;
 
-import com.almuradev.almura.pack.crop.stage.property.source.ItemSource;
+import com.almuradev.almura.pack.property.source.ItemSource;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
 

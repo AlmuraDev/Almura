@@ -1,0 +1,53 @@
+date: 12-6-2014
+type: block
+title: Block
+texture: block.png
+shape: block.shape
+coordinates:
+    - 0 0 128 128
+    - 128 0 128 128
+    - 256 0 128 128
+    - 384 0 128 128
+    - 512 0 128 128
+    - 128 640 128 128
+render:
+    normal-cube: false
+    opaque: false
+creative-tab: blocks
+show-in-creative-tab: true
+hardness: 0.5
+resistance: 1
+rotate: true
+mirror-rotate: false
+light:
+    emission: 1
+    opacity: 200
+break:
+    tools:
+        none:
+            experience: 5-10
+            drops:
+                almura\food\corn:
+                    amount: 1-2
+                    bonus:
+                        enabled: false
+                        amount: 1-5
+                        chance: 10-15
+        almura\tools\diamond_sickle:
+            experience: 5-10
+            drops:
+                almura\food\corn:
+                    amount: 3-4
+                    bonus:
+                        enabled: true
+                        amount: 4-5
+                        chance: 45-75
+recipes:
+    0:
+        type: shaped
+        amount: 1
+        damage: 3
+        ingredients:
+            - air air air
+            - air stone air
+            - air sand air

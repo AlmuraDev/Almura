@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.crop.stage.property.source;
+package com.almuradev.almura.pack.property.source;
 
 public class BonusSource extends RangeSource {
 

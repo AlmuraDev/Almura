@@ -3,27 +3,21 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.crop.stage.property;
+package com.almuradev.almura.pack.property;
 
-import com.almuradev.almura.pack.crop.stage.property.source.HydrationSource;
+import com.almuradev.almura.pack.property.source.HydrationSource;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 
-public class HydrationProperty implements ToggleableProperty<List<HydrationSource>> {
+public class HydrationProperty extends ToggleableProperty<List<HydrationSource>> {
 
-    private final boolean enabled;
     private final List<HydrationSource> value = Lists.newArrayList();
 
-    public HydrationProperty(boolean enabled, HydrationSource... value) {
-        this.enabled = enabled;
+    public HydrationProperty(boolean isEnabled, HydrationSource... value) {
+        super(isEnabled);
         ArrayUtils.addAll(value, this.value);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
     @Override

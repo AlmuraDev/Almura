@@ -3,27 +3,21 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.crop.stage.property;
+package com.almuradev.almura.pack.property;
 
-import com.almuradev.almura.pack.crop.stage.property.source.FertilizerSource;
+import com.almuradev.almura.pack.property.source.FertilizerSource;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 
-public class FertilizerProperty implements ToggleableProperty<List<FertilizerSource>> {
+public class FertilizerProperty extends ToggleableProperty<List<FertilizerSource>> {
 
-    private final boolean enabled;
     private final List<FertilizerSource> value = Lists.newArrayList();
 
-    public FertilizerProperty(boolean enabled, FertilizerSource... value) {
-        this.enabled = enabled;
+    public FertilizerProperty(boolean isEnabled, FertilizerSource... value) {
+        super(isEnabled);
         ArrayUtils.addAll(value, this.value);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
     @Override
