@@ -163,6 +163,7 @@ stages:
             tools:
                 none:
                     experience: 10-15
+                    exhaustion: 5-10
                     drops:
                         almura\food\corn:
                             amount: 1-2
@@ -172,6 +173,7 @@ stages:
                                 chance: 10-15
                 almura\tools\diamond_sickle:
                     experience: 10-15
+                    exhaustion: 5-10
                     drops:
                         almura\food\corn:
                             amount: 3-4

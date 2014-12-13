@@ -1,0 +1,23 @@
+date: 12-13-2014
+type: food
+title: Food
+texture: food.png
+shape: food.shape
+coordinates:
+    - 0 0 16 16
+    - 16 16 32 32
+creative-tab: food
+show-in-creative-tab: true
+consumption:
+    health-change: 1
+    saturation-change: 1
+    wolf-favorite: false
+    always-edible: true
+recipes:
+    0:
+        type: shaped
+        amount: 1
+        ingredients:
+            - air air air
+            - air stone air
+            - air sand air
