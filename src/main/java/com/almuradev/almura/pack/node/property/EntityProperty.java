@@ -7,16 +7,21 @@ package com.almuradev.almura.pack.node.property;
 
 import net.minecraft.entity.Entity;
 
-public class EntityProperty implements IProperty<Class<? extends Entity>> {
-
+public class EntityProperty implements IProperty<Boolean> {
+    private final boolean isEnabled;
     private final Class<? extends Entity> clazz;
 
-    public EntityProperty(Class<? extends Entity> clazz) {
+    public EntityProperty(boolean isEnabled, Class<? extends Entity> clazz) {
+        this.isEnabled = isEnabled;
         this.clazz = clazz;
     }
 
     @Override
-    public Class<? extends Entity> getSource() {
+    public Boolean getSource() {
+        return isEnabled;
+    }
+
+    public Class<? extends Entity> getEntityClass() {
         return clazz;
     }
 }

@@ -7,7 +7,6 @@ package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.pack.IRecipeContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
@@ -19,6 +18,7 @@ import com.almuradev.almura.pack.node.DropsNode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.RenderNode;
+import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.ToolsNode;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
@@ -49,36 +49,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, IRotatable, IRecipeContainer {
+public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, IRotatable {
 
     public static int renderId;
     private final Pack pack;
     private final String identifier;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
-    private final boolean rotate;
-    private final boolean mirrorRotate;
-    private final RenderNode renderProperty;
-    private final BreakNode breakProperty;
-    private final boolean hasRecipe;
+    private final RotationNode rotationNode;
+    private final RenderNode renderNode;
+    private final BreakNode breakNode;
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
 
-    public PackBlock(Pack pack, String identifier, String textureName, float hardness, float resistance, boolean rotate,
-                     boolean mirrorRotate, LightNode lightProperty, boolean showInCreativeTab, String creativeTabName,
-                     Map<Integer, List<Integer>> textureCoordinates, String shapeName, RenderNode renderProperty, BreakNode breakProperty, boolean hasRecipe) {
+    public PackBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String shapeName, float hardness,
+                     float resistance, boolean showInCreativeTab, String creativeTabName, RotationNode rotationNode, LightNode lightProperty,
+                     RenderNode renderNode, BreakNode breakNode) {
         super(Material.rock);
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinatesByFace = textureCoordinates;
         this.textureName = textureName;
         this.shapeName = shapeName;
-        this.rotate = rotate;
-        this.mirrorRotate = mirrorRotate;
-        this.renderProperty = renderProperty;
-        this.breakProperty = breakProperty;
-        this.hasRecipe = hasRecipe;
+        this.rotationNode = rotationNode;
+        this.renderNode = renderNode;
+        this.breakNode = breakNode;
         setBlockName(pack.getName() + "\\" + identifier);
         setHardness(hardness);
         setResistance(resistance);
@@ -128,7 +124,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     @SideOnly(Side.CLIENT)
     public boolean renderAsNormalBlock() {
-        return shape == null && renderProperty.getValue();
+        return shape == null && renderNode.getValue();
     }
 
     @Override
@@ -142,7 +138,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         player.addStat(StatList.mineBlockStatArray[getIdFromBlock(this)], 1);
         final ItemStack held = player.getHeldItem();
         ToolsNode toolsProperty = null;
-        for (ToolsNode prop : breakProperty.getValue()) {
+        for (ToolsNode prop : breakNode.getValue()) {
             if (held == null && prop instanceof ToolsNode.OffHand) {
                 toolsProperty = prop;
                 break;
@@ -195,7 +191,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack item) {
-        if (rotate || mirrorRotate) {
+        if (rotationNode.isEnabled() && (rotationNode.isDefaultRotate() || rotationNode.isDefaultMirrorRotate())) {
             final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
             final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
             world.setBlockMetadataWithNotify(x, y, z, Rotation.getState(cameraDir, playerDir).getId(), 3);
@@ -259,6 +255,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
+    public RotationNode getNode() {
+        return rotationNode;
+    }
+
+    @Override
     public void setShape(PackShape shape) {
         this.shape = shape;
         if (shape != null) {
@@ -269,28 +270,13 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
             }
             opaque = false;
         } else {
-            opaque = renderProperty.isOpaque();
+            opaque = renderNode.isOpaque();
         }
-    }
-
-    @Override
-    public boolean hasRecipe() {
-        return hasRecipe;
     }
 
     @Override
     public String getShapeName() {
         return shapeName;
-    }
-
-    @Override
-    public boolean canMirrorRotate(IBlockAccess access, int x, int y, int z, int metadata) {
-        return mirrorRotate;
-    }
-
-    @Override
-    public boolean canRotate(IBlockAccess access, int x, int y, int z, int metadata) {
-        return rotate;
     }
 
     @Override

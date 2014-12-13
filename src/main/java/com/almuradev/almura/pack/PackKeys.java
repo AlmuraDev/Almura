@@ -16,8 +16,6 @@ public class PackKeys {
     public static final DefaultedKey<String> SHAPE = new DefaultedKey<>("shape", "");
     public static final DefaultedKey<String> CREATIVE_TAB = new DefaultedKey<>("creative-tab", "other");
     public static final DefaultedKey<Boolean> SHOW_IN_CREATIVE_TAB = new DefaultedKey<>("show-in-creative-tab", Boolean.TRUE);
-    public static final DefaultedKey<Boolean> ROTATE = new DefaultedKey<>("rotate", Boolean.TRUE);
-    public static final DefaultedKey<Boolean> MIRROR_ROTATE = new DefaultedKey<>("mirror-rotate", Boolean.FALSE);
     public static final DefaultedKey<Float> HARDNESS = new DefaultedKey<>("hardness", Float.MIN_VALUE);
     public static final DefaultedKey<Float> RESISTANCE = new DefaultedKey<>("resistance", Float.MIN_VALUE);
     public static final DefaultedKey<Integer> AMOUNT = new DefaultedKey<>("amount", Integer.MIN_VALUE);
@@ -29,7 +27,7 @@ public class PackKeys {
     public static final DefaultedKey<Float> EXHAUSTION_CHANGE = new DefaultedKey<>("exhaustion-change", Float.MIN_VALUE);
     //CONSUMPTION NODE
     public static final DefaultedKey<String> NODE_CONSUMPTION = new DefaultedKey<>("consumption", "");
-    public static final DefaultedKey<Float> SATURATION_CHANGE = new DefaultedKey<>("saturation-change", Float.MIN_VALUE);
+    public static final DefaultedKey<Float> SATURATION_CHANGE = new DefaultedKey<>("saturation-change", 1f);
     public static final DefaultedKey<Boolean> ALWAYS_EDIBLE = new DefaultedKey<>("always-edible", Boolean.FALSE);
     public static final DefaultedKey<Boolean> WOLF_FAVORITE = new DefaultedKey<>("wolf-favorite", Boolean.FALSE);
     //RENDER NODE
@@ -41,11 +39,23 @@ public class PackKeys {
     public static final DefaultedKey<? extends List<String>> INGREDIENTS = new DefaultedKey<>("ingredients", Lists.<String>newArrayList());
     //LIGHT NODE
     public static final DefaultedKey<String> NODE_LIGHT = new DefaultedKey<>("light", "");
-    public static final DefaultedKey<Float> EMISSION = new DefaultedKey<>("emission", Float.MIN_VALUE);
-    public static final DefaultedKey<Integer> OPACITY = new DefaultedKey<>("opacity", Integer.MIN_VALUE);
-
-
-    public static final String SEED = "seed";
+    public static final DefaultedKey<Float> EMISSION = new DefaultedKey<>("emission", 1f);
+    public static final DefaultedKey<Integer> OPACITY = new DefaultedKey<>("opacity", 0);
+    public static final DefaultedKey<String> REQUIRED = new DefaultedKey<>("required", "");
+    public static final DefaultedKey<Integer> MIN = new DefaultedKey<>("min", 1);
+    public static final DefaultedKey<Integer> MAX = new DefaultedKey<>("max", 1);
+    //ROTATION NODE
+    public static final DefaultedKey<String> ROTATE = new DefaultedKey<>("rotate", "");
+    public static final DefaultedKey<Boolean> DEFAULT_ROTATE = new DefaultedKey<>("default-rotate", Boolean.TRUE);
+    public static final DefaultedKey<Boolean> DEFAULT_MIRROR_ROTATE = new DefaultedKey<>("default-mirror", Boolean.FALSE);
+    public static final DefaultedKey<String> DIRECTION = new DefaultedKey<>("direction", "");
+    public static final DefaultedKey<Float> ANGLE = new DefaultedKey<>("angle", 0f);
+    public static final DefaultedKey<String> DIRECTION_X = new DefaultedKey<>("x", "none");
+    public static final DefaultedKey<String> DIRECTION_Y = new DefaultedKey<>("y", "none");
+    public static final DefaultedKey<String> DIRECTION_Z = new DefaultedKey<>("z", "none");
+    //COLLISION NODE
+    public static final DefaultedKey<String> NODE_COLLISION = new DefaultedKey<>("collision", "");
+    public static final DefaultedKey<String> SOURCES = new DefaultedKey<>("sources", "");
 
     public static class DefaultedKey<T> {
         private final String key;

@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.pack;
 
+import com.almuradev.almura.pack.node.RotationNode;
+import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.google.common.collect.Maps;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -13,9 +15,7 @@ import java.util.Map;
 
 public interface IRotatable {
 
-    boolean canMirrorRotate(IBlockAccess access, int x, int y, int z, int metadata);
-
-    boolean canRotate(IBlockAccess access, int x, int y, int z, int metadata);
+    RotationNode getNode();
 
     enum Rotation implements IState {
         NORTH(0),
@@ -60,6 +60,79 @@ public interface IRotatable {
         public static Rotation getState(int id) {
             final Rotation rotation = map.get(id);
             return rotation == null ? Rotation.NORTH : rotation;
+        }
+
+        public static Rotation getState(String rawRotation) {
+            switch(rawRotation.toUpperCase()) {
+                case "NORTH":
+                    return NORTH;
+                case "SOUTH":
+                    return SOUTH;
+                case "WEST":
+                    return WEST;
+                case "EAST":
+                    return EAST;
+                case "DOWN_NORTH":
+                    return DOWN_NORTH;
+                case "DOWN_SOUTH":
+                    return DOWN_SOUTH;
+                case "DOWN_WEST":
+                    return DOWN_WEST;
+                case "DOWN_EAST":
+                    return DOWN_EAST;
+                case "UP_NORTH":
+                    return UP_NORTH;
+                case "UP_SOUTH":
+                    return UP_SOUTH;
+                case "UP_WEST":
+                    return UP_WEST;
+                case "UP_EAST":
+                    return UP_EAST;
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public int getId() {
+            return id;
+        }
+    }
+
+    enum Direction implements IState {
+        BACKWARDS(-1),
+        NONE(0),
+        FORWARDS(1);
+
+        private static final Map<Integer, Direction> map = Maps.newHashMap();
+
+        static {
+            for (Direction r : Direction.values()) {
+                map.put(r.getId(), r);
+            }
+        }
+
+        private final int id;
+
+        Direction(int id) {
+            this.id = id;
+        }
+
+        public static Direction getState(String rawDirection) {
+            switch(rawDirection.toUpperCase()) {
+                case "BACKWARDS":
+                    return BACKWARDS;
+                case "NONE":
+                    return NONE;
+                case "FORWARDS":
+                    return FORWARDS;
+                default:
+                    return null;
+            }
+        }
+
+        public static Direction getState(int id) {
+            return map.get(id);
         }
 
         @Override

@@ -11,8 +11,8 @@ public class CollisionProperty extends EntityProperty {
 
     private final float healthChange;
 
-    public CollisionProperty(Class<? extends Entity> clazz, float healthChange) {
-        super(clazz);
+    public CollisionProperty(boolean isEnabled, Class<? extends Entity> clazz, float healthChange) {
+        super(isEnabled, clazz);
         this.healthChange = healthChange;
     }
 

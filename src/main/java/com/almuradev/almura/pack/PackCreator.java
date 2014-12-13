@@ -13,16 +13,19 @@ import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
+import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ConsumptionNode;
 import com.almuradev.almura.pack.node.HydrationNode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RenderNode;
+import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.property.CollisionProperty;
 import com.almuradev.almura.pack.node.property.HydrationProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.item.PackFood;
 import com.almuradev.almura.pack.item.PackItem;
+import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
@@ -37,6 +40,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +52,7 @@ public class PackCreator {
         final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
         final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.parseCoordinatesFrom(reader.getChild(
+        final Map<Integer, List<Integer>> textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
                 PackKeys.TEXTURE_COORDINATES.getKey()).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
@@ -56,11 +60,11 @@ public class PackCreator {
 
         final float hardness = reader.getChild(PackKeys.HARDNESS.getKey()).getFloat(PackKeys.HARDNESS.getDefaultValue());
         final float resistance = reader.getChild(PackKeys.RESISTANCE.getKey()).getFloat(PackKeys.RESISTANCE.getDefaultValue());
-        final boolean rotation = reader.getChild(PackKeys.ROTATE.getKey()).getBoolean(PackKeys.ROTATE.getDefaultValue());
-        final boolean mirrorRotation = reader.getChild(PackKeys.MIRROR_ROTATE.getKey()).getBoolean(PackKeys.MIRROR_ROTATE.getDefaultValue());
 
-        final ConfigurationNode lightNode = reader.getNode(PackKeys.NODE_LIGHT.getKey());
-        float emission = lightNode.getChild(PackKeys.EMISSION.getKey()).getFloat(PackKeys.EMISSION.getDefaultValue());
+        final RotationNode rotationNode = createNode(pack, name, reader.getNode(PackKeys.ROTATE.getKey()));
+
+        final ConfigurationNode lightConfigurationNode = reader.getNode(PackKeys.NODE_LIGHT.getKey());
+        float emission = lightConfigurationNode.getChild(PackKeys.EMISSION.getKey()).getFloat(PackKeys.EMISSION.getDefaultValue());
         if (emission < 0f) {
             emission = 0f;
         }
@@ -68,26 +72,23 @@ public class PackCreator {
             emission = emission / 15f;
         }
 
-        int lightOpacity = lightNode.getChild(PackKeys.OPACITY.getKey()).getInt(PackKeys.OPACITY.getDefaultValue());
+        int lightOpacity = lightConfigurationNode.getChild(PackKeys.OPACITY.getKey()).getInt(PackKeys.OPACITY.getDefaultValue());
         if (lightOpacity < 0) {
             lightOpacity = 0;
         }
         if (lightOpacity > 255) {
             lightOpacity = 255;
         }
-        final LightNode lightProperty = new LightNode(emission, lightOpacity, new RangeProperty(false, 0, 0));
-        final ConfigurationNode renderNode = reader.getNode(PackKeys.NODE_RENDER.getKey());
-        final boolean renderAsNormalBlock = renderNode.getChild(PackKeys.NORMAL_CUBE.getKey()).getBoolean(PackKeys.NORMAL_CUBE.getDefaultValue());
-        final boolean renderAsOpaque = renderNode.getChild(PackKeys.OPAQUE.getKey()).getBoolean(PackKeys.OPAQUE.getDefaultValue());
-        final RenderNode renderProperty = new RenderNode(renderAsNormalBlock, renderAsOpaque);
-        final boolean hasRecipe = reader.hasChild(PackKeys.NODE_RECIPES.getKey());
+        final LightNode lightNode = new LightNode(emission, lightOpacity, new RangeProperty<>(Integer.class, false, 0, 0));
+
+        final ConfigurationNode renderConfigurationNode = reader.getNode(PackKeys.NODE_RENDER.getKey());
+        final boolean renderAsNormalBlock = renderConfigurationNode.getChild(PackKeys.NORMAL_CUBE.getKey()).getBoolean(PackKeys.NORMAL_CUBE.getDefaultValue());
+        final boolean renderAsOpaque = renderConfigurationNode.getChild(PackKeys.OPAQUE.getKey()).getBoolean(PackKeys.OPAQUE.getDefaultValue());
+        final RenderNode renderNode = new RenderNode(renderAsNormalBlock, renderAsOpaque);
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        final int dropAmount = reader.getChild("ItemDropAmount").getInt(0);
-
-        return new PackBlock(pack, name, textureName, hardness, dropAmount, resistance, rotation, mirrorRotation, lightProperty, showInCreativeTab,
-                             creativeTabName, textureCoordinatesByFace, shapeName, renderProperty, hasRecipe);
+        return new PackBlock(pack, name, textureName, textureCoordinates, shapeName, hardness, resistance, showInCreativeTab, creativeTabName, rotationNode, lightNode, renderNode);
     }
 
     public static PackItem createItemFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -195,49 +196,12 @@ public class PackCreator {
                 hydrationProperty =
                 new HydrationNode(hydrationEnabled, hydrationSources.toArray(new HydrationProperty[hydrationSources.size()]));
 
-        //LIGHT
-        final ConfigurationNode lightNode = node.getNode("light");
-        final int lightLevel = lightNode.getChild("emission").getInt(0);
-        final int lightOpacity = lightNode.getChild("opacity").getInt(0);
-        final ConfigurationNode lightRequiredNode = lightNode.getNode("required");
-        final boolean lightRequiredEnabled = lightRequiredNode.getBoolean(true);
-        final int lightRequiredMin = lightRequiredNode.getChild("min").getInt(0);
-        final int lightRequiredMax = lightRequiredNode.getChild("max").getInt(15);
-        final LightNode
-                lightProperty =
-                new LightNode(lightLevel, lightOpacity, new RangeProperty(lightRequiredEnabled, lightRequiredMin, lightRequiredMax));
-
-        //COLLISION
-        final ConfigurationNode collisionNode = node.getNode("collision");
-        final boolean collisionEnabled = collisionNode.getChild("enabled").getBoolean(false);
-        final ConfigurationNode collisionSourcesNode = collisionNode.getNode("sources");
-        final List<CollisionProperty> collisionSources = Lists.newArrayList();
-        if (collisionSourcesNode != null) {
-            for (Map.Entry<String, ConfigurationNode> collisionSource : collisionSourcesNode.getChildren().entrySet()) {
-                final String[] entityIdentifierSplit = collisionSource.getKey().split(StringEscapeUtils.escapeJava("\\"));
-                String entityIdentifier = entityIdentifierSplit[0];
-                if (entityIdentifierSplit.length > 1) {
-                    for (int i = 1; i < entityIdentifierSplit.length; i++) {
-                        entityIdentifier = entityIdentifier + "." + entityIdentifierSplit[i];
-                    }
-                }
-                final Class<? extends Entity> entityClazz = (Class<? extends Entity>) EntityList.stringToClassMapping.get(entityIdentifier);
-                if (entityClazz == null) {
-                    Almura.LOGGER.warn("Unknown collision property [" + collisionSource.getKey() + "] provided for stage [" + id + "] in crop [" + crop
-                            .getIdentifier() + "] in pack [" + pack.getName() + "].");
-                }
-                final float healthChange = collisionSourcesNode.getChild(collisionSource.getKey()).getFloat(0f);
-                collisionSources.add(new CollisionProperty(entityClazz, healthChange));
-            }
-        }
-        final CollisionNode
-                collisionProperty =
-                new CollisionNode(collisionEnabled, collisionSources.toArray(new CollisionProperty[collisionSources.size()]));
+        final LightNode lightNode = createLightNode(pack, crop.getIdentifier(), node.getNode(PackKeys.NODE_LIGHT.getKey()));
 
         return new Stage(crop, id, textureCoordinatesByFace, shapeName, null);
     }
 
-    public static void createRecipeFromNode(Pack pack, String name, boolean isItem, ConfigurationNode node) {
+    public static void createRecipeNode(Pack pack, String name, boolean isItem, ConfigurationNode node) {
         for (Map.Entry<String, ConfigurationNode> entry : node.getChildren().entrySet()) {
             int id;
             try {
@@ -262,6 +226,75 @@ public class PackCreator {
                     Almura.LOGGER.error("Illegal type [" + type + "] for recipe id [" + id + "] specified in [" + name + "] for pack [" + pack.getName() + "]. Valid types are [SHAPED, SHAPELESS].");
             }
         }
+    }
+
+    private static RotationNode createRotationNode(Pack pack, String name, ConfigurationNode root) {
+        final boolean rotationEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(true);
+        final boolean defaultRotateEnabled = root.getChild(PackKeys.DEFAULT_ROTATE.getKey()).getBoolean(PackKeys.DEFAULT_ROTATE.getDefaultValue());
+        final boolean defaultMirrorRotateEnabled = root.getChild(PackKeys.DEFAULT_MIRROR_ROTATE.getKey()).getBoolean(
+                PackKeys.DEFAULT_MIRROR_ROTATE.getDefaultValue());
+        final EnumMap<IRotatable.Rotation, RotationProperty> rotationProperties = Maps.newEnumMap(IRotatable.Rotation.class);
+
+        final ConfigurationNode directionRotationNode = root.getNode(PackKeys.DIRECTION.getKey());
+        for (String rawRotation: directionRotationNode.getKeys(false)) {
+            final IRotatable.Rotation rotation = IRotatable.Rotation.getState(rawRotation);
+            if (rotation == null) {
+                Almura.LOGGER.warn("Invalid rotation [" + rawRotation + "] specified in [" + name + "] in pack [" + pack.getName() + "].");
+                continue;
+            }
+            final ConfigurationNode specificDirectionRotationNode = directionRotationNode.getNode(rawRotation);
+            final boolean specificDirectionRotationEnabled = specificDirectionRotationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+            final float angle = specificDirectionRotationNode.getChild(PackKeys.ANGLE.getKey()).getFloat(PackKeys.ANGLE.getDefaultValue());
+            final IRotatable.Direction directionX = IRotatable.Direction.getState(specificDirectionRotationNode.getChild(PackKeys.DIRECTION_X.getKey()).getString(PackKeys.DIRECTION_X.getDefaultValue()));
+            final IRotatable.Direction directionY = IRotatable.Direction.getState(specificDirectionRotationNode.getChild(PackKeys.DIRECTION_Y.getKey()).getString(PackKeys.DIRECTION_Y.getDefaultValue()));
+            final IRotatable.Direction directionZ = IRotatable.Direction.getState(specificDirectionRotationNode.getChild(PackKeys.DIRECTION_Z.getKey()).getString(PackKeys.DIRECTION_Z.getDefaultValue()));
+            final RotationProperty rotationProperty = new RotationProperty(specificDirectionRotationEnabled, rotation, angle, directionX, directionY, directionZ);
+            rotationProperties.put(rotation, rotationProperty);
+        }
+
+        return new RotationNode(rotationEnabled, defaultRotateEnabled, defaultMirrorRotateEnabled, rotationProperties);
+    }
+
+    private static LightNode createLightNode(Pack pack, String name, ConfigurationNode root) {
+        final float emission = root.getChild(PackKeys.EMISSION.getKey()).getFloat(PackKeys.EMISSION.getDefaultValue());
+        final int opacity = root.getChild(PackKeys.OPACITY.getKey()).getInt(PackKeys.OPACITY.getDefaultValue());
+        final ConfigurationNode lightRequiredConfigurationNode = root.getNode(PackKeys.REQUIRED.getKey());
+        final boolean enabled = lightRequiredConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+        final int min = lightRequiredConfigurationNode.getChild(PackKeys.MIN.getKey()).getInt(PackKeys.MIN.getDefaultValue());
+        final int max = lightRequiredConfigurationNode.getChild(PackKeys.MAX.getKey()).getInt(PackKeys.MAX.getDefaultValue());
+        return new LightNode(emission, opacity, new RangeProperty<>(Integer.class, enabled, min, max));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static CollisionNode createCollisionNode(Pack pack, String name, ConfigurationNode root) {
+        final boolean collisionEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+        final ConfigurationNode collisionSourcesConfigurationNode = root.getNode(PackKeys.SOURCES.getKey());
+        final List<CollisionProperty> collisionProperties = Lists.newArrayList();
+        if (collisionSourcesConfigurationNode != null) {
+            for (String rawCollisionSource : collisionSourcesConfigurationNode.getKeys(false)) {
+                final String[] entityIdentifierSplit = rawCollisionSource.split(StringEscapeUtils.escapeJava("\\"));
+                String entityIdentifier = entityIdentifierSplit[0];
+                if (entityIdentifierSplit.length > 1) {
+                    for (int i = 1; i < entityIdentifierSplit.length; i++) {
+                        entityIdentifier = entityIdentifier + "." + entityIdentifierSplit[i];
+                    }
+                }
+                final Class<? extends Entity> entityClazz = (Class<? extends Entity>) EntityList.stringToClassMapping.get(entityIdentifier);
+                if (entityClazz == null) {
+                    Almura.LOGGER.warn("invalid collision source [" + rawCollisionSource + "] specified in [" + name + "] in pack [" + pack.getName() + "].");
+                    continue;
+                }
+                final ConfigurationNode collisionSourceConfigurationNode = root.getChild(rawCollisionSource);
+                final boolean enabled = collisionSourceConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+                final float healthChange = collisionSourceConfigurationNode.getChild(PackKeys.HEALTH_CHANGE.getKey()).getFloat(PackKeys.HEALTH_CHANGE.getDefaultValue());
+                collisionProperties.add(new CollisionProperty(enabled, entityClazz, healthChange));
+            }
+        }
+        return new CollisionNode(collisionEnabled, collisionProperties.toArray(new CollisionProperty[collisionProperties.size()]));
+    }
+
+    private static BreakNode createBreakNode(Pack pack, String name, ConfigurationNode root) {
+        return null;
     }
 
     private static void addMinecraftRecipe(Pack pack, String name, int id, boolean shaped, boolean itemResult, ConfigurationNode node) {
