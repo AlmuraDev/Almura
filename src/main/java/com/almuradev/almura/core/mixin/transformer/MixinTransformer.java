@@ -287,7 +287,7 @@ public class MixinTransformer extends TreeTransformer {
     }
 
     /**
-     * Handles appending instructions from the source method to the target method
+     * Handles appending instructions from the property method to the target method
      *
      * @param targetClass
      * @param targetMethodName

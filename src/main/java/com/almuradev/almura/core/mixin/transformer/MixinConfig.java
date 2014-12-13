@@ -38,7 +38,7 @@ public class MixinConfig {
     private List<String> mixinClasses;
 
     /**
-     * True to set the sourceFile property when applying mixins
+     * True to set the sourceFile node when applying mixins
      */
     @SerializedName("setSourceFile")
     private boolean setSourceFile = false;
@@ -116,7 +116,7 @@ public class MixinConfig {
     }
 
     /**
-     * Get whether to propogate the source file attribute from a mixin onto the target class
+     * Get whether to propogate the property file attribute from a mixin onto the target class
      *
      * @return
      */

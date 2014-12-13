@@ -3,24 +3,24 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.property;
+package com.almuradev.almura.pack.node;
 
-import com.almuradev.almura.pack.property.source.RangeSource;
+import com.almuradev.almura.pack.node.property.RangeProperty;
 
-public class LightProperty implements IProperty<RangeSource> {
+public class LightNode implements INode<RangeProperty> {
 
     private final float emission;
     private final int opacity;
-    private final RangeSource value;
+    private final RangeProperty value;
 
-    public LightProperty(float emission, int opacity, RangeSource value) {
+    public LightNode(float emission, int opacity, RangeProperty value) {
         this.emission = emission;
         this.opacity = opacity;
         this.value = value;
     }
 
     @Override
-    public RangeSource getValue() {
+    public RangeProperty getValue() {
         return value;
     }
 

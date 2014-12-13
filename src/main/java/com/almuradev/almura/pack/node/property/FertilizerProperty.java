@@ -3,15 +3,15 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.property.source;
+package com.almuradev.almura.pack.node.property;
 
 import net.minecraft.block.Block;
 
-public class FertilizerSource extends BlockSource {
+public class FertilizerProperty extends BlockProperty {
 
     private final int amount;
 
-    public FertilizerSource(Block block, int amount) {
+    public FertilizerProperty(Block block, int amount) {
         super(block);
         this.amount = amount;
     }

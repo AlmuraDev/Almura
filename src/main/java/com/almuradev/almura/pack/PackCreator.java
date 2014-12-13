@@ -13,14 +13,14 @@ import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
-import com.almuradev.almura.pack.property.CollisionProperty;
-import com.almuradev.almura.pack.property.ConsumptionProperty;
-import com.almuradev.almura.pack.property.HydrationProperty;
-import com.almuradev.almura.pack.property.LightProperty;
-import com.almuradev.almura.pack.property.RenderProperty;
-import com.almuradev.almura.pack.property.source.CollisionSource;
-import com.almuradev.almura.pack.property.source.HydrationSource;
-import com.almuradev.almura.pack.property.source.RangeSource;
+import com.almuradev.almura.pack.node.CollisionNode;
+import com.almuradev.almura.pack.node.ConsumptionNode;
+import com.almuradev.almura.pack.node.HydrationNode;
+import com.almuradev.almura.pack.node.LightNode;
+import com.almuradev.almura.pack.node.RenderNode;
+import com.almuradev.almura.pack.node.property.CollisionProperty;
+import com.almuradev.almura.pack.node.property.HydrationProperty;
+import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.item.PackFood;
 import com.almuradev.almura.pack.item.PackItem;
 import com.flowpowered.cerealization.config.ConfigurationException;
@@ -75,11 +75,11 @@ public class PackCreator {
         if (lightOpacity > 255) {
             lightOpacity = 255;
         }
-        final LightProperty lightProperty = new LightProperty(emission, lightOpacity, new RangeSource(false, 0, 0));
+        final LightNode lightProperty = new LightNode(emission, lightOpacity, new RangeProperty(false, 0, 0));
         final ConfigurationNode renderNode = reader.getNode(PackKeys.NODE_RENDER.getKey());
         final boolean renderAsNormalBlock = renderNode.getChild(PackKeys.NORMAL_CUBE.getKey()).getBoolean(PackKeys.NORMAL_CUBE.getDefaultValue());
         final boolean renderAsOpaque = renderNode.getChild(PackKeys.OPAQUE.getKey()).getBoolean(PackKeys.OPAQUE.getDefaultValue());
-        final RenderProperty renderProperty = new RenderProperty(renderAsNormalBlock, renderAsOpaque);
+        final RenderNode renderProperty = new RenderNode(renderAsNormalBlock, renderAsOpaque);
         final boolean hasRecipe = reader.hasChild(PackKeys.NODE_RECIPES.getKey());
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
@@ -124,7 +124,7 @@ public class PackCreator {
         final float saturation = consumptionNode.getChild(PackKeys.SATURATION_CHANGE.getKey()).getFloat(PackKeys.SATURATION_CHANGE.getDefaultValue());
         final boolean wolfFavorite = consumptionNode.getChild(PackKeys.WOLF_FAVORITE.getKey()).getBoolean(PackKeys.WOLF_FAVORITE.getDefaultValue());
         final boolean alwaysEdible = consumptionNode.getChild(PackKeys.ALWAYS_EDIBLE.getKey()).getBoolean(PackKeys.ALWAYS_EDIBLE.getDefaultValue());
-        final ConsumptionProperty consumptionProperty = new ConsumptionProperty(true, heal, saturation, alwaysEdible, wolfFavorite);
+        final ConsumptionNode consumptionProperty = new ConsumptionNode(true, heal, saturation, alwaysEdible, wolfFavorite);
 
         final boolean hasRecipe = reader.hasChild(PackKeys.NODE_RECIPES.getKey());
 
@@ -172,12 +172,12 @@ public class PackCreator {
         final ConfigurationNode hydrationNode = node.getNode("hydration");
         final boolean hydrationEnabled = hydrationNode.getChild("enabled").getBoolean(false);
         final ConfigurationNode hydrationSourcesNode = hydrationNode.getNode("sources");
-        final List<HydrationSource> hydrationSources = Lists.newArrayList();
+        final List<HydrationProperty> hydrationSources = Lists.newArrayList();
         if (hydrationSourcesNode != null) {
             for (Map.Entry<String, ConfigurationNode> entry : hydrationSourcesNode.getChildren().entrySet()) {
                 final String[] split = entry.getKey().split(StringEscapeUtils.escapeJava("\\"));
                 if (split.length == 1) {
-                    Almura.LOGGER.warn("An invalid hydration source was provided [" + entry.getKey() + "] for.");
+                    Almura.LOGGER.warn("An invalid hydration property was provided [" + entry.getKey() + "] for.");
                     continue;
                 }
                 final String identifier = parseIdentifier(split);
@@ -188,12 +188,12 @@ public class PackCreator {
                     continue;
                 }
                 final int neededProximity = entry.getValue().getChild("needed-proximity").getInt(6);
-                hydrationSources.add(new HydrationSource(hydrationSource, neededProximity));
+                hydrationSources.add(new HydrationProperty(hydrationSource, neededProximity));
             }
         }
-        final HydrationProperty
+        final HydrationNode
                 hydrationProperty =
-                new HydrationProperty(hydrationEnabled, hydrationSources.toArray(new HydrationSource[hydrationSources.size()]));
+                new HydrationNode(hydrationEnabled, hydrationSources.toArray(new HydrationProperty[hydrationSources.size()]));
 
         //LIGHT
         final ConfigurationNode lightNode = node.getNode("light");
@@ -203,15 +203,15 @@ public class PackCreator {
         final boolean lightRequiredEnabled = lightRequiredNode.getBoolean(true);
         final int lightRequiredMin = lightRequiredNode.getChild("min").getInt(0);
         final int lightRequiredMax = lightRequiredNode.getChild("max").getInt(15);
-        final LightProperty
+        final LightNode
                 lightProperty =
-                new LightProperty(lightLevel, lightOpacity, new RangeSource(lightRequiredEnabled, lightRequiredMin, lightRequiredMax));
+                new LightNode(lightLevel, lightOpacity, new RangeProperty(lightRequiredEnabled, lightRequiredMin, lightRequiredMax));
 
         //COLLISION
         final ConfigurationNode collisionNode = node.getNode("collision");
         final boolean collisionEnabled = collisionNode.getChild("enabled").getBoolean(false);
         final ConfigurationNode collisionSourcesNode = collisionNode.getNode("sources");
-        final List<CollisionSource> collisionSources = Lists.newArrayList();
+        final List<CollisionProperty> collisionSources = Lists.newArrayList();
         if (collisionSourcesNode != null) {
             for (Map.Entry<String, ConfigurationNode> collisionSource : collisionSourcesNode.getChildren().entrySet()) {
                 final String[] entityIdentifierSplit = collisionSource.getKey().split(StringEscapeUtils.escapeJava("\\"));
@@ -223,16 +223,16 @@ public class PackCreator {
                 }
                 final Class<? extends Entity> entityClazz = (Class<? extends Entity>) EntityList.stringToClassMapping.get(entityIdentifier);
                 if (entityClazz == null) {
-                    Almura.LOGGER.warn("Unknown collision source [" + collisionSource.getKey() + "] provided for stage [" + id + "] in crop [" + crop
+                    Almura.LOGGER.warn("Unknown collision property [" + collisionSource.getKey() + "] provided for stage [" + id + "] in crop [" + crop
                             .getIdentifier() + "] in pack [" + pack.getName() + "].");
                 }
                 final float healthChange = collisionSourcesNode.getChild(collisionSource.getKey()).getFloat(0f);
-                collisionSources.add(new CollisionSource(entityClazz, healthChange));
+                collisionSources.add(new CollisionProperty(entityClazz, healthChange));
             }
         }
-        final CollisionProperty
+        final CollisionNode
                 collisionProperty =
-                new CollisionProperty(collisionEnabled, collisionSources.toArray(new CollisionSource[collisionSources.size()]));
+                new CollisionNode(collisionEnabled, collisionSources.toArray(new CollisionProperty[collisionSources.size()]));
 
         return new Stage(crop, id, textureCoordinatesByFace, shapeName, null);
     }

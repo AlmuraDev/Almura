@@ -17,8 +17,21 @@ creative-tab: blocks
 show-in-creative-tab: true
 hardness: 0.5
 resistance: 1
-rotate: true
-mirror-rotate: false
+rotate:
+    enabled: true
+    default-rotate: true
+    default-mirror: true
+    direction:
+        north:
+            angle: 100
+            x: backwards
+            y: 0
+            z: forwards
+        south:
+            angle: 45
+            x: backwards
+            y: backwards
+            z: backwards
 light:
     emission: 1
     opacity: 200
@@ -33,6 +46,7 @@ break:
     tools:
         none:
             experience: 5-10
+            exhaustion: 5-10
             drops:
                 almura\food\corn:
                     amount: 1-2
@@ -42,6 +56,7 @@ break:
                         chance: 10-15
         almura\tools\diamond_sickle:
             experience: 5-10
+            exhaustion: 5-10
             drops:
                 almura\food\corn:
                     amount: 3-4

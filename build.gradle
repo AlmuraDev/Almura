@@ -62,7 +62,7 @@ ext.organization = 'AlmuraDev'
 ext.buildNumber = project.hasProperty("buildNumber") ? buildNumber : '0'
 ext.commit = project.hasProperty("commit") ? commit : 'unknown'
 
-// Java version target/source compatibility
+// Java version target/property compatibility
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 

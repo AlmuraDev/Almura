@@ -1,12 +1,12 @@
-package com.almuradev.almura.pack.property;
+package com.almuradev.almura.pack.node;
 
-public class ConsumptionProperty implements IProperty<Boolean> {
+public class ConsumptionNode implements INode<Boolean> {
     private final boolean isEnabled;
     private final float heal;
     private final float saturation;
     private final boolean alwaysEdible, wolfFavorite;
 
-    public ConsumptionProperty(boolean isEnabled, float heal, float saturation, boolean alwaysEdible, boolean wolfFavorite) {
+    public ConsumptionNode(boolean isEnabled, float heal, float saturation, boolean alwaysEdible, boolean wolfFavorite) {
         this.isEnabled = isEnabled;
         this.heal = heal;
         this.saturation = saturation;

@@ -13,7 +13,7 @@ import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
-import com.almuradev.almura.pack.property.ConsumptionProperty;
+import com.almuradev.almura.pack.node.ConsumptionNode;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -42,7 +42,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
 
     public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinatesByFace,
-                    boolean showInCreativeTab, String creativeTabName, ConsumptionProperty consumptionProperty, boolean hasRecipe) {
+                    boolean showInCreativeTab, String creativeTabName, ConsumptionNode consumptionProperty, boolean hasRecipe) {
         super((int) consumptionProperty.getHeal(), consumptionProperty.getSaturation(), consumptionProperty.isWolfFavorite());
         this.pack = pack;
         this.identifier = identifier;

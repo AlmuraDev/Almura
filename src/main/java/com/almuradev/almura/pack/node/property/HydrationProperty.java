@@ -3,15 +3,15 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.property.source;
+package com.almuradev.almura.pack.node.property;
 
 import net.minecraft.block.Block;
 
-public class HydrationSource extends BlockSource {
+public class HydrationProperty extends BlockProperty {
 
     private final int neededPromixity;
 
-    public HydrationSource(Block block, int neededPromixity) {
+    public HydrationProperty(Block block, int neededPromixity) {
         super(block);
         this.neededPromixity = neededPromixity;
     }

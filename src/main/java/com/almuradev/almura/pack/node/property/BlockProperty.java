@@ -3,15 +3,15 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.property.source;
+package com.almuradev.almura.pack.node.property;
 
 import net.minecraft.block.Block;
 
-public class BlockSource implements ISource<Block> {
+public class BlockProperty implements IProperty<Block> {
 
     private final Block block;
 
-    public BlockSource(Block block) {
+    public BlockProperty(Block block) {
         this.block = block;
     }
 

@@ -3,22 +3,22 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.property;
+package com.almuradev.almura.pack.node;
 
 import net.minecraft.block.Block;
 
-public class SoilProperty implements IProperty<BiomeProperty> {
+public class SoilNode implements INode<BiomeNode> {
 
     private final Block soil;
-    private final BiomeProperty value;
+    private final BiomeNode value;
 
-    public SoilProperty(Block soil, BiomeProperty value) {
+    public SoilNode(Block soil, BiomeNode value) {
         this.soil = soil;
         this.value = value;
     }
 
     @Override
-    public BiomeProperty getValue() {
+    public BiomeNode getValue() {
         return value;
     }
 

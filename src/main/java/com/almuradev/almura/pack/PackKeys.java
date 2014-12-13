@@ -26,6 +26,7 @@ public class PackKeys {
     public static final DefaultedKey<Integer> LEVEL_REQUIRED = new DefaultedKey<>("level-required", Integer.MIN_VALUE);
     public static final DefaultedKey<Boolean> ENABLED = new DefaultedKey<>("enabled", Boolean.FALSE);
     public static final DefaultedKey<Float> HEALTH_CHANGE = new DefaultedKey<>("health-change", Float.MIN_VALUE);
+    public static final DefaultedKey<Float> EXHAUSTION_CHANGE = new DefaultedKey<>("exhaustion-change", Float.MIN_VALUE);
     //CONSUMPTION NODE
     public static final DefaultedKey<String> NODE_CONSUMPTION = new DefaultedKey<>("consumption", "");
     public static final DefaultedKey<Float> SATURATION_CHANGE = new DefaultedKey<>("saturation-change", Float.MIN_VALUE);

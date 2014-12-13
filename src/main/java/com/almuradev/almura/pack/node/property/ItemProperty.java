@@ -3,22 +3,20 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.property.source;
+package com.almuradev.almura.pack.node.property;
 
 import net.minecraft.item.Item;
 
-public class ItemSource implements ISource<Item> {
+public class ItemProperty implements IProperty<Item> {
 
     private final Item item;
     private final int amount;
     private final int damage;
-    private final BonusSource bonusSource;
 
-    public ItemSource(Item item, int amount, int damage, BonusSource bonusSource) {
+    public ItemProperty(Item item, int amount, int damage) {
         this.item = item;
         this.amount = amount;
         this.damage = damage;
-        this.bonusSource = bonusSource;
     }
 
     @Override
@@ -32,9 +30,5 @@ public class ItemSource implements ISource<Item> {
 
     public int getDamage() {
         return damage;
-    }
-
-    public BonusSource getBonusSource() {
-        return bonusSource;
     }
 }

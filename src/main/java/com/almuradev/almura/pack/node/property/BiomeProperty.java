@@ -3,16 +3,16 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.property.source;
+package com.almuradev.almura.pack.node.property;
 
 import net.minecraftforge.common.BiomeManager.BiomeType;
 
-public class BiomeSource implements ISource<BiomeType> {
+public class BiomeProperty implements IProperty<BiomeType> {
 
     private final BiomeType type;
-    private final RangeSource temperatureRange, humidityRange;
+    private final RangeProperty temperatureRange, humidityRange;
 
-    public BiomeSource(BiomeType type, RangeSource temperatureRange, RangeSource humidityRange) {
+    public BiomeProperty(BiomeType type, RangeProperty temperatureRange, RangeProperty humidityRange) {
         this.type = type;
         this.temperatureRange = temperatureRange;
         this.humidityRange = humidityRange;
@@ -23,11 +23,11 @@ public class BiomeSource implements ISource<BiomeType> {
         return type;
     }
 
-    public RangeSource getTemperatureRange() {
+    public RangeProperty getTemperatureRange() {
         return temperatureRange;
     }
 
-    public RangeSource getHumidityRange() {
+    public RangeProperty getHumidityRange() {
         return humidityRange;
     }
 }

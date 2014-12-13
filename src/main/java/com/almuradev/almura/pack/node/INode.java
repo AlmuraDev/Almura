@@ -3,9 +3,9 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.property.source;
+package com.almuradev.almura.pack.node;
 
-public interface ISource<T> {
+public interface INode<T> {
 
-    T getSource();
+    T getValue();
 }

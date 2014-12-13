@@ -3,15 +3,15 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.property.source;
+package com.almuradev.almura.pack.node.property;
 
 import net.minecraft.entity.Entity;
 
-public class CollisionSource extends EntitySource {
+public class CollisionProperty extends EntityProperty {
 
     private final float healthChange;
 
-    public CollisionSource(Class<? extends Entity> clazz, float healthChange) {
+    public CollisionProperty(Class<? extends Entity> clazz, float healthChange) {
         super(clazz);
         this.healthChange = healthChange;
     }

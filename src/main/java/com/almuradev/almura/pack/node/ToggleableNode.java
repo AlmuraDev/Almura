@@ -3,12 +3,12 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.property;
+package com.almuradev.almura.pack.node;
 
-public abstract class ToggleableProperty<T> implements IProperty<T> {
+public abstract class ToggleableNode<T> implements INode<T> {
     private final boolean isEnabled;
 
-    public ToggleableProperty(boolean isEnabled) {
+    public ToggleableNode(boolean isEnabled) {
         this.isEnabled = isEnabled;
     }
 
