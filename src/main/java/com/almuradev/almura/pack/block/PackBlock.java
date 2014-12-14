@@ -7,23 +7,29 @@ package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
+import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IPackObject;
-import com.almuradev.almura.pack.IRotatable;
+import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.node.BreakNode;
+import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.DropsNode;
+import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.ToolsNode;
+import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -42,46 +48,49 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
-public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, IRotatable {
+public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, INodeContainer {
 
     public static int renderId;
     private final Pack pack;
     private final String identifier;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
-    private final RotationNode rotationNode;
-    private final RenderNode renderNode;
-    private final BreakNode breakNode;
+    private final ConcurrentMap<Class<? extends INode>, INode> nodes = Maps.newConcurrentMap();
+    private RenderNode renderNode;
+    private RotationNode rotationNode;
+    private BreakNode breakNode;
+    private CollisionNode collisionNode;
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
 
     public PackBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String shapeName, float hardness,
-                     float resistance, boolean showInCreativeTab, String creativeTabName, RotationNode rotationNode, LightNode lightProperty,
-                     RenderNode renderNode, BreakNode breakNode) {
+                     float resistance, boolean showInCreativeTab, String creativeTabName, RotationNode rotationNode, LightNode lightNode,
+                     RenderNode renderNode) {
         super(Material.rock);
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinatesByFace = textureCoordinates;
         this.textureName = textureName;
         this.shapeName = shapeName;
-        this.rotationNode = rotationNode;
-        this.renderNode = renderNode;
-        this.breakNode = breakNode;
+        this.renderNode = addNode(renderNode);
+        this.rotationNode = addNode(rotationNode);
+        addNode(lightNode);
         setBlockName(pack.getName() + "\\" + identifier);
+        setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
         setHardness(hardness);
         setResistance(resistance);
-        setLightLevel(lightProperty.getEmission());
-
-        setLightOpacity(lightProperty.getOpacity());
-        setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
+        setLightLevel(lightNode.getEmission());
+        setLightOpacity(lightNode.getOpacity());
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
@@ -157,11 +166,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         final ArrayList<ItemStack> drops = Lists.newArrayList();
         for (DropsNode prop : toolsProperty.getValue()) {
             for (DropProperty src : prop.getValue()) {
-                final ItemStack toDrop = new ItemStack(src.getSource(), src.getAmount(), src.getDamage());
-                if (src.getBonus().getSource()) {
-                    final double chance = src.getBonus().getValueWithinRange();
+                final ItemStack toDrop = new ItemStack(src.getSource(), src.getAmountProperty().getValueWithinRange(), src.getDamage());
+                if (src.getBonusProperty().getSource()) {
+                    final double chance = src.getBonusProperty().getValueWithinRange();
                     if (RangeProperty.RANDOM.nextDouble() <= 100 / chance) {
-                        toDrop.stackSize += src.getBonus().getBonusAmountRange().getValueWithinRange();
+                        toDrop.stackSize += src.getBonusProperty().getBonusAmountRange().getValueWithinRange();
                     }
                 }
             }
@@ -194,14 +203,10 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         if (rotationNode.isEnabled() && (rotationNode.isDefaultRotate() || rotationNode.isDefaultMirrorRotate())) {
             final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
             final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
-            world.setBlockMetadataWithNotify(x, y, z, Rotation.getState(cameraDir, playerDir).getId(), 3);
+            world.setBlockMetadataWithNotify(x, y, z, RotationMeta.Rotation.getState(cameraDir, playerDir).getId(), 3);
         }
     }
 
-    /**
-     * Returns a bounding box from the pool of bounding boxes (this means this box can change after the pool has been
-     * cleared to be reused)
-     */
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
         final AxisAlignedBB vanillaBB = super.getCollisionBoundingBoxFromPool(world, x, y, z);
@@ -211,9 +216,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         return shape.getCollisionBoundingBoxFromPool(vanillaBB, world, x, y, z);
     }
 
-    /**
-     * Returns the bounding box of the wired rectangular prism to render.
-     */
     @SideOnly(Side.CLIENT)
     @Override
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
@@ -255,11 +257,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
-    public RotationNode getNode() {
-        return rotationNode;
-    }
-
-    @Override
     public void setShape(PackShape shape) {
         this.shape = shape;
         if (shape != null) {
@@ -277,6 +274,40 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public String getShapeName() {
         return shapeName;
+    }
+
+    @Override
+    public <T extends INode> T addNode(T node) {
+        nodes.put(node.getClass(), node);
+        MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
+        return node;
+    }
+
+    @Override
+    public void addNodes(INode... nodes) {
+        for (INode node : nodes) {
+            addNode(node);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends INode> T getNode(Class<T> clazz) {
+        return (T) nodes.get(clazz);
+    }
+
+    @Override
+    public <T extends INode> boolean hasNode(Class<T> clazz) {
+        return getNode(clazz) != null;
+    }
+
+    @SubscribeEvent
+    public void onAddNodeEvent(AddNodeEvent event) {
+        if (event.getNode() instanceof BreakNode) {
+            breakNode = (BreakNode) event.getNode();
+        } else if (event.getNode() instanceof CollisionNode) {
+            collisionNode = (CollisionNode) event.getNode();
+        }
     }
 
     @Override

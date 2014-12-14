@@ -16,12 +16,14 @@ import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ConsumptionNode;
+import com.almuradev.almura.pack.node.GrassNode;
 import com.almuradev.almura.pack.node.HydrationNode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.property.CollisionProperty;
 import com.almuradev.almura.pack.node.property.HydrationProperty;
+import com.almuradev.almura.pack.node.property.ItemProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.item.PackFood;
 import com.almuradev.almura.pack.item.PackItem;
@@ -61,31 +63,9 @@ public class PackCreator {
         final float hardness = reader.getChild(PackKeys.HARDNESS.getKey()).getFloat(PackKeys.HARDNESS.getDefaultValue());
         final float resistance = reader.getChild(PackKeys.RESISTANCE.getKey()).getFloat(PackKeys.RESISTANCE.getDefaultValue());
 
-        final RotationNode rotationNode = createNode(pack, name, reader.getNode(PackKeys.ROTATE.getKey()));
-
-        final ConfigurationNode lightConfigurationNode = reader.getNode(PackKeys.NODE_LIGHT.getKey());
-        float emission = lightConfigurationNode.getChild(PackKeys.EMISSION.getKey()).getFloat(PackKeys.EMISSION.getDefaultValue());
-        if (emission < 0f) {
-            emission = 0f;
-        }
-        if (emission > 1f) {
-            emission = emission / 15f;
-        }
-
-        int lightOpacity = lightConfigurationNode.getChild(PackKeys.OPACITY.getKey()).getInt(PackKeys.OPACITY.getDefaultValue());
-        if (lightOpacity < 0) {
-            lightOpacity = 0;
-        }
-        if (lightOpacity > 255) {
-            lightOpacity = 255;
-        }
-        final LightNode lightNode = new LightNode(emission, lightOpacity, new RangeProperty<>(Integer.class, false, 0, 0));
-
-        final ConfigurationNode renderConfigurationNode = reader.getNode(PackKeys.NODE_RENDER.getKey());
-        final boolean renderAsNormalBlock = renderConfigurationNode.getChild(PackKeys.NORMAL_CUBE.getKey()).getBoolean(PackKeys.NORMAL_CUBE.getDefaultValue());
-        final boolean renderAsOpaque = renderConfigurationNode.getChild(PackKeys.OPAQUE.getKey()).getBoolean(PackKeys.OPAQUE.getDefaultValue());
-        final RenderNode renderNode = new RenderNode(renderAsNormalBlock, renderAsOpaque);
-
+        final RotationNode rotationNode = createRotationNode(pack, name, reader.getNode(PackKeys.NODE_ROTATE.getKey()));
+        final LightNode lightNode = createLightNode(pack, name, reader.getNode(PackKeys.NODE_LIGHT.getKey()));
+        final RenderNode renderNode = createRenderNode(pack, name, reader.getNode(PackKeys.NODE_RENDER.getKey()));
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
         return new PackBlock(pack, name, textureName, textureCoordinates, shapeName, hardness, resistance, showInCreativeTab, creativeTabName, rotationNode, lightNode, renderNode);
@@ -96,17 +76,15 @@ public class PackCreator {
         final List<String> tooltip = reader.getChild(PackKeys.TOOLTIP.getKey()).getStringList();
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
         final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.parseCoordinatesFrom(reader.getChild(
+        final Map<Integer, List<Integer>> textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
                 PackKeys.TEXTURE_COORDINATES.getKey()).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
         final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
 
-        final boolean hasRecipe = reader.hasChild(PackKeys.NODE_RECIPES.getKey());
-
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackItem(pack, name, tooltip, textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName, hasRecipe);
+        return new PackItem(pack, name, tooltip, textureName, shapeName, textureCoordinates, showInCreativeTab, creativeTabName);
     }
 
     public static PackFood createFoodFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -114,24 +92,16 @@ public class PackCreator {
         final List<String> tooltip = reader.getChild(PackKeys.TOOLTIP.getKey()).getStringList();
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
         final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.parseCoordinatesFrom(reader.getChild(
+        final Map<Integer, List<Integer>> textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
                 PackKeys.TEXTURE_COORDINATES.getKey()).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
         final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
-
-        final ConfigurationNode consumptionNode = reader.getNode(PackKeys.NODE_CONSUMPTION.getKey());
-        final float heal = consumptionNode.getChild(PackKeys.HEALTH_CHANGE.getKey()).getFloat(PackKeys.HEALTH_CHANGE.getDefaultValue());
-        final float saturation = consumptionNode.getChild(PackKeys.SATURATION_CHANGE.getKey()).getFloat(PackKeys.SATURATION_CHANGE.getDefaultValue());
-        final boolean wolfFavorite = consumptionNode.getChild(PackKeys.WOLF_FAVORITE.getKey()).getBoolean(PackKeys.WOLF_FAVORITE.getDefaultValue());
-        final boolean alwaysEdible = consumptionNode.getChild(PackKeys.ALWAYS_EDIBLE.getKey()).getBoolean(PackKeys.ALWAYS_EDIBLE.getDefaultValue());
-        final ConsumptionNode consumptionProperty = new ConsumptionNode(true, heal, saturation, alwaysEdible, wolfFavorite);
-
-        final boolean hasRecipe = reader.hasChild(PackKeys.NODE_RECIPES.getKey());
+        final ConsumptionNode consumptionNode = createConsumptionNode(pack, name, reader.getNode(PackKeys.NODE_CONSUMPTION.getKey()));
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackFood(pack, name, tooltip, textureName, shapeName, textureCoordinatesByFace, showInCreativeTab, creativeTabName, consumptionProperty, hasRecipe);
+        return new PackFood(pack, name, tooltip, textureName, shapeName, textureCoordinates, showInCreativeTab, creativeTabName, consumptionNode);
     }
 
     public static PackCrops createCropFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -145,26 +115,26 @@ public class PackCreator {
         return new PackCrops(pack, name, textureName, levelRequired, new Stage[0]);
     }
 
-    public static PackSeeds createSeedFromNode(Pack pack, Block soil, PackCrops crop, String textureName, ConfigurationNode node)
+    public static PackSeeds createCropSeed(Pack pack, Block soil, PackCrops crop, String textureName, ConfigurationNode node)
             throws ConfigurationException {
-        final String identifier = node.getChild(PackKeys.IDENTIFIER.getKey()).getString(PackKeys.IDENTIFIER.getDefaultValue());
+        final String identifier = crop.getIdentifier() + "\\seed";
         final String title = node.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
         final List<String> tooltip = node.getChild(PackKeys.TOOLTIP.getKey()).getStringList();
         final String shapeName = node.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.parseCoordinatesFrom(node.getChild(
+        final Map<Integer, List<Integer>> textureCoordinates = PackUtil.parseCoordinatesFrom(node.getChild(
                 PackKeys.TEXTURE_COORDINATES.getKey()).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         final boolean showInCreativeTab = node.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
         final String creativeTabName = node.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
-        final boolean dropOnGrassBreak = node.getChild("drop-on-grass-break").getBoolean(true);
 
-        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + crop.getIdentifier() + "\\" + identifier, title);
-
-        return new PackSeeds(pack, pack.getName() + "\\" + crop.getIdentifier() + "\\" + identifier, textureName, showInCreativeTab, creativeTabName, crop, soil);
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + identifier, title);
+        final PackSeeds seed = new PackSeeds(pack, identifier, tooltip, textureName, shapeName, textureCoordinates, showInCreativeTab, creativeTabName, crop, soil);
+        seed.addNode(createGrassNode(pack, seed, node.getNode(PackKeys.NODE_GRASS.getKey())));
+        return seed;
     }
 
     @SuppressWarnings("unchecked")
-    public static Stage createStageFromNode(Pack pack, PackCrops crop, int id, ConfigurationNode node) {
+    public static Stage createCropStage(Pack pack, PackCrops crop, int id, ConfigurationNode node) {
         final String shapeName = node.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.parseCoordinatesFrom(node.getChild(
                 PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
@@ -233,11 +203,11 @@ public class PackCreator {
         final boolean defaultRotateEnabled = root.getChild(PackKeys.DEFAULT_ROTATE.getKey()).getBoolean(PackKeys.DEFAULT_ROTATE.getDefaultValue());
         final boolean defaultMirrorRotateEnabled = root.getChild(PackKeys.DEFAULT_MIRROR_ROTATE.getKey()).getBoolean(
                 PackKeys.DEFAULT_MIRROR_ROTATE.getDefaultValue());
-        final EnumMap<IRotatable.Rotation, RotationProperty> rotationProperties = Maps.newEnumMap(IRotatable.Rotation.class);
+        final EnumMap<RotationMeta.Rotation, RotationProperty> rotationProperties = Maps.newEnumMap(RotationMeta.Rotation.class);
 
         final ConfigurationNode directionRotationNode = root.getNode(PackKeys.DIRECTION.getKey());
         for (String rawRotation: directionRotationNode.getKeys(false)) {
-            final IRotatable.Rotation rotation = IRotatable.Rotation.getState(rawRotation);
+            final RotationMeta.Rotation rotation = RotationMeta.Rotation.getState(rawRotation);
             if (rotation == null) {
                 Almura.LOGGER.warn("Invalid rotation [" + rawRotation + "] specified in [" + name + "] in pack [" + pack.getName() + "].");
                 continue;
@@ -245,9 +215,9 @@ public class PackCreator {
             final ConfigurationNode specificDirectionRotationNode = directionRotationNode.getNode(rawRotation);
             final boolean specificDirectionRotationEnabled = specificDirectionRotationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
             final float angle = specificDirectionRotationNode.getChild(PackKeys.ANGLE.getKey()).getFloat(PackKeys.ANGLE.getDefaultValue());
-            final IRotatable.Direction directionX = IRotatable.Direction.getState(specificDirectionRotationNode.getChild(PackKeys.DIRECTION_X.getKey()).getString(PackKeys.DIRECTION_X.getDefaultValue()));
-            final IRotatable.Direction directionY = IRotatable.Direction.getState(specificDirectionRotationNode.getChild(PackKeys.DIRECTION_Y.getKey()).getString(PackKeys.DIRECTION_Y.getDefaultValue()));
-            final IRotatable.Direction directionZ = IRotatable.Direction.getState(specificDirectionRotationNode.getChild(PackKeys.DIRECTION_Z.getKey()).getString(PackKeys.DIRECTION_Z.getDefaultValue()));
+            final RotationMeta.Direction directionX = RotationMeta.Direction.getState(specificDirectionRotationNode.getChild(PackKeys.DIRECTION_X.getKey()).getString(PackKeys.DIRECTION_X.getDefaultValue()));
+            final RotationMeta.Direction directionY = RotationMeta.Direction.getState(specificDirectionRotationNode.getChild(PackKeys.DIRECTION_Y.getKey()).getString(PackKeys.DIRECTION_Y.getDefaultValue()));
+            final RotationMeta.Direction directionZ = RotationMeta.Direction.getState(specificDirectionRotationNode.getChild(PackKeys.DIRECTION_Z.getKey()).getString(PackKeys.DIRECTION_Z.getDefaultValue()));
             final RotationProperty rotationProperty = new RotationProperty(specificDirectionRotationEnabled, rotation, angle, directionX, directionY, directionZ);
             rotationProperties.put(rotation, rotationProperty);
         }
@@ -256,8 +226,20 @@ public class PackCreator {
     }
 
     private static LightNode createLightNode(Pack pack, String name, ConfigurationNode root) {
-        final float emission = root.getChild(PackKeys.EMISSION.getKey()).getFloat(PackKeys.EMISSION.getDefaultValue());
-        final int opacity = root.getChild(PackKeys.OPACITY.getKey()).getInt(PackKeys.OPACITY.getDefaultValue());
+        float emission = root.getChild(PackKeys.EMISSION.getKey()).getFloat(PackKeys.EMISSION.getDefaultValue());
+        if (emission < 0f) {
+            emission = 0f;
+        }
+        if (emission > 1f) {
+            emission = emission / 15f;
+        }
+        int opacity = root.getChild(PackKeys.OPACITY.getKey()).getInt(PackKeys.OPACITY.getDefaultValue());
+        if (opacity < 0) {
+            opacity = 0;
+        }
+        if (opacity > 255) {
+            opacity = 255;
+        }
         final ConfigurationNode lightRequiredConfigurationNode = root.getNode(PackKeys.REQUIRED.getKey());
         final boolean enabled = lightRequiredConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
         final int min = lightRequiredConfigurationNode.getChild(PackKeys.MIN.getKey()).getInt(PackKeys.MIN.getDefaultValue());
@@ -293,13 +275,62 @@ public class PackCreator {
         return new CollisionNode(collisionEnabled, collisionProperties.toArray(new CollisionProperty[collisionProperties.size()]));
     }
 
+    private static RenderNode createRenderNode(Pack pack, String name, ConfigurationNode root) {
+        final boolean renderAsNormalBlock = root.getChild(PackKeys.NORMAL_CUBE.getKey()).getBoolean(PackKeys.NORMAL_CUBE.getDefaultValue());
+        final boolean renderAsOpaque = root.getChild(PackKeys.OPAQUE.getKey()).getBoolean(PackKeys.OPAQUE.getDefaultValue());
+        return new RenderNode(renderAsNormalBlock, renderAsOpaque);
+    }
+
     private static BreakNode createBreakNode(Pack pack, String name, ConfigurationNode root) {
         return null;
     }
 
+    private static ConsumptionNode createConsumptionNode(Pack pack, String name, ConfigurationNode root) {
+        final float healthChange = root.getChild(PackKeys.HEALTH_CHANGE.getKey()).getFloat(PackKeys.HEALTH_CHANGE.getDefaultValue());
+        final float saturationChange = root.getChild(PackKeys.SATURATION_CHANGE.getKey()).getFloat(PackKeys.SATURATION_CHANGE.getDefaultValue());
+        final boolean wolfFavorite = root.getChild(PackKeys.WOLF_FAVORITE.getKey()).getBoolean(PackKeys.WOLF_FAVORITE.getDefaultValue());
+        final boolean alwaysEdible = root.getChild(PackKeys.ALWAYS_EDIBLE.getKey()).getBoolean(PackKeys.ALWAYS_EDIBLE.getDefaultValue());
+        return new ConsumptionNode(true, healthChange, saturationChange, alwaysEdible, wolfFavorite);
+    }
+
+    private static GrassNode createGrassNode(Pack pack, PackSeeds seed, ConfigurationNode root) {
+        final boolean enabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+        final String chanceRaw = root.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue());
+        double minChance = 100, maxChance = minChance;
+        if (!chanceRaw.isEmpty()) {
+            final String[] split = chanceRaw.split("-");
+            try {
+                minChance = Double.parseDouble(split[0]);
+                if (split.length > 1) {
+                    maxChance = Double.parseDouble(split[1]);
+                } else {
+                    maxChance = minChance;
+                }
+            } catch (NumberFormatException nfe) {
+                Almura.LOGGER.warn("Invalid chance given in [" + seed.getIdentifier() + "] in pack [" + pack + "]. Should be in the format of 10.5-20.5");
+            }
+        }
+        final String amountRaw = root.getChild(PackKeys.AMOUNT.getKey()).getString(PackKeys.AMOUNT.getDefaultValue());
+        int minAmount = 1, maxAmount = minAmount;
+        if (!amountRaw.isEmpty()) {
+            final String[] split = chanceRaw.split("-");
+            try {
+                minAmount = Integer.parseInt(split[0]);
+                if (split.length > 1) {
+                    maxAmount = Integer.parseInt(split[1]);
+                } else {
+                    maxAmount = minAmount;
+                }
+            } catch (NumberFormatException nfe) {
+                Almura.LOGGER.warn("Invalid amount given in [" + seed.getIdentifier() + "] in pack [" + pack + "]. Should be in the format of 1-3");
+            }
+        }
+        return new GrassNode(enabled, new ItemProperty(seed, new RangeProperty<>(Integer.class, true, minAmount, maxAmount), 0), new RangeProperty<>(Double.class, true, minChance, maxChance));
+    }
+
     private static void addMinecraftRecipe(Pack pack, String name, int id, boolean shaped, boolean itemResult, ConfigurationNode node) {
-        final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(PackKeys.AMOUNT.getDefaultValue());
-        final int damage = node.getChild(PackKeys.INTEGER_DAMAGE.getKey()).getInt(PackKeys.INTEGER_DAMAGE.getDefaultValue());
+        final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
+        final int damage = node.getChild(PackKeys.DAMAGE.getKey()).getInt(PackKeys.DAMAGE.getDefaultValue().intValue());
         final List<Object> params = Lists.newArrayList();
 
         for (String itemsRaw : node.getChild(PackKeys.INGREDIENTS.getKey()).getStringList()) {

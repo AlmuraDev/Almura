@@ -1,15 +1,15 @@
 package com.almuradev.almura.pack.node.property;
 
-import com.almuradev.almura.pack.IRotatable;
+import com.almuradev.almura.pack.RotationMeta;
 
 public class RotationProperty implements IProperty<Boolean> {
     private final boolean enabled;
-    private final IRotatable.Rotation rotation;
+    private final RotationMeta.Rotation rotation;
     private final float angle;
-    private final IRotatable.Direction x, y, z;
+    private final RotationMeta.Direction x, y, z;
 
-    public RotationProperty(boolean enabled, IRotatable.Rotation rotation, float angle, IRotatable.Direction x, IRotatable.Direction y,
-                            IRotatable.Direction z) {
+    public RotationProperty(boolean enabled, RotationMeta.Rotation rotation, float angle, RotationMeta.Direction x, RotationMeta.Direction y,
+                            RotationMeta.Direction z) {
         this.enabled = enabled;
         this.rotation = rotation;
         this.angle = angle;
@@ -23,7 +23,7 @@ public class RotationProperty implements IProperty<Boolean> {
         return enabled;
     }
 
-    public IRotatable.Rotation getRotation() {
+    public RotationMeta.Rotation getRotation() {
         return rotation;
     }
 
@@ -31,15 +31,15 @@ public class RotationProperty implements IProperty<Boolean> {
         return angle;
     }
 
-    public IRotatable.Direction getX() {
+    public RotationMeta.Direction getX() {
         return x;
     }
 
-    public IRotatable.Direction getY() {
+    public RotationMeta.Direction getY() {
         return y;
     }
 
-    public IRotatable.Direction getZ() {
+    public RotationMeta.Direction getZ() {
         return z;
     }
 

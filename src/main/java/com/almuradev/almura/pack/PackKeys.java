@@ -18,13 +18,13 @@ public class PackKeys {
     public static final DefaultedKey<Boolean> SHOW_IN_CREATIVE_TAB = new DefaultedKey<>("show-in-creative-tab", Boolean.TRUE);
     public static final DefaultedKey<Float> HARDNESS = new DefaultedKey<>("hardness", Float.MIN_VALUE);
     public static final DefaultedKey<Float> RESISTANCE = new DefaultedKey<>("resistance", Float.MIN_VALUE);
-    public static final DefaultedKey<Integer> AMOUNT = new DefaultedKey<>("amount", Integer.MIN_VALUE);
-    public static final DefaultedKey<Integer> INTEGER_DAMAGE = new DefaultedKey<>("damage", Integer.MIN_VALUE);
-    public static final DefaultedKey<Float> FLOAT_DAMAGE = new DefaultedKey<>("damage", Float.MIN_VALUE);
+    public static final DefaultedKey<String> AMOUNT = new DefaultedKey<>("amount", "");
+    public static final DefaultedKey<Float> DAMAGE = new DefaultedKey<>("damage", 0f);
     public static final DefaultedKey<Integer> LEVEL_REQUIRED = new DefaultedKey<>("level-required", Integer.MIN_VALUE);
     public static final DefaultedKey<Boolean> ENABLED = new DefaultedKey<>("enabled", Boolean.FALSE);
     public static final DefaultedKey<Float> HEALTH_CHANGE = new DefaultedKey<>("health-change", Float.MIN_VALUE);
     public static final DefaultedKey<Float> EXHAUSTION_CHANGE = new DefaultedKey<>("exhaustion-change", Float.MIN_VALUE);
+    public static final DefaultedKey<String> CHANCE = new DefaultedKey<>("chance", "");
     //CONSUMPTION NODE
     public static final DefaultedKey<String> NODE_CONSUMPTION = new DefaultedKey<>("consumption", "");
     public static final DefaultedKey<Float> SATURATION_CHANGE = new DefaultedKey<>("saturation-change", 1f);
@@ -45,7 +45,7 @@ public class PackKeys {
     public static final DefaultedKey<Integer> MIN = new DefaultedKey<>("min", 1);
     public static final DefaultedKey<Integer> MAX = new DefaultedKey<>("max", 1);
     //ROTATION NODE
-    public static final DefaultedKey<String> ROTATE = new DefaultedKey<>("rotate", "");
+    public static final DefaultedKey<String> NODE_ROTATE = new DefaultedKey<>("rotate", "");
     public static final DefaultedKey<Boolean> DEFAULT_ROTATE = new DefaultedKey<>("default-rotate", Boolean.TRUE);
     public static final DefaultedKey<Boolean> DEFAULT_MIRROR_ROTATE = new DefaultedKey<>("default-mirror", Boolean.FALSE);
     public static final DefaultedKey<String> DIRECTION = new DefaultedKey<>("direction", "");
@@ -56,6 +56,8 @@ public class PackKeys {
     //COLLISION NODE
     public static final DefaultedKey<String> NODE_COLLISION = new DefaultedKey<>("collision", "");
     public static final DefaultedKey<String> SOURCES = new DefaultedKey<>("sources", "");
+    //GRASS NODE
+    public static final DefaultedKey<String> NODE_GRASS = new DefaultedKey<>("grass", "");
 
     public static class DefaultedKey<T> {
         private final String key;

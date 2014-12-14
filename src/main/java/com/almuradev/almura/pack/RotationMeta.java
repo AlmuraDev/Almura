@@ -5,19 +5,16 @@
  */
 package com.almuradev.almura.pack;
 
-import com.almuradev.almura.pack.node.RotationNode;
-import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.google.common.collect.Maps;
-import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Map;
 
-public interface IRotatable {
+public class RotationMeta {
 
-    RotationNode getNode();
+    private RotationMeta() {}
 
-    enum Rotation implements IState {
+    public static enum Rotation implements IState {
         NORTH(0),
         SOUTH(1),
         WEST(2),
@@ -99,7 +96,7 @@ public interface IRotatable {
         }
     }
 
-    enum Direction implements IState {
+    public static enum Direction implements IState {
         BACKWARDS(-1),
         NONE(0),
         FORWARDS(1);

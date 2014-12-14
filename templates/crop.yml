@@ -9,7 +9,10 @@ seed:
         - 256 384 32 32
     creative-tab: crops
     show-in-creative-tab: true
-    drop-on-grass-break: true
+    grass:
+        enabled: true
+        chance: 10-20
+        amount: 1-3
     recipes:
         0:
             type: shaped

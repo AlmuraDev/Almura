@@ -10,12 +10,12 @@ import net.minecraft.item.Item;
 public class ItemProperty implements IProperty<Item> {
 
     private final Item item;
-    private final int amount;
+    private final RangeProperty<Integer> amountProperty;
     private final int damage;
 
-    public ItemProperty(Item item, int amount, int damage) {
+    public ItemProperty(Item item, RangeProperty<Integer> amountProperty, int damage) {
         this.item = item;
-        this.amount = amount;
+        this.amountProperty = amountProperty;
         this.damage = damage;
     }
 
@@ -24,8 +24,8 @@ public class ItemProperty implements IProperty<Item> {
         return item;
     }
 
-    public int getAmount() {
-        return amount;
+    public RangeProperty<Integer> getAmountProperty() {
+        return amountProperty;
     }
 
     public int getDamage() {

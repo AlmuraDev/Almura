@@ -7,12 +7,12 @@ public class DropProperty extends ItemProperty {
 
     private final BonusProperty<Integer, Integer> bonusProperty;
 
-    public DropProperty(Item item, int amount, int damage, BonusProperty<Integer, Integer> bonusProperty) {
-        super(item, amount, damage);
+    public DropProperty(Item item, RangeProperty<Integer> amountProperty, int damage, BonusProperty<Integer, Integer> bonusProperty) {
+        super(item, amountProperty, damage);
         this.bonusProperty = bonusProperty;
     }
 
-    public BonusProperty<Integer, Integer> getBonus() {
+    public BonusProperty<Integer, Integer> getBonusProperty() {
         return bonusProperty;
     }
 }

@@ -6,7 +6,7 @@
 package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.pack.IRecipeContainer;
+import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -14,48 +14,49 @@ import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.ConsumptionNode;
+import com.almuradev.almura.pack.node.INode;
+import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.google.common.collect.Maps;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
-public class PackFood extends ItemFood implements IPackObject, IClipContainer, IShapeContainer, IRecipeContainer {
+public class PackFood extends ItemFood implements IPackObject, IClipContainer, IShapeContainer, INodeContainer {
 
     private final Pack pack;
     private final String identifier;
-    //TEXTURES
-    private final Map<Integer, List<Integer>> textureCoordinatesByFace;
-    //SHAPES
+    private final Map<Integer, List<Integer>> textureCoordinates;
     private final String shapeName;
+    private final ConcurrentMap<Class<? extends INode>, INode> nodes = Maps.newConcurrentMap();
     public ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
     private List<String> tooltip;
-    private final boolean hasRecipe;
 
-    public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
-                    Map<Integer, List<Integer>> textureCoordinatesByFace,
-                    boolean showInCreativeTab, String creativeTabName, ConsumptionNode consumptionProperty, boolean hasRecipe) {
-        super((int) consumptionProperty.getHeal(), consumptionProperty.getSaturation(), consumptionProperty.isWolfFavorite());
+    public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName, ConsumptionNode consumptionNode) {
+        super((int) consumptionNode.getHeal(), consumptionNode.getSaturation(), consumptionNode.isWolfFavorite());
         this.pack = pack;
         this.identifier = identifier;
-        this.textureCoordinatesByFace = textureCoordinatesByFace;
+        this.textureCoordinates = textureCoordinates;
         this.textureName = textureName;
         this.shapeName = shapeName;
         this.tooltip = tooltip;
-        this.hasRecipe = hasRecipe;
+        addNode(consumptionNode);
         setUnlocalizedName(pack.getName() + "\\" + identifier);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
-        if (consumptionProperty.isAlwaysEdible()) {
+        if (consumptionNode.isAlwaysEdible()) {
             setAlwaysEdible();
         }
     }
@@ -68,7 +69,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     @Override
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(this, textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(itemIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(itemIcon, textureName, textureCoordinates);
     }
 
     @Override
@@ -102,12 +103,32 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
-    public String toString() {
-        return "PackFood {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
+    public <T extends INode> T addNode(T node) {
+        nodes.put(node.getClass(), node);
+        MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
+        return node;
     }
 
     @Override
-    public boolean hasRecipe() {
-        return hasRecipe;
+    public void addNodes(INode... nodes) {
+        for (INode node : nodes) {
+            addNode(node);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends INode> T getNode(Class<T> clazz) {
+        return (T) nodes.get(clazz);
+    }
+
+    @Override
+    public <T extends INode> boolean hasNode(Class<T> clazz) {
+        return getNode(clazz) != null;
+    }
+
+    @Override
+    public String toString() {
+        return "PackFood {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
     }
 }

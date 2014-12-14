@@ -8,7 +8,8 @@ package com.almuradev.almura.pack.renderer;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
-import com.almuradev.almura.pack.IRotatable;
+import com.almuradev.almura.pack.INodeContainer;
+import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackMirrorFace;
@@ -139,12 +140,15 @@ public class BlockRenderer extends MalisisRenderer {
     }
 
     private void handleRotation() {
-        if (renderType == RenderType.ISBRH_WORLD && block instanceof IRotatable && shape instanceof PackShape) {
-            final RotationNode node = ((IRotatable) block).getNode();
+        if (renderType == RenderType.ISBRH_WORLD && block instanceof INodeContainer && shape instanceof PackShape) {
+            final RotationNode node = ((INodeContainer) block).getNode(RotationNode.class);
+            if (node == null) {
+                return;
+            }
             if (!node.isEnabled()) {
                 return;
             }
-            final IRotatable.Rotation rotation = IRotatable.Rotation.getState(blockMetadata);
+            final RotationMeta.Rotation rotation = RotationMeta.Rotation.getState(blockMetadata);
             final RotationProperty property = node.getRotationProperty(rotation);
             if (property == null) {
                 switch (rotation) {
