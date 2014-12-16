@@ -1,7 +1,10 @@
-package com.almuradev.almura.core.mixin.impl;
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
+package com.almuradev.almura.core.mixin;
 
-import com.almuradev.almura.core.mixin.Mixin;
-import com.almuradev.almura.core.mixin.Overwrite;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.node.GrassNode;
@@ -14,6 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IShearable;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
 import java.util.ArrayList;
 

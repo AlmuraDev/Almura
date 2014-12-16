@@ -8,6 +8,7 @@ package com.almuradev.almura.core;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -17,7 +18,6 @@ public class AlmuraCoreMod implements IFMLLoadingPlugin {
 
     @SuppressWarnings("unchecked")
     public AlmuraCoreMod() {
-        Launch.classLoader.addClassLoaderExclusion("com.almuradev.almura.core.mixin.transformer.");
         try {
             Field f = LaunchClassLoader.class.getDeclaredField("classLoaderExceptions");
             f.setAccessible(true);
@@ -30,9 +30,7 @@ public class AlmuraCoreMod implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
-        return new String[]{
-                "com.almuradev.almura.core.mixin.transformer.MixinTransformer"
-        };
+        return new String[] {MixinEnvironment.MIXIN_TRANSFORMER_CLASS};
     }
 
     @Override
@@ -52,6 +50,6 @@ public class AlmuraCoreMod implements IFMLLoadingPlugin {
 
     @Override
     public String getAccessTransformerClass() {
-        return "com.almuradev.almura.core.AlmuraAccessTransformer";
+        return AlmuraAccessTransformer.CLASSPATH;
     }
 }
