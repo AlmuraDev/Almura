@@ -199,33 +199,33 @@ public class Pack {
     }
 
     public void onPostInitialization() throws IOException, ConfigurationException {
-        //Order is important
-        for (Block block : blocks) {
-            if (block instanceof IRecipeContainer && block instanceof IPackObject) {
-                if (((IRecipeContainer) block).hasRecipe()) {
-                    final InputStream entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(), ((IPackObject) block).getIdentifier() + ".yml"));
-                    final YamlConfiguration reader = new YamlConfiguration(entry);
-                    reader.load();
-                    PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), false,
-                                                 reader.getNode("recipes"));
-                    entry.close();
-                }
-            }
-        }
-
-        //Order is important
-        for (Item item : items) {
-            if (item instanceof IRecipeContainer && item instanceof IPackObject) {
-                if (((IRecipeContainer) item).hasRecipe()) {
-                    final InputStream entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((IPackObject) item).getIdentifier() + ".yml"));
-                    final YamlConfiguration reader = new YamlConfiguration(entry);
-                    reader.load();
-                    PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), true,
-                                                 reader.getNode("recipes"));
-                    entry.close();
-                }
-            }
-        }
+//        //Order is important
+//        for (Block block : blocks) {
+//            if (block instanceof IRecipeContainer && block instanceof IPackObject) {
+//                if (((IRecipeContainer) block).hasRecipe()) {
+//                    final InputStream entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(), ((IPackObject) block).getIdentifier() + ".yml"));
+//                    final YamlConfiguration reader = new YamlConfiguration(entry);
+//                    reader.load();
+//                    PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), false,
+//                                                 reader.getNode("recipes"));
+//                    entry.close();
+//                }
+//            }
+//        }
+//
+//        //Order is important
+//        for (Item item : items) {
+//            if (item instanceof IRecipeContainer && item instanceof IPackObject) {
+//                if (((IRecipeContainer) item).hasRecipe()) {
+//                    final InputStream entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((IPackObject) item).getIdentifier() + ".yml"));
+//                    final YamlConfiguration reader = new YamlConfiguration(entry);
+//                    reader.load();
+//                    PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), true,
+//                                                 reader.getNode("recipes"));
+//                    entry.close();
+//                }
+//            }
+//        }
     }
 
     @Override
