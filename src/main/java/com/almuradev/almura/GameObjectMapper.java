@@ -14,36 +14,32 @@ import java.util.Map;
 
 /**
  * minecraft:
- *     bonemeal:
- *         dye: 15
- *     dye_blue:
- *         dye: 4
+ *     dye:
+ *         bonemeal: 15
  */
 public class GameObjectMapper {
-    private static final Map<String, Map<String, Pair<?, ?>>> MAPPED = Maps.newHashMap();
+    private static final Map<String, Map<Object, Pair<String, Object>>> MAPPED = Maps.newHashMap();
 
-    public static <OBJECT, DATA> OBJECT add(String modid, String remapped, OBJECT key, DATA value) {
-        Map<String, Pair<?, ?>> identifierMap = MAPPED.get(modid);
+    public static void add(String modid, String remapped, Object parent, Object value) {
+        Map<Object, Pair<String, Object>> identifierMap = MAPPED.get(modid);
         if (identifierMap == null) {
             identifierMap = Maps.newHashMap();
             MAPPED.put(modid, identifierMap);
         }
 
-        identifierMap.put(remapped, new ImmutablePair<>(key, value));
-
-        return key;
+        identifierMap.put(parent, new ImmutablePair<>(remapped, value));
     }
 
-    public static Optional<? extends Pair<?, ?>> get(String modid, String remapped) {
-        Map<String, Pair<?, ?>> identifierMap = MAPPED.get(modid);
+    public static Optional<? extends Pair<String, Object>> get(String modid, String remapped) {
+        Map<Object, Pair<String, Object>> identifierMap = MAPPED.get(modid);
         if (identifierMap != null) {
             return Optional.fromNullable(identifierMap.get(remapped));
         }
         return Optional.absent();
     }
 
-    public static Map<String, Pair<?, ?>> getAll(String modid) {
-        Map<String, Pair<?, ?>> identifierMap = MAPPED.get(modid);
+    public static Map<Object, Pair<String, Object>> getAll(String modid) {
+        Map<Object, Pair<String, Object>> identifierMap = MAPPED.get(modid);
         if (identifierMap == null) {
             identifierMap = Maps.newHashMap();
             MAPPED.put(modid, identifierMap);
@@ -60,15 +56,17 @@ public class GameObjectMapper {
         }
         for (String modid : reader.getKeys(false)) {
             final ConfigurationNode modidConfigurationNode = reader.getNode(modid);
-            for (String remapped : modidConfigurationNode.getKeys(false)) {
-                final ConfigurationNode remappedConfigurationNode = modidConfigurationNode.getNode(remapped);
-                final String rawIdentifier = remappedConfigurationNode.getKeys(false).toArray(new String[1])[0];
-                final Object found = PackCreator.getGameObject(modid + "\\" + rawIdentifier);
+            for (String rawObjectIdentifier : modidConfigurationNode.getKeys(false)) {
+                final Object found = PackCreator.getGameObject(modid + "\\" + rawObjectIdentifier);
                 if (found == null) {
-                    Almura.LOGGER.warn("Game object [" + rawIdentifier + "] is neither a block or item within mod [" + modid + "].");
+                    Almura.LOGGER.warn("Game object [" + rawObjectIdentifier + "] is neither a block or item within mod [" + modid + "].");
                     continue;
                 }
-                add(modid, remapped, found, remappedConfigurationNode.getChild(rawIdentifier).getValue());
+
+                final ConfigurationNode objectConfigurationNode = modidConfigurationNode.getNode(rawObjectIdentifier);
+                for (String remapped : objectConfigurationNode.getKeys(false)) {
+                    add(modid, remapped, found, objectConfigurationNode.getChild(remapped).getValue());
+                }
             }
         }
 
