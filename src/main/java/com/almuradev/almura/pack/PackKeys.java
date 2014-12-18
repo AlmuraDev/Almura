@@ -63,6 +63,9 @@ public class PackKeys {
     public static final DefaultedKey<String> SOURCES = new DefaultedKey<>("sources", "");
     //GRASS NODE
     public static final DefaultedKey<String> NODE_GRASS = new DefaultedKey<>("grass", "");
+    //BREAK NODE
+    public static final DefaultedKey<String> NODE_BREAK = new DefaultedKey<>("break", "");
+    public static final DefaultedKey<String> TOOLS = new DefaultedKey<>("tools", "");
 
     public static class DefaultedKey<T> {
         private final String key;

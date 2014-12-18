@@ -41,6 +41,8 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.EnumMap;
 import java.util.Iterator;
@@ -138,40 +140,12 @@ public class PackCreator {
         final String shapeName = node.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.parseCoordinatesFrom(node.getChild(
                 PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
-
-        //HYDRATION
-        final ConfigurationNode hydrationNode = node.getNode("hydration");
-        final boolean hydrationEnabled = hydrationNode.getChild("enabled").getBoolean(false);
-        final ConfigurationNode hydrationSourcesNode = hydrationNode.getNode("sources");
-        final List<HydrationProperty> hydrationSources = Lists.newArrayList();
-        if (hydrationSourcesNode != null) {
-            for (Map.Entry<String, ConfigurationNode> entry : hydrationSourcesNode.getChildren().entrySet()) {
-                final String[] split = entry.getKey().split(StringEscapeUtils.escapeJava("\\"));
-                if (split.length == 1) {
-                    Almura.LOGGER.warn("An invalid hydration property was provided [" + entry.getKey() + "] for.");
-                    continue;
-                }
-                final String identifier = parseIdentifier(split);
-                final Block hydrationSource = getFromRegistry(split[0], identifier, Block.class);
-                if (hydrationSource == null) {
-                    Almura.LOGGER.warn("Could not find block [" + identifier + "] provided by mod [" + split[0] + "] for stage [" + id + "] in crop ["
-                                       + crop.getIdentifier() + "] in pack [" + pack.getName() + "].");
-                    continue;
-                }
-                final int neededProximity = entry.getValue().getChild("needed-proximity").getInt(6);
-                hydrationSources.add(new HydrationProperty(hydrationSource, neededProximity));
-            }
-        }
-        final HydrationNode
-                hydrationProperty =
-                new HydrationNode(hydrationEnabled, hydrationSources.toArray(new HydrationProperty[hydrationSources.size()]));
-
         final LightNode lightNode = createLightNode(pack, crop.getIdentifier(), node.getNode(PackKeys.NODE_LIGHT.getKey()));
 
         return new Stage(crop, id, textureCoordinatesByFace, shapeName, null);
     }
 
-    public static void createRecipeNode(Pack pack, String name, boolean isItem, ConfigurationNode node) {
+    public static void createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {
         for (Map.Entry<String, ConfigurationNode> entry : node.getChildren().entrySet()) {
             int id;
             try {
@@ -187,10 +161,10 @@ public class PackCreator {
             final String type = entry.getValue().getChild(PackKeys.TYPE.getKey()).getString(PackKeys.TYPE.getDefaultValue()).toUpperCase();
             switch(type) {
                 case "SHAPED":
-                    addMinecraftRecipe(pack, name, id, true, isItem, entry.getValue());
+                    addMinecraftRecipe(pack, name, result, id, true, entry.getValue());
                     break;
                 case "SHAPELESS":
-                    addMinecraftRecipe(pack, name, id, false, isItem, entry.getValue());
+                    addMinecraftRecipe(pack, name, result, id, false, entry.getValue());
                     break;
                 default:
                     Almura.LOGGER.error("Illegal type [" + type + "] for recipe id [" + id + "] specified in [" + name + "] for pack [" + pack.getName() + "]. Valid types are [SHAPED, SHAPELESS].");
@@ -282,6 +256,14 @@ public class PackCreator {
     }
 
     private static BreakNode createBreakNode(Pack pack, String name, ConfigurationNode root) {
+        final ConfigurationNode toolsConfigurationNode = root.getNode(PackKeys.TOOLS.getKey());
+        for (String rawToolSource : toolsConfigurationNode.getKeys(false)) {
+            if (rawToolSource.equalsIgnoreCase("none")) {
+
+            } else {
+
+            }
+        }
         return null;
     }
 
@@ -295,40 +277,28 @@ public class PackCreator {
 
     private static GrassNode createGrassNode(Pack pack, PackSeeds seed, ConfigurationNode root) {
         final boolean enabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
-        final String chanceRaw = root.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue());
-        double minChance = 100, maxChance = minChance;
-        if (!chanceRaw.isEmpty()) {
-            final String[] split = chanceRaw.split("-");
-            try {
-                minChance = Double.parseDouble(split[0]);
-                if (split.length > 1) {
-                    maxChance = Double.parseDouble(split[1]);
-                } else {
-                    maxChance = minChance;
-                }
-            } catch (NumberFormatException nfe) {
-                Almura.LOGGER.warn("Invalid chance given in [" + seed.getIdentifier() + "] in pack [" + pack + "]. Should be in the format of 10.5-20.5");
-            }
-        }
         final String amountRaw = root.getChild(PackKeys.AMOUNT.getKey()).getString(PackKeys.AMOUNT.getDefaultValue());
-        int minAmount = 1, maxAmount = minAmount;
-        if (!amountRaw.isEmpty()) {
-            final String[] split = chanceRaw.split("-");
-            try {
-                minAmount = Integer.parseInt(split[0]);
-                if (split.length > 1) {
-                    maxAmount = Integer.parseInt(split[1]);
-                } else {
-                    maxAmount = minAmount;
-                }
-            } catch (NumberFormatException nfe) {
-                Almura.LOGGER.warn("Invalid amount given in [" + seed.getIdentifier() + "] in pack [" + pack + "]. Should be in the format of 1-3");
-            }
+        Pair<Integer, Integer> amountPair;
+        try {
+            amountPair = getRange(Integer.class, amountRaw, 1);
+        } catch (NumberFormatException nfe) {
+            Almura.LOGGER.warn("Invalid amount given in [" + seed.getIdentifier() + "] in pack [" + pack + "]. Should be in the format of 1-3");
+            amountPair = new ImmutablePair<>(1, 1);
         }
-        return new GrassNode(enabled, new ItemProperty(seed, new RangeProperty<>(Integer.class, true, minAmount, maxAmount), 0), new RangeProperty<>(Double.class, true, minChance, maxChance));
+        final String chanceRaw = root.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue());
+        Pair<Double, Double> chancePair;
+        try {
+            chancePair = getRange(Double.class, chanceRaw, 100.0);
+        } catch (NumberFormatException nfe) {
+            Almura.LOGGER.warn("Invalid chance given in [" + seed.getIdentifier() + "] in pack [" + pack + "]. Should be in the format of 10.5-20.5");
+            chancePair = new ImmutablePair<>(100.0, 100.0);
+        }
+
+        return new GrassNode(enabled, new ItemProperty(seed, new RangeProperty<>(Integer.class, true, amountPair), 0),
+                             new RangeProperty<>(Double.class, true, chancePair));
     }
 
-    private static void addMinecraftRecipe(Pack pack, String name, int id, boolean shaped, boolean itemResult, ConfigurationNode node) {
+    private static void addMinecraftRecipe(Pack pack, String name, Object result, int id, boolean shaped, ConfigurationNode node) {
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
         final int damage = node.getChild(PackKeys.DAMAGE.getKey()).getInt(PackKeys.DAMAGE.getDefaultValue().intValue());
         final List<Object> params = Lists.newArrayList();
@@ -336,34 +306,13 @@ public class PackCreator {
         for (String itemsRaw : node.getChild(PackKeys.INGREDIENTS.getKey()).getStringList()) {
             final String[] itemsSplit = itemsRaw.split(" ");
             for (String identifierCombined : itemsSplit) {
-                final String[] separated = identifierCombined.split(StringEscapeUtils.escapeJava("\\"));
-                final String modid = separated[0].toLowerCase();
-                String identifier;
-                if (separated.length > 1) {
-                    identifier = identifierCombined.split(modid + StringEscapeUtils.escapeJava("\\"))[1];
+                final Object gameObject = getGameObject(identifierCombined);
+                if (gameObject == null) {
+                    Almura.LOGGER.warn("Could not add recipe id [" + id + "] in [" + name + "] requested by pack [" + pack.getName()
+                                       + "]. The ingredient [" + identifierCombined + "] was not found in the GameRegistry!");
+                    return;
                 } else {
-                    identifier = modid;
-                }
-                boolean minecraft = false;
-                //Air -> air
-                if (identifier.equalsIgnoreCase(modid)) {
-                    identifier = identifier.toLowerCase();
-                    minecraft = true;
-                }
-                if (!minecraft) {
-                    minecraft = modid.equalsIgnoreCase("Minecraft");
-                };
-                final Block block = GameRegistry.findBlock(minecraft ? "minecraft" : modid, identifier);
-                if (block == null) {
-                    final Item item = GameRegistry.findItem(minecraft ? "minecraft" : modid, identifier);
-                    if (item == null) {
-                        Almura.LOGGER.warn("Could not add recipe id [" + id + "] in [" + name + "] requested by pack [" + pack.getName() + "]. The ingredient [" + identifierCombined + "] was not found in the GameRegistry!");
-                        return;
-                    } else {
-                        params.add(item);
-                    }
-                } else {
-                    params.add(block);
+                    params.add(gameObject);
                 }
             }
         }
@@ -397,11 +346,10 @@ public class PackCreator {
                     combinedParams.add(entry.getValue());
                     combinedParams.add(entry.getKey());
                 }
-                if (itemResult) {
-                    GameRegistry.addShapedRecipe(new ItemStack(GameRegistry.findItem("almura", pack.getName() + "\\" + name), amount, damage), combinedParams.toArray());
-                } else {
-                    final Block block = GameRegistry.findBlock("almura", pack.getName() + "\\" + name);
-                    GameRegistry.addShapedRecipe(new ItemStack(block, amount, damage), combinedParams.toArray());
+                if (result instanceof Item) {
+                    GameRegistry.addShapedRecipe(new ItemStack((Item) result, amount, damage), combinedParams.toArray());
+                } else if (result instanceof Block) {
+                    GameRegistry.addShapedRecipe(new ItemStack((Block) result, amount, damage), combinedParams.toArray());
                 }
             } else {
                 final Iterator<Object> iter = params.iterator();
@@ -411,34 +359,68 @@ public class PackCreator {
                     }
                 }
 
-                if (itemResult) {
-                    GameRegistry.addShapelessRecipe(new ItemStack(GameRegistry.findItem("almura", pack.getName() + "\\" + name), amount, damage), params.toArray());
-                } else {
-                    GameRegistry.addShapelessRecipe(new ItemStack(GameRegistry.findBlock("almura", pack.getName() + "\\" + name), amount, damage), params.toArray());
+                if (result instanceof Item) {
+                    GameRegistry.addShapedRecipe(new ItemStack((Item) result, amount, damage), params.toArray());
+                } else if (result instanceof Block) {
+                    GameRegistry.addShapedRecipe(new ItemStack((Block) result, amount, damage), params.toArray());
                 }
             }
         }
     }
 
-    private static String parseIdentifier(String[] split) {
-        String identifier = split[1];
-        if (split.length > 2) {
-            for (int i = 1; i < split.length; ++i) {
-                identifier = identifier + "\\" + split[i];
-            }
+    public static Object getGameObject(String rawSource) {
+        final String[] separated = rawSource.split(StringEscapeUtils.escapeJava("\\"));
+        final String modid = separated[0].toLowerCase();
+        String identifier;
+        if (separated.length > 1) {
+            identifier = rawSource.split(modid + StringEscapeUtils.escapeJava("\\"))[1];
+        } else {
+            identifier = modid;
         }
-        return identifier;
+        boolean minecraft = false;
+        if (identifier.equalsIgnoreCase(modid)) {
+            identifier = identifier.toLowerCase();
+            minecraft = true;
+        }
+        if (!minecraft) {
+            minecraft = modid.equalsIgnoreCase("Minecraft");
+        }
+        final Block block = GameRegistry.findBlock(minecraft ? "minecraft" : modid, identifier);
+        if (block == null) {
+            return GameRegistry.findItem(minecraft ? "minecraft" : modid, identifier);
+        } else {
+            return block;
+        }
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getFromRegistry(String modid, String identifier, Class<T> type) {
-
-        if (type == Block.class) {
-            return (T) GameRegistry.findBlock(modid, identifier);
-        } else if (type == Item.class) {
-            return (T) GameRegistry.findItem(modid, identifier);
+    public static <N extends Number> Pair<N, N> getRange(Class<N> clazz, String rawRangeSource, N minimum) throws NumberFormatException {
+        N minAmount = minimum, maxAmount = minAmount;
+        if (!rawRangeSource.isEmpty()) {
+            final String[] split = rawRangeSource.split("-");
+            if (clazz == Integer.class) {
+                minAmount = (N) new Integer(Integer.parseInt(split[0]));
+                if (split.length > 1) {
+                    maxAmount = (N) new Integer(Integer.parseInt(split[1]));
+                } else {
+                    maxAmount = minAmount;
+                }
+            } else if (clazz == Double.class) {
+                minAmount = (N) new Double(Double.parseDouble(split[0]));
+                if (split.length > 1) {
+                    maxAmount = (N) new Double(Double.parseDouble(split[1]));
+                } else {
+                    maxAmount = minAmount;
+                }
+            } else if (clazz == Float.class) {
+                minAmount = (N) new Float(Float.parseFloat(split[0]));
+                if (split.length > 1) {
+                    maxAmount = (N) new Float(Float.parseFloat(split[0]));
+                } else {
+                    maxAmount = minAmount;
+                }
+            }
         }
-
-        return null;
+        return new ImmutablePair<>(minAmount, maxAmount);
     }
 }

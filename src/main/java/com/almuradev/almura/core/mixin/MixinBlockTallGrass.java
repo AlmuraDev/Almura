@@ -40,7 +40,9 @@ public abstract class MixinBlockTallGrass extends BlockBush implements IGrowable
                 }
             } else {
                 //Preserve Vanilla random logic
-                if (world.rand.nextInt(8) != 0) return ret;
+                if (world.rand.nextInt(8) != 0) {
+                    return ret;
+                }
             }
 
             ret.add(seed);

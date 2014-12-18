@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.pack.node.property;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.Random;
 
 public class RangeProperty<T extends Number> implements IProperty<Boolean> {
@@ -18,6 +20,13 @@ public class RangeProperty<T extends Number> implements IProperty<Boolean> {
         this.enabled = enabled;
         this.max = max;
         this.min = min;
+    }
+
+    public RangeProperty(Class<T> typeClass, boolean enabled, Pair<T, T> range) {
+        this.typeClass = typeClass;
+        this.enabled = enabled;
+        min = range.getLeft();
+        max = range.getRight();
     }
 
     @Override
