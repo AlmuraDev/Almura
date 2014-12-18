@@ -6,7 +6,6 @@ import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.registry.GameRegistry;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -23,7 +22,7 @@ import java.util.Map;
 public class GameObjectMapper {
     private static final Map<String, Map<String, Pair<?, ?>>> MAPPED = Maps.newHashMap();
 
-    public static <OBJECT, METADATA> OBJECT add(String modid, String remapped, OBJECT key, METADATA value) {
+    public static <OBJECT, DATA> OBJECT add(String modid, String remapped, OBJECT key, DATA value) {
         Map<String, Pair<?, ?>> identifierMap = MAPPED.get(modid);
         if (identifierMap == null) {
             identifierMap = Maps.newHashMap();
