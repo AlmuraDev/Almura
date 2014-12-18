@@ -59,9 +59,10 @@ public class GameObjectMapper {
             throw new RuntimeException(e);
         }
         for (String modid : reader.getKeys(false)) {
-            for (String remapped : reader.getNode(modid).getKeys(false)) {
-                final ConfigurationNode remappedConfigurationNode = reader.getNode(modid).getNode(remapped);
-                final String rawIdentifier = remappedConfigurationNode.getKeys(true).toArray(new String[1])[0];
+            final ConfigurationNode modidConfigurationNode = reader.getNode(modid);
+            for (String remapped : modidConfigurationNode.getKeys(false)) {
+                final ConfigurationNode remappedConfigurationNode = modidConfigurationNode.getNode(remapped);
+                final String rawIdentifier = remappedConfigurationNode.getKeys(false).toArray(new String[1])[0];
                 final Object found = PackCreator.getGameObject(modid + "\\" + rawIdentifier);
                 if (found == null) {
                     Almura.LOGGER.warn("Game object [" + rawIdentifier + "] is neither a block or item within mod [" + modid + "].");
@@ -70,5 +71,7 @@ public class GameObjectMapper {
                 add(modid, remapped, found, remappedConfigurationNode.getChild(rawIdentifier).getValue());
             }
         }
+
+        System.out.println(MAPPED);
     }
 }

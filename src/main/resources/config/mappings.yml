@@ -1,3 +1,6 @@
 minecraft:
-    bonemeal:
-        dye: 15
+    dye:
+        bonemeal: 15
+        lapis_lazuli: 4
+        dye_magenta: 13
+        dye_light_blue: 12
