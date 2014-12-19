@@ -8,11 +8,14 @@ package com.almuradev.almura.pack.renderer;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
-import com.almuradev.almura.pack.IRotatable;
+import com.almuradev.almura.pack.INodeContainer;
+import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackMirrorFace;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.node.RotationNode;
+import com.almuradev.almura.pack.node.property.RotationProperty;
 import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.RenderType;
@@ -60,71 +63,8 @@ public class BlockRenderer extends MalisisRenderer {
 
         shape.resetState();
 
-        if (renderType == RenderType.ISBRH_WORLD && block instanceof IRotatable && shape instanceof PackShape) {
-            final boolean canRotate = ((IRotatable) block).canRotate(world, x, y, z, blockMetadata);
-            final boolean canMirrorRotate = ((IRotatable) block).canMirrorRotate(world, x, y, z, blockMetadata);
+        handleRotation();
 
-            switch (IRotatable.Rotation.getState(blockMetadata)) {
-                case NORTH:
-                    if (canRotate) {
-                        shape.rotate(180f, 0, -1, 0);
-                        break;
-                    }
-                case SOUTH:
-                    break;
-                case WEST:
-                    if (canRotate) {
-                        shape.rotate(90f, 0, -1, 0);
-                        break;
-                    }
-                case EAST:
-                    if (canRotate) {
-                        shape.rotate(90f, 0, 1, 0);
-                        break;
-                    }
-                case DOWN_NORTH:
-                    if (canMirrorRotate) {
-                        shape.rotate(90f, -1, 0, 0);
-                        shape.rotate(180f, 0, -1, 0);
-                    }
-                    break;
-                case DOWN_SOUTH:
-                    if (canMirrorRotate) {
-                        shape.rotate(180f, -1, 0, 0);
-                        shape.rotate(90f, -1, 0, 0);
-                    }
-                    break;
-                case DOWN_WEST:
-                    if (canMirrorRotate) {
-                        shape.rotate(180f, -1, 0, 0);
-                        shape.rotate(90f, 0, -1, 0);
-                    }
-                    break;
-                case DOWN_EAST:
-                    if (canMirrorRotate) {
-                        shape.rotate(180f, -1, 0, 0);
-                        shape.rotate(90f, 0, 1, 0);
-                    }
-                    break;
-                case UP_NORTH:
-                    if (canMirrorRotate) {
-                        shape.rotate(180f, 0, -1, 0);
-                    }
-                    break;
-                case UP_SOUTH:
-                    break;
-                case UP_WEST:
-                    if (canMirrorRotate) {
-                        shape.rotate(90f, 0, -1, 0);
-                    }
-                    break;
-                case UP_EAST:
-                    if (canMirrorRotate) {
-                        shape.rotate(90f, 0, 1, 0);
-                    }
-                    break;
-            }
-        }
         if (renderType == RenderType.ISBRH_INVENTORY) {
             double max = Double.MIN_VALUE;
             for (Face fe : shape.getFaces()) {
@@ -197,5 +137,85 @@ public class BlockRenderer extends MalisisRenderer {
     @Override
     public void registerFor(Item item) {
         throw new UnsupportedOperationException(BlockRenderer.class.getSimpleName() + " is only meant for blocks!");
+    }
+
+    private void handleRotation() {
+        if (renderType == RenderType.ISBRH_WORLD && block instanceof INodeContainer && shape instanceof PackShape) {
+            final RotationNode node = ((INodeContainer) block).getNode(RotationNode.class);
+            if (node == null) {
+                return;
+            }
+            if (!node.isEnabled()) {
+                return;
+            }
+            final RotationMeta.Rotation rotation = RotationMeta.Rotation.getState(blockMetadata);
+            final RotationProperty property = node.getRotationProperty(rotation);
+            if (property == null) {
+                switch (rotation) {
+                    case NORTH:
+                        if (node.isDefaultRotate()) {
+                            shape.rotate(180f, 0, -1, 0);
+                        }
+                        break;
+                    case SOUTH:
+                        break;
+                    case WEST:
+                        if (node.isDefaultRotate()) {
+                            shape.rotate(90f, 0, -1, 0);
+                        }
+                        break;
+
+                    case EAST:
+                        if (node.isDefaultRotate()) {
+                            shape.rotate(90f, 0, 1, 0);
+                        }
+                        break;
+
+                    case DOWN_NORTH:
+                        if (node.isDefaultMirrorRotate()) {
+                            shape.rotate(90f, -1, 0, 0);
+                            shape.rotate(180f, 0, -1, 0);
+                        }
+                        break;
+                    case DOWN_SOUTH:
+                        if (node.isDefaultMirrorRotate()) {
+                            shape.rotate(180f, -1, 0, 0);
+                            shape.rotate(90f, -1, 0, 0);
+                        }
+                        break;
+                    case DOWN_WEST:
+                        if (node.isDefaultMirrorRotate()) {
+                            shape.rotate(180f, -1, 0, 0);
+                            shape.rotate(90f, 0, -1, 0);
+                        }
+                        break;
+                    case DOWN_EAST:
+                        if (node.isDefaultMirrorRotate()) {
+                            shape.rotate(180f, -1, 0, 0);
+                            shape.rotate(90f, 0, 1, 0);
+                        }
+                        break;
+                    case UP_NORTH:
+                        if (node.isDefaultMirrorRotate()) {
+                            shape.rotate(180f, 0, -1, 0);
+                        }
+                        break;
+                    case UP_SOUTH:
+                        break;
+                    case UP_WEST:
+                        if (node.isDefaultMirrorRotate()) {
+                            shape.rotate(90f, 0, -1, 0);
+                        }
+                        break;
+                    case UP_EAST:
+                        if (node.isDefaultMirrorRotate()) {
+                            shape.rotate(90f, 0, 1, 0);
+                        }
+                        break;
+                }
+            } else {
+                shape.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
+            }
+        }
     }
 }

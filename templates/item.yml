@@ -1,0 +1,18 @@
+date: 12-13-2014
+type: item
+title: Item
+texture: item.png
+shape: item.shape
+coordinates:
+    - 0 0 16 16
+    - 16 16 32 32
+creative-tab: item
+show-in-creative-tab: true
+recipes:
+    0:
+        type: shaped
+        amount: 1
+        ingredients:
+            - air air air
+            - air stone air
+            - air sand air

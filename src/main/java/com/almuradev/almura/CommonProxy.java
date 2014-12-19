@@ -46,6 +46,7 @@ public class CommonProxy {
     }
 
     public void onPostInitialization(FMLPostInitializationEvent event) {
+        GameObjectMapper.load();
         for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
             try {
                 entry.getValue().onPostInitialization();

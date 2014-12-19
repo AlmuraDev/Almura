@@ -34,6 +34,7 @@ public class Filesystem {
 
     public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID.toLowerCase());
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
+    public static final Path CONFIG_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "mappings.yml");
     public static final Path CONFIG_VERSION_PATH = Paths.get(CONFIG_PATH.toString(), Almura.PACK_VERSION);
     public static final Path CONFIG_YML_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "packs");
     public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "images");
@@ -82,9 +83,20 @@ public class Filesystem {
                 InputStream stream = Filesystem.class.getResourceAsStream("/config/settings.yml");
                 Files.copy(stream, Filesystem.CONFIG_SETTINGS_PATH);
             } catch (Exception e) {
-                throw new RuntimeException("Failed to copy over configuration files!", e);
+                throw new RuntimeException("Failed to copy over settings file!", e);
             }
         }
+        if (Files.notExists(CONFIG_MAPPINGS_PATH)) {
+            try {
+                Files.createDirectories(CONFIG_PATH);
+
+                InputStream stream = Filesystem.class.getResourceAsStream("/config/mappings.yml");
+                Files.copy(stream, Filesystem.CONFIG_MAPPINGS_PATH);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to copy over mapping file!", e);
+            }
+        }
+
         try {
             Files.createDirectories(CONFIG_YML_PATH);
         } catch (IOException e) {

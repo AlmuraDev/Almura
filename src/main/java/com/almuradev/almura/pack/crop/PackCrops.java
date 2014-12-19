@@ -60,7 +60,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
             //Get within range
             final double
                     chance =
-                    stage.growth.getValue().getMin() + (stage.growth.getValue().getMax() - stage.growth.getValue().getMin()) * random.nextDouble();
+                    stage.growth.getValue().getValueWithinRange();
 
             if (random.nextDouble() <= 100 / chance) {
                 stage.onGrowth(world, x, y, z, random);

@@ -11,8 +11,7 @@ import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IState;
 import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.crop.PackCrops;
-import com.almuradev.almura.pack.property.GrowthProperty;
+import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.model.PackShape;
 import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
@@ -36,11 +35,11 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
     //PROPERTY
-    public GrowthProperty growth;
+    public GrowthNode growth;
     private PackShape shape;
     private ClippedIcon[] clippedIcons;
 
-    public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName, GrowthProperty growth) {
+    public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName, GrowthNode growth) {
         this.block = block;
         this.id = id;
         this.textureCoordinatesByFace = textureCoordinatesByFace;

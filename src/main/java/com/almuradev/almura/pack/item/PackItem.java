@@ -7,7 +7,6 @@ package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.pack.IRecipeContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -26,30 +25,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class PackItem extends Item implements IPackObject, IClipContainer, IShapeContainer, IRecipeContainer {
+public class PackItem extends Item implements IPackObject, IClipContainer, IShapeContainer {
 
     private final Pack pack;
     private final String identifier;
-    //TEXTURES
-    private final Map<Integer, List<Integer>> textureCoordinatesByFace;
-    //SHAPES
+    private final Map<Integer, List<Integer>> textureCoordinates;
     private final String shapeName;
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
     private List<String> tooltip;
-    private final boolean hasRecipe;
 
-    public PackItem(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
-                    Map<Integer, List<Integer>> textureCoordinatesByFace,
-                    boolean showInCreativeTab, String creativeTabName, boolean hasRecipe) {
+    public PackItem(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName) {
         this.pack = pack;
         this.identifier = identifier;
-        this.textureCoordinatesByFace = textureCoordinatesByFace;
+        this.textureCoordinates = textureCoordinates;
         this.textureName = textureName;
         this.shapeName = shapeName;
         this.tooltip = tooltip;
-        this.hasRecipe = hasRecipe;
         setUnlocalizedName(pack.getName() + "\\" + identifier);
         setTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
         if (showInCreativeTab) {
@@ -65,7 +58,7 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     @Override
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(this, textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(itemIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(itemIcon, textureName, textureCoordinates);
     }
 
     @Override
@@ -101,10 +94,5 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     @Override
     public String toString() {
         return "PackItem {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
-    }
-
-    @Override
-    public boolean hasRecipe() {
-        return hasRecipe;
     }
 }

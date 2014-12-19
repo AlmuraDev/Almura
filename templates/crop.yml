@@ -9,7 +9,10 @@ seed:
         - 256 384 32 32
     creative-tab: crops
     show-in-creative-tab: true
-    drop-on-grass-break: true
+    grass:
+        enabled: true
+        chance: 10-20
+        amount: 1-3
     recipes:
         0:
             type: shaped
@@ -163,6 +166,7 @@ stages:
             tools:
                 none:
                     experience: 10-15
+                    exhaustion-change: 5-10
                     drops:
                         almura\food\corn:
                             amount: 1-2
@@ -172,6 +176,7 @@ stages:
                                 chance: 10-15
                 almura\tools\diamond_sickle:
                     experience: 10-15
+                    exhaustion-change: 5-10
                     drops:
                         almura\food\corn:
                             amount: 3-4

@@ -34,12 +34,17 @@ repositories {
         name = 'sonatype-nexus-public'
         url = 'https://oss.sonatype.org/content/repositories/public/'
     }
+    maven {
+        name = 'sponge-public'
+        url = 'http://repo.spongepowered.org/sponge/maven/'
+    }
 }
 
 // Project dependencies
 dependencies {
     compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
-    compile 'net.malisis:malisiscore:1.7.10-0.10.3-SNAPSHOT:dev'
+    compile 'net.malisis:malisiscore:1.7.10-0.10.4-SNAPSHOT:dev'
+    compile 'org.spongepowered:mixin:0.1-SNAPSHOT'
 }
 
 // Gradle default tasks
@@ -48,7 +53,7 @@ defaultTasks 'licenseFormat', 'build', 'shadowJar'
 // Basic project information
 group = 'com.almuradev'
 archivesBaseName = 'almura'
-version = '1.7.10-SNAPSHOT'
+version = '1.7-1270-0.1.0'
 
 // Extended project information
 ext.projectName = 'Almura'
@@ -62,7 +67,7 @@ ext.organization = 'AlmuraDev'
 ext.buildNumber = project.hasProperty("buildNumber") ? buildNumber : '0'
 ext.commit = project.hasProperty("commit") ? commit : 'unknown'
 
-// Java version target/source compatibility
+// Java version target/property compatibility
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
@@ -73,7 +78,7 @@ configurations.all {
 
 // MinecraftForge version
 minecraft {
-    version = "1.7.10-10.13.2.1258"
+    version = "1.7.10-10.13.2.1270"
 }
 
 // Include dependencies in the final JAR
@@ -82,6 +87,7 @@ shadowJar {
     destinationDir = file("build/distributions")
     dependencies {
         include(dependency('com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'))
+        include(dependency('org.spongepowered:mixin:0.1.0-SNAPSHOT'))
     }
 }
 
