@@ -4,3 +4,6 @@ minecraft:
         lapis_lazuli: 4
         dye_magenta: 13
         dye_light_blue: 12
+    wool:
+        wool_white: 0
+        wool_blue: 1
