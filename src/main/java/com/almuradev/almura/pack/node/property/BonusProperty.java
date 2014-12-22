@@ -7,14 +7,18 @@ package com.almuradev.almura.pack.node.property;
 
 public class BonusProperty<T extends Number, U extends Number> extends RangeProperty<T> {
 
-    private final RangeProperty<U> bonusAmountRange;
+    private final RangeProperty<U> bonusChanceRange;
 
-    public BonusProperty(Class<T> typeClass, boolean enabled, T min, T max, RangeProperty<U> bonusAmountRange) {
-        super(typeClass, enabled, min, max);
-        this.bonusAmountRange = bonusAmountRange;
+    public BonusProperty(Class<T> typeClass, boolean enabled, RangeProperty<T> bonusAmountRange, RangeProperty<U> bonusChanceRange) {
+        this(typeClass, enabled, bonusAmountRange.getMin(), bonusAmountRange.getMax(), bonusChanceRange);
     }
 
-    public RangeProperty<U> getBonusAmountRange() {
-        return bonusAmountRange;
+    public BonusProperty(Class<T> typeClass, boolean enabled, T min, T max, RangeProperty<U> bonusChanceRange) {
+        super(typeClass, enabled, min, max);
+        this.bonusChanceRange = bonusChanceRange;
+    }
+
+    public RangeProperty<U> getBonusChanceRange() {
+        return bonusChanceRange;
     }
 }

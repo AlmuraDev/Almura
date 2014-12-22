@@ -42,6 +42,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
@@ -162,23 +163,30 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
             return;
         }
 
-        player.addExhaustion(toolsProperty.getExhaustion().getValueWithinRange());
+        player.addExhaustion(toolsProperty.getExhaustionRange().getValueWithinRange());
         final ArrayList<ItemStack> drops = Lists.newArrayList();
-        for (DropsNode prop : toolsProperty.getValue()) {
-            for (DropProperty src : prop.getValue()) {
-                final ItemStack toDrop = new ItemStack(src.getSource(), src.getAmountProperty().getValueWithinRange(), src.getDamage());
-                if (src.getBonusProperty().getSource()) {
-                    final double chance = src.getBonusProperty().getValueWithinRange();
-                    if (RangeProperty.RANDOM.nextDouble() <= 100 / chance) {
-                        toDrop.stackSize += src.getBonusProperty().getBonusAmountRange().getValueWithinRange();
-                    }
+        for (DropProperty src : toolsProperty.getValue().getValue()) {
+            final Object source = src.getSource();
+            final ItemStack toDrop;
+            if (source instanceof Block) {
+                toDrop = new ItemStack((Block) source, src.getAmountProperty().getValueWithinRange(), src.getData());
+            } else {
+                toDrop = new ItemStack((Item) source, src.getAmountProperty().getValueWithinRange(), src.getData());
+            }
+            if (src.getBonusProperty().getSource()) {
+                final double chance = src.getBonusProperty().getValueWithinRange();
+                if (RangeProperty.RANDOM.nextDouble() <= 100 / chance) {
+                    toDrop.stackSize += src.getBonusProperty().getValueWithinRange();
                 }
             }
+            drops.add(toDrop);
         }
         harvesters.set(player);
         if (!world.isRemote && !world.restoringBlockSnapshots) {
             final int fortune = EnchantmentHelper.getFortuneModifier(player);
-            final float modchance = ForgeEventFactory.fireBlockHarvesting(drops, world, this, x, y, z, metadata, fortune, 1.0f, false, harvesters.get());
+            final float
+                    modchance =
+                    ForgeEventFactory.fireBlockHarvesting(drops, world, this, x, y, z, metadata, fortune, 1.0f, false, harvesters.get());
             for (ItemStack is : drops) {
                 if (modchance <= RangeProperty.RANDOM.nextFloat() && world.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
                     if (captureDrops.get()) {
@@ -186,10 +194,10 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
                         return;
                     }
                     final float f = 0.7F;
-                    final double d0 = (double)(world.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-                    final double d1 = (double)(world.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-                    final double d2 = (double)(world.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-                    final EntityItem item = new EntityItem(world, (double)x + d0, (double)y + d1, (double)z + d2, is);
+                    final double d0 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final double d1 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final double d2 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final EntityItem item = new EntityItem(world, (double) x + d0, (double) y + d1, (double) z + d2, is);
                     item.delayBeforeCanPickup = 10;
                     world.spawnEntityInWorld(item);
                 }

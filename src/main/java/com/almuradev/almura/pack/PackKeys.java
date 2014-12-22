@@ -24,11 +24,11 @@ public class PackKeys {
     public static final DefaultedKey<Float> HARDNESS = new DefaultedKey<>("hardness", Float.MIN_VALUE);
     public static final DefaultedKey<Float> RESISTANCE = new DefaultedKey<>("resistance", Float.MIN_VALUE);
     public static final DefaultedKey<String> AMOUNT = new DefaultedKey<>("amount", "");
-    public static final DefaultedKey<Float> DAMAGE = new DefaultedKey<>("damage", 0f);
+    public static final DefaultedKey<Integer> DATA = new DefaultedKey<>("data", 0);
     public static final DefaultedKey<Integer> LEVEL_REQUIRED = new DefaultedKey<>("level-required", Integer.MIN_VALUE);
     public static final DefaultedKey<Boolean> ENABLED = new DefaultedKey<>("enabled", Boolean.FALSE);
     public static final DefaultedKey<Float> HEALTH_CHANGE = new DefaultedKey<>("health-change", Float.MIN_VALUE);
-    public static final DefaultedKey<Float> EXHAUSTION_CHANGE = new DefaultedKey<>("exhaustion-change", Float.MIN_VALUE);
+    public static final DefaultedKey<String> EXHAUSTION_CHANGE = new DefaultedKey<>("exhaustion-change", "");
     public static final DefaultedKey<String> CHANCE = new DefaultedKey<>("chance", "");
     //CONSUMPTION NODE
     public static final DefaultedKey<String> NODE_CONSUMPTION = new DefaultedKey<>("consumption", "");
@@ -66,7 +66,9 @@ public class PackKeys {
     //BREAK NODE
     public static final DefaultedKey<String> NODE_BREAK = new DefaultedKey<>("break", "");
     public static final DefaultedKey<String> TOOLS = new DefaultedKey<>("tools", "");
-
+    public static final DefaultedKey<String> DROPS = new DefaultedKey<>("drops", "");
+    public static final DefaultedKey<String> EXPERIENCE = new DefaultedKey<>("experience", "");
+    public static final DefaultedKey<String> BONUS = new DefaultedKey<>("bonus", "");
     public static class DefaultedKey<T> {
         private final String key;
         private final T value;

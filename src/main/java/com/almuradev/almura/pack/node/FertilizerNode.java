@@ -5,23 +5,20 @@
  */
 package com.almuradev.almura.pack.node;
 
-import com.almuradev.almura.pack.node.property.FertilizerProperty;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang3.ArrayUtils;
+import com.almuradev.almura.pack.node.property.GameObjectProperty;
+import java.util.Set;
 
-import java.util.List;
+public class FertilizerNode extends ToggleableNode<Set<GameObjectProperty>> {
 
-public class FertilizerNode extends ToggleableNode<List<FertilizerProperty>> {
+    private final Set<GameObjectProperty> value;
 
-    private final List<FertilizerProperty> value = Lists.newArrayList();
-
-    public FertilizerNode(boolean isEnabled, FertilizerProperty... value) {
+    public FertilizerNode(boolean isEnabled, Set<GameObjectProperty> value) {
         super(isEnabled);
-        ArrayUtils.addAll(value, this.value);
+        this.value = value;
     }
 
     @Override
-    public List<FertilizerProperty> getValue() {
+    public Set<GameObjectProperty> getValue() {
         return value;
     }
 }

@@ -5,22 +5,22 @@
  */
 package com.almuradev.almura.pack.node;
 
-import com.almuradev.almura.pack.node.property.ItemProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
+import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
 
-public class GrassNode extends ToggleableNode<ItemProperty> {
-    private final ItemProperty itemProperty;
+public class GrassNode extends ToggleableNode<VariableGameObjectProperty> {
+    private final VariableGameObjectProperty variableGameObjectProperty;
     private final RangeProperty<Double> chanceProperty;
 
-    public GrassNode(boolean isEnabled, ItemProperty itemProperty, RangeProperty<Double> chanceProperty) {
+    public GrassNode(boolean isEnabled, VariableGameObjectProperty variableGameObjectProperty, RangeProperty<Double> chanceProperty) {
         super(isEnabled);
-        this.itemProperty = itemProperty;
+        this.variableGameObjectProperty = variableGameObjectProperty;
         this.chanceProperty = chanceProperty;
     }
 
     @Override
-    public ItemProperty getValue() {
-        return itemProperty;
+    public VariableGameObjectProperty getValue() {
+        return variableGameObjectProperty;
     }
 
     public RangeProperty<Double> getChanceProperty() {

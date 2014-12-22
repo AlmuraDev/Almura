@@ -10,18 +10,19 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
+import java.util.Set;
 
-public class HydrationNode extends ToggleableNode<List<HydrationProperty>> {
+public class HydrationNode extends ToggleableNode<Set<HydrationProperty>> {
 
-    private final List<HydrationProperty> value = Lists.newArrayList();
+    private final Set<HydrationProperty> value;
 
-    public HydrationNode(boolean isEnabled, HydrationProperty... value) {
+    public HydrationNode(boolean isEnabled, Set<HydrationProperty> value) {
         super(isEnabled);
-        ArrayUtils.addAll(value, this.value);
+        this.value = value;
     }
 
     @Override
-    public List<HydrationProperty> getValue() {
+    public Set<HydrationProperty> getValue() {
         return value;
     }
 }

@@ -47,6 +47,7 @@ collision:
              enabled: true
              health-change: 1
 break:
+    enabled: true
     tools:
         none:
             experience: 5-10
@@ -54,6 +55,7 @@ break:
             drops:
                 almura\food\corn:
                     amount: 1-2
+                    data: 2
                     bonus:
                         enabled: false
                         amount: 1-5
@@ -64,6 +66,7 @@ break:
             drops:
                 almura\food\corn:
                     amount: 3-4
+                    data: 2
                     bonus:
                         enabled: true
                         amount: 4-5

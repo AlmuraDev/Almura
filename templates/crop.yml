@@ -163,6 +163,7 @@ stages:
                 skeleton:
                     health-change: 0
         break:
+            enabled: true
             tools:
                 none:
                     experience: 10-15
@@ -170,6 +171,7 @@ stages:
                     drops:
                         almura\food\corn:
                             amount: 1-2
+                            data: 2
                             bonus:
                                 enabled: false
                                 amount: 1-5
@@ -180,6 +182,7 @@ stages:
                     drops:
                         almura\food\corn:
                             amount: 3-4
+                            data: 2
                             bonus:
                                 enabled: true
                                 amount: 4-5

@@ -5,46 +5,46 @@
  */
 package com.almuradev.almura.pack.node;
 
-import com.almuradev.almura.pack.PackKeys;
 import com.almuradev.almura.pack.node.property.RangeProperty;
-import com.google.common.collect.Lists;
-import net.minecraft.item.Item;
-import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.List;
+public class ToolsNode implements INode<DropsNode> {
+    private final Object tool;
+    private final RangeProperty<Integer> experienceRange;
+    private final RangeProperty<Float> exhaustionRange;
+    private final DropsNode value;
 
-public class ToolsNode implements INode<List<DropsNode>> {
-    private final Item tool;
-    private final RangeProperty<Float> exhaustion;
-    private final List<DropsNode> value = Lists.newArrayList();
-
-    public ToolsNode(Item tool, RangeProperty<Float> exhaustion, DropsNode... value) {
+    public ToolsNode(Object tool, RangeProperty<Integer> experienceRange, RangeProperty<Float> exhaustionRange, DropsNode value) {
         this.tool = tool;
-        this.exhaustion = exhaustion;
-        ArrayUtils.addAll(value, this.value);
+        this.experienceRange = experienceRange;
+        this.exhaustionRange = exhaustionRange;
+        this.value = value;
     }
 
-    public Item getTool() {
+    public Object getTool() {
         return tool;
     }
 
-    public RangeProperty<Float> getExhaustion() {
-        return exhaustion;
+    public RangeProperty<Integer> getExperienceRange() {
+        return experienceRange;
+    }
+
+    public RangeProperty<Float> getExhaustionRange() {
+        return exhaustionRange;
     }
 
     @Override
-    public List<DropsNode> getValue() {
+    public DropsNode getValue() {
         return value;
     }
 
     public static final class OffHand extends ToolsNode {
 
-        public OffHand(DropsNode... value) {
-            super(null, new RangeProperty<>(Float.class, true, PackKeys.EXHAUSTION_CHANGE.getDefaultValue(), PackKeys.EXHAUSTION_CHANGE.getDefaultValue()), value);
+        public OffHand(RangeProperty<Integer> experienceRange, RangeProperty<Float> exhaustionRange, DropsNode value) {
+            super(null, experienceRange, exhaustionRange, value);
         }
 
         @Override
-        public Item getTool() {
+        public final Object getTool() {
             throw new UnsupportedOperationException("OffHand node has no tool!");
         }
     }

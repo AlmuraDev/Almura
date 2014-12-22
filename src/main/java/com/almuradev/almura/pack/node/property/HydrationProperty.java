@@ -7,7 +7,7 @@ package com.almuradev.almura.pack.node.property;
 
 import net.minecraft.block.Block;
 
-public class HydrationProperty extends BlockProperty {
+public class HydrationProperty extends GameObjectProperty {
 
     private final int neededPromixity;
 

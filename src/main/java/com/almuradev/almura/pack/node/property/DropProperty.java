@@ -5,19 +5,16 @@
  */
 package com.almuradev.almura.pack.node.property;
 
+public class DropProperty extends VariableGameObjectProperty {
 
-import net.minecraft.item.Item;
+    private final BonusProperty<Integer, Double> bonusProperty;
 
-public class DropProperty extends ItemProperty {
-
-    private final BonusProperty<Integer, Integer> bonusProperty;
-
-    public DropProperty(Item item, RangeProperty<Integer> amountProperty, int damage, BonusProperty<Integer, Integer> bonusProperty) {
-        super(item, amountProperty, damage);
+    public DropProperty(Object object, RangeProperty<Integer> amountProperty, int data, BonusProperty<Integer, Double> bonusProperty) {
+        super(object, amountProperty, data);
         this.bonusProperty = bonusProperty;
     }
 
-    public BonusProperty<Integer, Integer> getBonusProperty() {
+    public BonusProperty<Integer, Double> getBonusProperty() {
         return bonusProperty;
     }
 }

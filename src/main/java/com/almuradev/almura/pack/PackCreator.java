@@ -7,6 +7,7 @@ package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.GameObjectMapper;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
@@ -16,23 +17,27 @@ import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ConsumptionNode;
+import com.almuradev.almura.pack.node.DropsNode;
 import com.almuradev.almura.pack.node.GrassNode;
-import com.almuradev.almura.pack.node.HydrationNode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
+import com.almuradev.almura.pack.node.ToolsNode;
+import com.almuradev.almura.pack.node.property.BonusProperty;
 import com.almuradev.almura.pack.node.property.CollisionProperty;
-import com.almuradev.almura.pack.node.property.HydrationProperty;
-import com.almuradev.almura.pack.node.property.ItemProperty;
+import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.item.PackFood;
 import com.almuradev.almura.pack.item.PackItem;
 import com.almuradev.almura.pack.node.property.RotationProperty;
+import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
@@ -48,6 +53,7 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PackCreator {
     private static final char[] RECIPE_MATRIX_PLACEHOLDER = new char[] {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'};
@@ -152,9 +158,9 @@ public class PackCreator {
                 id = Integer.parseInt(entry.getKey());
             } catch (NumberFormatException e) {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                    Almura.LOGGER.error("Illegal id [" + entry.getKey() + "] for recipe specified in [" + name + "] for pack [" + pack.getName() + "]", e);
+                    Almura.LOGGER.error("Recipe id [" + entry.getKey() + "] in [" + name + "] in pack [" + pack.getName() + "] is not a valid number.", e);
                 } else {
-                    Almura.LOGGER.warn("Illegal id [" + entry.getKey() + "] for recipe specified in [" + name + "] for pack [" + pack.getName() + "]");
+                    Almura.LOGGER.warn("Recipe id [" + entry.getKey() + "] in [" + name + "] in pack [" + pack.getName() + "] is not a valid number.");
                 }
                 continue;
             }
@@ -167,7 +173,7 @@ public class PackCreator {
                     addMinecraftRecipe(pack, name, result, id, false, entry.getValue());
                     break;
                 default:
-                    Almura.LOGGER.error("Illegal type [" + type + "] for recipe id [" + id + "] specified in [" + name + "] for pack [" + pack.getName() + "]. Valid types are [SHAPED, SHAPELESS].");
+                    Almura.LOGGER.error("Type [" + type + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is not valid. Valid types are [SHAPED, SHAPELESS].");
             }
         }
     }
@@ -183,7 +189,7 @@ public class PackCreator {
         for (String rawRotation: directionRotationNode.getKeys(false)) {
             final RotationMeta.Rotation rotation = RotationMeta.Rotation.getState(rawRotation);
             if (rotation == null) {
-                Almura.LOGGER.warn("Invalid rotation [" + rawRotation + "] specified in [" + name + "] in pack [" + pack.getName() + "].");
+                Almura.LOGGER.warn("Rotation [" + rawRotation + "] in [" + name + "] in pack [" + pack.getName() + "] is not valid.");
                 continue;
             }
             final ConfigurationNode specificDirectionRotationNode = directionRotationNode.getNode(rawRotation);
@@ -225,7 +231,7 @@ public class PackCreator {
     private static CollisionNode createCollisionNode(Pack pack, String name, ConfigurationNode root) {
         final boolean collisionEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
         final ConfigurationNode collisionSourcesConfigurationNode = root.getNode(PackKeys.SOURCES.getKey());
-        final List<CollisionProperty> collisionProperties = Lists.newArrayList();
+        final Set<CollisionProperty> collisionProperties = Sets.newHashSet();
         if (collisionSourcesConfigurationNode != null) {
             for (String rawCollisionSource : collisionSourcesConfigurationNode.getKeys(false)) {
                 final String[] entityIdentifierSplit = rawCollisionSource.split(StringEscapeUtils.escapeJava("\\"));
@@ -237,7 +243,7 @@ public class PackCreator {
                 }
                 final Class<? extends Entity> entityClazz = (Class<? extends Entity>) EntityList.stringToClassMapping.get(entityIdentifier);
                 if (entityClazz == null) {
-                    Almura.LOGGER.warn("invalid collision source [" + rawCollisionSource + "] specified in [" + name + "] in pack [" + pack.getName() + "].");
+                    Almura.LOGGER.warn("Entity source [" + rawCollisionSource + "] in [" + name + "] for modid [" + entityIdentifierSplit[0] + "] in pack [" + pack.getName() + "] is not a registered Entity.");
                     continue;
                 }
                 final ConfigurationNode collisionSourceConfigurationNode = root.getChild(rawCollisionSource);
@@ -246,7 +252,7 @@ public class PackCreator {
                 collisionProperties.add(new CollisionProperty(enabled, entityClazz, healthChange));
             }
         }
-        return new CollisionNode(collisionEnabled, collisionProperties.toArray(new CollisionProperty[collisionProperties.size()]));
+        return new CollisionNode(collisionEnabled, collisionProperties);
     }
 
     private static RenderNode createRenderNode(Pack pack, String name, ConfigurationNode root) {
@@ -256,15 +262,51 @@ public class PackCreator {
     }
 
     private static BreakNode createBreakNode(Pack pack, String name, ConfigurationNode root) {
+        final boolean breakEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
         final ConfigurationNode toolsConfigurationNode = root.getNode(PackKeys.TOOLS.getKey());
+        final Set<ToolsNode> tools = Sets.newHashSet();
+
         for (String rawToolSource : toolsConfigurationNode.getKeys(false)) {
-            if (rawToolSource.equalsIgnoreCase("none")) {
-
-            } else {
-
+            final Pair<String, String> toolModidIdentifierParsed = parseModidIdentifierFrom(rawToolSource);
+            boolean validTool = false;
+            if (rawToolSource.equalsIgnoreCase(toolModidIdentifierParsed.getValue())) {
+                validTool = true;
             }
+            Object tool = null;
+            if (!validTool) {
+                tool = getGameObject(toolModidIdentifierParsed.getKey(), toolModidIdentifierParsed.getValue());
+                validTool = tool != null;
+            }
+            if (!validTool) {
+                Almura.LOGGER.warn("Tool source [" + rawToolSource + "] in [" + name + "] for modid [" + toolModidIdentifierParsed.getKey() + "] + in pack [" + pack + "]  is not a registered Block or Item.");
+                continue;
+            }
+            final ConfigurationNode toolConfigurationNode = toolsConfigurationNode.getNode(rawToolSource);
+            final RangeProperty<Integer> experienceRange = new RangeProperty<>(Integer.class, true, getRange(Integer.class, toolsConfigurationNode.getChild(PackKeys.EXPERIENCE.getKey()).getString(PackKeys.EXPERIENCE.getDefaultValue()), 0));
+            final RangeProperty<Float> exhaustionRange = new RangeProperty<>(Float.class, true, getRange(Float.class, toolsConfigurationNode.getChild(PackKeys.EXHAUSTION_CHANGE.getKey()).getString(PackKeys.EXHAUSTION_CHANGE.getDefaultValue()), 0.025F));
+            final ConfigurationNode dropsConfigurationNode = toolConfigurationNode.getNode(PackKeys.DROPS.getDefaultValue());
+            final Set<DropProperty> drops = Sets.newHashSet();
+
+            for (String rawDropSource : dropsConfigurationNode.getKeys(false)) {
+                final Pair<String, String> dropModidIdentifierParsed = parseModidIdentifierFrom(rawDropSource);
+                final Object drop = getGameObject(dropModidIdentifierParsed.getKey(), dropModidIdentifierParsed.getValue());
+                if (drop == null) {
+                    Almura.LOGGER.warn("Drop source [" + rawDropSource + "] in [" + name + "] for modid [" + dropModidIdentifierParsed.getKey() + "] in pack [" + pack + "] is not a registered Block or Item!");
+                    continue;
+                }
+                final ConfigurationNode dropConfigurationNode = dropsConfigurationNode.getNode(dropModidIdentifierParsed.getKey(), dropModidIdentifierParsed.getValue());
+                final RangeProperty<Integer> amountRange = new RangeProperty<>(Integer.class, true, getRange(Integer.class, dropConfigurationNode.getChild(PackKeys.AMOUNT.getKey()).getString(PackKeys.AMOUNT.getDefaultValue()), 1));
+                final int data = dropsConfigurationNode.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue());
+                final ConfigurationNode bonusConfigurationNode = dropConfigurationNode.getNode(PackKeys.BONUS.getKey());
+                final boolean bonusEnabled = bonusConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+                final RangeProperty<Integer> bonusAmountRange = new RangeProperty<>(Integer.class, true, getRange(Integer.class, bonusConfigurationNode.getChild(PackKeys.AMOUNT.getKey()).getString(PackKeys.AMOUNT.getDefaultValue()), 1));
+                final RangeProperty<Double> bonusChanceRange = new RangeProperty<>(Double.class, true, getRange(Double.class, bonusConfigurationNode.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
+                drops.add(new DropProperty(drop, amountRange, data, new BonusProperty<>(Integer.class, bonusEnabled, bonusAmountRange, bonusChanceRange)));
+            }
+
+            tools.add(tool == null ? new ToolsNode.OffHand(experienceRange, exhaustionRange, new DropsNode(drops)) : new ToolsNode(tool, experienceRange, exhaustionRange, new DropsNode(drops)));
         }
-        return null;
+        return new BreakNode(breakEnabled, tools);
     }
 
     private static ConsumptionNode createConsumptionNode(Pack pack, String name, ConfigurationNode root) {
@@ -282,7 +324,7 @@ public class PackCreator {
         try {
             amountPair = getRange(Integer.class, amountRaw, 1);
         } catch (NumberFormatException nfe) {
-            Almura.LOGGER.warn("Invalid amount given in [" + seed.getIdentifier() + "] in pack [" + pack + "]. Should be in the format of 1-3");
+            Almura.LOGGER.warn("Amount given for [" + seed.getIdentifier() + "] in pack [" + pack + "] is not valid. Should be in the format of 1-3.");
             amountPair = new ImmutablePair<>(1, 1);
         }
         final String chanceRaw = root.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue());
@@ -290,17 +332,17 @@ public class PackCreator {
         try {
             chancePair = getRange(Double.class, chanceRaw, 100.0);
         } catch (NumberFormatException nfe) {
-            Almura.LOGGER.warn("Invalid chance given in [" + seed.getIdentifier() + "] in pack [" + pack + "]. Should be in the format of 10.5-20.5");
+            Almura.LOGGER.warn("Chance given for [" + seed.getIdentifier() + "] in pack [" + pack + "] is not valid. Should be in the format of 10.5-20.5.");
             chancePair = new ImmutablePair<>(100.0, 100.0);
         }
 
-        return new GrassNode(enabled, new ItemProperty(seed, new RangeProperty<>(Integer.class, true, amountPair), 0),
+        return new GrassNode(enabled, new VariableGameObjectProperty(seed, new RangeProperty<>(Integer.class, true, amountPair), 0),
                              new RangeProperty<>(Double.class, true, chancePair));
     }
 
     private static void addMinecraftRecipe(Pack pack, String name, Object result, int id, boolean shaped, ConfigurationNode node) {
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
-        final int damage = node.getChild(PackKeys.DAMAGE.getKey()).getInt(PackKeys.DAMAGE.getDefaultValue().intValue());
+        final int data = node.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue().intValue());
         final List<Object> params = Lists.newArrayList();
 
         for (String itemsRaw : node.getChild(PackKeys.INGREDIENTS.getKey()).getStringList()) {
@@ -308,8 +350,8 @@ public class PackCreator {
             for (String identifierCombined : itemsSplit) {
                 final Object gameObject = getGameObject(identifierCombined);
                 if (gameObject == null) {
-                    Almura.LOGGER.warn("Could not add recipe id [" + id + "] in [" + name + "] requested by pack [" + pack.getName()
-                                       + "]. The ingredient [" + identifierCombined + "] was not found in the GameRegistry!");
+                    Almura.LOGGER.warn("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
+                                       + "] cannot be registered. Ingredient [" + identifierCombined + "] was not found.");
                     return;
                 } else {
                     params.add(gameObject);
@@ -347,9 +389,9 @@ public class PackCreator {
                     combinedParams.add(entry.getKey());
                 }
                 if (result instanceof Item) {
-                    GameRegistry.addShapedRecipe(new ItemStack((Item) result, amount, damage), combinedParams.toArray());
+                    GameRegistry.addShapedRecipe(new ItemStack((Item) result, amount, data), combinedParams.toArray());
                 } else if (result instanceof Block) {
-                    GameRegistry.addShapedRecipe(new ItemStack((Block) result, amount, damage), combinedParams.toArray());
+                    GameRegistry.addShapedRecipe(new ItemStack((Block) result, amount, data), combinedParams.toArray());
                 }
             } else {
                 final Iterator<Object> iter = params.iterator();
@@ -360,37 +402,48 @@ public class PackCreator {
                 }
 
                 if (result instanceof Item) {
-                    GameRegistry.addShapedRecipe(new ItemStack((Item) result, amount, damage), params.toArray());
+                    GameRegistry.addShapedRecipe(new ItemStack((Item) result, amount, data), params.toArray());
                 } else if (result instanceof Block) {
-                    GameRegistry.addShapedRecipe(new ItemStack((Block) result, amount, damage), params.toArray());
+                    GameRegistry.addShapedRecipe(new ItemStack((Block) result, amount, data), params.toArray());
                 }
             }
         }
     }
 
     public static Object getGameObject(String rawSource) {
+        final Pair<String, String> parsedModidIdentifier = parseModidIdentifierFrom(rawSource);
+        return getGameObject(parsedModidIdentifier.getKey(), parsedModidIdentifier.getValue());
+    }
+
+    public static Object getGameObject(String modid, String identifier) {
+        Object object = GameRegistry.findBlock(modid, identifier);
+        if (object == null) {
+            object = GameRegistry.findItem(modid, identifier);
+            if (object == null) {
+                final Optional<GameObjectMapper.TrioWrapper<Object, String, Object>> wrapper = GameObjectMapper.get(modid, identifier);
+                if (wrapper.isPresent()) {
+                    object = wrapper.get().object;
+                }
+            }
+        }
+        return object;
+    }
+
+    public static Pair<String, String> parseModidIdentifierFrom(String rawSource) {
         final String[] separated = rawSource.split(StringEscapeUtils.escapeJava("\\"));
-        final String modid = separated[0].toLowerCase();
+        String modid = separated[0].toLowerCase();
         String identifier;
         if (separated.length > 1) {
             identifier = rawSource.split(modid + StringEscapeUtils.escapeJava("\\"))[1];
         } else {
             identifier = modid;
         }
-        boolean minecraft = false;
         if (identifier.equalsIgnoreCase(modid)) {
             identifier = identifier.toLowerCase();
-            minecraft = true;
+            modid = "minecraft";
         }
-        if (!minecraft) {
-            minecraft = modid.equalsIgnoreCase("Minecraft");
-        }
-        final Block block = GameRegistry.findBlock(minecraft ? "minecraft" : modid, identifier);
-        if (block == null) {
-            return GameRegistry.findItem(minecraft ? "minecraft" : modid, identifier);
-        } else {
-            return block;
-        }
+
+        return new ImmutablePair<>(modid, identifier);
     }
 
     @SuppressWarnings("unchecked")

@@ -5,22 +5,19 @@
  */
 package com.almuradev.almura.pack.node;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang3.ArrayUtils;
+import java.util.Set;
 
-import java.util.List;
+public class BreakNode extends ToggleableNode<Set<ToolsNode>> {
 
-public class BreakNode extends ToggleableNode<List<ToolsNode>> {
+    private final Set<ToolsNode> value;
 
-    private final List<ToolsNode> value = Lists.newArrayList();
-
-    public BreakNode(boolean isEnabled, ToolsNode... value) {
+    public BreakNode(boolean isEnabled, Set<ToolsNode> value) {
         super(isEnabled);
-        ArrayUtils.add(value, this.value);
+        this.value = value;
     }
 
     @Override
-    public List<ToolsNode> getValue() {
+    public Set<ToolsNode> getValue() {
         return value;
     }
 }

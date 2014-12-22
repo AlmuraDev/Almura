@@ -10,17 +10,18 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
+import java.util.Set;
 
-public class BiomeNode extends ToggleableNode<List<BiomeProperty>> {
-    private final List<BiomeProperty> value = Lists.newArrayList();
+public class BiomeNode extends ToggleableNode<Set<BiomeProperty>> {
+    private final Set<BiomeProperty> value;
 
-    public BiomeNode(boolean isEnabled, BiomeProperty... value) {
+    public BiomeNode(boolean isEnabled, Set<BiomeProperty> value) {
         super(isEnabled);
-        ArrayUtils.addAll(value, this.value);
+        this.value = value;
     }
 
     @Override
-    public List<BiomeProperty> getValue() {
+    public Set<BiomeProperty> getValue() {
         return value;
     }
 }

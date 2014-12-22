@@ -6,22 +6,19 @@
 package com.almuradev.almura.pack.node;
 
 import com.almuradev.almura.pack.node.property.DropProperty;
-import com.almuradev.almura.pack.node.property.ItemProperty;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.List;
+import java.util.Set;
 
-public class DropsNode implements INode<List<DropProperty>> {
+public class DropsNode implements INode<Set<DropProperty>> {
 
-    private final List<DropProperty> value = Lists.newArrayList();
+    private final Set<DropProperty> value;
 
-    public DropsNode(DropProperty... value) {
-        ArrayUtils.addAll(value, this.value);
+    public DropsNode(Set<DropProperty> value) {
+        this.value = value;
     }
 
     @Override
-    public List<DropProperty> getValue() {
+    public Set<DropProperty> getValue() {
         return value;
     }
 }

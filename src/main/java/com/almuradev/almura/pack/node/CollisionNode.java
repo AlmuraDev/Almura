@@ -10,17 +10,18 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
+import java.util.Set;
 
-public class CollisionNode extends ToggleableNode<List<CollisionProperty>> {
-    private final List<CollisionProperty> value = Lists.newArrayList();
+public class CollisionNode extends ToggleableNode<Set<CollisionProperty>> {
+    private final Set<CollisionProperty> value;
 
-    public CollisionNode(boolean isEnabled, CollisionProperty... value) {
+    public CollisionNode(boolean isEnabled, Set<CollisionProperty> value) {
         super(isEnabled);
-        ArrayUtils.add(value, this.value);
+        this.value = value;
     }
 
     @Override
-    public List<CollisionProperty> getValue() {
+    public Set<CollisionProperty> getValue() {
         return value;
     }
 }
