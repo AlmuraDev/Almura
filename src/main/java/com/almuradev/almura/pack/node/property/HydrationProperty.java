@@ -9,18 +9,18 @@ import net.minecraft.block.Block;
 
 public class HydrationProperty extends GameObjectProperty {
 
-    private final int neededPromixity;
+    private final int neededProximity;
 
-    public HydrationProperty(Block block, int neededPromixity) {
+    public HydrationProperty(Block block, int neededProximity) {
         super(block);
-        this.neededPromixity = neededPromixity;
+        this.neededProximity = neededProximity;
     }
 
-    public int getNeededPromixity() {
-        return neededPromixity;
+    public int getNeededProximity() {
+        return neededProximity;
     }
 
     public boolean isInRange(int radius) {
-        return radius <= neededPromixity;
+        return radius <= neededProximity;
     }
 }

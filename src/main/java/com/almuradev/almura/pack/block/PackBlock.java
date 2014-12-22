@@ -65,7 +65,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private final String identifier;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
-    private final ConcurrentMap<Class<? extends INode>, INode> nodes = Maps.newConcurrentMap();
+    private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private RenderNode renderNode;
     private RotationNode rotationNode;
     private BreakNode breakNode;
@@ -285,27 +285,28 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
-    public <T extends INode> T addNode(T node) {
-        nodes.put(node.getClass(), node);
+    @SuppressWarnings("unchecked")
+    public <T extends INode<?>> T addNode(T node) {
+        nodes.put((Class<? extends INode<?>>)node.getClass(), node);
         MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
         return node;
     }
 
     @Override
     public void addNodes(INode... nodes) {
-        for (INode node : nodes) {
+        for (INode<?> node : nodes) {
             addNode(node);
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends INode> T getNode(Class<T> clazz) {
+    public <T extends INode<?>> T getNode(Class<T> clazz) {
         return (T) nodes.get(clazz);
     }
 
     @Override
-    public <T extends INode> boolean hasNode(Class<T> clazz) {
+    public <T extends INode<?>> boolean hasNode(Class<T> clazz) {
         return getNode(clazz) != null;
     }
 

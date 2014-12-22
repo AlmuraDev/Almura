@@ -11,9 +11,9 @@ import cpw.mods.fml.common.eventhandler.Event;
 
 public abstract class NodeEvent extends Event {
     private final INodeContainer container;
-    private final INode node;
+    private final INode<?> node;
 
-    public NodeEvent(INodeContainer container, INode node) {
+    public NodeEvent(INodeContainer container, INode<?> node) {
         this.container = container;
         this.node = node;
     }
@@ -22,7 +22,7 @@ public abstract class NodeEvent extends Event {
         return container;
     }
 
-    public final INode getNode() {
+    public final INode<?> getNode() {
         return node;
     }
 }

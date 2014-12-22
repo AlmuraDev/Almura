@@ -10,9 +10,9 @@ import net.minecraftforge.common.BiomeManager.BiomeType;
 public class BiomeProperty implements IProperty<BiomeType> {
 
     private final BiomeType type;
-    private final RangeProperty temperatureRange, humidityRange;
+    private final RangeProperty<Double> temperatureRange, humidityRange;
 
-    public BiomeProperty(BiomeType type, RangeProperty temperatureRange, RangeProperty humidityRange) {
+    public BiomeProperty(BiomeType type, RangeProperty<Double> temperatureRange, RangeProperty<Double> humidityRange) {
         this.type = type;
         this.temperatureRange = temperatureRange;
         this.humidityRange = humidityRange;
@@ -23,11 +23,11 @@ public class BiomeProperty implements IProperty<BiomeType> {
         return type;
     }
 
-    public RangeProperty getTemperatureRange() {
+    public RangeProperty<Double> getTemperatureRange() {
         return temperatureRange;
     }
 
-    public RangeProperty getHumidityRange() {
+    public RangeProperty<Double> getHumidityRange() {
         return humidityRange;
     }
 }

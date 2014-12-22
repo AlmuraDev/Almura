@@ -7,20 +7,20 @@ package com.almuradev.almura.pack.node;
 
 import com.almuradev.almura.pack.node.property.RangeProperty;
 
-public class LightNode implements INode<RangeProperty> {
+public class LightNode implements INode<RangeProperty<Integer>> {
 
     private final float emission;
     private final int opacity;
-    private final RangeProperty value;
+    private final RangeProperty<Integer> value;
 
-    public LightNode(float emission, int opacity, RangeProperty value) {
+    public LightNode(float emission, int opacity, RangeProperty<Integer> value) {
         this.emission = emission;
         this.opacity = opacity;
         this.value = value;
     }
 
     @Override
-    public RangeProperty getValue() {
+    public RangeProperty<Integer> getValue() {
         return value;
     }
 
