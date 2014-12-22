@@ -58,12 +58,14 @@ public class ExternalIcon extends MalisisIcon {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                     Almura.LOGGER
                             .error("Failed to load icon [" + textureName
-                                   + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.",
+                                   + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH
+                                   + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.",
                                    e);
                 } else {
                     Almura.LOGGER.warn(
                             "Failed to load icon [" + textureName
-                            + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
+                            + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH
+                            + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
                 }
             } else {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {

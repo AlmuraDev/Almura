@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.node.property;
 
 public class VariableGameObjectProperty extends GameObjectProperty {
+
     private final RangeProperty<Integer> amountProperty;
 
     public VariableGameObjectProperty(Object object, RangeProperty<Integer> amount, int data) {

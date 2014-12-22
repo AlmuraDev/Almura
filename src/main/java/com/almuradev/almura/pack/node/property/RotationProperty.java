@@ -8,6 +8,7 @@ package com.almuradev.almura.pack.node.property;
 import com.almuradev.almura.pack.RotationMeta;
 
 public class RotationProperty implements IProperty<Boolean> {
+
     private final boolean enabled;
     private final RotationMeta.Rotation rotation;
     private final float angle;

@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -132,7 +131,8 @@ public class Pack {
                         pack.blocks.add(block);
                         break;
                     default:
-                        Almura.LOGGER.warn("Unknown yml type [" + type + "] in file [" + path.getFileName() + "]. Valid types are [ITEM, FOOD, BLOCK].");
+                        Almura.LOGGER
+                                .warn("Unknown yml type [" + type + "] in file [" + path.getFileName() + "]. Valid types are [ITEM, FOOD, BLOCK].");
                         continue;
                 }
                 entry.close();
@@ -176,7 +176,8 @@ public class Pack {
                 if (shape != null) {
                     ((IShapeContainer) block).setShape(shape);
                 } else if (!((IShapeContainer) block).getShapeName().isEmpty()) {
-                    Almura.LOGGER.warn("Shape [" + ((IShapeContainer) block).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH.toString() + "]. Will render as a basic cube...");
+                    Almura.LOGGER.warn("Shape [" + ((IShapeContainer) block).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
+                            .toString() + "]. Will render as a basic cube...");
                 }
             }
         }
@@ -192,7 +193,8 @@ public class Pack {
                 if (shape != null) {
                     ((IShapeContainer) item).setShape(shape);
                 } else if (!((IShapeContainer) item).getShapeName().isEmpty()) {
-                    Almura.LOGGER.warn("Shape [" + ((IShapeContainer) item).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH.toString() + "]. Will render as a basic item");
+                    Almura.LOGGER.warn("Shape [" + ((IShapeContainer) item).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
+                            .toString() + "]. Will render as a basic item");
                 }
             }
         }

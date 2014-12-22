@@ -12,7 +12,8 @@ import java.util.Map;
 
 public class RotationMeta {
 
-    private RotationMeta() {}
+    private RotationMeta() {
+    }
 
     public static enum Rotation implements IState {
         NORTH(0),
@@ -60,7 +61,7 @@ public class RotationMeta {
         }
 
         public static Rotation getState(String rawRotation) {
-            switch(rawRotation.toUpperCase()) {
+            switch (rawRotation.toUpperCase()) {
                 case "NORTH":
                     return NORTH;
                 case "SOUTH":
@@ -116,7 +117,7 @@ public class RotationMeta {
         }
 
         public static Direction getState(String rawDirection) {
-            switch(rawDirection.toUpperCase()) {
+            switch (rawDirection.toUpperCase()) {
                 case "BACKWARDS":
                     return BACKWARDS;
                 case "NONE":

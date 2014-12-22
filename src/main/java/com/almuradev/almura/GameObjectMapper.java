@@ -25,6 +25,7 @@ import java.util.Set;
  *         bonemeal: 15
  */
 public class GameObjectMapper {
+
     private static final Map<String, Map<Object, Set<Pair<String, Object>>>> MAPPED = Maps.newHashMap();
 
     public static boolean add(String modid, Object gameObject, String name, Object value) {
@@ -41,7 +42,8 @@ public class GameObjectMapper {
         boolean exists = false;
         for (Pair<String, Object> pair : pairSet) {
             if (pair.getKey().equals(name)) {
-                Almura.LOGGER.warn("Duplicate remapped name [" + name + "] within mappings.yml. Attempt made to register under object [" + gameObject + "]. Only one remapped name is allowed!");
+                Almura.LOGGER.warn("Duplicate remapped name [" + name + "] within mappings.yml. Attempt made to register under object [" + gameObject
+                                   + "]. Only one remapped name is allowed!");
                 exists = true;
             }
         }
@@ -91,7 +93,8 @@ public class GameObjectMapper {
 
                 final ConfigurationNode objectConfigurationNode = modidConfigurationNode.getNode(rawObjectIdentifier);
                 for (String remapped : objectConfigurationNode.getKeys(false)) {
-                    if (add(modid, found, remapped, objectConfigurationNode.getChild(remapped).getValue()) && (Configuration.DEBUG_MODE || Configuration.DEBUG_MAPPINGS_MODE)) {
+                    if (add(modid, found, remapped, objectConfigurationNode.getChild(remapped).getValue()) && (Configuration.DEBUG_MODE
+                                                                                                               || Configuration.DEBUG_MAPPINGS_MODE)) {
                         Almura.LOGGER.info("Registered mapping [" + remapped + "] for object [" + found + "] for mod [" + modid + "].");
                     }
                 }
@@ -100,6 +103,7 @@ public class GameObjectMapper {
     }
 
     public static class TrioWrapper<S, T, U> {
+
         public final S object;
         public final Pair<T, U> pair;
 

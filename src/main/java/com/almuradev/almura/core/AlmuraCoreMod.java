@@ -6,9 +6,7 @@
 package com.almuradev.almura.core;
 
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
-import net.minecraft.item.ItemDye;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import java.lang.reflect.Field;
@@ -33,7 +31,7 @@ public class AlmuraCoreMod implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
-        return new String[] {MixinEnvironment.MIXIN_TRANSFORMER_CLASS};
+        return new String[]{MixinEnvironment.MIXIN_TRANSFORMER_CLASS};
     }
 
     @Override

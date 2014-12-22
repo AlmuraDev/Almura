@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 public class PackKeys {
+
     //NON-SPECIFIC-NODE
     public static final DefaultedKey<String> DATE = new DefaultedKey<>("date", "");
     public static final DefaultedKey<String> TYPE = new DefaultedKey<>("type", "");
@@ -69,7 +70,9 @@ public class PackKeys {
     public static final DefaultedKey<String> DROPS = new DefaultedKey<>("drops", "");
     public static final DefaultedKey<String> EXPERIENCE = new DefaultedKey<>("experience", "");
     public static final DefaultedKey<String> BONUS = new DefaultedKey<>("bonus", "");
+
     public static class DefaultedKey<T> {
+
         private final String key;
         private final T value;
 

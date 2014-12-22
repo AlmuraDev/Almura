@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.node;
 
 public class RenderNode implements INode<Boolean> {
+
     private final boolean normalCube, opaque;
 
     public RenderNode(boolean normalCube, boolean opaque) {

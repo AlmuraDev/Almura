@@ -11,11 +11,13 @@ import com.almuradev.almura.pack.node.property.RotationProperty;
 import java.util.EnumMap;
 
 public class RotationNode extends ToggleableNode<EnumMap<RotationMeta.Rotation, RotationProperty>> {
+
     private final boolean defaultRotate;
     private final boolean defaultMirrorRotate;
     private final EnumMap<RotationMeta.Rotation, RotationProperty> value;
 
-    public RotationNode(boolean isEnabled, boolean defaultRotate, boolean defaultMirrorRotate, EnumMap<RotationMeta.Rotation, RotationProperty> value) {
+    public RotationNode(boolean isEnabled, boolean defaultRotate, boolean defaultMirrorRotate,
+                        EnumMap<RotationMeta.Rotation, RotationProperty> value) {
         super(isEnabled);
         this.defaultRotate = defaultRotate;
         this.defaultMirrorRotate = defaultMirrorRotate;

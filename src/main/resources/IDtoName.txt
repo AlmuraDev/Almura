@@ -1,10 +1,4 @@
-====
-    This file is part of Almura, All Rights Reserved.
-
-    Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
-====
-
-  blockRegistry.addObject(0, "air", (new BlockAir()).setBlockName("air"));
+        blockRegistry.addObject(0, "air", (new BlockAir()).setBlockName("air"));
         blockRegistry.addObject(1, "stone", (new BlockStone()).setHardness(1.5F).setResistance(10.0F).setStepSound(soundTypePiston).setBlockName("stone").setBlockTextureName("stone"));
         blockRegistry.addObject(2, "grass", (new BlockGrass()).setHardness(0.6F).setStepSound(soundTypeGrass).setBlockName("grass").setBlockTextureName("grass"));
         blockRegistry.addObject(3, "dirt", (new BlockDirt()).setHardness(0.5F).setStepSound(soundTypeGravel).setBlockName("dirt").setBlockTextureName("dirt"));
@@ -186,10 +180,10 @@
         blockRegistry.addObject(174, "packed_ice", (new BlockPackedIce()).setHardness(0.5F).setStepSound(soundTypeGlass).setBlockName("icePacked").setBlockTextureName("ice_packed"));
         blockRegistry.addObject(175, "double_plant", new BlockDoublePlant());
  
- itemRegistry.addObject(256, "iron_shovel", (new ItemSpade(Item.ToolMaterial.IRON)).setUnlocalizedName("shovelIron").setTextureName("iron_shovel"));
- itemRegistry.addObject(257, "iron_pickaxe", (new ItemPickaxe(Item.ToolMaterial.IRON)).setUnlocalizedName("pickaxeIron").setTextureName("iron_pickaxe"));
- itemRegistry.addObject(258, "iron_axe", (new ItemAxe(Item.ToolMaterial.IRON)).setUnlocalizedName("hatchetIron").setTextureName("iron_axe"));
- itemRegistry.addObject(259, "flint_and_steel", (new ItemFlintAndSteel()).setUnlocalizedName("flintAndSteel").setTextureName("flint_and_steel"));
+        itemRegistry.addObject(256, "iron_shovel", (new ItemSpade(Item.ToolMaterial.IRON)).setUnlocalizedName("shovelIron").setTextureName("iron_shovel"));
+        itemRegistry.addObject(257, "iron_pickaxe", (new ItemPickaxe(Item.ToolMaterial.IRON)).setUnlocalizedName("pickaxeIron").setTextureName("iron_pickaxe"));
+        itemRegistry.addObject(258, "iron_axe", (new ItemAxe(Item.ToolMaterial.IRON)).setUnlocalizedName("hatchetIron").setTextureName("iron_axe"));
+        itemRegistry.addObject(259, "flint_and_steel", (new ItemFlintAndSteel()).setUnlocalizedName("flintAndSteel").setTextureName("flint_and_steel"));
         itemRegistry.addObject(260, "apple", (new ItemFood(4, 0.3F, false)).setUnlocalizedName("apple").setTextureName("apple"));
         itemRegistry.addObject(261, "bow", (new ItemBow()).setUnlocalizedName("bow").setTextureName("bow"));
         itemRegistry.addObject(262, "arrow", (new Item()).setUnlocalizedName("arrow").setCreativeTab(CreativeTabs.tabCombat).setTextureName("arrow"));

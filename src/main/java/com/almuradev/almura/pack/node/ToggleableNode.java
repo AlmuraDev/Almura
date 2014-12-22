@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.node;
 
 public abstract class ToggleableNode<T> implements INode<T> {
+
     private final boolean isEnabled;
 
     public ToggleableNode(boolean isEnabled) {

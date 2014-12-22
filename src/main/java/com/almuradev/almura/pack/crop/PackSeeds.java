@@ -7,15 +7,13 @@ package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.pack.INodeContainer;
-import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IShapeContainer;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
-import com.almuradev.almura.pack.node.BreakNode;
-import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.GrassNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
@@ -48,7 +46,8 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     private String textureName;
     private PackShape shape;
 
-    public PackSeeds(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName, Block crop, Block soil) {
+    public PackSeeds(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
+                     Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName, Block crop, Block soil) {
         super(crop, soil);
         this.pack = pack;
         this.identifier = identifier;
@@ -107,7 +106,7 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     @Override
     @SuppressWarnings("unchecked")
     public <T extends INode<?>> T addNode(T node) {
-        nodes.put((Class<? extends INode<?>>)node.getClass(), node);
+        nodes.put((Class<? extends INode<?>>) node.getClass(), node);
         MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
         return node;
     }

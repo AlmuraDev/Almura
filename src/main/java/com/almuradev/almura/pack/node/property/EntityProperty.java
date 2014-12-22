@@ -8,6 +8,7 @@ package com.almuradev.almura.pack.node.property;
 import net.minecraft.entity.Entity;
 
 public class EntityProperty implements IProperty<Boolean> {
+
     private final boolean isEnabled;
     private final Class<? extends Entity> clazz;
 

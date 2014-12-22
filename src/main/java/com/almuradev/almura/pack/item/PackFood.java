@@ -6,11 +6,11 @@
 package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.pack.INodeContainer;
-import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IShapeContainer;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.ConsumptionNode;
@@ -43,7 +43,9 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     private PackShape shape;
     private List<String> tooltip;
 
-    public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName, Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName, ConsumptionNode consumptionNode) {
+    public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
+                    Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName,
+                    ConsumptionNode consumptionNode) {
         super((int) consumptionNode.getHeal(), consumptionNode.getSaturation(), consumptionNode.isWolfFavorite());
         this.pack = pack;
         this.identifier = identifier;
@@ -105,7 +107,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     @Override
     @SuppressWarnings("unchecked")
     public <T extends INode<?>> T addNode(T node) {
-        nodes.put((Class<? extends INode<?>>)node.getClass(), node);
+        nodes.put((Class<? extends INode<?>>) node.getClass(), node);
         MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
         return node;
     }

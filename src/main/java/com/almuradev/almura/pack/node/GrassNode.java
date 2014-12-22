@@ -9,6 +9,7 @@ import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
 
 public class GrassNode extends ToggleableNode<VariableGameObjectProperty> {
+
     private final VariableGameObjectProperty variableGameObjectProperty;
     private final RangeProperty<Double> chanceProperty;
 

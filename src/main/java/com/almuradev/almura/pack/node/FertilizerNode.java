@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.node;
 
 import com.almuradev.almura.pack.node.property.GameObjectProperty;
+
 import java.util.Set;
 
 public class FertilizerNode extends ToggleableNode<Set<GameObjectProperty>> {

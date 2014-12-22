@@ -6,13 +6,11 @@
 package com.almuradev.almura.pack.node;
 
 import com.almuradev.almura.pack.node.property.BiomeProperty;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.List;
 import java.util.Set;
 
 public class BiomeNode extends ToggleableNode<Set<BiomeProperty>> {
+
     private final Set<BiomeProperty> value;
 
     public BiomeNode(boolean isEnabled, Set<BiomeProperty> value) {

@@ -7,19 +7,18 @@ package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
-import com.almuradev.almura.pack.INodeContainer;
-import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
-import com.almuradev.almura.pack.RotationMeta;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.RotationMeta;
+import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
-import com.almuradev.almura.pack.node.DropsNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
-import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.ToolsNode;
@@ -74,7 +73,8 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private String textureName;
     private PackShape shape;
 
-    public PackBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String shapeName, float hardness,
+    public PackBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
+                     float hardness,
                      float resistance, boolean showInCreativeTab, String creativeTabName, RotationNode rotationNode, LightNode lightNode,
                      RenderNode renderNode) {
         super(Material.rock);
@@ -287,7 +287,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     @SuppressWarnings("unchecked")
     public <T extends INode<?>> T addNode(T node) {
-        nodes.put((Class<? extends INode<?>>)node.getClass(), node);
+        nodes.put((Class<? extends INode<?>>) node.getClass(), node);
         MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
         return node;
     }

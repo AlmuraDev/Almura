@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.node;
 
 public class ConsumptionNode implements INode<Boolean> {
+
     private final boolean isEnabled;
     private final float heal;
     private final float saturation;

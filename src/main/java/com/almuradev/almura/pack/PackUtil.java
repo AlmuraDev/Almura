@@ -8,7 +8,6 @@ package com.almuradev.almura.pack;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
-import com.flowpowered.cerealization.config.ConfigurationNode;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.util.IIcon;
@@ -42,7 +41,8 @@ public class PackUtil {
         return textureCoordinatesByFace;
     }
 
-    public static ClippedIcon[] generateClippedIconsFromCoordinates(IIcon source, String textureName, Map<Integer, List<Integer>> textureCoordinates) {
+    public static ClippedIcon[] generateClippedIconsFromCoordinates(IIcon source, String textureName,
+                                                                    Map<Integer, List<Integer>> textureCoordinates) {
         final ClippedIcon[] clippedIcons = new ClippedIcon[textureCoordinates.size()];
         Dimension dimension = null;
 

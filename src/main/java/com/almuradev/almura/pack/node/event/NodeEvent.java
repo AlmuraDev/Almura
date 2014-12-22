@@ -10,6 +10,7 @@ import com.almuradev.almura.pack.node.INode;
 import cpw.mods.fml.common.eventhandler.Event;
 
 public abstract class NodeEvent extends Event {
+
     private final INodeContainer container;
     private final INode<?> node;
 

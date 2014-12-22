@@ -8,6 +8,7 @@ package com.almuradev.almura.pack.node;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 
 public class ToolsNode implements INode<DropsNode> {
+
     private final Object tool;
     private final RangeProperty<Integer> experienceRange;
     private final RangeProperty<Float> exhaustionRange;
