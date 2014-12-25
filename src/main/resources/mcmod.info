@@ -4,7 +4,7 @@
   "description": "${description}",
   "version": "${version}-b${buildNumber}",
   "credits": "",
-  "logoFile": "assets/foo/bar.png",
+  "logoFile": "assets/almura/textures/background/almura2b.png",
   "mcversion": "${mcversion}",
   "url": "${url}",
   "updateUrl": "",

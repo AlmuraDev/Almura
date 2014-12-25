@@ -18,7 +18,6 @@ buildscript {
 
 plugins {
     id "com.github.hierynomus.license" version "0.11.0"
-    id "com.github.johnrengelman.shadow" version "1.1.2"
     id "java"
     id "maven"
     id "signing"
@@ -81,16 +80,6 @@ minecraft {
     version = "1.7.10-10.13.2.1277"
 }
 
-// Include dependencies in the final JAR
-shadowJar {
-    classifier = ''
-    destinationDir = file("build/distributions")
-    dependencies {
-        include(dependency('com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'))
-        include(dependency('org.spongepowered:mixin:0.1.0-SNAPSHOT'))
-    }
-}
-
 // Filter, process, and include resources
 processResources {
     inputs.property "version", version
@@ -111,10 +100,6 @@ processResources {
                'authorList': organization
     }
 }
-
-// Obfuscate based on the shaded jars content
-reobf { reobf(file('build/distributions/' + archivesBaseName + '-' + version + '.jar')) {spec ->  spec.classpath = configurations.compile } }
-reobf.dependsOn shadowJar
 
 // License header formatting
 license {
