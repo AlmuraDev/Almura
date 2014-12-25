@@ -49,7 +49,7 @@ public class PackUtil {
         try {
             dimension =
                     Filesystem.getImageDimension(Files.newInputStream(
-                            Paths.get(Filesystem.CONFIG_PATH.toString(), "images" + File.separator + textureName + ".png")));
+                            Paths.get(Filesystem.CONFIG_IMAGES_PATH.toString(), textureName + ".png")));
         } catch (IOException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                 Almura.LOGGER.error("Failed to load texture [" + textureName + "] for dimensions", e);
