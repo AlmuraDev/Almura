@@ -18,20 +18,20 @@ public class AlmuraCoreMod implements IFMLLoadingPlugin {
     @SuppressWarnings("unchecked")
     public AlmuraCoreMod() {
         Launch.classLoader.addClassLoaderExclusion("com.almuradev.almura.core.mixin.transformer.");
-        try {
-            Field f = LaunchClassLoader.class.getDeclaredField("classLoaderExceptions");
-            f.setAccessible(true);
-            Set<String> classLoaderExclusions = (Set<String>) f.get(Launch.classLoader);
-            classLoaderExclusions.remove("org.lwjgl.");
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Field f = LaunchClassLoader.class.getDeclaredField("classLoaderExceptions");
+//            f.setAccessible(true);
+//            Set<String> classLoaderExclusions = (Set<String>) f.get(Launch.classLoader);
+//            classLoaderExclusions.remove("org.lwjgl.");
+//        } catch (NoSuchFieldException | IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
     public String[] getASMTransformerClass() {
         return new String[]{
-                "com.almuradev.almura.core.mixin.transformer.MixinTransformer"
+                /*"com.almuradev.almura.core.mixin.transformer.MixinTransformer"*/
         };
     }
 
