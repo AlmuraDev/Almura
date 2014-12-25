@@ -1,9 +1,83 @@
 minecraft:
     dye:
         bonemeal: 15
-        lapis_lazuli: 4
+        dye_orange: 14
         dye_magenta: 13
         dye_light_blue: 12
+        dye_yellow: 11
+        dye_lime: 10
+        dye_pink: 9
+        dye_gray: 8
+        dye_silver: 7
+        dye_cyan: 6
+        dye_purple: 5
+        lapis_lazuli: 4
+        dye_brown: 3
+        dye_green: 2
+        dye_red: 1
+        dye_black: 0
     wool:
         wool_white: 0
-        wool_blue: 1
+        wool_orange: 1
+        wool_magenta: 2
+        wool_light_blue: 3
+        wool_yellow: 4
+        wool_lime: 5
+        wool_pink: 6
+        wool_gray: 7
+        wool_silver: 8
+        wool_cyan: 9
+        wool_purple: 10
+        wool_blue: 11
+        wool_brown: 12
+        wool_green: 13
+        wool_red: 14
+        wool_black: 15
+    leaves:
+        leaves_oak: 0
+        leaves_spruce: 1
+        leaves_birch: 2
+        leaves_jungle: 3
+        leaves_acacia: 4
+        leaves_dark_oak: 5
+    planks:
+        planks_oak: 0
+        planks_spruce: 1
+        planks_birch: 2
+        planks_jungle: 3
+        planks_acacia: 4
+        planks_dark_oak: 5
+    stained_glass:
+        stained_glass_white: 0
+        stained_glass_orange: 1
+        stained_glass_magenta: 2
+        stained_glass_light_blue: 3
+        stained_glass_yellow: 4
+        stained_glass_lime: 5
+        stained_glass_pink: 6
+        stained_glass_gray: 7
+        stained_glass_silver: 8
+        stained_glass_cyan: 9
+        stained_glass_purple: 10
+        stained_glass_blue: 11
+        stained_glass_brown: 12
+        stained_glass_green: 13
+        stained_glass_red: 14
+        stained_glass_black: 15
+    stained_glass_pane:
+        stained_glass_pane_white: 0
+        stained_glass_pane_orange: 1
+        stained_glass_pane_magenta: 2
+        stained_glass_pane_light_blue: 3
+        stained_glass_pane_yellow: 4
+        stained_glass_pane_lime: 5
+        stained_glass_pane_pink: 6
+        stained_glass_pane_gray: 7
+        stained_glass_pane_silver: 8
+        stained_glass_pane_cyan: 9
+        stained_glass_pane_purple: 10
+        stained_glass_pane_blue: 11
+        stained_glass_pane_brown: 12
+        stained_glass_pane_green: 13
+        stained_glass_pane_red: 14
+        stained_glass_pane_black: 15

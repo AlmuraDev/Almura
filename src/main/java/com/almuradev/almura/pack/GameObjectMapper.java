@@ -3,8 +3,11 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura;
+package com.almuradev.almura.pack;
 
+import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
+import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.PackCreator;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
@@ -87,15 +90,16 @@ public class GameObjectMapper {
             for (String rawObjectIdentifier : modidConfigurationNode.getKeys(false)) {
                 final Object found = PackCreator.getGameObject(modid + "\\" + rawObjectIdentifier);
                 if (found == null) {
-                    Almura.LOGGER.warn("Game object [" + rawObjectIdentifier + "] is neither a block or item within mod [" + modid + "].");
+                    Almura.LOGGER.warn("Object [" + rawObjectIdentifier + "] is neither a block or item within mod [" + modid + "].");
                     continue;
                 }
 
                 final ConfigurationNode objectConfigurationNode = modidConfigurationNode.getNode(rawObjectIdentifier);
                 for (String remapped : objectConfigurationNode.getKeys(false)) {
-                    if (add(modid, found, remapped, objectConfigurationNode.getChild(remapped).getValue()) && (Configuration.DEBUG_MODE
+                    final Object value = objectConfigurationNode.getChild(remapped).getValue();
+                    if (add(modid, found, remapped, value) && (Configuration.DEBUG_MODE
                                                                                                                || Configuration.DEBUG_MAPPINGS_MODE)) {
-                        Almura.LOGGER.info("Registered mapping [" + remapped + "] for object [" + found + "] for mod [" + modid + "].");
+                        Almura.LOGGER.info("Registered mapping [" + remapped + "] with value [" + value + "] for object [" + found + "] for mod [" + modid + "].");
                     }
                 }
             }
