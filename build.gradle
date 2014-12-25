@@ -39,7 +39,7 @@ repositories {
 // Project dependencies
 dependencies {
     compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
-    compile 'net.malisis:malisiscore:1.7.10-0.10.3-SNAPSHOT:dev'
+    compile 'net.malisis:malisiscore:1.7.10-0.10.4-SNAPSHOT:dev'
 }
 
 // Gradle default tasks
@@ -73,7 +73,7 @@ configurations.all {
 
 // MinecraftForge version
 minecraft {
-    version = "1.7.10-10.13.2.1258"
+    version = "1.7.10-10.13.2.1277"
 }
 
 // Include dependencies in the final JAR
