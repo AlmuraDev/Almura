@@ -3,6 +3,8 @@ Bounds:
     CollisionBox: "0 0 0 0 0 0"
     Use-Vanilla-Wireframe: false
     WireframeBox: "0 0 0 1 .20 1"
+    Use-Vanilla-Block-Bounds: false    
+    BlockBounds: "0 0 0 1 .20 1"
 Shapes:
   - Texture: 1
     Coords: |

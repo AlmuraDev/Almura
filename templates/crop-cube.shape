@@ -3,6 +3,8 @@ Bounds:
     CollisionBox: "1 1 1 1 1 1"
     Use-Vanilla-Wireframe: true
     WireframeBox: "1 1 1 1 1 1"
+    Use-Vanilla-Block-Bounds: true 
+    BlockBounds: "1 1 1 1 1 1"
 Shapes:
   - Texture: 0 #Front
     Coords: |

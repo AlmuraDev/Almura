@@ -2,7 +2,9 @@ Bounds:
     Use-Vanilla-Collision: false
     CollisionBox: "0 0 0 0 0 0"
     Use-Vanilla-Wireframe: false
-    WireframeBox: ".25 0 .25 .75 1 .75"    
+    WireframeBox: ".25 0 .25 .75 1 .75"
+    Use-Vanilla-Block-Bounds: false    
+    BlockBounds: ".25 0 .25 .75 1 .75"
 Shapes:
   - Coords: |
       1 0 1 
