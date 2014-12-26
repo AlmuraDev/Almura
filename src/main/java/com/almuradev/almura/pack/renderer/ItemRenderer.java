@@ -56,7 +56,7 @@ public class ItemRenderer extends MalisisRenderer {
             final PackFace face = (PackFace) f;
             IIcon icon;
 
-            if (PackUtil.isEmpty(clipContainer.getClipIcons())) {
+            if (PackUtil.isEmptyClip(clipContainer.getClipIcons())) {
                 icon = super.getIcon(params);
             } else if (face.getTextureId() >= clipContainer.getClipIcons().length) {
                 icon = clipContainer.getClipIcons()[0];

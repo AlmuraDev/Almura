@@ -88,7 +88,7 @@ public class GameObjectMapper {
         for (String modid : reader.getKeys(false)) {
             final ConfigurationNode modidConfigurationNode = reader.getNode(modid);
             for (String rawObjectIdentifier : modidConfigurationNode.getKeys(false)) {
-                final Object found = PackCreator.getGameObject(modid + "\\" + rawObjectIdentifier);
+                final Object found = PackUtil.getGameObject(modid + "\\" + rawObjectIdentifier);
                 if (found == null) {
                     Almura.LOGGER.warn("Object [" + rawObjectIdentifier + "] is neither a block or item within mod [" + modid + "].");
                     continue;

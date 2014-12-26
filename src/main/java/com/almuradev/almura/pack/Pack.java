@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,7 +31,6 @@ import java.util.Map;
 
 public class Pack {
 
-    //TODO Better home for this
     private static final List<PackShape> SHAPES = Lists.newArrayList();
     private static final Map<String, Pack> PACKS = new HashMap<>();
     protected final List<Block> blocks = Lists.newArrayList();
@@ -199,34 +199,38 @@ public class Pack {
     }
 
     public void onPostInitialization() throws IOException, ConfigurationException {
-//        //Order is important
-//        for (Block block : blocks) {
-//            if (block instanceof IRecipeContainer && block instanceof IPackObject) {
-//                if (((IRecipeContainer) block).hasRecipe()) {
-//                    final InputStream entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(), ((IPackObject) block).getIdentifier() + ".yml"));
-//                    final YamlConfiguration reader = new YamlConfiguration(entry);
-//                    reader.load();
-//                    PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), false,
-//                                                 reader.getNode("recipes"));
-//                    entry.close();
-//                }
-//            }
-//        }
-//
-//        //Order is important
-//        for (Item item : items) {
-//            if (item instanceof IRecipeContainer && item instanceof IPackObject) {
-//                if (((IRecipeContainer) item).hasRecipe()) {
-//                    final InputStream entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((IPackObject) item).getIdentifier() + ".yml"));
-//                    final YamlConfiguration reader = new YamlConfiguration(entry);
-//                    reader.load();
-//                    PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), true,
-//                                                 reader.getNode("recipes"));
-//                    entry.close();
-//                }
-//            }
-//        }
+        //Order is important
+        for (Block block : blocks) {
+            if (block instanceof IPackObject && block instanceof INodeContainer) {
+                final InputStream
+                        entry =
+                        Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
+                                                       ((IPackObject) block).getIdentifier() + ".yml"));
+                final YamlConfiguration reader = new YamlConfiguration(entry);
+                reader.load();
+                //Recipes
+                ((INodeContainer) block).addNode(
+                        PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), block,
+                                                     reader.getNode(PackKeys.NODE_RECIPES.getKey())));
+                entry.close();
+            }
+        }
 
+        for (Item item : items) {
+            if (item instanceof IPackObject && item instanceof INodeContainer) {
+                final InputStream
+                        entry =
+                        Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
+                                                       ((IPackObject) item).getIdentifier() + ".yml"));
+                final YamlConfiguration reader = new YamlConfiguration(entry);
+                reader.load();
+                //Recipes
+                ((INodeContainer) item).addNode(
+                        PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), item,
+                                                     reader.getNode(PackKeys.NODE_RECIPES.getKey())));
+                entry.close();
+            }
+        }
     }
 
     @Override

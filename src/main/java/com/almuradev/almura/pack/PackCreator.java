@@ -24,6 +24,7 @@ import com.almuradev.almura.pack.node.ConsumptionNode;
 import com.almuradev.almura.pack.node.DropsNode;
 import com.almuradev.almura.pack.node.GrassNode;
 import com.almuradev.almura.pack.node.LightNode;
+import com.almuradev.almura.pack.node.RecipeNode;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.ToolsNode;
@@ -33,14 +34,15 @@ import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
+import com.almuradev.almura.pack.node.recipe.InvalidRecipeException;
+import com.almuradev.almura.pack.node.recipe.RecipeContainer;
+import com.almuradev.almura.pack.node.recipe.UnknownRecipeTypeException;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import cpw.mods.fml.common.registry.GameRegistry;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Vertex;
@@ -50,6 +52,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -58,7 +63,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,19 +75,18 @@ public class PackCreator {
         final ConfigurationNode boundsConfigurationNode = reader.getNode(PackKeys.NODE_BOUNDS.getKey());
 
         final boolean useVanillaCollision = boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_COLLISION.getKey()).getBoolean(PackKeys.USE_VANILLA_COLLISION.getDefaultValue());
-        final List<Double> collisionCoordinates = Lists.newArrayList();
-        readCoordinatesIntoList(name, boundsConfigurationNode, PackKeys.COLLISION_BOX.getKey(), "collision", useVanillaCollision, collisionCoordinates);
+        final List<Double> collisionCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.COLLISION_BOX.getKey()).getString(PackKeys.COLLISION_BOX.getDefaultValue()), 6);
 
         final boolean useVanillaWireframe = boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_WIREFRAME.getKey()).getBoolean(PackKeys.USE_VANILLA_WIREFRAME.getDefaultValue());
-        final List<Double> wireframeCoordinates = Lists.newArrayList();
-        readCoordinatesIntoList(name, boundsConfigurationNode, PackKeys.WIREFRAME_BOX.getKey(), "wireframe", useVanillaWireframe, wireframeCoordinates);
+        final List<Double> wireframeCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.WIREFRAME_BOX.getKey())
+                .getString(PackKeys.WIREFRAME_BOX.getDefaultValue()), 6);
 
         final boolean useVanillaBlockBounds = boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_RENDER.getKey()).getBoolean(PackKeys.USE_VANILLA_RENDER.getDefaultValue());
-        final List<Double> blockBoundCoordinates = Lists.newArrayList();
-        readCoordinatesIntoList(name, boundsConfigurationNode, PackKeys.RENDER_BOX.getKey(), "render", useVanillaBlockBounds, blockBoundCoordinates);
+        final List<Double> renderCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.RENDER_BOX.getKey())
+                .getString(PackKeys.RENDER_BOX.getDefaultValue()), 6);
 
         final ConfigurationNode shapesConfigurationNode = reader.getNode(PackKeys.SHAPES.getKey());
-        final List<Face> faces = new LinkedList<>();
+        final List<Face> faces = Lists.newLinkedList();
 
         for (Object obj : shapesConfigurationNode.getList()) {
             final LinkedHashMap map = (LinkedHashMap) obj;
@@ -91,12 +94,11 @@ public class PackCreator {
             final String rawCoordinateString = (String) map.get(PackKeys.TEXTURE_COORDINATES.getKey());
             final int textureIndex = (Integer) map.get(PackKeys.TEXTURE.getKey());
 
-            //Convert String coordinates to vertices
-            final List<Vertex> vertices = new LinkedList<>();
+            final List<Vertex> vertices = Lists.newLinkedList();
             for (String rawCoordinate : rawCoordinateString.substring(0, rawCoordinateString.length() - 1).split("\n")) {
                 final List<Double> coordinates = Lists.newArrayList();
                 try {
-                    coordinates.addAll(PackUtil.parseStringToDoubleList(rawCoordinate, 3));
+                    coordinates.addAll(PackUtil.parseStringToNumericList(Double.class, rawCoordinate, 3));
                 } catch (NumberFormatException nfe) {
                     if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                         Almura.LOGGER.error("Could not parse vertex in shape [" + name + "]. Value: [" + rawCoordinate + "]", nfe);
@@ -120,7 +122,7 @@ public class PackCreator {
         PackShape
                 shape =
                 new PackShape(name, faces, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
-                              useVanillaBlockBounds, blockBoundCoordinates);
+                              useVanillaBlockBounds, renderCoordinates);
 
         //Handle shapes that don't have at least 4 faces
         if (shape.getFaces().length < 4) {
@@ -129,12 +131,12 @@ public class PackCreator {
             final PackShape
                     s =
                     new PackShape(shape.getName(), useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
-                                  useVanillaBlockBounds, blockBoundCoordinates);
+                                  useVanillaBlockBounds, renderCoordinates);
             s.addFaces(shape.getFaces());
             final PackShape
                     scaled =
                     new PackShape(shape.getName(), shape, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
-                                  useVanillaBlockBounds, blockBoundCoordinates);
+                                  useVanillaBlockBounds, renderCoordinates);
             scaled.scale(-1, 1, -1);
             scaled.applyMatrix();
             //Scaled returns non PackFaces, OOP demands a fix
@@ -245,7 +247,8 @@ public class PackCreator {
         return new Stage(crop, id, textureCoordinatesByFace, shapeName, null);
     }
 
-    public static void createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {
+    public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {
+        final Set<RecipeContainer<? extends IRecipe>> recipes = Sets.newHashSet();
         for (Map.Entry<String, ConfigurationNode> entry : node.getChildren().entrySet()) {
             int id;
             try {
@@ -261,18 +264,24 @@ public class PackCreator {
                 continue;
             }
             final String type = entry.getValue().getChild(PackKeys.TYPE.getKey()).getString(PackKeys.TYPE.getDefaultValue()).toUpperCase();
-            switch (type) {
-                case "SHAPED":
-                    addMinecraftRecipe(pack, name, result, id, true, entry.getValue());
-                    break;
-                case "SHAPELESS":
-                    addMinecraftRecipe(pack, name, result, id, false, entry.getValue());
-                    break;
-                default:
-                    Almura.LOGGER.error("Type [" + type + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
-                                        + "] is not valid. Valid types are [SHAPED, SHAPELESS].");
+            try {
+                switch (type) {
+                    case "SHAPED":
+                        recipes.add(createRecipeContainer(pack, name, ShapedRecipes.class, id, result, entry.getValue()));
+                        break;
+                    case "SHAPELESS":
+                        recipes.add(createRecipeContainer(pack, name, ShapelessRecipes.class, id, result, entry.getValue()));
+                        break;
+                }
+            } catch (UnknownRecipeTypeException | InvalidRecipeException e) {
+                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                    Almura.LOGGER.error(e.getMessage(), e);
+                } else {
+                    Almura.LOGGER.warn(e.getMessage());
+                }
             }
         }
+        return new RecipeNode(recipes);
     }
 
     private static RotationNode createRotationNode(Pack pack, String name, ConfigurationNode root) {
@@ -382,14 +391,14 @@ public class PackCreator {
         final Set<ToolsNode> tools = Sets.newHashSet();
 
         for (String rawToolSource : toolsConfigurationNode.getKeys(false)) {
-            final Pair<String, String> toolModidIdentifierParsed = parseModidIdentifierFrom(rawToolSource);
+            final Pair<String, String> toolModidIdentifierParsed = PackUtil.parseModidIdentifierFrom(rawToolSource);
             boolean validTool = false;
             if (rawToolSource.equalsIgnoreCase(toolModidIdentifierParsed.getValue())) {
                 validTool = true;
             }
             Object tool = null;
             if (!validTool) {
-                tool = getGameObject(toolModidIdentifierParsed.getKey(), toolModidIdentifierParsed.getValue());
+                tool = PackUtil.getGameObject(toolModidIdentifierParsed.getKey(), toolModidIdentifierParsed.getValue());
                 validTool = tool != null;
             }
             if (!validTool) {
@@ -400,18 +409,20 @@ public class PackCreator {
             final ConfigurationNode toolConfigurationNode = toolsConfigurationNode.getNode(rawToolSource);
             final RangeProperty<Integer>
                     experienceRange =
-                    new RangeProperty<>(Integer.class, true, getRange(Integer.class, toolsConfigurationNode.getChild(PackKeys.EXPERIENCE.getKey())
-                            .getString(PackKeys.EXPERIENCE.getDefaultValue()), 0));
+                    new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
+                                                                               toolsConfigurationNode.getChild(PackKeys.EXPERIENCE.getKey())
+                                                                                       .getString(PackKeys.EXPERIENCE.getDefaultValue()), 0));
             final RangeProperty<Float>
                     exhaustionRange =
-                    new RangeProperty<>(Float.class, true, getRange(Float.class, toolsConfigurationNode.getChild(PackKeys.EXHAUSTION_CHANGE.getKey())
-                            .getString(PackKeys.EXHAUSTION_CHANGE.getDefaultValue()), 0.025F));
+                    new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
+                                                                             toolsConfigurationNode.getChild(PackKeys.EXHAUSTION_CHANGE.getKey())
+                                                                                     .getString(PackKeys.EXHAUSTION_CHANGE.getDefaultValue()), 0.025F));
             final ConfigurationNode dropsConfigurationNode = toolConfigurationNode.getNode(PackKeys.DROPS.getDefaultValue());
             final Set<DropProperty> drops = Sets.newHashSet();
 
             for (String rawDropSource : dropsConfigurationNode.getKeys(false)) {
-                final Pair<String, String> dropModidIdentifierParsed = parseModidIdentifierFrom(rawDropSource);
-                final Object drop = getGameObject(dropModidIdentifierParsed.getKey(), dropModidIdentifierParsed.getValue());
+                final Pair<String, String> dropModidIdentifierParsed = PackUtil.parseModidIdentifierFrom(rawDropSource);
+                final Object drop = PackUtil.getGameObject(dropModidIdentifierParsed.getKey(), dropModidIdentifierParsed.getValue());
                 if (drop == null) {
                     Almura.LOGGER.warn("Drop source [" + rawDropSource + "] in [" + name + "] for modid [" + dropModidIdentifierParsed.getKey()
                                        + "] in pack [" + pack + "] is not a registered Block or Item!");
@@ -422,8 +433,9 @@ public class PackCreator {
                         dropsConfigurationNode.getNode(dropModidIdentifierParsed.getKey(), dropModidIdentifierParsed.getValue());
                 final RangeProperty<Integer>
                         amountRange =
-                        new RangeProperty<>(Integer.class, true, getRange(Integer.class, dropConfigurationNode.getChild(PackKeys.AMOUNT.getKey())
-                                .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
+                        new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
+                                                                                   dropConfigurationNode.getChild(PackKeys.AMOUNT.getKey())
+                                                                                           .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
                 final int data = dropsConfigurationNode.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue());
                 final ConfigurationNode bonusConfigurationNode = dropConfigurationNode.getNode(PackKeys.BONUS.getKey());
                 final boolean
@@ -431,12 +443,14 @@ public class PackCreator {
                         bonusConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
                 final RangeProperty<Integer>
                         bonusAmountRange =
-                        new RangeProperty<>(Integer.class, true, getRange(Integer.class, bonusConfigurationNode.getChild(PackKeys.AMOUNT.getKey())
-                                .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
+                        new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
+                                                                                   bonusConfigurationNode.getChild(PackKeys.AMOUNT.getKey())
+                                                                                           .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
                 final RangeProperty<Double>
                         bonusChanceRange =
-                        new RangeProperty<>(Double.class, true, getRange(Double.class, bonusConfigurationNode.getChild(PackKeys.CHANCE.getKey())
-                                .getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
+                        new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class,
+                                                                                  bonusConfigurationNode.getChild(PackKeys.CHANCE.getKey())
+                                                                                          .getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
                 drops.add(new DropProperty(drop, amountRange, data,
                                            new BonusProperty<>(Integer.class, bonusEnabled, bonusAmountRange, bonusChanceRange)));
             }
@@ -460,7 +474,7 @@ public class PackCreator {
         final String amountRaw = root.getChild(PackKeys.AMOUNT.getKey()).getString(PackKeys.AMOUNT.getDefaultValue());
         Pair<Integer, Integer> amountPair;
         try {
-            amountPair = getRange(Integer.class, amountRaw, 1);
+            amountPair = PackUtil.getRange(Integer.class, amountRaw, 1);
         } catch (NumberFormatException nfe) {
             Almura.LOGGER
                     .warn("Amount given for [" + seed.getIdentifier() + "] in pack [" + pack + "] is not valid. Should be in the format of 1-3.");
@@ -469,7 +483,7 @@ public class PackCreator {
         final String chanceRaw = root.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue());
         Pair<Double, Double> chancePair;
         try {
-            chancePair = getRange(Double.class, chanceRaw, 100.0);
+            chancePair = PackUtil.getRange(Double.class, chanceRaw, 100.0);
         } catch (NumberFormatException nfe) {
             Almura.LOGGER.warn("Chance given for [" + seed.getIdentifier() + "] in pack [" + pack
                                + "] is not valid. Should be in the format of 10.5-20.5.");
@@ -480,158 +494,74 @@ public class PackCreator {
                              new RangeProperty<>(Double.class, true, chancePair));
     }
 
-    private static void addMinecraftRecipe(Pack pack, String name, Object result, int id, boolean shaped, ConfigurationNode node) {
+    private static <T extends IRecipe> RecipeContainer<T> createRecipeContainer(Pack pack, String name, Class<T> clazz, int id, Object result,
+                                                                                ConfigurationNode node)
+            throws InvalidRecipeException, UnknownRecipeTypeException {
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
         final int data = node.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue().intValue());
-        final List<Object> params = Lists.newArrayList();
+        List<Object> params = Lists.newArrayList();
 
         for (String itemsRaw : node.getChild(PackKeys.INGREDIENTS.getKey()).getStringList()) {
             final String[] itemsSplit = itemsRaw.split(" ");
             for (String identifierCombined : itemsSplit) {
-                final Object gameObject = getGameObject(identifierCombined);
+                final Object gameObject = PackUtil.getGameObject(identifierCombined);
                 if (gameObject == null) {
-                    Almura.LOGGER.warn("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
-                                       + "] cannot be registered. Ingredient [" + identifierCombined + "] was not found.");
-                    return;
+                    throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
+                                                     + "] cannot be registered. Ingredient [" + identifierCombined + "] was not found.");
                 } else {
                     params.add(gameObject);
                 }
             }
         }
 
-        if (!params.isEmpty()) {
-            if (shaped) {
-                int index = 0;
-                final Map<Object, Character> objectViaParamMap = Maps.newHashMap();
+        if (params.isEmpty()) {
+            throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] has no parameters.");
+        }
 
-                final List<Object> combinedParams = Lists.newArrayList();
+        if (clazz == ShapedRecipes.class) {
+            int index = 0;
+            final Map<Object, Character> objectViaParamMap = Maps.newHashMap();
 
-                StringBuilder lineMatrixBuilder = new StringBuilder();
-                for (Object param : params) {
-                    if (param.getClass() != BlockAir.class) {
-                        Character c = objectViaParamMap.get(param);
-                        if (c == null) {
-                            c = RECIPE_MATRIX_PLACEHOLDER[index];
-                            objectViaParamMap.put(param, c);
-                            index++;
-                        }
-                        lineMatrixBuilder.append(c);
-                    } else {
-                        lineMatrixBuilder.append(" ");
-                    }
-                    if (lineMatrixBuilder.length() == 3) {
-                        combinedParams.add(lineMatrixBuilder.toString());
-                        lineMatrixBuilder = new StringBuilder();
-                    }
-                }
-                for (Map.Entry<Object, Character> entry : objectViaParamMap.entrySet()) {
-                    combinedParams.add(entry.getValue());
-                    combinedParams.add(entry.getKey());
-                }
-                if (result instanceof Item) {
-                    GameRegistry.addShapedRecipe(new ItemStack((Item) result, amount, data), combinedParams.toArray());
-                } else if (result instanceof Block) {
-                    GameRegistry.addShapedRecipe(new ItemStack((Block) result, amount, data), combinedParams.toArray());
-                }
-            } else {
-                final Iterator<Object> iter = params.iterator();
-                while (iter.hasNext()) {
-                    if (iter.next().getClass().equals(BlockAir.class)) {
-                        iter.remove();
-                    }
-                }
+            final List<Object> combinedParams = Lists.newArrayList();
 
-                if (result instanceof Item) {
-                    GameRegistry.addShapedRecipe(new ItemStack((Item) result, amount, data), params.toArray());
-                } else if (result instanceof Block) {
-                    GameRegistry.addShapedRecipe(new ItemStack((Block) result, amount, data), params.toArray());
+            StringBuilder lineMatrixBuilder = new StringBuilder();
+            for (Object param : params) {
+                if (param.getClass() != BlockAir.class) {
+                    Character c = objectViaParamMap.get(param);
+                    if (c == null) {
+                        c = RECIPE_MATRIX_PLACEHOLDER[index];
+                        objectViaParamMap.put(param, c);
+                        index++;
+                    }
+                    lineMatrixBuilder.append(c);
+                } else {
+                    lineMatrixBuilder.append(" ");
+                }
+                if (lineMatrixBuilder.length() == 3) {
+                    combinedParams.add(lineMatrixBuilder.toString());
+                    lineMatrixBuilder = new StringBuilder();
                 }
             }
-        }
-    }
-
-    public static Object getGameObject(String rawSource) {
-        final Pair<String, String> parsedModidIdentifier = parseModidIdentifierFrom(rawSource);
-        return getGameObject(parsedModidIdentifier.getKey(), parsedModidIdentifier.getValue());
-    }
-
-    public static Object getGameObject(String modid, String identifier) {
-        Object object = GameRegistry.findBlock(modid, identifier);
-        if (object == null) {
-            object = GameRegistry.findItem(modid, identifier);
-            if (object == null) {
-                final Optional<GameObjectMapper.TrioWrapper<Object, String, Object>> wrapper = GameObjectMapper.get(modid, identifier);
-                if (wrapper.isPresent()) {
-                    object = wrapper.get().object;
-                }
+            for (Map.Entry<Object, Character> entry : objectViaParamMap.entrySet()) {
+                combinedParams.add(entry.getValue());
+                combinedParams.add(entry.getKey());
             }
-        }
-        return object;
-    }
-
-    public static Pair<String, String> parseModidIdentifierFrom(String rawSource) {
-        final String[] separated = rawSource.split(StringEscapeUtils.escapeJava("\\"));
-        String modid = separated[0].toLowerCase();
-        String identifier;
-        if (separated.length > 1) {
-            identifier = rawSource.split(modid + StringEscapeUtils.escapeJava("\\"))[1];
+            params = combinedParams;
         } else {
-            identifier = modid;
-        }
-        if (identifier.equalsIgnoreCase(modid)) {
-            identifier = identifier.toLowerCase();
-            modid = "minecraft";
-        }
-
-        return new ImmutablePair<>(modid, identifier);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <N extends Number> Pair<N, N> getRange(Class<N> clazz, String rawRangeSource, N minimum) throws NumberFormatException {
-        N minAmount = minimum, maxAmount = minAmount;
-        if (!rawRangeSource.isEmpty()) {
-            final String[] split = rawRangeSource.split("-");
-            if (clazz == Integer.class) {
-                minAmount = (N) new Integer(Integer.parseInt(split[0]));
-                if (split.length > 1) {
-                    maxAmount = (N) new Integer(Integer.parseInt(split[1]));
-                } else {
-                    maxAmount = minAmount;
-                }
-            } else if (clazz == Double.class) {
-                minAmount = (N) new Double(Double.parseDouble(split[0]));
-                if (split.length > 1) {
-                    maxAmount = (N) new Double(Double.parseDouble(split[1]));
-                } else {
-                    maxAmount = minAmount;
-                }
-            } else if (clazz == Float.class) {
-                minAmount = (N) new Float(Float.parseFloat(split[0]));
-                if (split.length > 1) {
-                    maxAmount = (N) new Float(Float.parseFloat(split[0]));
-                } else {
-                    maxAmount = minAmount;
+            final Iterator<Object> iter = params.iterator();
+            while (iter.hasNext()) {
+                if (iter.next().getClass().equals(BlockAir.class)) {
+                    iter.remove();
                 }
             }
         }
-        return new ImmutablePair<>(minAmount, maxAmount);
-    }
 
-    private static void readCoordinatesIntoList(String name, ConfigurationNode node, String element, String type, boolean flag, List<Double> list) {
-        if (!flag) {
-            final String coordinatesRaw = node.getChild(element).getString("");
-            if (coordinatesRaw.isEmpty()) {
-                return;
-            }
-            try {
-                list.addAll(PackUtil.parseStringToDoubleList(coordinatesRaw, 6));
-            } catch (NumberFormatException nfe) {
-                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                    Almura.LOGGER.error("[" + type + "] bounds provided for shape [" + name + "] are not valid. Value: [" + coordinatesRaw + "]", nfe);
-                } else {
-                    Almura.LOGGER.warn("[" + type + "] bounds provided for shape [" + name + "] are not valid. Value: [" + coordinatesRaw + "]");
-                }
-            }
+        if (result instanceof Item) {
+            return new RecipeContainer<>(pack, name, clazz, id, new ItemStack((Item) result, amount, data), params);
+        } else if (result instanceof Block) {
+            return new RecipeContainer<>(pack, name, clazz, id, new ItemStack((Block) result, amount, data), params);
+        } else {
+            throw new InvalidRecipeException("Result [" + result + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is not a block or item.");
         }
     }
 }

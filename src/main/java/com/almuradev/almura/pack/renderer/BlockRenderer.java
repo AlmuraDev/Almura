@@ -96,7 +96,7 @@ public class BlockRenderer extends MalisisRenderer {
             final ClippedIcon[] clippedIcons = ((IBlockClipContainer) block).getClipIcons(world, x, y, z, blockMetadata);
             IIcon icon;
 
-            if (PackUtil.isEmpty(clippedIcons)) {
+            if (PackUtil.isEmptyClip(clippedIcons)) {
                 icon = super.getIcon(params);
             } else if (face.getTextureId() >= clippedIcons.length) {
                 icon = clippedIcons[0];

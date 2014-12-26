@@ -111,7 +111,7 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
 
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(IIcon blockIcon, int side, int type) {
-        if (PackUtil.isEmpty(clippedIcons)) {
+        if (PackUtil.isEmptyClip(clippedIcons)) {
             return blockIcon;
         }
         ClippedIcon sideIcon;

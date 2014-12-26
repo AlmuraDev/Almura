@@ -113,7 +113,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int type) {
-        if (PackUtil.isEmpty(clippedIcons)) {
+        if (PackUtil.isEmptyClip(clippedIcons)) {
             return super.getIcon(side, type);
         }
         ClippedIcon sideIcon;
