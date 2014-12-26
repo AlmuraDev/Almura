@@ -5,22 +5,22 @@
  */
 package com.almuradev.almura.pack.node.property;
 
-import net.minecraftforge.common.BiomeManager.BiomeType;
+import net.minecraft.world.biome.BiomeGenBase;
 
-public class BiomeProperty implements IProperty<BiomeType> {
+public class BiomeProperty implements IProperty<BiomeGenBase> {
 
-    private final BiomeType type;
+    private final BiomeGenBase biome;
     private final RangeProperty<Double> temperatureRange, humidityRange;
 
-    public BiomeProperty(BiomeType type, RangeProperty<Double> temperatureRange, RangeProperty<Double> humidityRange) {
-        this.type = type;
+    public BiomeProperty(BiomeGenBase biome, RangeProperty<Double> temperatureRange, RangeProperty<Double> humidityRange) {
+        this.biome = biome;
         this.temperatureRange = temperatureRange;
         this.humidityRange = humidityRange;
     }
 
     @Override
-    public BiomeType getSource() {
-        return type;
+    public BiomeGenBase getSource() {
+        return biome;
     }
 
     public RangeProperty<Double> getTemperatureRange() {

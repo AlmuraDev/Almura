@@ -9,10 +9,13 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.crop.PackCrops;
+import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.node.SoilNode;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
@@ -155,6 +158,22 @@ public class Pack {
         return Collections.unmodifiableList(blocks);
     }
 
+    /**
+     * INTERNAL USE ONLY
+     * @param block
+     */
+    public void addBlock(Block block) {
+        blocks.add(block);
+    }
+
+    /**
+     * INTERNAL USE ONLY
+     * @param item
+     */
+    public void addItem(Item item) {
+        items.add(item);
+    }
+
     public List<Item> getItems() {
         return Collections.unmodifiableList(items);
     }
@@ -194,41 +213,6 @@ public class Pack {
                 } else if (((IShapeContainer) item).getShapeName() != null && ((IShapeContainer) item).getShapeName().isEmpty()) {
                     Almura.LOGGER.warn("Shape [" + ((IShapeContainer) item).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH.toString() + "]. Will render as a basic item.");
                 }
-            }
-        }
-    }
-
-    public void onPostInitialization() throws IOException, ConfigurationException {
-        //Order is important
-        for (Block block : blocks) {
-            if (block instanceof IPackObject && block instanceof INodeContainer) {
-                final InputStream
-                        entry =
-                        Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
-                                                       ((IPackObject) block).getIdentifier() + ".yml"));
-                final YamlConfiguration reader = new YamlConfiguration(entry);
-                reader.load();
-                //Recipes
-                ((INodeContainer) block).addNode(
-                        PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), block,
-                                                     reader.getNode(PackKeys.NODE_RECIPES.getKey())));
-                entry.close();
-            }
-        }
-
-        for (Item item : items) {
-            if (item instanceof IPackObject && item instanceof INodeContainer) {
-                final InputStream
-                        entry =
-                        Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
-                                                       ((IPackObject) item).getIdentifier() + ".yml"));
-                final YamlConfiguration reader = new YamlConfiguration(entry);
-                reader.load();
-                //Recipes
-                ((INodeContainer) item).addNode(
-                        PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), item,
-                                                     reader.getNode(PackKeys.NODE_RECIPES.getKey())));
-                entry.close();
             }
         }
     }

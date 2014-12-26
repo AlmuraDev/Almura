@@ -79,7 +79,15 @@ public class PackKeys {
     public static final DefaultedKey<String> DROPS = new DefaultedKey<>("drops", "");
     public static final DefaultedKey<String> EXPERIENCE = new DefaultedKey<>("experience", "");
     public static final DefaultedKey<String> BONUS = new DefaultedKey<>("bonus", "");
-
+    //SOIL NODE
+    public static final DefaultedKey<String> NODE_SOIL = new DefaultedKey<>("soil", "");
+    public static final DefaultedKey<String> SOURCE = new DefaultedKey<>("source", "");
+    //BIOME NODE
+    public static final DefaultedKey<String> NODE_BIOME = new DefaultedKey<>("biome", "");
+    public static final DefaultedKey<String> TEMPERATURE_REQUIRED = new DefaultedKey<>("temperature-required", "");
+    public static final DefaultedKey<String> HUMIDITY_REQUIRED = new DefaultedKey<>("humidity-required", "");
+    //SEED NODE
+    public static final DefaultedKey<String> NODE_SEED = new DefaultedKey<>("seed", "");
     public static class DefaultedKey<T> {
 
         private final String key;

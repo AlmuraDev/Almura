@@ -18,6 +18,7 @@ import com.almuradev.almura.pack.item.PackItem;
 import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackMirrorFace;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.node.BiomeNode;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ConsumptionNode;
@@ -27,7 +28,9 @@ import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RecipeNode;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
+import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.ToolsNode;
+import com.almuradev.almura.pack.node.property.BiomeProperty;
 import com.almuradev.almura.pack.node.property.BonusProperty;
 import com.almuradev.almura.pack.node.property.CollisionProperty;
 import com.almuradev.almura.pack.node.property.DropProperty;
@@ -55,6 +58,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -214,7 +219,7 @@ public class PackCreator {
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackCrops(pack, name, textureName, levelRequired, new Stage[0]);
+        return new PackCrops(pack, name, textureName, levelRequired);
     }
 
     public static PackSeeds createCropSeed(Pack pack, Block soil, PackCrops crop, String textureName, ConfigurationNode node)
@@ -284,7 +289,7 @@ public class PackCreator {
         return new RecipeNode(recipes);
     }
 
-    private static RotationNode createRotationNode(Pack pack, String name, ConfigurationNode root) {
+    public static RotationNode createRotationNode(Pack pack, String name, ConfigurationNode root) {
         final boolean rotationEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(true);
         final boolean defaultRotateEnabled = root.getChild(PackKeys.DEFAULT_ROTATE.getKey()).getBoolean(PackKeys.DEFAULT_ROTATE.getDefaultValue());
         final boolean defaultMirrorRotateEnabled = root.getChild(PackKeys.DEFAULT_MIRROR_ROTATE.getKey()).getBoolean(
@@ -324,7 +329,7 @@ public class PackCreator {
         return new RotationNode(rotationEnabled, defaultRotateEnabled, defaultMirrorRotateEnabled, rotationProperties);
     }
 
-    private static LightNode createLightNode(Pack pack, String name, ConfigurationNode root) {
+    public static LightNode createLightNode(Pack pack, String name, ConfigurationNode root) {
         float emission = root.getChild(PackKeys.EMISSION.getKey()).getFloat(PackKeys.EMISSION.getDefaultValue());
         if (emission < 0f) {
             emission = 0f;
@@ -347,7 +352,7 @@ public class PackCreator {
     }
 
     @SuppressWarnings("unchecked")
-    private static CollisionNode createCollisionNode(Pack pack, String name, ConfigurationNode root) {
+    public static CollisionNode createCollisionNode(Pack pack, String name, ConfigurationNode root) {
         final boolean collisionEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
         final ConfigurationNode collisionSourcesConfigurationNode = root.getNode(PackKeys.SOURCES.getKey());
         final Set<CollisionProperty> collisionProperties = Sets.newHashSet();
@@ -379,13 +384,13 @@ public class PackCreator {
         return new CollisionNode(collisionEnabled, collisionProperties);
     }
 
-    private static RenderNode createRenderNode(Pack pack, String name, ConfigurationNode root) {
+    public static RenderNode createRenderNode(Pack pack, String name, ConfigurationNode root) {
         final boolean renderAsNormalBlock = root.getChild(PackKeys.NORMAL_CUBE.getKey()).getBoolean(PackKeys.NORMAL_CUBE.getDefaultValue());
         final boolean renderAsOpaque = root.getChild(PackKeys.OPAQUE.getKey()).getBoolean(PackKeys.OPAQUE.getDefaultValue());
         return new RenderNode(renderAsNormalBlock, renderAsOpaque);
     }
 
-    private static BreakNode createBreakNode(Pack pack, String name, ConfigurationNode root) {
+    public static BreakNode createBreakNode(Pack pack, String name, ConfigurationNode root) {
         final boolean breakEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
         final ConfigurationNode toolsConfigurationNode = root.getNode(PackKeys.TOOLS.getKey());
         final Set<ToolsNode> tools = Sets.newHashSet();
@@ -461,7 +466,7 @@ public class PackCreator {
         return new BreakNode(breakEnabled, tools);
     }
 
-    private static ConsumptionNode createConsumptionNode(Pack pack, String name, ConfigurationNode root) {
+    public static ConsumptionNode createConsumptionNode(Pack pack, String name, ConfigurationNode root) {
         final float healthChange = root.getChild(PackKeys.HEALTH_CHANGE.getKey()).getFloat(PackKeys.HEALTH_CHANGE.getDefaultValue());
         final float saturationChange = root.getChild(PackKeys.SATURATION_CHANGE.getKey()).getFloat(PackKeys.SATURATION_CHANGE.getDefaultValue());
         final boolean wolfFavorite = root.getChild(PackKeys.WOLF_FAVORITE.getKey()).getBoolean(PackKeys.WOLF_FAVORITE.getDefaultValue());
@@ -469,7 +474,7 @@ public class PackCreator {
         return new ConsumptionNode(true, healthChange, saturationChange, alwaysEdible, wolfFavorite);
     }
 
-    private static GrassNode createGrassNode(Pack pack, PackSeeds seed, ConfigurationNode root) {
+    public static GrassNode createGrassNode(Pack pack, PackSeeds seed, ConfigurationNode root) {
         final boolean enabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
         final String amountRaw = root.getChild(PackKeys.AMOUNT.getKey()).getString(PackKeys.AMOUNT.getDefaultValue());
         Pair<Integer, Integer> amountPair;
@@ -492,6 +497,38 @@ public class PackCreator {
 
         return new GrassNode(enabled, new VariableGameObjectProperty(seed, new RangeProperty<>(Integer.class, true, amountPair), 0),
                              new RangeProperty<>(Double.class, true, chancePair));
+    }
+
+    public static SoilNode createSoilNode(Pack pack, String name, ConfigurationNode node) {
+        final String rawSource = node.getChild(PackKeys.SOURCE.getKey()).getString(PackKeys.SOURCE.getDefaultValue());
+        final Object source = PackUtil.getGameObject(rawSource);
+        if (source == null) {
+            Almura.LOGGER.warn("Soil source [" + rawSource + "] in [" + name + "] in pack [" + pack.getName() + "] is not a registered block.");
+            return null;
+        }
+
+        if (!(source instanceof Block)) {
+            Almura.LOGGER.warn("Soil source [" + rawSource + "] in [" + name + "] in pack [" + pack.getName() + "] is an item. It needs to be a block.");
+            return null;
+        }
+
+        final ConfigurationNode biomeConfigurationNode = node.getNode(PackKeys.NODE_BIOME.getKey());
+        final boolean biomeNodeEnabled = biomeConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+        final ConfigurationNode biomeSourcesConfigurationNode = biomeConfigurationNode.getNode(PackKeys.SOURCES.getKey());
+        final Set<BiomeProperty> biomes = Sets.newHashSet();
+        for (String rawBiomeSource : biomeSourcesConfigurationNode.getKeys(false)) {
+            final BiomeGenBase biome = PackUtil.getBiome(rawBiomeSource);
+            if (biome == null) {
+                Almura.LOGGER.warn("Biome source [" + rawBiomeSource + "] in [" + name + "] in pack [" + pack.getName() + "] is not a registered biome.");
+                continue;
+            }
+            final ConfigurationNode biomeSourceConfigurationNode = biomeSourcesConfigurationNode.getNode(rawBiomeSource);
+            final Pair<Double, Double> temperaturePair = PackUtil.getRange(Double.class, biomeSourceConfigurationNode.getChild(PackKeys.TEMPERATURE_REQUIRED.getKey()).getString(PackKeys.TEMPERATURE_REQUIRED.getDefaultValue()), 100.0);
+            final Pair<Double, Double> humidityPair = PackUtil.getRange(Double.class, biomeSourceConfigurationNode.getChild(PackKeys.HUMIDITY_REQUIRED.getKey()).getString(PackKeys.HUMIDITY_REQUIRED.getDefaultValue()), 100.0);
+            biomes.add(new BiomeProperty(biome, new RangeProperty<>(Double.class, true, temperaturePair), new RangeProperty<>(Double.class, true, humidityPair)));
+        }
+        final BiomeNode biomeNode = new BiomeNode(biomeNodeEnabled, biomes);
+        return new SoilNode((Block) source, biomeNode);
     }
 
     private static <T extends IRecipe> RecipeContainer<T> createRecipeContainer(Pack pack, String name, Class<T> clazz, int id, Object result,

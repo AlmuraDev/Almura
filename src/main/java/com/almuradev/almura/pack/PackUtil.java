@@ -15,6 +15,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.biome.BiomeGenBase;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -123,8 +124,8 @@ public class PackUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static <N extends Number> Pair<N, N> getRange(Class<N> clazz, String rawRangeSource, N minimum) throws NumberFormatException {
-        N minAmount = minimum, maxAmount = minAmount;
+    public static <N extends Number> Pair<N, N> getRange(Class<N> clazz, String rawRangeSource, N fallback) throws NumberFormatException {
+        N minAmount = fallback, maxAmount = minAmount;
         if (!rawRangeSource.isEmpty()) {
             final String[] split = rawRangeSource.split("-");
             if (clazz == Integer.class) {
@@ -175,5 +176,14 @@ public class PackUtil {
             }
         }
         return parsed;
+    }
+
+    public static BiomeGenBase getBiome(String biomeSource) {
+        for (BiomeGenBase biome : BiomeGenBase.getBiomeGenArray()) {
+            if (biome.biomeName.equalsIgnoreCase(biomeSource)) {
+                return biome;
+            }
+        }
+        return null;
     }
 }

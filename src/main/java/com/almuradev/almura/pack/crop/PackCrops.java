@@ -34,13 +34,12 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     private final Pack pack;
     private final String identifier;
     private final int levelRequired;
-    private final Stage[] stages;
+    private Stage[] stages;
 
-    public PackCrops(Pack pack, String identifier, String textureName, int levelRequired, Stage[] stages) {
+    public PackCrops(Pack pack, String identifier, String textureName, int levelRequired) {
         this.pack = pack;
         this.identifier = identifier;
         this.levelRequired = levelRequired;
-        this.stages = stages;
         setBlockName(pack.getName() + "\\" + identifier);
         setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
         setTickRandomly(true);
