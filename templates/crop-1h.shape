@@ -1,4 +1,4 @@
-Physics:
+Bounds:
     Use-Vanilla-Collision: false
     CollisionBox: "0 0 0 0 0 0"
     Use-Vanilla-Wireframe: false
