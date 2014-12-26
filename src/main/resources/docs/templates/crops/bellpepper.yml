@@ -1,11 +1,11 @@
 Date: 12-3-2014
 Type: Crop
 Title: Bellpepper
-Texture: crops.png
+texture: crops.png
 level-require: 18
 seed:
     Title: Bellpepper Seed
-    Coords: 256 384 32 32
+    coordinates: 256 384 32 32
     Creative-Tab-Name: crops
     Show-In-Creative-Tab: true
     drop-on-grass-break: true
@@ -19,7 +19,7 @@ soil:
                 humidity-required: 50-60
 stages:
     0:
-        Coords: 256 384 32 32
+        coordinates: 256 384 32 32
         shape: crop-dirt.shape
         Hardness: 1
         Resistance: 1
@@ -50,7 +50,7 @@ stages:
                 skeleton:
                     health-change: 0
     1:
-        Coords: 256 384 32 32
+        coordinates: 256 384 32 32
         shape: crop-1h.shape
         Hardness: 0
         Resistance: 0        
@@ -81,7 +81,7 @@ stages:
                 skeleton:
                     health-change: 0
     2:
-        Coords: 256 384 32 32
+        coordinates: 256 384 32 32
         shape: crop-1h.shape
         Hardness: 0
         Resistance: 0        
@@ -112,7 +112,7 @@ stages:
                 skeleton:
                     health-change: 0
     3:
-        Coords: 256 384 32 32
+        coordinates: 256 384 32 32
         shape: crop-1h.shape
         Hardness: 0
         Resistance: 0        

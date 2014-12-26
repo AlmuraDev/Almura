@@ -1,20 +1,20 @@
-Bounds:
-    Use-Vanilla-Collision: false
-    CollisionBox: "0 0 0 0 0 0"
-    Use-Vanilla-Wireframe: false
-    WireframeBox: ".25 0 .25 .75 3 .75" 
-    Use-Vanilla-Block-Bounds: false 
-    BlockBounds: ".25 0 .25 .75 3 .75"
-Shapes:
-  - Coords: |
+bounds:
+    use-vanilla-collision: false
+    collision-box: "0 0 0 0 0 0"
+    use-vanilla-wireframe: false
+    wireframe-box: ".25 0 .25 .75 3 .75"
+    use-vanilla-render: false
+    render-box: ".25 0 .25 .75 3 .75"
+shapes:
+  - coordinates: |
       1 0 1 
       1 3 1
       0 3 0
       0 0 0
-    Texture: 0
-  - Coords: |
+    texture: 0
+  - coordinates: |
       1 0 0
       1 3 0
       0 3 1
       0 0 1
-    Texture: 0
+    texture: 0

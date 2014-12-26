@@ -1,43 +1,43 @@
-Bounds:
-    Use-Vanilla-Collision: true
-    CollisionBox: "1 1 1 1 1 1"
-    Use-Vanilla-Wireframe: true
-    WireframeBox: "1 1 1 1 1 1"
-    Use-Vanilla-Block-Bounds: true 
-    BlockBounds: "1 1 1 1 1 1"
-Shapes:
-  - Texture: 0 #Front
-    Coords: |
+bounds:
+    use-vanilla-collision: true
+    collision-box: "1 1 1 1 1 1"
+    use-vanilla-wireframe: true
+    wireframe-box: "1 1 1 1 1 1"
+    use-vanilla-render: true
+    render-box: "1 1 1 1 1 1"
+shapes:
+  - texture: 0 #Front
+    coordinates: |
       1 0 1
       1 1 1
       0 1 1
       0 0 1
-  - Texture: 0 #Back
-    Coords: |
+  - texture: 0 #Back
+    coordinates: |
       0 0 0
       0 1 0
       1 1 0
       1 0 0
-  - Texture: 1 #Top
-    Coords: |
+  - texture: 1 #Top
+    coordinates: |
       1 1 1
       1 1 0
       0 1 0
       0 1 1
-  - Texture: 0 #OuterRight
-    Coords: |
+  - texture: 0 #OuterRight
+    coordinates: |
       1 0 0
       1 1 0
       1 1 1
       1 0 1
-  - Texture: 0 #OuterLeft
-    Coords: |
+  - texture: 0 #OuterLeft
+    coordinates: |
       0 0 1
       0 1 1
       0 1 0
       0 0 0
-  - Texture: 1 #Bottom
-    Coords: |
+  - texture: 1 #Bottom
+    coordinates: |
       0 0 1
       0 0 0
       1 0 0

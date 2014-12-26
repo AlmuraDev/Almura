@@ -1,13 +1,13 @@
-Bounds:
-    Use-Vanilla-Collision: false
-    CollisionBox: "0 0 0 0 0 0"
-    Use-Vanilla-Wireframe: false
-    WireframeBox: "0 0 0 1 .20 1"
-    Use-Vanilla-Block-Bounds: false    
-    BlockBounds: "0 0 0 1 .20 1"
-Shapes:
-  - Texture: 0
-    Coords: |
+bounds:
+    use-vanilla-collision: false
+    collision-box: "0 0 0 0 0 0"
+    use-vanilla-wireframe: false
+    wireframe-box: "0 0 0 1 .20 1"
+    use-vanilla-render: false
+    render-box: "0 0 0 1 .20 1"
+shapes:
+  - texture: 0
+    coordinates: |
       0 0 1
       1 0 1
       1 0 0

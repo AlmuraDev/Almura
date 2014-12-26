@@ -83,7 +83,7 @@ public class Pack {
         final InputStream entry = Files.newInputStream(root);
         final YamlConfiguration reader = new YamlConfiguration(entry);
         reader.load();
-        return PackShape.createFromReader(root.getFileName().toString().split(".shape")[0], reader);
+        return PackCreator.createShapeFromReader(root.getFileName().toString().split(".shape")[0], reader);
     }
 
     public static Pack loadPack(Path root) {
@@ -226,6 +226,7 @@ public class Pack {
 //                }
 //            }
 //        }
+
     }
 
     @Override

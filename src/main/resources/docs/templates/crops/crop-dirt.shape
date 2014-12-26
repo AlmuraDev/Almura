@@ -1,103 +1,103 @@
-Bounds:
-    Use-Vanilla-Collision: false
-    CollisionBox: "0 0 0 0 0 0"
-    Use-Vanilla-Wireframe: false
-    WireframeBox: "0 0 0 1 .20 1"
-    Use-Vanilla-Block-Bounds: false    
-    BlockBounds: "0 0 0 1 .20 1"
-Shapes:
-  - Texture: 0
-    Coords: |
+bounds:
+    use-vanilla-collision: false
+    collision-box: "0 0 0 0 0 0"
+    use-vanilla-wireframe: false
+    wireframe-box: "0 0 0 1 .20 1"
+    use-vanilla-render: false
+    render-box: "0 0 0 1 .20 1"
+shapes:
+  - texture: 0
+    coordinates: |
       0.5625 0.125 0.5625
       0.4375 0.125 0.5625
       0.375 0 0.75
       0.625 0 0.75
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.5625 0.125 0.5625
       0.5 0.125 0.5625
       0.625 0 0.75
       0.75 0 0.625
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.5625 0.125 0.4375
       0.75 0 0.375
       0.625 0 0.25
       0.5625 0.125 0.4375
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.4375 0.125 0.4375
       0.5625 0.125 0.4375
       0.625 0 0.25
       0.375 0 0.25
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.4375 0.125 0.4375
       0.5 0.125 0.4375
       0.375 0 0.25
       0.25 0 0.375
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.4375 0.125 0.4375
       0.25 0 0.375
       0.25 0 0.625
       0.4375 0.125 0.5625
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.4375 0.125 0.5625
       0.25 0 0.625
       0.375 0 0.75
       0.5 0.125 0.5625
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.5625 0.125 0.5625
       0.75 0 0.625
       0.75 0 0.375
       0.5625 0.125 0.4375
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.75 0 0.625
       0.625 0 0.75
       0.625 0 0.25
       0.75 0 0.375
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.375 0 0.75
       0.25 0 0.625
       0.25 0 0.375
       0.375 0 0.25
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.625 0 0.75
       0.375 0 0.75
       0.375 0 0.25
       0.625 0 0.25
-  - Texture: 0
-    Coords: |
+  - texture: 0
+    coordinates: |
       0.4375 0.125 0.5625
       0.5625 0.125 0.5625
       0.5625 0.125 0.4375
       0.4375 0.125 0.4375
-  - Texture: 2
-    Coords: |
+  - texture: 2
+    coordinates: |
       0.5 0.15 0.4375
       0.4375 0 0.4375
       0.4375 0 0.5625
       0.5 0.15 0.5625
-  - Texture: 1
-    Coords: |
+  - texture: 1
+    coordinates: |
       0.5625 0.15 0.5
       0.4375 0.15 0.5
       0.4375 0 0.5625
       0.5625 0 0.5625
-  - Texture: 2
-    Coords: |
+  - texture: 2
+    coordinates: |
       0.5 0.15 0.5625
       0.5625 0 0.5625
       0.5625 0 0.4375
       0.5 0.15 0.4375
-  - Texture: 1
-    Coords: |
+  - texture: 1
+    coordinates: |
       0.4375 0.15 0.5
       0.5625 0.15 0.5
       0.5625 0 0.4375

@@ -15,6 +15,9 @@ import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.item.PackFood;
 import com.almuradev.almura.pack.item.PackItem;
+import com.almuradev.almura.pack.model.PackFace;
+import com.almuradev.almura.pack.model.PackMirrorFace;
+import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ConsumptionNode;
@@ -38,18 +41,24 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.malisis.core.renderer.RenderParameters;
+import net.malisis.core.renderer.element.Face;
+import net.malisis.core.renderer.element.Vertex;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,6 +66,88 @@ import java.util.Set;
 public class PackCreator {
 
     private static final char[] RECIPE_MATRIX_PLACEHOLDER = new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'};
+
+    public static PackShape createShapeFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
+        final ConfigurationNode boundsConfigurationNode = reader.getNode(PackKeys.NODE_BOUNDS.getKey());
+
+        final boolean useVanillaCollision = boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_COLLISION.getKey()).getBoolean(PackKeys.USE_VANILLA_COLLISION.getDefaultValue());
+        final List<Double> collisionCoordinates = Lists.newArrayList();
+        readCoordinatesIntoList(name, boundsConfigurationNode, PackKeys.COLLISION_BOX.getKey(), "collision", useVanillaCollision, collisionCoordinates);
+
+        final boolean useVanillaWireframe = boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_WIREFRAME.getKey()).getBoolean(PackKeys.USE_VANILLA_WIREFRAME.getDefaultValue());
+        final List<Double> wireframeCoordinates = Lists.newArrayList();
+        readCoordinatesIntoList(name, boundsConfigurationNode, PackKeys.WIREFRAME_BOX.getKey(), "wireframe", useVanillaWireframe, wireframeCoordinates);
+
+        final boolean useVanillaBlockBounds = boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_RENDER.getKey()).getBoolean(PackKeys.USE_VANILLA_RENDER.getDefaultValue());
+        final List<Double> blockBoundCoordinates = Lists.newArrayList();
+        readCoordinatesIntoList(name, boundsConfigurationNode, PackKeys.RENDER_BOX.getKey(), "render", useVanillaBlockBounds, blockBoundCoordinates);
+
+        final ConfigurationNode shapesConfigurationNode = reader.getNode(PackKeys.SHAPES.getKey());
+        final List<Face> faces = new LinkedList<>();
+
+        for (Object obj : shapesConfigurationNode.getList()) {
+            final LinkedHashMap map = (LinkedHashMap) obj;
+
+            final String rawCoordinateString = (String) map.get(PackKeys.TEXTURE_COORDINATES.getKey());
+            final int textureIndex = (Integer) map.get(PackKeys.TEXTURE.getKey());
+
+            //Convert String coordinates to vertices
+            final List<Vertex> vertices = new LinkedList<>();
+            for (String rawCoordinate : rawCoordinateString.substring(0, rawCoordinateString.length() - 1).split("\n")) {
+                final List<Double> coordinates = Lists.newArrayList();
+                try {
+                    coordinates.addAll(PackUtil.parseStringToDoubleList(rawCoordinate, 3));
+                } catch (NumberFormatException nfe) {
+                    if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                        Almura.LOGGER.error("Could not parse vertex in shape [" + name + "]. Value: [" + rawCoordinate + "]", nfe);
+                    } else {
+                        Almura.LOGGER.warn("Could not parse vertex in shape [" + name + "]. Value: [" + rawCoordinate + "]");
+                    }
+                    continue;
+                }
+
+                //Convert list of coordinates to vertex
+                vertices.add(new Vertex(coordinates.get(0), coordinates.get(1), coordinates.get(2)));
+            }
+            final RenderParameters params = new RenderParameters();
+            params.textureSide.set(ForgeDirection.getOrientation(textureIndex));
+            final Face face = new PackFace(textureIndex, vertices);
+            face.setStandardUV();
+            face.setParameters(params);
+            faces.add(face);
+        }
+
+        PackShape
+                shape =
+                new PackShape(name, faces, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
+                              useVanillaBlockBounds, blockBoundCoordinates);
+
+        //Handle shapes that don't have at least 4 faces
+        if (shape.getFaces().length < 4) {
+            shape.applyMatrix();
+
+            final PackShape
+                    s =
+                    new PackShape(shape.getName(), useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
+                                  useVanillaBlockBounds, blockBoundCoordinates);
+            s.addFaces(shape.getFaces());
+            final PackShape
+                    scaled =
+                    new PackShape(shape.getName(), shape, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
+                                  useVanillaBlockBounds, blockBoundCoordinates);
+            scaled.scale(-1, 1, -1);
+            scaled.applyMatrix();
+            //Scaled returns non PackFaces, OOP demands a fix
+            for (int i = 0; i < 4 - scaled.getFaces().length; i++) {
+                s.addFaces(new PackMirrorFace[]{new PackMirrorFace(((PackFace) s.getFaces()[i]).getTextureId(),
+                                                                   scaled.getFaces()[i >= scaled.getFaces().length ? scaled.getFaces().length - 1
+                                                                                                                   : i])});
+            }
+            shape = s;
+        }
+        shape.storeState();
+        return shape;
+    }
 
     public static PackBlock createBlockFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
@@ -524,5 +615,23 @@ public class PackCreator {
             }
         }
         return new ImmutablePair<>(minAmount, maxAmount);
+    }
+
+    private static void readCoordinatesIntoList(String name, ConfigurationNode node, String element, String type, boolean flag, List<Double> list) {
+        if (!flag) {
+            final String coordinatesRaw = node.getChild(element).getString("");
+            if (coordinatesRaw.isEmpty()) {
+                return;
+            }
+            try {
+                list.addAll(PackUtil.parseStringToDoubleList(coordinatesRaw, 6));
+            } catch (NumberFormatException nfe) {
+                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                    Almura.LOGGER.error("[" + type + "] bounds provided for shape [" + name + "] are not valid. Value: [" + coordinatesRaw + "]", nfe);
+                } else {
+                    Almura.LOGGER.warn("[" + type + "] bounds provided for shape [" + name + "] are not valid. Value: [" + coordinatesRaw + "]");
+                }
+            }
+        }
     }
 }

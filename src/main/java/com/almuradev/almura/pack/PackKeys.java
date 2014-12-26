@@ -31,6 +31,15 @@ public class PackKeys {
     public static final DefaultedKey<Float> HEALTH_CHANGE = new DefaultedKey<>("health-change", Float.MIN_VALUE);
     public static final DefaultedKey<String> EXHAUSTION_CHANGE = new DefaultedKey<>("exhaustion-change", "");
     public static final DefaultedKey<String> CHANCE = new DefaultedKey<>("chance", "");
+    public static final DefaultedKey<String> SHAPES = new DefaultedKey<>("shapes", "");
+    //BOUNDS NODE
+    public static final DefaultedKey<String> NODE_BOUNDS = new DefaultedKey<>("bounds", "");
+    public static final DefaultedKey<Boolean> USE_VANILLA_COLLISION = new DefaultedKey<>("use-vanilla-collision", true);
+    public static final DefaultedKey<Boolean> USE_VANILLA_WIREFRAME = new DefaultedKey<>("use-vanilla-wireframe", true);
+    public static final DefaultedKey<Boolean> USE_VANILLA_RENDER = new DefaultedKey<>("use-vanilla-render", true);
+    public static final DefaultedKey<String> COLLISION_BOX = new DefaultedKey<>("collision-box", "");
+    public static final DefaultedKey<String> WIREFRAME_BOX = new DefaultedKey<>("wireframe-box", "");
+    public static final DefaultedKey<String> RENDER_BOX = new DefaultedKey<>("render-box", "");
     //CONSUMPTION NODE
     public static final DefaultedKey<String> NODE_CONSUMPTION = new DefaultedKey<>("consumption", "");
     public static final DefaultedKey<Float> SATURATION_CHANGE = new DefaultedKey<>("saturation-change", 1f);
