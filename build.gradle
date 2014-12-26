@@ -127,7 +127,8 @@ jar.manifest.mainAttributes(
         "Implementation-Title": name,
         "Implementation-Version": version + "-b" + buildNumber + ".git-" + commit,
         "Implementation-Vendor": url,
-        "FMLCorePluginContainsFMLMod": 'true'
+        "FMLCorePluginContainsFMLMod": 'true',
+        "FMLCorePlugin": 'com.almuradev.almura.core.AlmuraCoreMod'
 )
 
 
