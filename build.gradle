@@ -78,6 +78,7 @@ configurations.all {
 // MinecraftForge version
 minecraft {
     version = "1.7.10-10.13.2.1277"
+    runDir = "run/"
 }
 
 // Filter, process, and include resources
