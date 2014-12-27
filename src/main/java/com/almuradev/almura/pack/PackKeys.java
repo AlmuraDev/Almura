@@ -18,7 +18,7 @@ public class PackKeys {
     public static final DefaultedKey<String> IDENTIFIER = new DefaultedKey<>("identifier", "");
     public static final DefaultedKey<? extends List<String>> TOOLTIP = new DefaultedKey<>("tooltip", Lists.<String>newArrayList());
     public static final DefaultedKey<String> TEXTURE = new DefaultedKey<>("texture", "");
-    public static final DefaultedKey<? extends List<String>> TEXTURE_COORDINATES = new DefaultedKey<>("coordinates", Lists.<String>newArrayList());
+    public static final DefaultedKey<? extends List<String>> TEXTURE_COORDINATES = new DefaultedKey<>("coords", Lists.<String>newArrayList());
     public static final DefaultedKey<String> SHAPE = new DefaultedKey<>("shape", "");
     public static final DefaultedKey<String> CREATIVE_TAB = new DefaultedKey<>("creative-tab", "other");
     public static final DefaultedKey<Boolean> SHOW_IN_CREATIVE_TAB = new DefaultedKey<>("show-in-creative-tab", Boolean.TRUE);
