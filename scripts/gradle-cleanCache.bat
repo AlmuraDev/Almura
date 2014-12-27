@@ -1,1 +1,1 @@
-gradlew cleanCache
+../gradlew cleanCache
