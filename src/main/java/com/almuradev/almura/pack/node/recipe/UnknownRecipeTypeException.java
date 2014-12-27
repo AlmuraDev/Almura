@@ -1,6 +1,12 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.pack.node.recipe;
 
 public class UnknownRecipeTypeException extends Exception {
+
     static final long serialVersionUID = -1L;
 
     public UnknownRecipeTypeException(String message) {

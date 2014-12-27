@@ -24,7 +24,8 @@ public class AlmuraCoreMod implements IFMLLoadingPlugin {
         //Filter those pesky log entries
         //TODO Non-functional yet
         final Logger launchWrapperLogger = (Logger) LogManager.getLogger("LaunchWrapper");
-        launchWrapperLogger.addFilter(RegexFilter.createFilter(".*has a security seal for path org.lwjgl.*", "true", Filter.Result.DENY.name(), Filter.Result.DENY.name()));
+        launchWrapperLogger.addFilter(
+                RegexFilter.createFilter(".*has a security seal for path org.lwjgl.*", "true", Filter.Result.DENY.name(), Filter.Result.DENY.name()));
     }
 
     @SuppressWarnings("unchecked")

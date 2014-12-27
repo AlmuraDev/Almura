@@ -47,7 +47,7 @@ dependencies {
 }
 
 // Gradle default tasks
-defaultTasks 'licenseFormat', 'build', 'shadowJar'
+defaultTasks 'licenseFormat', 'build'
 
 // Basic project information
 group = 'com.almuradev'
@@ -110,7 +110,7 @@ license {
     header rootProject.file('HEADER.txt')
     ignoreFailures true
     strictCheck true
-    excludes(["**/*.cfg", "**/*.info", "**/*.jpg", "**/*.png", "**/*.yml", "**/*.json", "**/*.txt"])
+    excludes(["**/*.cfg", "**/*.info", "**/*.jpg", "**/*.png", "**/*.yml", "**/*.json", "**/*.txt", "**/*.shape"])
 }
 
 // Source compiler configuration

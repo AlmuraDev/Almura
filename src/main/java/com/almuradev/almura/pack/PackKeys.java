@@ -88,6 +88,7 @@ public class PackKeys {
     public static final DefaultedKey<String> HUMIDITY_REQUIRED = new DefaultedKey<>("humidity-required", "");
     //SEED NODE
     public static final DefaultedKey<String> NODE_SEED = new DefaultedKey<>("seed", "");
+
     public static class DefaultedKey<T> {
 
         private final String key;

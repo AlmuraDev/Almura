@@ -59,7 +59,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -79,14 +78,25 @@ public class PackCreator {
     public static PackShape createShapeFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
         final ConfigurationNode boundsConfigurationNode = reader.getNode(PackKeys.NODE_BOUNDS.getKey());
 
-        final boolean useVanillaCollision = boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_COLLISION.getKey()).getBoolean(PackKeys.USE_VANILLA_COLLISION.getDefaultValue());
-        final List<Double> collisionCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.COLLISION_BOX.getKey()).getString(PackKeys.COLLISION_BOX.getDefaultValue()), 6);
+        final boolean
+                useVanillaCollision =
+                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_COLLISION.getKey())
+                        .getBoolean(PackKeys.USE_VANILLA_COLLISION.getDefaultValue());
+        final List<Double>
+                collisionCoordinates =
+                PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.COLLISION_BOX.getKey())
+                        .getString(PackKeys.COLLISION_BOX.getDefaultValue()), 6);
 
-        final boolean useVanillaWireframe = boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_WIREFRAME.getKey()).getBoolean(PackKeys.USE_VANILLA_WIREFRAME.getDefaultValue());
+        final boolean
+                useVanillaWireframe =
+                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_WIREFRAME.getKey())
+                        .getBoolean(PackKeys.USE_VANILLA_WIREFRAME.getDefaultValue());
         final List<Double> wireframeCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.WIREFRAME_BOX.getKey())
                 .getString(PackKeys.WIREFRAME_BOX.getDefaultValue()), 6);
 
-        final boolean useVanillaBlockBounds = boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_RENDER.getKey()).getBoolean(PackKeys.USE_VANILLA_RENDER.getDefaultValue());
+        final boolean
+                useVanillaBlockBounds =
+                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_RENDER.getKey()).getBoolean(PackKeys.USE_VANILLA_RENDER.getDefaultValue());
         final List<Double> renderCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.RENDER_BOX.getKey())
                 .getString(PackKeys.RENDER_BOX.getDefaultValue()), 6);
 
@@ -421,7 +431,8 @@ public class PackCreator {
                     exhaustionRange =
                     new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
                                                                              toolsConfigurationNode.getChild(PackKeys.EXHAUSTION_CHANGE.getKey())
-                                                                                     .getString(PackKeys.EXHAUSTION_CHANGE.getDefaultValue()), 0.025F));
+                                                                                     .getString(PackKeys.EXHAUSTION_CHANGE.getDefaultValue()),
+                                                                             0.025F));
             final ConfigurationNode dropsConfigurationNode = toolConfigurationNode.getNode(PackKeys.DROPS.getDefaultValue());
             final Set<DropProperty> drops = Sets.newHashSet();
 
@@ -508,7 +519,8 @@ public class PackCreator {
         }
 
         if (!(source instanceof Block)) {
-            Almura.LOGGER.warn("Soil source [" + rawSource + "] in [" + name + "] in pack [" + pack.getName() + "] is an item. It needs to be a block.");
+            Almura.LOGGER
+                    .warn("Soil source [" + rawSource + "] in [" + name + "] in pack [" + pack.getName() + "] is an item. It needs to be a block.");
             return null;
         }
 
@@ -519,13 +531,21 @@ public class PackCreator {
         for (String rawBiomeSource : biomeSourcesConfigurationNode.getKeys(false)) {
             final BiomeGenBase biome = PackUtil.getBiome(rawBiomeSource);
             if (biome == null) {
-                Almura.LOGGER.warn("Biome source [" + rawBiomeSource + "] in [" + name + "] in pack [" + pack.getName() + "] is not a registered biome.");
+                Almura.LOGGER
+                        .warn("Biome source [" + rawBiomeSource + "] in [" + name + "] in pack [" + pack.getName() + "] is not a registered biome.");
                 continue;
             }
             final ConfigurationNode biomeSourceConfigurationNode = biomeSourcesConfigurationNode.getNode(rawBiomeSource);
-            final Pair<Double, Double> temperaturePair = PackUtil.getRange(Double.class, biomeSourceConfigurationNode.getChild(PackKeys.TEMPERATURE_REQUIRED.getKey()).getString(PackKeys.TEMPERATURE_REQUIRED.getDefaultValue()), 100.0);
-            final Pair<Double, Double> humidityPair = PackUtil.getRange(Double.class, biomeSourceConfigurationNode.getChild(PackKeys.HUMIDITY_REQUIRED.getKey()).getString(PackKeys.HUMIDITY_REQUIRED.getDefaultValue()), 100.0);
-            biomes.add(new BiomeProperty(biome, new RangeProperty<>(Double.class, true, temperaturePair), new RangeProperty<>(Double.class, true, humidityPair)));
+            final Pair<Double, Double>
+                    temperaturePair =
+                    PackUtil.getRange(Double.class, biomeSourceConfigurationNode.getChild(PackKeys.TEMPERATURE_REQUIRED.getKey())
+                            .getString(PackKeys.TEMPERATURE_REQUIRED.getDefaultValue()), 100.0);
+            final Pair<Double, Double>
+                    humidityPair =
+                    PackUtil.getRange(Double.class, biomeSourceConfigurationNode.getChild(PackKeys.HUMIDITY_REQUIRED.getKey())
+                            .getString(PackKeys.HUMIDITY_REQUIRED.getDefaultValue()), 100.0);
+            biomes.add(new BiomeProperty(biome, new RangeProperty<>(Double.class, true, temperaturePair),
+                                         new RangeProperty<>(Double.class, true, humidityPair)));
         }
         final BiomeNode biomeNode = new BiomeNode(biomeNodeEnabled, biomes);
         return new SoilNode((Block) source, biomeNode);
@@ -598,7 +618,8 @@ public class PackCreator {
         } else if (result instanceof Block) {
             return new RecipeContainer<>(pack, name, clazz, id, new ItemStack((Block) result, amount, data), params);
         } else {
-            throw new InvalidRecipeException("Result [" + result + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is not a block or item.");
+            throw new InvalidRecipeException(
+                    "Result [" + result + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is not a block or item.");
         }
     }
 }

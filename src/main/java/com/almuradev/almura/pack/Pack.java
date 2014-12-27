@@ -9,13 +9,10 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.crop.PackCrops;
-import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.model.PackShape;
-import com.almuradev.almura.pack.node.SoilNode;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
-import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
@@ -25,7 +22,6 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -195,7 +191,8 @@ public class Pack {
                 if (shape != null) {
                     ((IShapeContainer) block).setShape(shape);
                 } else if (((IShapeContainer) block).getShapeName() != null && ((IShapeContainer) block).getShapeName().isEmpty()) {
-                    Almura.LOGGER.warn("Shape [" + ((IShapeContainer) block).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH.toString() + "]. Will render as a basic cube.");
+                    Almura.LOGGER.warn("Shape [" + ((IShapeContainer) block).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
+                            .toString() + "]. Will render as a basic cube.");
                 }
             }
         }
@@ -211,7 +208,8 @@ public class Pack {
                 if (shape != null) {
                     ((IShapeContainer) item).setShape(shape);
                 } else if (((IShapeContainer) item).getShapeName() != null && ((IShapeContainer) item).getShapeName().isEmpty()) {
-                    Almura.LOGGER.warn("Shape [" + ((IShapeContainer) item).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH.toString() + "]. Will render as a basic item.");
+                    Almura.LOGGER.warn("Shape [" + ((IShapeContainer) item).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
+                            .toString() + "]. Will render as a basic item.");
                 }
             }
         }

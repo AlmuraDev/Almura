@@ -66,7 +66,8 @@ public class PackUtil {
 
                 clippedIcons[i] =
                         new ClippedIcon((MalisisIcon) source, (float) (coordinatesList.get(0) / dimension.getWidth()),
-                                        (float) (coordinatesList.get(1) / dimension.getHeight()), (float) (coordinatesList.get(2) / dimension.getWidth()),
+                                        (float) (coordinatesList.get(1) / dimension.getHeight()),
+                                        (float) (coordinatesList.get(2) / dimension.getWidth()),
                                         (float) (coordinatesList.get(3) / dimension.getHeight()));
             }
         }

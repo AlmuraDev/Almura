@@ -8,7 +8,6 @@ package com.almuradev.almura.pack;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.pack.PackCreator;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
@@ -98,8 +97,10 @@ public class GameObjectMapper {
                 for (String remapped : objectConfigurationNode.getKeys(false)) {
                     final Object value = objectConfigurationNode.getChild(remapped).getValue();
                     if (add(modid, found, remapped, value) && (Configuration.DEBUG_MODE
-                                                                                                               || Configuration.DEBUG_MAPPINGS_MODE)) {
-                        Almura.LOGGER.info("Registered mapping [" + remapped + "] with value [" + value + "] for object [" + found + "] for mod [" + modid + "].");
+                                                               || Configuration.DEBUG_MAPPINGS_MODE)) {
+                        Almura.LOGGER
+                                .info("Registered mapping [" + remapped + "] with value [" + value + "] for object [" + found + "] for mod [" + modid
+                                      + "].");
                     }
                 }
             }

@@ -5,25 +5,14 @@
  */
 package com.almuradev.almura.pack.model;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.Configuration;
-import com.almuradev.almura.pack.PackUtil;
-import com.flowpowered.cerealization.config.ConfigurationException;
-import com.flowpowered.cerealization.config.ConfigurationNode;
-import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
-import net.malisis.core.renderer.element.Vertex;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 public class PackShape extends Shape {

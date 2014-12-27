@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.pack.node.recipe;
 
 import com.almuradev.almura.pack.Pack;
@@ -20,7 +25,8 @@ public class RecipeContainer<T extends IRecipe> {
     private final T recipe;
 
     @SuppressWarnings("unchecked")
-    public RecipeContainer(Pack pack, String identifier, Class<T> clazz, int id, ItemStack result, List<Object> params) throws UnknownRecipeTypeException, InvalidRecipeException {
+    public RecipeContainer(Pack pack, String identifier, Class<T> clazz, int id, ItemStack result, List<Object> params)
+            throws UnknownRecipeTypeException, InvalidRecipeException {
         this.pack = pack;
         this.identifier = identifier;
         this.id = id;
@@ -31,7 +37,9 @@ public class RecipeContainer<T extends IRecipe> {
                 recipe = (T) createShapelessRecipe(result, params.toArray(new Object[params.size()]));
                 CraftingManager.getInstance().getRecipeList().add(recipe);
             } else {
-                throw new UnknownRecipeTypeException("Recipe type [" + clazz.getSimpleName() + "] with id [" + id + "] in [" + identifier + "] in pack [" + pack.getName() + "] is not valid. Valid types are [SHAPED, SHAPELESS].");
+                throw new UnknownRecipeTypeException(
+                        "Recipe type [" + clazz.getSimpleName() + "] with id [" + id + "] in [" + identifier + "] in pack [" + pack.getName()
+                        + "] is not valid. Valid types are [SHAPED, SHAPELESS].");
             }
         } catch (RuntimeException ex) {
             throw new InvalidRecipeException(ex);
