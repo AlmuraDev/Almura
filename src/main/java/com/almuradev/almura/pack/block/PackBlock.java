@@ -268,10 +268,10 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     public void setShape(PackShape shape) {
         this.shape = shape;
         if (shape != null) {
-            if (!shape.useVanillaRenderBounds && shape.renderBoundsCoordinates.size() == 6) {
-                setBlockBounds(shape.renderBoundsCoordinates.get(0).floatValue(), shape.renderBoundsCoordinates.get(1).floatValue(),
-                               shape.renderBoundsCoordinates.get(2).floatValue(), shape.renderBoundsCoordinates.get(3).floatValue(),
-                               shape.renderBoundsCoordinates.get(4).floatValue(), shape.renderBoundsCoordinates.get(5).floatValue());
+            if (!shape.useVanillaBlockBounds && shape.blockBoundsCoordinates.size() == 6) {
+                setBlockBounds(shape.blockBoundsCoordinates.get(0).floatValue(), shape.blockBoundsCoordinates.get(1).floatValue(),
+                               shape.blockBoundsCoordinates.get(2).floatValue(), shape.blockBoundsCoordinates.get(3).floatValue(),
+                               shape.blockBoundsCoordinates.get(4).floatValue(), shape.blockBoundsCoordinates.get(5).floatValue());
             }
             opaque = false;
         } else {
