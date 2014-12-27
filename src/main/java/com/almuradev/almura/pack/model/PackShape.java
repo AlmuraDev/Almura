@@ -17,43 +17,43 @@ import java.util.List;
 
 public class PackShape extends Shape {
 
-    public final boolean useVanillaCollision, useVanillaWireframe, useVanillaBlockBounds;
-    public final List<Double> collisionCoordinates, wireframeCoordinates, blockBoundsCoordinates;
+    public final boolean useVanillaCollision, useVanillaWireframe, useVanillaRenderBounds;
+    public final List<Double> collisionCoordinates, wireframeCoordinates, renderBoundsCoordinates;
     private final String name;
 
     public PackShape(String name, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
-                     List<Double> wireframeCoordinates, boolean useVanillaBlockBounds, List<Double> blockBoundsCoordinates) {
+                     List<Double> wireframeCoordinates, boolean useVanillaRenderBounds, List<Double> renderBoundsCoordinates) {
         this.name = name;
         this.useVanillaCollision = useVanillaCollision;
         this.useVanillaWireframe = useVanillaWireframe;
-        this.useVanillaBlockBounds = useVanillaBlockBounds;
+        this.useVanillaRenderBounds = useVanillaRenderBounds;
         this.collisionCoordinates = collisionCoordinates == null ? Lists.<Double>newArrayList() : collisionCoordinates;
         this.wireframeCoordinates = wireframeCoordinates == null ? Lists.<Double>newArrayList() : wireframeCoordinates;
-        this.blockBoundsCoordinates = blockBoundsCoordinates == null ? Lists.<Double>newArrayList() : blockBoundsCoordinates;
+        this.renderBoundsCoordinates = renderBoundsCoordinates == null ? Lists.<Double>newArrayList() : renderBoundsCoordinates;
     }
 
     public PackShape(String name, List<Face> faces, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
-                     List<Double> wireframeCoordinates, boolean useVanillaBlockBounds, List<Double> blockBoundsCoordinates) {
+                     List<Double> wireframeCoordinates, boolean useVanillaRenderBounds, List<Double> renderBoundsCoordinates) {
         super(faces);
         this.name = name;
         this.useVanillaCollision = useVanillaCollision;
         this.useVanillaWireframe = useVanillaWireframe;
-        this.useVanillaBlockBounds = useVanillaBlockBounds;
+        this.useVanillaRenderBounds = useVanillaRenderBounds;
         this.collisionCoordinates = collisionCoordinates == null ? Lists.<Double>newArrayList() : collisionCoordinates;
         this.wireframeCoordinates = wireframeCoordinates == null ? Lists.<Double>newArrayList() : wireframeCoordinates;
-        this.blockBoundsCoordinates = blockBoundsCoordinates == null ? Lists.<Double>newArrayList() : blockBoundsCoordinates;
+        this.renderBoundsCoordinates = renderBoundsCoordinates == null ? Lists.<Double>newArrayList() : renderBoundsCoordinates;
     }
 
     public PackShape(String name, PackShape s, boolean useVanillaCollision, List<Double> collisionCoordinates, boolean useVanillaWireframe,
-                     List<Double> wireframeCoordinates, boolean useVanillaBlockBounds, List<Double> blockBoundsCoordinates) {
+                     List<Double> wireframeCoordinates, boolean useVanillaRenderBounds, List<Double> renderBoundsCoordinates) {
         super(s);
         this.name = name;
         this.useVanillaCollision = useVanillaCollision;
         this.useVanillaWireframe = useVanillaWireframe;
-        this.useVanillaBlockBounds = useVanillaBlockBounds;
+        this.useVanillaRenderBounds = useVanillaRenderBounds;
         this.collisionCoordinates = collisionCoordinates == null ? Lists.<Double>newArrayList() : collisionCoordinates;
         this.wireframeCoordinates = wireframeCoordinates == null ? Lists.<Double>newArrayList() : wireframeCoordinates;
-        this.blockBoundsCoordinates = blockBoundsCoordinates == null ? Lists.<Double>newArrayList() : blockBoundsCoordinates;
+        this.renderBoundsCoordinates = renderBoundsCoordinates == null ? Lists.<Double>newArrayList() : renderBoundsCoordinates;
     }
 
     public String getName() {
@@ -65,6 +65,9 @@ public class PackShape extends Shape {
             return vanillaBB;
         }
 
+        if (collisionCoordinates.size() != 6) {
+            return vanillaBB;
+        }
         return AxisAlignedBB.getBoundingBox(x + collisionCoordinates.get(0), y + collisionCoordinates.get(1), z + collisionCoordinates.get(2),
                                             x + collisionCoordinates.get(3), y + collisionCoordinates.get(4), z + collisionCoordinates.get(5));
     }
@@ -72,6 +75,10 @@ public class PackShape extends Shape {
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getSelectedBoundingBoxFromPool(AxisAlignedBB vanillaBB, World world, int x, int y, int z) {
         if (useVanillaWireframe) {
+            return vanillaBB;
+        }
+
+        if (wireframeCoordinates.size() != 6) {
             return vanillaBB;
         }
 

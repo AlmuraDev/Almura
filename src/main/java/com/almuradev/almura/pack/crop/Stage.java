@@ -91,10 +91,10 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
             }
         }
         if (shape != null) {
-            if (!shape.useVanillaBlockBounds) {
-                block.setBlockBounds(shape.blockBoundsCoordinates.get(0).floatValue(), shape.blockBoundsCoordinates.get(1).floatValue(),
-                                     shape.blockBoundsCoordinates.get(2).floatValue(), shape.blockBoundsCoordinates.get(3).floatValue(),
-                                     shape.blockBoundsCoordinates.get(4).floatValue(), shape.blockBoundsCoordinates.get(5).floatValue());
+            if (!shape.useVanillaRenderBounds) {
+                block.setBlockBounds(shape.renderBoundsCoordinates.get(0).floatValue(), shape.renderBoundsCoordinates.get(1).floatValue(),
+                                     shape.renderBoundsCoordinates.get(2).floatValue(), shape.renderBoundsCoordinates.get(3).floatValue(),
+                                     shape.renderBoundsCoordinates.get(4).floatValue(), shape.renderBoundsCoordinates.get(5).floatValue());
             }
         }
     }

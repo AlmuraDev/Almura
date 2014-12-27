@@ -113,7 +113,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
-    public void addNodes(INode... nodes) {
+    public void addNodes(INode<?>... nodes) {
         for (INode<?> node : nodes) {
             addNode(node);
         }

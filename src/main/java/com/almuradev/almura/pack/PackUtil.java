@@ -158,6 +158,9 @@ public class PackUtil {
     @SuppressWarnings("unchecked")
     public static <T extends Number> List<T> parseStringToNumericList(Class<T> clazz, String raw, int expectedSize) throws NumberFormatException {
         final List<T> parsed = Lists.newLinkedList();
+        if (raw.isEmpty()) {
+            return parsed;
+        }
         final String[] split = raw.split(" ");
         if (expectedSize != Integer.MIN_VALUE && split.length != expectedSize) {
             throw new NumberFormatException("Expected size [" + expectedSize + "] but actual size was [" + split.length + "]");

@@ -3,8 +3,8 @@ bounds:
     collision-box: "0 0 0 0 0 0"
     use-vanilla-wireframe: false
     wireframe-box: "0 0 0 1 .20 1"
-    use-vanilla-render: false
-    render-box: "0 0 0 1 .20 1"
+    use-vanilla-block-bounds: false
+    block-bounds: "0 0 0 1 .20 1"
 shapes:
   - texture: 1
     coordinates: |
