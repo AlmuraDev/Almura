@@ -2,7 +2,7 @@
   "modid": "${modid}",
   "name": "${name}",
   "description": "${description}",
-  "version": "${version}-b${buildNumber}",
+  "version": "${version}",
   "credits": "",
   "logoFile": "assets/almura/textures/background/almura2b.png",
   "mcversion": "${mcversion}",

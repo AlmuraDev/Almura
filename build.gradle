@@ -52,7 +52,12 @@ defaultTasks 'licenseFormat', 'build'
 // Basic project information
 group = 'com.almuradev'
 archivesBaseName = 'almura'
-version = '1.7-1277-0.1.0'
+
+// Version information
+ext.minecraftVersion = '1.7.10'
+ext.forgeVersion = '10.13.2.1277'
+ext.almuraVersion = '0.1.0'
+version = minecraftVersion.substring(0, 3) + '-' + forgeVersion.substring(forgeVersion.size() - 4) + '-' + almuraVersion
 
 // Extended project information
 ext.projectName = 'Almura'
@@ -62,40 +67,32 @@ ext.url = 'http://github.com/AlmuraDev'
 ext.description = 'The official mod for the Almura Minecraft Client and Server'
 ext.organization = 'AlmuraDev'
 
-// Define variables
-ext.buildNumber = project.hasProperty("buildNumber") ? buildNumber : '0'
-ext.commit = project.hasProperty("commit") ? commit : 'unknown'
-
 // Java version target/property compatibility
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
+
+// MinecraftForge version
+minecraft {
+    version = project.ext.minecraftVersion + '-' + project.ext.forgeVersion
+    runDir = "run/"
+}
 
 // Configuration settings
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds' // Always check for new snapshots
 }
 
-// MinecraftForge version
-minecraft {
-    version = "1.7.10-10.13.2.1277"
-    runDir = "run/"
-}
-
 // Filter, process, and include resources
 processResources {
-    inputs.property "version", version
-    inputs.property "mcversion", project.minecraft.version
-
     // Include in final JAR
     from 'LICENSE.txt'
 
     // Replace variables
     from('src/main/resources/mcmod.info') {
-        expand 'modid': projectName,
+        expand 'modid': projectName.toLowerCase(),
                'name': projectName,
                'description': project.ext.description,
                'version': version,
-               'buildNumber': buildNumber,
                'mcversion': minecraft.version,
                'url': url,
                'authorList': organization
@@ -126,7 +123,7 @@ jar.manifest.mainAttributes(
         "Built-By": System.properties['user.name'],
         "Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
         "Implementation-Title": name,
-        "Implementation-Version": version + "-b" + buildNumber + ".git-" + commit,
+        "Implementation-Version": version,
         "Implementation-Vendor": url,
         "FMLCorePluginContainsFMLMod": 'true',
         "FMLCorePlugin": 'com.almuradev.almura.core.AlmuraCoreMod'
