@@ -3,7 +3,7 @@ type: block
 title: Block
 texture: block.png
 shape: block.shape
-coordinates:
+coords:
     - 0 0 128 128
     - 128 0 128 128
     - 256 0 128 128
@@ -80,3 +80,14 @@ recipes:
             - air air air
             - air stone air
             - air sand air
+     1:
+        type: shapeless
+        amount: 1
+        ingredients:            
+            - air stone air
+            - air sand air
+    2:
+        type: furance
+        amount: 1
+        ingredients:            
+            - ITEM_NAME

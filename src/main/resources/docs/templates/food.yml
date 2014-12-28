@@ -8,9 +8,10 @@ coordinates:
     - 16 16 32 32
 creative-tab: food
 show-in-creative-tab: true
-consumption:
-    health-change: 1
+consumption:    
+    food-change: 1
     saturation-change: 1
+    health-change: 1
     wolf-favorite: false
     always-edible: true
 recipes:
