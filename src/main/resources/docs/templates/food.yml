@@ -14,6 +14,7 @@ consumption:
     health-change: 1
     wolf-favorite: false
     always-edible: true
+    damage: 1
 recipes:
     0:
         type: shaped
