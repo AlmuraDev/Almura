@@ -112,7 +112,7 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
-    public void addNodes(INode... nodes) {
+    public void addNodes(INode<?>... nodes) {
         for (INode<?> node : nodes) {
             addNode(node);
         }

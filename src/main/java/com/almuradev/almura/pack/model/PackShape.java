@@ -65,6 +65,9 @@ public class PackShape extends Shape {
             return vanillaBB;
         }
 
+        if (collisionCoordinates.size() != 6) {
+            return vanillaBB;
+        }
         return AxisAlignedBB.getBoundingBox(x + collisionCoordinates.get(0), y + collisionCoordinates.get(1), z + collisionCoordinates.get(2),
                                             x + collisionCoordinates.get(3), y + collisionCoordinates.get(4), z + collisionCoordinates.get(5));
     }
@@ -72,6 +75,10 @@ public class PackShape extends Shape {
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getSelectedBoundingBoxFromPool(AxisAlignedBB vanillaBB, World world, int x, int y, int z) {
         if (useVanillaWireframe) {
+            return vanillaBB;
+        }
+
+        if (wireframeCoordinates.size() != 6) {
             return vanillaBB;
         }
 

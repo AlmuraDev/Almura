@@ -11,7 +11,7 @@ public interface INodeContainer {
 
     <T extends INode<?>> T addNode(T node);
 
-    void addNodes(INode... nodes);
+    void addNodes(INode<?>... nodes);
 
     <T extends INode<?>> T getNode(Class<T> clazz);
 

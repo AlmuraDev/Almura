@@ -82,23 +82,56 @@ public class PackCreator {
                 useVanillaCollision =
                 boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_COLLISION.getKey())
                         .getBoolean(PackKeys.USE_VANILLA_COLLISION.getDefaultValue());
-        final List<Double>
-                collisionCoordinates =
-                PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.COLLISION_BOX.getKey())
-                        .getString(PackKeys.COLLISION_BOX.getDefaultValue()), 6);
+        List<Double> collisionCoordinates = Lists.newLinkedList();
+
+        try {
+            collisionCoordinates =
+                    PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.COLLISION_BOX.getKey())
+                            .getString(PackKeys.COLLISION_BOX.getDefaultValue()), 6);
+        } catch (NumberFormatException e) {
+            if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                Almura.LOGGER.error("Shape ["+ name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e.getMessage(), e);
+            } else {
+                Almura.LOGGER.error("Shape ["+ name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e.getMessage());
+            }
+        }
 
         final boolean
                 useVanillaWireframe =
                 boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_WIREFRAME.getKey())
                         .getBoolean(PackKeys.USE_VANILLA_WIREFRAME.getDefaultValue());
-        final List<Double> wireframeCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.WIREFRAME_BOX.getKey())
-                .getString(PackKeys.WIREFRAME_BOX.getDefaultValue()), 6);
+        List<Double> wireframeCoordinates = Lists.newLinkedList();
+
+        try {
+            wireframeCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.WIREFRAME_BOX.getKey())
+                    .getString(PackKeys.WIREFRAME_BOX.getDefaultValue()), 6);
+        } catch (NumberFormatException e) {
+            if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e.getMessage(), e);
+            } else {
+                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e.getMessage());
+            }
+        }
 
         final boolean
                 useVanillaBlockBounds =
                 boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_RENDER.getKey()).getBoolean(PackKeys.USE_VANILLA_RENDER.getDefaultValue());
-        final List<Double> renderCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.RENDER_BOX.getKey())
-                .getString(PackKeys.RENDER_BOX.getDefaultValue()), 6);
+        List<Double> blockBoundsCoordinates = Lists.newLinkedList();
+
+        try {
+            blockBoundsCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.RENDER_BOX.getKey())
+                    .getString(PackKeys.RENDER_BOX.getDefaultValue()), 6);
+        } catch (NumberFormatException e) {
+            if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                Almura.LOGGER
+                        .error("Shape [" + name + "] has invalid " + PackKeys.RENDER_BOX.getKey().toLowerCase() + " coordinates. "
+                               + e.getMessage(), e);
+            } else {
+                Almura.LOGGER
+                        .error("Shape [" + name + "] has invalid " + PackKeys.RENDER_BOX.getKey().toLowerCase() + " coordinates. "
+                               + e.getMessage());
+            }
+        }
 
         final ConfigurationNode shapesConfigurationNode = reader.getNode(PackKeys.SHAPES.getKey());
         final List<Face> faces = Lists.newLinkedList();
@@ -137,7 +170,7 @@ public class PackCreator {
         PackShape
                 shape =
                 new PackShape(name, faces, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
-                              useVanillaBlockBounds, renderCoordinates);
+                              useVanillaBlockBounds, blockBoundsCoordinates);
 
         //Handle shapes that don't have at least 4 faces
         if (shape.getFaces().length < 4) {
@@ -146,12 +179,12 @@ public class PackCreator {
             final PackShape
                     s =
                     new PackShape(shape.getName(), useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
-                                  useVanillaBlockBounds, renderCoordinates);
+                                  useVanillaBlockBounds, blockBoundsCoordinates);
             s.addFaces(shape.getFaces());
             final PackShape
                     scaled =
                     new PackShape(shape.getName(), shape, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
-                                  useVanillaBlockBounds, renderCoordinates);
+                                  useVanillaBlockBounds, blockBoundsCoordinates);
             scaled.scale(-1, 1, -1);
             scaled.applyMatrix();
             //Scaled returns non PackFaces, OOP demands a fix

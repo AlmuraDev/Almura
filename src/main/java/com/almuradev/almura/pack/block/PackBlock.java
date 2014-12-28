@@ -268,7 +268,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     public void setShape(PackShape shape) {
         this.shape = shape;
         if (shape != null) {
-            if (!shape.useVanillaBlockBounds) {
+            if (!shape.useVanillaBlockBounds && shape.blockBoundsCoordinates.size() == 6) {
                 setBlockBounds(shape.blockBoundsCoordinates.get(0).floatValue(), shape.blockBoundsCoordinates.get(1).floatValue(),
                                shape.blockBoundsCoordinates.get(2).floatValue(), shape.blockBoundsCoordinates.get(3).floatValue(),
                                shape.blockBoundsCoordinates.get(4).floatValue(), shape.blockBoundsCoordinates.get(5).floatValue());
@@ -293,7 +293,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
-    public void addNodes(INode... nodes) {
+    public void addNodes(INode<?>... nodes) {
         for (INode<?> node : nodes) {
             addNode(node);
         }
