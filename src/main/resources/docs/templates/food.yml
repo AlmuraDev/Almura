@@ -23,3 +23,9 @@ recipes:
             - air air air
             - air stone air
             - air sand air
+    1:
+        type: shapeless
+        amount: 1
+        ingredients:
+            - air stone air
+            - air sand air
