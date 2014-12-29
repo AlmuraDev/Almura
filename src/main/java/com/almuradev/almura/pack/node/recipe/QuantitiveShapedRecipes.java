@@ -1,7 +1,6 @@
 package com.almuradev.almura.pack.node.recipe;
 
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 
