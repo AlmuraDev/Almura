@@ -64,8 +64,11 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-        Collections.addAll(list, tooltip);
+        for (String str : tooltip) {
+            list.add(str);
+        }
     }
 
     @Override

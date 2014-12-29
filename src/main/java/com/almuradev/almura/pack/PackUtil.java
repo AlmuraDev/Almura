@@ -21,6 +21,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -141,6 +142,12 @@ public class PackUtil {
             }
         }
         return parsed;
+    }
+
+    public static List<String> parseNewlineStringIntoList(String raw) {
+        List<String> lines = Lists.newLinkedList();
+        Collections.addAll(lines, raw.split("\\n"));
+        return lines;
     }
 
     public static BiomeGenBase getBiome(String biomeSource) {

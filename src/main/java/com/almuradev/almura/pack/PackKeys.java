@@ -15,7 +15,6 @@ public class PackKeys {
     public static final DefaultedKey<String> DATE = new DefaultedKey<>("date", "");
     public static final DefaultedKey<String> TYPE = new DefaultedKey<>("type", "");
     public static final DefaultedKey<String> TITLE = new DefaultedKey<>("title", "");
-    public static final DefaultedKey<? extends List<String>> TOOLTIP = new DefaultedKey<>("tooltip", Lists.<String>newArrayList());
     public static final DefaultedKey<String> TEXTURE = new DefaultedKey<>("texture", "");
     public static final DefaultedKey<? extends List<String>> TEXTURE_COORDINATES = new DefaultedKey<>("coords", Lists.<String>newArrayList());
     public static final DefaultedKey<String> SHAPE = new DefaultedKey<>("shape", "");
