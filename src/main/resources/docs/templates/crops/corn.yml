@@ -2,7 +2,7 @@ date: 12-5-2014
 type: crop
 title: Corn
 texture: crops.png
-level-required: 18
+level-required: 0
 seed:
     title: Corn Seed
     coords:
@@ -163,7 +163,7 @@ stages:
                 skeleton:
                     health-change: 0
         break:
-            Tools:
+            tools:
                 none:
                     drops:
                         almura\Food\corn:

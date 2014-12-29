@@ -151,7 +151,7 @@ stages:
                 skeleton:
                     health-change: 0
         break:
-            Tools:
+            tools:
                 none:
                     drops:
                         almura\Food\bellpepper:
