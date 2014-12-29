@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.pack.node.property;
 
+import com.almuradev.almura.pack.GameObject;
 import net.minecraft.block.Block;
 
 public class HydrationProperty extends GameObjectProperty {
@@ -12,7 +13,7 @@ public class HydrationProperty extends GameObjectProperty {
     private final int neededProximity;
 
     public HydrationProperty(Block block, int neededProximity) {
-        super(block);
+        super(new GameObject("minecraft", block, "", 0));
         this.neededProximity = neededProximity;
     }
 

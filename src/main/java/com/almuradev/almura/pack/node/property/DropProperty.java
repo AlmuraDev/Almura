@@ -5,16 +5,24 @@
  */
 package com.almuradev.almura.pack.node.property;
 
+import com.almuradev.almura.pack.GameObject;
+
 public class DropProperty extends VariableGameObjectProperty {
 
     private final BonusProperty<Integer, Double> bonusProperty;
+    private final int data;
 
-    public DropProperty(Object object, RangeProperty<Integer> amountProperty, int data, BonusProperty<Integer, Double> bonusProperty) {
-        super(object, amountProperty, data);
+    public DropProperty(GameObject object, RangeProperty<Integer> amountProperty, int data, BonusProperty<Integer, Double> bonusProperty) {
+        super(object, amountProperty);
+        this.data = data;
         this.bonusProperty = bonusProperty;
     }
 
     public BonusProperty<Integer, Double> getBonusProperty() {
         return bonusProperty;
+    }
+
+    public int getData() {
+        return data;
     }
 }

@@ -8,15 +8,12 @@ package com.almuradev.almura.pack;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.registry.GameRegistry;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.biome.BiomeGenBase;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -86,42 +83,6 @@ public class PackUtil {
             }
         }
         return isEmpty;
-    }
-
-    public static Object getGameObject(String rawSource) {
-        final Pair<String, String> parsedModidIdentifier = parseModidIdentifierFrom(rawSource);
-        return getGameObject(parsedModidIdentifier.getKey(), parsedModidIdentifier.getValue());
-    }
-
-    public static Object getGameObject(String modid, String identifier) {
-        Object object = GameRegistry.findBlock(modid, identifier);
-        if (object == null) {
-            object = GameRegistry.findItem(modid, identifier);
-            if (object == null) {
-                final Optional<GameObjectMapper.TrioWrapper<Object, String, Object>> wrapper = GameObjectMapper.get(modid, identifier);
-                if (wrapper.isPresent()) {
-                    object = wrapper.get().object;
-                }
-            }
-        }
-        return object;
-    }
-
-    public static Pair<String, String> parseModidIdentifierFrom(String rawSource) {
-        final String[] separated = rawSource.split(StringEscapeUtils.escapeJava("\\"));
-        String modid = separated[0].toLowerCase();
-        String identifier;
-        if (separated.length > 1) {
-            identifier = rawSource.split(modid + StringEscapeUtils.escapeJava("\\"))[1];
-        } else {
-            identifier = modid;
-        }
-        if (identifier.equalsIgnoreCase(modid)) {
-            identifier = identifier.toLowerCase();
-            modid = "minecraft";
-        }
-
-        return new ImmutablePair<>(modid, identifier);
     }
 
     @SuppressWarnings("unchecked")

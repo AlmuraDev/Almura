@@ -110,8 +110,10 @@ public class CommonProxy {
                         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue());
                         final PackSeeds
                                 seed =
-                                PackCreator.createCropSeed(((PackCrops) block).getPack(), soilNode.getSoil(), (PackCrops) block, textureName,
-                                                           reader.getNode(PackKeys.NODE_SEED.getKey()));
+                                PackCreator
+                                        .createCropSeed(((PackCrops) block).getPack(), (Block) soilNode.getSoil().minecraftObject, (PackCrops) block,
+                                                        textureName,
+                                                        reader.getNode(PackKeys.NODE_SEED.getKey()));
                         if (GameRegistry.findItem(Almura.MOD_ID, seed.getPack().getName() + "\\" + seed.getIdentifier()) != null) {
                             Almura.LOGGER.error("Crop [" + ((PackCrops) block).getIdentifier() + "] in [" + ((PackCrops) block).getPack().getName()
                                                 + "] is trying to add seed [" + seed.getIdentifier()

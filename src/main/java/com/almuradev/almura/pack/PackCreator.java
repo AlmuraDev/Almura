@@ -38,11 +38,14 @@ import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
 import com.almuradev.almura.pack.node.recipe.InvalidRecipeException;
+import com.almuradev.almura.pack.node.recipe.QuantitiveShapedRecipes;
+import com.almuradev.almura.pack.node.recipe.QuantitiveShapelessRecipes;
 import com.almuradev.almura.pack.node.recipe.RecipeContainer;
 import com.almuradev.almura.pack.node.recipe.UnknownRecipeTypeException;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -56,8 +59,6 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -90,9 +91,11 @@ public class PackCreator {
                             .getString(PackKeys.COLLISION_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                Almura.LOGGER.error("Shape ["+ name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e.getMessage(), e);
+                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e
+                        .getMessage(), e);
             } else {
-                Almura.LOGGER.error("Shape ["+ name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e.getMessage());
+                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e
+                        .getMessage());
             }
         }
 
@@ -107,9 +110,11 @@ public class PackCreator {
                     .getString(PackKeys.WIREFRAME_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e.getMessage(), e);
+                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e
+                        .getMessage(), e);
             } else {
-                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e.getMessage());
+                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e
+                        .getMessage());
             }
         }
 
@@ -315,10 +320,10 @@ public class PackCreator {
             try {
                 switch (type) {
                     case "SHAPED":
-                        recipes.add(createRecipeContainer(pack, name, ShapedRecipes.class, id, result, entry.getValue()));
+                        recipes.add(createRecipeContainer(pack, name, QuantitiveShapedRecipes.class, id, result, entry.getValue()));
                         break;
                     case "SHAPELESS":
-                        recipes.add(createRecipeContainer(pack, name, ShapelessRecipes.class, id, result, entry.getValue()));
+                        recipes.add(createRecipeContainer(pack, name, QuantitiveShapelessRecipes.class, id, result, entry.getValue()));
                         break;
                 }
             } catch (UnknownRecipeTypeException | InvalidRecipeException e) {
@@ -439,19 +444,10 @@ public class PackCreator {
         final Set<ToolsNode> tools = Sets.newHashSet();
 
         for (String rawToolSource : toolsConfigurationNode.getKeys(false)) {
-            final Pair<String, String> toolModidIdentifierParsed = PackUtil.parseModidIdentifierFrom(rawToolSource);
-            boolean validTool = false;
-            if (rawToolSource.equalsIgnoreCase(toolModidIdentifierParsed.getValue())) {
-                validTool = true;
-            }
-            Object tool = null;
-            if (!validTool) {
-                tool = PackUtil.getGameObject(toolModidIdentifierParsed.getKey(), toolModidIdentifierParsed.getValue());
-                validTool = tool != null;
-            }
-            if (!validTool) {
-                Almura.LOGGER.warn("Tool source [" + rawToolSource + "] in [" + name + "] for modid [" + toolModidIdentifierParsed.getKey()
-                                   + "] + in pack [" + pack + "]  is not a registered Block or Item.");
+            final Optional<GameObject> tool = GameObjectMapper.getGameObject(rawToolSource);
+            if (!rawToolSource.equals("none") && !tool.isPresent()) {
+                Almura.LOGGER.warn("Tool source [" + rawToolSource + "] in [" + name + "] for mod [" + tool.get().modid + "] in pack [" + pack
+                                   + "] is not a registered Block or Item.");
                 continue;
             }
             final ConfigurationNode toolConfigurationNode = toolsConfigurationNode.getNode(rawToolSource);
@@ -470,16 +466,15 @@ public class PackCreator {
             final Set<DropProperty> drops = Sets.newHashSet();
 
             for (String rawDropSource : dropsConfigurationNode.getKeys(false)) {
-                final Pair<String, String> dropModidIdentifierParsed = PackUtil.parseModidIdentifierFrom(rawDropSource);
-                final Object drop = PackUtil.getGameObject(dropModidIdentifierParsed.getKey(), dropModidIdentifierParsed.getValue());
-                if (drop == null) {
-                    Almura.LOGGER.warn("Drop source [" + rawDropSource + "] in [" + name + "] for modid [" + dropModidIdentifierParsed.getKey()
-                                       + "] in pack [" + pack + "] is not a registered Block or Item!");
+                final Optional<GameObject> drop = GameObjectMapper.getGameObject(rawDropSource);
+                if (!drop.isPresent()) {
+                    Almura.LOGGER.warn("Drop source [" + rawDropSource + "] in [" + name + "] for mod [" + drop.get().modid + "] in pack [" + pack
+                                       + "] is not a registered Block or Item!");
                     continue;
                 }
                 final ConfigurationNode
                         dropConfigurationNode =
-                        dropsConfigurationNode.getNode(dropModidIdentifierParsed.getKey(), dropModidIdentifierParsed.getValue());
+                        dropsConfigurationNode.getNode(drop.get().modid, drop.get().remapped);
                 final RangeProperty<Integer>
                         amountRange =
                         new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
@@ -500,12 +495,12 @@ public class PackCreator {
                         new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class,
                                                                                   bonusConfigurationNode.getChild(PackKeys.CHANCE.getKey())
                                                                                           .getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
-                drops.add(new DropProperty(drop, amountRange, data,
+                drops.add(new DropProperty(drop.get(), amountRange, data,
                                            new BonusProperty<>(Integer.class, bonusEnabled, bonusAmountRange, bonusChanceRange)));
             }
 
-            tools.add(tool == null ? new ToolsNode.OffHand(experienceRange, exhaustionRange, new DropsNode(drops))
-                                   : new ToolsNode(tool, experienceRange, exhaustionRange, new DropsNode(drops)));
+            tools.add(!tool.isPresent() ? new ToolsNode.OffHand(experienceRange, exhaustionRange, new DropsNode(drops))
+                                        : new ToolsNode(tool.get(), experienceRange, exhaustionRange, new DropsNode(drops)));
         }
         return new BreakNode(breakEnabled, tools);
     }
@@ -539,19 +534,20 @@ public class PackCreator {
             chancePair = new ImmutablePair<>(100.0, 100.0);
         }
 
-        return new GrassNode(enabled, new VariableGameObjectProperty(seed, new RangeProperty<>(Integer.class, true, amountPair), 0),
+        return new GrassNode(enabled, new VariableGameObjectProperty(new GameObject(Almura.MOD_ID, seed, "", 0),
+                                                                     new RangeProperty<>(Integer.class, true, amountPair)),
                              new RangeProperty<>(Double.class, true, chancePair));
     }
 
     public static SoilNode createSoilNode(Pack pack, String name, ConfigurationNode node) {
         final String rawSource = node.getChild(PackKeys.SOURCE.getKey()).getString(PackKeys.SOURCE.getDefaultValue());
-        final Object source = PackUtil.getGameObject(rawSource);
-        if (source == null) {
+        final Optional<GameObject> source = GameObjectMapper.getGameObject(rawSource);
+        if (!source.isPresent()) {
             Almura.LOGGER.warn("Soil source [" + rawSource + "] in [" + name + "] in pack [" + pack.getName() + "] is not a registered block.");
             return null;
         }
 
-        if (!(source instanceof Block)) {
+        if (!source.get().isBlock()) {
             Almura.LOGGER
                     .warn("Soil source [" + rawSource + "] in [" + name + "] in pack [" + pack.getName() + "] is an item. It needs to be a block.");
             return null;
@@ -581,7 +577,7 @@ public class PackCreator {
                                          new RangeProperty<>(Double.class, true, humidityPair)));
         }
         final BiomeNode biomeNode = new BiomeNode(biomeNodeEnabled, biomes);
-        return new SoilNode((Block) source, biomeNode);
+        return new SoilNode(source.get(), biomeNode);
     }
 
     private static <T extends IRecipe> RecipeContainer<T> createRecipeContainer(Pack pack, String name, Class<T> clazz, int id, Object result,
@@ -589,17 +585,31 @@ public class PackCreator {
             throws InvalidRecipeException, UnknownRecipeTypeException {
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
         final int data = node.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue().intValue());
-        List<Object> params = Lists.newArrayList();
+        List<Object> params = Lists.newLinkedList();
 
         for (String itemsRaw : node.getChild(PackKeys.INGREDIENTS.getKey()).getStringList()) {
             final String[] itemsSplit = itemsRaw.split(" ");
             for (String identifierCombined : itemsSplit) {
-                final Object gameObject = PackUtil.getGameObject(identifierCombined);
-                if (gameObject == null) {
+                final String[] identifierAmountSplit = identifierCombined.split(":");
+                int ingredientAmount = 1;
+                if (identifierAmountSplit.length == 2) {
+                    ingredientAmount = Integer.parseInt(identifierAmountSplit[1]);
+                }
+                final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0]);
+                if (!gameObject.isPresent()) {
                     throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
                                                      + "] cannot be registered. Ingredient [" + identifierCombined + "] was not found.");
                 } else {
-                    params.add(gameObject);
+                    if (gameObject.get().isBlock()) {
+                        final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
+                        if (itemBlock != null) {
+                            params.add(new ItemStack((Block) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
+                        } else {
+                            params.add(gameObject.get().minecraftObject);
+                        }
+                    } else if (gameObject.get().minecraftObject instanceof Item) {
+                        params.add(new ItemStack((Item) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
+                    }
                 }
             }
         }
@@ -608,11 +618,11 @@ public class PackCreator {
             throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] has no parameters.");
         }
 
-        if (clazz == ShapedRecipes.class) {
+        if (clazz == QuantitiveShapedRecipes.class) {
             int index = 0;
-            final Map<Object, Character> objectViaParamMap = Maps.newHashMap();
+            final Map<Object, Character> objectViaParamMap = Maps.newLinkedHashMap();
 
-            final List<Object> combinedParams = Lists.newArrayList();
+            final List<Object> combinedParams = Lists.newLinkedList();
 
             StringBuilder lineMatrixBuilder = new StringBuilder();
             for (Object param : params) {
@@ -637,13 +647,17 @@ public class PackCreator {
                 combinedParams.add(entry.getKey());
             }
             params = combinedParams;
-        } else {
+        } else if (clazz == QuantitiveShapelessRecipes.class) {
             final Iterator<Object> iter = params.iterator();
             while (iter.hasNext()) {
                 if (iter.next().getClass().equals(BlockAir.class)) {
                     iter.remove();
                 }
             }
+        } else {
+            throw new UnknownRecipeTypeException(
+                    "Recipe type [" + clazz.getSimpleName() + "] with id [" + id + "] in [" + name + "] in pack [" + pack.getName()
+                    + "] is not valid. Valid types are [SHAPED, SHAPELESS].");
         }
 
         if (result instanceof Item) {

@@ -5,12 +5,14 @@
  */
 package com.almuradev.almura.pack.node.property;
 
+import com.almuradev.almura.pack.GameObject;
+
 public class VariableGameObjectProperty extends GameObjectProperty {
 
     private final RangeProperty<Integer> amountProperty;
 
-    public VariableGameObjectProperty(Object object, RangeProperty<Integer> amount, int data) {
-        super(object, data);
+    public VariableGameObjectProperty(GameObject object, RangeProperty<Integer> amount) {
+        super(object);
         this.amountProperty = amount;
     }
 

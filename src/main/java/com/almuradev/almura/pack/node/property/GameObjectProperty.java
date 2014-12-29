@@ -5,26 +5,18 @@
  */
 package com.almuradev.almura.pack.node.property;
 
-public class GameObjectProperty implements IProperty<Object> {
+import com.almuradev.almura.pack.GameObject;
 
-    private final Object object;
-    private final int data;
+public class GameObjectProperty implements IProperty<GameObject> {
 
-    public GameObjectProperty(Object object) {
-        this(object, 0);
-    }
+    private final GameObject object;
 
-    public GameObjectProperty(Object object, int data) {
+    public GameObjectProperty(GameObject object) {
         this.object = object;
-        this.data = data;
     }
 
     @Override
-    public Object getSource() {
+    public GameObject getSource() {
         return object;
-    }
-
-    public int getData() {
-        return data;
     }
 }

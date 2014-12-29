@@ -5,14 +5,14 @@
  */
 package com.almuradev.almura.pack.node;
 
-import net.minecraft.block.Block;
+import com.almuradev.almura.pack.GameObject;
 
 public class SoilNode implements INode<BiomeNode> {
 
-    private final Block soil;
+    private final GameObject soil;
     private final BiomeNode value;
 
-    public SoilNode(Block soil, BiomeNode value) {
+    public SoilNode(GameObject soil, BiomeNode value) {
         this.soil = soil;
         this.value = value;
     }
@@ -22,7 +22,7 @@ public class SoilNode implements INode<BiomeNode> {
         return value;
     }
 
-    public Block getSoil() {
+    public GameObject getSoil() {
         return soil;
     }
 }

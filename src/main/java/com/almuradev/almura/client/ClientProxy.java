@@ -17,26 +17,19 @@ import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
-
-import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.Map;
 
 public class ClientProxy extends CommonProxy {
 

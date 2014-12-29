@@ -5,23 +5,24 @@
  */
 package com.almuradev.almura.pack.node;
 
+import com.almuradev.almura.pack.GameObject;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 
 public class ToolsNode implements INode<DropsNode> {
 
-    private final Object tool;
+    private final GameObject tool;
     private final RangeProperty<Integer> experienceRange;
     private final RangeProperty<Float> exhaustionRange;
     private final DropsNode value;
 
-    public ToolsNode(Object tool, RangeProperty<Integer> experienceRange, RangeProperty<Float> exhaustionRange, DropsNode value) {
+    public ToolsNode(GameObject tool, RangeProperty<Integer> experienceRange, RangeProperty<Float> exhaustionRange, DropsNode value) {
         this.tool = tool;
         this.experienceRange = experienceRange;
         this.exhaustionRange = exhaustionRange;
         this.value = value;
     }
 
-    public Object getTool() {
+    public GameObject getTool() {
         return tool;
     }
 
@@ -45,8 +46,8 @@ public class ToolsNode implements INode<DropsNode> {
         }
 
         @Override
-        public final Object getTool() {
-            throw new UnsupportedOperationException("OffHand node has no tool!");
+        public final GameObject getTool() {
+            return null;
         }
     }
 }

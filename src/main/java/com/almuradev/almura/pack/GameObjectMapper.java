@@ -13,13 +13,12 @@ import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import cpw.mods.fml.common.registry.GameRegistry;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * minecraft:
@@ -28,53 +27,37 @@ import java.util.Set;
  */
 public class GameObjectMapper {
 
-    private static final Map<String, Map<Object, Set<Pair<String, Object>>>> MAPPED = Maps.newHashMap();
+    private static final Map<String, Map<String, GameObject>> MAPPED = Maps.newHashMap();
 
     public static boolean add(String modid, Object gameObject, String name, Object value) {
-        Map<Object, Set<Pair<String, Object>>> identifierMap = MAPPED.get(modid);
+        Map<String, GameObject> identifierMap = MAPPED.get(modid);
         if (identifierMap == null) {
             identifierMap = Maps.newHashMap();
             MAPPED.put(modid, identifierMap);
         }
-        Set<Pair<String, Object>> pairSet = identifierMap.get(gameObject);
-        if (pairSet == null) {
-            pairSet = new HashSet<>();
-            identifierMap.put(gameObject, pairSet);
-        }
-        boolean exists = false;
-        for (Pair<String, Object> pair : pairSet) {
-            if (pair.getKey().equals(name)) {
-                Almura.LOGGER.warn("Duplicate remapped name [" + name + "] within mappings.yml. Attempt made to register under object [" + gameObject
-                                   + "]. Only one remapped name is allowed!");
-                exists = true;
+        for (Map.Entry<String, Map<String, GameObject>> modEntry : MAPPED.entrySet()) {
+            for (Map.Entry<String, GameObject> objectEntry : modEntry.getValue().entrySet()) {
+                if (objectEntry.getKey().equalsIgnoreCase(name)) {
+                    Almura.LOGGER.warn("Duplicate [" + name + "] for Minecraft object [" + gameObject + "] for mod [" + modEntry.getKey()
+                                       + "]. Only one remapped name is allowed!");
+                    return false;
+                }
             }
         }
-        if (!exists) {
-            pairSet.add(new ImmutablePair<>(name, value));
-        }
-        return !exists;
+        identifierMap.put(name, new GameObject(modid, gameObject, name, (Integer) value));
+        return true;
     }
 
-    public static Optional<TrioWrapper<Object, String, Object>> get(String modid, String name) {
-        final Map<Object, Set<Pair<String, Object>>> identifierMap = MAPPED.get(modid);
+    public static Optional<GameObject> get(String modid, String identifier) {
+        final Map<String, GameObject> identifierMap = MAPPED.get(modid);
         if (identifierMap != null) {
-            for (Map.Entry<Object, Set<Pair<String, Object>>> entry : identifierMap.entrySet()) {
-                for (Pair<String, Object> pair : entry.getValue()) {
-                    if (pair.getKey().equals(name)) {
-                        return Optional.of(new TrioWrapper<>(entry.getKey(), pair));
-                    }
+            for (Map.Entry<String, GameObject> entry : identifierMap.entrySet()) {
+                if (entry.getKey().equalsIgnoreCase(identifier)) {
+                    return Optional.of(entry.getValue());
                 }
             }
         }
         return Optional.absent();
-    }
-
-    public static Optional<Map<Object, Set<Pair<String, Object>>>> getAll(String modid) {
-        Map<Object, Set<Pair<String, Object>>> identifierMap = MAPPED.get(modid);
-        if (identifierMap != null) {
-            return Optional.of(Collections.unmodifiableMap(identifierMap));
-        }
-        return Optional.of(Collections.unmodifiableMap(Collections.<Object, Set<Pair<String, Object>>>emptyMap()));
     }
 
     public static void load() {
@@ -87,8 +70,8 @@ public class GameObjectMapper {
         for (String modid : reader.getKeys(false)) {
             final ConfigurationNode modidConfigurationNode = reader.getNode(modid);
             for (String rawObjectIdentifier : modidConfigurationNode.getKeys(false)) {
-                final Object found = PackUtil.getGameObject(modid + "\\" + rawObjectIdentifier);
-                if (found == null) {
+                final Optional<GameObject> found = getGameObject(modid + "\\" + rawObjectIdentifier);
+                if (!found.isPresent()) {
                     Almura.LOGGER.warn("Object [" + rawObjectIdentifier + "] is neither a block or item within mod [" + modid + "].");
                     continue;
                 }
@@ -96,10 +79,10 @@ public class GameObjectMapper {
                 final ConfigurationNode objectConfigurationNode = modidConfigurationNode.getNode(rawObjectIdentifier);
                 for (String remapped : objectConfigurationNode.getKeys(false)) {
                     final Object value = objectConfigurationNode.getChild(remapped).getValue();
-                    if (add(modid, found, remapped, value) && (Configuration.DEBUG_MODE
+                    if (add(modid, found.get().minecraftObject, remapped, value) && (Configuration.DEBUG_MODE
                                                                || Configuration.DEBUG_MAPPINGS_MODE)) {
                         Almura.LOGGER
-                                .info("Registered mapping [" + remapped + "] with value [" + value + "] for object [" + found + "] for mod [" + modid
+                                .info("Registered mapping [" + remapped + "] with value [" + value + "] for object [" + found.get().minecraftObject + "] for mod [" + modid
                                       + "].");
                     }
                 }
@@ -107,14 +90,42 @@ public class GameObjectMapper {
         }
     }
 
-    public static class TrioWrapper<S, T, U> {
-
-        public final S object;
-        public final Pair<T, U> pair;
-
-        public TrioWrapper(S object, Pair<T, U> pair) {
-            this.object = object;
-            this.pair = pair;
+    private static Optional<Object> getMinecraftObject(String modid, String identifier) {
+        Object object = GameRegistry.findBlock(modid, identifier);
+        if (object == null) {
+            object = GameRegistry.findItem(modid, identifier);
         }
+        return Optional.fromNullable(object);
+    }
+
+    public static Optional<GameObject> getGameObject(String rawSource) {
+        final Pair<String, String> parsedModidIdentifier = parseModidIdentifierFrom(rawSource);
+        return getGameObject(parsedModidIdentifier.getKey(), parsedModidIdentifier.getValue());
+    }
+
+    public static Optional<GameObject> getGameObject(String modid, String identifier) {
+        final Optional<Object> object = getMinecraftObject(modid, identifier);
+        if (!object.isPresent()) {
+            return get(modid, identifier);
+        }
+
+        return Optional.of(new GameObject(modid, object.get(), "", 0));
+    }
+
+    public static Pair<String, String> parseModidIdentifierFrom(String rawSource) {
+        final String[] separated = rawSource.split(StringEscapeUtils.escapeJava("\\"));
+        String modid = separated[0].toLowerCase();
+        String identifier;
+        if (separated.length > 1) {
+            identifier = rawSource.split(modid + StringEscapeUtils.escapeJava("\\"))[1];
+        } else {
+            identifier = modid;
+        }
+        if (identifier.equalsIgnoreCase(modid)) {
+            identifier = identifier.toLowerCase();
+            modid = "minecraft";
+        }
+
+        return new ImmutablePair<>(modid, identifier);
     }
 }

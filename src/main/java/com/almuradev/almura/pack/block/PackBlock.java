@@ -7,6 +7,7 @@ package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
+import com.almuradev.almura.pack.GameObject;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.INodeContainer;
@@ -153,7 +154,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
                 toolsProperty = prop;
                 break;
             }
-            if (held != null && prop.getTool() == held.getItem()) {
+            if (held != null && prop.getTool().minecraftObject == held.getItem()) {
                 toolsProperty = prop;
                 break;
             }
@@ -166,12 +167,12 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         player.addExhaustion(toolsProperty.getExhaustionRange().getValueWithinRange());
         final ArrayList<ItemStack> drops = Lists.newArrayList();
         for (DropProperty src : toolsProperty.getValue().getValue()) {
-            final Object source = src.getSource();
+            final GameObject source = src.getSource();
             final ItemStack toDrop;
-            if (source instanceof Block) {
-                toDrop = new ItemStack((Block) source, src.getAmountProperty().getValueWithinRange(), src.getData());
+            if (source.isBlock()) {
+                toDrop = new ItemStack((Block) source.minecraftObject, src.getAmountProperty().getValueWithinRange(), src.getData());
             } else {
-                toDrop = new ItemStack((Item) source, src.getAmountProperty().getValueWithinRange(), src.getData());
+                toDrop = new ItemStack((Item) source.minecraftObject, src.getAmountProperty().getValueWithinRange(), src.getData());
             }
             if (src.getBonusProperty().getSource()) {
                 final double chance = src.getBonusProperty().getValueWithinRange();
