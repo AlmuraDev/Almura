@@ -81,3 +81,71 @@ minecraft:
         stained_glass_pane_green: 13
         stained_glass_pane_red: 14
         stained_glass_pane_black: 15
+    tallgrass:
+        tallgrass_brown: 0
+        tallgrass_green: 1
+        tallgrass_fern: 2
+    red_flower:
+        red_flower_poppy: 0
+        red_flower_blue_orchid: 1
+        red_flower_allium: 2
+        red_flower_azure_bluet: 3
+        red_flower_red_tulip: 4
+        red_flower_orange_tulip: 5
+        red_flower_white_tulip: 6
+        red_flower_pink_tulip: 7
+        red_flower_oxeye_daisy: 8
+    carpet:
+        carpet_white: 0
+        carpet_orange: 1
+        carpet_magenta: 2
+        carpet_light_blue: 3
+        carpet_yellow: 4
+        carpet_lime: 5
+        carpet_pink: 6
+        carpet_grey: 7
+        carpet_light_grey: 8
+        carpet_cyan: 9
+        carpet_purple: 10
+        carpet_blue: 11
+        carpet_brown: 12
+        carpet_green: 13
+        carpet_red: 14
+        carpet_black: 15
+    double_plant:
+        double_plant_sunflower: 0
+        double_plant_lilac: 1
+        double_plant_tallgrass: 2
+        double_plant_fern: 3
+        double_plant_bush: 4
+        double_plant_peony: 5
+    red_sandstone: 
+        red_sandstone: 0
+        red_sandstone_smooth: 1
+        red_sandstone_chiseled: 2
+    sapling:
+        sapling_oak: 0
+        sapling_spruce: 1
+        sapling_birch: 2
+        sapling_jungle: 3
+        sapling_aracia: 4
+        sapling_dark_oak: 5
+    stone:
+        stone: 0
+        stone_granite: 1
+        stone_polished_granite: 2
+        stone_diorite: 3
+        stone_polished_diorite: 4
+        stone_andesite: 5
+        stone_polished_andesite: 6
+    dirt:
+        dirt: 0
+        dirt_course: 1
+        dirt_podzol: 2
+    sponge:
+        sponge: 0
+        sponge_wet: 1
+    sandstone:
+        sandstone: 0
+        sandstone_chiseled: 1
+        sandstone_smooth: 2
