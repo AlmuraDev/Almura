@@ -172,6 +172,11 @@ public class PackCreator {
             faces.add(face);
         }
 
+        if (faces.isEmpty()) {
+            Almura.LOGGER.error("Shape [" + name + "] has no faces and therefore will not be loaded.");
+            return null;
+        }
+
         PackShape
                 shape =
                 new PackShape(name, faces, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,

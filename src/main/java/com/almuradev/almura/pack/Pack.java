@@ -54,7 +54,9 @@ public class Pack {
                 for (Path path : stream) {
                     try {
                         final PackShape shape = loadShape(path);
-                        SHAPES.add(shape);
+                        if (shape != null) {
+                            SHAPES.add(shape);
+                        }
                     } catch (IOException | ConfigurationException e) {
                         Almura.LOGGER.error("Failed to load model [" + path + "] in [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
                     }
