@@ -1,16 +1,20 @@
-Date: 12-3-2014
-Type: Crop
-Title: Garlic
+date: 12-28-2014
+type: crop
+title: Garlic
 texture: crops.png
 level-required: 18
 seed:
-    Title: Garlic Seed
-    coordinates: 256 384 32 32
-    Creative-Tab-Name: crops
-    Show-In-Creative-Tab: true
-    drop-on-grass-break: true
+    title: Garlic Seed
+    coords: 
+        - 256 384 32 32
+    creative-tab-name: crops
+    show-in-creative-tab: true
+    grass:
+        enabled: true
+        chance: 10-20
+        amount: 1-3
 soil:
-    source: minecraft\farmland
+    source: farmland
     biome:
         enabled: disabled
         sources:
@@ -19,19 +23,20 @@ soil:
                 humidity-required: 50-60
 stages:
     0:
-        coordinates: 256 384 32 32
+        coords: 
+            - 256 384 32 32
         shape: crop-dirt.shape
-        Hardness: 1
-        Resistance: 1
+        hardness: 0
+        resistance: 1
         hydration:
             enabled: false
             sources:
-                minecraft\water:
+                water:
                     needed-promixity: 5
         fertilizer:
             enabled: true
             sources:
-                minecraft\bonemeal:
+                bonemeal:
                      amount: 5
         light:
             emission: 0
@@ -50,19 +55,20 @@ stages:
                 skeleton:
                     health-change: 0
     1:
-        coordinates: 256 384 32 32
+        coords: 
+            - 256 384 32 32
         shape: crop-1h.shape
-        Hardness: 0
-        Resistance: 0        
+        hardness: 0
+        resistance: 0        
         hydration:
             enabled: false
             sources:
-                minecraft\water:
+                water:
                     needed-promixity: 5
         fertilizer:
             enabled: true
             sources:
-                minecraft\bonemeal:
+                bonemeal:
                      amount: 5
         light:            
             emission: 0
@@ -81,19 +87,20 @@ stages:
                 skeleton:
                     health-change: 0
     2:
-        coordinates: 256 384 32 32
+        coords: 
+            - 256 384 32 32
         shape: crop-1h.shape
-        Hardness: 0
-        Resistance: 0        
+        hardness: 0
+        resistance: 0        
         hydration:
             enabled: false
             sources:
-                minecraft\water:
+                water:
                     needed-promixity: 5
         fertilizer:
             enabled: true
             sources:
-                minecraft\bonemeal:
+                bonemeal:
                      amount: 5
         light:            
             emission: 0
@@ -112,19 +119,20 @@ stages:
                 skeleton:
                     health-change: 0
     3:
-        coordinates: 256 384 32 32
+        coords: 
+            - 256 384 32 32
         shape: crop-1h.shape
-        Hardness: 0
-        Resistance: 0        
+        hardness: 0
+        resistance: 0        
         hydration:
             enabled: false
             sources:
-                minecraft\water:
+                water:
                     needed-promixity: 5
         fertilizer:
             enabled: true
             sources:
-                minecraft\bonemeal:
+                bonemeal:
                      amount: 5
         light:            
             emission: 0
@@ -142,19 +150,19 @@ stages:
                     health-change: 0
                 skeleton:
                     health-change: 0
-        harvest:
-            tools:
+        break:
+            Tools:
                 none:
                     drops:
-                        almura\food\garlic:
+                        almura\Food\garlic:
                             amount: 1-2
                             bonus:
                                 enabled: false
                                 amount: 1-5
                                 chance: 10-15
-                almura\tools\diamond_sickle:
+                almura\Tools\diamond_sickle:
                     drops:
-                        almura\food\garlic:
+                        almura\Food\garlic:
                             amount: 3-4
                             bonus:
                                 enabled: true
