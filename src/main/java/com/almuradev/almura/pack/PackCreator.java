@@ -213,8 +213,14 @@ public class PackCreator {
         final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
         final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
-        final Map<Integer, List<Integer>> textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
-                PackKeys.TEXTURE_COORDINATES.getKey()).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        Map<Integer, List<Integer>> textureCoordinates;
+        try {
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
+                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        } catch (NumberFormatException nfe) {
+            Almura.LOGGER.error("Error parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]." + nfe.getMessage());
+            textureCoordinates = Maps.newHashMap();
+        }
         final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
         final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
@@ -241,8 +247,14 @@ public class PackCreator {
         }
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
         final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
-        final Map<Integer, List<Integer>> textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
-                PackKeys.TEXTURE_COORDINATES.getKey()).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        Map<Integer, List<Integer>> textureCoordinates;
+        try {
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
+                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        } catch (NumberFormatException nfe) {
+            Almura.LOGGER.error("Error parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]." + nfe.getMessage());
+            textureCoordinates = Maps.newHashMap();
+        }
         final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
         final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
@@ -262,8 +274,14 @@ public class PackCreator {
         }
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
         final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
-        final Map<Integer, List<Integer>> textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
-                PackKeys.TEXTURE_COORDINATES.getKey()).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        Map<Integer, List<Integer>> textureCoordinates;
+        try {
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
+                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        } catch (NumberFormatException nfe) {
+            Almura.LOGGER.error("Error parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]." + nfe.getMessage());
+            textureCoordinates = Maps.newHashMap();
+        }
         final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
         final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
@@ -296,8 +314,14 @@ public class PackCreator {
             tooltip.remove(0);
         }
         final String shapeName = node.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
-        final Map<Integer, List<Integer>> textureCoordinates = PackUtil.parseCoordinatesFrom(node.getChild(
-                PackKeys.TEXTURE_COORDINATES.getKey()).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        Map<Integer, List<Integer>> textureCoordinates;
+        try {
+            textureCoordinates = PackUtil.parseCoordinatesFrom(node.getChild(
+                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        } catch (NumberFormatException nfe) {
+            Almura.LOGGER.error("Error parsing texture coordinates in [" + crop.getIdentifier() + "\\seed." + nfe.getMessage());
+            textureCoordinates = Maps.newHashMap();
+        }
         final boolean showInCreativeTab = node.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
         final String creativeTabName = node.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
@@ -313,11 +337,17 @@ public class PackCreator {
     @SuppressWarnings("unchecked")
     public static Stage createCropStage(Pack pack, PackCrops crop, int id, ConfigurationNode node) {
         final String shapeName = node.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = PackUtil.parseCoordinatesFrom(node.getChild(
-                PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        Map<Integer, List<Integer>> textureCoordinates;
+        try {
+            textureCoordinates = PackUtil.parseCoordinatesFrom(node.getChild(
+                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        } catch (NumberFormatException nfe) {
+            Almura.LOGGER.error("Error parsing texture coordinates in [" + crop.getIdentifier() + "\\stage\\" + id + "." + nfe.getMessage());
+            textureCoordinates = Maps.newHashMap();
+        }
         final LightNode lightNode = createLightNode(pack, crop.getIdentifier(), node.getNode(PackKeys.NODE_LIGHT.getKey()));
 
-        return new Stage(crop, id, textureCoordinatesByFace, shapeName, null);
+        return new Stage(crop, id, textureCoordinates, shapeName, null);
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {
