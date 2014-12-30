@@ -28,7 +28,7 @@ import org.lwjgl.input.Keyboard;
 import java.util.Calendar;
 import java.util.Random;
 
-public class AlmuraMainMenu extends AlmuraGui {
+public class AlmuraServerMenu extends AlmuraGui {
 
     private static final GuiTexture
             ALMURA_2_LOGO =
@@ -36,14 +36,14 @@ public class AlmuraMainMenu extends AlmuraGui {
     private static final Random RANDOM = new Random();
     private static int imageNum = 0;
     public UIBackgroundContainer window;
-    public UIButton singlePlayerButton, optionsButton, modsButton, serverButton, closeButton;
+    public UIButton backButton, betaServerButton, liveServerButton, devServerButton, otherServerButton;
     public int screenH, screenW;
     public UIImage backgroundImage;
     public int tick = 1;
     int timer = 1;
 
     @SuppressWarnings("rawtypes")
-    public AlmuraMainMenu() {
+    public AlmuraServerMenu() {
 
         guiscreenBackground = false; // prevent full screen black background.       
         screenH = Minecraft.getMinecraft().displayHeight;
@@ -72,48 +72,47 @@ public class AlmuraMainMenu extends AlmuraGui {
         panel.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
 
         final UIImage almuraLogo = new UIImage(this, ALMURA_2_LOGO, null);
-        almuraLogo.setSize(panel.getWidth(), panel.getHeight());
+        almuraLogo.setSize(panel.getWidth(), panel.getHeight());      
         
         final UILabel version = new UILabel(this, ChatColor.WHITE + Almura.GUI_VERSION);
         version.setPosition(0, 105, Anchor.CENTER | Anchor.TOP);
         version.setFontScale(0.75F);
-
-        singlePlayerButton = (new UIButton(this, ChatColor.AQUA + "Singleplayer").setPosition(0, -105, Anchor.BOTTOM | Anchor.CENTER).register(this));
-        singlePlayerButton.setSize(180, 15);
-        singlePlayerButton.setTooltip(new UITooltip(this, "Play Singleplayer using Almura 2", 20));
-        singlePlayerButton.setName("BTNSINGLEPLAYER");
-
-        serverButton = (new UIButton(this, ChatColor.AQUA + "Multiplayer").setPosition(0, -85, Anchor.BOTTOM | Anchor.CENTER).register(this));
-        serverButton.setSize(180, 15);
-        serverButton.setTooltip(new UITooltip(this, "Access Multiplayer Server List", 20));
-        serverButton.setName("BTNSERVER");
-
-        optionsButton = (new UIButton(this, ChatColor.WHITE + "Options").setPosition(-30, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
-        optionsButton.setSize(50, 15);
-        optionsButton.setName("BTNOPTIONS");
         
-        modsButton = (new UIButton(this, ChatColor.WHITE + "Mods").setPosition(30, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
-        modsButton.setSize(50, 15);
-        modsButton.setName("BTNMODS");
+        liveServerButton =
+                (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "Almura Live" + ChatColor.WHITE + " Server").setPosition(
+                        0, -100, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        liveServerButton.setSize(180, 15);
+        liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 20));
+        liveServerButton.setName("BTNLIVESERVER");
+        
+        devServerButton =
+                (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GREEN + "ObsidianBox" + ChatColor.WHITE + " Server").setPosition(
+                        0, -80, Anchor.BOTTOM | Anchor.CENTER).register(this));
+        devServerButton.setSize(180, 15);
+        devServerButton.setTooltip(new UITooltip(this, "Logon to ObsidianBox Server", 20));
+        devServerButton.setName("BTNDEVSERVER");
 
-        closeButton = (new UIButton(this, ChatColor.WHITE + "Quit").setPosition(0, -40, Anchor.CENTER | Anchor.BOTTOM).register(this));
-        closeButton.setSize(50, 15);
-        closeButton.setName("BTNCLOSE");
+        betaServerButton =
+                (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Almura Beta" + ChatColor.WHITE + " Server").setPosition(
+                        0, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        betaServerButton.setSize(180, 15);
+        betaServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 5));
+        betaServerButton.setName("BTNLIVESERVER");        
         
-        final UILabel copyright1 = new UILabel(this, ChatColor.WHITE + "AlmuraDev © 2015.");
-        copyright1.setPosition(0, -22, Anchor.CENTER | Anchor.BOTTOM);
-        copyright1.setFontScale(0.7F);
+        otherServerButton =
+                (new UIButton(this, ChatColor.WHITE + "Other " + ChatColor.LIGHT_PURPLE + "Multiplayer" + ChatColor.WHITE + " Servers").setPosition(
+                        0, -40, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        otherServerButton.setSize(180, 15);
+        otherServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 5));
+        otherServerButton.setName("BTNMULTIPLAYER");       
         
-        final UILabel copyright2 = new UILabel(this, ChatColor.WHITE + "Minecarft and all other products are ");
-        copyright2.setPosition(0, -12, Anchor.CENTER | Anchor.BOTTOM);
-        copyright2.setFontScale(0.7F);
-        
-        final UILabel copyright3 = new UILabel(this, ChatColor.WHITE + "trademarks of their respective holders.");
-        copyright3.setPosition(0, -5, Anchor.CENTER | Anchor.BOTTOM);
-        copyright3.setFontScale(0.7F);
+
+        backButton = (new UIButton(this, ChatColor.WHITE + "Back to MainMenu").setPosition(0, -10, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        backButton.setSize(100, 15);
+        backButton.setName("BTNBACK");             
 
         panel.add(almuraLogo);
-        window.add(panel, singlePlayerButton, serverButton, optionsButton, modsButton, closeButton, version, copyright1, copyright2, copyright3);
+        window.add(panel, devServerButton, betaServerButton, liveServerButton, otherServerButton, backButton, version);
 
         main.add(backgroundImage, window);
 
@@ -128,18 +127,24 @@ public class AlmuraMainMenu extends AlmuraGui {
 
     @Subscribe
     public void onButtonClick(ClickEvent event) {
-        switch (event.getComponent().getName().toUpperCase()) {
-            case "BTNSINGLEPLAYER":
-                this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiSelectWorld(this));
+        switch (event.getComponent().getName().toUpperCase()) {            
+            case "BTNDEVSERVER":
+                FMLClientHandler.instance().setupServerList();
+                FMLClientHandler.instance().connectToServer(this, new ServerData("ObsidianBox", "obsidianbox.org"));
+                break;
+            case "BTNBETASERVER":
+                FMLClientHandler.instance().setupServerList();
+                FMLClientHandler.instance().connectToServer(this, new ServerData("BetaServer", "69.4.96.139"));
+                break;
+            case "BTNLIVESERVER":
+                FMLClientHandler.instance().setupServerList();
+                FMLClientHandler.instance().connectToServer(this, new ServerData("LiveServer", "srv1.almuramc.com"));
                 break;
             case "BTNMULTIPLAYER":
-                this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this));
+                this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this));                
                 break;
-            case "BTNSERVER":
-                this.mc.displayGuiScreen(new AlmuraServerMenu());
-                break;
-            case "BTNOPTIONS":
-                this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiOptions(this, this.mc.gameSettings));
+            case "BTNBACK":
+                this.mc.displayGuiScreen(new AlmuraMainMenu());
                 break;
             case "BTNMODS":
                 this.mc.displayGuiScreen(new GuiModList(this));
@@ -160,7 +165,7 @@ public class AlmuraMainMenu extends AlmuraGui {
         }
         animate();
         renderer.enableBlending();
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        super.drawScreen(mouseX, mouseY, partialTicks);       
     }
 
     public void animate() {
