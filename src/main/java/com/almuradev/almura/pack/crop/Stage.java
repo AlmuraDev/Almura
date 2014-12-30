@@ -6,7 +6,6 @@
 package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Configuration;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.INodeContainer;
@@ -19,7 +18,6 @@ import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
-import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
 import com.almuradev.almura.server.network.play.S01SpawnParticle;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -50,7 +48,8 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     private PackShape shape;
     private ClippedIcon[] clippedIcons;
 
-    public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName, GrowthNode growth, LightNode light) {
+    public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName, GrowthNode growth,
+                 LightNode light) {
         this.block = block;
         this.id = id;
         this.textureCoordinatesByFace = textureCoordinatesByFace;

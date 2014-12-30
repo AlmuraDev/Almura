@@ -16,10 +16,8 @@ import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackCreator;
 import com.almuradev.almura.pack.PackKeys;
-import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
-import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapedRecipes;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapelessRecipes;
@@ -119,7 +117,9 @@ public class CommonProxy {
                     if (soilNode != null) {
                         //For seeds to work, they require a soil
                         ((INodeContainer) block).addNode(soilNode);
-                        final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+                        final String
+                                textureName =
+                                reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
                         final PackSeeds
                                 seed =
                                 PackCreator
@@ -153,9 +153,13 @@ public class CommonProxy {
             if (item instanceof IPackObject && item instanceof INodeContainer) {
                 final InputStream entry;
                 if (item instanceof PackSeeds) {
-                    entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((PackCrops) ((ItemSeeds) item).field_150925_a).getIdentifier() + ".yml"));
+                    entry =
+                            Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
+                                                           ((PackCrops) ((ItemSeeds) item).field_150925_a).getIdentifier() + ".yml"));
                 } else {
-                    entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((IPackObject) item).getIdentifier() + ".yml"));
+                    entry =
+                            Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
+                                                           ((IPackObject) item).getIdentifier() + ".yml"));
                 }
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
@@ -163,7 +167,8 @@ public class CommonProxy {
                     //Recipes
                     ((INodeContainer) item).addNode(
                             PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), item,
-                                                         reader.getChild(((IPackObject) item).getIdentifier()).getNode(PackKeys.NODE_RECIPES.getKey())));
+                                                         reader.getChild(((IPackObject) item).getIdentifier())
+                                                                 .getNode(PackKeys.NODE_RECIPES.getKey())));
                 } else {
                     //Recipes
                     ((INodeContainer) item).addNode(

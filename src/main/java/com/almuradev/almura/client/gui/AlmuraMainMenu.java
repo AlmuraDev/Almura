@@ -8,7 +8,6 @@ package com.almuradev.almura.client.gui;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.google.common.eventbus.Subscribe;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -21,9 +20,7 @@ import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Keyboard;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -73,7 +70,7 @@ public class AlmuraMainMenu extends AlmuraGui {
 
         final UIImage almuraLogo = new UIImage(this, ALMURA_2_LOGO, null);
         almuraLogo.setSize(panel.getWidth(), panel.getHeight());
-        
+
         final UILabel version = new UILabel(this, ChatColor.WHITE + Almura.GUI_VERSION);
         version.setPosition(0, 105, Anchor.CENTER | Anchor.TOP);
         version.setFontScale(0.75F);
@@ -91,7 +88,7 @@ public class AlmuraMainMenu extends AlmuraGui {
         optionsButton = (new UIButton(this, ChatColor.WHITE + "Options").setPosition(-30, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
         optionsButton.setSize(50, 15);
         optionsButton.setName("BTNOPTIONS");
-        
+
         modsButton = (new UIButton(this, ChatColor.WHITE + "Mods").setPosition(30, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
         modsButton.setSize(50, 15);
         modsButton.setName("BTNMODS");
@@ -99,15 +96,15 @@ public class AlmuraMainMenu extends AlmuraGui {
         closeButton = (new UIButton(this, ChatColor.WHITE + "Quit").setPosition(0, -40, Anchor.CENTER | Anchor.BOTTOM).register(this));
         closeButton.setSize(50, 15);
         closeButton.setName("BTNCLOSE");
-        
-        final UILabel copyright1 = new UILabel(this, ChatColor.WHITE + "AlmuraDev © 2015.");
+
+        final UILabel copyright1 = new UILabel(this, ChatColor.WHITE + "AlmuraDev ï¿½ 2015.");
         copyright1.setPosition(0, -22, Anchor.CENTER | Anchor.BOTTOM);
         copyright1.setFontScale(0.7F);
-        
+
         final UILabel copyright2 = new UILabel(this, ChatColor.WHITE + "Minecarft and all other products are ");
         copyright2.setPosition(0, -12, Anchor.CENTER | Anchor.BOTTOM);
         copyright2.setFontScale(0.7F);
-        
+
         final UILabel copyright3 = new UILabel(this, ChatColor.WHITE + "trademarks of their respective holders.");
         copyright3.setPosition(0, -5, Anchor.CENTER | Anchor.BOTTOM);
         copyright3.setFontScale(0.7F);

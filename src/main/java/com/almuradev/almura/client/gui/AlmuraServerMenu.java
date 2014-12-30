@@ -23,7 +23,6 @@ import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Keyboard;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -72,19 +71,19 @@ public class AlmuraServerMenu extends AlmuraGui {
         panel.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
 
         final UIImage almuraLogo = new UIImage(this, ALMURA_2_LOGO, null);
-        almuraLogo.setSize(panel.getWidth(), panel.getHeight());      
-        
+        almuraLogo.setSize(panel.getWidth(), panel.getHeight());
+
         final UILabel version = new UILabel(this, ChatColor.WHITE + Almura.GUI_VERSION);
         version.setPosition(0, 105, Anchor.CENTER | Anchor.TOP);
         version.setFontScale(0.75F);
-        
+
         liveServerButton =
                 (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GOLD + "Almura Live" + ChatColor.WHITE + " Server").setPosition(
                         0, -100, Anchor.CENTER | Anchor.BOTTOM).register(this));
         liveServerButton.setSize(180, 15);
         liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 20));
         liveServerButton.setName("BTNLIVESERVER");
-        
+
         devServerButton =
                 (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GREEN + "ObsidianBox" + ChatColor.WHITE + " Server").setPosition(
                         0, -80, Anchor.BOTTOM | Anchor.CENTER).register(this));
@@ -97,19 +96,18 @@ public class AlmuraServerMenu extends AlmuraGui {
                         0, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
         betaServerButton.setSize(180, 15);
         betaServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 5));
-        betaServerButton.setName("BTNLIVESERVER");        
-        
+        betaServerButton.setName("BTNLIVESERVER");
+
         otherServerButton =
                 (new UIButton(this, ChatColor.WHITE + "Other " + ChatColor.LIGHT_PURPLE + "Multiplayer" + ChatColor.WHITE + " Servers").setPosition(
                         0, -40, Anchor.CENTER | Anchor.BOTTOM).register(this));
         otherServerButton.setSize(180, 15);
         otherServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 5));
-        otherServerButton.setName("BTNMULTIPLAYER");       
-        
+        otherServerButton.setName("BTNMULTIPLAYER");
 
         backButton = (new UIButton(this, ChatColor.WHITE + "Back to MainMenu").setPosition(0, -10, Anchor.CENTER | Anchor.BOTTOM).register(this));
         backButton.setSize(100, 15);
-        backButton.setName("BTNBACK");             
+        backButton.setName("BTNBACK");
 
         panel.add(almuraLogo);
         window.add(panel, devServerButton, betaServerButton, liveServerButton, otherServerButton, backButton, version);
@@ -127,7 +125,7 @@ public class AlmuraServerMenu extends AlmuraGui {
 
     @Subscribe
     public void onButtonClick(ClickEvent event) {
-        switch (event.getComponent().getName().toUpperCase()) {            
+        switch (event.getComponent().getName().toUpperCase()) {
             case "BTNDEVSERVER":
                 FMLClientHandler.instance().setupServerList();
                 FMLClientHandler.instance().connectToServer(this, new ServerData("ObsidianBox", "obsidianbox.org"));
@@ -141,7 +139,7 @@ public class AlmuraServerMenu extends AlmuraGui {
                 FMLClientHandler.instance().connectToServer(this, new ServerData("LiveServer", "srv1.almuramc.com"));
                 break;
             case "BTNMULTIPLAYER":
-                this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this));                
+                this.mc.displayGuiScreen(new net.minecraft.client.gui.GuiMultiplayer(this));
                 break;
             case "BTNBACK":
                 this.mc.displayGuiScreen(new AlmuraMainMenu());
@@ -165,7 +163,7 @@ public class AlmuraServerMenu extends AlmuraGui {
         }
         animate();
         renderer.enableBlending();
-        super.drawScreen(mouseX, mouseY, partialTicks);       
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     public void animate() {

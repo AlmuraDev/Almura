@@ -310,18 +310,21 @@ public class PackCreator {
             try {
                 stageId = Integer.parseInt(stageIdRaw);
             } catch (NumberFormatException e) {
-                Almura.LOGGER.warn("Stage [" + stageIdRaw + "] in [" + name + "] in pack [" + pack.getName() + "] is not a valid integer between 0 and 15.");
+                Almura.LOGGER.warn("Stage [" + stageIdRaw + "] in [" + name + "] in pack [" + pack.getName()
+                                   + "] is not a valid integer between 0 and 15.");
                 continue;
             }
 
             if (stageId < 0 || stageId > 15) {
-                Almura.LOGGER.warn("Stage [" + stageIdRaw + "] in [" + name + "] in pack [" + pack.getName() + "] is not a valid integer between 0 and 15.");
+                Almura.LOGGER.warn("Stage [" + stageIdRaw + "] in [" + name + "] in pack [" + pack.getName()
+                                   + "] is not a valid integer between 0 and 15.");
                 continue;
             }
 
             final Stage stage = createCropStage(pack, crop, stageId, reader.getNode(PackKeys.NODE_STAGES.getKey(), stageIdRaw));
             if (stages.put(stageId, stage) != null) {
-                Almura.LOGGER.warn("Stage [" + stageIdRaw + "] in [" + name + "] in pack [" + pack.getName() + "] already existed as a stage. Duplicate stage ID is present within the file.");
+                Almura.LOGGER.warn("Stage [" + stageIdRaw + "] in [" + name + "] in pack [" + pack.getName()
+                                   + "] already existed as a stage. Duplicate stage ID is present within the file.");
             }
         }
 
@@ -749,7 +752,9 @@ public class PackCreator {
     }
 
     private static GrowthNode createGrowthNode(Pack pack, String name, ConfigurationNode node) {
-        final Pair<Double, Double> chancePair = PackUtil.getRange(Double.class, node.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0);
+        final Pair<Double, Double>
+                chancePair =
+                PackUtil.getRange(Double.class, node.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0);
         return new GrowthNode(new RangeProperty<>(Double.class, true, chancePair));
     }
 }

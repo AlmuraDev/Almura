@@ -32,7 +32,7 @@ public class QuantitiveShapedRecipes extends ShapedRecipes {
                     }
                 }
 
-               final ItemStack itemstack1 = craftingInventory.getStackInRowAndColumn(k, l);
+                final ItemStack itemstack1 = craftingInventory.getStackInRowAndColumn(k, l);
 
                 if (itemstack1 != null || itemstack != null) {
                     if (itemstack1 == null || itemstack == null) {

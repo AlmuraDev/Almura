@@ -80,9 +80,10 @@ public class GameObjectMapper {
                 for (String remapped : objectConfigurationNode.getKeys(false)) {
                     final Object value = objectConfigurationNode.getChild(remapped).getValue();
                     if (add(modid, found.get().minecraftObject, remapped, value) && (Configuration.DEBUG_MODE
-                                                               || Configuration.DEBUG_MAPPINGS_MODE)) {
+                                                                                     || Configuration.DEBUG_MAPPINGS_MODE)) {
                         Almura.LOGGER
-                                .info("Registered mapping [" + remapped + "] with value [" + value + "] for object [" + found.get().minecraftObject + "] for mod [" + modid
+                                .info("Registered mapping [" + remapped + "] with value [" + value + "] for object [" + found.get().minecraftObject
+                                      + "] for mod [" + modid
                                       + "].");
                     }
                 }

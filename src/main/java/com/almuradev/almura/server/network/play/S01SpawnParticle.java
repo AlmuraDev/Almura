@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.server.network.play;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -9,6 +14,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 
 public class S01SpawnParticle implements IMessage, IMessageHandler<S01SpawnParticle, IMessage> {
+
     public String particleName;
     public int x, y, z;
     public double offsetX, offsetY, offsetZ;
@@ -51,7 +57,8 @@ public class S01SpawnParticle implements IMessage, IMessageHandler<S01SpawnParti
     @Override
     public IMessage onMessage(S01SpawnParticle message, MessageContext ctx) {
         if (ctx.side == Side.CLIENT) {
-            Minecraft.getMinecraft().theWorld.spawnParticle(message.particleName, message.x, message.y, message.z, message.offsetX, message.offsetY, message.offsetZ);
+            Minecraft.getMinecraft().theWorld
+                    .spawnParticle(message.particleName, message.x, message.y, message.z, message.offsetX, message.offsetY, message.offsetZ);
         }
         return null;
     }
