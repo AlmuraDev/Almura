@@ -57,6 +57,19 @@ public class CommonProxy {
         Tabs.fakeStaticLoad();
 
         Pack.loadAllContent();
+    }
+
+    public void onPostInitialization(FMLPostInitializationEvent event) {
+        GameObjectMapper.load();
+
+        for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
+            try {
+                onPostCreate(entry.getValue());
+            } catch (IOException | ConfigurationException e) {
+                //TODO Better exception handling
+                e.printStackTrace();
+            }
+        }
 
         LanguageRegistry.injectIntoForge();
 
@@ -64,18 +77,6 @@ public class CommonProxy {
             final Map<String, String> value = LanguageRegistry.get(entry);
             if (!value.isEmpty()) {
                 Almura.LOGGER.info("Registered [" + value.size() + "] entries for language [" + entry.name() + "]");
-            }
-        }
-    }
-
-    public void onPostInitialization(FMLPostInitializationEvent event) {
-        GameObjectMapper.load();
-        for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
-            try {
-                onPostCreate(entry.getValue());
-            } catch (IOException | ConfigurationException e) {
-                //TODO Better exception handling
-                e.printStackTrace();
             }
         }
     }

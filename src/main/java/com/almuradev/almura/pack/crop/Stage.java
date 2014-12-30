@@ -162,7 +162,6 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
      */
     public void onGrown(World world, int x, int y, int z, Random random) {
         if (!world.isRemote) {
-            System.out.println(world + " " + x + " " + y + " " + z);
             Almura.NETWORK_FORGE.sendToAllAround(new S01SpawnParticle("happyVillager", x, y, z, 0D, 1.5D, 0D),
                                                  new NetworkRegistry.TargetPoint(world.provider.dimensionId, x, y, z, 15));
         }
