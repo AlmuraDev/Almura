@@ -149,3 +149,9 @@ minecraft:
         sandstone: 0
         sandstone_chiseled: 1
         sandstone_smooth: 2
+    cooked_fished:    
+        cooked_fished: 0
+        cooked_salmon: 1
+    coal:
+        coal: 0
+        charcoal: 1
