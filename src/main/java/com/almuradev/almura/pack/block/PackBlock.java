@@ -67,12 +67,12 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final String shapeName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
+    private final String textureName;
     private RenderNode renderNode;
     private RotationNode rotationNode;
     private BreakNode breakNode;
     private CollisionNode collisionNode;
     private ClippedIcon[] clippedIcons;
-    private String textureName;
     private PackShape shape;
 
     public PackBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
@@ -89,7 +89,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         this.rotationNode = addNode(rotationNode);
         addNode(lightNode);
         setBlockName(pack.getName() + "\\" + identifier);
-        setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
+        setBlockTextureName(Almura.MOD_ID + ":images/" + textureName);
         setHardness(hardness);
         setResistance(resistance);
         setLightLevel(lightNode.getEmission());

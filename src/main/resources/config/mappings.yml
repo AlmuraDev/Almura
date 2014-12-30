@@ -119,10 +119,11 @@ minecraft:
         double_plant_fern: 3
         double_plant_bush: 4
         double_plant_peony: 5
-    red_sandstone: 
-        red_sandstone: 0
-        red_sandstone_smooth: 1
-        red_sandstone_chiseled: 2
+    # Uncomment on Forge 1.8
+    # red_sandstone:
+    #    red_sandstone: 0
+    #    red_sandstone_smooth: 1
+    #    red_sandstone_chiseled: 2
     sapling:
         sapling_oak: 0
         sapling_spruce: 1

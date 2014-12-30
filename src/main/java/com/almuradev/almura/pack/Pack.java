@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
+import net.minecraftforge.oredict.RecipeSorter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -134,6 +135,7 @@ public class Pack {
                     case "CROP":
                         final Block crop = PackCreator.createCropFromReader(pack, name, reader);
                         pack.blocks.add(crop);
+                        break;
                     default:
                         Almura.LOGGER
                                 .warn("Unknown yml type [" + type + "] in file [" + path.getFileName() + "]. Valid types are [ITEM, FOOD, BLOCK, CROP].");

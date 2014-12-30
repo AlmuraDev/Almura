@@ -45,7 +45,7 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
         this.shapeName = shapeName;
         this.tooltip = tooltip;
         setUnlocalizedName(pack.getName() + "\\" + identifier);
-        setTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
+        setTextureName(Almura.MOD_ID + ":images/" + textureName);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }

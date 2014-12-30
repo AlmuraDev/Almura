@@ -36,6 +36,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     private final Pack pack;
     private final String identifier;
     private final int levelRequired;
+    private final String textureName;
     private final Map<Integer, Stage> stages;
 
     public PackCrops(Pack pack, String identifier, String textureName, int levelRequired, Map<Integer, Stage> stages) {
@@ -43,8 +44,9 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         this.identifier = identifier;
         this.levelRequired = levelRequired;
         this.stages = stages;
+        this.textureName = textureName;
         setBlockName(pack.getName() + "\\" + identifier);
-        setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
+        setBlockTextureName(Almura.MOD_ID + ":images/" + textureName);
         setTickRandomly(true);
     }
 
@@ -213,5 +215,10 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
     public int getLevelRequired() {
         return levelRequired;
+    }
+
+    @Override
+    public String toString() {
+        return "PackCrops {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + ", stages= " + stages + "}";
     }
 }

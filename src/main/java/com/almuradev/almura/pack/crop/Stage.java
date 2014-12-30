@@ -213,4 +213,9 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     public <T extends INode<?>> boolean hasNode(Class<T> clazz) {
         return getNode(clazz) != null;
     }
+
+    @Override
+    public String toString() {
+        return "Stage {id= " + id + "}";
+    }
 }
