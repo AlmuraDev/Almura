@@ -16,12 +16,15 @@ import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackCreator;
 import com.almuradev.almura.pack.PackKeys;
+import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
+import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapedRecipes;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapelessRecipes;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
+import com.almuradev.almura.server.network.play.S01SpawnParticle;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
 import com.flowpowered.cerealization.config.ConfigurationException;
@@ -33,6 +36,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemSeeds;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.RecipeSorter;
 
@@ -47,6 +51,7 @@ public class CommonProxy {
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
         Almura.NETWORK_FORGE.registerMessage(S00AdditionalWorldInfo.class, S00AdditionalWorldInfo.class, 0, Side.CLIENT);
+        Almura.NETWORK_FORGE.registerMessage(S01SpawnParticle.class, S01SpawnParticle.class, 1, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B00PlayerDisplayName.class, B00PlayerDisplayName.class, 0, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
         RecipeSorter.register(Almura.MOD_ID + ":shaped", QuantitiveShapedRecipes.class, SHAPED, "after:minecraft:shaped");
@@ -114,7 +119,7 @@ public class CommonProxy {
                     if (soilNode != null) {
                         //For seeds to work, they require a soil
                         ((INodeContainer) block).addNode(soilNode);
-                        final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue());
+                        final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
                         final PackSeeds
                                 seed =
                                 PackCreator
@@ -146,16 +151,26 @@ public class CommonProxy {
 
         for (Item item : pack.getItems()) {
             if (item instanceof IPackObject && item instanceof INodeContainer) {
-                final InputStream
-                        entry =
-                        Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
-                                                       ((IPackObject) item).getIdentifier() + ".yml"));
+                final InputStream entry;
+                if (item instanceof PackSeeds) {
+                    entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((PackCrops) ((ItemSeeds) item).field_150925_a).getIdentifier() + ".yml"));
+                } else {
+                    entry = Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((IPackObject) item).getIdentifier() + ".yml"));
+                }
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
-                //Recipes
-                ((INodeContainer) item).addNode(
-                        PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), item,
-                                                     reader.getNode(PackKeys.NODE_RECIPES.getKey())));
+                if (item instanceof PackSeeds) {
+                    //Recipes
+                    ((INodeContainer) item).addNode(
+                            PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), item,
+                                                         reader.getChild(((IPackObject) item).getIdentifier()).getNode(PackKeys.NODE_RECIPES.getKey())));
+                } else {
+                    //Recipes
+                    ((INodeContainer) item).addNode(
+                            PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), item,
+                                                         reader.getNode(PackKeys.NODE_RECIPES.getKey())));
+                }
+
                 entry.close();
             }
         }

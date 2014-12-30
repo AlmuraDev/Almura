@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.pack.block;
 
+import akka.routing.RandomPool;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.pack.GameObject;
@@ -177,7 +178,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
             }
             if (src.getBonusProperty().getSource()) {
                 final double chance = src.getBonusProperty().getValueWithinRange();
-                if (RangeProperty.RANDOM.nextDouble() <= 100 / chance) {
+                if (RangeProperty.RANDOM.nextDouble() <= (chance / 100)) {
                     toDrop.stackSize += src.getBonusProperty().getValueWithinRange();
                 }
             }

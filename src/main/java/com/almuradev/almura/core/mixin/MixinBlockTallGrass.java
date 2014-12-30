@@ -33,7 +33,7 @@ public abstract class MixinBlockTallGrass extends BlockBush implements IGrowable
             if (seed.getItem().getClass() == PackSeeds.class) {
                 final GrassNode grassNode = ((INodeContainer) seed.getItem()).getNode(GrassNode.class);
                 final double chance = grassNode.getChanceProperty().getValueWithinRange();
-                if (RangeProperty.RANDOM.nextDouble() <= 100 / chance) {
+                if (RangeProperty.RANDOM.nextDouble() <= (chance / 100)) {
                     seed.stackSize = grassNode.getValue().getAmountProperty().getValueWithinRange();
                 } else {
                     return ret;

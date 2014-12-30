@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.pack.crop;
 
+import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.INodeContainer;
@@ -17,8 +19,11 @@ import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
+import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
+import com.almuradev.almura.server.network.play.S01SpawnParticle;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -157,7 +162,11 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
      * @param random random
      */
     public void onGrown(World world, int x, int y, int z, Random random) {
-
+        if (!world.isRemote) {
+            System.out.println(world + " " + x + " " + y + " " + z);
+            Almura.NETWORK_FORGE.sendToAllAround(new S01SpawnParticle("happyVillager", x, y, z, 0D, 1.5D, 0D),
+                                                 new NetworkRegistry.TargetPoint(world.provider.dimensionId, x, y, z, 15));
+        }
     }
 
     /**

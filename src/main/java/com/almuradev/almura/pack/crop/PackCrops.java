@@ -8,12 +8,16 @@ package com.almuradev.almura.pack.crop;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.GrowthNode;
+import com.almuradev.almura.pack.node.INode;
+import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -25,18 +29,21 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentMap;
 
-public class PackCrops extends BlockCrops implements IPackObject, IBlockClipContainer, IBlockShapeContainer {
+public class PackCrops extends BlockCrops implements IPackObject, IBlockClipContainer, IBlockShapeContainer, INodeContainer {
 
     public static int renderId;
     private final Pack pack;
     private final String identifier;
     private final int levelRequired;
     private final String textureName;
+    private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final Map<Integer, Stage> stages;
 
     public PackCrops(Pack pack, String identifier, String textureName, int levelRequired, Map<Integer, Stage> stages) {
@@ -55,7 +62,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         final int metadata = world.getBlockMetadata(x, y, z);
         //TODO Needs serious testing
         if (metadata >= stages.size() - 1) {
-            setTickRandomly(false);
             return;
         }
         final Stage stage = stages.get(metadata);
@@ -65,12 +71,11 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
             final double
                     chance =
                     stage.getNode(GrowthNode.class).getValue().getValueWithinRange();
-
-            if (random.nextDouble() <= 100 / chance) {
+            if (random.nextDouble() <= (chance / 100)) {
                 stage.onGrowth(world, x, y, z, random);
-                world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
                 final Stage newStage = stages.get(metadata + 1);
                 newStage.onGrown(world, x, y, z, random);
+                world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
             }
         }
     }
@@ -120,9 +125,8 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int type) {
         final Stage stage = stages.get(type);
-        final IIcon icon = super.getIcon(side, type);
 
-        return stage != null ? stage.getIcon(icon, side, type) : icon;
+        return stage != null ? stage.getIcon(blockIcon, side, type) : blockIcon;
     }
 
     /**
@@ -221,4 +225,31 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     public String toString() {
         return "PackCrops {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + ", stages= " + stages + "}";
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends INode<?>> T addNode(T node) {
+        nodes.put((Class<? extends INode<?>>) node.getClass(), node);
+        MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
+        return node;
+    }
+
+    @Override
+    public void addNodes(INode<?>... nodes) {
+        for (INode<?> node : nodes) {
+            addNode(node);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends INode<?>> T getNode(Class<T> clazz) {
+        return (T) nodes.get(clazz);
+    }
+
+    @Override
+    public <T extends INode<?>> boolean hasNode(Class<T> clazz) {
+        return getNode(clazz) != null;
+    }
+
 }
