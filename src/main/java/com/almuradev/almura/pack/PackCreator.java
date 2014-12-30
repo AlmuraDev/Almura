@@ -556,11 +556,11 @@ public class PackCreator {
     }
 
     public static ConsumptionNode createConsumptionNode(Pack pack, String name, ConfigurationNode root) {
-        final float healthChange = root.getChild(PackKeys.HEALTH_CHANGE.getKey()).getFloat(PackKeys.HEALTH_CHANGE.getDefaultValue());
+        final float foodChange = root.getChild(PackKeys.FOOD_CHANGE.getKey()).getFloat(PackKeys.FOOD_CHANGE.getDefaultValue());
         final float saturationChange = root.getChild(PackKeys.SATURATION_CHANGE.getKey()).getFloat(PackKeys.SATURATION_CHANGE.getDefaultValue());
         final boolean wolfFavorite = root.getChild(PackKeys.WOLF_FAVORITE.getKey()).getBoolean(PackKeys.WOLF_FAVORITE.getDefaultValue());
         final boolean alwaysEdible = root.getChild(PackKeys.ALWAYS_EDIBLE.getKey()).getBoolean(PackKeys.ALWAYS_EDIBLE.getDefaultValue());
-        return new ConsumptionNode(true, healthChange, saturationChange, alwaysEdible, wolfFavorite);
+        return new ConsumptionNode(true, foodChange, saturationChange, alwaysEdible, wolfFavorite);
     }
 
     public static GrassNode createGrassNode(Pack pack, PackSeeds seed, ConfigurationNode root) {
