@@ -63,7 +63,7 @@ public class BlockRenderer extends MalisisRenderer {
 
         shape.resetState();
 
-        handleRotation();
+        handleRotation(shape);
 
         if (renderType == RenderType.ISBRH_INVENTORY) {
             double max = Double.MIN_VALUE;
@@ -139,12 +139,9 @@ public class BlockRenderer extends MalisisRenderer {
         throw new UnsupportedOperationException(BlockRenderer.class.getSimpleName() + " is only meant for blocks!");
     }
 
-    private void handleRotation() {
-        if (renderType == RenderType.ISBRH_WORLD && block instanceof INodeContainer && shape instanceof PackShape) {
+    private void handleRotation(Shape s) {
+        if (renderType == RenderType.ISBRH_WORLD && block instanceof INodeContainer && s instanceof PackShape) {
             final RotationNode node = ((INodeContainer) block).getNode(RotationNode.class);
-            if (node == null) {
-                return;
-            }
             if (!node.isEnabled()) {
                 return;
             }
@@ -154,67 +151,67 @@ public class BlockRenderer extends MalisisRenderer {
                 switch (rotation) {
                     case NORTH:
                         if (node.isDefaultRotate()) {
-                            shape.rotate(180f, 0, -1, 0);
+                            s.rotate(180f, 0, -1, 0);
                         }
                         break;
                     case SOUTH:
                         break;
                     case WEST:
                         if (node.isDefaultRotate()) {
-                            shape.rotate(90f, 0, -1, 0);
+                            s.rotate(90f, 0, -1, 0);
                         }
                         break;
-
                     case EAST:
                         if (node.isDefaultRotate()) {
-                            shape.rotate(90f, 0, 1, 0);
+                            s.rotate(90f, 0, 1, 0);
                         }
                         break;
-
                     case DOWN_NORTH:
+                        if (node.isDefaultRotate()) {
+                            s.rotate(180f, 0, -1, 0);
+                        }
                         if (node.isDefaultMirrorRotate()) {
-                            shape.rotate(90f, -1, 0, 0);
-                            shape.rotate(180f, 0, -1, 0);
+                            s.rotate(90f, -1, 0, 0);
                         }
                         break;
                     case DOWN_SOUTH:
-                        if (node.isDefaultMirrorRotate()) {
-                            shape.rotate(180f, -1, 0, 0);
-                            shape.rotate(90f, -1, 0, 0);
-                        }
                         break;
                     case DOWN_WEST:
+                        if (node.isDefaultRotate()) {
+                            s.rotate(90f, 0, -1, 0);
+                        }
                         if (node.isDefaultMirrorRotate()) {
-                            shape.rotate(180f, -1, 0, 0);
-                            shape.rotate(90f, 0, -1, 0);
+                            s.rotate(180f, -1, 0, 0);
                         }
                         break;
                     case DOWN_EAST:
+                        if (node.isDefaultRotate()) {
+                            s.rotate(90f, 0, 1, 0);
+                        }
                         if (node.isDefaultMirrorRotate()) {
-                            shape.rotate(180f, -1, 0, 0);
-                            shape.rotate(90f, 0, 1, 0);
+                            s.rotate(180f, -1, 0, 0);
                         }
                         break;
                     case UP_NORTH:
-                        if (node.isDefaultMirrorRotate()) {
-                            shape.rotate(180f, 0, -1, 0);
+                        if (node.isDefaultRotate()) {
+                            s.rotate(180f, 0, -1, 0);
                         }
                         break;
                     case UP_SOUTH:
                         break;
                     case UP_WEST:
-                        if (node.isDefaultMirrorRotate()) {
-                            shape.rotate(90f, 0, -1, 0);
+                        if (node.isDefaultRotate()) {
+                            s.rotate(90f, 0, -1, 0);
                         }
                         break;
                     case UP_EAST:
-                        if (node.isDefaultMirrorRotate()) {
-                            shape.rotate(90f, 0, 1, 0);
+                        if (node.isDefaultRotate()) {
+                            s.rotate(90f, 0, 1, 0);
                         }
                         break;
                 }
             } else {
-                shape.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
+                s.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
             }
         }
     }
