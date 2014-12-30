@@ -11,6 +11,7 @@ import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
@@ -26,6 +27,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Random;
 
 public class PackCrops extends BlockCrops implements IPackObject, IBlockClipContainer, IBlockShapeContainer {
@@ -34,12 +36,13 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     private final Pack pack;
     private final String identifier;
     private final int levelRequired;
-    private Stage[] stages;
+    private final Map<Integer, Stage> stages;
 
-    public PackCrops(Pack pack, String identifier, String textureName, int levelRequired) {
+    public PackCrops(Pack pack, String identifier, String textureName, int levelRequired, Map<Integer, Stage> stages) {
         this.pack = pack;
         this.identifier = identifier;
         this.levelRequired = levelRequired;
+        this.stages = stages;
         setBlockName(pack.getName() + "\\" + identifier);
         setBlockTextureName(Almura.MOD_ID.toLowerCase() + ":images/" + textureName);
         setTickRandomly(true);
@@ -49,22 +52,22 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     public void updateTick(World world, int x, int y, int z, Random random) {
         final int metadata = world.getBlockMetadata(x, y, z);
         //TODO Needs serious testing
-        if (metadata >= stages.length - 1) {
+        if (metadata >= stages.size() - 1) {
             setTickRandomly(false);
             return;
         }
-        final Stage stage = stages[metadata];
+        final Stage stage = stages.get(metadata);
         if (stage != null) {
             stage.onTick(world, x, y, z, random);
             //Get within range
             final double
                     chance =
-                    stage.growth.getValue().getValueWithinRange();
+                    stage.getNode(GrowthNode.class).getValue().getValueWithinRange();
 
             if (random.nextDouble() <= 100 / chance) {
                 stage.onGrowth(world, x, y, z, random);
                 world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
-                final Stage newStage = stages[metadata + 1];
+                final Stage newStage = stages.get(metadata + 1);
                 newStage.onGrown(world, x, y, z, random);
             }
         }
@@ -77,7 +80,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
     @Override
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
-        final Stage stage = stages[metadata];
+        final Stage stage = stages.get(metadata);
         if (stage != null) {
             return stage.getDrops(world, x, y, z, metadata, fortune);
         }
@@ -86,13 +89,13 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
     @Override
     public int getLightOpacity(IBlockAccess world, int x, int y, int z) {
-        final Stage stage = stages[world.getBlockMetadata(x, y, z)];
+        final Stage stage = stages.get(world.getBlockMetadata(x, y, z));
         return stage != null ? stage.getLightOpacity(world, x, y, z) : super.getLightOpacity(world, x, y, z);
     }
 
     @Override
     public int getExpDrop(IBlockAccess world, int metadata, int fortune) {
-        final Stage stage = stages[metadata];
+        final Stage stage = stages.get(metadata);
         return stage != null ? stage.getExpDrop(world, metadata, fortune) : super.getExpDrop(world, metadata, fortune);
     }
 
@@ -100,21 +103,21 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
-        for (Stage stage : stages) {
+        for (Stage stage : stages.values()) {
             stage.registerBlockIcons(blockIcon, textureName, register);
         }
     }
 
     @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
-        final Stage stage = stages[world.getBlockMetadata(x, y, z)];
+        final Stage stage = stages.get(world.getBlockMetadata(x, y, z));
         return stage != null ? stage.getLightValue(world, x, y, z) : super.getLightValue(world, x, y, z);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int type) {
-        final Stage stage = stages[type];
+        final Stage stage = stages.get(type);
         final IIcon icon = super.getIcon(side, type);
 
         return stage != null ? stage.getIcon(icon, side, type) : icon;
@@ -128,7 +131,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
         final AxisAlignedBB vanillaBB = super.getCollisionBoundingBoxFromPool(world, x, y, z);
         final int metadata = world.getBlockMetadata(x, y, z);
-        final Stage stage = stages[metadata];
+        final Stage stage = stages.get(metadata);
         if (stage != null) {
             final PackShape shape = stage.getShape(world, x, y, z, metadata);
             if (shape != null && !shape.useVanillaCollision) {
@@ -146,7 +149,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
         final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
         final int metadata = world.getBlockMetadata(x, y, z);
-        final Stage stage = stages[metadata];
+        final Stage stage = stages.get(metadata);
         if (stage != null) {
             final PackShape shape = stage.getShape(world, x, y, z, metadata);
             if (shape != null && !shape.useVanillaWireframe) {
@@ -168,13 +171,13 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
     @Override
     public ClippedIcon[] getClipIcons() {
-        final Stage stage = stages[0];
+        final Stage stage = stages.get(0);
         return stage == null ? null : stage.getClipIcons();
     }
 
     @Override
     public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
-        final Stage stage = stages[metadata];
+        final Stage stage = stages.get(metadata);
         if (stage != null) {
             return stage.getClipIcons(access, x, y, z, metadata);
         }
@@ -183,7 +186,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
     @Override
     public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
-        final Stage stage = stages[metadata];
+        final Stage stage = stages.get(metadata);
         if (stage != null) {
             return stage.getShape(access, x, y, z, metadata);
         }
@@ -192,13 +195,13 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
     @Override
     public PackShape getShape() {
-        final Stage stage = stages[0];
+        final Stage stage = stages.get(0);
         return stage == null ? null : stage.getShape();
     }
 
     @Override
     public void setShape(PackShape shape) {
-        for (Stage stage : stages) {
+        for (Stage stage : stages.values()) {
             stage.setShape(shape);
         }
     }

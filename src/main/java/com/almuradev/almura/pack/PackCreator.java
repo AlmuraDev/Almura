@@ -24,6 +24,7 @@ import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ConsumptionNode;
 import com.almuradev.almura.pack.node.DropsNode;
 import com.almuradev.almura.pack.node.GrassNode;
+import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RecipeNode;
 import com.almuradev.almura.pack.node.RenderNode;
@@ -120,20 +121,20 @@ public class PackCreator {
 
         final boolean
                 useVanillaBlockBounds =
-                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_RENDER.getKey()).getBoolean(PackKeys.USE_VANILLA_RENDER.getDefaultValue());
+                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_BLOCK.getKey()).getBoolean(PackKeys.USE_VANILLA_BLOCK.getDefaultValue());
         List<Double> blockBoundsCoordinates = Lists.newLinkedList();
 
         try {
-            blockBoundsCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.RENDER_BOX.getKey())
-                    .getString(PackKeys.RENDER_BOX.getDefaultValue()), 6);
+            blockBoundsCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.BLOCK_BOX.getKey())
+                    .getString(PackKeys.BLOCK_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                 Almura.LOGGER
-                        .error("Shape [" + name + "] has invalid " + PackKeys.RENDER_BOX.getKey().toLowerCase() + " coordinates. "
+                        .error("Shape [" + name + "] has invalid " + PackKeys.BLOCK_BOX.getKey().toLowerCase() + " coordinates. "
                                + e.getMessage(), e);
             } else {
                 Almura.LOGGER
-                        .error("Shape [" + name + "] has invalid " + PackKeys.RENDER_BOX.getKey().toLowerCase() + " coordinates. "
+                        .error("Shape [" + name + "] has invalid " + PackKeys.BLOCK_BOX.getKey().toLowerCase() + " coordinates. "
                                + e.getMessage());
             }
         }
@@ -298,9 +299,33 @@ public class PackCreator {
 
         final int levelRequired = reader.getChild(PackKeys.LEVEL_REQUIRED.getKey()).getInt(PackKeys.LEVEL_REQUIRED.getDefaultValue());
 
+        final Map<Integer, Stage> stages = Maps.newHashMap();
+
+        final PackCrops crop = new PackCrops(pack, name, textureName, levelRequired, stages);
+
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackCrops(pack, name, textureName, levelRequired);
+        for (String stageIdRaw : reader.getNode(PackKeys.NODE_STAGES.getKey()).getKeys(false)) {
+            final int stageId;
+            try {
+                stageId = Integer.parseInt(stageIdRaw);
+            } catch (NumberFormatException e) {
+                Almura.LOGGER.warn("Stage [" + stageIdRaw + "] in [" + name + "] in pack [" + pack.getName() + "] is not a valid integer between 0 and 15.");
+                continue;
+            }
+
+            if (stageId < 0 || stageId > 15) {
+                Almura.LOGGER.warn("Stage [" + stageIdRaw + "] in [" + name + "] in pack [" + pack.getName() + "] is not a valid integer between 0 and 15.");
+                continue;
+            }
+
+            final Stage stage = createCropStage(pack, crop, stageId, reader.getNode(PackKeys.NODE_STAGES.getKey(), stageIdRaw));
+            if (stages.put(stageId, stage) != null) {
+                Almura.LOGGER.warn("Stage [" + stageIdRaw + "] in [" + name + "] in pack [" + pack.getName() + "] already existed as a stage. Duplicate stage ID is present within the file.");
+            }
+        }
+
+        return crop;
     }
 
     public static PackSeeds createCropSeed(Pack pack, Block soil, PackCrops crop, String textureName, ConfigurationNode node)
@@ -345,9 +370,12 @@ public class PackCreator {
             Almura.LOGGER.error("Error parsing texture coordinates in [" + crop.getIdentifier() + "\\stage\\" + id + ". " + nfe.getMessage());
             textureCoordinates = Maps.newHashMap();
         }
+
+        final GrowthNode growthNode = createGrowthNode(pack, crop.getIdentifier(), node.getNode(PackKeys.NODE_GROWTH.getKey()));
+
         final LightNode lightNode = createLightNode(pack, crop.getIdentifier(), node.getNode(PackKeys.NODE_LIGHT.getKey()));
 
-        return new Stage(crop, id, textureCoordinates, shapeName, null);
+        return new Stage(crop, id, textureCoordinates, shapeName, growthNode, lightNode);
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {
@@ -718,5 +746,10 @@ public class PackCreator {
             throw new InvalidRecipeException(
                     "Result [" + result + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is not a block or item.");
         }
+    }
+
+    private static GrowthNode createGrowthNode(Pack pack, String name, ConfigurationNode node) {
+        final Pair<Double, Double> chancePair = PackUtil.getRange(Double.class, node.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0);
+        return new GrowthNode(new RangeProperty<>(Double.class, true, chancePair));
     }
 }

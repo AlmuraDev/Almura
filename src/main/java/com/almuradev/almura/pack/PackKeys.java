@@ -35,10 +35,10 @@ public class PackKeys {
     public static final DefaultedKey<String> NODE_BOUNDS = new DefaultedKey<>("bounds", "");
     public static final DefaultedKey<Boolean> USE_VANILLA_COLLISION = new DefaultedKey<>("use-vanilla-collision", true);
     public static final DefaultedKey<Boolean> USE_VANILLA_WIREFRAME = new DefaultedKey<>("use-vanilla-wireframe", true);
-    public static final DefaultedKey<Boolean> USE_VANILLA_RENDER = new DefaultedKey<>("use-vanilla-block-bounds", true);
+    public static final DefaultedKey<Boolean> USE_VANILLA_BLOCK = new DefaultedKey<>("use-vanilla-block-bounds", true);
     public static final DefaultedKey<String> COLLISION_BOX = new DefaultedKey<>("collision-box", "");
     public static final DefaultedKey<String> WIREFRAME_BOX = new DefaultedKey<>("wireframe-box", "");
-    public static final DefaultedKey<String> RENDER_BOX = new DefaultedKey<>("block-bounds", "");
+    public static final DefaultedKey<String> BLOCK_BOX = new DefaultedKey<>("block-bounds", "");
     //CONSUMPTION NODE
     public static final DefaultedKey<String> NODE_CONSUMPTION = new DefaultedKey<>("consumption", "");
     public static final DefaultedKey<Float> SATURATION_CHANGE = new DefaultedKey<>("saturation-change", 1f);
@@ -85,8 +85,10 @@ public class PackKeys {
     public static final DefaultedKey<String> NODE_BIOME = new DefaultedKey<>("biome", "");
     public static final DefaultedKey<String> TEMPERATURE_REQUIRED = new DefaultedKey<>("temperature-required", "");
     public static final DefaultedKey<String> HUMIDITY_REQUIRED = new DefaultedKey<>("humidity-required", "");
-    //SEED NODE
+    //CROPS NODE
+    public static final DefaultedKey<String> NODE_STAGES = new DefaultedKey<>("stages", "");
     public static final DefaultedKey<String> NODE_SEED = new DefaultedKey<>("seed", "");
+    public static final DefaultedKey<String> NODE_GROWTH = new DefaultedKey<>("growth", "");
 
     public static class DefaultedKey<T> {
 

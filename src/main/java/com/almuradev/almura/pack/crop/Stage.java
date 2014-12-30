@@ -7,13 +7,18 @@ package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IState;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.GrowthNode;
+import com.almuradev.almura.pack.node.INode;
+import com.almuradev.almura.pack.node.LightNode;
+import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -22,29 +27,31 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentMap;
 
-public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockShapeContainer {
+public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockShapeContainer, INodeContainer {
 
     private final PackCrops block;
     private final int id;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
+    private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String shapeName;
-    //PROPERTY
-    public GrowthNode growth;
     private PackShape shape;
     private ClippedIcon[] clippedIcons;
 
-    public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName, GrowthNode growth) {
+    public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName, GrowthNode growth, LightNode light) {
         this.block = block;
         this.id = id;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.shapeName = shapeName;
-        this.growth = growth;
+        addNode(growth);
+        addNode(light);
     }
 
     @Override
@@ -179,5 +186,31 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
 
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
         return Integer.MIN_VALUE;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends INode<?>> T addNode(T node) {
+        nodes.put((Class<? extends INode<?>>) node.getClass(), node);
+        MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
+        return node;
+    }
+
+    @Override
+    public void addNodes(INode<?>... nodes) {
+        for (INode<?> node : nodes) {
+            addNode(node);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends INode<?>> T getNode(Class<T> clazz) {
+        return (T) nodes.get(clazz);
+    }
+
+    @Override
+    public <T extends INode<?>> boolean hasNode(Class<T> clazz) {
+        return getNode(clazz) != null;
     }
 }

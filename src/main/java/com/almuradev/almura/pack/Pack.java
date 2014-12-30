@@ -131,9 +131,12 @@ public class Pack {
                         final Block block = PackCreator.createBlockFromReader(pack, name, reader);
                         pack.blocks.add(block);
                         break;
+                    case "CROP":
+                        final Block crop = PackCreator.createCropFromReader(pack, name, reader);
+                        pack.blocks.add(crop);
                     default:
                         Almura.LOGGER
-                                .warn("Unknown yml type [" + type + "] in file [" + path.getFileName() + "]. Valid types are [ITEM, FOOD, BLOCK].");
+                                .warn("Unknown yml type [" + type + "] in file [" + path.getFileName() + "]. Valid types are [ITEM, FOOD, BLOCK, CROP].");
                         continue;
                 }
                 entry.close();
