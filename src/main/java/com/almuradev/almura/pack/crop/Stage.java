@@ -184,7 +184,7 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     }
 
     public int getLightOpacity(IBlockAccess world, int x, int y, int z) {
-        return Integer.MIN_VALUE;
+        return getNode(LightNode.class).getOpacity();
     }
 
     public int getExpDrop(IBlockAccess world, int metadata, int fortune) {
@@ -192,7 +192,7 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     }
 
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
-        return Integer.MIN_VALUE;
+        return (int) getNode(LightNode.class).getEmission();
     }
 
     @Override
