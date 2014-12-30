@@ -1,4 +1,5 @@
 debug:
     all: false
     language: false
-    pack: true
+    pack: false
+    mappings: false
