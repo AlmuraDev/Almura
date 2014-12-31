@@ -37,7 +37,6 @@ import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemSeeds;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.RecipeSorter;
 
 import java.io.IOException;
@@ -73,6 +72,15 @@ public class CommonProxy {
             }
         }
 
+        for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
+            try {
+                onLoadFinished(entry.getValue());
+            } catch (IOException | ConfigurationException e) {
+                //TODO Better exception handling
+                e.printStackTrace();
+            }
+        }
+
         LanguageRegistry.injectIntoForge();
 
         for (Languages entry : Languages.values()) {
@@ -83,13 +91,16 @@ public class CommonProxy {
         }
     }
 
+    //Stage 1 loader
     public void onCreate(Pack pack) {
+        //Stage 1a -> Register blocks
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject) {
                 GameRegistry.registerBlock(block, ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
             }
         }
 
+        //Stage 1b -> Register items
         for (Item item : pack.getItems()) {
             if (item instanceof IPackObject) {
                 GameRegistry.registerItem(item, ((IPackObject) item).getPack().getName() + "\\" + ((IPackObject) item).getIdentifier());
@@ -99,10 +110,10 @@ public class CommonProxy {
         Almura.LOGGER.info("Loaded -> " + pack);
     }
 
+    //Stage 2 loader
     private void onPostCreate(Pack pack) throws IOException, ConfigurationException {
         final List<Item> seedsToAdd = Lists.newArrayList();
 
-        //Order is important
         //Stage 2a -> Break/Collision, Seeds, Stage Break/Collision
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
@@ -162,7 +173,10 @@ public class CommonProxy {
         for (Item item : seedsToAdd) {
             pack.addItem(item);
         }
+    }
 
+    //Stage 3 loader
+    private void onLoadFinished(Pack pack) throws IOException, ConfigurationException {
         //Stage 3a -> Block Recipes
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
