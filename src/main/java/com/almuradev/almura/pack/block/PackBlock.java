@@ -29,7 +29,6 @@ import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -189,7 +188,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
                     modchance =
                     ForgeEventFactory.fireBlockHarvesting(drops, world, this, x, y, z, metadata, fortune, 1.0f, false, harvesters.get());
             for (ItemStack is : drops) {
-                if (modchance <= RangeProperty.RANDOM.nextFloat() && world.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
+                if (RangeProperty.RANDOM.nextFloat() <= modchance && world.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
                     if (captureDrops.get()) {
                         capturedDrops.get().add(is);
                         return;
