@@ -9,14 +9,14 @@ import net.minecraft.entity.Entity;
 
 public class CollisionProperty extends EntityProperty {
 
-    private final float healthChange;
+    private final RangeProperty<Float> healthRange;
 
-    public CollisionProperty(boolean isEnabled, Class<? extends Entity> clazz, float healthChange) {
+    public CollisionProperty(boolean isEnabled, Class<? extends Entity> clazz, RangeProperty<Float> healthRange) {
         super(isEnabled, clazz);
-        this.healthChange = healthChange;
+        this.healthRange = healthRange;
     }
 
-    public float getHealthChange() {
-        return healthChange;
+    public RangeProperty<Float> getHealthRange() {
+        return healthRange;
     }
 }

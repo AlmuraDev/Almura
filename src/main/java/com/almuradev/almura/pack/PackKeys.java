@@ -26,8 +26,8 @@ public class PackKeys {
     public static final DefaultedKey<Integer> DATA = new DefaultedKey<>("data", 0);
     public static final DefaultedKey<Integer> LEVEL_REQUIRED = new DefaultedKey<>("level-required", 0);
     public static final DefaultedKey<Boolean> ENABLED = new DefaultedKey<>("enabled", Boolean.FALSE);
-    public static final DefaultedKey<Float> FOOD_CHANGE = new DefaultedKey<>("food-change", 0f);
-    public static final DefaultedKey<Float> HEALTH_CHANGE = new DefaultedKey<>("health-change", 0f);
+    public static final DefaultedKey<String> FOOD_CHANGE = new DefaultedKey<>("food-change", "");
+    public static final DefaultedKey<String> HEALTH_CHANGE = new DefaultedKey<>("health-change", "");
     public static final DefaultedKey<String> EXHAUSTION_CHANGE = new DefaultedKey<>("exhaustion-change", "");
     public static final DefaultedKey<String> CHANCE = new DefaultedKey<>("chance", "");
     public static final DefaultedKey<String> SHAPES = new DefaultedKey<>("shapes", "");
@@ -41,7 +41,7 @@ public class PackKeys {
     public static final DefaultedKey<String> BLOCK_BOX = new DefaultedKey<>("block-bounds", "");
     //CONSUMPTION NODE
     public static final DefaultedKey<String> NODE_CONSUMPTION = new DefaultedKey<>("consumption", "");
-    public static final DefaultedKey<Float> SATURATION_CHANGE = new DefaultedKey<>("saturation-change", 1f);
+    public static final DefaultedKey<String> SATURATION_CHANGE = new DefaultedKey<>("saturation-change", "");
     public static final DefaultedKey<Boolean> ALWAYS_EDIBLE = new DefaultedKey<>("always-edible", Boolean.FALSE);
     public static final DefaultedKey<Boolean> WOLF_FAVORITE = new DefaultedKey<>("wolf-favorite", Boolean.FALSE);
     //RENDER NODE

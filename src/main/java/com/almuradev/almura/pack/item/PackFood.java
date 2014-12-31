@@ -27,6 +27,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
@@ -44,23 +45,23 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     private String textureName;
     private PackShape shape;
     private List<String> tooltip;
-
+    private final ConsumptionNode consumption;
     public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName,
                     ConsumptionNode consumptionNode) {
-        super((int) consumptionNode.getHeal(), consumptionNode.getSaturation(), consumptionNode.isWolfFavorite());
+        super(-1, -1, consumptionNode.isWolfFavorite());
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinates = textureCoordinates;
         this.textureName = textureName;
         this.shapeName = shapeName;
         this.tooltip = tooltip;
-        addNode(consumptionNode);
+        consumption = addNode(consumptionNode);
         setUnlocalizedName(pack.getName() + "\\" + identifier);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
-        if (consumptionNode.isAlwaysEdible()) {
+        if (consumption.isAlwaysEdible()) {
             setAlwaysEdible();
         }
     }
@@ -88,6 +89,25 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(this, textureName).register((TextureMap) register);
         clippedIcons = PackUtil.generateClippedIconsFromCoordinates(itemIcon, textureName, textureCoordinates);
+    }
+
+    @Override
+    public ItemStack onEaten(ItemStack stack, World world, EntityPlayer player) {
+        final ItemStack result = super.onEaten(stack, world, player);
+        if (!world.isRemote) {
+            player.heal(consumption.getHealthRange().getValueWithinRange());
+        }
+        return result;
+    }
+
+    @Override
+    public int func_150905_g(ItemStack stack) {
+        return consumption.getFoodRange().getValueWithinRange();
+    }
+
+    @Override
+    public float func_150906_h(ItemStack stack) {
+        return consumption.getSaturationRange().getValueWithinRange();
     }
 
     @Override

@@ -65,6 +65,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import scala.Int;
 
 import java.util.EnumMap;
 import java.util.Iterator;
@@ -505,10 +506,13 @@ public class PackCreator {
                 final boolean
                         enabled =
                         collisionSourceConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
-                final float
-                        healthChange =
-                        collisionSourceConfigurationNode.getChild(PackKeys.HEALTH_CHANGE.getKey()).getFloat(PackKeys.HEALTH_CHANGE.getDefaultValue());
-                collisionProperties.add(new CollisionProperty(enabled, entityClazz, healthChange));
+
+                final RangeProperty<Float>
+                        healthRange =
+                        new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
+                                                                                 collisionSourceConfigurationNode.getChild(PackKeys.HEALTH_CHANGE.getKey())
+                                                                                         .getString(PackKeys.HEALTH_CHANGE.getDefaultValue()), 0f));
+                collisionProperties.add(new CollisionProperty(enabled, entityClazz, healthRange));
             }
         }
         return new CollisionNode(collisionEnabled, collisionProperties);
@@ -588,11 +592,26 @@ public class PackCreator {
     }
 
     public static ConsumptionNode createConsumptionNode(Pack pack, String name, ConfigurationNode root) {
-        final float foodChange = root.getChild(PackKeys.FOOD_CHANGE.getKey()).getFloat(PackKeys.FOOD_CHANGE.getDefaultValue());
-        final float saturationChange = root.getChild(PackKeys.SATURATION_CHANGE.getKey()).getFloat(PackKeys.SATURATION_CHANGE.getDefaultValue());
+        final RangeProperty<Integer>
+                foodRange =
+                new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
+                                                                          root.getChild(PackKeys.FOOD_CHANGE.getKey())
+                                                                                  .getString(PackKeys.FOOD_CHANGE.getDefaultValue()), 0));
+        final RangeProperty<Float>
+                saturationRange =
+                new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
+                                                                          root.getChild(PackKeys.SATURATION_CHANGE.getKey())
+                                                                                  .getString(PackKeys.SATURATION_CHANGE.getDefaultValue()), 0f));
+
+        final RangeProperty<Float>
+                healthRange =
+                new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
+                                                                         root.getChild(PackKeys.HEALTH_CHANGE.getKey())
+                                                                                 .getString(PackKeys.HEALTH_CHANGE.getDefaultValue()), 0f));
+
         final boolean wolfFavorite = root.getChild(PackKeys.WOLF_FAVORITE.getKey()).getBoolean(PackKeys.WOLF_FAVORITE.getDefaultValue());
         final boolean alwaysEdible = root.getChild(PackKeys.ALWAYS_EDIBLE.getKey()).getBoolean(PackKeys.ALWAYS_EDIBLE.getDefaultValue());
-        return new ConsumptionNode(true, foodChange, saturationChange, alwaysEdible, wolfFavorite);
+        return new ConsumptionNode(true, foodRange, saturationRange, healthRange, alwaysEdible, wolfFavorite);
     }
 
     public static GrassNode createGrassNode(Pack pack, PackSeeds seed, ConfigurationNode root) {

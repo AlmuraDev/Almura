@@ -5,17 +5,20 @@
  */
 package com.almuradev.almura.pack.node;
 
+import com.almuradev.almura.pack.node.property.RangeProperty;
+
 public class ConsumptionNode implements INode<Boolean> {
 
     private final boolean isEnabled;
-    private final float heal;
-    private final float saturation;
+    private final RangeProperty<Integer> foodRange;
+    private final RangeProperty<Float> saturationRange, healthRange;
     private final boolean alwaysEdible, wolfFavorite;
 
-    public ConsumptionNode(boolean isEnabled, float heal, float saturation, boolean alwaysEdible, boolean wolfFavorite) {
+    public ConsumptionNode(boolean isEnabled, RangeProperty<Integer> foodRange, RangeProperty<Float> saturationRange, RangeProperty<Float> healthRange, boolean alwaysEdible, boolean wolfFavorite) {
         this.isEnabled = isEnabled;
-        this.heal = heal;
-        this.saturation = saturation;
+        this.foodRange = foodRange;
+        this.saturationRange = saturationRange;
+        this.healthRange = healthRange;
         this.alwaysEdible = alwaysEdible;
         this.wolfFavorite = wolfFavorite;
     }
@@ -25,12 +28,16 @@ public class ConsumptionNode implements INode<Boolean> {
         return isEnabled;
     }
 
-    public float getHeal() {
-        return heal;
+    public RangeProperty<Float> getHealthRange() {
+        return healthRange;
     }
 
-    public float getSaturation() {
-        return saturation;
+    public RangeProperty<Integer> getFoodRange() {
+        return foodRange;
+    }
+
+    public RangeProperty<Float> getSaturationRange() {
+        return saturationRange;
     }
 
     public boolean isAlwaysEdible() {
