@@ -14,6 +14,8 @@ import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -52,6 +54,7 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     @SuppressWarnings("unchecked")
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
         for (String str : tooltip) {
@@ -60,6 +63,7 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage(int p_77617_1_) {
         if (PackUtil.isEmptyClip(clippedIcons)) {
             return super.getIconFromDamage(p_77617_1_);
@@ -68,6 +72,7 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(this, textureName).register((TextureMap) register);
         clippedIcons = PackUtil.generateClippedIconsFromCoordinates(itemIcon, textureName, textureCoordinates);

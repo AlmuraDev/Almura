@@ -20,6 +20,8 @@ import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -63,6 +65,7 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     @SuppressWarnings("unchecked")
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
         for (String str : tooltip) {
@@ -71,6 +74,7 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage(int damage) {
         if (PackUtil.isEmptyClip(clippedIcons)) {
             return super.getIconFromDamage(damage);
@@ -79,6 +83,7 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(this, textureName).register((TextureMap) register);
         clippedIcons = PackUtil.generateClippedIconsFromCoordinates(itemIcon, textureName, textureCoordinates);
@@ -117,7 +122,12 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     @Override
     @SuppressWarnings("unchecked")
     public <T extends INode<?>> T addNode(T node) {
-        nodes.put((Class<? extends INode<?>>) node.getClass(), node);
+        boolean exists = nodes.put((Class<? extends INode<?>>) node.getClass(), node) != null;
+        if (!exists && node.getClass() == GrassNode.class) {
+            if (((GrassNode) node).isEnabled()) {
+                MinecraftForge.addGrassSeed(new ItemStack(this, 1, 0), 0);
+            }
+        }
         MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
         return node;
     }
@@ -138,15 +148,6 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     @Override
     public <T extends INode<?>> boolean hasNode(Class<T> clazz) {
         return getNode(clazz) != null;
-    }
-
-    @SubscribeEvent
-    public void onAddNodeEvent(AddNodeEvent event) {
-        if (event.getNode() instanceof GrassNode) {
-            if (((GrassNode) event.getNode()).isEnabled()) {
-                MinecraftForge.addGrassSeed(new ItemStack(this, 1, 0), 0);
-            }
-        }
     }
 
     @Override

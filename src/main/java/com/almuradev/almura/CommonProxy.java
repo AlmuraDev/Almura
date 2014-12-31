@@ -19,7 +19,6 @@ import com.almuradev.almura.pack.PackKeys;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
-import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapedRecipes;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapelessRecipes;
@@ -88,18 +87,12 @@ public class CommonProxy {
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject) {
                 GameRegistry.registerBlock(block, ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
-                if (block instanceof INodeContainer) {
-                    MinecraftForge.EVENT_BUS.register(block);
-                }
             }
         }
 
         for (Item item : pack.getItems()) {
             if (item instanceof IPackObject) {
                 GameRegistry.registerItem(item, ((IPackObject) item).getPack().getName() + "\\" + ((IPackObject) item).getIdentifier());
-                if (item instanceof INodeContainer) {
-                    MinecraftForge.EVENT_BUS.register(item);
-                }
             }
         }
 
@@ -140,10 +133,8 @@ public class CommonProxy {
                                                 + "] is trying to add seed [" + seed.getIdentifier()
                                                 + "] but it already exists. You may only have one seed per crop.");
                         } else {
-                            System.out.println(seed.getPack().getName() + "\\" + seed.getIdentifier());
                             GameRegistry.registerItem(seed, seed.getPack().getName() + "\\" + seed.getIdentifier());
                             seedsToAdd.add(seed);
-                            MinecraftForge.EVENT_BUS.register(seed);
                         }
 
                         for (Stage stage : ((PackCrops) block).getStages().values()) {

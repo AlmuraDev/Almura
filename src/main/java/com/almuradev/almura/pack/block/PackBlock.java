@@ -67,12 +67,12 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private final String shapeName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String textureName;
+    private ClippedIcon[] clippedIcons;
+    private PackShape shape;
     private RenderNode renderNode;
     private RotationNode rotationNode;
     private BreakNode breakNode;
     private CollisionNode collisionNode;
-    private ClippedIcon[] clippedIcons;
-    private PackShape shape;
 
     public PackBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
                      float hardness,
@@ -289,6 +289,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @SuppressWarnings("unchecked")
     public <T extends INode<?>> T addNode(T node) {
         nodes.put((Class<? extends INode<?>>) node.getClass(), node);
+        if (node.getClass() == BreakNode.class) {
+            breakNode = (BreakNode) node;
+        } else if (node.getClass() == CollisionNode.class) {
+            collisionNode = (CollisionNode) node;
+        }
         MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
         return node;
     }
@@ -309,15 +314,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public <T extends INode<?>> boolean hasNode(Class<T> clazz) {
         return getNode(clazz) != null;
-    }
-
-    @SubscribeEvent
-    public void onAddNodeEvent(AddNodeEvent event) {
-        if (event.getNode() instanceof BreakNode) {
-            breakNode = (BreakNode) event.getNode();
-        } else if (event.getNode() instanceof CollisionNode) {
-            collisionNode = (CollisionNode) event.getNode();
-        }
     }
 
     @Override

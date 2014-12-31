@@ -18,6 +18,8 @@ import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Maps;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -38,7 +40,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     private final Map<Integer, List<Integer>> textureCoordinates;
     private final String shapeName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
-    public ClippedIcon[] clippedIcons;
+    private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
     private List<String> tooltip;
@@ -64,6 +66,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     @SuppressWarnings("unchecked")
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
         for (String str : tooltip) {
@@ -72,6 +75,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage(int p_77617_1_) {
         if (PackUtil.isEmptyClip(clippedIcons)) {
             return super.getIconFromDamage(p_77617_1_);
@@ -80,6 +84,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(this, textureName).register((TextureMap) register);
         clippedIcons = PackUtil.generateClippedIconsFromCoordinates(itemIcon, textureName, textureCoordinates);

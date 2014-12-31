@@ -680,7 +680,6 @@ public class PackCreator {
                 }
                 final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0]);
                 if (!gameObject.isPresent()) {
-                    Thread.dumpStack();
                     throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
                                                      + "] cannot be registered. Ingredient [" + identifierCombined + "] was not found.");
                 } else {
