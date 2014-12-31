@@ -18,6 +18,8 @@ import com.almuradev.almura.pack.PackCreator;
 import com.almuradev.almura.pack.PackKeys;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
+import com.almuradev.almura.pack.crop.Stage;
+import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapedRecipes;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapelessRecipes;
@@ -26,6 +28,7 @@ import com.almuradev.almura.server.network.play.S01SpawnParticle;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
 import com.flowpowered.cerealization.config.ConfigurationException;
+import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -136,12 +139,28 @@ public class CommonProxy {
                             seedsToAdd.add(seed);
                             MinecraftForge.EVENT_BUS.register(seed);
                         }
+
+                        for (Stage stage : ((PackCrops) block).getStages().values()) {
+                            final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
+                            stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
+                            stage.addNode(PackCreator.createCollisionNode(pack, stage.getIdentifier(), stageNode.getNode(PackKeys.NODE_COLLISION.getKey())));
+                        }
                     }
+                } else {
+                    //Break
+                    ((INodeContainer) block).addNode(
+                            PackCreator.createBreakNode(pack, ((IPackObject) block).getIdentifier(), reader.getNode(PackKeys.NODE_BREAK.getKey())));
+
+                    //Collision
+                    ((INodeContainer) block).addNode(
+                            PackCreator.createCollisionNode(pack, ((IPackObject) block).getIdentifier(), reader.getNode(PackKeys.NODE_COLLISION.getKey())));
+
+                    //Recipes
+                    ((INodeContainer) block).addNode(
+                            PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), block,
+                                                         reader.getNode(PackKeys.NODE_RECIPES.getKey())));
                 }
-                //Recipes
-                ((INodeContainer) block).addNode(
-                        PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), block,
-                                                     reader.getNode(PackKeys.NODE_RECIPES.getKey())));
+
                 entry.close();
             }
         }

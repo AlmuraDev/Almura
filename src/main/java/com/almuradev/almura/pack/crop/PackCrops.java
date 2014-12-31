@@ -33,6 +33,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentMap;
@@ -218,10 +219,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         return "";
     }
 
-    public int getLevelRequired() {
-        return levelRequired;
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public <T extends INode<?>> T addNode(T node) {
@@ -246,6 +243,14 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     @Override
     public <T extends INode<?>> boolean hasNode(Class<T> clazz) {
         return getNode(clazz) != null;
+    }
+
+    public int getLevelRequired() {
+        return levelRequired;
+    }
+
+    public Map<Integer, Stage> getStages() {
+        return Collections.unmodifiableMap(stages);
     }
 
     @Override

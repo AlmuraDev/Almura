@@ -496,6 +496,7 @@ public class PackCreator {
                     }
                 }
                 final Class<? extends Entity> entityClazz = (Class<? extends Entity>) EntityList.stringToClassMapping.get(entityIdentifier);
+                System.out.println(EntityList.stringToClassMapping);
                 if (entityClazz == null) {
                     Almura.LOGGER.warn("Entity source [" + rawCollisionSource + "] in [" + name + "] for modid [" + entityIdentifierSplit[0]
                                        + "] in pack [" + pack.getName() + "] is not a registered Entity.");
@@ -526,9 +527,10 @@ public class PackCreator {
         final Set<ToolsNode> tools = Sets.newHashSet();
 
         for (String rawToolSource : toolsConfigurationNode.getKeys(false)) {
-            final Optional<GameObject> tool = GameObjectMapper.getGameObject(rawToolSource);
+            final Pair<String, String> modidIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawToolSource);
+            final Optional<GameObject> tool = GameObjectMapper.getGameObject(modidIdentifier.getKey(), modidIdentifier.getValue());
             if (!rawToolSource.equals("none") && !tool.isPresent()) {
-                Almura.LOGGER.warn("Tool source [" + rawToolSource + "] in [" + name + "] for mod [" + tool.get().modid + "] in pack [" + pack
+                Almura.LOGGER.warn("Tool source [" + modidIdentifier.getValue() + "] in [" + name + "] for mod [" + modidIdentifier.getKey() + "] in pack [" + pack
                                    + "] is not a registered Block or Item.");
                 continue;
             }
