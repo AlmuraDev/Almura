@@ -34,6 +34,9 @@ public class PackUtil {
             textureCoordinatesByFace.put(i, parseStringToNumericList(Integer.class, value.get(i), 4));
         }
 
+        if (textureCoordinatesByFace.isEmpty()) {
+            throw new NumberFormatException("No texture coordinates were provided.");
+        }
         return textureCoordinatesByFace;
     }
 

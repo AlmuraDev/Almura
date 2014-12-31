@@ -14,6 +14,7 @@ import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
+import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Lists;
@@ -222,11 +223,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     }
 
     @Override
-    public String toString() {
-        return "PackCrops {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + ", stages= " + stages + "}";
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T extends INode<?>> T addNode(T node) {
         nodes.put((Class<? extends INode<?>>) node.getClass(), node);
@@ -252,4 +248,8 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         return getNode(clazz) != null;
     }
 
+    @Override
+    public String toString() {
+        return "PackCrops {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + ", stages= " + stages + "}";
+    }
 }

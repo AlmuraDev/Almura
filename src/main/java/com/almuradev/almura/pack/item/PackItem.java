@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,14 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
         for (String str : tooltip) {
             list.add(str);
         }
+    }
+
+    @Override
+    public IIcon getIconFromDamage(int p_77617_1_) {
+        if (PackUtil.isEmptyClip(clippedIcons)) {
+            return super.getIconFromDamage(p_77617_1_);
+        }
+        return clippedIcons[0];
     }
 
     @Override

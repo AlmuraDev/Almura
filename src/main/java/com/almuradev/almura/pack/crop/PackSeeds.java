@@ -27,6 +27,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
@@ -67,6 +68,14 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
         for (String str : tooltip) {
             list.add(str);
         }
+    }
+
+    @Override
+    public IIcon getIconFromDamage(int p_77617_1_) {
+        if (PackUtil.isEmptyClip(clippedIcons)) {
+            return super.getIconFromDamage(p_77617_1_);
+        }
+        return clippedIcons[0];
     }
 
     @Override

@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
@@ -70,6 +71,14 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
         }
     }
 
+    @Override
+    public IIcon getIconFromDamage(int p_77617_1_) {
+        if (PackUtil.isEmptyClip(clippedIcons)) {
+            return super.getIconFromDamage(p_77617_1_);
+        }
+        return clippedIcons[0];
+    }
+    
     @Override
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(this, textureName).register((TextureMap) register);

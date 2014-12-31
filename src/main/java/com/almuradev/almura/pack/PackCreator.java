@@ -376,11 +376,11 @@ public class PackCreator {
             textureCoordinates = Maps.newHashMap();
         }
 
-        final GrowthNode growthNode = createGrowthNode(pack, crop.getIdentifier(), node.getNode(PackKeys.NODE_GROWTH.getKey()));
+        final GrowthNode growthNode = createGrowthNode(pack, crop.getIdentifier() + "\\stage\\" + id, node.getNode(PackKeys.NODE_GROWTH.getKey()));
+        final LightNode lightNode = createLightNode(pack, crop.getIdentifier() + "\\stage\\" + id, node.getNode(PackKeys.NODE_LIGHT.getKey()));
+        final RenderNode renderNode = createRenderNode(pack, crop.getIdentifier() + "\\stage\\" + id, node.getNode(PackKeys.NODE_RENDER.getKey()));
 
-        final LightNode lightNode = createLightNode(pack, crop.getIdentifier(), node.getNode(PackKeys.NODE_LIGHT.getKey()));
-
-        return new Stage(crop, id, textureCoordinates, shapeName, growthNode, lightNode);
+        return new Stage(crop, id, textureCoordinates, shapeName, growthNode, lightNode, renderNode);
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {

@@ -17,6 +17,7 @@ import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
+import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.server.network.play.S01SpawnParticle;
 import com.google.common.collect.Lists;
@@ -49,13 +50,14 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     private ClippedIcon[] clippedIcons;
 
     public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName, GrowthNode growth,
-                 LightNode light) {
+                 LightNode light, RenderNode render) {
         this.block = block;
         this.id = id;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.shapeName = shapeName;
         addNode(growth);
         addNode(light);
+        addNode(render);
     }
 
     @Override
