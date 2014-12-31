@@ -97,7 +97,7 @@ public class AlmuraMainMenu extends AlmuraGui {
         closeButton.setSize(50, 15);
         closeButton.setName("BTNCLOSE");
 
-        final UILabel copyright1 = new UILabel(this, ChatColor.WHITE + "AlmuraDev ï¿½ 2015.");
+        final UILabel copyright1 = new UILabel(this, ChatColor.WHITE + "AlmuraDev © 2015.");
         copyright1.setPosition(0, -22, Anchor.CENTER | Anchor.BOTTOM);
         copyright1.setFontScale(0.7F);
 

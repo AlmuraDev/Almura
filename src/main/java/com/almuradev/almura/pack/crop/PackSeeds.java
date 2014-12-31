@@ -71,9 +71,9 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
-    public IIcon getIconFromDamage(int p_77617_1_) {
+    public IIcon getIconFromDamage(int damage) {
         if (PackUtil.isEmptyClip(clippedIcons)) {
-            return super.getIconFromDamage(p_77617_1_);
+            return super.getIconFromDamage(damage);
         }
         return clippedIcons[0];
     }
