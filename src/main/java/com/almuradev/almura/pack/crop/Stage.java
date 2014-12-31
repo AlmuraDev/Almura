@@ -180,10 +180,6 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
 
     }
 
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
-        return Lists.newArrayList();
-    }
-
     public int getLightOpacity(IBlockAccess world, int x, int y, int z) {
         return getNode(LightNode.class).getOpacity();
     }

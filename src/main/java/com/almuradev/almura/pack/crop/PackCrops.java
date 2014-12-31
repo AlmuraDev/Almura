@@ -6,31 +6,43 @@
 package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.pack.GameObject;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.RenderNode;
+import com.almuradev.almura.pack.node.ToolsNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
+import com.almuradev.almura.pack.node.property.DropProperty;
+import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,15 +100,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     }
 
     @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
-        final Stage stage = stages.get(metadata);
-        if (stage != null) {
-            return stage.getDrops(world, x, y, z, metadata, fortune);
-        }
-        return Lists.newArrayList();
-    }
-
-    @Override
     public int getLightOpacity(IBlockAccess world, int x, int y, int z) {
         final Stage stage = stages.get(world.getBlockMetadata(x, y, z));
         return stage != null ? stage.getLightOpacity(world, x, y, z) : super.getLightOpacity(world, x, y, z);
@@ -129,6 +132,74 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         final Stage stage = stages.get(type);
 
         return stage != null ? stage.getIcon(blockIcon, side, type) : blockIcon;
+    }
+
+    //TODO Check this come 1.8
+    @Override
+    public void harvestBlock(World world, EntityPlayer player, int x, int y, int z, int metadata) {
+        final Stage stage = stages.get(metadata);
+        if (stage == null) {
+            return;
+        }
+        player.addStat(StatList.mineBlockStatArray[getIdFromBlock(this)], 1);
+        final ItemStack held = player.getHeldItem();
+        ToolsNode toolsProperty = null;
+        for (ToolsNode prop : stage.getNode(BreakNode.class).getValue()) {
+            if (held == null && prop instanceof ToolsNode.OffHand) {
+                toolsProperty = prop;
+                break;
+            }
+            if (held != null && prop.getTool().minecraftObject == held.getItem()) {
+                toolsProperty = prop;
+                break;
+            }
+        }
+
+        if (toolsProperty == null) {
+            return;
+        }
+
+        player.addExhaustion(toolsProperty.getExhaustionRange().getValueWithinRange());
+        final ArrayList<ItemStack> drops = Lists.newArrayList();
+        for (DropProperty src : toolsProperty.getValue().getValue()) {
+            final GameObject source = src.getSource();
+            final ItemStack toDrop;
+            if (source.isBlock()) {
+                toDrop = new ItemStack((Block) source.minecraftObject, src.getAmountProperty().getValueWithinRange(), src.getData());
+            } else {
+                toDrop = new ItemStack((Item) source.minecraftObject, src.getAmountProperty().getValueWithinRange(), src.getData());
+            }
+            if (src.getBonusProperty().getSource()) {
+                final double chance = src.getBonusProperty().getValueWithinRange();
+                if (RangeProperty.RANDOM.nextDouble() <= (chance / 100)) {
+                    toDrop.stackSize += src.getBonusProperty().getValueWithinRange();
+                }
+            }
+            drops.add(toDrop);
+        }
+        harvesters.set(player);
+        if (!world.isRemote && !world.restoringBlockSnapshots) {
+            final int fortune = EnchantmentHelper.getFortuneModifier(player);
+            final float
+                    modchance =
+                    ForgeEventFactory.fireBlockHarvesting(drops, world, this, x, y, z, metadata, fortune, 1.0f, false, harvesters.get());
+            for (ItemStack is : drops) {
+                if (RangeProperty.RANDOM.nextFloat() <= modchance && world.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
+                    if (captureDrops.get()) {
+                        capturedDrops.get().add(is);
+                        return;
+                    }
+                    final float f = 0.7F;
+                    final double d0 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final double d1 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final double d2 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final EntityItem item = new EntityItem(world, (double) x + d0, (double) y + d1, (double) z + d2, is);
+                    item.delayBeforeCanPickup = 10;
+                    world.spawnEntityInWorld(item);
+                }
+            }
+        }
+        harvesters.set(null);
     }
 
     /**

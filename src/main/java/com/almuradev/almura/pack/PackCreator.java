@@ -521,15 +521,15 @@ public class PackCreator {
     }
 
     public static BreakNode createBreakNode(Pack pack, String name, ConfigurationNode root) {
-        final boolean breakEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+        final boolean breakEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(true);
         final ConfigurationNode toolsConfigurationNode = root.getNode(PackKeys.TOOLS.getKey());
         final Set<ToolsNode> tools = Sets.newHashSet();
 
         for (String rawToolSource : toolsConfigurationNode.getKeys(false)) {
-            final Pair<String, String> modidIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawToolSource);
-            final Optional<GameObject> tool = GameObjectMapper.getGameObject(modidIdentifier.getKey(), modidIdentifier.getValue());
+            final Pair<String, String> toolSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawToolSource);
+            final Optional<GameObject> tool = GameObjectMapper.getGameObject(toolSourceModIdIdentifier.getKey(), toolSourceModIdIdentifier.getValue());
             if (!rawToolSource.equals("none") && !tool.isPresent()) {
-                Almura.LOGGER.warn("Tool source [" + modidIdentifier.getValue() + "] in [" + name + "] for mod [" + modidIdentifier.getKey() + "] in pack [" + pack.getName()
+                Almura.LOGGER.warn("Tool source [" + toolSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" + toolSourceModIdIdentifier.getKey() + "] in pack [" + pack.getName()
                                    + "] is not a registered Block or Item.");
                 continue;
             }
@@ -537,33 +537,32 @@ public class PackCreator {
             final RangeProperty<Integer>
                     experienceRange =
                     new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
-                                                                               toolsConfigurationNode.getChild(PackKeys.EXPERIENCE.getKey())
+                                                                               toolConfigurationNode.getChild(PackKeys.EXPERIENCE.getKey())
                                                                                        .getString(PackKeys.EXPERIENCE.getDefaultValue()), 0));
             final RangeProperty<Float>
                     exhaustionRange =
                     new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
-                                                                             toolsConfigurationNode.getChild(PackKeys.EXHAUSTION_CHANGE.getKey())
+                                                                             toolConfigurationNode.getChild(PackKeys.EXHAUSTION_CHANGE.getKey())
                                                                                      .getString(PackKeys.EXHAUSTION_CHANGE.getDefaultValue()),
                                                                              0.025F));
-            final ConfigurationNode dropsConfigurationNode = toolConfigurationNode.getNode(PackKeys.DROPS.getDefaultValue());
+            final ConfigurationNode dropsConfigurationNode = toolConfigurationNode.getNode(PackKeys.DROPS.getKey());
             final Set<DropProperty> drops = Sets.newHashSet();
 
             for (String rawDropSource : dropsConfigurationNode.getKeys(false)) {
+                final Pair<String, String> dropSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawDropSource);
                 final Optional<GameObject> drop = GameObjectMapper.getGameObject(rawDropSource);
                 if (!drop.isPresent()) {
-                    Almura.LOGGER.warn("Drop source [" + rawDropSource + "] in [" + name + "] for mod [" + drop.get().modid + "] in pack [" + pack
+                    Almura.LOGGER.warn("Drop source [" + rawDropSource + "] in [" + name + "] for mod [" + dropSourceModIdIdentifier.getKey() + "] in pack [" + pack.getName()
                                        + "] is not a registered Block or Item!");
                     continue;
                 }
-                final ConfigurationNode
-                        dropConfigurationNode =
-                        dropsConfigurationNode.getNode(drop.get().modid, drop.get().remapped);
+                final ConfigurationNode dropConfigurationNode = dropsConfigurationNode.getNode(rawDropSource);
                 final RangeProperty<Integer>
                         amountRange =
                         new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
                                                                                    dropConfigurationNode.getChild(PackKeys.AMOUNT.getKey())
                                                                                            .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
-                final int data = dropsConfigurationNode.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue());
+                final int data = dropConfigurationNode.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue());
                 final ConfigurationNode bonusConfigurationNode = dropConfigurationNode.getNode(PackKeys.BONUS.getKey());
                 final boolean
                         bonusEnabled =
