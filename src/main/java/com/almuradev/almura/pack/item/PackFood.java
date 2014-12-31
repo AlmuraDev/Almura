@@ -78,7 +78,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
         }
         return clippedIcons[0];
     }
-    
+
     @Override
     public void registerIcons(IIconRegister register) {
         itemIcon = new PackIcon(this, textureName).register((TextureMap) register);

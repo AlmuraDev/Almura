@@ -50,14 +50,13 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     private ClippedIcon[] clippedIcons;
 
     public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName, GrowthNode growth,
-                 LightNode light, RenderNode render) {
+                 LightNode light) {
         this.block = block;
         this.id = id;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
         this.shapeName = shapeName;
         addNode(growth);
         addNode(light);
-        addNode(render);
     }
 
     @Override

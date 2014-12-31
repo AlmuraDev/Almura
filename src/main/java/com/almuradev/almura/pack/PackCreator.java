@@ -378,9 +378,8 @@ public class PackCreator {
 
         final GrowthNode growthNode = createGrowthNode(pack, crop.getIdentifier() + "\\stage\\" + id, node.getNode(PackKeys.NODE_GROWTH.getKey()));
         final LightNode lightNode = createLightNode(pack, crop.getIdentifier() + "\\stage\\" + id, node.getNode(PackKeys.NODE_LIGHT.getKey()));
-        final RenderNode renderNode = createRenderNode(pack, crop.getIdentifier() + "\\stage\\" + id, node.getNode(PackKeys.NODE_RENDER.getKey()));
 
-        return new Stage(crop, id, textureCoordinates, shapeName, growthNode, lightNode, renderNode);
+        return new Stage(crop, id, textureCoordinates, shapeName, growthNode, lightNode);
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {

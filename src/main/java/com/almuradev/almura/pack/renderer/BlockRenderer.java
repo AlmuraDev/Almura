@@ -49,7 +49,7 @@ public class BlockRenderer extends MalisisRenderer {
         if (shape == null) {
             shape = vanillaShape;
         }
-        rp.useBlockBounds.set(true);
+        rp.useBlockBounds.set(false);
         if (shape instanceof PackShape) {
             rp.renderAllFaces.set(true);
             rp.flipU.set(true);
