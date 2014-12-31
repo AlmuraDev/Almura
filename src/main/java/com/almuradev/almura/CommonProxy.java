@@ -88,14 +88,18 @@ public class CommonProxy {
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject) {
                 GameRegistry.registerBlock(block, ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
-                MinecraftForge.EVENT_BUS.register(block);
+                if (block instanceof INodeContainer) {
+                    MinecraftForge.EVENT_BUS.register(block);
+                }
             }
         }
 
         for (Item item : pack.getItems()) {
             if (item instanceof IPackObject) {
                 GameRegistry.registerItem(item, ((IPackObject) item).getPack().getName() + "\\" + ((IPackObject) item).getIdentifier());
-                MinecraftForge.EVENT_BUS.register(item);
+                if (item instanceof INodeContainer) {
+                    MinecraftForge.EVENT_BUS.register(item);
+                }
             }
         }
 
@@ -106,6 +110,7 @@ public class CommonProxy {
         final List<Item> seedsToAdd = Lists.newArrayList();
 
         //Order is important
+        //Stage 2a -> Break/Collision, Seeds, Stage Break/Collision
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
                 final InputStream
@@ -135,6 +140,7 @@ public class CommonProxy {
                                                 + "] is trying to add seed [" + seed.getIdentifier()
                                                 + "] but it already exists. You may only have one seed per crop.");
                         } else {
+                            System.out.println(seed.getPack().getName() + "\\" + seed.getIdentifier());
                             GameRegistry.registerItem(seed, seed.getPack().getName() + "\\" + seed.getIdentifier());
                             seedsToAdd.add(seed);
                             MinecraftForge.EVENT_BUS.register(seed);
@@ -155,20 +161,37 @@ public class CommonProxy {
                     ((INodeContainer) block).addNode(
                             PackCreator.createCollisionNode(pack, ((IPackObject) block).getIdentifier(), reader.getNode(PackKeys.NODE_COLLISION.getKey())));
 
-                    //Recipes
-                    ((INodeContainer) block).addNode(
-                            PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), block,
-                                                         reader.getNode(PackKeys.NODE_RECIPES.getKey())));
                 }
 
                 entry.close();
             }
         }
 
+        //Stage2b -> Add seeds to pack
         for (Item item : seedsToAdd) {
             pack.addItem(item);
         }
 
+        //Stage 3a -> Block Recipes
+        for (Block block : pack.getBlocks()) {
+            if (block instanceof IPackObject && block instanceof INodeContainer) {
+                final InputStream
+                        entry =
+                        Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
+                                                       ((IPackObject) block).getIdentifier() + ".yml"));
+                final YamlConfiguration reader = new YamlConfiguration(entry);
+                reader.load();
+
+                //Recipes
+                ((INodeContainer) block).addNode(
+                        PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), block,
+                                                     reader.getNode(PackKeys.NODE_RECIPES.getKey())));
+
+                entry.close();
+            }
+        }
+
+        //Stage 3b -> Item Recipes
         for (Item item : pack.getItems()) {
             if (item instanceof IPackObject && item instanceof INodeContainer) {
                 final InputStream entry;

@@ -1,0 +1,42 @@
+Manifest-Version: 1.0
+Implementation-Vendor: Cauldron
+Implementation-Title: Cauldron
+Implementation-Version: git-Cauldron-MCPC-Plus-1.7.10-1.1236.05.210
+Forge-Version: 10.13.2.1236
+Specification-Vendor: Bukkit Team
+Specification-Title: Bukkit
+Specification-Version: 1.7.10-R0.1-SNAPSHOT
+Main-Class: cpw.mods.fml.relauncher.ServerLaunchWrapper
+TweakClass: cpw.mods.fml.common.launcher.FMLTweaker
+Class-Path: libraries/net/minecraft/launchwrapper/1.11/launchwrapper-1
+ .11.jar libraries/org/ow2/asm/asm-all/5.0.3/asm-all-5.0.3.jar librari
+ es/com/typesafe/akka/akka-actor_2.11/2.3.3/akka-actor_2.11-2.3.3.jar 
+ libraries/com/typesafe/config/1.2.1/config-1.2.1.jar libraries/org/sc
+ ala-lang/scala-actors-migration_2.11/1.1.0/scala-actors-migration_2.1
+ 1-1.1.0.jar libraries/org/scala-lang/scala-compiler/2.11.1/scala-comp
+ iler-2.11.1.jar libraries/org/scala-lang/plugins/scala-continuations-
+ library_2.11/1.0.2/scala-continuations-library_2.11-1.0.2.jar librari
+ es/org/scala-lang/plugins/scala-continuations-plugin_2.11.1/1.0.2/sca
+ la-continuations-plugin_2.11.1-1.0.2.jar libraries/org/scala-lang/sca
+ la-library/2.11.1/scala-library-2.11.1.jar libraries/org/scala-lang/s
+ cala-parser-combinators_2.11/1.0.1/scala-parser-combinators_2.11-1.0.
+ 1.jar libraries/org/scala-lang/scala-reflect/2.11.1/scala-reflect-2.1
+ 1.1.jar libraries/org/scala-lang/scala-swing_2.11/1.0.1/scala-swing_2
+ .11-1.0.1.jar libraries/org/scala-lang/scala-xml_2.11/1.0.2/scala-xml
+ _2.11-1.0.2.jar libraries/net/sf/jopt-simple/jopt-simple/4.5/jopt-sim
+ ple-4.5.jar libraries/lzma/lzma/0.0.1/lzma-0.0.1.jar libraries/org/ya
+ ml/snakeyaml/1.13/snakeyaml-1.13.jar libraries/commons-lang/commons-l
+ ang/2.6/commons-lang-2.6.jar libraries/org/avaje/ebean/2.7.3/ebean-2.
+ 7.3.jar libraries/jline/jline/2.6/jline-2.6.jar libraries/net/md-5/Sp
+ ecialSource/1.7-SNAPSHOT/SpecialSource-1.7-SNAPSHOT.jar libraries/net
+ /minecraftforge/cauldron/cauldron-api/1.7.10-SNAPSHOT/cauldron-api-1.
+ 7.10-SNAPSHOT.jar libraries/org/fusesource/jansi/jansi/1.8/jansi-1.8.
+ jar libraries/net/sourceforge/argo/argo/2.25/argo-2.25.jar libraries/
+ com/googlecode/json-simple/json-simple/1.1/json-simple-1.1.jar librar
+ ies/org/xerial/sqlite-jdbc/3.7.2/sqlite-jdbc-3.7.2.jar libraries/mysq
+ l/mysql-connector-java/5.1.14/mysql-connector-java-5.1.14.jar librari
+ es/javax/persistence/persistence-api/1.0.2/persistence-api-1.0.2.jar 
+ libraries/com/flowpowered/flow-cerealization/0.1.0-SNAPSHOT/flow-cere
+ alization-0.1.0-SNAPSHOT.jar libraries/org/spongepowered/mixin/0.1-SN
+ APSHOT/mixin-0.1-SNAPSHOT.jar minecraft_server.1.7.10.jar
+

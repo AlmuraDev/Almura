@@ -496,7 +496,6 @@ public class PackCreator {
                     }
                 }
                 final Class<? extends Entity> entityClazz = (Class<? extends Entity>) EntityList.stringToClassMapping.get(entityIdentifier);
-                System.out.println(EntityList.stringToClassMapping);
                 if (entityClazz == null) {
                     Almura.LOGGER.warn("Entity source [" + rawCollisionSource + "] in [" + name + "] for modid [" + entityIdentifierSplit[0]
                                        + "] in pack [" + pack.getName() + "] is not a registered Entity.");
@@ -674,13 +673,14 @@ public class PackCreator {
         for (String itemsRaw : node.getChild(PackKeys.INGREDIENTS.getKey()).getStringList()) {
             final String[] itemsSplit = itemsRaw.split(" ");
             for (String identifierCombined : itemsSplit) {
-                final String[] identifierAmountSplit = identifierCombined.split(":");
+                final String[] identifierAmountSplit = identifierCombined.split(StringEscapeUtils.escapeJava(":"));
                 int ingredientAmount = 1;
                 if (identifierAmountSplit.length == 2) {
                     ingredientAmount = Integer.parseInt(identifierAmountSplit[1]);
                 }
                 final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0]);
                 if (!gameObject.isPresent()) {
+                    Thread.dumpStack();
                     throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
                                                      + "] cannot be registered. Ingredient [" + identifierCombined + "] was not found.");
                 } else {
