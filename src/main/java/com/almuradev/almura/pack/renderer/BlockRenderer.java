@@ -142,6 +142,9 @@ public class BlockRenderer extends MalisisRenderer {
     private void handleRotation(Shape s) {
         if (renderType == RenderType.ISBRH_WORLD && block instanceof INodeContainer && s instanceof PackShape) {
             final RotationNode node = ((INodeContainer) block).getNode(RotationNode.class);
+            if (node == null) {
+                return;
+            }
             if (!node.isEnabled()) {
                 return;
             }

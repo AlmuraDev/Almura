@@ -15,6 +15,7 @@ import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.block.PackBlock;
+import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -46,6 +47,7 @@ public class ClientProxy extends CommonProxy {
     public void onPreInitialization(FMLPreInitializationEvent event) {
         super.onPreInitialization(event);
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
+        PACK_BLOCK_RENDERER.registerFor(PackCrops.class);
         ClientRegistry.registerKeyBinding(BINDING_CONFIG_GUI);
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
@@ -54,7 +56,6 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onPostInitialization(FMLPostInitializationEvent event) {
         super.onPostInitialization(event);
-        MinecraftForge.EVENT_BUS.register(this);
         final IngameHUD almuraHud = new IngameHUD();
         final IngameDebugHUD almuraDebugHud = new IngameDebugHUD();
         MinecraftForge.EVENT_BUS.register(almuraHud);
