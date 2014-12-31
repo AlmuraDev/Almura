@@ -108,7 +108,7 @@ license {
     header rootProject.file('HEADER.txt')
     ignoreFailures true
     strictCheck true
-    excludes(["**/*.cfg", "**/*.info", "**/*.jpg", "**/*.png", "**/*.yml", "**/*.json", "**/*.txt", "**/*.shape"])
+    includes(["**/*.java"])
 }
 
 // Source compiler configuration
