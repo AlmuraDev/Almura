@@ -529,7 +529,7 @@ public class PackCreator {
             final Pair<String, String> modidIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawToolSource);
             final Optional<GameObject> tool = GameObjectMapper.getGameObject(modidIdentifier.getKey(), modidIdentifier.getValue());
             if (!rawToolSource.equals("none") && !tool.isPresent()) {
-                Almura.LOGGER.warn("Tool source [" + modidIdentifier.getValue() + "] in [" + name + "] for mod [" + modidIdentifier.getKey() + "] in pack [" + pack
+                Almura.LOGGER.warn("Tool source [" + modidIdentifier.getValue() + "] in [" + name + "] for mod [" + modidIdentifier.getKey() + "] in pack [" + pack.getName()
                                    + "] is not a registered Block or Item.");
                 continue;
             }
