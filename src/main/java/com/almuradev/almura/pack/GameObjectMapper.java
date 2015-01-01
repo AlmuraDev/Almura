@@ -118,6 +118,7 @@ public class GameObjectMapper {
         String modid = separated[0].toLowerCase();
         String identifier;
         if (separated.length > 1) {
+            final String[] rawSourceSplit = rawSource.split(modid + StringEscapeUtils.escapeJava("\\"));
             identifier = rawSource.split(modid + StringEscapeUtils.escapeJava("\\"))[1];
         } else {
             identifier = modid;

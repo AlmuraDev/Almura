@@ -124,7 +124,7 @@ public class CommonProxy {
     private void onPostCreate(Pack pack) throws IOException, ConfigurationException {
         final List<Item> seedsToAdd = Lists.newArrayList();
 
-        //Stage 2a -> Break/Collision, Seeds, Stage Break/Collision
+        //Stage 2a -> Collision, Seeds, Stage (Collision)
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
                 final InputStream
@@ -160,15 +160,10 @@ public class CommonProxy {
 
                         for (Stage stage : ((PackCrops) block).getStages().values()) {
                             final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
-                            stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
                             stage.addNode(PackCreator.createCollisionNode(pack, stage.getIdentifier(), stageNode.getNode(PackKeys.NODE_COLLISION.getKey())));
                         }
                     }
                 } else {
-                    //Break
-                    ((INodeContainer) block).addNode(
-                            PackCreator.createBreakNode(pack, ((IPackObject) block).getIdentifier(), reader.getNode(PackKeys.NODE_BREAK.getKey())));
-
                     //Collision
                     ((INodeContainer) block).addNode(
                             PackCreator.createCollisionNode(pack, ((IPackObject) block).getIdentifier(), reader.getNode(PackKeys.NODE_COLLISION.getKey())));
@@ -187,7 +182,7 @@ public class CommonProxy {
 
     //Stage 3 loader
     private void onLoadFinished(Pack pack) throws IOException, ConfigurationException {
-        //Stage 3a -> Block Recipes
+        //Stage 3a -> Block Break, Recipes
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
                 final InputStream
@@ -196,6 +191,18 @@ public class CommonProxy {
                                                        ((IPackObject) block).getIdentifier() + ".yml"));
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
+
+                if (block instanceof PackCrops) {
+                    for (Stage stage : ((PackCrops) block).getStages().values()) {
+                        final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
+                        stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
+                    }
+                } else {
+                    //Break
+                    ((INodeContainer) block).addNode(
+                            PackCreator.createBreakNode(pack, ((IPackObject) block).getIdentifier(), reader.getNode(PackKeys.NODE_BREAK.getKey())));
+
+                }
 
                 //Recipes
                 ((INodeContainer) block).addNode(

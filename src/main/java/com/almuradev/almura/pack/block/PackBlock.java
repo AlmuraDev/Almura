@@ -77,7 +77,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
                      float hardness,
                      float resistance, boolean showInCreativeTab, String creativeTabName, RotationNode rotationNode, LightNode lightNode,
                      RenderNode renderNode) {
-        super(Material.rock);
+        super(Material.ground);
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinatesByFace = textureCoordinates;
@@ -147,25 +147,31 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     public void harvestBlock(World world, EntityPlayer player, int x, int y, int z, int metadata) {
         player.addStat(StatList.mineBlockStatArray[getIdFromBlock(this)], 1);
         final ItemStack held = player.getHeldItem();
-        ToolsNode toolsProperty = null;
-        for (ToolsNode prop : breakNode.getValue()) {
-            if (held == null && prop instanceof ToolsNode.OffHand) {
-                toolsProperty = prop;
-                break;
+        ToolsNode found = null;
+        for (ToolsNode toolsNode : breakNode.getValue()) {
+            if (toolsNode instanceof ToolsNode.OffHand) {
+                if (held == null) {
+                    found = toolsNode;
+                    break;
+                }
+                continue;
             }
-            if (held != null && prop.getTool().minecraftObject == held.getItem()) {
-                toolsProperty = prop;
+            if (held != null && toolsNode.getTool().minecraftObject == held.getItem()) {
+                found = toolsNode;
                 break;
             }
         }
 
-        if (toolsProperty == null) {
-            return;
+        if (found == null) {
+            found = breakNode.getToolByIdentifier("", "none");
+            if (found == null) {
+                return;
+            }
         }
 
-        player.addExhaustion(toolsProperty.getExhaustionRange().getValueWithinRange());
+        player.addExhaustion(found.getExhaustionRange().getValueWithinRange());
         final ArrayList<ItemStack> drops = Lists.newArrayList();
-        for (DropProperty src : toolsProperty.getValue().getValue()) {
+        for (DropProperty src : found.getValue().getValue()) {
             final GameObject source = src.getSource();
             final ItemStack toDrop;
             if (source.isBlock()) {
