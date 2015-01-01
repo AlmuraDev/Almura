@@ -232,8 +232,7 @@ public class CommonProxy {
                     //Recipes
                     ((INodeContainer) item).addNode(
                             PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), item,
-                                                         reader.getChild(((IPackObject) item).getIdentifier())
-                                                                 .getNode(PackKeys.NODE_RECIPES.getKey())));
+                                                         reader.getNode(PackKeys.NODE_SEED.getKey(), PackKeys.NODE_RECIPES.getKey())));
                 } else {
                     //Recipes
                     ((INodeContainer) item).addNode(
