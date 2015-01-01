@@ -93,27 +93,66 @@ public class PackUtil {
     public static <N extends Number> Pair<N, N> getRange(Class<N> clazz, String rawRangeSource, N fallback) throws NumberFormatException {
         N minAmount = fallback, maxAmount = minAmount;
         if (!rawRangeSource.isEmpty()) {
-            final String[] split = rawRangeSource.split("-");
+            rawRangeSource = rawRangeSource.trim().endsWith("-") ? rawRangeSource.substring(0, rawRangeSource.length() - 1) : rawRangeSource;
+            String[] split = rawRangeSource.split("--");
+
+            boolean minNeg, maxNeg = minNeg = false;
+            if (split.length > 1) {
+                if (split[0].startsWith("-")) {
+                    minNeg = true;
+                }
+                maxNeg = true;
+            } else {
+                split = rawRangeSource.split("-");
+                if (split.length == 3 || split[0].isEmpty()) {
+                    minNeg = true;
+                }
+            }
+
+            int minIndex, maxIndex = Integer.MIN_VALUE;
+            minIndex = split.length > 1 ? (minNeg && split[0].isEmpty()) ? 1 : 0 : 0;
+            if (split.length >= 3 && !minNeg) {
+                maxIndex = maxNeg ? 4 : 3;
+            } else if (split.length == 2) {
+                maxIndex = maxNeg ? 1 : 0;
+            }
+
             if (clazz == Integer.class) {
-                minAmount = (N) new Integer(Integer.parseInt(split[0]));
-                if (split.length > 1) {
-                    maxAmount = (N) new Integer(Integer.parseInt(split[1]));
+                minAmount = (N) ((minNeg) ? new Integer(0 - Math.abs(Integer.parseInt(split[minIndex]))) : new Integer(Integer.parseInt(split[minIndex])));
+                if (maxIndex != Integer.MIN_VALUE) {
+                    maxAmount = (N) ((maxNeg) ? new Integer(0 - Math.abs(Integer.parseInt(split[maxIndex]))) : new Integer(Integer.parseInt(split[maxIndex])));
                 } else {
                     maxAmount = minAmount;
+                }
+
+                if (maxAmount.intValue() < minIndex) {
+                    final N temp = minAmount;
+                    minAmount = maxAmount;
+                    maxAmount = temp;
                 }
             } else if (clazz == Double.class) {
-                minAmount = (N) new Double(Double.parseDouble(split[0]));
-                if (split.length > 1) {
-                    maxAmount = (N) new Double(Double.parseDouble(split[1]));
+                minAmount = (N) ((minNeg) ? new Double(0 - Math.abs(Double.parseDouble(split[minIndex]))) : new Double(Double.parseDouble(split[minIndex])));
+                if (maxIndex != Integer.MIN_VALUE) {
+                    maxAmount = (N) ((maxNeg) ? new Double(0 - Math.abs(Double.parseDouble(split[maxIndex]))) : new Double(Double.parseDouble(split[maxIndex])));
                 } else {
                     maxAmount = minAmount;
                 }
+                if (maxAmount.doubleValue() < minIndex) {
+                    final N temp = minAmount;
+                    minAmount = maxAmount;
+                    maxAmount = temp;
+                }
             } else if (clazz == Float.class) {
-                minAmount = (N) new Float(Float.parseFloat(split[0]));
-                if (split.length > 1) {
-                    maxAmount = (N) new Float(Float.parseFloat(split[0]));
+                minAmount = (N) ((minNeg) ? new Float(0 - Math.abs(Float.parseFloat(split[minIndex]))) : new Float(Float.parseFloat(split[minIndex])));
+                if (maxIndex != Integer.MIN_VALUE) {
+                    maxAmount = (N) ((maxNeg) ? new Float(0 - Math.abs(Float.parseFloat(split[maxIndex]))) : new Float(Float.parseFloat(split[maxIndex])));
                 } else {
                     maxAmount = minAmount;
+                }
+                if (maxAmount.floatValue() < minIndex) {
+                    final N temp = minAmount;
+                    minAmount = maxAmount;
+                    maxAmount = temp;
                 }
             }
         }
