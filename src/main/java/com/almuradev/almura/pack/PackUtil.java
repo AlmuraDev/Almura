@@ -94,29 +94,20 @@ public class PackUtil {
         N minAmount = fallback, maxAmount = minAmount;
         if (!rawRangeSource.isEmpty()) {
             rawRangeSource = rawRangeSource.trim().endsWith("-") ? rawRangeSource.substring(0, rawRangeSource.length() - 1) : rawRangeSource;
-            String[] split = rawRangeSource.split("--");
-
+            final String[] split = rawRangeSource.split("-");
+            int minIndex = 0, maxIndex = Integer.MIN_VALUE;
             boolean minNeg, maxNeg = minNeg = false;
+            if (split[0].startsWith("^")) {
+                minNeg = true;
+                split[0] = split[0].substring(1, split[0].length());
+            }
             if (split.length > 1) {
-                if (split[0].startsWith("-")) {
-                    minNeg = true;
-                }
-                maxNeg = true;
-            } else {
-                split = rawRangeSource.split("-");
-                if (split.length == 3 || split[0].isEmpty()) {
-                    minNeg = true;
+                maxNeg = split[1].startsWith("^");
+                maxIndex = 1;
+                if (maxNeg) {
+                    split[1] = split[1].substring(1, split[1].length());
                 }
             }
-
-            int minIndex, maxIndex = Integer.MIN_VALUE;
-            minIndex = split.length > 1 ? (minNeg && split[0].isEmpty()) ? 1 : 0 : 0;
-            if (split.length >= 3 && !minNeg) {
-                maxIndex = maxNeg ? 4 : 3;
-            } else if (split.length == 2) {
-                maxIndex = maxNeg ? 1 : 0;
-            }
-
             if (clazz == Integer.class) {
                 minAmount = (N) ((minNeg) ? new Integer(0 - Math.abs(Integer.parseInt(split[minIndex]))) : new Integer(Integer.parseInt(split[minIndex])));
                 if (maxIndex != Integer.MIN_VALUE) {
@@ -125,7 +116,7 @@ public class PackUtil {
                     maxAmount = minAmount;
                 }
 
-                if (maxAmount.intValue() < minIndex) {
+                if (maxAmount.intValue() < minAmount.intValue()) {
                     final N temp = minAmount;
                     minAmount = maxAmount;
                     maxAmount = temp;
@@ -137,7 +128,7 @@ public class PackUtil {
                 } else {
                     maxAmount = minAmount;
                 }
-                if (maxAmount.doubleValue() < minIndex) {
+                if (maxAmount.doubleValue() < minAmount.doubleValue()) {
                     final N temp = minAmount;
                     minAmount = maxAmount;
                     maxAmount = temp;
@@ -149,7 +140,7 @@ public class PackUtil {
                 } else {
                     maxAmount = minAmount;
                 }
-                if (maxAmount.floatValue() < minIndex) {
+                if (maxAmount.floatValue() < minAmount.floatValue()) {
                     final N temp = minAmount;
                     minAmount = maxAmount;
                     maxAmount = temp;
