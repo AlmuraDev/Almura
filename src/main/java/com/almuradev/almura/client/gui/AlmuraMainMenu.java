@@ -245,7 +245,6 @@ public class AlmuraMainMenu extends AlmuraGui {
             background = new GuiTexture(Filesystem.registerTexture(Almura.MOD_ID, location, path));
             BACKGROUNDS.put(imageNum, background);
         }
-        SlotCrafting
         backgroundImage.setIcon(background, null);
         backgroundImage.setZIndex(-1);
         backgroundImage.setSize(0, 0);
