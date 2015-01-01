@@ -6,8 +6,10 @@
 package com.almuradev.almura.client.gui;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.ingame.IngameConfig;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 
 import cpw.mods.fml.client.GuiModList;
@@ -22,9 +24,15 @@ import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.util.ResourceLocation;
 
+import java.io.IOException;
+import java.nio.file.FileStore;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.Random;
 
 public class AlmuraMainMenu extends AlmuraGui {
@@ -33,6 +41,7 @@ public class AlmuraMainMenu extends AlmuraGui {
             ALMURA_2_LOGO =
             new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/almura2b.png"));
     private static final Random RANDOM = new Random();
+    private static final Map<Integer, GuiTexture> BACKGROUNDS = Maps.newHashMap();
     private static int imageNum = 0;
     public UIBackgroundContainer window;
     public UIButton singlePlayerButton, optionsButton, modsButton, configButton, serverButton, closeButton;
@@ -56,7 +65,11 @@ public class AlmuraMainMenu extends AlmuraGui {
         backgroundImage = new UIImage(this, background, null);
         backgroundImage.setZIndex(-1);
         backgroundImage.setSize(0, 0);
-        randomBackground();
+        try {
+            randomBackground();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Buttons Window.
         window = new UIBackgroundContainer(this);
@@ -103,7 +116,7 @@ public class AlmuraMainMenu extends AlmuraGui {
         closeButton.setSize(50, 15);
         closeButton.setName("BTNCLOSE");
 
-        final UILabel copyright1 = new UILabel(this, ChatColor.WHITE + "AlmuraDev © 2015.");
+        final UILabel copyright1 = new UILabel(this, ChatColor.WHITE + "AlmuraDev ï¿½ 2015.");
         copyright1.setPosition(0, -22, Anchor.CENTER | Anchor.BOTTOM);
         copyright1.setFontScale(0.7F);
 
@@ -160,16 +173,24 @@ public class AlmuraMainMenu extends AlmuraGui {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (screenH != Minecraft.getMinecraft().currentScreen.height || screenW != Minecraft.getMinecraft().currentScreen.width) {
-            randomBackground();
+            try {
+                randomBackground();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             screenH = Minecraft.getMinecraft().currentScreen.height;
             screenW = Minecraft.getMinecraft().currentScreen.width;
         }
-        animate();
+        try {
+            animate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         renderer.enableBlending();
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    public void animate() {
+    public void animate() throws IOException {
         if (tick++ % 2 == 0) {
             backgroundImage.setSize(backgroundImage.getWidth() + 1, backgroundImage.getHeight() + 1);
             timer++;
@@ -215,12 +236,16 @@ public class AlmuraMainMenu extends AlmuraGui {
         }
     }
 
-    private void randomBackground() {
-        String qualifier = getTime().toLowerCase();
-        GuiTexture
-                background =
-                new GuiTexture(
-                        new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/" + qualifier + "/" + qualifier + imageNum + ".jpg"));
+    private void randomBackground() throws IOException {
+        final String qualifier = getTime().toLowerCase();
+        GuiTexture background = BACKGROUNDS.get(imageNum);
+        if (background == null) {
+            final String location = "textures/background/" + qualifier + "/" + qualifier + imageNum + ".jpg";
+            final Path path = Paths.get(Filesystem.CONFIG_BACKGROUNDS_PATH.toString(), qualifier, qualifier + imageNum + ".jpg");
+            background = new GuiTexture(Filesystem.registerTexture(Almura.MOD_ID, location, path));
+            BACKGROUNDS.put(imageNum, background);
+        }
+        SlotCrafting
         backgroundImage.setIcon(background, null);
         backgroundImage.setZIndex(-1);
         backgroundImage.setSize(0, 0);

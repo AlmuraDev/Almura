@@ -5,10 +5,13 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.client.BufferedTexture;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,7 +35,8 @@ import javax.imageio.stream.ImageInputStream;
 
 public class Filesystem {
 
-    public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID.toLowerCase());
+    public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID);
+    public static final Path CONFIG_BACKGROUNDS_PATH = Paths.get(CONFIG_PATH.toString(), "backgrounds");
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
     public static final Path CONFIG_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "mappings.yml");
     public static final Path CONFIG_VERSION_PATH = Paths.get(CONFIG_PATH.toString(), Almura.PACK_VERSION);
@@ -115,6 +119,12 @@ public class Filesystem {
             } catch (IOException e) {
                 throw new RuntimeException("Failed to create directory [" + CONFIG_MODELS_PATH + "].", e);
             }
+
+            try {
+                Files.createDirectories(CONFIG_BACKGROUNDS_PATH);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to create directory [" + CONFIG_BACKGROUNDS_PATH + "].", e);
+            }
         }
     }
 
@@ -183,5 +193,12 @@ public class Filesystem {
 
     public static Dimension getImageDimension(ResourceLocation location) throws IOException {
         return getImageDimension(Minecraft.getMinecraft().getResourceManager().getResource(location).getInputStream());
+    }
+
+    public static ResourceLocation registerTexture(String modid, String key, Path path) throws IOException {
+        final BufferedImage image = ImageIO.read(Files.newInputStream(path));
+        final ResourceLocation location = new ResourceLocation(modid, key);
+        Minecraft.getMinecraft().getTextureManager().loadTexture(location, new BufferedTexture(location, image));
+        return location;
     }
 }
