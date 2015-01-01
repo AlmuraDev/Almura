@@ -7,7 +7,9 @@ package com.almuradev.almura.client.gui;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
+import com.almuradev.almura.client.gui.ingame.IngameConfig;
 import com.google.common.eventbus.Subscribe;
+
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -33,7 +35,7 @@ public class AlmuraMainMenu extends AlmuraGui {
     private static final Random RANDOM = new Random();
     private static int imageNum = 0;
     public UIBackgroundContainer window;
-    public UIButton singlePlayerButton, optionsButton, modsButton, serverButton, closeButton;
+    public UIButton singlePlayerButton, optionsButton, modsButton, configButton, serverButton, closeButton;
     public int screenH, screenW;
     public UIImage backgroundImage;
     public int tick = 1;
@@ -85,14 +87,18 @@ public class AlmuraMainMenu extends AlmuraGui {
         serverButton.setTooltip(new UITooltip(this, "Access Multiplayer Server List", 20));
         serverButton.setName("BTNSERVER");
 
-        optionsButton = (new UIButton(this, ChatColor.WHITE + "Options").setPosition(-30, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        optionsButton = (new UIButton(this, ChatColor.WHITE + "Options").setPosition(-60, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
         optionsButton.setSize(50, 15);
         optionsButton.setName("BTNOPTIONS");
 
-        modsButton = (new UIButton(this, ChatColor.WHITE + "Mods").setPosition(30, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        configButton = (new UIButton(this, ChatColor.WHITE + "Config").setPosition(0, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
+        configButton.setSize(50, 15);
+        configButton.setName("BTNCONFIG");
+        
+        modsButton = (new UIButton(this, ChatColor.WHITE + "Mods").setPosition(60, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
         modsButton.setSize(50, 15);
         modsButton.setName("BTNMODS");
-
+        
         closeButton = (new UIButton(this, ChatColor.WHITE + "Quit").setPosition(0, -40, Anchor.CENTER | Anchor.BOTTOM).register(this));
         closeButton.setSize(50, 15);
         closeButton.setName("BTNCLOSE");
@@ -110,7 +116,7 @@ public class AlmuraMainMenu extends AlmuraGui {
         copyright3.setFontScale(0.7F);
 
         panel.add(almuraLogo);
-        window.add(panel, singlePlayerButton, serverButton, optionsButton, modsButton, closeButton, version, copyright1, copyright2, copyright3);
+        window.add(panel, singlePlayerButton, serverButton, optionsButton, modsButton, configButton, closeButton, version, copyright1, copyright2, copyright3);
 
         main.add(backgroundImage, window);
 
@@ -140,6 +146,9 @@ public class AlmuraMainMenu extends AlmuraGui {
                 break;
             case "BTNMODS":
                 this.mc.displayGuiScreen(new GuiModList(this));
+                break;
+            case "BTNCONFIG":
+                this.mc.displayGuiScreen(new IngameConfig());
                 break;
             case "BTNCLOSE":
                 this.mc.shutdown();
