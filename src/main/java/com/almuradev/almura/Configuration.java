@@ -45,7 +45,7 @@ public class Configuration {
         DEBUG_MAPPINGS_MODE = debugConfigurationNode.getChild("mappings").getBoolean(false);        
         
         final ConfigurationNode clientConfigurationNode = reader.getNode("client");
-        ALMURA_GUI = clientConfigurationNode.getChild("ShowGUI").getBoolean(true);
+        ALMURA_GUI = clientConfigurationNode.getChild("displayAlmuraGUI").getBoolean(true);
     }
     
     public void setShowAlmuraGUI(boolean value) {
