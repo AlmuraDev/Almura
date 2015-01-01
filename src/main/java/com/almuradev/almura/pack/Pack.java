@@ -101,13 +101,6 @@ public class Pack {
             throw new RuntimeException("Failed filtering yml files from [" + Filesystem.CONFIG_YML_PATH + "].", e);
         }
 
-//        Collections.sort(streamed, new Comparator<Path>() {
-//            @Override
-//            public int compare(Path o1, Path o2) {
-//                return o1.getFileName().toString().compareTo(o2.getFileName().toString());
-//            }
-//        });
-
         for (Path path : streamed) {
             try {
                 final InputStream entry = Files.newInputStream(path);
