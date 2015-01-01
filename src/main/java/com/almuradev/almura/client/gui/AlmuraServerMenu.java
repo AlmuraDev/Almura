@@ -6,7 +6,9 @@
 package com.almuradev.almura.client.gui;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.ChatColor;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.GuiModList;
@@ -24,7 +26,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.ResourceLocation;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.Random;
 
 public class AlmuraServerMenu extends AlmuraGui {
@@ -33,6 +39,7 @@ public class AlmuraServerMenu extends AlmuraGui {
             ALMURA_2_LOGO =
             new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/almura2b.png"));
     private static final Random RANDOM = new Random();
+    private static final Map<Integer, GuiTexture> BACKGROUNDS = Maps.newHashMap();
     private static int imageNum = 0;
     public UIBackgroundContainer window;
     public UIButton backButton, betaServerButton, liveServerButton, devServerButton, otherServerButton;
@@ -56,7 +63,11 @@ public class AlmuraServerMenu extends AlmuraGui {
         backgroundImage = new UIImage(this, background, null);
         backgroundImage.setZIndex(-1);
         backgroundImage.setSize(0, 0);
-        randomBackground();
+        try {
+            randomBackground();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Buttons Window.
         window = new UIBackgroundContainer(this);
@@ -157,16 +168,24 @@ public class AlmuraServerMenu extends AlmuraGui {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (screenH != Minecraft.getMinecraft().currentScreen.height || screenW != Minecraft.getMinecraft().currentScreen.width) {
-            randomBackground();
+            try {
+                randomBackground();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             screenH = Minecraft.getMinecraft().currentScreen.height;
             screenW = Minecraft.getMinecraft().currentScreen.width;
         }
-        animate();
+        try {
+            animate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         renderer.enableBlending();
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    public void animate() {
+    public void animate() throws IOException {
         if (tick++ % 2 == 0) {
             backgroundImage.setSize(backgroundImage.getWidth() + 1, backgroundImage.getHeight() + 1);
             timer++;
@@ -212,12 +231,15 @@ public class AlmuraServerMenu extends AlmuraGui {
         }
     }
 
-    private void randomBackground() {
-        String qualifier = getTime().toLowerCase();
-        GuiTexture
-                background =
-                new GuiTexture(
-                        new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/" + qualifier + "/" + qualifier + imageNum + ".jpg"));
+    private void randomBackground() throws IOException {
+        final String qualifier = getTime().toLowerCase();
+        GuiTexture background = BACKGROUNDS.get(imageNum);
+        if (background == null) {
+            final String location = "textures/background/" + qualifier + "/" + qualifier + imageNum + ".jpg";
+            final Path path = Paths.get(Filesystem.CONFIG_BACKGROUNDS_PATH.toString(), qualifier, qualifier + imageNum + ".jpg");
+            background = new GuiTexture(Filesystem.registerTexture(Almura.MOD_ID, location, path));
+            BACKGROUNDS.put(imageNum, background);
+        }
         backgroundImage.setIcon(background, null);
         backgroundImage.setZIndex(-1);
         backgroundImage.setSize(0, 0);
