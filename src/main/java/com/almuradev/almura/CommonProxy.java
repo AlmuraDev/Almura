@@ -30,13 +30,22 @@ import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemSeeds;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraftforge.oredict.RecipeSorter;
 
 import java.io.IOException;
@@ -55,6 +64,7 @@ public class CommonProxy {
         Almura.NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
         RecipeSorter.register(Almura.MOD_ID + ":shaped", QuantitiveShapedRecipes.class, SHAPED, "after:minecraft:shaped");
         RecipeSorter.register(Almura.MOD_ID + ":shapeless", QuantitiveShapelessRecipes.class, SHAPELESS, "after:minecraft:shapeless");
+        FMLCommonHandler.instance().bus().register(this);
         Tabs.fakeStaticLoad();
 
         Pack.loadAllContent();
@@ -226,6 +236,43 @@ public class CommonProxy {
 
                 entry.close();
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
+        if (!(event.craftMatrix instanceof InventoryCrafting)) {
+            return;
+        }
+        IRecipe recipe = null;
+
+        for (Object obj : CraftingManager.getInstance().getRecipeList()) {
+            if (obj instanceof QuantitiveShapedRecipes || obj instanceof QuantitiveShapelessRecipes) {
+                if (((IRecipe) obj).matches((InventoryCrafting) event.craftMatrix, event.player.worldObj)) {
+                    recipe = (IRecipe) obj;
+                    break;
+                }
+            }
+        }
+
+        if (recipe == null) {
+            return;
+        }
+
+        for (int i = 0; i < 9 ; i++) {
+            final ItemStack stackSlot = event.craftMatrix.getStackInSlot(i);
+            ItemStack recipeSlot;
+            if (recipe instanceof QuantitiveShapedRecipes) {
+                recipeSlot = ((QuantitiveShapedRecipes) recipe).recipeItems[i];
+            } else {
+                recipeSlot = (ItemStack) ((QuantitiveShapelessRecipes) recipe).recipeItems.get(i);
+            }
+
+            if (stackSlot == null) {
+                continue;
+            }
+
+            stackSlot.stackSize -= recipeSlot.stackSize - 1;
         }
     }
 }
