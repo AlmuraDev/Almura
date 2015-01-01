@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,6 +47,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     private String textureName;
     private PackShape shape;
     private List<String> tooltip;
+    private static final DamageSource FOOD_SOURCE = new DamageSource("food").setDamageBypassesArmor();
 
     public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName,
@@ -96,7 +98,12 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     public ItemStack onEaten(ItemStack stack, World world, EntityPlayer player) {
         final ItemStack result = super.onEaten(stack, world, player);
         if (!world.isRemote) {
-            player.heal(consumption.getHealthRange().getValueWithinRange());
+            final float change = consumption.getHealthRange().getValueWithinRange();
+            if (change < 0) {
+                player.attackEntityFrom(FOOD_SOURCE, Math.abs(change));
+            } else if (change > 0) {
+                player.heal(change);
+            }
         }
         return result;
     }
