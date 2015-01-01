@@ -325,7 +325,7 @@ public class PackCreator {
             final Stage stage = createCropStage(pack, crop, stageId, reader.getNode(PackKeys.NODE_STAGES.getKey(), stageIdRaw));
             if (stages.put(stageId, stage) != null) {
                 Almura.LOGGER.warn("Stage [" + stageIdRaw + "] in [" + name + "] in pack [" + pack.getName()
-                                   + "] already existed as a stage. Duplicate stage ID is present within the file.");
+                                   + "] already exists as a stage.");
             }
         }
 
@@ -499,7 +499,7 @@ public class PackCreator {
                 final Class<? extends Entity> entityClazz = (Class<? extends Entity>) EntityList.stringToClassMapping.get(entityIdentifier);
                 if (entityClazz == null) {
                     Almura.LOGGER.warn("Entity source [" + rawCollisionSource + "] in [" + name + "] for modid [" + entityIdentifierSplit[0]
-                                       + "] in pack [" + pack.getName() + "] is not a registered Entity.");
+                                       + "] in pack [" + pack.getName() + "] is not a registered entity.");
                     continue;
                 }
                 final ConfigurationNode collisionSourceConfigurationNode = root.getChild(rawCollisionSource);
@@ -557,7 +557,7 @@ public class PackCreator {
                 final Optional<GameObject> drop = GameObjectMapper.getGameObject(rawDropSource);
                 if (!drop.isPresent()) {
                     Almura.LOGGER.warn("Drop source [" + rawDropSource + "] in [" + name + "] for mod [" + dropSourceModIdIdentifier.getKey() + "] in pack [" + pack.getName()
-                                       + "] is not a registered Block or Item!");
+                                       + "] is not a registered Block or Item.");
                     continue;
                 }
                 final ConfigurationNode dropConfigurationNode = dropsConfigurationNode.getNode(rawDropSource);
@@ -699,7 +699,7 @@ public class PackCreator {
                 final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0]);
                 if (!gameObject.isPresent()) {
                     throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
-                                                     + "] cannot be registered. Ingredient [" + identifierCombined + "] was not found.");
+                                                     + "] cannot be registered. Ingredient [" + identifierCombined + "] is not a registered block or item.");
                 } else {
                     if (gameObject.get().isBlock()) {
                         final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
@@ -767,7 +767,7 @@ public class PackCreator {
             return new RecipeContainer<>(pack, name, clazz, id, new ItemStack((Block) result, amount, data), params);
         } else {
             throw new InvalidRecipeException(
-                    "Result [" + result + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is not a block or item.");
+                    "Result [" + result + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is not a registered block or item.");
         }
     }
 
