@@ -5,12 +5,15 @@
  */
 package com.almuradev.almura.client.gui.ingame;
 
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.AlmuraGui;
+
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.interaction.UICheckBox;
 
 public class IngameConfig extends AlmuraGui {
 
@@ -31,8 +34,13 @@ public class IngameConfig extends AlmuraGui {
         configTitle.setPosition(0, 3, Anchor.CENTER | Anchor.TOP);
         configTitle.setFontScale(1.1F);
 
+        UICheckBox showAlmuraGUI = new UICheckBox(this, "Use Almura 2.0 GUI");
+        showAlmuraGUI.setPosition(0, 20, Anchor.CENTER | Anchor.TOP);
+        showAlmuraGUI.setChecked(Configuration.ALMURA_GUI);
+        
         configPanel.add(configTitle);
-
+        configPanel.add(showAlmuraGUI);
+        
         addToScreen(configPanel);
     }
 

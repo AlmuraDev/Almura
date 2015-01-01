@@ -7,6 +7,7 @@ package com.almuradev.almura.client;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.gui.AlmuraMainMenu;
 import com.almuradev.almura.client.gui.ingame.IngameConfig;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
@@ -18,6 +19,7 @@ import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
+
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -30,6 +32,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
+
 import org.lwjgl.input.Keyboard;
 
 public class ClientProxy extends CommonProxy {
@@ -72,7 +75,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
-        if (event.gui instanceof GuiMainMenu) {
+        if (event.gui instanceof GuiMainMenu && Configuration.ALMURA_GUI) {
             event.gui = new AlmuraMainMenu();
         }
     }
