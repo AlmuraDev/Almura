@@ -94,6 +94,7 @@ public class AlmuraServerMenu extends AlmuraGui {
         liveServerButton.setSize(180, 15);
         liveServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 20));
         liveServerButton.setName("BTNLIVESERVER");
+        liveServerButton.setDisabled(true);
 
         devServerButton =
                 (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.GREEN + "ObsidianBox" + ChatColor.WHITE + " Server").setPosition(
@@ -106,14 +107,14 @@ public class AlmuraServerMenu extends AlmuraGui {
                 (new UIButton(this, ChatColor.WHITE + "Logon to " + ChatColor.AQUA + "Almura Beta" + ChatColor.WHITE + " Server").setPosition(
                         0, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
         betaServerButton.setSize(180, 15);
-        betaServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 5));
-        betaServerButton.setName("BTNLIVESERVER");
+        betaServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Beta Server", 5));
+        betaServerButton.setName("BTNBETASERVER");
 
         otherServerButton =
                 (new UIButton(this, ChatColor.WHITE + "Other " + ChatColor.LIGHT_PURPLE + "Multiplayer" + ChatColor.WHITE + " Servers").setPosition(
                         0, -40, Anchor.CENTER | Anchor.BOTTOM).register(this));
         otherServerButton.setSize(180, 15);
-        otherServerButton.setTooltip(new UITooltip(this, "Logon to Almura 2 Live Server", 5));
+        otherServerButton.setTooltip(new UITooltip(this, "Logon to other Multiplayer Servers", 5));
         otherServerButton.setName("BTNMULTIPLAYER");
 
         backButton = (new UIButton(this, ChatColor.WHITE + "Back to MainMenu").setPosition(0, -10, Anchor.CENTER | Anchor.BOTTOM).register(this));
