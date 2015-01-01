@@ -143,25 +143,32 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         }
         player.addStat(StatList.mineBlockStatArray[getIdFromBlock(this)], 1);
         final ItemStack held = player.getHeldItem();
-        ToolsNode toolsProperty = null;
-        for (ToolsNode prop : stage.getNode(BreakNode.class).getValue()) {
-            if (held == null && prop instanceof ToolsNode.OffHand) {
-                toolsProperty = prop;
-                break;
+        ToolsNode found = null;
+        final BreakNode breakNode = stage.getNode(BreakNode.class);
+        for (ToolsNode toolsNode : breakNode.getValue()) {
+            if (toolsNode instanceof ToolsNode.OffHand) {
+                if (held == null) {
+                    found = toolsNode;
+                    break;
+                }
+                continue;
             }
-            if (held != null && prop.getTool().minecraftObject == held.getItem()) {
-                toolsProperty = prop;
+            if (held != null && toolsNode.getTool().minecraftObject == held.getItem()) {
+                found = toolsNode;
                 break;
             }
         }
 
-        if (toolsProperty == null) {
-            return;
+        if (found == null) {
+            found = breakNode.getToolByIdentifier("", "none");
+            if (found == null) {
+                return;
+            }
         }
 
-        player.addExhaustion(toolsProperty.getExhaustionRange().getValueWithinRange());
+        player.addExhaustion(found.getExhaustionRange().getValueWithinRange());
         final ArrayList<ItemStack> drops = Lists.newArrayList();
-        for (DropProperty src : toolsProperty.getValue().getValue()) {
+        for (DropProperty src : found.getValue().getValue()) {
             final GameObject source = src.getSource();
             final ItemStack toDrop;
             if (source.isBlock()) {

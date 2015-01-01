@@ -20,4 +20,20 @@ public class BreakNode extends ToggleableNode<Set<ToolsNode>> {
     public Set<ToolsNode> getValue() {
         return value;
     }
+
+    public ToolsNode getToolByIdentifier(String modid, String identifier) {
+        for (ToolsNode toolNode : value) {
+            if (identifier.equals("none")) {
+                if (toolNode instanceof ToolsNode.OffHand) {
+                    return toolNode;
+                } else {
+                    continue;
+                }
+            }
+            if (toolNode.getTool().modid.equals(modid) && toolNode.getTool().remapped.equals(identifier)) {
+                return toolNode;
+            }
+        }
+        return null;
+    }
 }
