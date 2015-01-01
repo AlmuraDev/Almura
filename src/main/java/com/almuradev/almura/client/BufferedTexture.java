@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.client;
 
 import net.minecraft.client.renderer.texture.SimpleTexture;
@@ -9,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class BufferedTexture extends SimpleTexture {
+
     private final BufferedImage image;
 
     public BufferedTexture(ResourceLocation key, BufferedImage image) {

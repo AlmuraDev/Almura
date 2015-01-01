@@ -65,7 +65,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import scala.Int;
 
 import java.util.EnumMap;
 import java.util.Iterator;
@@ -510,7 +509,8 @@ public class PackCreator {
                 final RangeProperty<Float>
                         healthRange =
                         new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
-                                                                                 collisionSourceConfigurationNode.getChild(PackKeys.HEALTH_CHANGE.getKey())
+                                                                                 collisionSourceConfigurationNode
+                                                                                         .getChild(PackKeys.HEALTH_CHANGE.getKey())
                                                                                          .getString(PackKeys.HEALTH_CHANGE.getDefaultValue()), 0f));
                 collisionProperties.add(new CollisionProperty(enabled, entityClazz, healthRange));
             }
@@ -531,10 +531,14 @@ public class PackCreator {
 
         for (String rawToolSource : toolsConfigurationNode.getKeys(false)) {
             final Pair<String, String> toolSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawToolSource);
-            final Optional<GameObject> tool = GameObjectMapper.getGameObject(toolSourceModIdIdentifier.getKey(), toolSourceModIdIdentifier.getValue());
+            final Optional<GameObject>
+                    tool =
+                    GameObjectMapper.getGameObject(toolSourceModIdIdentifier.getKey(), toolSourceModIdIdentifier.getValue());
             if (!rawToolSource.equals("none") && !tool.isPresent()) {
-                Almura.LOGGER.warn("Tool source [" + toolSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" + toolSourceModIdIdentifier.getKey() + "] in pack [" + pack.getName()
-                                   + "] is not a registered Block or Item.");
+                Almura.LOGGER
+                        .warn("Tool source [" + toolSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" + toolSourceModIdIdentifier
+                                .getKey() + "] in pack [" + pack.getName()
+                              + "] is not a registered block or item.");
                 continue;
             }
             final ConfigurationNode toolConfigurationNode = toolsConfigurationNode.getNode(rawToolSource);
@@ -556,8 +560,9 @@ public class PackCreator {
                 final Pair<String, String> dropSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawDropSource);
                 final Optional<GameObject> drop = GameObjectMapper.getGameObject(rawDropSource);
                 if (!drop.isPresent()) {
-                    Almura.LOGGER.warn("Drop source [" + rawDropSource + "] in [" + name + "] for mod [" + dropSourceModIdIdentifier.getKey() + "] in pack [" + pack.getName()
-                                       + "] is not a registered Block or Item.");
+                    Almura.LOGGER.warn("Drop source [" + dropSourceModIdIdentifier.getValue()+ "] in [" + name + "] for mod [" + dropSourceModIdIdentifier.getKey()
+                                       + "] in pack [" + pack.getName()
+                                       + "] is not a registered block or item.");
                     continue;
                 }
                 final ConfigurationNode dropConfigurationNode = dropsConfigurationNode.getNode(rawDropSource);
@@ -595,13 +600,13 @@ public class PackCreator {
         final RangeProperty<Integer>
                 foodRange =
                 new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
-                                                                          root.getChild(PackKeys.FOOD_CHANGE.getKey())
-                                                                                  .getString(PackKeys.FOOD_CHANGE.getDefaultValue()), 0));
+                                                                           root.getChild(PackKeys.FOOD_CHANGE.getKey())
+                                                                                   .getString(PackKeys.FOOD_CHANGE.getDefaultValue()), 0));
         final RangeProperty<Float>
                 saturationRange =
                 new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
-                                                                          root.getChild(PackKeys.SATURATION_CHANGE.getKey())
-                                                                                  .getString(PackKeys.SATURATION_CHANGE.getDefaultValue()), 0f));
+                                                                         root.getChild(PackKeys.SATURATION_CHANGE.getKey())
+                                                                                 .getString(PackKeys.SATURATION_CHANGE.getDefaultValue()), 0f));
 
         final RangeProperty<Float>
                 healthRange =
@@ -699,7 +704,8 @@ public class PackCreator {
                 final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0]);
                 if (!gameObject.isPresent()) {
                     throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
-                                                     + "] cannot be registered. Ingredient [" + identifierCombined + "] is not a registered block or item.");
+                                                     + "] cannot be registered. Ingredient [" + identifierCombined
+                                                     + "] is not a registered block or item.");
                 } else {
                     if (gameObject.get().isBlock()) {
                         final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
@@ -767,7 +773,8 @@ public class PackCreator {
             return new RecipeContainer<>(pack, name, clazz, id, new ItemStack((Block) result, amount, data), params);
         } else {
             throw new InvalidRecipeException(
-                    "Result [" + result + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is not a registered block or item.");
+                    "Result [" + result + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
+                    + "] is not a registered block or item.");
         }
     }
 

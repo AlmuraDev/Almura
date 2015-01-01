@@ -20,7 +20,7 @@ public class Configuration {
     public static boolean DEBUG_MAPPINGS_MODE;
     public static boolean ALMURA_GUI;
     public static boolean APPLY_MIXINS;
-    
+
     public boolean showAlmuraGUI;
 
     static {
@@ -43,12 +43,12 @@ public class Configuration {
         DEBUG_MODE = debugConfigurationNode.getChild("all").getBoolean(false);
         DEBUG_LANGUAGES_MODE = debugConfigurationNode.getChild("language").getBoolean(false);
         DEBUG_PACKS_MODE = debugConfigurationNode.getChild("pack").getBoolean(false);
-        DEBUG_MAPPINGS_MODE = debugConfigurationNode.getChild("mappings").getBoolean(false);        
-        
+        DEBUG_MAPPINGS_MODE = debugConfigurationNode.getChild("mappings").getBoolean(false);
+
         final ConfigurationNode clientConfigurationNode = reader.getNode("client");
         ALMURA_GUI = clientConfigurationNode.getChild("displayAlmuraGUI").getBoolean(true);
     }
-    
+
     public void setShowAlmuraGUI(boolean value) {
         ALMURA_GUI = value;
         //TODO: Save to config file.

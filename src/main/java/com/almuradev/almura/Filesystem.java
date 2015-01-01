@@ -7,7 +7,6 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.client.BufferedTexture;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
@@ -87,7 +86,7 @@ public class Filesystem {
                 InputStream stream = Filesystem.class.getResourceAsStream("/config/settings.yml");
                 Files.copy(stream, Filesystem.CONFIG_SETTINGS_PATH);
             } catch (Exception e) {
-                throw new RuntimeException("Failed to copy over settings file!", e);
+                throw new RuntimeException("Failed to copy over settings file.", e);
             }
         }
         if (Files.notExists(CONFIG_MAPPINGS_PATH)) {
@@ -97,7 +96,7 @@ public class Filesystem {
                 InputStream stream = Filesystem.class.getResourceAsStream("/config/mappings.yml");
                 Files.copy(stream, Filesystem.CONFIG_MAPPINGS_PATH);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to copy over mapping file!", e);
+                throw new RuntimeException("Failed to copy over mapping file.", e);
             }
         }
 

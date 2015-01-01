@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura.core;
 
-import com.almuradev.almura.Configuration;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;

@@ -5,13 +5,6 @@
  */
 package com.almuradev.almura.client.gui.ingame;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Calendar;
-import java.util.Map;
-import java.util.Random;
-
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
@@ -21,7 +14,6 @@ import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.AlmuraMainMenu;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -30,32 +22,39 @@ import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
+import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Calendar;
+import java.util.Map;
+import java.util.Random;
+
 public class IngameConfig extends AlmuraGui {
 
-    public UIButton saveButton, closeButton;    
     private static final Random RANDOM = new Random();
     private static final Map<Integer, GuiTexture> BACKGROUNDS = Maps.newHashMap();
     private static int imageNum = 0;
-    public UIBackgroundContainer window;    
+    public UIButton saveButton, closeButton;
+    public UIBackgroundContainer window;
 
     public int screenH, screenW;
     public UIImage backgroundImage;
     public int tick = 1;
     int timer = 1;
-    
+
     public IngameConfig() {
         guiscreenBackground = false; // prevent full screen black background.
         screenH = Minecraft.getMinecraft().displayHeight;
         screenW = Minecraft.getMinecraft().displayWidth;
-        
+
         //Main Container
         UIContainer main = new UIContainer(this);
-        
+
         // Container background image.
         GuiTexture background = new GuiTexture(new ResourceLocation(Almura.MOD_ID.toLowerCase(), "textures/background/evening/evening1.jpg"));
         backgroundImage = new UIImage(this, background, null);
@@ -84,28 +83,27 @@ public class IngameConfig extends AlmuraGui {
         UICheckBox showAlmuraGUI = new UICheckBox(this, ChatColor.WHITE + "  Use Almura 2.0 GUI");
         showAlmuraGUI.setPosition(0, 20, Anchor.CENTER | Anchor.TOP);
         showAlmuraGUI.setChecked(Configuration.ALMURA_GUI);
-        
+
         saveButton = (new UIButton(this, ChatColor.WHITE + "Save").setPosition(-45, -10, Anchor.RIGHT | Anchor.BOTTOM).register(this));
         saveButton.setSize(40, 15);
         saveButton.setName("BTNSAVE");
-        
+
         closeButton = (new UIButton(this, ChatColor.WHITE + "Cancel").setPosition(0, -10, Anchor.RIGHT | Anchor.BOTTOM).register(this));
         closeButton.setSize(40, 15);
         closeButton.setName("BTNCLOSE");
-        
-        
+
         configPanel.add(configTitle);
         configPanel.add(showAlmuraGUI);
         configPanel.add(saveButton);
         configPanel.add(closeButton);
-        
+
         new UIMoveHandle(this, configPanel);
-        
+
         if (Minecraft.getMinecraft().thePlayer == null) {
             main.add(backgroundImage, configPanel);
             addToScreen(main);
         } else {
-            addToScreen(configPanel);    
+            addToScreen(configPanel);
         }
     }
 
@@ -115,10 +113,10 @@ public class IngameConfig extends AlmuraGui {
             close();
         }
     }
-    
+
     @Subscribe
     public void onButtonClick(ClickEvent event) {
-        switch (event.getComponent().getName().toUpperCase()) {  
+        switch (event.getComponent().getName().toUpperCase()) {
             case "BTNCLOSE":
                 if (Minecraft.getMinecraft().thePlayer == null) {
                     this.mc.displayGuiScreen(new AlmuraMainMenu());
@@ -129,9 +127,9 @@ public class IngameConfig extends AlmuraGui {
                 //TODO: Save
                 this.close();
                 break;
-        }        
+        }
     }
-    
+
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (Minecraft.getMinecraft().thePlayer == null) {
@@ -149,7 +147,7 @@ public class IngameConfig extends AlmuraGui {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            renderer.enableBlending();            
+            renderer.enableBlending();
         }
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

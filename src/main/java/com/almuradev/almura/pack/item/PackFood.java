@@ -41,11 +41,12 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     private final Map<Integer, List<Integer>> textureCoordinates;
     private final String shapeName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
+    private final ConsumptionNode consumption;
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private PackShape shape;
     private List<String> tooltip;
-    private final ConsumptionNode consumption;
+
     public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName,
                     ConsumptionNode consumptionNode) {

@@ -11,7 +11,6 @@ import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.ingame.IngameConfig;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -24,11 +23,9 @@ import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UIButton.ClickEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
-import java.nio.file.FileStore;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
@@ -107,11 +104,11 @@ public class AlmuraMainMenu extends AlmuraGui {
         configButton = (new UIButton(this, ChatColor.WHITE + "Config").setPosition(0, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
         configButton.setSize(50, 15);
         configButton.setName("BTNCONFIG");
-        
+
         modsButton = (new UIButton(this, ChatColor.WHITE + "Mods").setPosition(60, -60, Anchor.CENTER | Anchor.BOTTOM).register(this));
         modsButton.setSize(50, 15);
         modsButton.setName("BTNMODS");
-        
+
         closeButton = (new UIButton(this, ChatColor.WHITE + "Quit").setPosition(0, -40, Anchor.CENTER | Anchor.BOTTOM).register(this));
         closeButton.setSize(50, 15);
         closeButton.setName("BTNCLOSE");
@@ -129,7 +126,8 @@ public class AlmuraMainMenu extends AlmuraGui {
         copyright3.setFontScale(0.7F);
 
         panel.add(almuraLogo);
-        window.add(panel, singlePlayerButton, serverButton, optionsButton, modsButton, configButton, closeButton, version, copyright1, copyright2, copyright3);
+        window.add(panel, singlePlayerButton, serverButton, optionsButton, modsButton, configButton, closeButton, version, copyright1, copyright2,
+                   copyright3);
 
         main.add(backgroundImage, window);
 

@@ -38,14 +38,12 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraftforge.oredict.RecipeSorter;
 
 import java.io.IOException;
@@ -160,13 +158,15 @@ public class CommonProxy {
 
                         for (Stage stage : ((PackCrops) block).getStages().values()) {
                             final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
-                            stage.addNode(PackCreator.createCollisionNode(pack, stage.getIdentifier(), stageNode.getNode(PackKeys.NODE_COLLISION.getKey())));
+                            stage.addNode(PackCreator.createCollisionNode(pack, stage.getIdentifier(),
+                                                                          stageNode.getNode(PackKeys.NODE_COLLISION.getKey())));
                         }
                     }
                 } else {
                     //Collision
                     ((INodeContainer) block).addNode(
-                            PackCreator.createCollisionNode(pack, ((IPackObject) block).getIdentifier(), reader.getNode(PackKeys.NODE_COLLISION.getKey())));
+                            PackCreator.createCollisionNode(pack, ((IPackObject) block).getIdentifier(),
+                                                            reader.getNode(PackKeys.NODE_COLLISION.getKey())));
 
                 }
 
@@ -265,7 +265,7 @@ public class CommonProxy {
             return;
         }
 
-        for (int i = 0; i < 9 ; i++) {
+        for (int i = 0; i < 9; i++) {
             final ItemStack stackSlot = event.craftMatrix.getStackInSlot(i);
             ItemStack recipeSlot;
             if (recipe instanceof QuantitiveShapedRecipes) {

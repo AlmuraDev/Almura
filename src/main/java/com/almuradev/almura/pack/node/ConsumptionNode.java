@@ -14,7 +14,8 @@ public class ConsumptionNode implements INode<Boolean> {
     private final RangeProperty<Float> saturationRange, healthRange;
     private final boolean alwaysEdible, wolfFavorite;
 
-    public ConsumptionNode(boolean isEnabled, RangeProperty<Integer> foodRange, RangeProperty<Float> saturationRange, RangeProperty<Float> healthRange, boolean alwaysEdible, boolean wolfFavorite) {
+    public ConsumptionNode(boolean isEnabled, RangeProperty<Integer> foodRange, RangeProperty<Float> saturationRange,
+                           RangeProperty<Float> healthRange, boolean alwaysEdible, boolean wolfFavorite) {
         this.isEnabled = isEnabled;
         this.foodRange = foodRange;
         this.saturationRange = saturationRange;
