@@ -19,6 +19,7 @@ public class Configuration {
     public static boolean DEBUG_PACKS_MODE;
     public static boolean DEBUG_MAPPINGS_MODE;
     public static boolean ALMURA_GUI;
+    public static boolean APPLY_MIXINS;
     
     public boolean showAlmuraGUI;
 
