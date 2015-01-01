@@ -5,6 +5,7 @@
     "MixinTileEntityChestRenderer",
     "MixinBlockWall",
     "MixinSimpleReloadableResourceManager",
-    "MixinBlockTallGrass"
+    "MixinBlockTallGrass",
+    "MixinContainerWorkbench"
   ]
 }
