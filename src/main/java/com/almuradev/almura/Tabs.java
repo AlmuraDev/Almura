@@ -8,6 +8,7 @@ package com.almuradev.almura;
 import com.almuradev.almura.client.ExternalIcon;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
+import com.almuradev.almura.pack.IPackObject;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -16,6 +17,12 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class Tabs {
 
@@ -94,6 +101,30 @@ public class Tabs {
         @SideOnly(Side.CLIENT)
         public Item getTabIconItem() {
             return displayItem == null ? Items.feather : displayItem;
+        }
+
+        @Override
+        public void displayAllReleventItems(List list) {
+            super.displayAllReleventItems(list);
+            Collections.sort(list, new Comparator<ItemStack>() {
+                @Override
+                public int compare(ItemStack o1, ItemStack o2) {
+                    final IPackObject object1;
+                    if (o1.getItem() instanceof ItemBlock) {
+                        object1 = (IPackObject) ((ItemBlock) o1.getItem()).field_150939_a;
+                    } else {
+                        object1 = (IPackObject) o1.getItem();
+                    }
+
+                    final IPackObject object2;
+                    if (o2.getItem() instanceof ItemBlock) {
+                        object2 = (IPackObject) ((ItemBlock) o2.getItem()).field_150939_a;
+                    } else {
+                        object2 = (IPackObject) o2.getItem();
+                    }
+                    return object1.getIdentifier().compareTo(object2.getIdentifier());
+                }
+            });
         }
     }
 
