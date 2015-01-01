@@ -125,7 +125,7 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
         boolean exists = nodes.put((Class<? extends INode<?>>) node.getClass(), node) != null;
         if (!exists && node.getClass() == GrassNode.class) {
             if (((GrassNode) node).isEnabled()) {
-                MinecraftForge.addGrassSeed(new ItemStack(this, 1, 0), 0);
+                MinecraftForge.addGrassSeed(new ItemStack(this, 1, 0), 10);
             }
         }
         MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
