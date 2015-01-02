@@ -58,7 +58,7 @@ public class RecipeContainer<T extends IRecipe> {
         }
 
         if (Configuration.DEBUG_MODE || Configuration.DEBUG_RECIPES_MODE) {
-            Almura.LOGGER.info("Added Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] as type [" + clazz.getSimpleName()
+            Almura.LOGGER.info("Added recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] as type [" + clazz.getSimpleName()
                     .toUpperCase() + "].");
         }
     }
