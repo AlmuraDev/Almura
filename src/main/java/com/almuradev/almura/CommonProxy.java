@@ -265,16 +265,22 @@ public class CommonProxy {
             return;
         }
 
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
             final ItemStack stackSlot = event.craftMatrix.getStackInSlot(i);
-            ItemStack recipeSlot;
+            ItemStack recipeSlot = null;
             if (recipe instanceof QuantitiveShapedRecipes) {
                 recipeSlot = ((QuantitiveShapedRecipes) recipe).recipeItems[i];
             } else {
-                recipeSlot = (ItemStack) ((QuantitiveShapelessRecipes) recipe).recipeItems.get(i);
+                for (Object obj : ((QuantitiveShapelessRecipes) recipe).recipeItems) {
+                    final ItemStack stack = (ItemStack) obj;
+
+                    if (ItemStack.areItemStacksEqual(stackSlot, stack)) {
+                        recipeSlot = stack;
+                    }
+                }
             }
 
-            if (stackSlot == null) {
+            if (recipeSlot == null) {
                 continue;
             }
 

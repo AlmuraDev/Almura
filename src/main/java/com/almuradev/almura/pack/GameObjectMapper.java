@@ -92,9 +92,9 @@ public class GameObjectMapper {
     }
 
     private static Optional<Object> getMinecraftObject(String modid, String identifier) {
-        Object object = GameRegistry.findItem(modid, identifier);
+        Object object = GameRegistry.findBlock(modid, identifier);
         if (object == null) {
-            object = GameRegistry.findBlock(modid, identifier);
+            object = GameRegistry.findItem(modid, identifier);
         }
         return Optional.fromNullable(object);
     }

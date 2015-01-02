@@ -709,12 +709,11 @@ public class PackCreator {
                                                      + "] is not a registered block or item.");
                 } else {
                     if (gameObject.get().isBlock()) {
-                        if (!(gameObject.get().minecraftObject instanceof BlockAir)) {
-                            final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
-                            if (itemBlock == null) {
-                                throw new InvalidRecipeException("Congratulations, you hit a Mojang bug with object [" + gameObject.get().minecraftObject + "] in recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + ". All blocks require an ItemBlock equivalent.");
-                            }
-                            params.add(new ItemStack(itemBlock, ingredientAmount, gameObject.get().data));
+                        final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
+                        if (itemBlock != null) {
+                            params.add(new ItemStack((Block) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
+                        } else {
+                            params.add(gameObject.get().minecraftObject);
                         }
                     } else if (gameObject.get().minecraftObject instanceof Item) {
                         params.add(new ItemStack((Item) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
@@ -757,12 +756,12 @@ public class PackCreator {
             }
             params = combinedParams;
         } else if (clazz == QuantitiveShapelessRecipes.class) {
-            final Iterator<Object> iter = params.iterator();
-            while (iter.hasNext()) {
-                if (iter.next().getClass().equals(BlockAir.class)) {
-                    iter.remove();
-                }
-            }
+//            final Iterator<Object> iter = params.iterator();
+//            while (iter.hasNext()) {
+//                if (iter.next().getClass().equals(BlockAir.class)) {
+//                    iter.remove();
+//                }
+//            }
         } else {
             throw new UnknownRecipeTypeException(
                     "Recipe type [" + clazz.getSimpleName() + "] with id [" + id + "] in [" + name + "] in pack [" + pack.getName()
