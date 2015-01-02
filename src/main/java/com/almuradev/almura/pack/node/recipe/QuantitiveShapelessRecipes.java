@@ -42,7 +42,7 @@ public class QuantitiveShapelessRecipes extends ShapelessRecipes {
                     for (Object anArraylist : arraylist) {
                         ItemStack itemstack1 = (ItemStack) anArraylist;
 
-                        if (itemstack.getItem() == itemstack1.getItem() && itemstack1.stackSize >= itemstack.stackSize && (
+                        if (itemstack.getItem() == itemstack1.getItem() && itemstack.stackSize >= itemstack1.stackSize && (
                                 itemstack1.getItemDamage() == 32767 || itemstack.getItemDamage() == itemstack1.getItemDamage())) {
                             flag = true;
                             arraylist.remove(itemstack1);
