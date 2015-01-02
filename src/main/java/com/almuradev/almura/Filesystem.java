@@ -6,6 +6,8 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.client.BufferedTexture;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
@@ -194,6 +196,7 @@ public class Filesystem {
         return getImageDimension(Minecraft.getMinecraft().getResourceManager().getResource(location).getInputStream());
     }
 
+    @SideOnly(Side.CLIENT)
     public static ResourceLocation registerTexture(String modid, String key, Path path) throws IOException {
         final BufferedImage image = ImageIO.read(Files.newInputStream(path));
         final ResourceLocation location = new ResourceLocation(modid, key);
