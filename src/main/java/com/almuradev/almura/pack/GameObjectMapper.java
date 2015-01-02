@@ -70,7 +70,7 @@ public class GameObjectMapper {
         for (String modid : reader.getKeys(false)) {
             final ConfigurationNode modidConfigurationNode = reader.getNode(modid);
             for (String rawObjectIdentifier : modidConfigurationNode.getKeys(false)) {
-                final Optional<GameObject> found = getGameObject(modid + "\\" + rawObjectIdentifier);
+                final Optional<GameObject> found = getGameObject(modid + "\\" + rawObjectIdentifier, false);
                 if (!found.isPresent()) {
                     Almura.LOGGER.warn("Object [" + rawObjectIdentifier + "] is neither a block or item within mod [" + modid + "].");
                     continue;
@@ -91,21 +91,32 @@ public class GameObjectMapper {
         }
     }
 
-    private static Optional<Object> getMinecraftObject(String modid, String identifier) {
-        Object object = GameRegistry.findBlock(modid, identifier);
-        if (object == null) {
+    private static Optional<Object> getMinecraftObject(String modid, String identifier, boolean itemFirst) {
+        Object object;
+
+        if (itemFirst) {
             object = GameRegistry.findItem(modid, identifier);
+
+            if (object == null) {
+                object = GameRegistry.findBlock(modid, identifier);
+            }
+        } else {
+            object = GameRegistry.findBlock(modid, identifier);
+
+            if (object == null) {
+                object = GameRegistry.findItem(modid, identifier);
+            }
         }
         return Optional.fromNullable(object);
     }
 
-    public static Optional<GameObject> getGameObject(String rawSource) {
+    public static Optional<GameObject> getGameObject(String rawSource, boolean itemFirst) {
         final Pair<String, String> parsedModidIdentifier = parseModidIdentifierFrom(rawSource);
-        return getGameObject(parsedModidIdentifier.getKey(), parsedModidIdentifier.getValue());
+        return getGameObject(parsedModidIdentifier.getKey(), parsedModidIdentifier.getValue(), itemFirst);
     }
 
-    public static Optional<GameObject> getGameObject(String modid, String identifier) {
-        final Optional<Object> object = getMinecraftObject(modid, identifier);
+    public static Optional<GameObject> getGameObject(String modid, String identifier, boolean itemFirst) {
+        final Optional<Object> object = getMinecraftObject(modid, identifier, itemFirst);
         if (!object.isPresent()) {
             return get(modid, identifier);
         }

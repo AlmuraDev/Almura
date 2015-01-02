@@ -532,9 +532,10 @@ public class PackCreator {
 
         for (String rawToolSource : toolsConfigurationNode.getKeys(false)) {
             final Pair<String, String> toolSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawToolSource);
+            //TODO FAILURE POINT, CHECKING ITEM FIRST
             final Optional<GameObject>
                     tool =
-                    GameObjectMapper.getGameObject(toolSourceModIdIdentifier.getKey(), toolSourceModIdIdentifier.getValue());
+                    GameObjectMapper.getGameObject(toolSourceModIdIdentifier.getKey(), toolSourceModIdIdentifier.getValue(), true);
             if (!rawToolSource.equals("none") && !tool.isPresent()) {
                 Almura.LOGGER
                         .warn("Tool source [" + toolSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" + toolSourceModIdIdentifier
@@ -559,7 +560,8 @@ public class PackCreator {
 
             for (String rawDropSource : dropsConfigurationNode.getKeys(false)) {
                 final Pair<String, String> dropSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawDropSource);
-                final Optional<GameObject> drop = GameObjectMapper.getGameObject(rawDropSource);
+                //TODO FAILURE POINT, CHECKING ITEM FIRST
+                final Optional<GameObject> drop = GameObjectMapper.getGameObject(rawDropSource, true);
                 if (!drop.isPresent()) {
                     Almura.LOGGER.warn("Drop source [" + dropSourceModIdIdentifier.getValue()+ "] in [" + name + "] for mod [" + dropSourceModIdIdentifier.getKey()
                                        + "] in pack [" + pack.getName()
@@ -648,7 +650,8 @@ public class PackCreator {
 
     public static SoilNode createSoilNode(Pack pack, String name, ConfigurationNode node) {
         final String rawSource = node.getChild(PackKeys.SOURCE.getKey()).getString(PackKeys.SOURCE.getDefaultValue());
-        final Optional<GameObject> source = GameObjectMapper.getGameObject(rawSource);
+        //TODO FAILURE POINT, CHECKING BLOCK FIRST
+        final Optional<GameObject> source = GameObjectMapper.getGameObject(rawSource, false);
         if (!source.isPresent()) {
             Almura.LOGGER.warn("Soil source [" + rawSource + "] in [" + name + "] in pack [" + pack.getName() + "] is not a registered block.");
             return null;
@@ -702,7 +705,8 @@ public class PackCreator {
                 if (identifierAmountSplit.length == 2) {
                     ingredientAmount = Integer.parseInt(identifierAmountSplit[1]);
                 }
-                final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0]);
+                //TODO FAILURE POINT, CHECKING ITEM FIRST
+                final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0], true);
                 if (!gameObject.isPresent()) {
                     throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
                                                      + "] cannot be registered. Ingredient [" + identifierCombined
@@ -712,8 +716,10 @@ public class PackCreator {
                         final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
                         if (itemBlock != null) {
                             params.add(new ItemStack((Block) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
-                        } else {
+                        } else if (gameObject.get().minecraftObject instanceof BlockAir) {
                             params.add(gameObject.get().minecraftObject);
+                        } else {
+                            throw new InvalidRecipeException("Game Object [" + gameObject.get().minecraftObject + "] of type [BLOCK] in [" + name + "] in pack [" + pack.getName() + "] has no given ItemBlock.");
                         }
                     } else if (gameObject.get().minecraftObject instanceof Item) {
                         params.add(new ItemStack((Item) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));

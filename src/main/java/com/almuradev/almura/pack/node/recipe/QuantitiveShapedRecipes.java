@@ -53,7 +53,7 @@ public class QuantitiveShapedRecipes extends ShapedRecipes {
                         return false;
                     }
 
-                    if (itemstack1.stackSize < itemstack.stackSize) {
+                    if (itemstack.stackSize < itemstack1.stackSize) {
                         return false;
                     }
 

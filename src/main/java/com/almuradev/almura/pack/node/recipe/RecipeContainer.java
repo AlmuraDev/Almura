@@ -18,6 +18,7 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import scala.tools.nsc.Global;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,19 +37,19 @@ public class RecipeContainer<T extends IRecipe> {
         this.id = id;
         if (clazz == QuantitiveShapedRecipes.class) {
             recipe = (T) createShapedRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
-//            final IRecipe found = getExisting();
-//            if (found != null) {
-//                throw new InvalidRecipeException(
-//                        "Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is a duplicate. Matched [" + found + "].");
-//            }
+            final IRecipe found = getExisting();
+            if (found != null) {
+                throw new InvalidRecipeException(
+                        "Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is a duplicate. Matched [" + found + "].");
+            }
             CraftingManager.getInstance().getRecipeList().add(recipe);
         } else if (clazz == QuantitiveShapelessRecipes.class) {
             recipe = (T) createShapelessRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
-//            final IRecipe found = getExisting();
-//            if (found != null) {
-//                throw new InvalidRecipeException(
-//                        "Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is a duplicate. Matched [" + found + "].");
-//            }
+            final IRecipe found = getExisting();
+            if (found != null) {
+                throw new InvalidRecipeException(
+                        "Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is a duplicate. Matched [" + found + "].");
+            }
             CraftingManager.getInstance().getRecipeList().add(recipe);
         } else {
             throw new UnknownRecipeTypeException(
@@ -176,22 +177,34 @@ public class RecipeContainer<T extends IRecipe> {
 
                 if (recipe instanceof ShapelessRecipes) {
                     if (registeredShapeless.recipeItems.size() == ((ShapelessRecipes) recipe).recipeItems.size()) {
+                        final ArrayList items = new ArrayList<>(((ShapelessRecipes) recipe).recipeItems);
+
                         for (Object uStack : registeredShapeless.recipeItems) {
                             final ItemStack unknownStack = (ItemStack) uStack;
-
-                            boolean isInList = false;
 
                             for (Object rStack : ((ShapelessRecipes) recipe).recipeItems) {
                                 final ItemStack recipeStack = (ItemStack) rStack;
 
-                                if (ItemStack.areItemStacksEqual(unknownStack, recipeStack)) {
-                                    isInList = true;
-                                    break;
+                                // Air -> Air
+                                if (unknownStack.getItem() == null && recipeStack.getItem() == null) {
+                                    items.remove(rStack);
+                                }
+
+                                // Air/Stack -> Air/Stack
+                                if (unknownStack.getItem() == null || recipeStack.getItem() == null) {
+                                    continue;
+                                }
+
+                                // a. Items match
+                                // b. Registered stack size is greater than or equal to recipe stack size
+                                // c. Damage values match
+                                if (unknownStack.getItem() == recipeStack.getItem() && unknownStack.stackSize != recipeStack.stackSize && unknownStack.getItemDamage() == recipeStack.getItemDamage()) {
+                                    items.remove(rStack);
                                 }
                             }
 
-                            if (!isInList) {
-                                doesMatch = false;
+                            doesMatch = items.isEmpty();
+                            if (doesMatch) {
                                 break;
                             }
                         }
@@ -209,7 +222,24 @@ public class RecipeContainer<T extends IRecipe> {
                             final ItemStack unknownStack = ((ShapedRecipes) registeredRecipe).recipeItems[i];
                             final ItemStack recipeStack = ((ShapedRecipes) recipe).recipeItems[i];
 
-                            if (!ItemStack.areItemStacksEqual(unknownStack, recipeStack)) {
+                            if (registeredShaped instanceof QuantitiveShapedRecipes && recipe instanceof QuantitiveShapedRecipes) {
+                                System.out.println("Begin debug");
+                            }
+                            // Air -> Air
+                            if (unknownStack == null && recipeStack == null) {
+                                continue;
+                            }
+
+                            // Air/Stack -> Air/Stack
+                            if (unknownStack == null || recipeStack == null) {
+                                doesMatch = false;
+                                break;
+                            }
+
+                            // a. Items don't match
+                            // b. Registered stack size is less than recipe stack size
+                            // c. Damage values don't match
+                            if (unknownStack.getItem() != recipeStack.getItem() || unknownStack.stackSize != recipeStack.stackSize || unknownStack.getItemDamage() != recipeStack.getItemDamage()) {
                                 doesMatch = false;
                                 break;
                             }
