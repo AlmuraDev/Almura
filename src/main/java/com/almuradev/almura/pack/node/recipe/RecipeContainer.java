@@ -35,7 +35,7 @@ public class RecipeContainer<T extends IRecipe> {
         this.pack = pack;
         this.identifier = name;
         this.id = id;
-        if (clazz == QuantitiveShapedRecipes.class) {
+        if (clazz == ShapedRecipes.class) {
             recipe = (T) createShapedRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
             final IRecipe found = getExisting();
             if (found != null) {
@@ -43,7 +43,7 @@ public class RecipeContainer<T extends IRecipe> {
                         "Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is a duplicate. Matched [" + found + "].");
             }
             CraftingManager.getInstance().getRecipeList().add(recipe);
-        } else if (clazz == QuantitiveShapelessRecipes.class) {
+        } else if (clazz == ShapelessRecipes.class) {
             recipe = (T) createShapelessRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
             final IRecipe found = getExisting();
             if (found != null) {
@@ -222,9 +222,6 @@ public class RecipeContainer<T extends IRecipe> {
                             final ItemStack unknownStack = ((ShapedRecipes) registeredRecipe).recipeItems[i];
                             final ItemStack recipeStack = ((ShapedRecipes) recipe).recipeItems[i];
 
-                            if (registeredShaped instanceof QuantitiveShapedRecipes && recipe instanceof QuantitiveShapedRecipes) {
-                                System.out.println("Begin debug");
-                            }
                             // Air -> Air
                             if (unknownStack == null && recipeStack == null) {
                                 continue;

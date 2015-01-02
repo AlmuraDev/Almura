@@ -144,7 +144,7 @@ public class CommonProxy {
                         final PackSeeds
                                 seed =
                                 PackCreator
-                                        .createCropSeed(((PackCrops) block).getPack(), (Block) soilNode.getSoil().minecraftObject, (PackCrops) block,
+                                        .createCropSeed(((PackCrops) block).getPack(), ((IPackObject) block).getIdentifier(), (Block) soilNode.getSoil().minecraftObject, (PackCrops) block,
                                                         textureName,
                                                         reader.getNode(PackKeys.NODE_SEED.getKey()));
                         if (GameRegistry.findItem(Almura.MOD_ID, seed.getPack().getName() + "\\" + seed.getIdentifier()) != null) {
