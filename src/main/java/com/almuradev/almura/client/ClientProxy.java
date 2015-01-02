@@ -73,7 +73,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
-        if (event.gui instanceof GuiMainMenu && Configuration.ALMURA_GUI) {
+        if (event.gui instanceof GuiMainMenu && Configuration.DISPLAY_ENHANCED_GUI) {
             event.gui = new AlmuraMainMenu();
         }
     }

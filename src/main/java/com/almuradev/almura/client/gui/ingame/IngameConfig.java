@@ -82,7 +82,7 @@ public class IngameConfig extends AlmuraGui {
 
         UICheckBox showAlmuraGUI = new UICheckBox(this, ChatColor.WHITE + "  Use Almura 2.0 GUI");
         showAlmuraGUI.setPosition(0, 20, Anchor.CENTER | Anchor.TOP);
-        showAlmuraGUI.setChecked(Configuration.ALMURA_GUI);
+        showAlmuraGUI.setChecked(Configuration.DISPLAY_ENHANCED_GUI);
 
         saveButton = (new UIButton(this, ChatColor.WHITE + "Save").setPosition(-45, -10, Anchor.RIGHT | Anchor.BOTTOM).register(this));
         saveButton.setSize(40, 15);

@@ -14,43 +14,50 @@ public class Configuration {
 
     public static final boolean IS_SERVER = FMLCommonHandler.instance().getEffectiveSide().isServer();
     public static final boolean IS_CLIENT = FMLCommonHandler.instance().getEffectiveSide().isClient();
+
+    //DEBUG
     public static boolean DEBUG_MODE;
     public static boolean DEBUG_LANGUAGES_MODE;
     public static boolean DEBUG_PACKS_MODE;
     public static boolean DEBUG_MAPPINGS_MODE;
-    public static boolean ALMURA_GUI;
-    public static boolean APPLY_MIXINS;
+    public static boolean DEBUG_RECIPES_MODE;
+    //GUI
+    public static boolean DISPLAY_ENHANCED_GUI;
 
-    public boolean showAlmuraGUI;
+    private static YamlConfiguration reader;
 
     static {
         DEBUG_LANGUAGES_MODE = false;
         DEBUG_PACKS_MODE = false;
-        ALMURA_GUI = true;
-        reloadConfig();
-    }
-
-    public static void reloadConfig() {
-        final YamlConfiguration reader = new YamlConfiguration(Filesystem.CONFIG_SETTINGS_PATH.toFile());
+        DISPLAY_ENHANCED_GUI = true;
         try {
-            reader.load();
+            load();
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
-        ALMURA_GUI = reader.getChild("almura_gui").getBoolean(true);
+    }
+
+    public static void load() throws ConfigurationException {
+        reader = new YamlConfiguration(Filesystem.CONFIG_SETTINGS_PATH.toFile());
+        reader.load();
 
         final ConfigurationNode debugConfigurationNode = reader.getNode("debug");
         DEBUG_MODE = debugConfigurationNode.getChild("all").getBoolean(false);
         DEBUG_LANGUAGES_MODE = debugConfigurationNode.getChild("language").getBoolean(false);
         DEBUG_PACKS_MODE = debugConfigurationNode.getChild("pack").getBoolean(false);
         DEBUG_MAPPINGS_MODE = debugConfigurationNode.getChild("mappings").getBoolean(false);
+        DEBUG_RECIPES_MODE = debugConfigurationNode.getChild("recipes").getBoolean(false);
 
         final ConfigurationNode clientConfigurationNode = reader.getNode("client");
-        ALMURA_GUI = clientConfigurationNode.getChild("displayAlmuraGUI").getBoolean(true);
+        DISPLAY_ENHANCED_GUI = clientConfigurationNode.getChild("enhanced-gui").getBoolean(true);
+
     }
 
-    public void setShowAlmuraGUI(boolean value) {
-        ALMURA_GUI = value;
-        //TODO: Save to config file.
+    public static void save() throws ConfigurationException {
+        reader.save();
+    }
+
+    public static void toggleEnhancedGUI(boolean value) {
+        DISPLAY_ENHANCED_GUI = value;
     }
 }

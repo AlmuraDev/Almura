@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.node.recipe;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.pack.Pack;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
@@ -56,6 +57,9 @@ public class RecipeContainer<T extends IRecipe> {
             throw new InvalidRecipeException(ex);
         }
 
+        if (Configuration.DEBUG_MODE || Configuration.DEBUG_RECIPES_MODE) {
+
+        }
         Almura.LOGGER.info("Added Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] as type [" + clazz.getSimpleName().toUpperCase() + "].");
     }
 

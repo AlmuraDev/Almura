@@ -206,14 +206,14 @@ public class IngameHUD extends AlmuraGui {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTick(ClientTickEvent event) {
-        if (UPDATES_ENABLED && Configuration.ALMURA_GUI && MINECRAFT.thePlayer != null) {
+        if (UPDATES_ENABLED && Configuration.DISPLAY_ENHANCED_GUI && MINECRAFT.thePlayer != null) {
             updateWidgets();
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
-        if (!Configuration.ALMURA_GUI || !UPDATES_ENABLED) {
+        if (!Configuration.DISPLAY_ENHANCED_GUI || !UPDATES_ENABLED) {
             return;
         }
         switch (event.type) {
