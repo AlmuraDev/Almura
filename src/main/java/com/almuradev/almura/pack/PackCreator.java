@@ -58,6 +58,7 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -708,7 +709,13 @@ public class PackCreator {
                                                      + "] is not a registered block or item.");
                 } else {
                     if (gameObject.get().isBlock()) {
-                        params.add(new ItemStack((Block) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
+                        if (!(gameObject.get().minecraftObject instanceof BlockAir)) {
+                            final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
+                            if (itemBlock == null) {
+                                throw new InvalidRecipeException("Congratulations, you hit a Mojang bug with object [" + gameObject.get().minecraftObject + "] in recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + ". All blocks require an ItemBlock equivalent.");
+                            }
+                            params.add(new ItemStack(itemBlock, ingredientAmount, gameObject.get().data));
+                        }
                     } else if (gameObject.get().minecraftObject instanceof Item) {
                         params.add(new ItemStack((Item) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
                     }

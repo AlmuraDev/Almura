@@ -16,6 +16,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import scala.tools.nsc.Global;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,32 +34,31 @@ public class RecipeContainer<T extends IRecipe> {
         this.pack = pack;
         this.identifier = name;
         this.id = id;
-        try {
-            if (clazz == QuantitiveShapedRecipes.class) {
-                recipe = (T) createShapedRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
-                final IRecipe found = getExisting();
-                if (found != null) {
-                    throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is a duplicate. Matched [" + found + "].");
-                }
-                CraftingManager.getInstance().getRecipeList().add(recipe);
-            } else if (clazz == QuantitiveShapelessRecipes.class) {
-                recipe = (T) createShapelessRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
-                final IRecipe found = getExisting();
-                if (found != null) {
-                    throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is a duplicate. Matched [" + found + "].");
-                }
-                CraftingManager.getInstance().getRecipeList().add(recipe);
-            } else {
-                throw new UnknownRecipeTypeException(
-                        "Recipe type [" + clazz.getSimpleName() + "] with id [" + id + "] in [" + name + "] in pack [" + pack.getName()
-                        + "] is not valid. Valid types are [SHAPED, SHAPELESS].");
-            }
-        } catch (RuntimeException ex) {
-            throw new InvalidRecipeException(ex);
+        if (clazz == QuantitiveShapedRecipes.class) {
+            recipe = (T) createShapedRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
+//            final IRecipe found = getExisting();
+//            if (found != null) {
+//                throw new InvalidRecipeException(
+//                        "Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is a duplicate. Matched [" + found + "].");
+//            }
+            CraftingManager.getInstance().getRecipeList().add(recipe);
+        } else if (clazz == QuantitiveShapelessRecipes.class) {
+            recipe = (T) createShapelessRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
+//            final IRecipe found = getExisting();
+//            if (found != null) {
+//                throw new InvalidRecipeException(
+//                        "Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] is a duplicate. Matched [" + found + "].");
+//            }
+            CraftingManager.getInstance().getRecipeList().add(recipe);
+        } else {
+            throw new UnknownRecipeTypeException(
+                    "Recipe type [" + clazz.getSimpleName() + "] with id [" + id + "] in [" + name + "] in pack [" + pack.getName()
+                    + "] is not valid. Valid types are [SHAPED, SHAPELESS].");
         }
 
         if (Configuration.DEBUG_MODE || Configuration.DEBUG_RECIPES_MODE) {
-            Almura.LOGGER.info("Added Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] as type [" + clazz.getSimpleName().toUpperCase() + "].");
+            Almura.LOGGER.info("Added Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] as type [" + clazz.getSimpleName()
+                    .toUpperCase() + "].");
         }
     }
 
@@ -184,7 +184,7 @@ public class RecipeContainer<T extends IRecipe> {
                             for (Object rStack : ((ShapelessRecipes) recipe).recipeItems) {
                                 final ItemStack recipeStack = (ItemStack) rStack;
 
-                                if (unknownStack.getItem() == recipeStack.getItem() && unknownStack.stackSize == recipeStack.stackSize && unknownStack.getItemDamage() == recipeStack.getItemDamage()) {
+                                if (ItemStack.areItemStacksEqual(unknownStack, recipeStack)) {
                                     isInList = true;
                                     break;
                                 }
@@ -205,17 +205,16 @@ public class RecipeContainer<T extends IRecipe> {
                 final ShapedRecipes registeredShaped = (ShapedRecipes) registered;
                 if (recipe instanceof ShapedRecipes) {
                     if (registeredShaped.recipeItems.length == ((ShapedRecipes) recipe).recipeItems.length) {
-
                         for (int i = 0; i < registeredShaped.recipeItems.length; i++) {
                             final ItemStack unknownStack = ((ShapedRecipes) registeredRecipe).recipeItems[i];
                             final ItemStack recipeStack = ((ShapedRecipes) recipe).recipeItems[i];
 
-                            if (unknownStack.getItem() != recipeStack.getItem() || unknownStack.stackSize != recipeStack.stackSize
-                                || unknownStack.getItemDamage() != recipeStack.getItemDamage()) {
+                            if (!ItemStack.areItemStacksEqual(unknownStack, recipeStack)) {
                                 doesMatch = false;
                                 break;
                             }
                         }
+
                     } else {
                         doesMatch = false;
                     }

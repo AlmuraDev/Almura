@@ -92,9 +92,9 @@ public class GameObjectMapper {
     }
 
     private static Optional<Object> getMinecraftObject(String modid, String identifier) {
-        Object object = GameRegistry.findBlock(modid, identifier);
+        Object object = GameRegistry.findItem(modid, identifier);
         if (object == null) {
-            object = GameRegistry.findItem(modid, identifier);
+            object = GameRegistry.findBlock(modid, identifier);
         }
         return Optional.fromNullable(object);
     }
@@ -118,7 +118,6 @@ public class GameObjectMapper {
         String modid = separated[0].toLowerCase();
         String identifier;
         if (separated.length > 1) {
-            final String[] rawSourceSplit = rawSource.split(modid + StringEscapeUtils.escapeJava("\\"));
             identifier = rawSource.split(modid + StringEscapeUtils.escapeJava("\\"))[1];
         } else {
             identifier = modid;
