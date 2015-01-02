@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.pack.node.recipe;
 
+import com.almuradev.almura.pack.Pack;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
@@ -14,9 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuantitiveShapelessRecipes extends ShapelessRecipes {
+    private final Pack pack;
+    private final String name;
+    private final int id;
 
-    public QuantitiveShapelessRecipes(ItemStack stack, List params) {
+    public QuantitiveShapelessRecipes(Pack pack, String name, int id, ItemStack stack, List params) {
         super(stack, params);
+        this.pack = pack;
+        this.name = name;
+        this.id = id;
     }
 
     //TODO Check each Minecraft update
@@ -24,7 +32,6 @@ public class QuantitiveShapelessRecipes extends ShapelessRecipes {
     @SuppressWarnings("unchecked")
     public boolean matches(InventoryCrafting craftingInventory, World world) {
         ArrayList arraylist = new ArrayList(this.recipeItems);
-
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 3; ++j) {
                 ItemStack itemstack = craftingInventory.getStackInRowAndColumn(j, i);
@@ -51,5 +58,10 @@ public class QuantitiveShapelessRecipes extends ShapelessRecipes {
         }
 
         return arraylist.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return "QuantitiveShapelessRecipes{" + "pack= " + pack + ", name= " + name + ", id= " + id + ", items= {" + recipeItems + "}}";
     }
 }

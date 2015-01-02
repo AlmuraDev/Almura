@@ -708,12 +708,7 @@ public class PackCreator {
                                                      + "] is not a registered block or item.");
                 } else {
                     if (gameObject.get().isBlock()) {
-                        final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
-                        if (itemBlock != null) {
-                            params.add(new ItemStack((Block) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
-                        } else {
-                            params.add(gameObject.get().minecraftObject);
-                        }
+                        params.add(new ItemStack((Block) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
                     } else if (gameObject.get().minecraftObject instanceof Item) {
                         params.add(new ItemStack((Item) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
                     }

@@ -5,14 +5,24 @@
  */
 package com.almuradev.almura.pack.node.recipe;
 
+import com.almuradev.almura.pack.Pack;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 
-public class QuantitiveShapedRecipes extends ShapedRecipes {
+import java.util.Arrays;
+import java.util.List;
 
-    public QuantitiveShapedRecipes(int width, int length, ItemStack[] stacks, ItemStack result) {
+public class QuantitiveShapedRecipes extends ShapedRecipes {
+    private final Pack pack;
+    private final String name;
+    private final int id;
+
+    public QuantitiveShapedRecipes(Pack pack, String name, int id, int width, int length, ItemStack[] stacks, ItemStack result) {
         super(width, length, stacks, result);
+        this.pack = pack;
+        this.name = name;
+        this.id = id;
     }
 
     //TODO Check each Minecraft update
@@ -57,4 +67,8 @@ public class QuantitiveShapedRecipes extends ShapedRecipes {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "QuantitiveShapedRecipes{" + "pack= " + pack + ", name= " + name + ", id= " + id + ", items= {" + Arrays.toString(recipeItems) + "}}";
+    }
 }
