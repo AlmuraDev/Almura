@@ -62,6 +62,6 @@ public class QuantitiveShapelessRecipes extends ShapelessRecipes {
 
     @Override
     public String toString() {
-        return "QuantitiveShapelessRecipes{" + "pack= " + pack.getName() + ", name= " + name + ", id= " + id + ", items= {" + recipeItems + "}}";
+        return "QuantitiveShapelessRecipes{" + "pack= " + pack.getName() + ", name= " + name + ", id= " + id + ", items= " + recipeItems + "}";
     }
 }

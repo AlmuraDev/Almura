@@ -97,7 +97,7 @@ public class Pack {
                 streamed.add(path);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed filtering yml files from [" + Filesystem.CONFIG_YML_PATH + "].", e);
+            throw new RuntimeException("Failed filtering files from [" + Filesystem.CONFIG_YML_PATH + "].", e);
         }
 
         for (Path path : streamed) {
@@ -129,16 +129,16 @@ public class Pack {
                         break;
                     default:
                         Almura.LOGGER
-                                .warn("Unknown yml type [" + type + "] in file [" + path.getFileName()
+                                .warn("Unknown type [" + type + "] in file [" + path.getFileName()
                                       + "]. Valid types are [ITEM, FOOD, BLOCK, CROP].");
                         continue;
                 }
                 entry.close();
             } catch (IOException | ConfigurationException e) {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                    Almura.LOGGER.error("Failed to load yml [" + path + "] for pack [" + pack.getName() + "].", e);
+                    Almura.LOGGER.error("Failed to load [" + path + "] for pack [" + pack.getName() + "].", e);
                 } else {
-                    Almura.LOGGER.warn("Failed to load yml [" + path + "] for pack [" + pack.getName() + "].");
+                    Almura.LOGGER.error("Failed to load [" + path + "] for pack [" + pack.getName() + "].");
                 }
             }
         }
