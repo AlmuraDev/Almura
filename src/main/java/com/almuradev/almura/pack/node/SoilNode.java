@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.pack.node;
 
-import com.almuradev.almura.pack.GameObject;
+import com.almuradev.almura.pack.mapper.GameObject;
 
 public class SoilNode implements INode<BiomeNode> {
 

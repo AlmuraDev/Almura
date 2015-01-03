@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.pack.node.property;
 
-import com.almuradev.almura.pack.GameObject;
+import com.almuradev.almura.pack.mapper.GameObject;
 import net.minecraft.block.Block;
 
 public class HydrationProperty extends GameObjectProperty {

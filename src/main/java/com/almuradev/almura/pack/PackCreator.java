@@ -15,6 +15,9 @@ import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.item.PackFood;
 import com.almuradev.almura.pack.item.PackItem;
+import com.almuradev.almura.pack.mapper.EntityMapper;
+import com.almuradev.almura.pack.mapper.GameObject;
+import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackMirrorFace;
 import com.almuradev.almura.pack.model.PackShape;
@@ -39,8 +42,6 @@ import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
 import com.almuradev.almura.pack.node.recipe.InvalidRecipeException;
-import com.almuradev.almura.pack.node.recipe.QuantitiveShapedRecipes;
-import com.almuradev.almura.pack.node.recipe.QuantitiveShapelessRecipes;
 import com.almuradev.almura.pack.node.recipe.RecipeContainer;
 import com.almuradev.almura.pack.node.recipe.UnknownRecipeTypeException;
 import com.flowpowered.cerealization.config.ConfigurationException;
@@ -57,8 +58,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
@@ -70,7 +71,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -491,17 +491,10 @@ public class PackCreator {
         final Set<CollisionProperty> collisionProperties = Sets.newHashSet();
         if (collisionSourcesConfigurationNode != null) {
             for (String rawCollisionSource : collisionSourcesConfigurationNode.getKeys(false)) {
-                final String[] entityIdentifierSplit = rawCollisionSource.split(StringEscapeUtils.escapeJava("\\"));
-                String entityIdentifier = entityIdentifierSplit[0];
-                if (entityIdentifierSplit.length > 1) {
-                    for (int i = 1; i < entityIdentifierSplit.length; i++) {
-                        entityIdentifier = entityIdentifier + "." + entityIdentifierSplit[i];
-                    }
-                }
-                final Class<? extends Entity> entityClazz = (Class<? extends Entity>) EntityList.stringToClassMapping.get(entityIdentifier);
-                if (entityClazz == null) {
-                    Almura.LOGGER.warn("Entity source [" + rawCollisionSource + "] in [" + name + "] for modid [" + entityIdentifierSplit[0]
-                                       + "] in pack [" + pack.getName() + "] is not a registered entity.");
+                final Pair<String, String> collisionSourceModidIdenfifier = GameObjectMapper.parseModidIdentifierFrom(rawCollisionSource);
+                final Optional<Class<? extends Entity>> entityClazz = EntityMapper.getEntityClassRemapped(collisionSourceModidIdenfifier.getKey(), collisionSourceModidIdenfifier.getValue());
+                if (!entityClazz.isPresent()) {
+                    Almura.LOGGER.warn("Entity source [" + collisionSourceModidIdenfifier.getValue() + "] in [" + name + "] for mod [" + collisionSourceModidIdenfifier.getKey() + "] in pack [" + pack.getName() + "] is not a registered entity.");
                     continue;
                 }
                 final ConfigurationNode collisionSourceConfigurationNode = root.getChild(rawCollisionSource);
@@ -515,7 +508,7 @@ public class PackCreator {
                                                                                  collisionSourceConfigurationNode
                                                                                          .getChild(PackKeys.HEALTH_CHANGE.getKey())
                                                                                          .getString(PackKeys.HEALTH_CHANGE.getDefaultValue()), 0f));
-                collisionProperties.add(new CollisionProperty(enabled, entityClazz, healthRange));
+                collisionProperties.add(new CollisionProperty(enabled, entityClazz.get(), healthRange));
             }
         }
         return new CollisionNode(collisionEnabled, collisionProperties);

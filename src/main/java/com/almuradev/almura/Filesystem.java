@@ -40,6 +40,7 @@ public class Filesystem {
     public static final Path CONFIG_BACKGROUNDS_PATH = Paths.get(CONFIG_PATH.toString(), "backgrounds");
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
     public static final Path CONFIG_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "mappings.yml");
+    public static final Path CONFIG_ENTITY_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "entity_mappings.yml");
     public static final Path CONFIG_VERSION_PATH = Paths.get(CONFIG_PATH.toString(), Almura.PACK_VERSION);
     public static final Path CONFIG_YML_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "packs");
     public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "images");
@@ -91,6 +92,7 @@ public class Filesystem {
                 throw new RuntimeException("Failed to copy over settings file.", e);
             }
         }
+
         if (Files.notExists(CONFIG_MAPPINGS_PATH)) {
             try {
                 Files.createDirectories(CONFIG_PATH);
@@ -98,7 +100,18 @@ public class Filesystem {
                 InputStream stream = Filesystem.class.getResourceAsStream("/config/mappings.yml");
                 Files.copy(stream, Filesystem.CONFIG_MAPPINGS_PATH);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to copy over mapping file.", e);
+                throw new RuntimeException("Failed to copy over mappings file.", e);
+            }
+        }
+
+        if (Files.notExists(CONFIG_ENTITY_MAPPINGS_PATH)) {
+            try {
+                Files.createDirectories(CONFIG_PATH);
+
+                InputStream stream = Filesystem.class.getResourceAsStream("/config/entity_mappings.yml");
+                Files.copy(stream, Filesystem.CONFIG_ENTITY_MAPPINGS_PATH);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to copy over entity_mappings file.", e);
             }
         }
 

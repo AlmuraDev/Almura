@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack;
+package com.almuradev.almura.pack.mapper;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
@@ -60,19 +60,16 @@ public class GameObjectMapper {
         return Optional.absent();
     }
 
-    public static void load() {
+    public static void load() throws ConfigurationException {
         final YamlConfiguration reader = new YamlConfiguration(Filesystem.CONFIG_MAPPINGS_PATH.toFile());
-        try {
-            reader.load();
-        } catch (ConfigurationException e) {
-            throw new RuntimeException(e);
-        }
+        reader.load();
+
         for (String modid : reader.getKeys(false)) {
             final ConfigurationNode modidConfigurationNode = reader.getNode(modid);
             for (String rawObjectIdentifier : modidConfigurationNode.getKeys(false)) {
                 final Optional<GameObject> found = getGameObject(modid + "\\" + rawObjectIdentifier, false);
                 if (!found.isPresent()) {
-                    Almura.LOGGER.warn("Object [" + rawObjectIdentifier + "] is neither a block or item within mod [" + modid + "].");
+                    Almura.LOGGER.warn("Object [" + rawObjectIdentifier + "] is neither a block or item registered to mod [" + modid + "].");
                     continue;
                 }
 

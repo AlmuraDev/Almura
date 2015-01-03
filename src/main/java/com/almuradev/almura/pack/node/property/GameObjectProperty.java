@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.pack.node.property;
 
-import com.almuradev.almura.pack.GameObject;
+import com.almuradev.almura.pack.mapper.GameObject;
 
 public class GameObjectProperty implements IProperty<GameObject> {
 

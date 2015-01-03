@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.pack.node;
 
-import com.almuradev.almura.pack.GameObject;
+import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 
 public class ToolsNode implements INode<DropsNode> {

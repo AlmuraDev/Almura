@@ -10,7 +10,8 @@ import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPELESS;
 
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.GameObjectMapper;
+import com.almuradev.almura.pack.mapper.EntityMapper;
+import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
@@ -69,13 +70,22 @@ public class CommonProxy {
     }
 
     public void onPostInitialization(FMLPostInitializationEvent event) {
-        GameObjectMapper.load();
+        try {
+            GameObjectMapper.load();
+        } catch (ConfigurationException e) {
+            Almura.LOGGER.error("Failed to load mappings file in the config folder.", e);
+        }
+
+        try {
+            EntityMapper.load();
+        } catch (ConfigurationException e) {
+            Almura.LOGGER.error("Failed to load entity_mappings file in the config folder.", e);
+        }
 
         for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
             try {
                 onPostCreate(entry.getValue());
             } catch (IOException | ConfigurationException e) {
-                //TODO Better exception handling
                 e.printStackTrace();
             }
         }
@@ -84,7 +94,6 @@ public class CommonProxy {
             try {
                 onLoadFinished(entry.getValue());
             } catch (IOException | ConfigurationException e) {
-                //TODO Better exception handling
                 e.printStackTrace();
             }
         }
