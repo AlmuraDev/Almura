@@ -10,8 +10,6 @@ import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPELESS;
 
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.mapper.EntityMapper;
-import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
@@ -20,6 +18,8 @@ import com.almuradev.almura.pack.PackKeys;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
+import com.almuradev.almura.pack.mapper.EntityMapper;
+import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapedRecipes;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapelessRecipes;
@@ -153,7 +153,8 @@ public class CommonProxy {
                         final PackSeeds
                                 seed =
                                 PackCreator
-                                        .createCropSeed(((PackCrops) block).getPack(), ((IPackObject) block).getIdentifier(), (Block) soilNode.getSoil().minecraftObject, (PackCrops) block,
+                                        .createCropSeed(((PackCrops) block).getPack(), ((IPackObject) block).getIdentifier(),
+                                                        (Block) soilNode.getSoil().minecraftObject, (PackCrops) block,
                                                         textureName,
                                                         reader.getNode(PackKeys.NODE_SEED.getKey()));
                         if (GameRegistry.findItem(Almura.MOD_ID, seed.getPack().getName() + "\\" + seed.getIdentifier()) != null) {
@@ -286,7 +287,8 @@ public class CommonProxy {
                 for (Object obj : ((QuantitiveShapelessRecipes) recipe).recipeItems) {
                     final ItemStack stack = (ItemStack) obj;
 
-                    if (stackSlot.getItem() == stack.getItem() && stackSlot.stackSize > stack.stackSize && stackSlot.getItemDamage() == stack.getItemDamage()) {
+                    if (stackSlot.getItem() == stack.getItem() && stackSlot.stackSize > stack.stackSize && stackSlot.getItemDamage() == stack
+                            .getItemDamage()) {
                         recipeSlot = stack;
                     }
                 }

@@ -6,7 +6,6 @@
 package com.almuradev.almura.pack.node.recipe;
 
 import com.almuradev.almura.pack.Pack;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuantitiveShapelessRecipes extends ShapelessRecipes {
+
     private final Pack pack;
     private final String name;
     private final int id;

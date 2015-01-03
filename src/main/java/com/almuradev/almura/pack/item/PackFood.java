@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class PackFood extends ItemFood implements IPackObject, IClipContainer, IShapeContainer, INodeContainer {
 
+    private static final DamageSource FOOD_SOURCE = new DamageSource("food").setDamageBypassesArmor();
     private final Pack pack;
     private final String identifier;
     private final Map<Integer, List<Integer>> textureCoordinates;
@@ -47,7 +48,6 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     private String textureName;
     private PackShape shape;
     private List<String> tooltip;
-    private static final DamageSource FOOD_SOURCE = new DamageSource("food").setDamageBypassesArmor();
 
     public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
                     Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName,

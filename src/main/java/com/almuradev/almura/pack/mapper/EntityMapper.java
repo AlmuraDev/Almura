@@ -29,6 +29,7 @@ import java.util.Set;
  *     Zombie: zombie
  */
 public class EntityMapper {
+
     private static final Map<String, Set<Pair<String, String>>> MAPPED = Maps.newHashMap();
 
     public static boolean add(String modid, String name, String remapped) {
@@ -102,7 +103,7 @@ public class EntityMapper {
 
         if (value.isPresent()) {
             if (minecraft && value.get().equalsIgnoreCase("Player")) {
-                entityClazz =  EntityPlayer.class;
+                entityClazz = EntityPlayer.class;
             } else {
                 entityClazz = (Class<? extends Entity>) EntityList.stringToClassMapping.get(minecraft ? value.get() : modid + "." + value.get());
             }

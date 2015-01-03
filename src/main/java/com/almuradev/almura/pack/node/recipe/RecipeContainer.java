@@ -16,7 +16,6 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import scala.tools.nsc.Global;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -198,7 +197,8 @@ public class RecipeContainer<T extends IRecipe> {
                                 // a. Items match
                                 // b. Registered stack size is greater than or equal to recipe stack size
                                 // c. Damage values match
-                                if (unknownStack.getItem() == recipeStack.getItem() && unknownStack.stackSize != recipeStack.stackSize && unknownStack.getItemDamage() == recipeStack.getItemDamage()) {
+                                if (unknownStack.getItem() == recipeStack.getItem() && unknownStack.stackSize != recipeStack.stackSize
+                                    && unknownStack.getItemDamage() == recipeStack.getItemDamage()) {
                                     items.remove(rStack);
                                 }
                             }
@@ -236,7 +236,8 @@ public class RecipeContainer<T extends IRecipe> {
                             // a. Items don't match
                             // b. Registered stack size is less than recipe stack size
                             // c. Damage values don't match
-                            if (unknownStack.getItem() != recipeStack.getItem() || unknownStack.stackSize != recipeStack.stackSize || unknownStack.getItemDamage() != recipeStack.getItemDamage()) {
+                            if (unknownStack.getItem() != recipeStack.getItem() || unknownStack.stackSize != recipeStack.stackSize
+                                || unknownStack.getItemDamage() != recipeStack.getItemDamage()) {
                                 doesMatch = false;
                                 break;
                             }

@@ -57,8 +57,6 @@ import net.malisis.core.renderer.element.Vertex;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -375,7 +373,8 @@ public class PackCreator {
             textureCoordinates = PackUtil.parseCoordinatesFrom(node.getChild(
                     PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         } catch (NumberFormatException nfe) {
-            Almura.LOGGER.warn("Failed parsing texture coordinates in stage [" + id + "] in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            Almura.LOGGER.warn("Failed parsing texture coordinates in stage [" + id + "] in [" + name + "] in pack [" + pack.getName() + "]. " + nfe
+                    .getMessage());
             textureCoordinates = Maps.newHashMap();
         }
 
@@ -492,9 +491,11 @@ public class PackCreator {
         if (collisionSourcesConfigurationNode != null) {
             for (String rawCollisionSource : collisionSourcesConfigurationNode.getKeys(false)) {
                 final Pair<String, String> collisionSourceModidIdenfifier = GameObjectMapper.parseModidIdentifierFrom(rawCollisionSource);
-                final Optional<Class<? extends Entity>> entityClazz = EntityMapper.getEntityClassRemapped(collisionSourceModidIdenfifier.getKey(), collisionSourceModidIdenfifier.getValue());
+                final Optional<Class<? extends Entity>> entityClazz = EntityMapper.getEntityClassRemapped(collisionSourceModidIdenfifier.getKey(),
+                                                                                                          collisionSourceModidIdenfifier.getValue());
                 if (!entityClazz.isPresent()) {
-                    Almura.LOGGER.warn("Entity source [" + collisionSourceModidIdenfifier.getValue() + "] in [" + name + "] for mod [" + collisionSourceModidIdenfifier.getKey() + "] in pack [" + pack.getName() + "] is not a registered entity.");
+                    Almura.LOGGER.warn("Entity source [" + collisionSourceModidIdenfifier.getValue() + "] in [" + name + "] for mod ["
+                                       + collisionSourceModidIdenfifier.getKey() + "] in pack [" + pack.getName() + "] is not a registered entity.");
                     continue;
                 }
                 final ConfigurationNode collisionSourceConfigurationNode = root.getChild(rawCollisionSource);
@@ -556,9 +557,11 @@ public class PackCreator {
                 final Pair<String, String> dropSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawDropSource);
                 final Optional<GameObject> drop = GameObjectMapper.getGameObject(rawDropSource, true);
                 if (!drop.isPresent()) {
-                    Almura.LOGGER.warn("Drop source [" + dropSourceModIdIdentifier.getValue()+ "] in [" + name + "] for mod [" + dropSourceModIdIdentifier.getKey()
-                                       + "] in pack [" + pack.getName()
-                                       + "] is not a registered block or item.");
+                    Almura.LOGGER
+                            .warn("Drop source [" + dropSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" + dropSourceModIdIdentifier
+                                    .getKey()
+                                  + "] in pack [" + pack.getName()
+                                  + "] is not a registered block or item.");
                     continue;
                 }
                 final ConfigurationNode dropConfigurationNode = dropsConfigurationNode.getNode(rawDropSource);
@@ -623,7 +626,8 @@ public class PackCreator {
             amountPair = PackUtil.getRange(Integer.class, amountRaw, 1);
         } catch (NumberFormatException nfe) {
             Almura.LOGGER
-                    .warn("Amount given for seed [" + seed.getIdentifier() + "] in [" + name + "] in pack [" + pack + "] is not valid. Should be in the format of 1-3.");
+                    .warn("Amount given for seed [" + seed.getIdentifier() + "] in [" + name + "] in pack [" + pack
+                          + "] is not valid. Should be in the format of 1-3.");
             amountPair = new ImmutablePair<>(1, 1);
         }
         final String chanceRaw = root.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue());
@@ -642,10 +646,15 @@ public class PackCreator {
     }
 
     public static SoilNode createSoilNode(Pack pack, String name, ConfigurationNode node) {
-        final Pair<String, String> soilSourceModidIdentifier = GameObjectMapper.parseModidIdentifierFrom(node.getChild(PackKeys.SOURCE.getKey()).getString(PackKeys.SOURCE.getDefaultValue()));
-        final Optional<GameObject> source = GameObjectMapper.getGameObject(soilSourceModidIdentifier.getKey(), soilSourceModidIdentifier.getValue(), false);
+        final Pair<String, String>
+                soilSourceModidIdentifier =
+                GameObjectMapper.parseModidIdentifierFrom(node.getChild(PackKeys.SOURCE.getKey()).getString(PackKeys.SOURCE.getDefaultValue()));
+        final Optional<GameObject>
+                source =
+                GameObjectMapper.getGameObject(soilSourceModidIdentifier.getKey(), soilSourceModidIdentifier.getValue(), false);
         if (!source.isPresent()) {
-            Almura.LOGGER.warn("Soil source [" + soilSourceModidIdentifier.getValue() + "] in [" + name + "] for mod [" + soilSourceModidIdentifier.getKey() + "] in pack [" + pack.getName() + "] is not a registered block.");
+            Almura.LOGGER.warn("Soil source [" + soilSourceModidIdentifier.getValue() + "] in [" + name + "] for mod [" + soilSourceModidIdentifier
+                    .getKey() + "] in pack [" + pack.getName() + "] is not a registered block.");
             return null;
         }
 
@@ -711,7 +720,9 @@ public class PackCreator {
                         } else if (gameObject.get().minecraftObject instanceof BlockAir) {
                             params.add(gameObject.get().minecraftObject);
                         } else {
-                            throw new InvalidRecipeException("Game Object [" + gameObject.get().minecraftObject + "] of type [BLOCK] in [" + name + "] in pack [" + pack.getName() + "] has no given ItemBlock.");
+                            throw new InvalidRecipeException(
+                                    "Game Object [" + gameObject.get().minecraftObject + "] of type [BLOCK] in [" + name + "] in pack [" + pack
+                                            .getName() + "] has no given ItemBlock.");
                         }
                     } else if (gameObject.get().minecraftObject instanceof Item) {
                         params.add(new ItemStack((Item) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));

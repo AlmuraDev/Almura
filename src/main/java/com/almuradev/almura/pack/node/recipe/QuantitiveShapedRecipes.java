@@ -11,9 +11,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class QuantitiveShapedRecipes extends ShapedRecipes {
+
     private final Pack pack;
     private final String name;
     private final int id;
@@ -69,6 +69,7 @@ public class QuantitiveShapedRecipes extends ShapedRecipes {
 
     @Override
     public String toString() {
-        return "QuantitiveShapedRecipes{" + "pack= " + pack.getName() + ", name= " + name + ", id= " + id + ", items= " + Arrays.toString(recipeItems) + "}";
+        return "QuantitiveShapedRecipes{" + "pack= " + pack.getName() + ", name= " + name + ", id= " + id + ", items= " + Arrays.toString(recipeItems)
+               + "}";
     }
 }
