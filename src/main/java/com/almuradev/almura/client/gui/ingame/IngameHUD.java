@@ -48,10 +48,10 @@ public class IngameHUD extends AlmuraGui {
     public static Minecraft MINECRAFT = Minecraft.getMinecraft();
     public static IngameHUD INSTANCE;
     public static boolean UPDATES_ENABLED = true;
-    public final UILabel worldDisplay, playerTitle, playerMode;
-    private final UIImage mapImage, worldImage, playerImage;
-    private final UILabel serverCount, playerCoords, playerCompass, worldTime, xpLevel;
-    private final UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
+    public UILabel worldDisplay, playerTitle, playerMode;
+    private UIImage mapImage, worldImage, playerImage;
+    private UILabel serverCount, playerCoords, playerCompass, worldTime, xpLevel;
+    private UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
 
     private float playerHealth, playerArmor, playerHunger, playerStamina, playerExperience, playerExperienceLevel = 0.0F;
     private String serverTime, playerComp, rawWorldName = "";
@@ -59,7 +59,13 @@ public class IngameHUD extends AlmuraGui {
     private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE, playerCount = Integer.MAX_VALUE;
 
     @SuppressWarnings("rawtypes")
-    public IngameHUD() {
+    public IngameHUD(AlmuraGui parent) {
+        super(parent);
+        setup();
+    }
+
+    @Override
+    protected void setup() {
         INSTANCE = this;
         guiscreenBackground = false;
 
