@@ -60,10 +60,10 @@ public class Filesystem {
         }
     };
 
-    public static DirectoryStream.Filter<Path> ICON_FILES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
+    public static DirectoryStream.Filter<Path> IMAGE_FILES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
         @Override
         public boolean accept(Path entry) throws IOException {
-            return entry.getFileName().endsWith(".png") || entry.getFileName().endsWith(".jpg");
+            return entry.getFileName().toString().endsWith(".png") || entry.getFileName().toString().endsWith(".jpg");
         }
     };
 
