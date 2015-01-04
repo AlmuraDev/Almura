@@ -6,6 +6,8 @@
 package com.almuradev.almura.core.mixin;
 
 import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.client.Minecraft;
@@ -21,6 +23,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
+@SideOnly(Side.CLIENT)
 @Mixin(TileEntityChestRenderer.class)
 public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRenderer {
 
@@ -51,7 +54,6 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
     @Shadow
     private boolean field_147509_j;
 
-    @Overwrite
     public void renderTileEntityAt(TileEntityChest p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_, float p_147500_8_) {
         int i;
 
@@ -176,7 +178,6 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
         }
     }
 
-    @Overwrite
     public void func_180535_a(TileEntityChest p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_, float p_147500_8_) {
         int i;
 

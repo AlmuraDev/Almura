@@ -7,6 +7,8 @@ package com.almuradev.almura.core.mixin;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -17,6 +19,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.List;
 
+@SideOnly(Side.CLIENT)
 @Mixin(SimpleReloadableResourceManager.class)
 public abstract class MixinSimpleReloadableResourceManager implements IReloadableResourceManager {
 
@@ -25,7 +28,6 @@ public abstract class MixinSimpleReloadableResourceManager implements IReloadabl
 
     private boolean reload = false;
 
-    @Overwrite
     private void notifyReloadListeners() {
 
         for (Object reloadListener : reloadListeners) {
@@ -39,7 +41,6 @@ public abstract class MixinSimpleReloadableResourceManager implements IReloadabl
         }
     }
 
-    @Overwrite
     private void func_110544_b() {
         for (Object reloadListener : reloadListeners) {
             IResourceManagerReloadListener iresourcemanagerreloadlistener = (IResourceManagerReloadListener) reloadListener;
