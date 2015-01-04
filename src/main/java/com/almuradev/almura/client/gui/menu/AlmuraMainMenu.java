@@ -85,11 +85,11 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         configurationButton.register(this);
 
         // Create the Mods button
-        final UIButton modsButton = new UIButton(this, "Mods");
-        modsButton.setSize(50, 16);
-        modsButton.setPosition(-10, getPaddedY(multiplayerButton, padding), Anchor.RIGHT | Anchor.TOP);
-        modsButton.setName("button.mods");
-        modsButton.register(this);
+        final UIButton aboutButton = new UIButton(this, "About");
+        aboutButton.setSize(50, 16);
+        aboutButton.setPosition(-10, getPaddedY(multiplayerButton, padding), Anchor.RIGHT | Anchor.TOP);
+        aboutButton.setName("button.about");
+        aboutButton.register(this);
 
         // Create the quit button
         final UIButton quitButton = new UIButton(this, "Quit");
@@ -109,7 +109,7 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         trademarkLabel.setFontScale(0.7f);
 
         window.add(logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
-                   modsButton, quitButton, copyrightLabel, trademarkLabel);
+                   aboutButton, quitButton, copyrightLabel, trademarkLabel);
 
         // Allow the window to move
         new UIMoveHandle(this, window);
@@ -132,8 +132,8 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
             case "button.configuration":
                 mc.displayGuiScreen(new AlmuraConfigurationMenu(this));
                 break;
-            case "button.mods":
-                mc.displayGuiScreen(new GuiModList(this));
+            case "button.about":
+                mc.displayGuiScreen(new AlmuraAboutMenu(this));
                 break;
             case "button.quit":
                 mc.shutdown();
