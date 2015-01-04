@@ -104,7 +104,7 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         copyrightLabel.setFontScale(0.7f);
 
         // Create the trademark label
-        final UILabel trademarkLabel = new UILabel(this, ChatColor.GRAY + "Minecraft is a registered trademark owned by Mojang AB");
+        final UILabel trademarkLabel = new UILabel(this, ChatColor.GRAY + "Minecraft is a registered trademark of Mojang AB");
         trademarkLabel.setPosition(0, -1, Anchor.CENTER | Anchor.BOTTOM);
         trademarkLabel.setFontScale(0.7f);
 
