@@ -30,8 +30,13 @@ public class IngameDebugHUD extends AlmuraGui {
     private Chunk chunk;
     private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE, yaw = Integer.MIN_VALUE;
 
-    public IngameDebugHUD() {
+    public IngameDebugHUD(AlmuraGui parent) {
+        super(parent);
+        setup();
+    }
 
+    @Override
+    protected void setup() {
         guiscreenBackground = false; // prevent full screen black background.
 
         // Construct Hud with all elements

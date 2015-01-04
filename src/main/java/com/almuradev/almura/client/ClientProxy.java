@@ -8,10 +8,10 @@ package com.almuradev.almura.client;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.client.gui.AlmuraMainMenu;
-import com.almuradev.almura.client.gui.ingame.IngameConfig;
+import com.almuradev.almura.client.gui.menu.AlmuraConfigurationMenu;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
+import com.almuradev.almura.client.gui.menu.AlmuraMainMenu;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.Pack;
@@ -57,8 +57,8 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onPostInitialization(FMLPostInitializationEvent event) {
         super.onPostInitialization(event);
-        final IngameHUD almuraHud = new IngameHUD();
-        final IngameDebugHUD almuraDebugHud = new IngameDebugHUD();
+        final IngameHUD almuraHud = new IngameHUD(null);
+        final IngameDebugHUD almuraDebugHud = new IngameDebugHUD(null);
         MinecraftForge.EVENT_BUS.register(almuraHud);
         MinecraftForge.EVENT_BUS.register(almuraDebugHud);
         FMLCommonHandler.instance().bus().register(almuraHud);
@@ -74,15 +74,14 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         if (event.gui instanceof GuiMainMenu && Configuration.DISPLAY_ENHANCED_GUI) {
-            event.gui = new AlmuraMainMenu();
+            event.gui = new AlmuraMainMenu(null);
         }
     }
 
     @SubscribeEvent
     public void onKeyInput(KeyInputEvent event) {
         if (BINDING_CONFIG_GUI.isPressed()) {
-            final IngameConfig form = new IngameConfig();
-            form.display();
+            // TODO: Create an ingame config screen? Could just make our own option screen...
         } else if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
             IngameDebugHUD.UPDATES_ENABLED = !IngameDebugHUD.UPDATES_ENABLED;
         }
