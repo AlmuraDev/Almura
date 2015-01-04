@@ -22,6 +22,7 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UIMultiLineLabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
+import net.malisis.core.client.gui.component.interaction.UITextField;
 
 public class AlmuraAboutMenu extends AlmuraBackgroundGui {
 
@@ -70,11 +71,11 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
        
         String fieldText = "Almura 2.0 began June 1st, 2014.  Based on the idea that we could finally get away from the broken and abandoned Spoutcraft client a brilliant developer came to Almura and said,"
                            + " \"Why don't you get rid of that out of date client and move into the present?\" This brilliant developer's name is " + ChatColor.AQUA + "Zidane" + ChatColor.RESET + ". Along with him and another outstanding developer " + ChatColor.AQUA + "Grinch" + ChatColor.RESET + ","
-                           + " Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + ChatColor.GOLD + "Dockter" + ChatColor.RESET + "'s content and gui abilities, built, in our opinion, one of the best content loading /"
-                           + " gui enabled Minecraft experiences ever conceived. " + ChatColor.LIGHT_PURPLE + "More info to follow..." + ChatColor.RESET + "";
+                           + " Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + ChatColor.GOLD + "Dockter's" + ChatColor.RESET + " content and gui abilities, built, in our opinion, one of the best content loading /"
+                           + " gui enabled Minecraft experiences ever conceived. \r \r" + ChatColor.LIGHT_PURPLE + "More info to follow..." + ChatColor.RESET + "";
         
         aboutUsLabel.setText(fieldText);
-        aboutUsLabel.setSize(290, 200);
+        aboutUsLabel.setSize(290, 100);
         aboutUsLabel.setColor(Color.WHITE.getRGB());
         aboutUsLabel.setPosition(0, 25, Anchor.CENTER);
         aboutUsLabel.setName("mline.aboutus");

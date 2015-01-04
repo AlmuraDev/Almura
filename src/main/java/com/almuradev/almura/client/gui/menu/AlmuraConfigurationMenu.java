@@ -152,7 +152,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         this.mc.gameSettings.renderDistanceChunks = 12;
         this.mc.gameSettings.viewBobbing = false;
                 
-        //this.mc.scheduleResourcesRefresh();
+        this.mc.scheduleResourcesRefresh();
         this.mc.gameSettings.saveOptions();
         
         mc.displayGuiScreen(new AlmuraConfirmMenu(parent, "Optimized Configuration Applied.", "Almura 2.0"));

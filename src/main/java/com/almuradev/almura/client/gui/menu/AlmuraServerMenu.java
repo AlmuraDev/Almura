@@ -64,7 +64,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         final UIButton xButton = new UIButton(this, ChatColor.BOLD + "X");
         xButton.setSize(5, 1);
         xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
-        xButton.setName("button.quit");
+        xButton.setName("button.back");
         xButton.register(this);
 
         
@@ -84,7 +84,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         // Create the live Almura button
         almuraLiveButton = new UIButton(this, "Join " + ChatColor.GOLD + ALMURA_LIVE_SERVER_DATA.serverName);
         almuraLiveButton.setPosition(0, getPaddedY(logoImage, padding * 3), Anchor.CENTER | Anchor.TOP);
-        almuraLiveButton.setSize(200, 16);
+        almuraLiveButton.setSize(205, 16);
         almuraLiveButton.setName("button.server.almura.live");
         almuraLiveButton.setDisabled(false);
         almuraLiveButton.register(this);
@@ -106,7 +106,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         // Create the join another server button
         anotherButton = new UIButton(this, "Join another server");
         anotherButton.setPosition(0, getPaddedY(obsidianboxLiveButton, padding), Anchor.CENTER | Anchor.TOP);
-        anotherButton.setSize(200, 16);
+        anotherButton.setSize(205, 16);
         anotherButton.setName("button.server.another");
         anotherButton.register(this);
 
