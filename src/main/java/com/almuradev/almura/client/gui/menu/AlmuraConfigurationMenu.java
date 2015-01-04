@@ -9,7 +9,9 @@ import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import com.flowpowered.cerealization.config.ConfigurationException;
 import com.google.common.eventbus.Subscribe;
+
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
@@ -21,7 +23,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
     private UIBackgroundContainer window;
     private UIButton cancelButton, saveButton;
-    private UICheckBox almuraGuiCheckBox;
+    private UICheckBox almuraGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox;
     private UILabel titleLabel;
 
     /**
@@ -54,7 +56,37 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         almuraGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_GUI);
         almuraGuiCheckBox.setName("checkbox.gui.enhanced_gui");
         almuraGuiCheckBox.register(this);
+        
+        // Create the debug mode checkbox
+        debugModeCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Mode (All)");
+        debugModeCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4) + 20, Anchor.LEFT | Anchor.TOP);
+        debugModeCheckBox.setChecked(Configuration.DEBUG_MODE);
+        debugModeCheckBox.setName("checkbox.gui.debug_mode");
 
+        // Create the debug languages checkbox
+        debugLanguagesCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Languages");
+        debugLanguagesCheckBox.setPosition(padding, debugModeCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
+        debugLanguagesCheckBox.setChecked(Configuration.DEBUG_LANGUAGES_MODE);
+        debugLanguagesCheckBox.setName("checkbox.gui.debug_languages");
+
+        // Create the debug packs checkbox
+        debugPacksCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Content Loading");
+        debugPacksCheckBox.setPosition(padding, debugLanguagesCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
+        debugPacksCheckBox.setChecked(Configuration.DEBUG_PACKS_MODE);
+        debugPacksCheckBox.setName("checkbox.gui.debug_packs");
+        
+        // Create the debug mappings checkbox
+        debugMappingsCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Entity / Item Mappings");
+        debugMappingsCheckBox.setPosition(padding, debugPacksCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
+        debugMappingsCheckBox.setChecked(Configuration.DEBUG_MAPPINGS_MODE);
+        debugMappingsCheckBox.setName("checkbox.gui.debug_mappings");
+        
+        // Create the debug recipes checkbox
+        debugRecipesCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Recipe Loading");
+        debugRecipesCheckBox.setPosition(padding, debugMappingsCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
+        debugRecipesCheckBox.setChecked(Configuration.DEBUG_RECIPES_MODE);
+        debugRecipesCheckBox.setName("checkbox.gui.debug_recipes");
+        
         // Create the save button
         saveButton = new UIButton(this, "Save");
         saveButton.setSize(50, 16);
@@ -69,7 +101,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         cancelButton.setName("button.cancel");
         cancelButton.register(this);
 
-        window.add(titleLabel, almuraGuiCheckBox, cancelButton, saveButton);
+        window.add(titleLabel, almuraGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, cancelButton, saveButton);
 
         // Allow the window to move
         new UIMoveHandle(this, window);
@@ -84,6 +116,17 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
                 displayParent();
                 break;
             case "button.save":
+            try {
+                Configuration.toggleEnhancedGUI(almuraGuiCheckBox.isChecked());
+                Configuration.toggleDebugMode(debugModeCheckBox.isChecked());
+                Configuration.toggleDebugLanguageMode(debugLanguagesCheckBox.isChecked());
+                Configuration.toggleDebugPacksMode(debugPacksCheckBox.isChecked());
+                Configuration.toggleDebugMappingsMode(debugMappingsCheckBox.isChecked());
+                Configuration.toggleDebugRecipesMode(debugRecipesCheckBox.isChecked());
+                Configuration.save();
+            } catch (ConfigurationException e) {
+                e.printStackTrace();
+            }
                 displayParent();
         }
     }

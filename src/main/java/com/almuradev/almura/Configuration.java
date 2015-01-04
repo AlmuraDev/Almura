@@ -54,10 +54,60 @@ public class Configuration {
     }
 
     public static void save() throws ConfigurationException {
+        reader.getConfiguration();  
+        // GUI
+        ConfigurationNode enhanced_gui = reader.getNode("client.enhanced-gui");
+        enhanced_gui.setValue(DISPLAY_ENHANCED_GUI);
+        reader.setNode(enhanced_gui);
+        
+        // Debug All
+        ConfigurationNode debug_mode = reader.getNode("debug.all");
+        debug_mode.setValue(DEBUG_MODE);
+        reader.setNode(debug_mode);
+        
+        // Debug Language Mode
+        ConfigurationNode debug_language = reader.getNode("debug.language");
+        debug_language.setValue(DEBUG_LANGUAGES_MODE);
+        reader.setNode(debug_language);
+        
+        // Debug Packs Mode
+        ConfigurationNode debug_packs = reader.getNode("debug.pack");
+        debug_packs.setValue(DEBUG_PACKS_MODE);
+        reader.setNode(debug_packs);
+        
+        // Debug Mappings Mode
+        ConfigurationNode debug_mappings = reader.getNode("debug.mappings");
+        debug_mappings.setValue(DEBUG_MAPPINGS_MODE);
+        reader.setNode(debug_mappings);
+        
+        // Debug Recipes Mode
+        ConfigurationNode debug_recipes = reader.getNode("debug.recipes");
+        debug_recipes.setValue(DEBUG_RECIPES_MODE);
+        reader.setNode(debug_recipes);
+        
         reader.save();
     }
 
     public static void toggleEnhancedGUI(boolean value) {
         DISPLAY_ENHANCED_GUI = value;
+    }
+    
+    public static void toggleDebugMode(boolean value) {
+        DEBUG_MODE = value;
+    }
+    
+    public static void toggleDebugLanguageMode(boolean value) {
+        DEBUG_LANGUAGES_MODE = value;
+    }
+    public static void toggleDebugPacksMode(boolean value) {
+        DEBUG_PACKS_MODE = value;
+    }
+    
+    public static void toggleDebugMappingsMode(boolean value) {
+        DEBUG_MAPPINGS_MODE = value;
+    }
+    
+    public static void toggleDebugRecipesMode(boolean value) {
+        DEBUG_RECIPES_MODE = value;
     }
 }

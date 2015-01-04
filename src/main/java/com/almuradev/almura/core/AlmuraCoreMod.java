@@ -35,11 +35,11 @@ public class AlmuraCoreMod implements IFMLLoadingPlugin {
             Field f = LaunchClassLoader.class.getDeclaredField("classLoaderExceptions");
             f.setAccessible(true);
             Set<String> classLoaderExclusions = (Set<String>) f.get(Launch.classLoader);
-            classLoaderExclusions.remove("org.lwjgl.");
+            //classLoaderExclusions.remove("org.lwjgl.");
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        MixinEnvironment.getCurrentEnvironment().addConfiguration("mixins.almura.json");
+        //MixinEnvironment.getCurrentEnvironment().addConfiguration("mixins.almura.json");
     }
 
     @Override
