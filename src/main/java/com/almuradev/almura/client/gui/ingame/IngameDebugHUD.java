@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -110,7 +111,7 @@ public class IngameDebugHUD extends AlmuraGui {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTick(ClientTickEvent event) {
-        if (UPDATES_ENABLED && MINECRAFT.thePlayer != null && MINECRAFT.currentScreen == null) {
+        if (UPDATES_ENABLED && MINECRAFT.thePlayer != null && MINECRAFT.currentScreen == null && Configuration.DISPLAY_ENHANCED_DEBUG) {
             updateWidgets();
         }
     }
@@ -123,7 +124,7 @@ public class IngameDebugHUD extends AlmuraGui {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
-        if (event.type == RenderGameOverlayEvent.ElementType.DEBUG) {
+        if (event.type == RenderGameOverlayEvent.ElementType.DEBUG && Configuration.DISPLAY_ENHANCED_DEBUG) {
             if (UPDATES_ENABLED && MINECRAFT.thePlayer != null) {
                 event.setCanceled(true);
 

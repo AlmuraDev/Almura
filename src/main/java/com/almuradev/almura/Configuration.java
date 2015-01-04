@@ -23,6 +23,7 @@ public class Configuration {
     public static boolean DEBUG_RECIPES_MODE;
     //GUI
     public static boolean DISPLAY_ENHANCED_GUI;
+    public static boolean DISPLAY_ENHANCED_DEBUG;
 
     private static YamlConfiguration reader;
 
@@ -50,15 +51,21 @@ public class Configuration {
 
         final ConfigurationNode clientConfigurationNode = reader.getNode("client");
         DISPLAY_ENHANCED_GUI = clientConfigurationNode.getChild("enhanced-gui").getBoolean(true);
+        DISPLAY_ENHANCED_DEBUG = clientConfigurationNode.getChild("enhanced-debug").getBoolean(true);
 
     }
 
     public static void save() throws ConfigurationException {
         reader.getConfiguration();  
-        // GUI
+        // In-Game Almura GUI
         ConfigurationNode enhanced_gui = reader.getNode("client.enhanced-gui");
         enhanced_gui.setValue(DISPLAY_ENHANCED_GUI);
         reader.setNode(enhanced_gui);
+        
+        // In-Game Almura GUI
+        ConfigurationNode enhanced_debug = reader.getNode("client.enhanced-debug");
+        enhanced_debug.setValue(DISPLAY_ENHANCED_DEBUG);
+        reader.setNode(enhanced_debug);
         
         // Debug All
         ConfigurationNode debug_mode = reader.getNode("debug.all");
@@ -90,6 +97,10 @@ public class Configuration {
 
     public static void toggleEnhancedGUI(boolean value) {
         DISPLAY_ENHANCED_GUI = value;
+    }
+    
+    public static void toggleEnhancedDebug(boolean value) {
+        DISPLAY_ENHANCED_DEBUG = value;
     }
     
     public static void toggleDebugMode(boolean value) {
