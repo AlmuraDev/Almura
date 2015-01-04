@@ -68,15 +68,15 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
         // Create About us multi-line label
         aboutUsLabel = new UIMultiLineLabel(this, "");
        
-        String fieldText = "Almura 2.0 began June 1st, 2014.  Based on the idea that we could finally get away from the broken and abandoned Spoutcraft client a brilliant developer came to Almura and said, ";
-        fieldText = fieldText + "why don't you get rid of that out of date client and move into the present?  This brilliant developers name is " + ChatColor.AQUA + "Zidane" + ChatColor.RESET + ".  Along with him and another outstanding developer " + ChatColor.AQUA + "Grinch" + ChatColor.RESET + ", ";
-        fieldText = fieldText + "Almura 2.0 was born.  Using the forge client as our basis these two developers along with " + ChatColor.GOLD + "Zidane" + ChatColor.RESET + " content and gui abilites built in our opinion one of the best content loading / ";
-        fieldText = fieldText + "gui enabled Minecraft game ever conceived.  " + ChatColor.LIGHT_PURPLE + "More info to follow..." + ChatColor.RESET + "";
+        String fieldText = "Almura 2.0 began June 1st, 2014.  Based on the idea that we could finally get away from the broken and abandoned Spoutcraft client a brilliant developer came to Almura and said,"
+                           + " \"Why don't you get rid of that out of date client and move into the present?\" This brilliant developer's name is " + ChatColor.AQUA + "Zidane" + ChatColor.RESET + ". Along with him and another outstanding developer " + ChatColor.AQUA + "Grinch" + ChatColor.RESET + ","
+                           + " Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + ChatColor.GOLD + "Dockter" + ChatColor.RESET + "'s content and gui abilities, built, in our opinion, one of the best content loading /"
+                           + " gui enabled Minecraft experiences ever conceived. " + ChatColor.LIGHT_PURPLE + "More info to follow..." + ChatColor.RESET + "";
         
         aboutUsLabel.setText(fieldText);
         aboutUsLabel.setSize(290, 200);
         aboutUsLabel.setColor(Color.WHITE.getRGB());
-        aboutUsLabel.setPosition(0, 25, Anchor.CENTER | Anchor.CENTER);
+        aboutUsLabel.setPosition(0, 25, Anchor.CENTER);
         aboutUsLabel.setName("mline.aboutus");
         
         // Create the mods button
