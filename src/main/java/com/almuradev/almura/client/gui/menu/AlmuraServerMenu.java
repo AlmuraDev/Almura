@@ -24,7 +24,7 @@ import net.minecraft.client.multiplayer.ServerData;
 public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
     private static final ServerData ALMURA_LIVE_SERVER_DATA = new ServerData("Almura", "srv1.almuramc.com");
-    private static final ServerData ALMURA_DEV_SERVER_DATA = new ServerData("Almura (Dev)", "67.4.96.139");
+    private static final ServerData ALMURA_DEV_SERVER_DATA = new ServerData("Almura (Beta)", "69.4.96.139");
     private static final ServerData OBSIDIANBOX_LIVE_SERVER_DATA = new ServerData("ObsidianBox", "obsidianbox.org");
     private UIBackgroundContainer window;
     private UIButton almuraLiveButton, almuraDevButton, obsidianboxLiveButton, anotherButton, backButton;
@@ -56,7 +56,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
         // Create the build label
         buildLabel = new UILabel(this, ChatColor.GRAY + Almura.GUI_VERSION);
-        buildLabel.setPosition(-40, getPaddedY(logoImage, -7), Anchor.RIGHT | Anchor.TOP);
+        buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
         buildLabel.setFontScale(0.65f);
 
         final int padding = 4;
@@ -66,6 +66,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         almuraLiveButton.setPosition(0, getPaddedY(logoImage, padding * 3), Anchor.CENTER | Anchor.TOP);
         almuraLiveButton.setSize(180, 16);
         almuraLiveButton.setName("button.server.almura.live");
+        almuraLiveButton.setDisabled(true);
         almuraLiveButton.register(this);
 
         // Create the dev Almura button
@@ -91,7 +92,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
         // Create the back button
         backButton = new UIButton(this, "Back");
-        backButton.setPosition(padding, -padding, Anchor.LEFT | Anchor.BOTTOM);
+        backButton.setPosition(0, -padding, Anchor.CENTER | Anchor.BOTTOM);
         backButton.setSize(50, 16);
         backButton.setName("button.back");
         backButton.register(this);

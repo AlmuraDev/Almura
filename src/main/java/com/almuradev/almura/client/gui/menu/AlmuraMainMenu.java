@@ -94,19 +94,19 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         // Create the quit button
         final UIButton quitButton = new UIButton(this, "Quit");
         quitButton.setSize(50, 16);
-        quitButton.setPosition(0, getPaddedY(configurationButton, padding), Anchor.CENTER | Anchor.TOP);
+        quitButton.setPosition(0, getPaddedY(configurationButton, padding+10), Anchor.CENTER | Anchor.TOP);
         quitButton.setName("button.quit");
         quitButton.register(this);
 
         // Create the copyright label
-        final UILabel copyrightLabel = new UILabel(this, ChatColor.GRAY + "Copyright AlmuraDev 2015");
-        copyrightLabel.setPosition(0, -7, Anchor.CENTER | Anchor.BOTTOM);
-        copyrightLabel.setFontScale(0.5f);
+        final UILabel copyrightLabel = new UILabel(this, ChatColor.GRAY + "Copyright AlmuraDev 2012 - 2015 ");
+        copyrightLabel.setPosition(0, -9, Anchor.CENTER | Anchor.BOTTOM);
+        copyrightLabel.setFontScale(0.7f);
 
         // Create the trademark label
         final UILabel trademarkLabel = new UILabel(this, ChatColor.GRAY + "Minecraft is a registered trademark owned by Mojang AB");
         trademarkLabel.setPosition(0, -1, Anchor.CENTER | Anchor.BOTTOM);
-        trademarkLabel.setFontScale(0.5f);
+        trademarkLabel.setFontScale(0.7f);
 
         window.add(logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
                    modsButton, quitButton, copyrightLabel, trademarkLabel);
