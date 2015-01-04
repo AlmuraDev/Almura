@@ -111,7 +111,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         debugRecipesCheckBox.setName("checkbox.gui.debug_recipes");
         
         // Set Optimized Client Settings
-        graphicsButton = new UIButton(this, "Load Optimized Graphics Configuration");
+        graphicsButton = new UIButton(this, "Load Optimized Settings");
         graphicsButton.setSize(50, 16);
         graphicsButton.setPosition(padding, -padding, Anchor.LEFT | Anchor.BOTTOM);
         graphicsButton.setName("button.graphics");

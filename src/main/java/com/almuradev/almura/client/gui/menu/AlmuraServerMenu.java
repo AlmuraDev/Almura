@@ -47,7 +47,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
     protected void setup() {
         // Create the window container
         window = new UIBackgroundContainer(this);
-        window.setSize(200, 225);
+        window.setSize(225, 225);
         window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         window.setColor(Integer.MIN_VALUE);
         window.setBackgroundAlpha(125);
@@ -84,7 +84,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         // Create the live Almura button
         almuraLiveButton = new UIButton(this, "Join " + ChatColor.GOLD + ALMURA_LIVE_SERVER_DATA.serverName);
         almuraLiveButton.setPosition(0, getPaddedY(logoImage, padding * 3), Anchor.CENTER | Anchor.TOP);
-        almuraLiveButton.setSize(180, 16);
+        almuraLiveButton.setSize(200, 16);
         almuraLiveButton.setName("button.server.almura.live");
         almuraLiveButton.setDisabled(false);
         almuraLiveButton.register(this);
@@ -106,7 +106,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         // Create the join another server button
         anotherButton = new UIButton(this, "Join another server");
         anotherButton.setPosition(0, getPaddedY(obsidianboxLiveButton, padding), Anchor.CENTER | Anchor.TOP);
-        anotherButton.setSize(180, 16);
+        anotherButton.setSize(200, 16);
         anotherButton.setName("button.server.another");
         anotherButton.register(this);
 
