@@ -3,18 +3,18 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.infoguide;
+package com.almuradev.almura.client.gui.guide;
 
 import com.almuradev.almura.client.gui.AlmuraGui;
 
-public class infoguideGUI extends AlmuraGui {
+public class GuideGUI extends AlmuraGui {
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
 
      * @param parent the {@link AlmuraGui} that we came from
      */
-    public infoguideGUI(AlmuraGui parent) {
+    public GuideGUI(AlmuraGui parent) {
         super(parent);
         setup();
     }

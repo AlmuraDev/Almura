@@ -19,26 +19,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class AlmuraCoreMod implements IFMLLoadingPlugin {
-
-    static {
-        //Filter those pesky log entries
-        //TODO Non-functional yet
-        final Logger launchWrapperLogger = (Logger) LogManager.getLogger("LaunchWrapper");
-        launchWrapperLogger.addFilter(
-                RegexFilter.createFilter(".*has a security seal for path org.lwjgl.*", "true", Filter.Result.DENY.name(), Filter.Result.DENY.name()));
-    }
-
     @SuppressWarnings("unchecked")
     public AlmuraCoreMod() {
         Launch.classLoader.addClassLoaderExclusion("org.spongepowered.asm.mixin.");
-        try {
-            Field f = LaunchClassLoader.class.getDeclaredField("classLoaderExceptions");
-            f.setAccessible(true);
-            Set<String> classLoaderExclusions = (Set<String>) f.get(Launch.classLoader);
-            classLoaderExclusions.remove("org.lwjgl.");
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
         //MixinEnvironment.getCurrentEnvironment().addConfiguration("mixins.almura.json");
     }
 
