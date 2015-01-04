@@ -39,7 +39,7 @@ public class AlmuraCoreMod implements IFMLLoadingPlugin {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        //MixinEnvironment.getCurrentEnvironment().addConfiguration("mixins.almura.json");
+        MixinEnvironment.getCurrentEnvironment().addConfiguration("mixins.almura.json");
     }
 
     @Override
