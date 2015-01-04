@@ -19,7 +19,6 @@ public abstract class MixinBlockWall extends Block {
         super(p_i45394_1_);
     }
 
-    @Overwrite
     public boolean canConnectWallTo(IBlockAccess access, int x, int y, int z) {
         return access.getBlock(x, y, z) instanceof BlockWall;
     }

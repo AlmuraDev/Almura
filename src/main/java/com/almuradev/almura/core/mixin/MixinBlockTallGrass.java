@@ -25,7 +25,7 @@ import java.util.ArrayList;
 @Mixin(BlockTallGrass.class)
 public abstract class MixinBlockTallGrass extends BlockBush implements IGrowable, IShearable {
 
-    @Overwrite
+    @Override
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
         final ArrayList<ItemStack> ret = Lists.newArrayList();
         final ItemStack seed = ForgeHooks.getGrassSeed(world);

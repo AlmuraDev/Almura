@@ -22,11 +22,25 @@ public abstract class MixinSimpleReloadableResourceManager implements IReloadabl
 
     @Shadow
     public List reloadListeners;
+
     private boolean reload = false;
 
     @Overwrite
     private void notifyReloadListeners() {
 
+        for (Object reloadListener : reloadListeners) {
+            IResourceManagerReloadListener iresourcemanagerreloadlistener = (IResourceManagerReloadListener) reloadListener;
+            if (iresourcemanagerreloadlistener.getClass() == TextureManager.class && Loader.instance().hasReachedState(LoaderState.AVAILABLE)
+                && !reload) {
+                reload = true;
+                continue;
+            }
+            iresourcemanagerreloadlistener.onResourceManagerReload(this);
+        }
+    }
+
+    @Overwrite
+    private void func_110544_b() {
         for (Object reloadListener : reloadListeners) {
             IResourceManagerReloadListener iresourcemanagerreloadlistener = (IResourceManagerReloadListener) reloadListener;
             if (iresourcemanagerreloadlistener.getClass() == TextureManager.class && Loader.instance().hasReachedState(LoaderState.AVAILABLE)
