@@ -37,7 +37,15 @@ public class S00AdditionalWorldInfo implements IMessage, IMessageHandler<S00Addi
     @Override
     public IMessage onMessage(S00AdditionalWorldInfo message, MessageContext ctx) {
         if (ctx.side == Side.CLIENT) {
-            IngameHUD.INSTANCE.worldDisplay.setText(Character.toUpperCase(message.worldName.charAt(0)) + message.worldName.substring(1));
+            if (message.worldName.equalsIgnoreCase("Dim1")) {
+                IngameHUD.INSTANCE.worldDisplay.setText("The End");
+            } else if (message.worldName.equalsIgnoreCase("Dim-1")) {
+                IngameHUD.INSTANCE.worldDisplay.setText("Nether");
+            } else if (message.worldName.equalsIgnoreCase("redrock_nether")) {
+                IngameHUD.INSTANCE.worldDisplay.setText("Redrock Nether");
+            } else {
+                IngameHUD.INSTANCE.worldDisplay.setText(Character.toUpperCase(message.worldName.charAt(0)) + message.worldName.substring(1));
+            }
         }
         return null;
     }
