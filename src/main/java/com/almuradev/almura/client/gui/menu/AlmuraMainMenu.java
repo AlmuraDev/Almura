@@ -94,7 +94,7 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         // Create the quit button
         final UIButton quitButton = new UIButton(this, "Quit");
         quitButton.setSize(50, 16);
-        quitButton.setPosition(0, getPaddedY(configurationButton, padding+10), Anchor.CENTER | Anchor.TOP);
+        quitButton.setPosition(0, getPaddedY(configurationButton, padding + 10), Anchor.CENTER | Anchor.TOP);
         quitButton.setName("button.quit");
         quitButton.register(this);
 

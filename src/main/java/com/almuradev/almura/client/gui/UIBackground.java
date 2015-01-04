@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.menu;
+package com.almuradev.almura.client.gui;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
@@ -18,7 +18,6 @@ import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.renderer.animation.Animation;
 import net.malisis.core.renderer.animation.transformation.SizeTransform;
-import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -38,7 +37,6 @@ public class UIBackground extends UIImage {
     private int currentAnchor;
     public static final float ZOOM_LEVEL = 1.5f;
     public static final int ANIMATION_SPEED = 160;
-    public static final GuiTexture DEFAULT_TEXTURE = new GuiTexture(new ResourceLocation(Almura.MOD_ID, "textures/gui/background/default.jpg"));
     public Animation animation;
 
     static {
@@ -64,7 +62,6 @@ public class UIBackground extends UIImage {
                     Almura.LOGGER.warn("Failed to filter background images (jpg/png) for TimeState [" + state
                                        + "]. Using default texture for that TimeState.");
                 }
-                backgrounds.add(DEFAULT_TEXTURE);
             }
         }
     }
@@ -81,7 +78,7 @@ public class UIBackground extends UIImage {
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         // Check if the animation is finished
-        if (animation.isFinished() && getTexture() != DEFAULT_TEXTURE) {
+        if (animation.isFinished()) {
             // Get a random background and ensure it isn't the same as the current one so long as there is more than one background image
             GuiTexture texture = getRandomBackgroundTexture();
             while (texture == getTexture() && STATE_TEXTURES.get(getTimeState()).size() > 1) {
@@ -96,11 +93,6 @@ public class UIBackground extends UIImage {
     }
 
     public void animate() {
-        // Do not animate when using the default texture
-        if (getTexture() == DEFAULT_TEXTURE) {
-            return;
-        }
-
         // Get a random anchor
         int anchor = getRandomAnchor();
 
@@ -174,10 +166,10 @@ public class UIBackground extends UIImage {
         final TimeState state = getTimeState();
         final List<GuiTexture> backgrounds = STATE_TEXTURES.get(state);
         if (backgrounds == null) {
-            return DEFAULT_TEXTURE;
+            return null;
         }
         if (backgrounds.isEmpty()) {
-            return DEFAULT_TEXTURE;
+            return null;
         }
         final int random = getRandomValue(1, STATE_TEXTURES.get(state).size()) - 1;
         return STATE_TEXTURES.get(state).get(random);
