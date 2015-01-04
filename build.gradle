@@ -26,6 +26,9 @@ plugins {
 
 apply plugin: "forge"
 
+// Depends on subprojects
+evaluationDependsOn('Mixin')
+
 // Project repositories
 repositories {
     mavenLocal()
@@ -44,7 +47,7 @@ repositories {
 dependencies {
     compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
     compile 'net.malisis:malisiscore:1.7.10-0.10.4-SNAPSHOT:dev'
-    compile 'org.spongepowered:mixin:0.1-SNAPSHOT'
+    compile project('Mixin')
 }
 
 // Gradle default tasks
@@ -110,7 +113,7 @@ shadowJar {
     destinationDir = file("build/distributions")
     dependencies {
         include(dependency('com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'))
-        include(dependency('org.spongepowered:mixin:0.1-SNAPSHOT'))
+        include(project('Mixin'))
     }
 }
 
