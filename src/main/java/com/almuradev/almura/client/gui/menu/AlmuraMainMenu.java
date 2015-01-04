@@ -5,11 +5,14 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
+import java.awt.Color;
+
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.google.common.eventbus.Subscribe;
+
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -44,10 +47,26 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         window.setColor(Integer.MIN_VALUE);
         window.setBackgroundAlpha(125);
 
+        // Create the title & Window layout 
+        final UILabel titleLabel = new UILabel(this, ChatColor.WHITE + "Welcome to Almura 2.0");
+        titleLabel.setPosition(0, 5, Anchor.CENTER | Anchor.TOP);
+
+        final UIBackgroundContainer uiTitleBar = new UIBackgroundContainer(this);
+        uiTitleBar.setSize(300, 1);
+        uiTitleBar.setPosition(0, 17, Anchor.CENTER | Anchor.TOP);
+        uiTitleBar.setColor(Color.gray.getRGB());
+        
+        final UIButton xButton = new UIButton(this, ChatColor.BOLD + "X");
+        xButton.setSize(5, 1);
+        xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
+        xButton.setName("button.quit");
+        xButton.register(this);
+        
         // Create the logo
         final UIImage logoImage = new UIImage(this, new GuiTexture(ALMURA_LOGO_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
-        logoImage.setSize(65, 105);
+        logoImage.setPosition(0,15);
+        logoImage.setSize(65, 95);
 
         final int padding = 4;
 
@@ -108,7 +127,7 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         trademarkLabel.setPosition(0, -1, Anchor.CENTER | Anchor.BOTTOM);
         trademarkLabel.setFontScale(0.7f);
 
-        window.add(logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
+        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
                    aboutButton, quitButton, copyrightLabel, trademarkLabel);
 
         // Allow the window to move
