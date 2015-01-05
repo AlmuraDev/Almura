@@ -9,6 +9,7 @@ import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.server.ServerProxy;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -25,6 +26,9 @@ public class Almura {
     public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
     public static String GUI_VERSION = "Build 30";
     public static String PACK_VERSION = "1.2";
+
+    @Instance
+    public static Almura INSTANCE;
 
     @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
     public static CommonProxy PROXY;
