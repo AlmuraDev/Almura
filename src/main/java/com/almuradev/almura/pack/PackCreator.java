@@ -89,7 +89,7 @@ public class PackCreator {
 
         try {
             collisionCoordinates =
-                    PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.COLLISION_BOX.getKey())
+                    PackUtil.parseStringToNumericList(Double.class, boundsConfigurationNode.getChild(PackKeys.COLLISION_BOX.getKey())
                             .getString(PackKeys.COLLISION_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
@@ -108,7 +108,7 @@ public class PackCreator {
         List<Double> wireframeCoordinates = Lists.newLinkedList();
 
         try {
-            wireframeCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.WIREFRAME_BOX.getKey())
+            wireframeCoordinates = PackUtil.parseStringToNumericList(Double.class, boundsConfigurationNode.getChild(PackKeys.WIREFRAME_BOX.getKey())
                     .getString(PackKeys.WIREFRAME_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
@@ -126,7 +126,7 @@ public class PackCreator {
         List<Double> blockBoundsCoordinates = Lists.newLinkedList();
 
         try {
-            blockBoundsCoordinates = PackUtil.parseStringToNumericList(Double.class, reader.getChild(PackKeys.BLOCK_BOX.getKey())
+            blockBoundsCoordinates = PackUtil.parseStringToNumericList(Double.class, boundsConfigurationNode.getChild(PackKeys.BLOCK_BOX.getKey())
                     .getString(PackKeys.BLOCK_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
