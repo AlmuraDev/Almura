@@ -24,11 +24,11 @@ public abstract class AlmuraGui extends MalisisGui {
 
     static {
         try {
-            final ResourceLocation loc = new ResourceLocation(Almura.MOD_ID, "textures/gui/gui.png");
-            final Dimension dimension = Filesystem.getImageDimension(loc);
-            TEXTURE_DEFAULT = new GuiTexture(loc, dimension.width, dimension.height);
+            final ResourceLocation loc = Filesystem.registerTexture(Almura.MOD_ID, "textures/gui/gui.png", Filesystem.CONFIG_GUI_SPRITESHEET_PATH);
+            final Dimension dim = Filesystem.getImageDimension(Filesystem.CONFIG_GUI_SPRITESHEET_PATH);
+            TEXTURE_DEFAULT = new GuiTexture(loc, dim.width, dim.height);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to determine dimensions of gui sprite sheet!", e);
+            throw new RuntimeException("Failed load gui sprite sheet.", e);
         }
     }
 

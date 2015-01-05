@@ -44,8 +44,9 @@ public class Filesystem {
     public static final Path CONFIG_VERSION_PATH = Paths.get(CONFIG_PATH.toString(), Almura.PACK_VERSION);
     public static final Path CONFIG_YML_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "packs");
     public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "images");
+    public static final Path CONFIG_GUI_SPRITESHEET_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "gui.png");
+    public static final Path CONFIG_GUI_LOGO_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "almura.png");
     public static final Path CONFIG_MODELS_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "models");
-
     public static DirectoryStream.Filter<Path> DIRECTORIES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
         @Override
         public boolean accept(Path entry) throws IOException {
@@ -203,10 +204,6 @@ public class Filesystem {
 
     public static Dimension getImageDimension(Path path) throws IOException {
         return getImageDimension(Files.newInputStream(path));
-    }
-
-    public static Dimension getImageDimension(ResourceLocation location) throws IOException {
-        return getImageDimension(Minecraft.getMinecraft().getResourceManager().getResource(location).getInputStream());
     }
 
     @SideOnly(Side.CLIENT)

@@ -6,8 +6,10 @@
 package com.almuradev.almura.client.gui.menu;
 
 import java.awt.Color;
+import java.io.IOException;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
@@ -27,7 +29,15 @@ import net.minecraft.util.ResourceLocation;
 
 public class AlmuraMainMenu extends AlmuraBackgroundGui {
 
-    protected static final ResourceLocation ALMURA_LOGO_LOCATION = new ResourceLocation(Almura.MOD_ID, "textures/gui/almura.png");
+    protected static final ResourceLocation ALMURA_LOGO_LOCATION;
+
+    static {
+        try {
+            ALMURA_LOGO_LOCATION = Filesystem.registerTexture(Almura.MOD_ID, "textures/gui/almura.png", Filesystem.CONFIG_GUI_LOGO_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load logo.", e);
+        }
+    }
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added

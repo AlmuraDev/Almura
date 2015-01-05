@@ -7,16 +7,9 @@ package com.almuradev.almura.core;
 
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.launchwrapper.LaunchClassLoader;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Logger;
-import org.apache.logging.log4j.core.filter.RegexFilter;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
-import java.lang.reflect.Field;
 import java.util.Map;
-import java.util.Set;
 
 public class AlmuraCoreMod implements IFMLLoadingPlugin {
     @SuppressWarnings("unchecked")

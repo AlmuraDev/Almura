@@ -110,6 +110,7 @@ public class Configuration {
     public static void toggleDebugLanguageMode(boolean value) {
         DEBUG_LANGUAGES_MODE = value;
     }
+
     public static void toggleDebugPacksMode(boolean value) {
         DEBUG_PACKS_MODE = value;
     }
