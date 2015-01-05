@@ -1,0 +1,108 @@
+date: 12-12-2014
+type: container
+title: Container
+texture: container.png
+shape: container.shape
+coords:
+    - 0 0 128 128
+    - 128 0 128 128
+    - 256 0 128 128
+    - 384 0 128 128
+    - 512 0 128 128
+    - 128 640 128 128
+render:
+    normal-cube: false
+    opaque: false
+creative-tab: blocks
+show-in-creative-tab: true
+hardness: 0.5
+resistance: 1
+rotate:
+    enabled: true
+    default-rotate: true
+    default-mirror: true
+    direction:
+        north:
+            enabled: true
+            angle: 100
+            x: backwards
+            y: 0
+            z: forwards
+        south:
+            enabled: true
+            angle: 45
+            x: backwards
+            y: backwards
+            z: backwards
+light:
+    emission: 1
+    opacity: 200
+collision:
+     enabled: false
+     sources:
+         player:
+             enabled: true
+             health-change: 1
+         skeleton:
+             enabled: true
+             health-change: 1
+break:
+    enabled: true
+    tools:
+        none:
+            experience: 5-10
+            exhaustion-change: 5-10
+            drops:
+                almura\food\corn:
+                    amount: 1-2
+                    data: 2
+                    bonus:
+                        enabled: false
+                        amount: 1-5
+                        chance: 10-15
+        almura\tools\diamond_sickle:
+            experience: 5-10
+            exhaustion-change: 5-10
+            drops:
+                almura\food\corn:
+                    amount: 3-4
+                    data: 2
+                    bonus:
+                        enabled: true
+                        amount: 4-5
+                        chance: 45-75
+recipes:
+    0:
+        type: shaped
+        amount: 1
+        damage: 3
+        ingredients:
+            - air air air
+            - air stone air
+            - air sand air
+     1:
+        type: shapeless
+        amount: 1
+        ingredients:
+            - air stone air
+            - air sand air
+    2:
+        type: furance
+        amount: 1
+        ingredients:
+            - ITEM_NAME
+container:
+    size: 9
+    title: "Storage"
+    use-display-name-as-title: false
+    state:
+        full:
+            texture: container.png
+            coords:
+                - 0 0 128 128
+                - 128 0 128 128
+                - 256 0 128 128
+                - 384 0 128 128
+                - 512 0 128 128
+                - 128 640 128 128
+            shape: container.shape
