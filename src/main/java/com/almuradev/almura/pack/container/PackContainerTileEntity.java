@@ -8,7 +8,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityBrewingStand;
 import net.minecraft.tileentity.TileEntityChest;
 
 public class PackContainerTileEntity extends TileEntity implements IInventory {
@@ -17,6 +21,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     private static final String TAG_INT_MAX_STACK_SIZE = "MaxStackSize";
     private static final String TAG_LIST_ITEMS = "Items";
     private static final String TAG_BYTE_SLOT = "Slot";
+    private static final String TAG_BOOLEAN_FULL = "Full";
     private ItemStack[] contents;
     private String title = null;
     private int size = Integer.MIN_VALUE;
@@ -70,25 +75,14 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
                 }
             }
         }
-
-        if (worldObj != null && !worldObj.isRemote) {
-            boolean hasEmptySlots = false;
-
-            for (ItemStack stack : contents) {
-                if (stack == null) {
-                    hasEmptySlots = true;
-                }
-            }
-
-            this.hasEmptySlots = hasEmptySlots;
-            worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 1, hasEmptySlots ? 0 : 1);
+        if (compound.hasKey(TAG_BOOLEAN_FULL)) {
+            hasEmptySlots = compound.getBoolean(TAG_BOOLEAN_FULL);
         }
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-
         compound.setString(TAG_STRING_TITLE, title);
         compound.setInteger(TAG_INT_SIZE, size);
         compound.setInteger(TAG_INT_MAX_STACK_SIZE, maxStackSize);
@@ -105,16 +99,30 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
         }
 
         compound.setTag(TAG_LIST_ITEMS, nbttaglist);
+        boolean hasEmptySlots = false;
+        for (ItemStack stack : contents) {
+            if (stack == null) {
+                hasEmptySlots = true;
+            }
+        }
+        this.hasEmptySlots = hasEmptySlots;
+        compound.setBoolean(TAG_BOOLEAN_FULL, hasEmptySlots);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public boolean receiveClientEvent(int action, int flag) {
-        if (action == 1) {
-            hasEmptySlots = flag == 0;
+    public Packet getDescriptionPacket() {
+        final NBTTagCompound sync = new NBTTagCompound();
+        sync.setBoolean(TAG_BOOLEAN_FULL, hasEmptySlots);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, sync);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+        if (pkt.func_148857_g().hasKey(TAG_BOOLEAN_FULL)) {
+            hasEmptySlots = pkt.func_148857_g().getBoolean(TAG_BOOLEAN_FULL);
+
+            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
         }
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-        return true;
     }
 
     @Override
@@ -205,14 +213,15 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     public void closeInventory() {
         if (!worldObj.isRemote) {
             boolean hasEmptySlots = false;
+
             for (ItemStack stack : contents) {
                 if (stack == null) {
                     hasEmptySlots = true;
-                    break;
                 }
             }
+
             this.hasEmptySlots = hasEmptySlots;
-            worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 1, hasEmptySlots ? 0 : 1);
+            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
         }
     }
 
