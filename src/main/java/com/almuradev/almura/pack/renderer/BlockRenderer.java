@@ -121,7 +121,7 @@ public class BlockRenderer extends MalisisRenderer {
             IIcon icon;
 
             if (PackUtil.isEmptyClip(clippedIcons)) {
-                icon = super.getIcon(params);
+                icon = property.isPresent() ? property.get().getStateIcon() : super.getIcon(params);
             } else if (face.getTextureId() >= clippedIcons.length) {
                 icon = clippedIcons[0];
             } else {
