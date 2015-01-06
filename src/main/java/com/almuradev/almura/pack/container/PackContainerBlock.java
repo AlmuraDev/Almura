@@ -173,8 +173,6 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     //TODO Check this come 1.8
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int metadata) {
-        super.breakBlock(world, x, y, z, block, metadata);
-
         final PackContainerTileEntity te = (PackContainerTileEntity) world.getTileEntity(x, y, z);
         if (te != null) {
             for (int i1 = 0; i1 < te.getSizeInventory(); ++i1) {
@@ -208,6 +206,8 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
                 }
             }
         }
+
+        super.breakBlock(world, x, y, z, block, metadata);
     }
 
     //TODO Check this come 1.8
