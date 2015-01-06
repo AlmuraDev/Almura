@@ -85,7 +85,9 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         this.shapeName = shapeName;
         this.renderNode = addNode(renderNode);
         this.rotationNode = addNode(rotationNode);
+        addNode(rotationNode);
         addNode(lightNode);
+        addNode(renderNode);
         setBlockName(pack.getName() + "\\" + identifier);
         setBlockTextureName(Almura.MOD_ID + ":images/" + textureName);
         setHardness(hardness);

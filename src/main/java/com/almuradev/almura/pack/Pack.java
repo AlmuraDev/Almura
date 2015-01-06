@@ -127,10 +127,14 @@ public class Pack {
                         final Block crop = PackCreator.createCropFromReader(pack, name, reader);
                         pack.blocks.add(crop);
                         break;
+                    case "CONTAINER":
+                        final Block container = PackCreator.createContainerBlock(pack, name, reader);
+                        pack.blocks.add(container);
+                        break;
                     default:
                         Almura.LOGGER
                                 .warn("Unknown type [" + type + "] in file [" + path.getFileName()
-                                      + "]. Valid types are [ITEM, FOOD, BLOCK, CROP].");
+                                      + "]. Valid types are [ITEM, FOOD, BLOCK, CROP, CONTAINER].");
                         continue;
                 }
                 entry.close();

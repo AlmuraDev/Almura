@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.pack.container;
 
+import com.almuradev.almura.Almura;
+import com.almuradev.almura.Tabs;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.INodeContainer;
@@ -18,6 +20,7 @@ import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ContainerNode;
 import com.almuradev.almura.pack.node.INode;
+import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.ToolsNode;
@@ -32,9 +35,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.util.EntityUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.tileentity.TileEntityChestRenderer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -42,6 +48,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -63,12 +70,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackContainerBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, INodeContainer {
+public class PackContainerBlock extends BlockContainer implements IPackObject, IBlockClipContainer, IBlockShapeContainer, INodeContainer {
 
     public static int renderId;
     private final Pack pack;
     private final String identifier;
-    private final Map<Integer, List<Integer>> textureCoordinatesByFace;
+    private final Map<Integer, List<Integer>> textureCoordinates;
     private final String shapeName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String textureName;
@@ -80,18 +87,32 @@ public class PackContainerBlock extends Block implements IPackObject, IBlockClip
     private BreakNode breakNode;
     private CollisionNode collisionNode;
 
-    public PackContainerBlock(Pack pack, String identifier, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName,
-                                 String textureName, ClippedIcon[] clippedIcons, RenderNode renderNode, RotationNode rotationNode, ContainerNode containerNode) {
+    public PackContainerBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
+                              float hardness,
+                              float resistance, boolean showInCreativeTab, String creativeTabName, RotationNode rotationNode, LightNode lightNode,
+                              RenderNode renderNode, ContainerNode containerNode) {
         super(Material.ground);
         this.pack = pack;
         this.identifier = identifier;
-        this.textureCoordinatesByFace = textureCoordinatesByFace;
+        this.textureCoordinates = textureCoordinates;
         this.shapeName = shapeName;
         this.textureName = textureName;
-        this.clippedIcons = clippedIcons;
         this.renderNode = renderNode;
         this.rotationNode = rotationNode;
         this.containerNode = containerNode;
+        addNode(rotationNode);
+        addNode(lightNode);
+        addNode(renderNode);
+        addNode(containerNode);
+        setBlockName(pack.getName() + "\\" + identifier);
+        setBlockTextureName(Almura.MOD_ID + ":images/" + textureName);
+        setHardness(hardness);
+        setResistance(resistance);
+        setLightLevel(lightNode.getEmission());
+        setLightOpacity(lightNode.getOpacity());
+        if (showInCreativeTab) {
+            setCreativeTab(Tabs.getTabByName(creativeTabName));
+        }
     }
 
     @Override
@@ -104,12 +125,7 @@ public class PackContainerBlock extends Block implements IPackObject, IBlockClip
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinatesByFace);
-    }
-
-    @Override
-    public TileEntity createTileEntity(World world, int metadata) {
-        return new PackContainerTileEntity(containerNode);
+        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinates);
     }
 
     @Override
@@ -405,5 +421,10 @@ public class PackContainerBlock extends Block implements IPackObject, IBlockClip
     @Override
     public String toString() {
         return "PackContainerBlock {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
+    }
+
+    @Override
+    public TileEntity createNewTileEntity(World world, int metadata) {
+        return new PackContainerTileEntity();
     }
 }

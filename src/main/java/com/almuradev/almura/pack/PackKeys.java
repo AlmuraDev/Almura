@@ -89,6 +89,12 @@ public class PackKeys {
     public static final DefaultedKey<String> NODE_STAGES = new DefaultedKey<>("stages", "");
     public static final DefaultedKey<String> NODE_SEED = new DefaultedKey<>("seed", "");
     public static final DefaultedKey<String> NODE_GROWTH = new DefaultedKey<>("growth", "");
+    //CONTAINER NODE
+    public static final DefaultedKey<String> NODE_CONTAINER = new DefaultedKey<>("container", "");
+    public static final DefaultedKey<Integer> INVENTORY_SIZE = new DefaultedKey<>("inventory-size", 9);
+    public static final DefaultedKey<Boolean> USE_DISPLAY_NAME_AS_TITLE = new DefaultedKey<>("use-display-name-as-title", true);
+    public static final DefaultedKey<Integer> MAX_STACK_SIZE = new DefaultedKey<>("max-stack-size", 64);
+    public static final DefaultedKey<String> STATE = new DefaultedKey<>("state", "");
 
     public static class DefaultedKey<T> {
 

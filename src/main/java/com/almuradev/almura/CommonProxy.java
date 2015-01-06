@@ -16,6 +16,7 @@ import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackCreator;
 import com.almuradev.almura.pack.PackKeys;
 import com.almuradev.almura.pack.container.AlmuraContainerHandler;
+import com.almuradev.almura.pack.container.PackContainerTileEntity;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
@@ -67,6 +68,7 @@ public class CommonProxy {
         RecipeSorter.register(Almura.MOD_ID + ":shaped", QuantitiveShapedRecipes.class, SHAPED, "after:minecraft:shaped");
         RecipeSorter.register(Almura.MOD_ID + ":shapeless", QuantitiveShapelessRecipes.class, SHAPELESS, "after:minecraft:shapeless");
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());
+        GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");
         FMLCommonHandler.instance().bus().register(this);
         Tabs.fakeStaticLoad();
 

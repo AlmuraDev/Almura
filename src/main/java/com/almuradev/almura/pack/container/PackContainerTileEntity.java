@@ -11,24 +11,28 @@ import net.minecraft.tileentity.TileEntity;
 public class PackContainerTileEntity extends TileEntity implements IInventory {
     private static final String TAG_LIST_ITEMS = "Items";
     private static final String TAG_BYTE_SLOT = "Slot";
-    private final ContainerNode containerNode;
-    private final ItemStack[] contents;
+    private ItemStack[] contents = new ItemStack[63];
+    private ContainerNode containerNode;
+
+    public PackContainerTileEntity() {
+    }
 
     public PackContainerTileEntity(ContainerNode containerNode) {
         this.containerNode = containerNode;
-        contents = new ItemStack[containerNode.getSize() + 9];
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
+
         final NBTTagList nbttaglist = compound.getTagList(TAG_LIST_ITEMS, 10);
+        contents = new ItemStack[63];
 
         for (int i = 0; i < nbttaglist.tagCount(); ++i) {
             final NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
             int j = nbttagcompound1.getByte(TAG_BYTE_SLOT) & 255;
 
-            if (j >= 0 && j < containerNode.getSize()) {
+            if (j >= 0 && j < 63) {
                 contents[i] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
             }
         }
@@ -122,12 +126,15 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
 
     @Override
     public String getInventoryName() {
+        if (containerNode == null) {
+            containerNode = ((PackContainerBlock) worldObj.getBlock(xCoord, yCoord, zCoord)).getNode(ContainerNode.class);
+        }
         return containerNode.getTitle();
     }
 
     @Override
     public boolean hasCustomInventoryName() {
-        return containerNode.useDisplayNameOfContainerAsTitle();
+        return containerNode.useDisplayNameAsTitle();
     }
 
     @Override

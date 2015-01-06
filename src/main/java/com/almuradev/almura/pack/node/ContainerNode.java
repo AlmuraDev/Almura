@@ -7,14 +7,14 @@ import java.util.Set;
 public class ContainerNode implements INode<Set<StateProperty>> {
     private final String title;
     private final int size;
-    private final boolean useDisplayNameOfContainerAsTitle;
+    private final boolean useDisplayNameAsTitle;
     private final int maxStackSize;
     private final Set<StateProperty> value;
 
-    public ContainerNode(String title, int size, boolean useDisplayNameOfContainerAsTitle, int maxStackSize, Set<StateProperty> value) {
+    public ContainerNode(String title, int size, boolean useDisplayNameAsTitle, int maxStackSize, Set<StateProperty> value) {
         this.title = title;
         this.size = size;
-        this.useDisplayNameOfContainerAsTitle = useDisplayNameOfContainerAsTitle;
+        this.useDisplayNameAsTitle = useDisplayNameAsTitle;
         this.maxStackSize = maxStackSize;
         this.value = value;
     }
@@ -32,8 +32,8 @@ public class ContainerNode implements INode<Set<StateProperty>> {
         return size;
     }
 
-    public boolean useDisplayNameOfContainerAsTitle() {
-        return useDisplayNameOfContainerAsTitle;
+    public boolean useDisplayNameAsTitle() {
+        return useDisplayNameAsTitle;
     }
 
     public int getMaxStackSize() {
