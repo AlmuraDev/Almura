@@ -81,9 +81,16 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         if (metadata >= stages.size() - 1) {
             return;
         }
+
         final Stage stage = stages.get(metadata);
-        final int minLightLevel = stage.getNode(LightNode.class).getValue().getMin();
-        final int maxLightLevel = stage.getNode(LightNode.class).getValue().getMax();
+
+        if (stage == null) {
+            return;
+        }
+
+        final LightNode lightNode = stage.getNode(LightNode.class);
+        final int minLightLevel = lightNode.getValue().getMin();
+        final int maxLightLevel = lightNode.getValue().getMax();
         final int areaBlockLight = world.getSkyBlockTypeBrightness(EnumSkyBlock.Block, x, y, z);
         final int worldLight = world.getSkyBlockTypeBrightness(EnumSkyBlock.Sky, x, y, z)- world.skylightSubtracted;
         boolean enoughLight = false;
