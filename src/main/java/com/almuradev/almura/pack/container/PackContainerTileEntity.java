@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.pack.container;
 
 import com.almuradev.almura.pack.node.ContainerNode;
@@ -12,10 +17,9 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityBrewingStand;
-import net.minecraft.tileentity.TileEntityChest;
 
 public class PackContainerTileEntity extends TileEntity implements IInventory {
+
     private static final String TAG_STRING_TITLE = "Title";
     private static final String TAG_INT_SIZE = "Size";
     private static final String TAG_INT_MAX_STACK_SIZE = "MaxStackSize";
@@ -92,7 +96,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
             final ItemStack slotStack = contents[i];
             if (slotStack != null) {
                 NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte(TAG_BYTE_SLOT, (byte)i);
+                nbttagcompound1.setByte(TAG_BYTE_SLOT, (byte) i);
                 slotStack.writeToNBT(nbttagcompound1);
                 nbttaglist.appendTag(nbttagcompound1);
             }
@@ -201,7 +205,8 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
 
     @Override
     public boolean isUseableByPlayer(EntityPlayer player) {
-        return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this && player.getDistanceSq((double) xCoord + 0.5D, (double) yCoord + 0.5D, (double) zCoord + 0.5D) <= 64.0D;
+        return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this
+               && player.getDistanceSq((double) xCoord + 0.5D, (double) yCoord + 0.5D, (double) zCoord + 0.5D) <= 64.0D;
     }
 
     @Override

@@ -41,6 +41,18 @@ public abstract class AlmuraGui extends MalisisGui {
         this.parent = Optional.fromNullable(parent);
     }
 
+    /**
+     * Snips out a {@link net.malisis.core.client.gui.icon.GuiIcon} based on the texture coordinates and size
+     * @param x in pixels
+     * @param y in pixels
+     * @param width in pixels
+     * @param height in pixels
+     * @return the icon
+     */
+    protected static GuiIcon getIcon(int x, int y, int width, int height) {
+        return TEXTURE_DEFAULT.getIcon(x, y, width, height);
+    }
+
     protected abstract void setup();
 
     /**
@@ -59,17 +71,5 @@ public abstract class AlmuraGui extends MalisisGui {
             return 0;
         }
         return component.getY() + component.getHeight() + padding;
-    }
-
-    /**
-     * Snips out a {@link net.malisis.core.client.gui.icon.GuiIcon} based on the texture coordinates and size
-     * @param x in pixels
-     * @param y in pixels
-     * @param width in pixels
-     * @param height in pixels
-     * @return the icon
-     */
-    protected static GuiIcon getIcon(int x, int y, int width, int height) {
-        return TEXTURE_DEFAULT.getIcon(x, y, width, height);
     }
 }

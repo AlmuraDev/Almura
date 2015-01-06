@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import java.util.Map;
 
 public class AlmuraCoreMod implements IFMLLoadingPlugin {
+
     @SuppressWarnings("unchecked")
     public AlmuraCoreMod() {
         Launch.classLoader.addClassLoaderExclusion("org.spongepowered.asm.mixin.");

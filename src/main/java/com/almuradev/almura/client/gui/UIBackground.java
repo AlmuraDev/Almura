@@ -31,14 +31,12 @@ import java.util.Random;
 
 public class UIBackground extends UIImage {
 
+    public static final float ZOOM_LEVEL = 1.5f;
+    public static final int ANIMATION_SPEED = 160;
     private static final Map<TimeState, List<GuiTexture>> STATE_TEXTURES = Maps.newEnumMap(TimeState.class);
     private static final Random RANDOM = new Random();
     private final MalisisGui gui;
-    private int currentAnchor;
-    public static final float ZOOM_LEVEL = 1.5f;
-    public static final int ANIMATION_SPEED = 160;
     public Animation animation;
-
     static {
         for (TimeState state : TimeState.values()) {
             final Path statePath = Paths.get(Filesystem.CONFIG_BACKGROUNDS_PATH.toString(), state.toString());
@@ -65,6 +63,7 @@ public class UIBackground extends UIImage {
             }
         }
     }
+    private int currentAnchor;
 
     public UIBackground(MalisisGui gui) {
         super(gui, getRandomBackgroundTexture(), null);
@@ -73,45 +72,6 @@ public class UIBackground extends UIImage {
         animation =
                 new Animation(this, new SizeTransform((int) (gui.width * ZOOM_LEVEL), (int) (gui.height * ZOOM_LEVEL), gui.width, gui.height)
                         .forTicks(ANIMATION_SPEED));
-    }
-
-    @Override
-    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        // Check if the animation is finished
-        if (animation.isFinished()) {
-            // Get a random background and ensure it isn't the same as the current one so long as there is more than one background image
-            GuiTexture texture = getRandomBackgroundTexture();
-            while (texture == getTexture() && STATE_TEXTURES.get(getTimeState()).size() > 1) {
-                texture = getRandomBackgroundTexture();
-            }
-            setIcon(texture, null);
-
-            // Start the animation again
-            animate();
-        }
-        super.drawForeground(renderer, mouseX, mouseY, partialTick);
-    }
-
-    public void animate() {
-        // Get a random anchor
-        int anchor = getRandomAnchor();
-
-        // Ensure it isn't the same anchor as the current one
-        while (anchor == currentAnchor) {
-            anchor = getRandomAnchor();
-        }
-        currentAnchor = anchor;
-
-        // Set the position based on the new anchor
-        setPosition(0, 0, currentAnchor);
-
-        // Create a new animation based on the current gui width and height
-        animation =
-                new Animation(this, new SizeTransform((int) (gui.width * ZOOM_LEVEL), (int) (gui.height * ZOOM_LEVEL), gui.width, gui.height)
-                        .forTicks(ANIMATION_SPEED));
-
-        // Start the animation
-        getGui().animate(animation);
     }
 
     /**
@@ -184,6 +144,45 @@ public class UIBackground extends UIImage {
      */
     private static int getRandomValue(int min, int max) {
         return RANDOM.nextInt((max - min) + 1) + 1;
+    }
+
+    @Override
+    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+        // Check if the animation is finished
+        if (animation.isFinished()) {
+            // Get a random background and ensure it isn't the same as the current one so long as there is more than one background image
+            GuiTexture texture = getRandomBackgroundTexture();
+            while (texture == getTexture() && STATE_TEXTURES.get(getTimeState()).size() > 1) {
+                texture = getRandomBackgroundTexture();
+            }
+            setIcon(texture, null);
+
+            // Start the animation again
+            animate();
+        }
+        super.drawForeground(renderer, mouseX, mouseY, partialTick);
+    }
+
+    public void animate() {
+        // Get a random anchor
+        int anchor = getRandomAnchor();
+
+        // Ensure it isn't the same anchor as the current one
+        while (anchor == currentAnchor) {
+            anchor = getRandomAnchor();
+        }
+        currentAnchor = anchor;
+
+        // Set the position based on the new anchor
+        setPosition(0, 0, currentAnchor);
+
+        // Create a new animation based on the current gui width and height
+        animation =
+                new Animation(this, new SizeTransform((int) (gui.width * ZOOM_LEVEL), (int) (gui.height * ZOOM_LEVEL), gui.width, gui.height)
+                        .forTicks(ANIMATION_SPEED));
+
+        // Start the animation
+        getGui().animate(animation);
     }
 
     private enum TimeState {

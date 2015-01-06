@@ -24,7 +24,6 @@ import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -77,7 +76,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     public void updateTick(World world, int x, int y, int z, Random random) {
         final int metadata = world.getBlockMetadata(x, y, z);
         //TODO Needs serious testing
-        
+
         if (metadata >= stages.size() - 1) {
             return;
         }
@@ -92,13 +91,13 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         final int minLightLevel = lightNode.getValue().getMin();
         final int maxLightLevel = lightNode.getValue().getMax();
         final int areaBlockLight = world.getSkyBlockTypeBrightness(EnumSkyBlock.Block, x, y, z);
-        final int worldLight = world.getSkyBlockTypeBrightness(EnumSkyBlock.Sky, x, y, z)- world.skylightSubtracted;
+        final int worldLight = world.getSkyBlockTypeBrightness(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
         boolean enoughLight = false;
 
-        if (areaBlockLight>= minLightLevel && areaBlockLight <= maxLightLevel) {
-           enoughLight = true;
+        if (areaBlockLight >= minLightLevel && areaBlockLight <= maxLightLevel) {
+            enoughLight = true;
         } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
-           enoughLight = true;
+            enoughLight = true;
         }
 
         if (stage != null && enoughLight) {

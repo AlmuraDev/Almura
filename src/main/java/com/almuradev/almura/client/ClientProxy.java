@@ -7,8 +7,6 @@ package com.almuradev.almura.client;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
-import com.almuradev.almura.Configuration;
-import com.almuradev.almura.client.gui.menu.AlmuraConfigurationMenu;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.menu.AlmuraMainMenu;

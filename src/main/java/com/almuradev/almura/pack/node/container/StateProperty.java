@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.pack.node.container;
 
 import com.almuradev.almura.pack.IBlockShapeContainer;
@@ -20,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 public class StateProperty implements IProperty<Boolean>, IPackObject, IClipContainer, IBlockShapeContainer {
+
     private final Pack pack;
     private final boolean enabled;
     private final String identifier;
@@ -30,7 +36,8 @@ public class StateProperty implements IProperty<Boolean>, IPackObject, IClipCont
     private ClippedIcon[] clippedIcons;
     private IIcon stateIcon;
 
-    public StateProperty(Pack pack, boolean enabled, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String shapeName) {
+    public StateProperty(Pack pack, boolean enabled, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates,
+                         String shapeName) {
         this.pack = pack;
         this.enabled = enabled;
         this.identifier = identifier;

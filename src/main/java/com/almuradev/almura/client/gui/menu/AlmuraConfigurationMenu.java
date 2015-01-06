@@ -5,28 +5,27 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import java.awt.Color;
-
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.google.common.eventbus.Subscribe;
-
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 
+import java.awt.*;
+
 public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
     private UIBackgroundContainer window, uiTitleBar;
     private UIButton graphicsButton, xButton, cancelButton, saveButton;
-    private UICheckBox almuraGuiCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox;
+    private UICheckBox almuraGuiCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
+            debugMappingsCheckBox, debugRecipesCheckBox;
     private UILabel titleLabel;
     private AlmuraGui parent;
 
@@ -59,27 +58,27 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         uiTitleBar.setSize(300, 1);
         uiTitleBar.setPosition(0, 17, Anchor.CENTER | Anchor.TOP);
         uiTitleBar.setColor(Color.gray.getRGB());
-        
+
         xButton = new UIButton(this, ChatColor.BOLD + "X");
         xButton.setSize(5, 1);
         xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
         xButton.setName("button.cancel");
         xButton.register(this);
-        
+
         // Create the almura GUI checkbox
         almuraGuiCheckBox = new UICheckBox(this, ChatColor.WHITE + "Enhanced In-Game HUD");
         almuraGuiCheckBox.setPosition(padding, titleLabel.getY() + (padding * 4 + 10), Anchor.LEFT | Anchor.TOP);
         almuraGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_GUI);
         almuraGuiCheckBox.setName("checkbox.gui.enhanced_gui");
         almuraGuiCheckBox.register(this);
-        
+
         // Create the almura GUI checkbox
         almuraDebugGuiCheckBox = new UICheckBox(this, ChatColor.WHITE + "Enhanced F3 Debug Menu");
         almuraDebugGuiCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         almuraDebugGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_DEBUG);
         almuraDebugGuiCheckBox.setName("checkbox.gui.enhanced_debug");
         almuraDebugGuiCheckBox.register(this);
-        
+
         // Create the debug mode checkbox
         debugModeCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Mode (All)");
         debugModeCheckBox.setPosition(padding, almuraDebugGuiCheckBox.getY() + (padding * 4) + 20, Anchor.LEFT | Anchor.TOP);
@@ -97,26 +96,26 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         debugPacksCheckBox.setPosition(padding, debugLanguagesCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugPacksCheckBox.setChecked(Configuration.DEBUG_PACKS_MODE);
         debugPacksCheckBox.setName("checkbox.gui.debug_packs");
-        
+
         // Create the debug mappings checkbox
         debugMappingsCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Entity / Item Mappings");
         debugMappingsCheckBox.setPosition(padding, debugPacksCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugMappingsCheckBox.setChecked(Configuration.DEBUG_MAPPINGS_MODE);
         debugMappingsCheckBox.setName("checkbox.gui.debug_mappings");
-        
+
         // Create the debug recipes checkbox
         debugRecipesCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Recipe Loading");
         debugRecipesCheckBox.setPosition(padding, debugMappingsCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugRecipesCheckBox.setChecked(Configuration.DEBUG_RECIPES_MODE);
         debugRecipesCheckBox.setName("checkbox.gui.debug_recipes");
-        
+
         // Set Optimized Client Settings
         graphicsButton = new UIButton(this, "Load Optimized Settings");
         graphicsButton.setSize(50, 16);
         graphicsButton.setPosition(padding, -padding, Anchor.LEFT | Anchor.BOTTOM);
         graphicsButton.setName("button.graphics");
         graphicsButton.register(this);
-        
+
         // Create the save button
         saveButton = new UIButton(this, "Save");
         saveButton.setSize(50, 16);
@@ -131,14 +130,15 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         cancelButton.setName("button.cancel");
         cancelButton.register(this);
 
-        window.add(titleLabel, uiTitleBar, xButton, almuraGuiCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton);
+        window.add(titleLabel, uiTitleBar, xButton, almuraGuiCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
+                   debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton);
 
         // Allow the window to move
         new UIMoveHandle(this, window);
 
         addToScreen(window);
     }
-    
+
     public void setOptimizedConfig() {
         this.mc.gameSettings.ambientOcclusion = 0;
         this.mc.gameSettings.mipmapLevels = 0;
@@ -151,10 +151,10 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         this.mc.gameSettings.snooperEnabled = false;
         this.mc.gameSettings.renderDistanceChunks = 12;
         this.mc.gameSettings.viewBobbing = false;
-                
+
         this.mc.scheduleResourcesRefresh();
         this.mc.gameSettings.saveOptions();
-        
+
         mc.displayGuiScreen(new AlmuraConfirmMenu(parent, "Optimized Configuration Applied.", "Almura 2.0"));
     }
 
@@ -168,18 +168,18 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
                 displayParent();
                 break;
             case "button.save":
-            try {
-                Configuration.toggleEnhancedGUI(almuraGuiCheckBox.isChecked());
-                Configuration.toggleEnhancedDebug(almuraDebugGuiCheckBox.isChecked());
-                Configuration.toggleDebugMode(debugModeCheckBox.isChecked());
-                Configuration.toggleDebugLanguageMode(debugLanguagesCheckBox.isChecked());
-                Configuration.toggleDebugPacksMode(debugPacksCheckBox.isChecked());
-                Configuration.toggleDebugMappingsMode(debugMappingsCheckBox.isChecked());
-                Configuration.toggleDebugRecipesMode(debugRecipesCheckBox.isChecked());
-                Configuration.save();
-            } catch (ConfigurationException e) {
-                e.printStackTrace();
-            }
+                try {
+                    Configuration.toggleEnhancedGUI(almuraGuiCheckBox.isChecked());
+                    Configuration.toggleEnhancedDebug(almuraDebugGuiCheckBox.isChecked());
+                    Configuration.toggleDebugMode(debugModeCheckBox.isChecked());
+                    Configuration.toggleDebugLanguageMode(debugLanguagesCheckBox.isChecked());
+                    Configuration.toggleDebugPacksMode(debugPacksCheckBox.isChecked());
+                    Configuration.toggleDebugMappingsMode(debugMappingsCheckBox.isChecked());
+                    Configuration.toggleDebugRecipesMode(debugRecipesCheckBox.isChecked());
+                    Configuration.save();
+                } catch (ConfigurationException e) {
+                    e.printStackTrace();
+                }
                 displayParent();
         }
     }

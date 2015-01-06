@@ -37,26 +37,20 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.util.EntityUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntityChestRenderer;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
@@ -67,7 +61,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
@@ -81,11 +74,11 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     private final String shapeName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String textureName;
-    private ClippedIcon[] clippedIcons;
-    private PackShape shape;
     private final RenderNode renderNode;
     private final RotationNode rotationNode;
     private final ContainerNode containerNode;
+    private ClippedIcon[] clippedIcons;
+    private PackShape shape;
     private BreakNode breakNode;
     private CollisionNode collisionNode;
 
@@ -134,7 +127,8 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_,
+                                    float p_149727_9_) {
         if (!world.isRemote) {
             final PackContainerTileEntity te = (PackContainerTileEntity) world.getTileEntity(x, y, z);
             if (te != null) {
@@ -199,14 +193,16 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
                         }
 
                         itemstack.stackSize -= j1;
-                        item = new EntityItem(world, (double)((float)x + f), (double)((float)y + f1), (double)((float)z + f2), new ItemStack(itemstack.getItem(), j1, itemstack.getItemDamage()));
+                        item =
+                                new EntityItem(world, (double) ((float) x + f), (double) ((float) y + f1), (double) ((float) z + f2),
+                                               new ItemStack(itemstack.getItem(), j1, itemstack.getItemDamage()));
                         float f3 = 0.05F;
-                        item.motionX = (double)((float)RangeProperty.RANDOM.nextGaussian() * f3);
-                        item.motionY = (double)((float)RangeProperty.RANDOM.nextGaussian() * f3 + 0.2F);
-                        item.motionZ = (double)((float)RangeProperty.RANDOM.nextGaussian() * f3);
+                        item.motionX = (double) ((float) RangeProperty.RANDOM.nextGaussian() * f3);
+                        item.motionY = (double) ((float) RangeProperty.RANDOM.nextGaussian() * f3 + 0.2F);
+                        item.motionZ = (double) ((float) RangeProperty.RANDOM.nextGaussian() * f3);
 
                         if (itemstack.hasTagCompound()) {
-                            item.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
+                            item.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
                         }
                     }
                 }
@@ -321,8 +317,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     public int isProvidingWeakPower(IBlockAccess access, int x, int y, int z, int metadata) {
         if (!this.canProvidePower()) {
             return 0;
-        }
-        else {
+        } else {
             return MathHelper.clamp_int(0, 0, 15);
         }
     }

@@ -412,8 +412,9 @@ public class PackCreator {
         final ContainerNode containerNode = createContainerNode(pack, name, reader.getNode(PackKeys.NODE_CONTAINER.getKey()));
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackContainerBlock(pack, name, textureName, textureCoordinates, shapeName, hardness, resistance, showInCreativeTab, creativeTabName,
-                             rotationNode, lightNode, renderNode, containerNode);
+        return new PackContainerBlock(pack, name, textureName, textureCoordinates, shapeName, hardness, resistance, showInCreativeTab,
+                                      creativeTabName,
+                                      rotationNode, lightNode, renderNode, containerNode);
     }
 
     public static ContainerNode createContainerNode(Pack pack, String name, ConfigurationNode node) {
@@ -431,11 +432,11 @@ public class PackCreator {
         }
 
         if (invalid) {
-            Almura.LOGGER.warn("Container size [" + size + "] in [" + name + "] in pack [" + pack.getName() + "] is invalid. Must be a multiple of 9 that doesn't exceed 54. As a precaution, This has been set to 9.");
+            Almura.LOGGER.warn("Container size [" + size + "] in [" + name + "] in pack [" + pack.getName()
+                               + "] is invalid. Must be a multiple of 9 that doesn't exceed 54. As a precaution, This has been set to 9.");
         }
 
         final String title = node.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
-        final boolean useDisplayNameAsTitle = node.getChild(PackKeys.USE_DISPLAY_NAME_AS_TITLE.getKey()).getBoolean(PackKeys.USE_DISPLAY_NAME_AS_TITLE.getDefaultValue());
         final int maxStackSize = node.getChild(PackKeys.MAX_STACK_SIZE.getKey()).getInt(PackKeys.MAX_STACK_SIZE.getDefaultValue());
         final Set<StateProperty> states = Sets.newHashSet();
         final ConfigurationNode statesConfigurationNode = node.getNode(PackKeys.STATE.getKey());
@@ -443,8 +444,12 @@ public class PackCreator {
             if (rawState.equalsIgnoreCase("full")) {
                 final ConfigurationNode stateConfigurationNode = statesConfigurationNode.getNode(rawState);
                 final boolean enabled = stateConfigurationNode.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
-                final String textureName = stateConfigurationNode.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
-                final String shapeName = stateConfigurationNode.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+                final String
+                        textureName =
+                        stateConfigurationNode.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+                final String
+                        shapeName =
+                        stateConfigurationNode.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
                 Map<Integer, List<Integer>> textureCoordinates;
                 try {
                     textureCoordinates = PackUtil.parseCoordinatesFrom(stateConfigurationNode.getChild(
@@ -457,7 +462,7 @@ public class PackCreator {
                 states.add(new StateProperty(pack, enabled, rawState, textureName, textureCoordinates, shapeName));
             }
         }
-        return new ContainerNode(title, size, useDisplayNameAsTitle, maxStackSize, states);
+        return new ContainerNode(title, size, maxStackSize, states);
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {

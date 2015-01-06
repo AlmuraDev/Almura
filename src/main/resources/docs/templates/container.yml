@@ -94,7 +94,6 @@ recipes:
 container:
     inventory-size: 9
     title: "Storage"
-    use-display-name-as-title: false
     max-stack-size: 64
     state:
         full:
