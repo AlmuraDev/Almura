@@ -16,6 +16,7 @@ import com.almuradev.almura.pack.model.PackShape;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
+import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.ToolsNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
@@ -23,6 +24,7 @@ import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -38,6 +40,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -74,11 +77,24 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     public void updateTick(World world, int x, int y, int z, Random random) {
         final int metadata = world.getBlockMetadata(x, y, z);
         //TODO Needs serious testing
+        
         if (metadata >= stages.size() - 1) {
             return;
         }
         final Stage stage = stages.get(metadata);
-        if (stage != null) {
+        final int minLightLevel = stage.getNode(LightNode.class).getValue().getMin();
+        final int maxLightLevel = stage.getNode(LightNode.class).getValue().getMax();
+        final int areaBlockLight = world.getSkyBlockTypeBrightness(EnumSkyBlock.Block, x, y, z);
+        final int worldLight = world.getSkyBlockTypeBrightness(EnumSkyBlock.Sky, x, y, z)- world.skylightSubtracted;
+        boolean enoughLight = false;
+
+        if (areaBlockLight>= minLightLevel && areaBlockLight <= maxLightLevel) {
+           enoughLight = true;
+        } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
+           enoughLight = true;
+        }
+
+        if (stage != null && enoughLight) {
             stage.onTick(world, x, y, z, random);
             //Get within range
             final double

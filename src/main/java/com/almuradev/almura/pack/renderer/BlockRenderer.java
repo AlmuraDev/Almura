@@ -79,7 +79,7 @@ public class BlockRenderer extends MalisisRenderer {
         }
         drawShape(shape, rp);
         if (Minecraft.getMinecraft().currentScreen == null) {
-            RenderHelper.disableStandardItemLighting();
+            //RenderHelper.disableStandardItemLighting();
         }
     }
 
