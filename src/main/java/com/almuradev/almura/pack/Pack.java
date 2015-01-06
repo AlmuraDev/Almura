@@ -200,7 +200,7 @@ public class Pack {
                 } else if (((IShapeContainer) block).getShapeName() != null && ((IShapeContainer) block).getShapeName().isEmpty() && (
                         Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
                     Almura.LOGGER
-                            .warn("Shape [" + ((IShapeContainer) block).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
+                            .warn("Shape [" + ((IShapeContainer) block).getShapeName() + "] for [" + name + "] for pack [" + getName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
                                     .toString() + "]. Will render as a basic cube.");
                 }
 
@@ -213,7 +213,7 @@ public class Pack {
                         }
 
                         if (prop.getShapeName() != null && prop.getShapeName().isEmpty() && prop.getShape() == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
-                            Almura.LOGGER.warn("State [full] in [" + name + "] in pack [" + getName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH.toString() + "]. Will render as a basic cube.");
+                            Almura.LOGGER.warn("Shape [" + prop.getShapeName() + "] for state [full] for [" + name + "] for pack [" + getName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH.toString() + "]. Will render as a basic cube.");
                         }
                     }
                 }
