@@ -8,8 +8,11 @@ package com.almuradev.almura.pack;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.node.ContainerNode;
+import com.almuradev.almura.pack.node.container.StateProperty;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
@@ -191,6 +194,7 @@ public class Pack {
                         break;
                     }
                 }
+
                 if (shape != null) {
                     ((IShapeContainer) block).setShape(shape);
                 } else if (((IShapeContainer) block).getShapeName() != null && ((IShapeContainer) block).getShapeName().isEmpty() && (
@@ -199,6 +203,21 @@ public class Pack {
                             .warn("Shape [" + ((IShapeContainer) block).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
                                     .toString() + "]. Will render as a basic cube.");
                 }
+
+                if (block instanceof PackContainerBlock) {
+                    for (StateProperty prop : ((PackContainerBlock) block).getNode(ContainerNode.class).getValue()) {
+                        for (PackShape s : SHAPES) {
+                            if (s.getName().equalsIgnoreCase(prop.getShapeName())) {
+                                prop.setShape(s);
+                            }
+                        }
+
+                        if (prop.getShapeName() != null && prop.getShapeName().isEmpty() && prop.getShape() == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+                            Almura.LOGGER.warn("State [full] in [" + name + "] in pack [" + getName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH.toString() + "]. Will render as a basic cube.");
+                        }
+                    }
+                }
+
             }
         }
         for (Item item : items) {

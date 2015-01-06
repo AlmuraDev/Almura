@@ -443,7 +443,7 @@ public class PackCreator {
             if (rawState.equalsIgnoreCase("full")) {
                 final ConfigurationNode stateConfigurationNode = statesConfigurationNode.getNode(rawState);
                 final boolean enabled = stateConfigurationNode.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
-                final String textureName = stateConfigurationNode.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue());
+                final String textureName = stateConfigurationNode.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
                 final String shapeName = stateConfigurationNode.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
                 Map<Integer, List<Integer>> textureCoordinates;
                 try {
@@ -454,7 +454,7 @@ public class PackCreator {
                     textureCoordinates = Maps.newHashMap();
                 }
 
-                states.add(new StateProperty(enabled, rawState, textureName, textureCoordinates, shapeName));
+                states.add(new StateProperty(pack, enabled, rawState, textureName, textureCoordinates, shapeName));
             }
         }
         return new ContainerNode(title, size, useDisplayNameAsTitle, maxStackSize, states);

@@ -1,6 +1,7 @@
 package com.almuradev.almura.pack.node;
 
 import com.almuradev.almura.pack.node.container.StateProperty;
+import com.google.common.base.Optional;
 
 import java.util.Set;
 
@@ -38,5 +39,15 @@ public class ContainerNode implements INode<Set<StateProperty>> {
 
     public int getMaxStackSize() {
         return maxStackSize;
+    }
+
+    public Optional<StateProperty> getByIdentifier(String identifier) {
+        for (StateProperty prop : value) {
+            if (prop.getIdentifier().equals(identifier)) {
+                return Optional.of(prop);
+            }
+        }
+
+        return Optional.absent();
     }
 }

@@ -24,10 +24,12 @@ import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.ToolsNode;
+import com.almuradev.almura.pack.node.container.StateProperty;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
@@ -126,6 +128,9 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
         clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinates);
+        for (StateProperty prop : containerNode.getValue()) {
+            prop.registerIcons(register);
+        }
     }
 
     @Override
@@ -344,6 +349,15 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
 
     @Override
     public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
+        if (access != null) {
+            final PackContainerTileEntity te = (PackContainerTileEntity) access.getTileEntity(x, y, z);
+            if (te != null && !te.hasEmptySlots()) {
+                final Optional<StateProperty> state = containerNode.getByIdentifier("full");
+                if (state.isPresent()) {
+                    return state.get().getShape();
+                }
+            }
+        }
         return shape;
     }
 

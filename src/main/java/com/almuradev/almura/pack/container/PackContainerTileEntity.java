@@ -1,12 +1,15 @@
 package com.almuradev.almura.pack.container;
 
 import com.almuradev.almura.pack.node.ContainerNode;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 
 public class PackContainerTileEntity extends TileEntity implements IInventory {
     private static final String TAG_STRING_TITLE = "Title";
@@ -14,10 +17,11 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     private static final String TAG_INT_MAX_STACK_SIZE = "MaxStackSize";
     private static final String TAG_LIST_ITEMS = "Items";
     private static final String TAG_BYTE_SLOT = "Slot";
-    private ItemStack[] contents = new ItemStack[63];
+    private ItemStack[] contents;
     private String title = null;
     private int size = Integer.MIN_VALUE;
     private int maxStackSize = Integer.MIN_VALUE;
+    private boolean hasEmptySlots = true;
 
     public PackContainerTileEntity() {
     }
@@ -26,6 +30,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
         this.title = containerNode.getTitle();
         this.size = containerNode.getSize();
         this.maxStackSize = containerNode.getMaxStackSize();
+        contents = new ItemStack[size];
     }
 
     @Override
@@ -51,8 +56,8 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
             } else {
                 maxStackSize = 64;
             }
-            contents = new ItemStack[size];
         }
+        contents = new ItemStack[size];
         if (compound.hasKey(TAG_LIST_ITEMS)) {
             final NBTTagList nbttaglist = compound.getTagList(TAG_LIST_ITEMS, 10);
 
@@ -64,6 +69,19 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
                     contents[j] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
                 }
             }
+        }
+
+        if (worldObj != null && !worldObj.isRemote) {
+            boolean hasEmptySlots = false;
+
+            for (ItemStack stack : contents) {
+                if (stack == null) {
+                    hasEmptySlots = true;
+                }
+            }
+
+            this.hasEmptySlots = hasEmptySlots;
+            worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 1, hasEmptySlots ? 0 : 1);
         }
     }
 
@@ -90,6 +108,16 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
+    public boolean receiveClientEvent(int action, int flag) {
+        if (action == 1) {
+            hasEmptySlots = flag == 0;
+        }
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        return true;
+    }
+
+    @Override
     public int getSizeInventory() {
         return size;
     }
@@ -109,7 +137,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
             if (slotStack.stackSize <= amount) {
                 itemstack = slotStack;
                 contents[slot] = null;
-                this.markDirty();
+                markDirty();
                 return itemstack;
             } else {
                 itemstack = slotStack.splitStack(amount);
@@ -118,7 +146,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
                     contents[slot] = null;
                 }
 
-                this.markDirty();
+                markDirty();
                 return itemstack;
             }
         } else {
@@ -142,7 +170,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
         contents[slot] = stack;
 
         if (stack != null && stack.stackSize > this.getInventoryStackLimit()) {
-            stack.stackSize = this.getInventoryStackLimit();
+            stack.stackSize = getInventoryStackLimit();
         }
 
         markDirty();
@@ -165,7 +193,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
 
     @Override
     public boolean isUseableByPlayer(EntityPlayer player) {
-        return this.worldObj.getTileEntity(this.xCoord, this.yCoord, this.zCoord) == this && player.getDistanceSq((double) this.xCoord + 0.5D, (double) this.yCoord + 0.5D, (double) this.zCoord + 0.5D) <= 64.0D;
+        return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this && player.getDistanceSq((double) xCoord + 0.5D, (double) yCoord + 0.5D, (double) zCoord + 0.5D) <= 64.0D;
     }
 
     @Override
@@ -175,11 +203,26 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
 
     @Override
     public void closeInventory() {
-
+        if (!worldObj.isRemote) {
+            boolean hasEmptySlots = false;
+            for (ItemStack stack : contents) {
+                if (stack == null) {
+                    hasEmptySlots = true;
+                    break;
+                }
+            }
+            this.hasEmptySlots = hasEmptySlots;
+            worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 1, hasEmptySlots ? 0 : 1);
+        }
     }
 
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack stack) {
         return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public boolean hasEmptySlots() {
+        return hasEmptySlots;
     }
 }
