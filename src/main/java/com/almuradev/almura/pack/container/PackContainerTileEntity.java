@@ -9,31 +9,60 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 
 public class PackContainerTileEntity extends TileEntity implements IInventory {
+    private static final String TAG_STRING_TITLE = "Title";
+    private static final String TAG_INT_SIZE = "Size";
+    private static final String TAG_INT_MAX_STACK_SIZE = "MaxStackSize";
     private static final String TAG_LIST_ITEMS = "Items";
     private static final String TAG_BYTE_SLOT = "Slot";
     private ItemStack[] contents = new ItemStack[63];
-    private ContainerNode containerNode;
+    private String title = null;
+    private int size = Integer.MIN_VALUE;
+    private int maxStackSize = Integer.MIN_VALUE;
 
     public PackContainerTileEntity() {
     }
 
     public PackContainerTileEntity(ContainerNode containerNode) {
-        this.containerNode = containerNode;
+        this.title = containerNode.getTitle();
+        this.size = containerNode.getSize();
+        this.maxStackSize = containerNode.getMaxStackSize();
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
+        if (title == null) {
+            if (compound.hasKey(TAG_STRING_TITLE)) {
+                title = compound.getString(TAG_STRING_TITLE);
+            } else {
+                title = "";
+            }
+        }
+        if (size == Integer.MIN_VALUE) {
+            if (compound.hasKey(TAG_INT_SIZE)) {
+                size = compound.getInteger(TAG_INT_SIZE);
+            } else {
+                size = 9;
+            }
+        }
+        if (maxStackSize == Integer.MIN_VALUE) {
+            if (compound.hasKey(TAG_INT_MAX_STACK_SIZE)) {
+                maxStackSize = compound.getInteger(TAG_INT_MAX_STACK_SIZE);
+            } else {
+                maxStackSize = 64;
+            }
+            contents = new ItemStack[size];
+        }
+        if (compound.hasKey(TAG_LIST_ITEMS)) {
+            final NBTTagList nbttaglist = compound.getTagList(TAG_LIST_ITEMS, 10);
 
-        final NBTTagList nbttaglist = compound.getTagList(TAG_LIST_ITEMS, 10);
-        contents = new ItemStack[63];
+            for (int i = 0; i < nbttaglist.tagCount(); ++i) {
+                final NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
+                int j = nbttagcompound1.getByte(TAG_BYTE_SLOT) & 255;
 
-        for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-            final NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
-            int j = nbttagcompound1.getByte(TAG_BYTE_SLOT) & 255;
-
-            if (j >= 0 && j < 63) {
-                contents[i] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
+                if (j >= 0 && j < contents.length) {
+                    contents[j] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
+                }
             }
         }
     }
@@ -42,6 +71,9 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
 
+        compound.setString(TAG_STRING_TITLE, title);
+        compound.setInteger(TAG_INT_SIZE, size);
+        compound.setInteger(TAG_INT_MAX_STACK_SIZE, maxStackSize);
         final NBTTagList nbttaglist = new NBTTagList();
 
         for (int i = 0; i < contents.length; ++i) {
@@ -59,7 +91,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
 
     @Override
     public int getSizeInventory() {
-        return containerNode.getSize();
+        return size;
     }
 
     @Override
@@ -71,32 +103,25 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     public ItemStack decrStackSize(int slot, int amount) {
         final ItemStack slotStack = contents[slot];
 
-        if (slotStack != null)
-        {
+        if (slotStack != null) {
             ItemStack itemstack;
 
-            if (slotStack.stackSize <= amount)
-            {
+            if (slotStack.stackSize <= amount) {
                 itemstack = slotStack;
                 contents[slot] = null;
                 this.markDirty();
                 return itemstack;
-            }
-            else
-            {
+            } else {
                 itemstack = slotStack.splitStack(amount);
 
-                if (slotStack.stackSize == 0)
-                {
+                if (slotStack.stackSize == 0) {
                     contents[slot] = null;
                 }
 
                 this.markDirty();
                 return itemstack;
             }
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
@@ -107,8 +132,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
         if (slotStack != null) {
             contents[slot] = null;
             return slotStack;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -121,25 +145,22 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
             stack.stackSize = this.getInventoryStackLimit();
         }
 
-        this.markDirty();
+        markDirty();
     }
 
     @Override
     public String getInventoryName() {
-        if (containerNode == null) {
-            containerNode = ((PackContainerBlock) worldObj.getBlock(xCoord, yCoord, zCoord)).getNode(ContainerNode.class);
-        }
-        return containerNode.getTitle();
+        return title;
     }
 
     @Override
     public boolean hasCustomInventoryName() {
-        return containerNode.useDisplayNameAsTitle();
+        return title != null;
     }
 
     @Override
     public int getInventoryStackLimit() {
-        return containerNode.getMaxStackSize();
+        return maxStackSize;
     }
 
     @Override

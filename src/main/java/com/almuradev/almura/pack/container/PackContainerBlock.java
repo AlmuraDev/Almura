@@ -419,12 +419,12 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     }
 
     @Override
-    public String toString() {
-        return "PackContainerBlock {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
+    public TileEntity createNewTileEntity(World world, int metadata) {
+        return new PackContainerTileEntity(containerNode);
     }
 
     @Override
-    public TileEntity createNewTileEntity(World world, int metadata) {
-        return new PackContainerTileEntity();
+    public String toString() {
+        return "PackContainerBlock {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
     }
 }

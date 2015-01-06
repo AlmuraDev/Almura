@@ -92,7 +92,7 @@ recipes:
         ingredients:
             - ITEM_NAME
 container:
-    size: 9
+    inventory-size: 9
     title: "Storage"
     use-display-name-as-title: false
     max-stack-size: 64
