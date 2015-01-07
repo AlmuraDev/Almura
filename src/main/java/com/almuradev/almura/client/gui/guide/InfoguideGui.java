@@ -26,7 +26,7 @@ public class InfoguideGui extends AlmuraGui{
 	private UIBackgroundContainer window, uiTitleBar;
 	private UIButton modsButton, xButton, closeButton;
 	private UILabel titleLabel;
-	private UITextField aboutUsLabel;
+	private UITextField textArea;
 	private UISelect dropDownMenu;
 	
 	public InfoguideGui(AlmuraGui parent) {
@@ -40,7 +40,7 @@ public class InfoguideGui extends AlmuraGui{
 	protected void setup() {
 		// Create the window container
 		window = new UIBackgroundContainer(this);
-		window.setSize(300, 225);
+		window.setSize(400, 225);
 		window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 		window.setColor(Integer.MIN_VALUE);
 		window.setBackgroundAlpha(125);
@@ -62,15 +62,48 @@ public class InfoguideGui extends AlmuraGui{
 		xButton.setName("button.close");
 		xButton.register(this);
 		
-	    dropDownMenu = new UISelect(this, 200, UISelect.Option.fromList(Arrays.asList("Option 1", "Option 2",
-				"Very ultra longer option 3", "Shorty", "Moar options", "Even more", "Even Steven", "And a potato too")));
-	    dropDownMenu.setPosition(5, 10, Anchor.TOP | Anchor.LEFT);
-	    dropDownMenu.setMaxExpandedWidth(120);
+	    dropDownMenu = new UISelect(this, 200, UISelect.Option.fromList(Arrays.asList("Almura - Banking System",			
+		"Almura - Chat System",	
+		//"Almura - Control Panel",
+		"Almura - Help and Support",
+		"Almura - Map Server",
+		//"Almura - Member Levels",
+		"Almura - News and Events",
+		"Almura - Shop Locations",
+		"Almura - Upcoming Changes",
+		//"Almura - Known Bugs",	
+		"Almura - Voice Server",	
+		"Almura - Welcome",	
+		//"FAQ - Aqualock",	
+		"FAQ - Backpack",	
+		"FAQ - Becoming a Member",	
+		"FAQ - Cheating or Hacking",
+		//"FAQ - Client Lag",	
+		"FAQ - Farming",	
+		//"FAQ - Finding a Recipe",
+		"FAQ - Griefing Rules",	
+		"FAQ - Jobs and Money",	
+		"FAQ - Large Animal Farms",	
+		//"FAQ - New PLayers",	
+		//"FAQ - Our Server",	
+		//"FAQ - Player Accessories",
+		//"FAQ - Read Me",
+		"FAQ - Residence",	
+		"FAQ - Rules",	
+		"FAQ - Shops",	
+		//"FAQ - Sign Editor",	
+		"FAQ - Stargates",	
+		"FAQ - Why can't I cut down trees",
+		"FAQ - Worlds and Maps")));
+	    dropDownMenu.setPosition(5, 20, Anchor.TOP | Anchor.LEFT);
+	    dropDownMenu.setMaxExpandedWidth(200);
+	    dropDownMenu.select(0);
+	    dropDownMenu.register(this);
 		//select.maxDisplayedOptions(5);
 	    //dropDownMenu.select(0);
 	    
 		// Create About us multi-line label
-		aboutUsLabel = new UITextField(this, "", true);
+		textArea = new UITextField(this, "", true);
 
 		String
 		fieldText =
@@ -83,11 +116,11 @@ public class InfoguideGui extends AlmuraGui{
 				+ " gui enabled Minecraft experiences ever conceived. \r \r" + ChatColor.LIGHT_PURPLE + "More info to follow..." + ChatColor.RESET
 				+ "";
 
-		aboutUsLabel.setSize(290, 100);
-		aboutUsLabel.setPosition(0, 40, Anchor.CENTER);
-		aboutUsLabel.setText(fieldText);
-		aboutUsLabel.setTextColor(Color.WHITE.getRGB());
-		aboutUsLabel.setName("mline.aboutus");
+		textArea.setSize(390, 160);
+		textArea.setPosition(0, 40, Anchor.CENTER);
+		textArea.setText(fieldText);
+		textArea.setTextColor(Color.WHITE.getRGB());
+		textArea.setName("mline.aboutus");
 
 		// Create the mods button
 		modsButton = new UIButton(this, "Mods");
@@ -103,7 +136,7 @@ public class InfoguideGui extends AlmuraGui{
 		closeButton.setName("button.close");
 		closeButton.register(this);
 
-		window.add(titleLabel, uiTitleBar, xButton, aboutUsLabel, dropDownMenu, modsButton, closeButton);
+		window.add(titleLabel, uiTitleBar, xButton, textArea, modsButton, closeButton,dropDownMenu);
 
 		// Allow the window to move
 		new UIMoveHandle(this, window);
@@ -125,7 +158,145 @@ public class InfoguideGui extends AlmuraGui{
 	
 	@Subscribe
 	public void onSelectionChanged(UISelect.SelectEvent event) {
-		System.out.println("Old: " + event.getOldValue());
-		System.out.println("New: " + event.getNewValue());		
+		System.out.println("Old: " + event.getOldValue().getLabel());
+		System.out.println("New: " + event.getNewValue().getLabel());
+		changeGuide(event.getNewValue().getLabel());
+	}
+	
+	public void colorizeGuide(String text) {
+		text = text.replaceAll("#0", ChatColor.COLOR_CHAR + "0");
+		text = text.replaceAll("#1", ChatColor.COLOR_CHAR + "1");
+		text = text.replaceAll("#2", ChatColor.COLOR_CHAR + "2");
+		text = text.replaceAll("#3", ChatColor.COLOR_CHAR + "3");
+		text = text.replaceAll("#4", ChatColor.COLOR_CHAR + "4");
+		text = text.replaceAll("#5", ChatColor.COLOR_CHAR + "5");
+		text = text.replaceAll("#6", ChatColor.COLOR_CHAR + "6");
+		text = text.replaceAll("#7", ChatColor.COLOR_CHAR + "7");
+		text = text.replaceAll("#8", ChatColor.COLOR_CHAR + "8");
+		text = text.replaceAll("#9", ChatColor.COLOR_CHAR + "9");
+		text = text.replaceAll("#a", ChatColor.COLOR_CHAR + "a");
+		text = text.replaceAll("#b", ChatColor.COLOR_CHAR + "b");
+		text = text.replaceAll("#c", ChatColor.COLOR_CHAR + "c");
+		text = text.replaceAll("#d", ChatColor.COLOR_CHAR + "d");
+		text = text.replaceAll("#e", ChatColor.COLOR_CHAR + "e");
+		text = text.replaceAll("#f", ChatColor.COLOR_CHAR + "f");
+		textArea.setText(text);
+	}
+	
+	public void changeGuide(String guide) {
+		String text = "";
+		switch (guide) {
+		case "Almura - Banking System":
+			text =  "#4Hello.";
+			colorizeGuide(text);
+			break;
+			
+		case "Almura - Chat System":
+			text =  "The following #cChat Channels#f are available to users while in Almura.\r\r"
+				    + "#aChat#f = Default Chat Channel for Everyone.\r#aTrade#f = Channel specifically "
+				    + "for Buying/Selling/Trading Items. \r#aMember#f = Channel available for#9 Members#f "
+				    + "Only.\r#aVeteran#f = Channel available for #6Veterans#f Only.\r#aModerator#f = Channel available "
+				    + "for #1Moderators#f Only. \r#aHoliday#f = Channel that makes people talk like "
+				    + "#6Pirates#f.\r#aParty#f = Available when you are in a group.  \rType #c/Party#f "
+				    + "for all the details.\r\rTo Change Channels, type #c/CHANNELNAME#f then press "
+				    + "enter.";
+			
+			colorizeGuide(text);
+			break;
+			
+		case "Almura - Control Panel":
+			break;
+			
+		case "Almura - Help and Support":
+			break;
+			
+		case "Almura - Map Server":
+			break;
+			
+		case "Almura - Member Levels":
+			break;
+			
+		case "Almura - News and Events":
+			break;
+			
+		case "Almura - Shop Locations":
+			break;
+			
+		case "Almura - Upcoming Changes":
+			break;
+			
+		case "Almura - Known Bugs":
+			break;
+			
+		case "Almura - Voice Server":
+			break;
+			
+		case "Almura - Welcome":
+			break;
+			
+		case "FAQ - Aqualock":
+			break;
+			
+		case "FAQ - Backpack":
+			break;
+			
+		case "FAQ - Becoming a Member":
+			break;
+			
+		case "FAQ - Cheating or Hacking":
+			break;
+		
+		case "FAQ - Client Lag":
+			break;
+			
+		case "FAQ - Farming":
+			break;
+			
+		case "FAQ - Finding a Recipe":
+			break;
+		
+		case "FAQ - Griefing Rules":
+			break;
+			
+		case "FAQ - Jobs and Money":
+			break;
+			
+		case "FAQ - Large Animal Farms":
+			break;
+			
+		case "FAQ - New PLayers":
+			break;
+			
+		case "FAQ - Our Server":
+			break;
+			
+		case "FAQ - Player Accessories":
+			break;
+			
+		case "FAQ - Read Me":
+			break;
+		
+		case "FAQ - Residence":
+			break;
+			
+		case "FAQ - Rules":
+			break;
+			
+		case "FAQ - Shops":
+			break;
+			
+		case "FAQ - Sign Editor":
+			break;
+			
+		case "FAQ - Stargates":
+			break;
+			
+		case "FAQ - Why can't I cut down trees":
+			break;
+			
+		case "FAQ - Worlds and Maps":
+			break;
+		
+		}
 	}
 }

@@ -96,7 +96,7 @@ public class IngameHUD extends AlmuraGui {
         playerMode.setSize(7, 7);
         
         // Player Display Name
-        playerCurrency = new UILabel(this, "$999,999,999.99");
+        playerCurrency = new UILabel(this, " ");
         playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 4, 2, Anchor.LEFT | Anchor.TOP);
         playerCurrency.setColor(Color.ORANGE.getRGB());
         playerCurrency.setSize(7, 7);
