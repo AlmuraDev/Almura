@@ -6,7 +6,7 @@ shape: food.shape
 coordinates:
     - 0 0 16 16
     - 16 16 32 32
-creative-tab: food
+creative-tab-name: food
 show-in-creative-tab: true
 consumption:    
     food-change: 1

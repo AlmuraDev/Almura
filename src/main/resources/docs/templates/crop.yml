@@ -7,7 +7,7 @@ seed:
     title: Crop Seed
     coordinates:
         - 256 384 32 32
-    creative-tab: crops
+    creative-tab-name: crops
     show-in-creative-tab: true
     grass:
         enabled: true

@@ -13,7 +13,7 @@ coords:
 render:
     normal-cube: false
     opaque: false
-creative-tab: blocks
+creative-tab-name: blocks
 show-in-creative-tab: true
 hardness: 0.5
 resistance: 1
