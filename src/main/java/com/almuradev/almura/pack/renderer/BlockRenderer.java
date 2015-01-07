@@ -8,14 +8,19 @@ package com.almuradev.almura.pack.renderer;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
+import com.almuradev.almura.pack.container.PackContainerTileEntity;
 import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackMirrorFace;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.node.ContainerNode;
 import com.almuradev.almura.pack.node.RotationNode;
+import com.almuradev.almura.pack.node.container.StateProperty;
 import com.almuradev.almura.pack.node.property.RotationProperty;
+import com.google.common.base.Optional;
 import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.RenderType;
@@ -90,14 +95,33 @@ public class BlockRenderer extends MalisisRenderer {
             return;
         }
 
+        Optional<StateProperty> property = Optional.absent();
+        if (world != null) {
+            final ContainerNode containerNode = ((INodeContainer) block).getNode(ContainerNode.class);
+            if (containerNode != null) {
+                final PackContainerTileEntity te = (PackContainerTileEntity) world.getTileEntity(x, y, z);
+                if (te != null) {
+                    if (!te.hasEmptySlots()) {
+                        property = containerNode.getByIdentifier("full");
+                    }
+                }
+            }
+        }
+
+        final ClippedIcon[] clippedIcons;
+        if (property.isPresent()) {
+            clippedIcons = property.get().getClipIcons();
+        } else {
+            clippedIcons = ((IClipContainer) block).getClipIcons();
+        }
+
         for (Face f : shape.getFaces()) {
             final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
             final PackFace face = (PackFace) f;
-            final ClippedIcon[] clippedIcons = ((IBlockClipContainer) block).getClipIcons(world, x, y, z, blockMetadata);
             IIcon icon;
 
             if (PackUtil.isEmptyClip(clippedIcons)) {
-                icon = super.getIcon(params);
+                icon = property.isPresent() ? property.get().getStateIcon() : super.getIcon(params);
             } else if (face.getTextureId() >= clippedIcons.length) {
                 icon = clippedIcons[0];
             } else {

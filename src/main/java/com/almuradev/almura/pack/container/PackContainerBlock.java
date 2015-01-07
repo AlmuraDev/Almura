@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.pack.container;
 
+import com.almuradev.almura.Almura;
+import com.almuradev.almura.Tabs;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.INodeContainer;
@@ -18,13 +20,16 @@ import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ContainerNode;
 import com.almuradev.almura.pack.node.INode;
+import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.ToolsNode;
+import com.almuradev.almura.pack.node.container.StateProperty;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
@@ -32,14 +37,13 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.util.EntityUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
@@ -47,7 +51,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
@@ -58,40 +61,53 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackContainerBlock extends Block implements IPackObject, IBlockClipContainer, IBlockShapeContainer, INodeContainer {
+public class PackContainerBlock extends BlockContainer implements IPackObject, IBlockClipContainer, IBlockShapeContainer, INodeContainer {
 
     public static int renderId;
     private final Pack pack;
     private final String identifier;
-    private final Map<Integer, List<Integer>> textureCoordinatesByFace;
+    private final Map<Integer, List<Integer>> textureCoordinates;
     private final String shapeName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String textureName;
-    private ClippedIcon[] clippedIcons;
-    private PackShape shape;
     private final RenderNode renderNode;
     private final RotationNode rotationNode;
     private final ContainerNode containerNode;
+    private ClippedIcon[] clippedIcons;
+    private PackShape shape;
     private BreakNode breakNode;
     private CollisionNode collisionNode;
 
-    public PackContainerBlock(Pack pack, String identifier, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName,
-                                 String textureName, ClippedIcon[] clippedIcons, RenderNode renderNode, RotationNode rotationNode, ContainerNode containerNode) {
+    public PackContainerBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
+                              float hardness,
+                              float resistance, boolean showInCreativeTab, String creativeTabName, RotationNode rotationNode, LightNode lightNode,
+                              RenderNode renderNode, ContainerNode containerNode) {
         super(Material.ground);
         this.pack = pack;
         this.identifier = identifier;
-        this.textureCoordinatesByFace = textureCoordinatesByFace;
+        this.textureCoordinates = textureCoordinates;
         this.shapeName = shapeName;
         this.textureName = textureName;
-        this.clippedIcons = clippedIcons;
         this.renderNode = renderNode;
         this.rotationNode = rotationNode;
         this.containerNode = containerNode;
+        addNode(rotationNode);
+        addNode(lightNode);
+        addNode(renderNode);
+        addNode(containerNode);
+        setBlockName(pack.getName() + "\\" + identifier);
+        setBlockTextureName(Almura.MOD_ID + ":images/" + textureName);
+        setHardness(hardness);
+        setResistance(resistance);
+        setLightLevel(lightNode.getEmission());
+        setLightOpacity(lightNode.getOpacity());
+        if (showInCreativeTab) {
+            setCreativeTab(Tabs.getTabByName(creativeTabName));
+        }
     }
 
     @Override
@@ -104,16 +120,15 @@ public class PackContainerBlock extends Block implements IPackObject, IBlockClip
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinates);
+        for (StateProperty prop : containerNode.getValue()) {
+            prop.registerIcons(register);
+        }
     }
 
     @Override
-    public TileEntity createTileEntity(World world, int metadata) {
-        return new PackContainerTileEntity(containerNode);
-    }
-
-    @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_,
+                                    float p_149727_9_) {
         if (!world.isRemote) {
             final PackContainerTileEntity te = (PackContainerTileEntity) world.getTileEntity(x, y, z);
             if (te != null) {
@@ -158,8 +173,6 @@ public class PackContainerBlock extends Block implements IPackObject, IBlockClip
     //TODO Check this come 1.8
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int metadata) {
-        super.breakBlock(world, x, y, z, block, metadata);
-
         final PackContainerTileEntity te = (PackContainerTileEntity) world.getTileEntity(x, y, z);
         if (te != null) {
             for (int i1 = 0; i1 < te.getSizeInventory(); ++i1) {
@@ -178,19 +191,23 @@ public class PackContainerBlock extends Block implements IPackObject, IBlockClip
                         }
 
                         itemstack.stackSize -= j1;
-                        item = new EntityItem(world, (double)((float)x + f), (double)((float)y + f1), (double)((float)z + f2), new ItemStack(itemstack.getItem(), j1, itemstack.getItemDamage()));
+                        item =
+                                new EntityItem(world, (double) ((float) x + f), (double) ((float) y + f1), (double) ((float) z + f2),
+                                               new ItemStack(itemstack.getItem(), j1, itemstack.getItemDamage()));
                         float f3 = 0.05F;
-                        item.motionX = (double)((float)RangeProperty.RANDOM.nextGaussian() * f3);
-                        item.motionY = (double)((float)RangeProperty.RANDOM.nextGaussian() * f3 + 0.2F);
-                        item.motionZ = (double)((float)RangeProperty.RANDOM.nextGaussian() * f3);
+                        item.motionX = (double) ((float) RangeProperty.RANDOM.nextGaussian() * f3);
+                        item.motionY = (double) ((float) RangeProperty.RANDOM.nextGaussian() * f3 + 0.2F);
+                        item.motionZ = (double) ((float) RangeProperty.RANDOM.nextGaussian() * f3);
 
                         if (itemstack.hasTagCompound()) {
-                            item.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
+                            item.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
                         }
                     }
                 }
             }
         }
+
+        super.breakBlock(world, x, y, z, block, metadata);
     }
 
     //TODO Check this come 1.8
@@ -300,8 +317,7 @@ public class PackContainerBlock extends Block implements IPackObject, IBlockClip
     public int isProvidingWeakPower(IBlockAccess access, int x, int y, int z, int metadata) {
         if (!this.canProvidePower()) {
             return 0;
-        }
-        else {
+        } else {
             return MathHelper.clamp_int(0, 0, 15);
         }
     }
@@ -328,6 +344,15 @@ public class PackContainerBlock extends Block implements IPackObject, IBlockClip
 
     @Override
     public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
+        if (access != null) {
+            final PackContainerTileEntity te = (PackContainerTileEntity) access.getTileEntity(x, y, z);
+            if (te != null && !te.hasEmptySlots()) {
+                final Optional<StateProperty> state = containerNode.getByIdentifier("full");
+                if (state.isPresent()) {
+                    return state.get().getShape();
+                }
+            }
+        }
         return shape;
     }
 
@@ -400,6 +425,11 @@ public class PackContainerBlock extends Block implements IPackObject, IBlockClip
     @Override
     public String getShapeName() {
         return shapeName;
+    }
+
+    @Override
+    public TileEntity createNewTileEntity(World world, int metadata) {
+        return new PackContainerTileEntity(containerNode);
     }
 
     @Override

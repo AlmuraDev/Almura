@@ -5,23 +5,17 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import java.awt.Color;
-
-import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
-import com.flowpowered.cerealization.config.ConfigurationException;
 import com.google.common.eventbus.Subscribe;
-
-import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.client.gui.component.decoration.UIMultiLineLabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.client.gui.component.interaction.UICheckBox;
+
+import java.awt.*;
 
 public class AlmuraConfirmMenu extends AlmuraBackgroundGui {
 
@@ -61,24 +55,24 @@ public class AlmuraConfirmMenu extends AlmuraBackgroundGui {
         uiTitleBar.setSize(300, 1);
         uiTitleBar.setPosition(0, 17, Anchor.CENTER | Anchor.TOP);
         uiTitleBar.setColor(Color.gray.getRGB());
-        
+
         xButton = new UIButton(this, ChatColor.BOLD + "X");
         xButton.setSize(5, 1);
         xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
         xButton.setName("button.close");
         xButton.register(this);
         //xButton.setColor(Color.white.getRGB());
-        
+
         // Create the message label
-        messageLabel = new UILabel(this, ChatColor.AQUA + "MESSAGE");        
+        messageLabel = new UILabel(this, ChatColor.AQUA + "MESSAGE");
         messageLabel.setFontScale(1.0F);
         messageLabel.setColor(Color.white.getRGB());
-        messageLabel.setPosition(0,0, Anchor.CENTER | Anchor.MIDDLE);       
-        
+        messageLabel.setPosition(0, 0, Anchor.CENTER | Anchor.MIDDLE);
+
         // Create the close button
         closeButton = new UIButton(this, "Close");
         closeButton.setSize(50, 16);
-        closeButton.setPosition( -5, -5, Anchor.RIGHT | Anchor.BOTTOM);
+        closeButton.setPosition(-5, -5, Anchor.RIGHT | Anchor.BOTTOM);
         closeButton.setName("button.close");
         closeButton.register(this);
 
@@ -95,10 +89,10 @@ public class AlmuraConfirmMenu extends AlmuraBackgroundGui {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.close":
                 displayParent();
-                break;            
+                break;
         }
     }
-    
+
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (titleLabel.getText() != title) {

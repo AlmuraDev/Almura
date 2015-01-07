@@ -5,15 +5,10 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import java.awt.Color;
-
-import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
-import com.flowpowered.cerealization.config.ConfigurationException;
 import com.google.common.eventbus.Subscribe;
-
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -21,8 +16,8 @@ import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UIMultiLineLabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.client.gui.component.interaction.UICheckBox;
-import net.malisis.core.client.gui.component.interaction.UITextField;
+
+import java.awt.*;
 
 public class AlmuraAboutMenu extends AlmuraBackgroundGui {
 
@@ -59,38 +54,44 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
         uiTitleBar.setSize(300, 1);
         uiTitleBar.setPosition(0, 17, Anchor.CENTER | Anchor.TOP);
         uiTitleBar.setColor(Color.gray.getRGB());
-        
+
         xButton = new UIButton(this, ChatColor.BOLD + "X");
         xButton.setSize(5, 1);
         xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
         xButton.setName("button.close");
         xButton.register(this);
-        
+
         // Create About us multi-line label
         aboutUsLabel = new UIMultiLineLabel(this, "");
-       
-        String fieldText = "Almura 2.0 began June 1st, 2014.  Based on the idea that we could finally get away from the broken and abandoned Spoutcraft client a brilliant developer came to Almura and said,"
-                           + " \"Why don't you get rid of that out of date client and move into the present?\" This brilliant developer's name is " + ChatColor.AQUA + "Zidane" + ChatColor.RESET + ". Along with him and another outstanding developer " + ChatColor.AQUA + "Grinch" + ChatColor.RESET + ","
-                           + " Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + ChatColor.GOLD + "Dockter's" + ChatColor.RESET + " content and gui abilities, built, in our opinion, one of the best content loading /"
-                           + " gui enabled Minecraft experiences ever conceived. \r \r" + ChatColor.LIGHT_PURPLE + "More info to follow..." + ChatColor.RESET + "";
-        
+
+        String
+                fieldText =
+                "Almura 2.0 began June 1st, 2014.  Based on the idea that we could finally get away from the broken and abandoned Spoutcraft client a brilliant developer came to Almura and said,"
+                + " \"Why don't you get rid of that out of date client and move into the present?\" This brilliant developer's name is "
+                + ChatColor.AQUA + "Zidane" + ChatColor.RESET + ". Along with him and another outstanding developer " + ChatColor.AQUA + "Grinch"
+                + ChatColor.RESET + ","
+                + " Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + ChatColor.GOLD + "Dockter's"
+                + ChatColor.RESET + " content and gui abilities, built, in our opinion, one of the best content loading /"
+                + " gui enabled Minecraft experiences ever conceived. \r \r" + ChatColor.LIGHT_PURPLE + "More info to follow..." + ChatColor.RESET
+                + "";
+
         aboutUsLabel.setText(fieldText);
         aboutUsLabel.setSize(290, 100);
         aboutUsLabel.setColor(Color.WHITE.getRGB());
         aboutUsLabel.setPosition(0, 25, Anchor.CENTER);
         aboutUsLabel.setName("mline.aboutus");
-        
+
         // Create the mods button
         modsButton = new UIButton(this, "Mods");
         modsButton.setSize(50, 16);
-        modsButton.setPosition( 5, -5, Anchor.LEFT | Anchor.BOTTOM);
+        modsButton.setPosition(5, -5, Anchor.LEFT | Anchor.BOTTOM);
         modsButton.setName("button.mods");
-        modsButton.register(this);        
-        
+        modsButton.register(this);
+
         // Create the close button
         closeButton = new UIButton(this, "Close");
         closeButton.setSize(50, 16);
-        closeButton.setPosition( -5, -5, Anchor.RIGHT | Anchor.BOTTOM);
+        closeButton.setPosition(-5, -5, Anchor.RIGHT | Anchor.BOTTOM);
         closeButton.setName("button.close");
         closeButton.register(this);
 
@@ -105,12 +106,12 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
-            case "button.mods":           
+            case "button.mods":
                 mc.displayGuiScreen(new GuiModList(this));
                 break;
             case "button.close":
                 displayParent();
-                break;            
+                break;
         }
     }
 }

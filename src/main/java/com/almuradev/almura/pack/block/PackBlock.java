@@ -62,7 +62,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     public static int renderId;
     private final Pack pack;
     private final String identifier;
-    private final Map<Integer, List<Integer>> textureCoordinatesByFace;
+    private final Map<Integer, List<Integer>> textureCoordinates;
     private final String shapeName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String textureName;
@@ -80,12 +80,14 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         super(Material.ground);
         this.pack = pack;
         this.identifier = identifier;
-        this.textureCoordinatesByFace = textureCoordinates;
+        this.textureCoordinates = textureCoordinates;
         this.textureName = textureName;
         this.shapeName = shapeName;
         this.renderNode = addNode(renderNode);
         this.rotationNode = addNode(rotationNode);
+        addNode(rotationNode);
         addNode(lightNode);
+        addNode(renderNode);
         setBlockName(pack.getName() + "\\" + identifier);
         setBlockTextureName(Almura.MOD_ID + ":images/" + textureName);
         setHardness(hardness);
@@ -107,7 +109,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
-        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinatesByFace);
+        clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinates);
     }
 
     @Override

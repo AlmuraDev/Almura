@@ -5,17 +5,12 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import java.awt.Color;
-import java.io.IOException;
-
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.google.common.eventbus.Subscribe;
-
-import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -26,6 +21,9 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiSelectWorld;
 import net.minecraft.util.ResourceLocation;
+
+import java.awt.*;
+import java.io.IOException;
 
 public class AlmuraMainMenu extends AlmuraBackgroundGui {
 
@@ -65,17 +63,17 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         uiTitleBar.setSize(300, 1);
         uiTitleBar.setPosition(0, 17, Anchor.CENTER | Anchor.TOP);
         uiTitleBar.setColor(Color.gray.getRGB());
-        
+
         final UIButton xButton = new UIButton(this, ChatColor.BOLD + "X");
         xButton.setSize(5, 1);
         xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
         xButton.setName("button.quit");
         xButton.register(this);
-        
+
         // Create the logo
         final UIImage logoImage = new UIImage(this, new GuiTexture(ALMURA_LOGO_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
-        logoImage.setPosition(0,15);
+        logoImage.setPosition(0, 15);
         logoImage.setSize(65, 95);
 
         final int padding = 4;

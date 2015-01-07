@@ -7,8 +7,6 @@ package com.almuradev.almura.client;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
-import com.almuradev.almura.Configuration;
-import com.almuradev.almura.client.gui.menu.AlmuraConfigurationMenu;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.menu.AlmuraMainMenu;
@@ -16,6 +14,7 @@ import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.block.PackBlock;
+import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
@@ -49,6 +48,7 @@ public class ClientProxy extends CommonProxy {
         super.onPreInitialization(event);
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
         PACK_BLOCK_RENDERER.registerFor(PackCrops.class);
+        PACK_BLOCK_RENDERER.registerFor(PackContainerBlock.class);
         ClientRegistry.registerKeyBinding(BINDING_CONFIG_GUI);
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);

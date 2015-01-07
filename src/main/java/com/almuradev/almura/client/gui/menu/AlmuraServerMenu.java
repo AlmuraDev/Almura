@@ -5,14 +5,11 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import java.awt.Color;
-
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.google.common.eventbus.Subscribe;
-
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -23,6 +20,8 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.multiplayer.ServerData;
+
+import java.awt.*;
 
 public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
@@ -60,14 +59,13 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         uiTitleBar.setSize(300, 1);
         uiTitleBar.setPosition(0, 17, Anchor.CENTER | Anchor.TOP);
         uiTitleBar.setColor(Color.gray.getRGB());
-        
+
         final UIButton xButton = new UIButton(this, ChatColor.BOLD + "X");
         xButton.setSize(5, 1);
         xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
         xButton.setName("button.back");
         xButton.register(this);
 
-        
         // Create the logo
         logoImage = new UIImage(this, new GuiTexture(AlmuraMainMenu.ALMURA_LOGO_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
@@ -117,7 +115,8 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         backButton.setName("button.back");
         backButton.register(this);
 
-        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, almuraLiveButton, almuraDevButton, obsidianboxLiveButton, anotherButton, backButton);
+        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, almuraLiveButton, almuraDevButton, obsidianboxLiveButton, anotherButton,
+                   backButton);
 
         // Allow the window to move
         new UIMoveHandle(this, window);

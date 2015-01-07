@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.pack.container;
 
 import com.almuradev.almura.pack.node.ContainerNode;
@@ -9,6 +14,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.world.World;
 
 public class AlmuraContainerHandler implements IGuiHandler {
+
     public static final int PACK_CONTAINER_ID = 0;
 
     @Override

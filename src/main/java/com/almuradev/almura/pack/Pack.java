@@ -8,8 +8,11 @@ package com.almuradev.almura.pack;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.node.ContainerNode;
+import com.almuradev.almura.pack.node.container.StateProperty;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
@@ -127,10 +130,14 @@ public class Pack {
                         final Block crop = PackCreator.createCropFromReader(pack, name, reader);
                         pack.blocks.add(crop);
                         break;
+                    case "CONTAINER":
+                        final Block container = PackCreator.createContainerBlock(pack, name, reader);
+                        pack.blocks.add(container);
+                        break;
                     default:
                         Almura.LOGGER
                                 .warn("Unknown type [" + type + "] in file [" + path.getFileName()
-                                      + "]. Valid types are [ITEM, FOOD, BLOCK, CROP].");
+                                      + "]. Valid types are [ITEM, FOOD, BLOCK, CROP, CONTAINER].");
                         continue;
                 }
                 entry.close();
@@ -187,14 +194,34 @@ public class Pack {
                         break;
                     }
                 }
+
                 if (shape != null) {
                     ((IShapeContainer) block).setShape(shape);
                 } else if (((IShapeContainer) block).getShapeName() != null && ((IShapeContainer) block).getShapeName().isEmpty() && (
                         Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
                     Almura.LOGGER
-                            .warn("Shape [" + ((IShapeContainer) block).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
+                            .warn("Shape [" + ((IShapeContainer) block).getShapeName() + "] for [" + name + "] for pack [" + getName()
+                                  + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
                                     .toString() + "]. Will render as a basic cube.");
                 }
+
+                if (block instanceof PackContainerBlock) {
+                    for (StateProperty prop : ((PackContainerBlock) block).getNode(ContainerNode.class).getValue()) {
+                        for (PackShape s : SHAPES) {
+                            if (s.getName().equalsIgnoreCase(prop.getShapeName())) {
+                                prop.setShape(s);
+                            }
+                        }
+
+                        if (prop.getShapeName() != null && prop.getShapeName().isEmpty() && prop.getShape() == null && (Configuration.DEBUG_MODE
+                                                                                                                        || Configuration.DEBUG_PACKS_MODE)) {
+                            Almura.LOGGER.warn("Shape [" + prop.getShapeName() + "] for state [full] for [" + name + "] for pack [" + getName()
+                                               + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH.toString()
+                                               + "]. Will render as a basic cube.");
+                        }
+                    }
+                }
+
             }
         }
         for (Item item : items) {

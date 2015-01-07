@@ -10,6 +10,7 @@ import com.almuradev.almura.Configuration;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
+import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
@@ -25,6 +26,7 @@ import com.almuradev.almura.pack.node.BiomeNode;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ConsumptionNode;
+import com.almuradev.almura.pack.node.ContainerNode;
 import com.almuradev.almura.pack.node.DropsNode;
 import com.almuradev.almura.pack.node.GrassNode;
 import com.almuradev.almura.pack.node.GrowthNode;
@@ -34,6 +36,7 @@ import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.ToolsNode;
+import com.almuradev.almura.pack.node.container.StateProperty;
 import com.almuradev.almura.pack.node.property.BiomeProperty;
 import com.almuradev.almura.pack.node.property.BonusProperty;
 import com.almuradev.almura.pack.node.property.CollisionProperty;
@@ -382,6 +385,84 @@ public class PackCreator {
         final LightNode lightNode = createLightNode(pack, crop.getIdentifier() + "\\stage\\" + id, node.getNode(PackKeys.NODE_LIGHT.getKey()));
 
         return new Stage(crop, id, textureCoordinates, shapeName, growthNode, lightNode);
+    }
+
+    public static PackContainerBlock createContainerBlock(Pack pack, String name, YamlConfiguration reader) {
+        final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
+        final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+        final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        Map<Integer, List<Integer>> textureCoordinates;
+        try {
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
+                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+        } catch (NumberFormatException nfe) {
+            Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            textureCoordinates = Maps.newHashMap();
+        }
+        final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
+                PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
+        final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
+
+        final float hardness = reader.getChild(PackKeys.HARDNESS.getKey()).getFloat(PackKeys.HARDNESS.getDefaultValue());
+        final float resistance = reader.getChild(PackKeys.RESISTANCE.getKey()).getFloat(PackKeys.RESISTANCE.getDefaultValue());
+
+        final RotationNode rotationNode = createRotationNode(pack, name, reader.getNode(PackKeys.NODE_ROTATE.getKey()));
+        final LightNode lightNode = createLightNode(pack, name, reader.getNode(PackKeys.NODE_LIGHT.getKey()));
+        final RenderNode renderNode = createRenderNode(pack, name, reader.getNode(PackKeys.NODE_RENDER.getKey()));
+        final ContainerNode containerNode = createContainerNode(pack, name, reader.getNode(PackKeys.NODE_CONTAINER.getKey()));
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
+
+        return new PackContainerBlock(pack, name, textureName, textureCoordinates, shapeName, hardness, resistance, showInCreativeTab,
+                                      creativeTabName,
+                                      rotationNode, lightNode, renderNode, containerNode);
+    }
+
+    public static ContainerNode createContainerNode(Pack pack, String name, ConfigurationNode node) {
+        int size = node.getChild(PackKeys.INVENTORY_SIZE.getKey()).getInt(PackKeys.INVENTORY_SIZE.getDefaultValue());
+
+        boolean invalid = true;
+        if (size < 9) {
+            size = 9;
+        } else if (size > 54) {
+            size = 54;
+        } else if (size % 9 != 0) {
+            size = 9;
+        } else {
+            invalid = false;
+        }
+
+        if (invalid) {
+            Almura.LOGGER.warn("Container size [" + size + "] in [" + name + "] in pack [" + pack.getName()
+                               + "] is invalid. Must be a multiple of 9 that doesn't exceed 54. As a precaution, This has been set to 9.");
+        }
+
+        final String title = node.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
+        final int maxStackSize = node.getChild(PackKeys.MAX_STACK_SIZE.getKey()).getInt(PackKeys.MAX_STACK_SIZE.getDefaultValue());
+        final Set<StateProperty> states = Sets.newHashSet();
+        final ConfigurationNode statesConfigurationNode = node.getNode(PackKeys.STATE.getKey());
+        for (String rawState : statesConfigurationNode.getKeys(false)) {
+            if (rawState.equalsIgnoreCase("full")) {
+                final ConfigurationNode stateConfigurationNode = statesConfigurationNode.getNode(rawState);
+                final boolean enabled = stateConfigurationNode.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+                final String
+                        textureName =
+                        stateConfigurationNode.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+                final String
+                        shapeName =
+                        stateConfigurationNode.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+                Map<Integer, List<Integer>> textureCoordinates;
+                try {
+                    textureCoordinates = PackUtil.parseCoordinatesFrom(stateConfigurationNode.getChild(
+                            PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+                } catch (NumberFormatException nfe) {
+                    Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+                    textureCoordinates = Maps.newHashMap();
+                }
+
+                states.add(new StateProperty(pack, enabled, rawState, textureName, textureCoordinates, shapeName));
+            }
+        }
+        return new ContainerNode(title, size, maxStackSize, states);
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {
