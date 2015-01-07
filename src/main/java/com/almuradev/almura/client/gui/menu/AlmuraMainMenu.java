@@ -10,7 +10,10 @@ import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import com.almuradev.almura.client.gui.guide.ExampleGUI;
+import com.almuradev.almura.client.gui.guide.InfoguideGui;
 import com.google.common.eventbus.Subscribe;
+
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -18,6 +21,7 @@ import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.inventory.MalisisInventoryContainer;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiSelectWorld;
 import net.minecraft.util.ResourceLocation;
@@ -160,7 +164,8 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
                 mc.displayGuiScreen(new AlmuraConfigurationMenu(this));
                 break;
             case "button.about":
-                mc.displayGuiScreen(new AlmuraAboutMenu(this));
+                //mc.displayGuiScreen(new AlmuraAboutMenu(this));
+            	mc.displayGuiScreen(new InfoguideGui(this));
                 break;
             case "button.quit":
                 mc.shutdown();

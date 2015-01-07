@@ -29,10 +29,12 @@ import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
 import com.almuradev.almura.server.network.play.S01SpawnParticle;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
+import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInfo;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -64,6 +66,7 @@ public class CommonProxy {
         Almura.NETWORK_FORGE.registerMessage(S01SpawnParticle.class, S01SpawnParticle.class, 1, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B00PlayerDisplayName.class, B00PlayerDisplayName.class, 0, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
+        Almura.NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInfo.class, B02AdditionalWorldInfo.class, 2, Side.CLIENT);
         RecipeSorter.register(Almura.MOD_ID + ":shaped", QuantitiveShapedRecipes.class, SHAPED, "after:minecraft:shaped");
         RecipeSorter.register(Almura.MOD_ID + ":shapeless", QuantitiveShapelessRecipes.class, SHAPELESS, "after:minecraft:shapeless");
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());

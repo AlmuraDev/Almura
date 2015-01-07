@@ -29,14 +29,14 @@ public class ServerProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        Almura.NETWORK_FORGE.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName()), (EntityPlayerMP) event.player);
+        //Almura.NETWORK_FORGE.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName(), 0, 50), (EntityPlayerMP) event.player);
+    	// Above line not needed because bridge is sending this.
     }
 
     @SubscribeEvent
     public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.fromDim != event.toDim) {
-            Almura.NETWORK_FORGE.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName()),
-                                        (EntityPlayerMP) event.player);
+            //Almura.NETWORK_FORGE.sendTo(new S00AdditionalWorldInfo(event.player.worldObj.getWorldInfo().getWorldName(), 0, 50), (EntityPlayerMP) event.player);
         }
     }
 }
