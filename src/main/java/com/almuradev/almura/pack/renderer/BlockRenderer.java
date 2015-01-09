@@ -95,33 +95,23 @@ public class BlockRenderer extends MalisisRenderer {
             return;
         }
 
-        Optional<StateProperty> property = Optional.absent();
-        if (world != null) {
-            final ContainerNode containerNode = ((INodeContainer) block).getNode(ContainerNode.class);
-            if (containerNode != null) {
-                final PackContainerTileEntity te = (PackContainerTileEntity) world.getTileEntity(x, y, z);
-                if (te != null) {
-                    if (!te.hasEmptySlots()) {
-                        property = containerNode.getByIdentifier("full");
-                    }
-                }
-            }
-        }
-
-        final ClippedIcon[] clippedIcons;
-        if (property.isPresent()) {
-            clippedIcons = property.get().getClipIcons();
+        final ContainerNode containerNode = ((INodeContainer) block).getNode(ContainerNode.class);
+        final Optional<StateProperty> renderState;
+        if (containerNode != null) {
+            renderState = containerNode.getByIdentifier("full");
         } else {
-            clippedIcons = ((IClipContainer) block).getClipIcons();
+            renderState = Optional.absent();
         }
 
+        final ClippedIcon[] clippedIcons = ((IBlockClipContainer) block).getClipIcons(world, x, y, z, blockMetadata);
+        
         for (Face f : shape.getFaces()) {
             final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
             final PackFace face = (PackFace) f;
             IIcon icon;
 
             if (PackUtil.isEmptyClip(clippedIcons)) {
-                icon = property.isPresent() ? property.get().getStateIcon() : super.getIcon(params);
+                icon = renderState.isPresent() ? renderState.get().getStateIcon() : super.getIcon(params);
             } else if (face.getTextureId() >= clippedIcons.length) {
                 icon = clippedIcons[0];
             } else {
@@ -150,17 +140,17 @@ public class BlockRenderer extends MalisisRenderer {
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
             if (Block.class.isAssignableFrom(clazz) && IBlockClipContainer.class.isAssignableFrom(clazz) && IBlockShapeContainer.class
-                    .isAssignableFrom(clazz)) {
+                    .isAssignableFrom(clazz) && INodeContainer.class.isAssignableFrom(clazz)) {
                 super.registerFor(clazz);
             } else {
-                Almura.LOGGER.error("Cannot register " + clazz.getSimpleName() + " for " + BlockRenderer.class.getSimpleName());
+                Almura.LOGGER.error("Cannot register [" + clazz.getSimpleName() + "] for " + getClass().getSimpleName());
             }
         }
     }
 
     @Override
     public void registerFor(Item item) {
-        throw new UnsupportedOperationException(BlockRenderer.class.getSimpleName() + " is only meant for blocks!");
+        throw new UnsupportedOperationException(getClass().getSimpleName() + " is only meant for blocks.");
     }
 
     private void handleRotation(Shape s) {

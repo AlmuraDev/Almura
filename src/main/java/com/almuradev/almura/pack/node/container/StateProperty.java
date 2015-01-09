@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.pack.node.container;
 
+import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockShapeContainer;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -24,7 +25,7 @@ import net.minecraft.world.IBlockAccess;
 import java.util.List;
 import java.util.Map;
 
-public class StateProperty implements IProperty<Boolean>, IPackObject, IClipContainer, IBlockShapeContainer {
+public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockClipContainer, IBlockShapeContainer {
 
     private final Pack pack;
     private final boolean enabled;
@@ -101,5 +102,10 @@ public class StateProperty implements IProperty<Boolean>, IPackObject, IClipCont
     @SideOnly(Side.CLIENT)
     public IIcon getStateIcon() {
         return stateIcon;
+    }
+
+    @Override
+    public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
+        return clippedIcons;
     }
 }

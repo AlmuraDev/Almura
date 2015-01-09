@@ -339,6 +339,19 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
 
     @Override
     public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
+        if (access != null) {
+            if (containerNode != null) {
+                final PackContainerTileEntity te = (PackContainerTileEntity) access.getTileEntity(x, y, z);
+                if (te != null) {
+                    if (!te.hasEmptySlots()) {
+                        final Optional<StateProperty> property = containerNode.getByIdentifier("full");
+                        if (property.isPresent()) {
+                            return property.get().getClipIcons(access, x, y, z, metadata);
+                        }
+                    }
+                }
+            }
+        }
         return clippedIcons;
     }
 
