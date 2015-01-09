@@ -32,32 +32,24 @@ public class QuantitiveShapedRecipes extends ShapedRecipes {
             for (int l = 0; l < 3; ++l) {
                 int i1 = k - width;
                 int j1 = l - length;
-                ItemStack itemstack = null;
+                ItemStack recipeStack = null;
 
                 if (i1 >= 0 && j1 >= 0 && i1 < this.recipeWidth && j1 < this.recipeHeight) {
                     if (flag) {
-                        itemstack = this.recipeItems[this.recipeWidth - i1 - 1 + j1 * this.recipeWidth];
+                        recipeStack = this.recipeItems[this.recipeWidth - i1 - 1 + j1 * this.recipeWidth];
                     } else {
-                        itemstack = this.recipeItems[i1 + j1 * this.recipeWidth];
+                        recipeStack = this.recipeItems[i1 + j1 * this.recipeWidth];
                     }
                 }
 
-                final ItemStack itemstack1 = craftingInventory.getStackInRowAndColumn(k, l);
+                final ItemStack slotStack = craftingInventory.getStackInRowAndColumn(k, l);
 
-                if (itemstack1 != null || itemstack != null) {
-                    if (itemstack1 == null || itemstack == null) {
+                if (slotStack != null || recipeStack != null) {
+                    if (slotStack == null || recipeStack == null) {
                         return false;
                     }
 
-                    if (itemstack.getItem() != itemstack1.getItem()) {
-                        return false;
-                    }
-
-                    if (itemstack.stackSize < itemstack1.stackSize) {
-                        return false;
-                    }
-
-                    if (itemstack.getItemDamage() != 32767 && itemstack.getItemDamage() != itemstack1.getItemDamage()) {
+                    if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
                         return false;
                     }
                 }

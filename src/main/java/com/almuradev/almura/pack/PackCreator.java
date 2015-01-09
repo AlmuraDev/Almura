@@ -99,7 +99,7 @@ public class PackCreator {
                 Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e
                         .getMessage(), e);
             } else {
-                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e
+                Almura.LOGGER.warn("Shape [" + name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e
                         .getMessage());
             }
         }
@@ -118,7 +118,7 @@ public class PackCreator {
                 Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e
                         .getMessage(), e);
             } else {
-                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e
+                Almura.LOGGER.warn("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e
                         .getMessage());
             }
         }
@@ -138,7 +138,7 @@ public class PackCreator {
                                + e.getMessage(), e);
             } else {
                 Almura.LOGGER
-                        .error("Shape [" + name + "] has invalid " + PackKeys.BLOCK_BOX.getKey().toLowerCase() + " coordinates. "
+                        .warn("Shape [" + name + "] has invalid " + PackKeys.BLOCK_BOX.getKey().toLowerCase() + " coordinates. "
                                + e.getMessage());
             }
         }
@@ -419,21 +419,21 @@ public class PackCreator {
 
     public static ContainerNode createContainerNode(Pack pack, String name, ConfigurationNode node) {
         int size = node.getChild(PackKeys.INVENTORY_SIZE.getKey()).getInt(PackKeys.INVENTORY_SIZE.getDefaultValue());
-
+        int correctSize = size;
         boolean invalid = true;
         if (size < 9) {
-            size = 9;
+            correctSize = 9;
         } else if (size > 54) {
-            size = 54;
+            correctSize = 54;
         } else if (size % 9 != 0) {
-            size = 9;
+            correctSize = 9;
         } else {
             invalid = false;
         }
 
         if (invalid) {
             Almura.LOGGER.warn("Container size [" + size + "] in [" + name + "] in pack [" + pack.getName()
-                               + "] is invalid. Must be a multiple of 9 that doesn't exceed 54. As a precaution, This has been set to 9.");
+                               + "] is invalid. Must be a multiple of [9] that does not exceed [54]. This has been set to [" + correctSize + "].");
         }
 
         final String title = node.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
@@ -462,7 +462,7 @@ public class PackCreator {
                 states.add(new StateProperty(pack, enabled, rawState, textureName, textureCoordinates, shapeName));
             }
         }
-        return new ContainerNode(title, size, maxStackSize, states);
+        return new ContainerNode(title, correctSize, maxStackSize, states);
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {

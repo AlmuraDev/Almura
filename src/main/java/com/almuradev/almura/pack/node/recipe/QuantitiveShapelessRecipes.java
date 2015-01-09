@@ -31,33 +31,35 @@ public class QuantitiveShapelessRecipes extends ShapelessRecipes {
     @Override
     @SuppressWarnings("unchecked")
     public boolean matches(InventoryCrafting craftingInventory, World world) {
-        ArrayList arraylist = new ArrayList(this.recipeItems);
+        final ArrayList buffer = new ArrayList(recipeItems);
+
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 3; ++j) {
-                ItemStack itemstack = craftingInventory.getStackInRowAndColumn(j, i);
+                final ItemStack slotStack = craftingInventory.getStackInRowAndColumn(j, i);
 
-                if (itemstack != null) {
-                    boolean flag = false;
+                if (slotStack != null) {
+                    boolean isWithinGrid = false;
 
-                    for (Object anArraylist : arraylist) {
-                        ItemStack itemstack1 = (ItemStack) anArraylist;
+                    for (Object obj : buffer) {
+                        ItemStack recipeStack = (ItemStack) obj;
 
-                        if (itemstack.getItem() == itemstack1.getItem() && itemstack.stackSize >= itemstack1.stackSize && (
-                                itemstack1.getItemDamage() == 32767 || itemstack.getItemDamage() == itemstack1.getItemDamage())) {
-                            flag = true;
-                            arraylist.remove(itemstack1);
-                            break;
+                        if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
+                            continue;
                         }
+
+                        isWithinGrid = true;
+                        buffer.remove(recipeStack);
+                        break;
                     }
 
-                    if (!flag) {
-                        return false;
+                    if (!isWithinGrid) {
+                        break;
                     }
                 }
             }
         }
 
-        return arraylist.isEmpty();
+        return buffer.isEmpty();
     }
 
     @Override
