@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @SideOnly(Side.CLIENT)
-@Mixin(TileEntityChestRenderer.class)
+@Mixin(value = TileEntityChestRenderer.class, remap = false)
 public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRenderer {
 
     @Shadow

@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
-@Mixin(SimpleReloadableResourceManager.class)
+@Mixin(value = SimpleReloadableResourceManager.class, remap = false)
 public abstract class MixinSimpleReloadableResourceManager implements IReloadableResourceManager {
 
     @Shadow

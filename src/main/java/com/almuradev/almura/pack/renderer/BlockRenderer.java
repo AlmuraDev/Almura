@@ -104,7 +104,7 @@ public class BlockRenderer extends MalisisRenderer {
         }
 
         final ClippedIcon[] clippedIcons = ((IBlockClipContainer) block).getClipIcons(world, x, y, z, blockMetadata);
-        
+
         for (Face f : shape.getFaces()) {
             final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
             final PackFace face = (PackFace) f;
