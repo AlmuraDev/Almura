@@ -113,6 +113,7 @@ shadowJar {
     destinationDir = file("build/distributions")
     dependencies {
         include(dependency('com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'))
+        include(dependency('net.minecraftforge.srg2source:Srg2Source:3.2-SNAPSHOT'))
         include(project('Mixin'))
     }
 }
