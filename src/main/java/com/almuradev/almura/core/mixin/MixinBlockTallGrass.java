@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import java.util.ArrayList;
 
 @Mixin(value = BlockTallGrass.class)
-public abstract class MixinBlockTallGrass extends BlockBush implements IGrowable, IShearable {
+public abstract class MixinBlockTallGrass extends BlockBush {
 
     @Override
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {

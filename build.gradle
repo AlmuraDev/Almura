@@ -133,7 +133,4 @@ jar.manifest.mainAttributes(
         "Implementation-Vendor": url,
         "FMLCorePluginContainsFMLMod": 'true',
         "FMLCorePlugin": 'com.almuradev.almura.core.AlmuraCoreMod',
-        "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-        "TweakOrder": "10000",
-        "ForceLoadAsMod": 'true'
 )
