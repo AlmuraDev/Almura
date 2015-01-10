@@ -1,10 +1,9 @@
 {
   "package": "com.almuradev.almura.core.mixin",
   "mixins": [
-    "MixinGL11",
-    "MixinTileEntityChestRenderer",
-    "MixinBlockWall",
     "MixinBlockTallGrass",
-    "MixinContainerWorkbench"
+    "MixinBlockWall",
+    "MixinContainerWorkbench",
+    "MixinTileEntityChestRenderer"
   ]
 }

@@ -11,7 +11,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.world.IBlockAccess;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(value = BlockWall.class, remap = false)
+@Mixin(value = BlockWall.class)
 public abstract class MixinBlockWall extends Block {
 
     protected MixinBlockWall(Material p_i45394_1_) {

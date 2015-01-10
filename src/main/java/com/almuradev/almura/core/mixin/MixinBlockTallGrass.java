@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.ArrayList;
 
-@Mixin(value = BlockTallGrass.class, remap = false)
+@Mixin(value = BlockTallGrass.class)
 public abstract class MixinBlockTallGrass extends BlockBush implements IGrowable, IShearable {
 
     @Override
