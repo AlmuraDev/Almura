@@ -271,6 +271,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     public PackShape getShape() {
         return shape;
     }
+    
+    @Override
+    public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+        return true;
+    }
 
     @Override
     public void setShape(PackShape shape) {
