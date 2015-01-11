@@ -65,12 +65,6 @@ public class ClientProxy extends CommonProxy {
         FMLCommonHandler.instance().bus().register(almuraDebugHud);
     }
 
-    @Override
-    public void onCreate(Pack pack) {
-        pack.injectShapes();
-        super.onCreate(pack);
-    }
-
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         if (event.gui instanceof GuiMainMenu) {
@@ -80,9 +74,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onKeyInput(KeyInputEvent event) {
-        if (BINDING_CONFIG_GUI.isPressed()) {
-            // TODO: Create an ingame config screen? Could just make our own option screen...
-        } else if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
             IngameDebugHUD.UPDATES_ENABLED = !IngameDebugHUD.UPDATES_ENABLED;
         }
     }

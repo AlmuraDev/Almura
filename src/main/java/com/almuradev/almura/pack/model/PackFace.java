@@ -30,14 +30,14 @@ public class PackFace extends Face {
         this.textureId = textureId;
     }
 
-    public PackFace(int textureId, Face face) {
+    public PackFace(PackFace face) {
         super(face);
-        this.textureId = textureId;
+        this.textureId = face.getTextureId();
     }
 
-    public PackFace(int textureId, Face face, RenderParameters params) {
+    public PackFace(PackFace face, RenderParameters params) {
         super(face, params);
-        this.textureId = textureId;
+        this.textureId = face.getTextureId();
     }
 
     public int getTextureId() {

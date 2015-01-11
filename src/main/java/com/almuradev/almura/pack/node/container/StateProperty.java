@@ -6,14 +6,14 @@
 package com.almuradev.almura.pack.node.container;
 
 import com.almuradev.almura.pack.IBlockClipContainer;
-import com.almuradev.almura.pack.IBlockShapeContainer;
-import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.property.IProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.google.common.base.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -25,7 +25,7 @@ import net.minecraft.world.IBlockAccess;
 import java.util.List;
 import java.util.Map;
 
-public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockClipContainer, IBlockShapeContainer {
+public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockClipContainer, IBlockModelContainer {
 
     private final Pack pack;
     private final boolean enabled;
@@ -33,7 +33,7 @@ public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockCli
     private final String textureName;
     private final Map<Integer, List<Integer>> textureCoordinates;
     private final String shapeName;
-    private PackShape shape;
+    private Optional<PackModelContainer> modelContainer;
     private ClippedIcon[] clippedIcons;
     private IIcon stateIcon;
 
@@ -70,22 +70,22 @@ public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockCli
     }
 
     @Override
-    public PackShape getShape() {
-        return shape;
+    public Optional<PackModelContainer> getModelContainer() {
+        return modelContainer;
     }
 
     @Override
-    public void setShape(PackShape shape) {
-        this.shape = shape;
+    public void setModelContainer(PackModelContainer modelContainer) {
+        this.modelContainer = Optional.fromNullable(modelContainer);
     }
 
-    public String getShapeName() {
+    public String getModelName() {
         return shapeName;
     }
 
     @Override
-    public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
-        return shape;
+    public Optional<PackModelContainer> getModelContainer(IBlockAccess access, int x, int y, int z, int metadata) {
+        return modelContainer;
     }
 
     @Override
