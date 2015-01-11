@@ -9,13 +9,11 @@ import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.google.common.eventbus.Subscribe;
-
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.client.gui.component.decoration.UIMultiLineLabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 
@@ -76,7 +74,7 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
                 + ChatColor.RESET + " content and gui abilities, built, in our opinion, one of the best content loading /"
                 + " gui enabled Minecraft experiences ever conceived. \r \r" + ChatColor.LIGHT_PURPLE + "More info to follow..." + ChatColor.RESET
                 + "";
-        
+
         aboutUsLabel.setSize(290, 100);
         aboutUsLabel.setPosition(0, 25, Anchor.CENTER);
         aboutUsLabel.setText(fieldText);

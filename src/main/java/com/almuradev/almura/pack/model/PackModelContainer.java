@@ -13,6 +13,7 @@ import net.malisis.core.renderer.element.Shape;
 import java.util.List;
 
 public class PackModelContainer {
+
     private final String identifier;
     private final PackPhysics physics;
     private Optional<IModel> model;
@@ -58,6 +59,7 @@ public class PackModelContainer {
 
     @SideOnly(Side.CLIENT)
     public static final class PackShape extends Shape implements IModel {
+
         public PackShape(PackFace... faces) {
             super(faces);
         }
@@ -69,8 +71,9 @@ public class PackModelContainer {
         public PackShape(PackShape s) {
             PackFace[] shapeFaces = (PackFace[]) s.getFaces();
             this.faces = new PackFace[shapeFaces.length];
-            for (int i = 0; i < shapeFaces.length; i++)
+            for (int i = 0; i < shapeFaces.length; i++) {
                 faces[i] = new PackFace(shapeFaces[i]);
+            }
             copyMatrix(s);
         }
     }

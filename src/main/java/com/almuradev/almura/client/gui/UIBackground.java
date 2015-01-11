@@ -37,6 +37,7 @@ public class UIBackground extends UIImage {
     private static final Random RANDOM = new Random();
     private final MalisisGui gui;
     public Animation animation;
+
     static {
         for (TimeState state : TimeState.values()) {
             final Path statePath = Paths.get(Filesystem.CONFIG_BACKGROUNDS_PATH.toString(), state.toString());
@@ -63,6 +64,7 @@ public class UIBackground extends UIImage {
             }
         }
     }
+
     private int currentAnchor;
 
     public UIBackground(MalisisGui gui) {

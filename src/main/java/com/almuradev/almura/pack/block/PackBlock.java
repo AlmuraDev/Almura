@@ -14,10 +14,8 @@ import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
-import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
-import com.almuradev.almura.pack.model.PackPhysics;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.INode;
@@ -76,7 +74,9 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private BreakNode breakNode;
     private CollisionNode collisionNode;
 
-    public PackBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String modelName, PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName, RotationNode rotationNode, LightNode lightNode, RenderNode renderNode) {
+    public PackBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String modelName,
+                     PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
+                     RotationNode rotationNode, LightNode lightNode, RenderNode renderNode) {
         super(Material.ground);
         this.pack = pack;
         this.identifier = identifier;

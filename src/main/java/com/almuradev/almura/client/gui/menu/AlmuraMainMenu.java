@@ -10,9 +10,7 @@ import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
-import com.almuradev.almura.client.gui.guide.InfoguideGui;
 import com.google.common.eventbus.Subscribe;
-
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -163,7 +161,7 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
                 break;
             case "button.about":
                 mc.displayGuiScreen(new AlmuraAboutMenu(this));
-            	//mc.displayGuiScreen(new InfoguideGui(this));
+                //mc.displayGuiScreen(new InfoguideGui(this));
                 break;
             case "button.quit":
                 mc.shutdown();

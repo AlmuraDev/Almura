@@ -1,7 +1,5 @@
 package com.almuradev.almura.core.mixin;
 
-import java.util.Random;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.material.Material;
@@ -9,14 +7,15 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
-
 import org.spongepowered.asm.mixin.Mixin;
+
+import java.util.Random;
 
 @Mixin(value = BlockFarmland.class, remap = false)
 public abstract class MixinBlockFarmland extends Block {
 
     protected MixinBlockFarmland() {
-        super(Material.ground);       
+        super(Material.ground);
     }
 
     public void updateTick(World world, int x, int y, int z, Random random) {
@@ -54,7 +53,7 @@ public abstract class MixinBlockFarmland extends Block {
             for (int i1 = z - b0; i1 <= z + b0; ++i1) {
                 Block block = world.getBlock(l, y + 1, i1);
 
-                if (block instanceof IPlantable && canSustainPlant(world, x, y, z, ForgeDirection.UP, (IPlantable)block)) {
+                if (block instanceof IPlantable && canSustainPlant(world, x, y, z, ForgeDirection.UP, (IPlantable) block)) {
                     return true;
                 }
             }

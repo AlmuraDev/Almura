@@ -8,9 +8,9 @@ package com.almuradev.almura.pack.crop;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
-import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackModelContainer;
@@ -20,7 +20,6 @@ import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -52,7 +51,8 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     private String textureName;
     private Optional<PackModelContainer> modelContainer;
 
-    public PackSeeds(Pack pack, String identifier, List<String> tooltip, String textureName, String modelName, PackModelContainer modelContainer, Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName, Block crop, Block soil) {
+    public PackSeeds(Pack pack, String identifier, List<String> tooltip, String textureName, String modelName, PackModelContainer modelContainer,
+                     Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName, Block crop, Block soil) {
         super(crop, soil);
         this.pack = pack;
         this.identifier = identifier;
@@ -94,7 +94,8 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
-    public boolean onItemUse(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int size, float hitX, float hitY, float hitZ) {
+    public boolean onItemUse(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int size, float hitX, float hitY,
+                             float hitZ) {
         if (size != 1) {
             return false;
         } else if (player.canPlayerEdit(x, y, z, size, itemStack) && player.canPlayerEdit(x, y + 1, z, size, itemStack)) {
@@ -102,7 +103,9 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
                 world.setBlock(x, y + 1, z, this.field_150925_a);
                 --itemStack.stackSize;
                 Block block1 = Blocks.farmland;
-                world.playSoundEffect((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), block1.stepSound.getStepResourcePath(), (block1.stepSound.getVolume() + 1.0F) / 2.0F, block1.stepSound.getPitch() * 0.8F);
+                world.playSoundEffect((double) ((float) x + 0.5F), (double) ((float) y + 0.5F), (double) ((float) z + 0.5F),
+                                      block1.stepSound.getStepResourcePath(), (block1.stepSound.getVolume() + 1.0F) / 2.0F,
+                                      block1.stepSound.getPitch() * 0.8F);
                 return true;
             } else {
                 return false;

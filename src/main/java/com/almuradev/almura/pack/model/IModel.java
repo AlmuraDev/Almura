@@ -6,6 +6,7 @@ import net.malisis.core.renderer.element.Vertex;
 import java.util.List;
 
 public interface IModel {
+
     Face[] getFaces();
 
     List<Vertex> getVertexes(Face fe);

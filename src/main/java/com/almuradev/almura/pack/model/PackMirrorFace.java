@@ -6,7 +6,6 @@
 package com.almuradev.almura.pack.model;
 
 import net.malisis.core.renderer.RenderParameters;
-import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Vertex;
 
 import java.util.List;

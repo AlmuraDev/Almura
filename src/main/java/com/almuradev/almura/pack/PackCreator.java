@@ -146,11 +146,12 @@ public class PackCreator {
         }
 
         return new PackModelContainer(name, new PackPhysics(useVanillaCollision, useVanillaWireframe, useVanillaBlockBounds, collisionCoordinates,
-                                                              wireframeCoordinates, blockBoundsCoordinates));
+                                                            wireframeCoordinates, blockBoundsCoordinates));
     }
 
     @SideOnly(Side.CLIENT)
-    public static void loadShapeIntoModelContainer(PackModelContainer modelContainer, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static void loadShapeIntoModelContainer(PackModelContainer modelContainer, String name, YamlConfiguration reader)
+            throws ConfigurationException {
         final ConfigurationNode modelConfigurationNode = reader.getNode(PackKeys.SHAPES.getKey());
         final List<PackFace> faces = Lists.newLinkedList();
 
@@ -223,7 +224,8 @@ public class PackCreator {
             }
         }
         if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
-            Almura.LOGGER.warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube.");
+            Almura.LOGGER
+                    .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube.");
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
@@ -245,7 +247,8 @@ public class PackCreator {
         final RenderNode renderNode = createRenderNode(pack, name, reader.getNode(PackKeys.NODE_RENDER.getKey()));
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab, creativeTabName,
+        return new PackBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
+                             creativeTabName,
                              rotationNode, lightNode, renderNode);
     }
 
@@ -266,7 +269,8 @@ public class PackCreator {
             }
         }
         if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
-            Almura.LOGGER.warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic item.");
+            Almura.LOGGER
+                    .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic item.");
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
@@ -302,7 +306,8 @@ public class PackCreator {
             }
         }
         if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
-            Almura.LOGGER.warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube");
+            Almura.LOGGER
+                    .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube");
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
@@ -319,7 +324,8 @@ public class PackCreator {
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", description.get(0));
 
-        return new PackFood(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName, consumptionNode);
+        return new PackFood(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName,
+                            consumptionNode);
     }
 
     public static PackCrops createCropFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -379,7 +385,8 @@ public class PackCreator {
         }
         if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
             Almura.LOGGER
-                    .warn("Model [" + modelName + "] for seed in [" + crop.getIdentifier() + "] in pack [" + pack.getName() + "] was not found. Will render as a basic item.");
+                    .warn("Model [" + modelName + "] for seed in [" + crop.getIdentifier() + "] in pack [" + pack.getName()
+                          + "] was not found. Will render as a basic item.");
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
@@ -395,7 +402,8 @@ public class PackCreator {
 
         final PackSeeds
                 seed =
-                new PackSeeds(pack, identifier, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName, crop, soil);
+                new PackSeeds(pack, identifier, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab,
+                              creativeTabName, crop, soil);
         seed.addNode(createGrassNode(pack, name, seed, node.getNode(PackKeys.NODE_GRASS.getKey())));
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + identifier + ".name", description.get(0));
@@ -413,7 +421,8 @@ public class PackCreator {
             }
         }
         if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
-            Almura.LOGGER.warn("Model [" + modelName + "] in stage [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube.");
+            Almura.LOGGER.warn("Model [" + modelName + "] in stage [" + id + "] in [" + name + "] in pack [" + pack.getName()
+                               + "] was not found. Will render as a basic cube.");
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
@@ -466,7 +475,8 @@ public class PackCreator {
         final ContainerNode containerNode = createContainerNode(pack, name, reader.getNode(PackKeys.NODE_CONTAINER.getKey()));
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackContainerBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab, creativeTabName, rotationNode, lightNode, renderNode, containerNode);
+        return new PackContainerBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
+                                      creativeTabName, rotationNode, lightNode, renderNode, containerNode);
     }
 
     public static ContainerNode createContainerNode(Pack pack, String name, ConfigurationNode node) {
@@ -509,7 +519,8 @@ public class PackCreator {
                     }
                 }
                 if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
-                    Almura.LOGGER.warn("Model [" + modelName + "] for state [full] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube.");
+                    Almura.LOGGER.warn("Model [" + modelName + "] for state [full] in [" + name + "] in pack [" + pack.getName()
+                                       + "] was not found. Will render as a basic cube.");
                 }
                 Map<Integer, List<Integer>> textureCoordinates;
                 try {

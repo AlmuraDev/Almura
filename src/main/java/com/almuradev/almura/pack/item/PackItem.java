@@ -8,8 +8,8 @@ package com.almuradev.almura.pack.item;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.pack.IClipContainer;
-import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IModelContainer;
+import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackModelContainer;
@@ -39,7 +39,8 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IMode
     private Optional<PackModelContainer> modelContainer;
     private List<String> tooltip;
 
-    public PackItem(Pack pack, String identifier, List<String> tooltip, String textureName, String modelName, PackModelContainer modelContainer, Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName) {
+    public PackItem(Pack pack, String identifier, List<String> tooltip, String textureName, String modelName, PackModelContainer modelContainer,
+                    Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName) {
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinates = textureCoordinates;

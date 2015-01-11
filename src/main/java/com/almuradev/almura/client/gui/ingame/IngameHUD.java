@@ -49,12 +49,12 @@ public class IngameHUD extends AlmuraGui {
     public static IngameHUD INSTANCE;
     public static boolean UPDATES_ENABLED = true;
     public UILabel worldDisplay, playerTitle, playerMode, playerCurrency;
-    private UIImage mapImage, worldImage, playerImage;
     public UILabel serverCount;
-	private UILabel playerCoords;
-	private UILabel playerCompass;
-	private UILabel worldTime;
-	private UILabel xpLevel;
+    private UIImage mapImage, worldImage, playerImage;
+    private UILabel playerCoords;
+    private UILabel playerCompass;
+    private UILabel worldTime;
+    private UILabel xpLevel;
     private UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
 
     private float playerHealth, playerArmor, playerHunger, playerStamina, playerExperience, playerExperienceLevel = 0.0F;
@@ -91,10 +91,10 @@ public class IngameHUD extends AlmuraGui {
 
         // Player Display Mode
         playerMode = new UILabel(this, "");
-        playerMode.setPosition(playerTitle.getX()+playerTitle.getText().length() + 4 , 2, Anchor.LEFT | Anchor.TOP);
+        playerMode.setPosition(playerTitle.getX() + playerTitle.getText().length() + 4, 2, Anchor.LEFT | Anchor.TOP);
         playerMode.setColor(0xffffffff);
         playerMode.setSize(7, 7);
-        
+
         // Player Display Name
         playerCurrency = new UILabel(this, " ");
         playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 4, 2, Anchor.LEFT | Anchor.TOP);
@@ -204,9 +204,10 @@ public class IngameHUD extends AlmuraGui {
         xpLevel.setSize(15, 7);
         xpLevel.setFontScale(0.8F);
 
-        gradientContainer.add(playerTitle, playerMode, playerCurrency, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty,
-                              mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage,
-                              worldTime, xpLevel);
+        gradientContainer
+                .add(playerTitle, playerMode, playerCurrency, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty,
+                     mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage,
+                     worldTime, xpLevel);
 
         addToScreen(gradientContainer);
     }
@@ -382,7 +383,7 @@ public class IngameHUD extends AlmuraGui {
 
         // Player Name
         if (playerTitle.getText().isEmpty()) {
-            playerTitle.setText(MINECRAFT.thePlayer.getDisplayName());           
+            playerTitle.setText(MINECRAFT.thePlayer.getDisplayName());
         }
 
         //World Name (SinglePlayer)
@@ -398,8 +399,9 @@ public class IngameHUD extends AlmuraGui {
         if (MINECRAFT.isSingleplayer() && firstPass) {
             serverCount.setText("--");
         } else {
-            if (((MINECRAFT.getIntegratedServer() != null && MINECRAFT.getIntegratedServer().getPublic()) || !MINECRAFT.isSingleplayer()) && playerCount != MINECRAFT.getNetHandler().playerInfoList.size()) {
-            	// Gets packet update now, don't touch this.
+            if (((MINECRAFT.getIntegratedServer() != null && MINECRAFT.getIntegratedServer().getPublic()) || !MINECRAFT.isSingleplayer())
+                && playerCount != MINECRAFT.getNetHandler().playerInfoList.size()) {
+                // Gets packet update now, don't touch this.
             }
         }
 
@@ -410,8 +412,8 @@ public class IngameHUD extends AlmuraGui {
         worldImage.setPosition(-(worldDisplay.getWidth() + 9), worldImage.getY(), Anchor.RIGHT | Anchor.TOP);
         playerCoords.setPosition(-(-worldImage.getX() + worldImage.getWidth() + 12), playerCoords.getY(), Anchor.RIGHT | Anchor.TOP);
         mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT | Anchor.TOP);
-        playerMode.setPosition(playerTitle.getX()+ playerTitle.getWidth() + 4 , 2, Anchor.LEFT | Anchor.TOP);
-        playerCurrency.setPosition(playerMode.getX() + playerMode.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);       
+        playerMode.setPosition(playerTitle.getX() + playerTitle.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);
+        playerCurrency.setPosition(playerMode.getX() + playerMode.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);
         firstPass = false;
     }
 

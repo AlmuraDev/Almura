@@ -13,7 +13,6 @@ import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
-import com.almuradev.almura.pack.model.PackPhysics;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
@@ -26,7 +25,6 @@ import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -42,8 +40,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -52,7 +48,6 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentMap;
@@ -94,12 +89,12 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         final int minLightLevel = lightNode.getValue().getMin();
         final int maxLightLevel = lightNode.getValue().getMax();
         final int areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
-        final int worldLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z)- world.skylightSubtracted;
+        final int worldLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
         boolean enoughLight = false;
-        if (areaBlockLight>= minLightLevel && areaBlockLight <= maxLightLevel) {
-           enoughLight = true;
+        if (areaBlockLight >= minLightLevel && areaBlockLight <= maxLightLevel) {
+            enoughLight = true;
         } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
-           enoughLight = true;
+            enoughLight = true;
         }
 
         if (enoughLight) {
@@ -124,8 +119,10 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
             final Stage stage = stages.get(metadata);
             final Optional<PackModelContainer> modelContainer = stage.getModelContainer();
             if (modelContainer.isPresent()) {
-                final AxisAlignedBB blockBoundsBB = modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0.5, 0, 0, 1, 0.25, 1),
-                                                                                                     access, x, y, z);
+                final AxisAlignedBB
+                        blockBoundsBB =
+                        modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0.5, 0, 0, 1, 0.25, 1),
+                                                                         access, x, y, z);
                 setBlockBounds((float) blockBoundsBB.minX, (float) blockBoundsBB.minY, (float) blockBoundsBB.minZ, (float) blockBoundsBB.maxX,
                                (float) blockBoundsBB.maxY, (float) blockBoundsBB.maxZ);
             }

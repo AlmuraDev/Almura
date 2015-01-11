@@ -14,7 +14,6 @@ import com.almuradev.almura.pack.IState;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackModelContainer;
-import com.almuradev.almura.pack.model.PackPhysics;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
@@ -47,7 +46,8 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockMo
     private Optional<PackModelContainer> modelContainer;
     private ClippedIcon[] clippedIcons;
 
-    public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String modelName, PackModelContainer modelContainer, GrowthNode growth,
+    public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String modelName, PackModelContainer modelContainer,
+                 GrowthNode growth,
                  LightNode light) {
         this.block = block;
         this.id = id;
