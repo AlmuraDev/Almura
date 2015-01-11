@@ -2,7 +2,9 @@ package com.almuradev.almura.pack.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -60,5 +62,13 @@ public final class PackPhysics {
         }
         return AxisAlignedBB.getBoundingBox(x + wireframeCoordinates.get(0), y + wireframeCoordinates.get(1), z + wireframeCoordinates.get(2),
                                             x + wireframeCoordinates.get(3), y + wireframeCoordinates.get(4), z + wireframeCoordinates.get(5));
+    }
+
+    public AxisAlignedBB getBlockBounds(AxisAlignedBB fallback, IBlockAccess access, int x, int y, int z) {
+        if (useVanillaBlockBounds || blockBoundsCoordinates.size() != 6) {
+            return fallback;
+        }
+
+        return AxisAlignedBB.getBoundingBox(blockBoundsCoordinates.get(0), blockBoundsCoordinates.get(1), blockBoundsCoordinates.get(2), blockBoundsCoordinates.get(3), blockBoundsCoordinates.get(4), blockBoundsCoordinates.get(5));
     }
 }

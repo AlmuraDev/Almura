@@ -13,6 +13,7 @@ import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
+import com.almuradev.almura.pack.model.PackPhysics;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
@@ -41,6 +42,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -49,6 +52,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentMap;
@@ -109,6 +113,21 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
                 final Stage newStage = stages.get(metadata + 1);
                 newStage.onGrown(world, x, y, z, random);
                 world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
+            }
+        }
+    }
+
+    @Override
+    public void setBlockBoundsBasedOnState(IBlockAccess access, int x, int y, int z) {
+        if (access != null) {
+            final int metadata = access.getBlockMetadata(x, y, z);
+            final Stage stage = stages.get(metadata);
+            final Optional<PackModelContainer> modelContainer = stage.getModelContainer();
+            if (modelContainer.isPresent()) {
+                final AxisAlignedBB blockBoundsBB = modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0.5, 0, 0, 1, 0.25, 1),
+                                                                                                     access, x, y, z);
+                setBlockBounds((float) blockBoundsBB.minX, (float) blockBoundsBB.minY, (float) blockBoundsBB.minZ, (float) blockBoundsBB.maxX,
+                               (float) blockBoundsBB.maxY, (float) blockBoundsBB.maxZ);
             }
         }
     }

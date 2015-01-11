@@ -14,6 +14,7 @@ import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
+import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.model.PackPhysics;
@@ -96,6 +97,18 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         setLightOpacity(lightNode.getOpacity());
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
+        }
+    }
+
+    @Override
+    public void setBlockBoundsBasedOnState(IBlockAccess access, int x, int y, int z) {
+        if (access != null) {
+            if (modelContainer.isPresent()) {
+                final AxisAlignedBB blockBoundsBB = modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1),
+                                                                                                     access, x, y, z);
+                setBlockBounds((float) blockBoundsBB.minX, (float) blockBoundsBB.minY, (float) blockBoundsBB.minZ, (float) blockBoundsBB.maxX,
+                               (float) blockBoundsBB.maxY, (float) blockBoundsBB.maxZ);
+            }
         }
     }
 
@@ -280,14 +293,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public void setModelContainer(PackModelContainer modelContainer) {
         this.modelContainer = Optional.fromNullable(modelContainer);
-        if (this.modelContainer.isPresent()) {
-            final PackPhysics physics = this.modelContainer.get().getPhysics();
-            final List<Double> blockBoundsCoordinates = physics.getBlockBoundsCoordinates();
-            if (!physics.useVanillaBlockBounds() && physics.getBlockBoundsCoordinates().size() == 6) {
-                setBlockBounds(blockBoundsCoordinates.get(0).floatValue(), blockBoundsCoordinates.get(1).floatValue(),
-                               blockBoundsCoordinates.get(2).floatValue(), blockBoundsCoordinates.get(3).floatValue(),
-                               blockBoundsCoordinates.get(4).floatValue(), blockBoundsCoordinates.get(5).floatValue());
-            }
+        if (this.modelContainer.get().getModel().isPresent()) {
             opaque = false;
         } else {
             opaque = renderNode.isOpaque();

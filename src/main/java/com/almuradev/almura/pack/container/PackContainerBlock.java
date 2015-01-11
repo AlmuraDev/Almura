@@ -110,6 +110,18 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     }
 
     @Override
+    public void setBlockBoundsBasedOnState(IBlockAccess access, int x, int y, int z) {
+        if (access != null) {
+            if (modelContainer.isPresent()) {
+                final AxisAlignedBB blockBoundsBB = modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1),
+                                                                                                     access, x, y, z);
+                setBlockBounds((float) blockBoundsBB.minX, (float) blockBoundsBB.minY, (float) blockBoundsBB.minZ, (float) blockBoundsBB.maxX,
+                               (float) blockBoundsBB.maxY, (float) blockBoundsBB.maxZ);
+            }
+        }
+    }
+
+    @Override
     @SideOnly(Side.CLIENT)
     public int getRenderType() {
         return renderId;
