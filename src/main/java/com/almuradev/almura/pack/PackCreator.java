@@ -197,13 +197,13 @@ public class PackCreator {
         if (shape.getFaces().length < 4) {
             shape.applyMatrix();
 
-            final PackModelContainer.PackShape copy = new PackModelContainer.PackShape(faces);
+            final PackModelContainer.PackShape copy = new PackModelContainer.PackShape(shape);
             copy.scale(-1, 1, -1);
             copy.applyMatrix();
 
-            for (int i = 0; i < 4 - shape.getFaces().length; i++) {
-                shape.addFaces(new PackMirrorFace[]{
-                        new PackMirrorFace((PackFace) copy.getFaces()[i >= copy.getFaces().length ? copy.getFaces().length - 1 : i])});
+            int length = shape.getFaces().length;
+            for (int i = 0; i < 4 - length; i++) {
+                shape.addFaces(new PackMirrorFace[]{new PackMirrorFace((PackFace) copy.getFaces()[i >= copy.getFaces().length ? copy.getFaces().length - 1 : i])});
             }
 
             shape.applyMatrix();
