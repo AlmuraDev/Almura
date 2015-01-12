@@ -7,7 +7,7 @@ package com.almuradev.almura.pack.container;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.Tabs;
+import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
@@ -17,7 +17,6 @@ import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
-import com.almuradev.almura.pack.model.PackPhysics;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ContainerNode;

@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.pack.item;
 
-import com.almuradev.almura.Tabs;
+import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
