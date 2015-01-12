@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = TileEntityChestRenderer.class)
 @SideOnly(Side.CLIENT)
+@Mixin(value = TileEntityChestRenderer.class)
 public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRenderer {
 
     @Inject(method = "renderTileEntityAt", at = @At("HEAD"), cancellable = true)
