@@ -295,7 +295,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     public void setModelContainer(PackModelContainer modelContainer) {
         this.modelContainer = Optional.fromNullable(modelContainer);
 
-        if (Configuration.IS_CLIENT) {
+        if (Configuration.IS_CLIENT && this.modelContainer.isPresent()) {
             if (this.modelContainer.get().getModel().isPresent()) {
                 opaque = false;
             } else {
