@@ -122,17 +122,18 @@ public class Filesystem {
             throw new RuntimeException("Failed to create directory [" + CONFIG_YML_PATH + "].", e);
         }
 
+        try {
+            Files.createDirectories(CONFIG_MODELS_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create directory [" + CONFIG_MODELS_PATH + "].", e);
+        }
+
+
         if (Configuration.IS_CLIENT) {
             try {
                 Files.createDirectories(CONFIG_IMAGES_PATH);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to create directory [" + CONFIG_IMAGES_PATH + "].", e);
-            }
-
-            try {
-                Files.createDirectories(CONFIG_MODELS_PATH);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to create directory [" + CONFIG_MODELS_PATH + "].", e);
             }
 
             try {
