@@ -8,16 +8,17 @@ package com.almuradev.almura.pack.crop;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
-import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.GrassNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -26,36 +27,40 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer, IShapeContainer, INodeContainer {
+public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer, IModelContainer, INodeContainer {
 
     private final Pack pack;
     private final String identifier;
     private final Map<Integer, List<Integer>> textureCoordinates;
-    private final String shapeName;
+    private final String modelName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final List<String> tooltip;
     private ClippedIcon[] clippedIcons;
     private String textureName;
-    private PackShape shape;
+    private Optional<PackModelContainer> modelContainer;
 
-    public PackSeeds(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
+    public PackSeeds(Pack pack, String identifier, List<String> tooltip, String textureName, String modelName, PackModelContainer modelContainer,
                      Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName, Block crop, Block soil) {
         super(crop, soil);
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinates = textureCoordinates;
         this.textureName = textureName;
-        this.shapeName = shapeName;
+        this.modelName = modelName;
         this.tooltip = tooltip;
+        setModelContainer(modelContainer);
         setUnlocalizedName(pack.getName() + "\\" + identifier);
         setTextureName(Almura.MOD_ID + ":images/" + textureName);
         if (showInCreativeTab) {
@@ -89,6 +94,28 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
+    public boolean onItemUse(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int size, float hitX, float hitY,
+                             float hitZ) {
+        if (size != 1) {
+            return false;
+        } else if (player.canPlayerEdit(x, y, z, size, itemStack) && player.canPlayerEdit(x, y + 1, z, size, itemStack)) {
+            if (world.getBlock(x, y, z).canSustainPlant(world, x, y, z, ForgeDirection.UP, this) && world.isAirBlock(x, y + 1, z)) {
+                world.setBlock(x, y + 1, z, this.field_150925_a);
+                --itemStack.stackSize;
+                Block block1 = Blocks.farmland;
+                world.playSoundEffect((double) ((float) x + 0.5F), (double) ((float) y + 0.5F), (double) ((float) z + 0.5F),
+                                      block1.stepSound.getStepResourcePath(), (block1.stepSound.getVolume() + 1.0F) / 2.0F,
+                                      block1.stepSound.getPitch() * 0.8F);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public Pack getPack() {
         return pack;
     }
@@ -104,18 +131,18 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
-    public PackShape getShape() {
-        return shape;
+    public Optional<PackModelContainer> getModelContainer() {
+        return modelContainer;
     }
 
     @Override
-    public void setShape(PackShape shape) {
-        this.shape = shape;
+    public void setModelContainer(PackModelContainer modelContainer) {
+        this.modelContainer = Optional.fromNullable(modelContainer);
     }
 
     @Override
-    public String getShapeName() {
-        return shapeName;
+    public String getModelName() {
+        return modelName;
     }
 
     @Override

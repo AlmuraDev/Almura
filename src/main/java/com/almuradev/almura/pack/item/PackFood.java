@@ -7,16 +7,17 @@ package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
-import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.ConsumptionNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -35,21 +36,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackFood extends ItemFood implements IPackObject, IClipContainer, IShapeContainer, INodeContainer {
+public class PackFood extends ItemFood implements IPackObject, IClipContainer, IModelContainer, INodeContainer {
 
     private static final DamageSource FOOD_SOURCE = new DamageSource("food").setDamageBypassesArmor();
     private final Pack pack;
     private final String identifier;
     private final Map<Integer, List<Integer>> textureCoordinates;
-    private final String shapeName;
+    private final String modelName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final ConsumptionNode consumption;
     private ClippedIcon[] clippedIcons;
     private String textureName;
-    private PackShape shape;
+    private Optional<PackModelContainer> modelContainer;
     private List<String> tooltip;
 
-    public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
+    public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String modelName, PackModelContainer modelContainer,
                     Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName,
                     ConsumptionNode consumptionNode) {
         super(-1, -1, consumptionNode.isWolfFavorite());
@@ -57,9 +58,10 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
         this.identifier = identifier;
         this.textureCoordinates = textureCoordinates;
         this.textureName = textureName;
-        this.shapeName = shapeName;
+        this.modelName = modelName;
         this.tooltip = tooltip;
         consumption = addNode(consumptionNode);
+        setModelContainer(modelContainer);
         setUnlocalizedName(pack.getName() + "\\" + identifier);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
@@ -134,18 +136,18 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
-    public PackShape getShape() {
-        return shape;
+    public Optional<PackModelContainer> getModelContainer() {
+        return modelContainer;
     }
 
     @Override
-    public void setShape(PackShape shape) {
-        this.shape = shape;
+    public void setModelContainer(PackModelContainer modelContainer) {
+        this.modelContainer = Optional.fromNullable(modelContainer);
     }
 
     @Override
-    public String getShapeName() {
-        return shapeName;
+    public String getModelName() {
+        return modelName;
     }
 
     @Override

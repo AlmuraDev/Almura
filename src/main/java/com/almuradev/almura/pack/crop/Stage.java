@@ -7,18 +7,19 @@ package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IBlockClipContainer;
-import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.IState;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.server.network.play.S01SpawnParticle;
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -35,22 +36,24 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentMap;
 
-public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockShapeContainer, INodeContainer {
+public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer {
 
     private final PackCrops block;
     private final int id;
     private final Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
-    private final String shapeName;
-    private PackShape shape;
+    private final String modelName;
+    private Optional<PackModelContainer> modelContainer;
     private ClippedIcon[] clippedIcons;
 
-    public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String shapeName, GrowthNode growth,
+    public Stage(PackCrops block, int id, Map<Integer, List<Integer>> textureCoordinatesByFace, String modelName, PackModelContainer modelContainer,
+                 GrowthNode growth,
                  LightNode light) {
         this.block = block;
         this.id = id;
         this.textureCoordinatesByFace = textureCoordinatesByFace;
-        this.shapeName = shapeName;
+        this.modelName = modelName;
+        setModelContainer(modelContainer);
         addNode(growth);
         addNode(light);
     }
@@ -81,35 +84,23 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockSh
     }
 
     @Override
-    public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
-        return shape;
+    public Optional<PackModelContainer> getModelContainer(IBlockAccess access, int x, int y, int z, int metadata) {
+        return modelContainer;
     }
 
     @Override
-    public PackShape getShape() {
-        return shape;
+    public Optional<PackModelContainer> getModelContainer() {
+        return modelContainer;
     }
 
     @Override
-    public void setShape(PackShape shape) {
-        for (PackShape s : Pack.getShapes()) {
-            if (s.getName().equalsIgnoreCase(shapeName)) {
-                this.shape = s;
-                break;
-            }
-        }
-        if (shape != null) {
-            if (!shape.useVanillaBlockBounds) {
-                block.setBlockBounds(shape.blockBoundsCoordinates.get(0).floatValue(), shape.blockBoundsCoordinates.get(1).floatValue(),
-                                     shape.blockBoundsCoordinates.get(2).floatValue(), shape.blockBoundsCoordinates.get(3).floatValue(),
-                                     shape.blockBoundsCoordinates.get(4).floatValue(), shape.blockBoundsCoordinates.get(5).floatValue());
-            }
-        }
+    public void setModelContainer(PackModelContainer modelContainer) {
+        this.modelContainer = Optional.fromNullable(modelContainer);
     }
 
     @Override
-    public String getShapeName() {
-        return shapeName;
+    public String getModelName() {
+        return modelName;
     }
 
     @SideOnly(Side.CLIENT)

@@ -8,11 +8,7 @@ package com.almuradev.almura.pack;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.pack.container.PackContainerBlock;
-import com.almuradev.almura.pack.crop.PackCrops;
-import com.almuradev.almura.pack.model.PackShape;
-import com.almuradev.almura.pack.node.ContainerNode;
-import com.almuradev.almura.pack.node.container.StateProperty;
+import com.almuradev.almura.pack.model.PackModelContainer;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
@@ -32,7 +28,7 @@ import java.util.Map;
 
 public class Pack {
 
-    private static final List<PackShape> SHAPES = Lists.newArrayList();
+    private static final List<PackModelContainer> MODEL_CONTAINERS = Lists.newArrayList();
     private static final Map<String, Pack> PACKS = new HashMap<>();
     protected final List<Block> blocks = Lists.newArrayList();
     protected final List<Item> items = Lists.newArrayList();
@@ -42,30 +38,30 @@ public class Pack {
         this.name = name;
     }
 
+    public static List<PackModelContainer> getModelContainers() {
+        return Collections.unmodifiableList(MODEL_CONTAINERS);
+    }
+
     public static Map<String, Pack> getPacks() {
         return Collections.unmodifiableMap(PACKS);
     }
 
-    public static List<PackShape> getShapes() {
-        return Collections.unmodifiableList(SHAPES);
-    }
-
     public static void loadAllContent() {
-        if (Configuration.IS_CLIENT) {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_MODELS_PATH, Filesystem.MODEL_FILES_ONLY_FILTER)) {
-                for (Path path : stream) {
-                    try {
-                        final PackShape shape = loadShape(path);
-                        if (shape != null) {
-                            SHAPES.add(shape);
-                        }
-                    } catch (IOException | ConfigurationException e) {
-                        Almura.LOGGER.error("Failed to load model [" + path + "] in [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
-                    }
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_MODELS_PATH, Filesystem.MODEL_FILES_ONLY_FILTER)) {
+            for (Path path : stream) {
+                try {
+                    String name = path.getFileName().toString();
+                    boolean shape = name.endsWith(".shape");
+                    name = name.split(".shape")[0];
+
+                    final PackModelContainer modelContainer = loadModelContainer(name, path, shape);
+                    MODEL_CONTAINERS.add(modelContainer);
+                } catch (IOException | ConfigurationException e) {
+                    Almura.LOGGER.error("Failed to load model container [" + path + "] in [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException("Failed filtering model files from [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
             }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed filtering model files from [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
         }
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_YML_PATH, Filesystem.DIRECTORIES_ONLY_FILTER)) {
@@ -82,11 +78,16 @@ public class Pack {
         }
     }
 
-    public static PackShape loadShape(Path root) throws ConfigurationException, IOException {
+    public static PackModelContainer loadModelContainer(String name, Path root, boolean shape) throws ConfigurationException, IOException {
         final InputStream entry = Files.newInputStream(root);
         final YamlConfiguration reader = new YamlConfiguration(entry);
         reader.load();
-        return PackCreator.createShapeFromReader(root.getFileName().toString().split(".shape")[0], reader);
+
+        final PackModelContainer modelContainer = PackCreator.createModelContainerFromReader(name, reader);
+        if (Configuration.IS_CLIENT && shape) {
+            PackCreator.loadShapeIntoModelContainer(modelContainer, name, reader);
+        }
+        return modelContainer;
     }
 
     public static Pack loadPack(Path root) {
@@ -162,15 +163,6 @@ public class Pack {
 
     /**
      * INTERNAL USE ONLY
-     * @param block
-     */
-    public void addBlock(Block block) {
-        blocks.add(block);
-    }
-
-    /**
-     * INTERNAL USE ONLY
-     * @param item
      */
     public void addItem(Item item) {
         items.add(item);
@@ -178,71 +170,6 @@ public class Pack {
 
     public List<Item> getItems() {
         return Collections.unmodifiableList(items);
-    }
-
-    public void injectShapes() {
-        for (Block block : blocks) {
-            if (block instanceof IShapeContainer) {
-                if (block instanceof PackCrops) {
-                    ((PackCrops) block).setShape(null);
-                    continue;
-                }
-                PackShape shape = null;
-                for (PackShape s : SHAPES) {
-                    if (s.getName().equalsIgnoreCase(((IShapeContainer) block).getShapeName())) {
-                        shape = s;
-                        break;
-                    }
-                }
-
-                if (shape != null) {
-                    ((IShapeContainer) block).setShape(shape);
-                } else if (((IShapeContainer) block).getShapeName() != null && ((IShapeContainer) block).getShapeName().isEmpty() && (
-                        Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
-                    Almura.LOGGER
-                            .warn("Shape [" + ((IShapeContainer) block).getShapeName() + "] for [" + name + "] for pack [" + getName()
-                                  + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
-                                    .toString() + "]. Will render as a basic cube.");
-                }
-
-                if (block instanceof PackContainerBlock) {
-                    for (StateProperty prop : ((PackContainerBlock) block).getNode(ContainerNode.class).getValue()) {
-                        for (PackShape s : SHAPES) {
-                            if (s.getName().equalsIgnoreCase(prop.getShapeName())) {
-                                prop.setShape(s);
-                            }
-                        }
-
-                        if (prop.getShapeName() != null && prop.getShapeName().isEmpty() && prop.getShape() == null && (Configuration.DEBUG_MODE
-                                                                                                                        || Configuration.DEBUG_PACKS_MODE)) {
-                            Almura.LOGGER.warn("Shape [" + prop.getShapeName() + "] for state [full] for [" + name + "] for pack [" + getName()
-                                               + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH.toString()
-                                               + "]. Will render as a basic cube.");
-                        }
-                    }
-                }
-
-            }
-        }
-        for (Item item : items) {
-            if (item instanceof IShapeContainer) {
-                PackShape shape = null;
-                for (PackShape s : SHAPES) {
-                    if (s.getName().equalsIgnoreCase(((IShapeContainer) item).getShapeName())) {
-                        shape = s;
-                        break;
-                    }
-                }
-                if (shape != null) {
-                    ((IShapeContainer) item).setShape(shape);
-                } else if (((IShapeContainer) item).getShapeName() != null && ((IShapeContainer) item).getShapeName().isEmpty() && (
-                        Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
-                    Almura.LOGGER
-                            .warn("Shape [" + ((IShapeContainer) item).getShapeName() + "] was not found in [" + Filesystem.CONFIG_MODELS_PATH
-                                    .toString() + "]. Will render as a basic item.");
-                }
-            }
-        }
     }
 
     @Override

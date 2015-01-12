@@ -12,7 +12,6 @@ import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.menu.AlmuraMainMenu;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
@@ -65,12 +64,6 @@ public class ClientProxy extends CommonProxy {
         FMLCommonHandler.instance().bus().register(almuraDebugHud);
     }
 
-    @Override
-    public void onCreate(Pack pack) {
-        pack.injectShapes();
-        super.onCreate(pack);
-    }
-
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         if (event.gui instanceof GuiMainMenu) {
@@ -80,9 +73,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onKeyInput(KeyInputEvent event) {
-        if (BINDING_CONFIG_GUI.isPressed()) {
-            // TODO: Create an ingame config screen? Could just make our own option screen...
-        } else if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
             IngameDebugHUD.UPDATES_ENABLED = !IngameDebugHUD.UPDATES_ENABLED;
         }
     }

@@ -43,7 +43,8 @@ public class QuantitiveShapelessRecipes extends ShapelessRecipes {
                     for (Object obj : buffer) {
                         ItemStack recipeStack = (ItemStack) obj;
 
-                        if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
+                        if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize
+                            || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
                             continue;
                         }
 

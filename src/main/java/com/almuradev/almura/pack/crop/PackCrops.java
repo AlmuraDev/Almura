@@ -7,12 +7,12 @@ package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IBlockClipContainer;
-import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.mapper.GameObject;
-import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
@@ -22,9 +22,9 @@ import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -52,12 +52,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackCrops extends BlockCrops implements IPackObject, IBlockClipContainer, IBlockShapeContainer, INodeContainer {
+public class PackCrops extends BlockCrops implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer {
 
     public static int renderId;
     private final Pack pack;
     private final String identifier;
-    private final int levelRequired;
     private final String textureName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final Map<Integer, Stage> stages;
@@ -65,7 +64,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     public PackCrops(Pack pack, String identifier, String textureName, int levelRequired, Map<Integer, Stage> stages) {
         this.pack = pack;
         this.identifier = identifier;
-        this.levelRequired = levelRequired;
         this.stages = stages;
         this.textureName = textureName;
         setBlockName(pack.getName() + "\\" + identifier);
@@ -76,8 +74,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     @Override
     public void updateTick(World world, int x, int y, int z, Random random) {
         final int metadata = world.getBlockMetadata(x, y, z);
-        //TODO Needs serious testing
-        
+
         if (metadata >= stages.size() - 1) {
             return;
         }
@@ -92,15 +89,15 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         final int minLightLevel = lightNode.getValue().getMin();
         final int maxLightLevel = lightNode.getValue().getMax();
         final int areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
-        final int worldLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z)- world.skylightSubtracted;
+        final int worldLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
         boolean enoughLight = false;
-        if (areaBlockLight>= minLightLevel && areaBlockLight <= maxLightLevel) {
-           enoughLight = true;
+        if (areaBlockLight >= minLightLevel && areaBlockLight <= maxLightLevel) {
+            enoughLight = true;
         } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
-           enoughLight = true;
+            enoughLight = true;
         }
 
-        if (stage != null && enoughLight) {
+        if (enoughLight) {
             stage.onTick(world, x, y, z, random);
             //Get within range
             final double
@@ -111,6 +108,23 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
                 final Stage newStage = stages.get(metadata + 1);
                 newStage.onGrown(world, x, y, z, random);
                 world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
+            }
+        }
+    }
+
+    @Override
+    public void setBlockBoundsBasedOnState(IBlockAccess access, int x, int y, int z) {
+        if (access != null) {
+            final int metadata = access.getBlockMetadata(x, y, z);
+            final Stage stage = stages.get(metadata);
+            final Optional<PackModelContainer> modelContainer = stage.getModelContainer();
+            if (modelContainer.isPresent()) {
+                final AxisAlignedBB
+                        blockBoundsBB =
+                        modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0.5, 0, 0, 1, 0.25, 1),
+                                                                         access, x, y, z);
+                setBlockBounds((float) blockBoundsBB.minX, (float) blockBoundsBB.minY, (float) blockBoundsBB.minZ, (float) blockBoundsBB.maxX,
+                               (float) blockBoundsBB.maxY, (float) blockBoundsBB.maxZ);
             }
         }
     }
@@ -230,27 +244,22 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         harvesters.set(null);
     }
 
-    /**
-     * Returns a bounding box from the pool of bounding boxes (this means this box can change after the pool has been
-     * cleared to be reused)
-     */
+
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
         final AxisAlignedBB vanillaBB = super.getCollisionBoundingBoxFromPool(world, x, y, z);
         final int metadata = world.getBlockMetadata(x, y, z);
         final Stage stage = stages.get(metadata);
         if (stage != null) {
-            final PackShape shape = stage.getShape(world, x, y, z, metadata);
-            if (shape != null && !shape.useVanillaCollision) {
-                return shape.getCollisionBoundingBoxFromPool(vanillaBB, world, x, y, z);
+            final Optional<PackModelContainer> modelContainer = stage.getModelContainer(world, x, y, z, metadata);
+            if (modelContainer.isPresent()) {
+                return modelContainer.get().getPhysics().getCollisionBoundingBoxFromPool(vanillaBB, world, x, y, z);
             }
         }
+
         return vanillaBB;
     }
 
-    /**
-     * Returns the bounding box of the wired rectangular prism to render.
-     */
     @SideOnly(Side.CLIENT)
     @Override
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
@@ -258,11 +267,12 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         final int metadata = world.getBlockMetadata(x, y, z);
         final Stage stage = stages.get(metadata);
         if (stage != null) {
-            final PackShape shape = stage.getShape(world, x, y, z, metadata);
-            if (shape != null && !shape.useVanillaWireframe) {
-                return shape.getSelectedBoundingBoxFromPool(vanillaBB, world, x, y, z);
+            final Optional<PackModelContainer> modelContainer = stage.getModelContainer(world, x, y, z, metadata);
+            if (modelContainer.isPresent()) {
+                return modelContainer.get().getPhysics().getSelectedBoundingBox(vanillaBB, world, x, y, z);
             }
         }
+
         return vanillaBB;
     }
 
@@ -292,29 +302,23 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     }
 
     @Override
-    public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
+    public Optional<PackModelContainer> getModelContainer(IBlockAccess access, int x, int y, int z, int metadata) {
         final Stage stage = stages.get(metadata);
-        if (stage != null) {
-            return stage.getShape(access, x, y, z, metadata);
-        }
-        return null;
+        return stage == null ? Optional.<PackModelContainer>absent() : stage.getModelContainer(access, x, y, z, metadata);
     }
 
     @Override
-    public PackShape getShape() {
+    public Optional<PackModelContainer> getModelContainer() {
         final Stage stage = stages.get(0);
-        return stage == null ? null : stage.getShape();
+        return stage == null ? Optional.<PackModelContainer>absent() : stage.getModelContainer();
     }
 
     @Override
-    public void setShape(PackShape shape) {
-        for (Stage stage : stages.values()) {
-            stage.setShape(shape);
-        }
+    public void setModelContainer(PackModelContainer modelContainer) {
     }
 
     @Override
-    public String getShapeName() {
+    public String getModelName() {
         return "";
     }
 
@@ -342,10 +346,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     @Override
     public <T extends INode<?>> boolean hasNode(Class<T> clazz) {
         return getNode(clazz) != null;
-    }
-
-    public int getLevelRequired() {
-        return levelRequired;
     }
 
     public Map<Integer, Stage> getStages() {

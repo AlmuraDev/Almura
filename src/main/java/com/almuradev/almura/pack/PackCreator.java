@@ -21,7 +21,8 @@ import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackMirrorFace;
-import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.model.PackModelContainer;
+import com.almuradev.almura.pack.model.PackPhysics;
 import com.almuradev.almura.pack.node.BiomeNode;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
@@ -54,8 +55,9 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.RenderParameters;
-import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Vertex;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
@@ -81,7 +83,7 @@ public class PackCreator {
 
     private static final char[] RECIPE_MATRIX_PLACEHOLDER = new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'};
 
-    public static PackShape createShapeFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackModelContainer createModelContainerFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
         final ConfigurationNode boundsConfigurationNode = reader.getNode(PackKeys.NODE_BOUNDS.getKey());
 
         final boolean
@@ -96,10 +98,10 @@ public class PackCreator {
                             .getString(PackKeys.COLLISION_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e
+                Almura.LOGGER.error("Model [" + name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e
                         .getMessage(), e);
             } else {
-                Almura.LOGGER.warn("Shape [" + name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e
+                Almura.LOGGER.warn("Model [" + name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e
                         .getMessage());
             }
         }
@@ -115,10 +117,10 @@ public class PackCreator {
                     .getString(PackKeys.WIREFRAME_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                Almura.LOGGER.error("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e
+                Almura.LOGGER.error("Model [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e
                         .getMessage(), e);
             } else {
-                Almura.LOGGER.warn("Shape [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e
+                Almura.LOGGER.warn("Model [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e
                         .getMessage());
             }
         }
@@ -134,19 +136,26 @@ public class PackCreator {
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                 Almura.LOGGER
-                        .error("Shape [" + name + "] has invalid " + PackKeys.BLOCK_BOX.getKey().toLowerCase() + " coordinates. "
+                        .error("Model [" + name + "] has invalid " + PackKeys.BLOCK_BOX.getKey().toLowerCase() + " coordinates. "
                                + e.getMessage(), e);
             } else {
                 Almura.LOGGER
-                        .warn("Shape [" + name + "] has invalid " + PackKeys.BLOCK_BOX.getKey().toLowerCase() + " coordinates. "
-                               + e.getMessage());
+                        .warn("Model [" + name + "] has invalid " + PackKeys.BLOCK_BOX.getKey().toLowerCase() + " coordinates. "
+                              + e.getMessage());
             }
         }
 
-        final ConfigurationNode shapesConfigurationNode = reader.getNode(PackKeys.SHAPES.getKey());
-        final List<Face> faces = Lists.newLinkedList();
+        return new PackModelContainer(name, new PackPhysics(useVanillaCollision, useVanillaWireframe, useVanillaBlockBounds, collisionCoordinates,
+                                                            wireframeCoordinates, blockBoundsCoordinates));
+    }
 
-        for (Object obj : shapesConfigurationNode.getList()) {
+    @SideOnly(Side.CLIENT)
+    public static void loadShapeIntoModelContainer(PackModelContainer modelContainer, String name, YamlConfiguration reader)
+            throws ConfigurationException {
+        final ConfigurationNode modelConfigurationNode = reader.getNode(PackKeys.SHAPES.getKey());
+        final List<PackFace> faces = Lists.newLinkedList();
+
+        for (Object obj : modelConfigurationNode.getList()) {
             final LinkedHashMap map = (LinkedHashMap) obj;
 
             final String rawCoordinateString = (String) map.get(PackKeys.TEXTURE_COORDINATES.getKey());
@@ -159,9 +168,9 @@ public class PackCreator {
                     coordinates.addAll(PackUtil.parseStringToNumericList(Double.class, rawCoordinate, 3));
                 } catch (NumberFormatException nfe) {
                     if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                        Almura.LOGGER.error("Could not parse vertex in shape [" + name + "]. Value: [" + rawCoordinate + "]", nfe);
+                        Almura.LOGGER.error("Could not parse vertex in model [" + name + "]. Value: [" + rawCoordinate + "]", nfe);
                     } else {
-                        Almura.LOGGER.warn("Could not parse vertex in shape [" + name + "]. Value: [" + rawCoordinate + "]");
+                        Almura.LOGGER.warn("Could not parse vertex in model [" + name + "]. Value: [" + rawCoordinate + "]");
                     }
                     continue;
                 }
@@ -171,53 +180,53 @@ public class PackCreator {
             }
             final RenderParameters params = new RenderParameters();
             params.textureSide.set(ForgeDirection.getOrientation(textureIndex));
-            final Face face = new PackFace(textureIndex, vertices);
+            final PackFace face = new PackFace(textureIndex, vertices);
             face.setStandardUV();
             face.setParameters(params);
             faces.add(face);
         }
 
         if (faces.isEmpty()) {
-            Almura.LOGGER.error("Shape [" + name + "] has no faces and therefore will not be loaded.");
-            return null;
+            Almura.LOGGER.error("Model [" + name + "] has no faces and therefore will not be loaded.");
+            return;
         }
 
-        PackShape
-                shape =
-                new PackShape(name, faces, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
-                              useVanillaBlockBounds, blockBoundsCoordinates);
+        final PackModelContainer.PackShape shape = new PackModelContainer.PackShape(faces);
 
         //Handle shapes that don't have at least 4 faces
         if (shape.getFaces().length < 4) {
             shape.applyMatrix();
 
-            final PackShape
-                    s =
-                    new PackShape(shape.getName(), useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
-                                  useVanillaBlockBounds, blockBoundsCoordinates);
-            s.addFaces(shape.getFaces());
-            final PackShape
-                    scaled =
-                    new PackShape(shape.getName(), shape, useVanillaCollision, collisionCoordinates, useVanillaWireframe, wireframeCoordinates,
-                                  useVanillaBlockBounds, blockBoundsCoordinates);
-            scaled.scale(-1, 1, -1);
-            scaled.applyMatrix();
-            //Scaled returns non PackFaces, OOP demands a fix
-            for (int i = 0; i < 4 - scaled.getFaces().length; i++) {
-                s.addFaces(new PackMirrorFace[]{new PackMirrorFace(((PackFace) s.getFaces()[i]).getTextureId(),
-                                                                   scaled.getFaces()[i >= scaled.getFaces().length ? scaled.getFaces().length - 1
-                                                                                                                   : i])});
+            final PackModelContainer.PackShape copy = new PackModelContainer.PackShape(faces);
+            copy.scale(-1, 1, -1);
+            copy.applyMatrix();
+
+            for (int i = 0; i < 4 - shape.getFaces().length; i++) {
+                shape.addFaces(new PackMirrorFace[]{
+                        new PackMirrorFace((PackFace) copy.getFaces()[i >= copy.getFaces().length ? copy.getFaces().length - 1 : i])});
             }
-            shape = s;
+
+            shape.applyMatrix();
         }
+
         shape.storeState();
-        return shape;
+        modelContainer.setModel(shape);
     }
 
     public static PackBlock createBlockFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
         final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
-        final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        PackModelContainer modelContainer = null;
+        for (PackModelContainer mContainer : Pack.getModelContainers()) {
+            if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
+                modelContainer = mContainer;
+            }
+        }
+        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+            Almura.LOGGER
+                    .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube.");
+        }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
@@ -238,7 +247,8 @@ public class PackCreator {
         final RenderNode renderNode = createRenderNode(pack, name, reader.getNode(PackKeys.NODE_RENDER.getKey()));
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackBlock(pack, name, textureName, textureCoordinates, shapeName, hardness, resistance, showInCreativeTab, creativeTabName,
+        return new PackBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
+                             creativeTabName,
                              rotationNode, lightNode, renderNode);
     }
 
@@ -251,7 +261,17 @@ public class PackCreator {
             tooltip.remove(0);
         }
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
-        final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        PackModelContainer modelContainer = null;
+        for (PackModelContainer mContainer : Pack.getModelContainers()) {
+            if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
+                modelContainer = mContainer;
+            }
+        }
+        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+            Almura.LOGGER
+                    .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic item.");
+        }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
@@ -266,7 +286,7 @@ public class PackCreator {
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", description.get(0));
 
-        return new PackItem(pack, name, tooltip, textureName, shapeName, textureCoordinates, showInCreativeTab, creativeTabName);
+        return new PackItem(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName);
     }
 
     public static PackFood createFoodFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -278,7 +298,17 @@ public class PackCreator {
             tooltip.remove(0);
         }
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
-        final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        PackModelContainer modelContainer = null;
+        for (PackModelContainer mContainer : Pack.getModelContainers()) {
+            if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
+                modelContainer = mContainer;
+            }
+        }
+        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+            Almura.LOGGER
+                    .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube");
+        }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
@@ -294,7 +324,8 @@ public class PackCreator {
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", description.get(0));
 
-        return new PackFood(pack, name, tooltip, textureName, shapeName, textureCoordinates, showInCreativeTab, creativeTabName, consumptionNode);
+        return new PackFood(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName,
+                            consumptionNode);
     }
 
     public static PackCrops createCropFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -345,7 +376,18 @@ public class PackCreator {
             tooltip.addAll(description);
             tooltip.remove(0);
         }
-        final String shapeName = node.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String modelName = node.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        PackModelContainer modelContainer = null;
+        for (PackModelContainer mContainer : Pack.getModelContainers()) {
+            if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
+                modelContainer = mContainer;
+            }
+        }
+        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+            Almura.LOGGER
+                    .warn("Model [" + modelName + "] for seed in [" + crop.getIdentifier() + "] in pack [" + pack.getName()
+                          + "] was not found. Will render as a basic item.");
+        }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(node.getChild(
@@ -360,7 +402,8 @@ public class PackCreator {
 
         final PackSeeds
                 seed =
-                new PackSeeds(pack, identifier, tooltip, textureName, shapeName, textureCoordinates, showInCreativeTab, creativeTabName, crop, soil);
+                new PackSeeds(pack, identifier, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab,
+                              creativeTabName, crop, soil);
         seed.addNode(createGrassNode(pack, name, seed, node.getNode(PackKeys.NODE_GRASS.getKey())));
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + identifier + ".name", description.get(0));
@@ -370,7 +413,17 @@ public class PackCreator {
 
     @SuppressWarnings("unchecked")
     public static Stage createCropStage(Pack pack, String name, PackCrops crop, int id, ConfigurationNode node) {
-        final String shapeName = node.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String modelName = node.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        PackModelContainer modelContainer = null;
+        for (PackModelContainer mContainer : Pack.getModelContainers()) {
+            if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
+                modelContainer = mContainer;
+            }
+        }
+        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+            Almura.LOGGER.warn("Model [" + modelName + "] in stage [" + id + "] in [" + name + "] in pack [" + pack.getName()
+                               + "] was not found. Will render as a basic cube.");
+        }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(node.getChild(
@@ -384,13 +437,23 @@ public class PackCreator {
         final GrowthNode growthNode = createGrowthNode(pack, crop.getIdentifier() + "\\stage\\" + id, node.getNode(PackKeys.NODE_GROWTH.getKey()));
         final LightNode lightNode = createLightNode(pack, crop.getIdentifier() + "\\stage\\" + id, node.getNode(PackKeys.NODE_LIGHT.getKey()));
 
-        return new Stage(crop, id, textureCoordinates, shapeName, growthNode, lightNode);
+        return new Stage(crop, id, textureCoordinates, modelName, modelContainer, growthNode, lightNode);
     }
 
     public static PackContainerBlock createContainerBlock(Pack pack, String name, YamlConfiguration reader) {
         final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
-        final String shapeName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        PackModelContainer modelContainer = null;
+        for (PackModelContainer mContainer : Pack.getModelContainers()) {
+            if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
+                modelContainer = mContainer;
+            }
+        }
+        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+            Almura.LOGGER
+                    .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube.");
+        }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
@@ -412,9 +475,8 @@ public class PackCreator {
         final ContainerNode containerNode = createContainerNode(pack, name, reader.getNode(PackKeys.NODE_CONTAINER.getKey()));
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackContainerBlock(pack, name, textureName, textureCoordinates, shapeName, hardness, resistance, showInCreativeTab,
-                                      creativeTabName,
-                                      rotationNode, lightNode, renderNode, containerNode);
+        return new PackContainerBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
+                                      creativeTabName, rotationNode, lightNode, renderNode, containerNode);
     }
 
     public static ContainerNode createContainerNode(Pack pack, String name, ConfigurationNode node) {
@@ -448,8 +510,18 @@ public class PackCreator {
                         textureName =
                         stateConfigurationNode.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
                 final String
-                        shapeName =
+                        modelName =
                         stateConfigurationNode.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+                PackModelContainer modelContainer = null;
+                for (PackModelContainer mContainer : Pack.getModelContainers()) {
+                    if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
+                        modelContainer = mContainer;
+                    }
+                }
+                if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+                    Almura.LOGGER.warn("Model [" + modelName + "] for state [full] in [" + name + "] in pack [" + pack.getName()
+                                       + "] was not found. Will render as a basic cube.");
+                }
                 Map<Integer, List<Integer>> textureCoordinates;
                 try {
                     textureCoordinates = PackUtil.parseCoordinatesFrom(stateConfigurationNode.getChild(
@@ -459,7 +531,7 @@ public class PackCreator {
                     textureCoordinates = Maps.newHashMap();
                 }
 
-                states.add(new StateProperty(pack, enabled, rawState, textureName, textureCoordinates, shapeName));
+                states.add(new StateProperty(pack, enabled, rawState, textureName, textureCoordinates, modelName, modelContainer));
             }
         }
         return new ContainerNode(title, correctSize, maxStackSize, states);

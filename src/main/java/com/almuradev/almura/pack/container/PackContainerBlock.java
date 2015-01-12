@@ -6,16 +6,18 @@
 package com.almuradev.almura.pack.container;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.pack.IBlockClipContainer;
-import com.almuradev.almura.pack.IBlockShapeContainer;
+import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.mapper.GameObject;
-import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.model.PackModelContainer;
+import com.almuradev.almura.pack.model.PackPhysics;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ContainerNode;
@@ -65,36 +67,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackContainerBlock extends BlockContainer implements IPackObject, IBlockClipContainer, IBlockShapeContainer, INodeContainer {
+public class PackContainerBlock extends BlockContainer implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer {
 
     public static int renderId;
     private final Pack pack;
     private final String identifier;
     private final Map<Integer, List<Integer>> textureCoordinates;
-    private final String shapeName;
+    private final String modelName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String textureName;
     private final RenderNode renderNode;
     private final RotationNode rotationNode;
     private final ContainerNode containerNode;
     private ClippedIcon[] clippedIcons;
-    private PackShape shape;
+    private Optional<PackModelContainer> modelContainer;
     private BreakNode breakNode;
     private CollisionNode collisionNode;
 
-    public PackContainerBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String shapeName,
-                              float hardness,
-                              float resistance, boolean showInCreativeTab, String creativeTabName, RotationNode rotationNode, LightNode lightNode,
-                              RenderNode renderNode, ContainerNode containerNode) {
+    public PackContainerBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String modelName,
+                              PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
+                              RotationNode rotationNode, LightNode lightNode, RenderNode renderNode, ContainerNode containerNode) {
         super(Material.ground);
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinates = textureCoordinates;
-        this.shapeName = shapeName;
+        this.modelName = modelName;
         this.textureName = textureName;
         this.renderNode = renderNode;
         this.rotationNode = rotationNode;
         this.containerNode = containerNode;
+        setModelContainer(modelContainer);
         addNode(rotationNode);
         addNode(lightNode);
         addNode(renderNode);
@@ -107,6 +109,36 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
         setLightOpacity(lightNode.getOpacity());
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
+        }
+    }
+
+    @Override
+    public void setBlockBoundsBasedOnState(IBlockAccess access, int x, int y, int z) {
+        if (access != null) {
+            if (modelContainer.isPresent()) {
+                AxisAlignedBB blockBoundsBB = modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1), access,
+                                                                                               x, y, z);
+                final PackContainerTileEntity te = (PackContainerTileEntity) access.getTileEntity(x, y, z);
+                boolean full = false;
+
+                if (te != null) {
+                    full = te.hasEmptySlots();
+                }
+
+                if (full) {
+                    Optional<StateProperty> prop = containerNode.getByIdentifier("full");
+
+                    if (prop.isPresent()) {
+                        final Optional<PackModelContainer> propModelContainer = prop.get().getModelContainer();
+                        if (propModelContainer.isPresent()) {
+                            blockBoundsBB = propModelContainer.get().getPhysics().getBlockBounds(blockBoundsBB, access, x, y, z);
+                        }
+                    }
+                }
+
+                setBlockBounds((float) blockBoundsBB.minX, (float) blockBoundsBB.minY, (float) blockBoundsBB.minZ, (float) blockBoundsBB.maxX,
+                               (float) blockBoundsBB.maxY, (float) blockBoundsBB.maxZ);
+            }
         }
     }
 
@@ -162,7 +194,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     @Override
     @SideOnly(Side.CLIENT)
     public boolean renderAsNormalBlock() {
-        return shape == null && renderNode.getValue();
+        return modelContainer == null && renderNode.getValue();
     }
 
     @Override
@@ -291,21 +323,60 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
 
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-        final AxisAlignedBB vanillaBB = super.getCollisionBoundingBoxFromPool(world, x, y, z);
-        if (shape == null) {
-            return vanillaBB;
+        AxisAlignedBB collisionBoundingBox = super.getCollisionBoundingBoxFromPool(world, x, y, z);
+
+        if (modelContainer.isPresent()) {
+            collisionBoundingBox = modelContainer.get().getPhysics().getCollisionBoundingBoxFromPool(collisionBoundingBox, world, x, y, z);
+            final PackContainerTileEntity te = (PackContainerTileEntity) world.getTileEntity(x, y, z);
+            boolean full = false;
+
+            if (te != null) {
+                full = te.hasEmptySlots();
+            }
+
+            if (full) {
+                Optional<StateProperty> prop = containerNode.getByIdentifier("full");
+
+                if (prop.isPresent()) {
+                    final Optional<PackModelContainer> propModelContainer = prop.get().getModelContainer();
+                    if (propModelContainer.isPresent()) {
+                        collisionBoundingBox = propModelContainer.get().getPhysics().getCollisionBoundingBoxFromPool(collisionBoundingBox, world, x,
+                                                                                                                     y, z);
+                    }
+                }
+            }
         }
-        return shape.getCollisionBoundingBoxFromPool(vanillaBB, world, x, y, z);
+
+        return collisionBoundingBox;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
-        final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
-        if (shape == null) {
-            return vanillaBB;
+        AxisAlignedBB wireframeBoundingBox = super.getCollisionBoundingBoxFromPool(world, x, y, z);
+
+        if (modelContainer.isPresent()) {
+            wireframeBoundingBox = modelContainer.get().getPhysics().getSelectedBoundingBox(wireframeBoundingBox, world, x, y, z);
+            final PackContainerTileEntity te = (PackContainerTileEntity) world.getTileEntity(x, y, z);
+            boolean full = false;
+
+            if (te != null) {
+                full = te.hasEmptySlots();
+            }
+
+            if (full) {
+                Optional<StateProperty> prop = containerNode.getByIdentifier("full");
+
+                if (prop.isPresent()) {
+                    final Optional<PackModelContainer> propModelContainer = prop.get().getModelContainer();
+                    if (propModelContainer.isPresent()) {
+                        wireframeBoundingBox = propModelContainer.get().getPhysics().getSelectedBoundingBox(wireframeBoundingBox, world, x, y, z);
+                    }
+                }
+            }
         }
-        return shape.getSelectedBoundingBoxFromPool(vanillaBB, world, x, y, z);
+
+        return wireframeBoundingBox;
     }
 
     @Override
@@ -356,17 +427,17 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     }
 
     @Override
-    public PackShape getShape(IBlockAccess access, int x, int y, int z, int metadata) {
+    public Optional<PackModelContainer> getModelContainer(IBlockAccess access, int x, int y, int z, int metadata) {
         if (access != null) {
             final PackContainerTileEntity te = (PackContainerTileEntity) access.getTileEntity(x, y, z);
             if (te != null && !te.hasEmptySlots()) {
                 final Optional<StateProperty> state = containerNode.getByIdentifier("full");
                 if (state.isPresent()) {
-                    return state.get().getShape();
+                    return state.get().getModelContainer();
                 }
             }
         }
-        return shape;
+        return modelContainer;
     }
 
     @Override
@@ -416,28 +487,26 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     }
 
     @Override
-    public PackShape getShape() {
-        return shape;
+    public Optional<PackModelContainer> getModelContainer() {
+        return modelContainer;
     }
 
     @Override
-    public void setShape(PackShape shape) {
-        this.shape = shape;
-        if (shape != null) {
-            if (!shape.useVanillaBlockBounds && shape.blockBoundsCoordinates.size() == 6) {
-                setBlockBounds(shape.blockBoundsCoordinates.get(0).floatValue(), shape.blockBoundsCoordinates.get(1).floatValue(),
-                               shape.blockBoundsCoordinates.get(2).floatValue(), shape.blockBoundsCoordinates.get(3).floatValue(),
-                               shape.blockBoundsCoordinates.get(4).floatValue(), shape.blockBoundsCoordinates.get(5).floatValue());
+    public void setModelContainer(PackModelContainer modelContainer) {
+        this.modelContainer = Optional.fromNullable(modelContainer);
+
+        if (Configuration.IS_CLIENT) {
+            if (this.modelContainer.get().getModel().isPresent()) {
+                opaque = false;
+            } else {
+                opaque = renderNode.isOpaque();
             }
-            opaque = false;
-        } else {
-            opaque = renderNode.isOpaque();
         }
     }
 
     @Override
-    public String getShapeName() {
-        return shapeName;
+    public String getModelName() {
+        return modelName;
     }
 
     @Override

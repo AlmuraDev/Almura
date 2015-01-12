@@ -8,12 +8,13 @@ package com.almuradev.almura.pack.item;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.IPackObject;
-import com.almuradev.almura.pack.IShapeContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.google.common.base.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -27,25 +28,26 @@ import net.minecraft.util.IIcon;
 import java.util.List;
 import java.util.Map;
 
-public class PackItem extends Item implements IPackObject, IClipContainer, IShapeContainer {
+public class PackItem extends Item implements IPackObject, IClipContainer, IModelContainer {
 
     private final Pack pack;
     private final String identifier;
     private final Map<Integer, List<Integer>> textureCoordinates;
-    private final String shapeName;
+    private final String modelName;
     private ClippedIcon[] clippedIcons;
     private String textureName;
-    private PackShape shape;
+    private Optional<PackModelContainer> modelContainer;
     private List<String> tooltip;
 
-    public PackItem(Pack pack, String identifier, List<String> tooltip, String textureName, String shapeName,
+    public PackItem(Pack pack, String identifier, List<String> tooltip, String textureName, String modelName, PackModelContainer modelContainer,
                     Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName) {
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinates = textureCoordinates;
         this.textureName = textureName;
-        this.shapeName = shapeName;
+        this.modelName = modelName;
         this.tooltip = tooltip;
+        setModelContainer(modelContainer);
         setUnlocalizedName(pack.getName() + "\\" + identifier);
         setTextureName(Almura.MOD_ID + ":images/" + textureName);
         if (showInCreativeTab) {
@@ -94,18 +96,18 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IShap
     }
 
     @Override
-    public PackShape getShape() {
-        return shape;
+    public Optional<PackModelContainer> getModelContainer() {
+        return modelContainer;
     }
 
     @Override
-    public void setShape(PackShape shape) {
-        this.shape = shape;
+    public void setModelContainer(PackModelContainer modelContainer) {
+        this.modelContainer = Optional.fromNullable(modelContainer);
     }
 
     @Override
-    public String getShapeName() {
-        return shapeName;
+    public String getModelName() {
+        return modelName;
     }
 
     @Override

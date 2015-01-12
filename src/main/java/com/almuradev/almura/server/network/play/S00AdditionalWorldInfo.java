@@ -5,10 +5,7 @@
  */
 package com.almuradev.almura.server.network.play;
 
-import net.minecraft.client.Minecraft;
-
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
-
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -45,8 +42,8 @@ public class S00AdditionalWorldInfo implements IMessage, IMessageHandler<S00Addi
     }
 
     @Override
-    public IMessage onMessage(S00AdditionalWorldInfo message, MessageContext ctx) {        
-    	if (ctx.side == Side.CLIENT) {
+    public IMessage onMessage(S00AdditionalWorldInfo message, MessageContext ctx) {
+        if (ctx.side == Side.CLIENT) {
             if (message.worldName.equalsIgnoreCase("Dim1")) {
                 IngameHUD.INSTANCE.worldDisplay.setText("The End");
             } else if (message.worldName.equalsIgnoreCase("Dim-1")) {

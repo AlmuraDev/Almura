@@ -7,15 +7,14 @@ package com.almuradev.almura.pack.renderer;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IBlockClipContainer;
-import com.almuradev.almura.pack.IBlockShapeContainer;
-import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
-import com.almuradev.almura.pack.container.PackContainerTileEntity;
+import com.almuradev.almura.pack.model.IModel;
 import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackMirrorFace;
-import com.almuradev.almura.pack.model.PackShape;
+import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.ContainerNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.container.StateProperty;
@@ -31,7 +30,6 @@ import net.malisis.core.renderer.element.shape.Cube;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
@@ -39,23 +37,30 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockRenderer extends MalisisRenderer {
 
-    private Cube vanillaShape;
+    private Cube cubeModel;
 
     @Override
     protected void initialize() {
-        vanillaShape = new Cube();
+        cubeModel = new Cube();
     }
 
     @Override
     public void render() {
-        enableBlending();
-        Shape shape = ((IBlockShapeContainer) block).getShape(world, x, y, z, blockMetadata);
-
-        if (shape == null) {
-            shape = vanillaShape;
+        shape = cubeModel;
+        final Optional<PackModelContainer> modelContainer = ((IBlockModelContainer) block).getModelContainer(world, x, y, z, blockMetadata);
+        if (modelContainer.isPresent()) {
+            if (modelContainer.get().getModel().isPresent()) {
+                final IModel model = modelContainer.get().getModel().get();
+                if (model instanceof PackModelContainer.PackShape) {
+                    shape = (PackModelContainer.PackShape) model;
+                }
+            }
         }
+        shape.resetState();
+
+        enableBlending();
         rp.useBlockBounds.set(false);
-        if (shape instanceof PackShape) {
+        if (shape instanceof IModel) {
             rp.renderAllFaces.set(true);
             rp.flipU.set(true);
             rp.flipV.set(true);
@@ -66,31 +71,22 @@ public class BlockRenderer extends MalisisRenderer {
             rp.interpolateUV.set(true);
         }
 
-        shape.resetState();
-
-        handleRotation(shape);
-
-        if (renderType == RenderType.ISBRH_INVENTORY) {
-            double max = Double.MIN_VALUE;
-            for (Face fe : shape.getFaces()) {
-                for (Vertex vt : shape.getVertexes(fe)) {
-                    max = Math.max(vt.getX(), max);
-                    max = Math.max(vt.getY(), max);
-                    max = Math.max(vt.getZ(), max);
-                }
+        if (shape instanceof IModel) {
+            if (renderType == RenderType.ISBRH_WORLD && block instanceof INodeContainer) {
+                handleRotation((IModel) shape);
             }
-            shape.scale((float) (1 / max));
-            RenderHelper.enableStandardItemLighting();
+
+            if (renderType == RenderType.ISBRH_INVENTORY) {
+                handleScaling((IModel) shape);
+            }
         }
+
         drawShape(shape, rp);
-        if (Minecraft.getMinecraft().currentScreen == null) {
-            //RenderHelper.disableStandardItemLighting();
-        }
     }
 
     @Override
     public void applyTexture(Shape shape, RenderParameters parameters) {
-        if (!(shape instanceof PackShape)) {
+        if (!(shape instanceof PackModelContainer.PackShape)) {
             super.applyTexture(shape, parameters);
             return;
         }
@@ -139,7 +135,7 @@ public class BlockRenderer extends MalisisRenderer {
     @SuppressWarnings("unchecked")
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
-            if (Block.class.isAssignableFrom(clazz) && IBlockClipContainer.class.isAssignableFrom(clazz) && IBlockShapeContainer.class
+            if (Block.class.isAssignableFrom(clazz) && IBlockClipContainer.class.isAssignableFrom(clazz) && IBlockModelContainer.class
                     .isAssignableFrom(clazz) && INodeContainer.class.isAssignableFrom(clazz)) {
                 super.registerFor(clazz);
             } else {
@@ -153,83 +149,95 @@ public class BlockRenderer extends MalisisRenderer {
         throw new UnsupportedOperationException(getClass().getSimpleName() + " is only meant for blocks.");
     }
 
-    private void handleRotation(Shape s) {
-        if (renderType == RenderType.ISBRH_WORLD && block instanceof INodeContainer && s instanceof PackShape) {
-            final RotationNode node = ((INodeContainer) block).getNode(RotationNode.class);
-            if (node == null) {
-                return;
+    private void handleRotation(IModel model) {
+        final RotationNode node = ((INodeContainer) block).getNode(RotationNode.class);
+        if (node == null) {
+            return;
+        }
+        if (!node.isEnabled()) {
+            return;
+        }
+        final RotationMeta.Rotation rotation = RotationMeta.Rotation.getState(blockMetadata);
+        final RotationProperty property = node.getRotationProperty(rotation);
+        if (property == null) {
+            switch (rotation) {
+                case NORTH:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(180f, 0, -1, 0);
+                    }
+                    break;
+                case SOUTH:
+                    break;
+                case WEST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, -1, 0);
+                    }
+                    break;
+                case EAST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, 1, 0);
+                    }
+                    break;
+                case DOWN_NORTH:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(180f, 0, -1, 0);
+                    }
+                    if (node.isDefaultMirrorRotate()) {
+                        model.rotate(90f, -1, 0, 0);
+                    }
+                    break;
+                case DOWN_SOUTH:
+                    break;
+                case DOWN_WEST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, -1, 0);
+                    }
+                    if (node.isDefaultMirrorRotate()) {
+                        model.rotate(180f, -1, 0, 0);
+                    }
+                    break;
+                case DOWN_EAST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, 1, 0);
+                    }
+                    if (node.isDefaultMirrorRotate()) {
+                        model.rotate(180f, -1, 0, 0);
+                    }
+                    break;
+                case UP_NORTH:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(180f, 0, -1, 0);
+                    }
+                    break;
+                case UP_SOUTH:
+                    break;
+                case UP_WEST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, -1, 0);
+                    }
+                    break;
+                case UP_EAST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, 1, 0);
+                    }
+                    break;
             }
-            if (!node.isEnabled()) {
-                return;
-            }
-            final RotationMeta.Rotation rotation = RotationMeta.Rotation.getState(blockMetadata);
-            final RotationProperty property = node.getRotationProperty(rotation);
-            if (property == null) {
-                switch (rotation) {
-                    case NORTH:
-                        if (node.isDefaultRotate()) {
-                            s.rotate(180f, 0, -1, 0);
-                        }
-                        break;
-                    case SOUTH:
-                        break;
-                    case WEST:
-                        if (node.isDefaultRotate()) {
-                            s.rotate(90f, 0, -1, 0);
-                        }
-                        break;
-                    case EAST:
-                        if (node.isDefaultRotate()) {
-                            s.rotate(90f, 0, 1, 0);
-                        }
-                        break;
-                    case DOWN_NORTH:
-                        if (node.isDefaultRotate()) {
-                            s.rotate(180f, 0, -1, 0);
-                        }
-                        if (node.isDefaultMirrorRotate()) {
-                            s.rotate(90f, -1, 0, 0);
-                        }
-                        break;
-                    case DOWN_SOUTH:
-                        break;
-                    case DOWN_WEST:
-                        if (node.isDefaultRotate()) {
-                            s.rotate(90f, 0, -1, 0);
-                        }
-                        if (node.isDefaultMirrorRotate()) {
-                            s.rotate(180f, -1, 0, 0);
-                        }
-                        break;
-                    case DOWN_EAST:
-                        if (node.isDefaultRotate()) {
-                            s.rotate(90f, 0, 1, 0);
-                        }
-                        if (node.isDefaultMirrorRotate()) {
-                            s.rotate(180f, -1, 0, 0);
-                        }
-                        break;
-                    case UP_NORTH:
-                        if (node.isDefaultRotate()) {
-                            s.rotate(180f, 0, -1, 0);
-                        }
-                        break;
-                    case UP_SOUTH:
-                        break;
-                    case UP_WEST:
-                        if (node.isDefaultRotate()) {
-                            s.rotate(90f, 0, -1, 0);
-                        }
-                        break;
-                    case UP_EAST:
-                        if (node.isDefaultRotate()) {
-                            s.rotate(90f, 0, 1, 0);
-                        }
-                        break;
-                }
-            } else {
-                s.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
+        } else {
+            model.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
+        }
+    }
+
+    private void handleScaling(IModel model) {
+        double max = Double.MIN_VALUE;
+        for (Face fe : model.getFaces()) {
+            for (Vertex vt : model.getVertexes(fe)) {
+                max = Math.max(vt.getX(), max);
+                max = Math.max(vt.getY(), max);
+                max = Math.max(vt.getZ(), max);
             }
         }
+        model.scale((float) (1 / max));
+        RenderHelper.enableStandardItemLighting();
+
     }
 }

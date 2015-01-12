@@ -6,7 +6,6 @@
 package com.almuradev.almura.pack.model;
 
 import net.malisis.core.renderer.RenderParameters;
-import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Vertex;
 
 import java.util.List;
@@ -25,11 +24,11 @@ public class PackMirrorFace extends PackFace {
         super(textureId, vertexes);
     }
 
-    public PackMirrorFace(int textureId, Face face) {
-        super(textureId, face);
+    public PackMirrorFace(PackFace face) {
+        super(face);
     }
 
-    public PackMirrorFace(int textureId, Face face, RenderParameters params) {
-        super(textureId, face, params);
+    public PackMirrorFace(PackFace face, RenderParameters params) {
+        super(face, params);
     }
 }
