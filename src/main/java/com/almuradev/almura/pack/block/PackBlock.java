@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Tabs;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
@@ -293,10 +294,13 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public void setModelContainer(PackModelContainer modelContainer) {
         this.modelContainer = Optional.fromNullable(modelContainer);
-        if (this.modelContainer.get().getModel().isPresent()) {
-            opaque = false;
-        } else {
-            opaque = renderNode.isOpaque();
+
+        if (Configuration.IS_CLIENT) {
+            if (this.modelContainer.get().getModel().isPresent()) {
+                opaque = false;
+            } else {
+                opaque = renderNode.isOpaque();
+            }
         }
     }
 

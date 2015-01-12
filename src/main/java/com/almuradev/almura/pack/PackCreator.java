@@ -531,7 +531,7 @@ public class PackCreator {
                     textureCoordinates = Maps.newHashMap();
                 }
 
-                states.add(new StateProperty(pack, enabled, rawState, textureName, textureCoordinates, modelName));
+                states.add(new StateProperty(pack, enabled, rawState, textureName, textureCoordinates, modelName, modelContainer));
             }
         }
         return new ContainerNode(title, correctSize, maxStackSize, states);

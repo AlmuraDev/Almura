@@ -32,19 +32,20 @@ public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockCli
     private final String identifier;
     private final String textureName;
     private final Map<Integer, List<Integer>> textureCoordinates;
-    private final String shapeName;
+    private final String modelName;
     private Optional<PackModelContainer> modelContainer;
     private ClippedIcon[] clippedIcons;
     private IIcon stateIcon;
 
     public StateProperty(Pack pack, boolean enabled, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates,
-                         String shapeName) {
+                         String modelName, PackModelContainer modelContainer) {
         this.pack = pack;
         this.enabled = enabled;
         this.identifier = identifier;
         this.textureName = textureName;
         this.textureCoordinates = textureCoordinates;
-        this.shapeName = shapeName;
+        this.modelName = modelName;
+        setModelContainer(modelContainer);
     }
 
     @Override
@@ -80,7 +81,7 @@ public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockCli
     }
 
     public String getModelName() {
-        return shapeName;
+        return modelName;
     }
 
     @Override
