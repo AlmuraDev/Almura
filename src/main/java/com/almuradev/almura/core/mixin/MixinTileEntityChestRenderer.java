@@ -28,9 +28,8 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
             viewer = Minecraft.getMinecraft().thePlayer;
         }
 
-        if (viewer != null && te.getDistanceFrom(viewer.posX, viewer.posY, viewer.posZ) < 200 || !te.hasWorldObj()) {
+        if (viewer != null && te.getDistanceFrom(viewer.posX, viewer.posY, viewer.posZ) > 250 && te.hasWorldObj()) {
             ci.cancel();
         }
     }
 }
-
