@@ -99,7 +99,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
         if (enoughLight) {
             stage.onTick(world, x, y, z, random);
-            //Get within range
             final double
                     chance =
                     stage.getNode(GrowthNode.class).getValue().getValueWithinRange();
@@ -117,14 +116,16 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         if (access != null) {
             final int metadata = access.getBlockMetadata(x, y, z);
             final Stage stage = stages.get(metadata);
-            final Optional<PackModelContainer> modelContainer = stage.getModelContainer();
-            if (modelContainer.isPresent()) {
-                final AxisAlignedBB
-                        blockBoundsBB =
-                        modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0.5, 0, 0, 1, 0.25, 1),
-                                                                         access, x, y, z);
-                setBlockBounds((float) blockBoundsBB.minX, (float) blockBoundsBB.minY, (float) blockBoundsBB.minZ, (float) blockBoundsBB.maxX,
-                               (float) blockBoundsBB.maxY, (float) blockBoundsBB.maxZ);
+            if (stage != null) {
+                final Optional<PackModelContainer> modelContainer = stage.getModelContainer();
+                if (modelContainer.isPresent()) {
+                    final AxisAlignedBB
+                            blockBoundsBB =
+                            modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0.5, 0, 0, 1, 0.25, 1),
+                                                                             access, x, y, z);
+                    setBlockBounds((float) blockBoundsBB.minX, (float) blockBoundsBB.minY, (float) blockBoundsBB.minZ, (float) blockBoundsBB.maxX,
+                                   (float) blockBoundsBB.maxY, (float) blockBoundsBB.maxZ);
+                }
             }
         }
     }
