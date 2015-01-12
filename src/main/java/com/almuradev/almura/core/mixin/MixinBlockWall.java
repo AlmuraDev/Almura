@@ -23,7 +23,7 @@ public abstract class MixinBlockWall extends Block {
     }
 
     @Inject(method = "canConnectWallTo", at = @At("RETURN"))
-    public void canConnectWallTo(IBlockAccess access, int x, int y, int z, CallbackInfoReturnable<Boolean> ci) {
+    public void onCanConnectWallTo(IBlockAccess access, int x, int y, int z, CallbackInfoReturnable<Boolean> ci) {
         final Block block = access.getBlock(x, y, z);
         if (block instanceof BlockWall) {
             ci.setReturnValue(true);

@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRenderer {
 
     @Inject(method = "renderTileEntityAt", at = @At("HEAD"), cancellable = true)
-    public void renderTileEntityAt(TileEntityChest te, double x, double y, double z, float delta, CallbackInfo ci) {
+    public void onRenderTileEntityAt(TileEntityChest te, double x, double y, double z, float delta, CallbackInfo ci) {
         EntityClientPlayerMP viewer = (EntityClientPlayerMP) Minecraft.getMinecraft().renderViewEntity;
         if (viewer == null) {
             viewer = Minecraft.getMinecraft().thePlayer;

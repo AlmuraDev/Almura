@@ -2,6 +2,7 @@
   "package": "com.almuradev.almura.core.mixin",
   "mixins": [
     "MixinBlockWall",
+    "MixinBlockTallGrass",
     "MixinContainerWorkbench"
   ]
 }
