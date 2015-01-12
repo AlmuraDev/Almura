@@ -18,7 +18,6 @@ buildscript {
 
 plugins {
     id "com.github.hierynomus.license" version "0.11.0"
-    id 'com.github.johnrengelman.shadow' version '1.2.0'
     id "java"
     id "maven"
     id "signing"
@@ -68,7 +67,7 @@ ext.projectName = 'Almura'
 ext.inceptionYear = '2014'
 ext.packaging = 'jar'
 ext.url = 'http://github.com/AlmuraDev'
-ext.description = 'The official mod for the Almura Minecraft Client and Server'
+ext.description = 'The official mod for the Almura Client and Server'
 ext.organization = 'AlmuraDev'
 
 // Java version target/property compatibility
@@ -103,19 +102,14 @@ processResources {
     }
 }
 
-// Obfuscate based on the shaded jars content
-reobf { reobf(file('build/distributions/' + archivesBaseName + '-' + version + '.jar')) {spec ->  spec.classpath = configurations.compile } }
-reobf.dependsOn shadowJar
+def mixinSrg = "${tasks.reobf.temporaryDir}" + File.separator + 'mixins.srg'
+reobf.addExtraSrgFile mixinSrg
 
-// Include dependencies in the final JAR
-shadowJar {
-    classifier = ''
-    destinationDir = file("build/distributions")
-    dependencies {
-        include(dependency('com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'))
-        include(dependency('net.minecraftforge.srg2source:Srg2Source:3.2-SNAPSHOT'))
-        include(project('Mixin'))
-    }
+// Source compiler configuration
+tasks.withType(JavaCompile) {
+    options.compilerArgs += [ '-Xlint:all', '-Xlint:-path', '-Xlint:-processing', "-AreobfSrgFile=${tasks.reobf.srg}", "-AoutSrgFile=${mixinSrg}" ]
+    options.deprecation = true
+    options.encoding = 'utf8'
 }
 
 // License header formatting
@@ -130,13 +124,6 @@ license {
     includes(["**/*.java"])
 }
 
-// Source compiler configuration
-tasks.withType(JavaCompile) {
-    options.compilerArgs += [ '-Xlint:all', '-Xlint:-path', '-Xlint:-processing', "-AreobfSrgFile=${tasks.reobf.srg}", "-AoutSrgFile=mixins.srg" ]
-    options.deprecation = true
-    options.encoding = 'utf8'
-}
-
 // JAR manifest configuration
 jar.manifest.mainAttributes(
         "Built-By": System.properties['user.name'],
@@ -145,5 +132,5 @@ jar.manifest.mainAttributes(
         "Implementation-Version": version,
         "Implementation-Vendor": url,
         "FMLCorePluginContainsFMLMod": 'true',
-        "FMLCorePlugin": 'com.almuradev.almura.core.AlmuraCoreMod'
+        "FMLCorePlugin": 'com.almuradev.almura.core.AlmuraCoreMod',
 )

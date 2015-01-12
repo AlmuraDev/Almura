@@ -1,0 +1,6 @@
+{
+  "package": "com.almuradev.almura.core.mixin",
+  "mixins": [
+    "MixinTileEntityChestRenderer"
+  ]
+}

@@ -18,11 +18,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IShearable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.struct.InjectionInfo;
 
 import java.util.ArrayList;
 
-@Mixin(value = BlockTallGrass.class, remap = false)
-public abstract class MixinBlockTallGrass extends BlockBush implements IGrowable, IShearable {
+@Mixin(value = BlockTallGrass.class)
+public abstract class MixinBlockTallGrass extends BlockBush {
 
     @Override
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {

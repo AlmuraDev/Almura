@@ -16,19 +16,19 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(value = ContainerWorkbench.class, remap = false)
+@Mixin(value = ContainerWorkbench.class)
 public abstract class MixinContainerWorkbench extends Container {
 
     @Shadow
-    public InventoryCrafting craftMatrix; //field_75162_e
+    public InventoryCrafting craftMatrix;
     @Shadow
-    public IInventory craftResult; //field_75160_f
+    public IInventory craftResult;
     @Shadow
-    private World worldObj; //field_75161_g
+    private World worldObj;
 
     @Override
-    public ItemStack slotClick(int p_75144_1_, int p_75144_2_, int p_75144_3_, EntityPlayer p_75144_4_) { //func_75144_a
-        this.craftResult.setInventorySlotContents(0, CraftingManager.getInstance().findMatchingRecipe(this.craftMatrix, this.worldObj));
+    public ItemStack slotClick(int p_75144_1_, int p_75144_2_, int p_75144_3_, EntityPlayer p_75144_4_) {
+        this.craftResult.setInventorySlotContents(0, CraftingManager.getInstance().findMatchingRecipe(craftMatrix, worldObj));
         return super.slotClick(p_75144_1_, p_75144_2_, p_75144_3_, p_75144_4_);
     }
 }
