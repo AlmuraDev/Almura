@@ -234,8 +234,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     public boolean isItemValidForSlot(int slot, ItemStack stack) {
         return true;
     }
-
-    @SideOnly(Side.CLIENT)
+    
     public boolean hasEmptySlots() {
         return hasEmptySlots;
     }
