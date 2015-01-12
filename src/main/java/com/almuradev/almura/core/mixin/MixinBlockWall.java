@@ -11,16 +11,22 @@ import net.minecraft.block.material.Material;
 import net.minecraft.world.IBlockAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = BlockWall.class)
 public abstract class MixinBlockWall extends Block {
 
-    protected MixinBlockWall(Material p_i45394_1_) {
-        super(p_i45394_1_);
+    protected MixinBlockWall(Material material) {
+        super(material);
     }
 
-    @Overwrite
-    public boolean canConnectWallTo(IBlockAccess access, int x, int y, int z) {
-        return access.getBlock(x, y, z) instanceof BlockWall;
+    @Inject(method = "canConnectWallTo", at = @At("RETURN"))
+    public void canConnectWallTo(IBlockAccess access, int x, int y, int z, CallbackInfoReturnable<Boolean> ci) {
+        final Block block = access.getBlock(x, y, z);
+        if (block instanceof BlockWall) {
+            ci.setReturnValue(true);
+        }
     }
 }
