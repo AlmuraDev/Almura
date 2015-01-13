@@ -6,6 +6,7 @@
     "MixinContainerWorkbench"
   ],
   "client": [
-    "MixinTileEntityChestRenderer"
+    "MixinTileEntityChestRenderer",
+    "MixinTileEntitySignRenderer"
   ]
 }

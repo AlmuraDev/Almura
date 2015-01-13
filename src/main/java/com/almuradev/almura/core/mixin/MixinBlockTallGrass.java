@@ -28,7 +28,6 @@ public abstract class MixinBlockTallGrass extends BlockBush {
     @Inject(method = "getDrops", at = @At(value = "JUMP", opcode = Opcodes.IFEQ), cancellable = true, remap = false)
     public void onGetDrops(World world, int x, int y, int z, int meta, int fortune, CallbackInfoReturnable<ArrayList<ItemStack>> ci) {
         final ItemStack seedStack = ForgeHooks.getGrassSeed(world);
-
         if (seedStack.getItem() instanceof PackSeeds) {
             final GrassNode grassNode = ((PackSeeds) seedStack.getItem()).getNode(GrassNode.class);
             if (grassNode != null) {
