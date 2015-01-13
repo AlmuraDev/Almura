@@ -22,7 +22,7 @@ public abstract class MixinBlockWall extends Block {
         super(material);
     }
 
-    @Inject(method = "canConnectWallTo", at = @At("RETURN"))
+    @Inject(method = "canConnectWallTo", at = @At("RETURN"), cancellable = true)
     public void onCanConnectWallTo(IBlockAccess access, int x, int y, int z, CallbackInfoReturnable<Boolean> ci) {
         final Block block = access.getBlock(x, y, z);
         if (block instanceof BlockWall) {
