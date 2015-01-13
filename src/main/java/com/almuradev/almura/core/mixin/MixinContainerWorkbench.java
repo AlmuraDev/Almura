@@ -15,6 +15,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.Inject;
 
 @Mixin(value = ContainerWorkbench.class)
 public abstract class MixinContainerWorkbench extends Container {
@@ -28,7 +29,7 @@ public abstract class MixinContainerWorkbench extends Container {
 
     @Override
     public ItemStack slotClick(int p_75144_1_, int p_75144_2_, int p_75144_3_, EntityPlayer p_75144_4_) {
-        this.craftResult.setInventorySlotContents(0, CraftingManager.getInstance().findMatchingRecipe(craftMatrix, worldObj));
+        craftResult.setInventorySlotContents(0, CraftingManager.getInstance().findMatchingRecipe(craftMatrix, worldObj));
         return super.slotClick(p_75144_1_, p_75144_2_, p_75144_3_, p_75144_4_);
     }
 }

@@ -5,49 +5,41 @@
  */
 package com.almuradev.almura.core.mixin;
 
-import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.node.GrassNode;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.google.common.collect.Lists;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockTallGrass;
-import net.minecraft.block.IGrowable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.IShearable;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.injection.struct.InjectionInfo;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 
 @Mixin(value = BlockTallGrass.class)
 public abstract class MixinBlockTallGrass extends BlockBush {
 
-    @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
-        final ArrayList<ItemStack> ret = Lists.newArrayList();
-        final ItemStack seed = ForgeHooks.getGrassSeed(world);
-        if (seed != null) {
-            if (seed.getItem().getClass() == PackSeeds.class) {
-                final GrassNode grassNode = ((INodeContainer) seed.getItem()).getNode(GrassNode.class);
+    @Inject(method = "getDrops", at = @At(value = "JUMP", opcode = Opcodes.IFEQ), cancellable = true)
+    public void onGetDrops(World world, int x, int y, int z, int meta, int fortune, CallbackInfoReturnable<ArrayList<ItemStack>> ci) {
+        final ItemStack seedStack = ForgeHooks.getGrassSeed(world);
+
+        if (seedStack.getItem() instanceof PackSeeds) {
+            final GrassNode grassNode = ((PackSeeds) seedStack.getItem()).getNode(GrassNode.class);
+            if (grassNode != null) {
                 final double chance = grassNode.getChanceProperty().getValueWithinRange();
                 if (RangeProperty.RANDOM.nextDouble() <= (chance / 100)) {
-                    seed.stackSize = grassNode.getValue().getAmountProperty().getValueWithinRange();
-                } else {
-                    return ret;
-                }
-            } else {
-                //Preserve Vanilla random logic
-                if (world.rand.nextInt(8) != 0) {
-                    return ret;
+                    seedStack.stackSize = grassNode.getValue().getAmountProperty().getValueWithinRange();
+                    final ArrayList<ItemStack> ret = Lists.newArrayList();
+                    ret.add(seedStack);
+                    ci.setReturnValue(ret);
                 }
             }
-
-            ret.add(seed);
         }
-        return ret;
     }
 }
