@@ -1,8 +1,11 @@
 {
   "package": "com.almuradev.almura.core.mixin",
   "mixins": [
-    "MixinBlockWall",
     "MixinBlockTallGrass",
+    "MixinBlockWall",
     "MixinContainerWorkbench"
+  ],
+  "client": [
+    "MixinTileEntityChestRenderer"
   ]
 }
