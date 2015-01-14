@@ -55,8 +55,8 @@ public class Configuration {
         final ConfigurationNode clientConfigurationNode = reader.getNode("client");
         DISPLAY_ENHANCED_GUI = clientConfigurationNode.getChild("enhanced-gui").getBoolean(true);
         DISPLAY_ENHANCED_DEBUG = clientConfigurationNode.getChild("enhanced-debug").getBoolean(true);
-        CHEST_RENDER_DISTANCE = clientConfigurationNode.getChild("chest-render-distance").getInt(15);
-        SIGN_RENDER_DISTANCE = clientConfigurationNode.getChild("sign-render-distance").getInt(15);
+        CHEST_RENDER_DISTANCE = clientConfigurationNode.getChild("chest-render-distance").getInt(32);
+        SIGN_RENDER_DISTANCE = clientConfigurationNode.getChild("sign-render-distance").getInt(32);
 
     }
 
