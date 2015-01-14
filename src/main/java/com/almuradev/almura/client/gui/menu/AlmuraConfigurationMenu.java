@@ -11,14 +11,17 @@ import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.google.common.eventbus.Subscribe;
+
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
+import net.malisis.core.client.gui.component.interaction.UISelect;
 
 import java.awt.*;
+import java.util.Arrays;
 
 public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
@@ -26,8 +29,9 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
     private UIButton graphicsButton, xButton, cancelButton, saveButton;
     private UICheckBox almuraGuiCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
             debugMappingsCheckBox, debugRecipesCheckBox;
-    private UILabel titleLabel;
+    private UILabel titleLabel, chestRenderDistance, signRenderDistance;
     private AlmuraGui parent;
+    private UISelect chestDistanceDownMenu, signDistanceDownMenu;
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
@@ -72,6 +76,40 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         almuraGuiCheckBox.setName("checkbox.gui.enhanced_gui");
         almuraGuiCheckBox.register(this);
 
+        chestRenderDistance = new UILabel(this, ChatColor.WHITE + "Chest Render Distance:");
+        chestRenderDistance.setPosition(-55, titleLabel.getY() + (padding * 4 + 11), Anchor.RIGHT | Anchor.TOP);
+        
+        signRenderDistance = new UILabel(this, ChatColor.WHITE + "Sign Render Distance:");
+        signRenderDistance.setPosition(-55, almuraGuiCheckBox.getY() + (padding * 4 + 1), Anchor.RIGHT | Anchor.TOP);
+        
+        // Chest Render Distance
+        chestDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
+        chestDistanceDownMenu.setPosition(-15, titleLabel.getY() + (padding * 4 + 10), Anchor.TOP | Anchor.RIGHT);
+        chestDistanceDownMenu.setMaxExpandedWidth(20);
+        if (Configuration.CHEST_RENDER_DISTANCE == 16) {
+            chestDistanceDownMenu.select(0);
+        } else if (Configuration.CHEST_RENDER_DISTANCE == 32) {
+            chestDistanceDownMenu.select(1);
+        } else if (Configuration.CHEST_RENDER_DISTANCE == 64) {
+            chestDistanceDownMenu.select(2);
+        }
+        chestDistanceDownMenu.setName("select.chest");
+        chestDistanceDownMenu.register(this);
+        
+        // Sign Render Distance
+        signDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
+        signDistanceDownMenu.setPosition(-15, almuraGuiCheckBox.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
+        signDistanceDownMenu.setMaxExpandedWidth(20);
+        if (Configuration.SIGN_RENDER_DISTANCE == 16) {
+            signDistanceDownMenu.select(0);
+        } else if (Configuration.SIGN_RENDER_DISTANCE == 32) {
+            signDistanceDownMenu.select(1);
+        } else if (Configuration.SIGN_RENDER_DISTANCE == 64) {
+            signDistanceDownMenu.select(2);
+        }
+        signDistanceDownMenu.setName("select.sign");
+        signDistanceDownMenu.register(this);
+        
         // Create the almura GUI checkbox
         almuraDebugGuiCheckBox = new UICheckBox(this, ChatColor.WHITE + "Enhanced F3 Debug Menu");
         almuraDebugGuiCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
@@ -130,8 +168,8 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         cancelButton.setName("button.cancel");
         cancelButton.register(this);
 
-        window.add(titleLabel, uiTitleBar, xButton, almuraGuiCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
-                   debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton);
+        window.add(titleLabel, uiTitleBar, chestRenderDistance, signRenderDistance, xButton, almuraGuiCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
+                   debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton, signDistanceDownMenu, chestDistanceDownMenu);
 
         // Allow the window to move
         new UIMoveHandle(this, window);
@@ -183,4 +221,36 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
                 displayParent();
         }
     }
+    
+    @Subscribe
+    public void onSelection(UISelect.SelectEvent event) {
+        String type = event.getComponent().getName().toLowerCase();
+        if (type.equalsIgnoreCase("select.sign")) {
+            switch (event.getNewValue().getLabel()) {
+            case "16":
+                Configuration.setSignRenderDinstance(16);
+                break;
+            case "32":
+                Configuration.setSignRenderDinstance(32);
+                break;
+            case "64":
+                Configuration.setSignRenderDinstance(64);
+                break;
+            }
+        }
+        
+        if (type.equalsIgnoreCase("select.chest")) {
+            switch (event.getNewValue().getLabel()) {
+            case "16":
+                Configuration.setChestRenderDinstance(16);
+                break;
+            case "32":
+                Configuration.setChestRenderDinstance(32);
+                break;
+            case "64":
+                Configuration.setChestRenderDinstance(64);
+                break;
+            }
+        }        
+    }    
 }

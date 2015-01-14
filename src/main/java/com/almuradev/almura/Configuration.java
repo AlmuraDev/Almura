@@ -24,6 +24,9 @@ public class Configuration {
     //GUI
     public static boolean DISPLAY_ENHANCED_GUI;
     public static boolean DISPLAY_ENHANCED_DEBUG;
+    //RENDER DISTANCE WITHIN SIGNS AND CHEST MIXINS
+    public static int CHEST_RENDER_DISTANCE;
+    public static int SIGN_RENDER_DISTANCE;
 
     private static YamlConfiguration reader;
 
@@ -52,6 +55,8 @@ public class Configuration {
         final ConfigurationNode clientConfigurationNode = reader.getNode("client");
         DISPLAY_ENHANCED_GUI = clientConfigurationNode.getChild("enhanced-gui").getBoolean(true);
         DISPLAY_ENHANCED_DEBUG = clientConfigurationNode.getChild("enhanced-debug").getBoolean(true);
+        CHEST_RENDER_DISTANCE = clientConfigurationNode.getChild("chest-render-distance").getInt(15);
+        SIGN_RENDER_DISTANCE = clientConfigurationNode.getChild("sign-render-distance").getInt(15);
 
     }
 
@@ -66,6 +71,16 @@ public class Configuration {
         ConfigurationNode enhanced_debug = reader.getNode("client.enhanced-debug");
         enhanced_debug.setValue(DISPLAY_ENHANCED_DEBUG);
         reader.setNode(enhanced_debug);
+        
+        // In-Game Render Distance for Chests
+        ConfigurationNode chest_render_distance = reader.getNode("client.chest-render-distance");
+        chest_render_distance.setValue(CHEST_RENDER_DISTANCE);
+        reader.setNode(chest_render_distance);
+        
+        // In-Game Render Distance for Signs
+        ConfigurationNode sign_render_distance = reader.getNode("client.sign-render-distance");
+        sign_render_distance.setValue(SIGN_RENDER_DISTANCE);
+        reader.setNode(sign_render_distance);
 
         // Debug All
         ConfigurationNode debug_mode = reader.getNode("debug.all");
@@ -121,5 +136,13 @@ public class Configuration {
 
     public static void toggleDebugRecipesMode(boolean value) {
         DEBUG_RECIPES_MODE = value;
+    }
+    
+    public static void setChestRenderDinstance(int value) {
+        CHEST_RENDER_DISTANCE = value;
+    }
+    
+    public static void setSignRenderDinstance(int value) {
+        SIGN_RENDER_DISTANCE = value;
     }
 }
