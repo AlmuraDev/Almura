@@ -7,6 +7,7 @@ package com.almuradev.almura.core.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.renderer.tileentity.RenderItemFrame;
 import net.minecraft.client.renderer.tileentity.TileEntitySignRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntityChest;
