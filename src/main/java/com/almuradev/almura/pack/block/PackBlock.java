@@ -250,7 +250,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
         final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
-        if (modelContainer == null) {
+        if (!modelContainer.isPresent()) {
             return vanillaBB;
         }
         return modelContainer.get().getPhysics().getSelectedBoundingBox(vanillaBB, world, x, y, z);
