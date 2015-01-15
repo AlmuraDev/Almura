@@ -10,16 +10,16 @@ import net.minecraft.item.crafting.IRecipe;
 
 import java.util.Set;
 
-public class RecipeNode implements INode<Set<RecipeContainer<? extends IRecipe>>> {
+public class RecipeNode implements INode<Set<RecipeContainer>> {
 
-    private final Set<RecipeContainer<? extends IRecipe>> value;
+    private final Set<RecipeContainer> value;
 
-    public RecipeNode(Set<RecipeContainer<? extends IRecipe>> value) {
+    public RecipeNode(Set<RecipeContainer> value) {
         this.value = value;
     }
 
     @Override
-    public Set<RecipeContainer<? extends IRecipe>> getValue() {
+    public Set<RecipeContainer> getValue() {
         return value;
     }
 }

@@ -21,21 +21,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class RecipeContainer<T extends IRecipe> {
+public class RecipeContainer {
 
     private final Pack pack;
     private final String identifier;
     private final int id;
-    private final T recipe;
+    private final Object recipe;
 
     @SuppressWarnings("unchecked")
-    public RecipeContainer(Pack pack, String name, Class<T> clazz, int id, ItemStack result, List<Object> params)
+    public RecipeContainer(Pack pack, String name, Class<?> clazz, int id, ItemStack result, List<Object> params)
             throws UnknownRecipeTypeException, InvalidRecipeException {
         this.pack = pack;
         this.identifier = name;
         this.id = id;
         if (clazz == ShapedRecipes.class) {
-            recipe = (T) createShapedRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
+            recipe = createShapedRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
             final IRecipe found = getExisting();
             if (found != null) {
                 throw new InvalidRecipeException(
@@ -43,7 +43,7 @@ public class RecipeContainer<T extends IRecipe> {
             }
             CraftingManager.getInstance().getRecipeList().add(recipe);
         } else if (clazz == ShapelessRecipes.class) {
-            recipe = (T) createShapelessRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
+            recipe = createShapelessRecipe(pack, name, id, result, params.toArray(new Object[params.size()]));
             final IRecipe found = getExisting();
             if (found != null) {
                 throw new InvalidRecipeException(
@@ -74,7 +74,7 @@ public class RecipeContainer<T extends IRecipe> {
         return id;
     }
 
-    public T getRecipe() {
+    public Object getRecipe() {
         return recipe;
     }
 

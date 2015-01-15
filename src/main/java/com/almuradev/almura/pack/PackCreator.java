@@ -538,7 +538,7 @@ public class PackCreator {
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {
-        final Set<RecipeContainer<? extends IRecipe>> recipes = Sets.newHashSet();
+        final Set<RecipeContainer> recipes = Sets.newHashSet();
         for (Map.Entry<String, ConfigurationNode> entry : node.getChildren().entrySet()) {
             int id;
             try {
@@ -845,7 +845,7 @@ public class PackCreator {
         return new SoilNode(source.get(), biomeNode);
     }
 
-    private static <T extends IRecipe> RecipeContainer<T> createRecipeContainer(Pack pack, String name, Class<T> clazz, int id, Object result,
+    private static RecipeContainer createRecipeContainer(Pack pack, String name, Class<?> clazz, int id, Object result,
                                                                                 ConfigurationNode node)
             throws InvalidRecipeException, UnknownRecipeTypeException {
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
@@ -924,9 +924,9 @@ public class PackCreator {
         }
 
         if (result instanceof Item) {
-            return new RecipeContainer<>(pack, name, clazz, id, new ItemStack((Item) result, amount, data), params);
+            return new RecipeContainer(pack, name, clazz, id, new ItemStack((Item) result, amount, data), params);
         } else if (result instanceof Block) {
-            return new RecipeContainer<>(pack, name, clazz, id, new ItemStack((Block) result, amount, data), params);
+            return new RecipeContainer(pack, name, clazz, id, new ItemStack((Block) result, amount, data), params);
         } else {
             throw new InvalidRecipeException(
                     "Result [" + result + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
