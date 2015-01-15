@@ -3,32 +3,24 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.node.recipe;
+package com.almuradev.almura.core.mixin;
 
-import com.almuradev.almura.pack.Pack;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuantitiveShapelessRecipes extends ShapelessRecipes {
+@Mixin(ShapelessRecipes.class)
+public abstract class MixinShapelessRecipes {
+    @Shadow private List recipeItems;
 
-    private final Pack pack;
-    private final String name;
-    private final int id;
-
-    public QuantitiveShapelessRecipes(Pack pack, String name, int id, ItemStack stack, List params) {
-        super(stack, params);
-        this.pack = pack;
-        this.name = name;
-        this.id = id;
-    }
-
-    //TODO Check each Minecraft update
-    @Override
+    @Overwrite
     @SuppressWarnings("unchecked")
     public boolean matches(InventoryCrafting craftingInventory, World world) {
         final ArrayList buffer = new ArrayList(recipeItems);
@@ -61,10 +53,5 @@ public class QuantitiveShapelessRecipes extends ShapelessRecipes {
         }
 
         return buffer.isEmpty();
-    }
-
-    @Override
-    public String toString() {
-        return "QuantitiveShapelessRecipes{" + "pack= " + pack.getName() + ", name= " + name + ", id= " + id + ", items= " + recipeItems + "}";
     }
 }

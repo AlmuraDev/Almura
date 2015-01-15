@@ -8,6 +8,8 @@ package com.almuradev.almura.pack.node.recipe;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.pack.Pack;
+import com.almuradev.almura.pack.node.recipe.crafting.MinecraftShapedRecipes;
+import com.almuradev.almura.pack.node.recipe.crafting.MinecraftShapelessRecipes;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -80,7 +82,7 @@ public class RecipeContainer {
 
     //TODO Check each Minecraft update
     @SuppressWarnings("unchecked")
-    public QuantitiveShapedRecipes createShapedRecipe(Pack pack, String name, int id, ItemStack result, Object... params) {
+    public MinecraftShapedRecipes createShapedRecipe(Pack pack, String name, int id, ItemStack result, Object... params) {
         String s = "";
         int i = 0;
         int j = 0;
@@ -132,11 +134,11 @@ public class RecipeContainer {
             }
         }
 
-        return new QuantitiveShapedRecipes(pack, name, id, j, k, aitemstack, result);
+        return new MinecraftShapedRecipes(pack, name, id, j, k, aitemstack, result);
     }
 
     //TODO Check each Minecraft update
-    private QuantitiveShapelessRecipes createShapelessRecipe(Pack pack, String name, int id, ItemStack result, Object... params) {
+    private MinecraftShapelessRecipes createShapelessRecipe(Pack pack, String name, int id, ItemStack result, Object... params) {
         final List<ItemStack> stacks = Lists.newArrayList();
 
         for (Object object1 : params) {
@@ -152,7 +154,7 @@ public class RecipeContainer {
             }
         }
 
-        return new QuantitiveShapelessRecipes(pack, name, id, result, stacks);
+        return new MinecraftShapelessRecipes(pack, name, id, result, stacks);
     }
 
     private IRecipe getExisting() {

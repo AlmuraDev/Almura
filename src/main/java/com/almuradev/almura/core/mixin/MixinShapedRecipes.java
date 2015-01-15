@@ -3,30 +3,22 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.node.recipe;
+package com.almuradev.almura.core.mixin;
 
-import com.almuradev.almura.pack.Pack;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.Arrays;
+@Mixin(ShapedRecipes.class)
+public abstract class MixinShapedRecipes {
+    @Shadow private int recipeWidth;
+    @Shadow private int recipeHeight;
+    @Shadow private ItemStack[] recipeItems;
 
-public class QuantitiveShapedRecipes extends ShapedRecipes {
-
-    private final Pack pack;
-    private final String name;
-    private final int id;
-
-    public QuantitiveShapedRecipes(Pack pack, String name, int id, int width, int length, ItemStack[] stacks, ItemStack result) {
-        super(width, length, stacks, result);
-        this.pack = pack;
-        this.name = name;
-        this.id = id;
-    }
-
-    //TODO Check each Minecraft update
-    @Override
+    @Overwrite
     public boolean checkMatch(InventoryCrafting craftingInventory, int width, int length, boolean flag) {
         for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < 3; ++l) {
@@ -58,11 +50,5 @@ public class QuantitiveShapedRecipes extends ShapedRecipes {
         }
 
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return "QuantitiveShapedRecipes{" + "pack= " + pack.getName() + ", name= " + name + ", id= " + id + ", items= " + Arrays.toString(recipeItems)
-               + "}";
     }
 }

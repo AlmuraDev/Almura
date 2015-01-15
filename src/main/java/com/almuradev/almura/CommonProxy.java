@@ -24,8 +24,8 @@ import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.mapper.EntityMapper;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.node.SoilNode;
-import com.almuradev.almura.pack.node.recipe.QuantitiveShapedRecipes;
-import com.almuradev.almura.pack.node.recipe.QuantitiveShapelessRecipes;
+import com.almuradev.almura.pack.node.recipe.crafting.MinecraftShapedRecipes;
+import com.almuradev.almura.pack.node.recipe.crafting.MinecraftShapelessRecipes;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
 import com.almuradev.almura.server.network.play.S01SpawnParticle;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
@@ -67,8 +67,8 @@ public class CommonProxy {
         Almura.NETWORK_BUKKIT.registerMessage(B00PlayerDisplayName.class, B00PlayerDisplayName.class, 0, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInfo.class, B02AdditionalWorldInfo.class, 2, Side.CLIENT);
-        RecipeSorter.register(Almura.MOD_ID + ":shaped", QuantitiveShapedRecipes.class, SHAPED, "after:minecraft:shaped");
-        RecipeSorter.register(Almura.MOD_ID + ":shapeless", QuantitiveShapelessRecipes.class, SHAPELESS, "after:minecraft:shapeless");
+        RecipeSorter.register(Almura.MOD_ID + ":shaped", MinecraftShapedRecipes.class, SHAPED, "after:minecraft:shaped");
+        RecipeSorter.register(Almura.MOD_ID + ":shapeless", MinecraftShapelessRecipes.class, SHAPELESS, "after:minecraft:shapeless");
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());
         GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");
         FMLCommonHandler.instance().bus().register(this);
@@ -271,7 +271,7 @@ public class CommonProxy {
         IRecipe recipe = null;
 
         for (Object obj : CraftingManager.getInstance().getRecipeList()) {
-            if (obj instanceof QuantitiveShapedRecipes || obj instanceof QuantitiveShapelessRecipes) {
+            if (obj instanceof MinecraftShapedRecipes || obj instanceof MinecraftShapelessRecipes) {
                 if (((IRecipe) obj).matches((InventoryCrafting) event.craftMatrix, event.player.worldObj)) {
                     recipe = (IRecipe) obj;
                     break;
@@ -289,10 +289,10 @@ public class CommonProxy {
                 continue;
             }
             ItemStack recipeSlot = null;
-            if (recipe instanceof QuantitiveShapedRecipes) {
-                recipeSlot = ((QuantitiveShapedRecipes) recipe).recipeItems[i];
+            if (recipe instanceof MinecraftShapedRecipes) {
+                recipeSlot = ((MinecraftShapedRecipes) recipe).recipeItems[i];
             } else {
-                for (Object obj : ((QuantitiveShapelessRecipes) recipe).recipeItems) {
+                for (Object obj : ((MinecraftShapelessRecipes) recipe).recipeItems) {
                     final ItemStack recipeStack = (ItemStack) obj;
 
                     if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize
