@@ -238,4 +238,8 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     public boolean hasEmptySlots() {
         return hasEmptySlots;
     }
+
+    public ItemStack[] getContents() {
+        return contents;
+    }
 }
