@@ -3,17 +3,15 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.node.recipe;
+package com.almuradev.almura.recipe;
 
 import net.minecraft.item.ItemStack;
 
-public interface ISmeltingRecipe extends IRecipe {
+public interface ISmeltRecipe extends IRecipe {
 
     ItemStack getInput();
 
     ItemStack getOutput();
 
     float getSmeltExperience();
-
-    boolean matches(ItemStack input, ItemStack output);
 }

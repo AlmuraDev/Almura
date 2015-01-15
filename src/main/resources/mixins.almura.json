@@ -3,7 +3,9 @@
   "mixins": [
     "MixinBlockTallGrass",
     "MixinBlockWall",
-    "MixinContainerWorkbench"
+    "MixinContainerWorkbench",
+    "MixinShapedRecipes",
+    "MixinShapelessRecipes"
   ],
   "client": [
     "MixinTileEntityChestRenderer",

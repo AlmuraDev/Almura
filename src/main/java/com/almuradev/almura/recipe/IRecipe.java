@@ -3,15 +3,8 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.node.recipe;
-
-import com.almuradev.almura.pack.Pack;
+package com.almuradev.almura.recipe;
 
 public interface IRecipe {
 
-    Pack getPack();
-
-    String getOwner();
-
-    int getId();
 }

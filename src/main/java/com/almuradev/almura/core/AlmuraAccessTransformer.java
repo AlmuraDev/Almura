@@ -9,7 +9,7 @@ import cpw.mods.fml.common.asm.transformers.AccessTransformer;
 
 import java.io.IOException;
 
-public class AlmuraAccessTransformer extends AccessTransformer {
+public final class AlmuraAccessTransformer extends AccessTransformer {
 
     public static final String CLASSPATH = "com.almuradev.almura.core.AlmuraAccessTransformer";
 

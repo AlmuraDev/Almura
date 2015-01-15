@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.core.mixin;
 
+import com.almuradev.almura.recipe.IShapedRecipe;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
@@ -12,8 +13,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.util.Arrays;
+
 @Mixin(ShapedRecipes.class)
-public abstract class MixinShapedRecipes {
+public abstract class MixinShapedRecipe implements IShapedRecipe {
     @Shadow private int recipeWidth;
     @Shadow private int recipeHeight;
     @Shadow private ItemStack[] recipeItems;
@@ -50,5 +53,10 @@ public abstract class MixinShapedRecipes {
         }
 
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ShapedRecipes {items= " + Arrays.toString(recipeItems) + "}";
     }
 }

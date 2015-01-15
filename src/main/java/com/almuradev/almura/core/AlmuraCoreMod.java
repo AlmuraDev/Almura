@@ -6,13 +6,14 @@
 package com.almuradev.almura.core;
 
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import java.util.Map;
 
-@IFMLLoadingPlugin.SortingIndex(value = 1001)
-public class AlmuraCoreMod implements IFMLLoadingPlugin {
+@SortingIndex(value = 1001)
+public final class AlmuraCoreMod implements IFMLLoadingPlugin {
 
     @SuppressWarnings("unchecked")
     public AlmuraCoreMod() {

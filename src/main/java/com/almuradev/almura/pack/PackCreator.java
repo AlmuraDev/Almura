@@ -45,9 +45,15 @@ import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
-import com.almuradev.almura.pack.node.recipe.InvalidRecipeException;
-import com.almuradev.almura.pack.node.recipe.RecipeContainer;
-import com.almuradev.almura.pack.node.recipe.UnknownRecipeTypeException;
+import com.almuradev.almura.recipe.DuplicateRecipeException;
+import com.almuradev.almura.recipe.IRecipe;
+import com.almuradev.almura.recipe.IShapedRecipe;
+import com.almuradev.almura.recipe.IShapelessRecipe;
+import com.almuradev.almura.recipe.ISmeltRecipe;
+import com.almuradev.almura.recipe.InvalidRecipeException;
+import com.almuradev.almura.recipe.RecipeContainer;
+import com.almuradev.almura.recipe.RecipeManager;
+import com.almuradev.almura.recipe.UnknownRecipeTypeException;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
@@ -64,9 +70,6 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -538,7 +541,7 @@ public class PackCreator {
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {
-        final Set<RecipeContainer> recipes = Sets.newHashSet();
+        final Set<RecipeContainer<? extends IRecipe>> recipes = Sets.newHashSet();
         for (Map.Entry<String, ConfigurationNode> entry : node.getChildren().entrySet()) {
             int id;
             try {
@@ -557,13 +560,16 @@ public class PackCreator {
             try {
                 switch (type) {
                     case "SHAPED":
-                        recipes.add(createRecipeContainer(pack, name, ShapedRecipes.class, id, result, entry.getValue()));
+                        recipes.add(createRecipeContainer(pack, name, IShapedRecipe.class, id, result, entry.getValue()));
                         break;
                     case "SHAPELESS":
-                        recipes.add(createRecipeContainer(pack, name, ShapelessRecipes.class, id, result, entry.getValue()));
+                        recipes.add(createRecipeContainer(pack, name, IShapelessRecipe.class, id, result, entry.getValue()));
+                        break;
+                    case "SMELT":
+                        recipes.add(createRecipeContainer(pack, name, ISmeltRecipe.class, id, result, entry.getValue()));
                         break;
                 }
-            } catch (UnknownRecipeTypeException | InvalidRecipeException e) {
+            } catch (UnknownRecipeTypeException | InvalidRecipeException | DuplicateRecipeException e) {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                     Almura.LOGGER.error(e.getMessage(), e);
                 } else {
@@ -845,50 +851,67 @@ public class PackCreator {
         return new SoilNode(source.get(), biomeNode);
     }
 
-    private static RecipeContainer createRecipeContainer(Pack pack, String name, Class<?> clazz, int id, Object result,
-                                                                                ConfigurationNode node)
-            throws InvalidRecipeException, UnknownRecipeTypeException {
+    private static GrowthNode createGrowthNode(Pack pack, String name, ConfigurationNode node) {
+        final Pair<Double, Double>
+                chancePair =
+                PackUtil.getRange(Double.class, node.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0);
+        return new GrowthNode(new RangeProperty<>(Double.class, true, chancePair));
+    }
+
+    private static <R extends IRecipe> RecipeContainer<R> createRecipeContainer(Pack pack, String name, Class<? extends R> clazz, int id, Object res, ConfigurationNode node) throws InvalidRecipeException, UnknownRecipeTypeException, DuplicateRecipeException {
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
         final int data = node.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue().intValue());
+
+        final ItemStack result;
+        if (res instanceof Block) {
+            result = new ItemStack((Block) res, amount, data);
+        } else {
+            result = new ItemStack((Item) res, amount, data);
+        }
+
         List<Object> params = Lists.newLinkedList();
 
-        for (String itemsRaw : node.getChild(PackKeys.INGREDIENTS.getKey()).getStringList()) {
-            final String[] itemsSplit = itemsRaw.split(" ");
-            for (String identifierCombined : itemsSplit) {
-                final String[] identifierAmountSplit = identifierCombined.split(StringEscapeUtils.escapeJava(":"));
-                int ingredientAmount = 1;
-                if (identifierAmountSplit.length == 2) {
-                    ingredientAmount = Integer.parseInt(identifierAmountSplit[1]);
-                }
-                final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0], true);
-                if (!gameObject.isPresent()) {
-                    throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
-                                                     + "] cannot be registered. Ingredient [" + identifierCombined
-                                                     + "] is not a registered block or item.");
-                } else {
-                    if (gameObject.get().isBlock()) {
-                        final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
-                        if (itemBlock != null) {
-                            params.add(new ItemStack((Block) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
-                        } else if (gameObject.get().minecraftObject instanceof BlockAir) {
-                            params.add(gameObject.get().minecraftObject);
-                        } else {
-                            throw new InvalidRecipeException(
-                                    "Game Object [" + gameObject.get().minecraftObject + "] of type [BLOCK] in [" + name + "] in pack [" + pack
-                                            .getName() + "] has no given ItemBlock.");
+        if (clazz == IShapelessRecipe.class || clazz == IShapedRecipe.class) {
+            for (String itemsRaw : node.getChild(PackKeys.INGREDIENTS.getKey()).getStringList()) {
+                final String[] itemsSplit = itemsRaw.split(" ");
+                for (String identifierCombined : itemsSplit) {
+                    final String[] identifierAmountSplit = identifierCombined.split(StringEscapeUtils.escapeJava(":"));
+                    int ingredientAmount = 1;
+                    if (identifierAmountSplit.length == 2) {
+                        ingredientAmount = Integer.parseInt(identifierAmountSplit[1]);
+                    }
+                    final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0], true);
+                    if (!gameObject.isPresent()) {
+                        throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
+                                                         + "] cannot be registered. Ingredient [" + identifierCombined
+                                                         + "] is not a registered block or item.");
+                    } else {
+                        if (gameObject.get().isBlock()) {
+                            final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
+                            if (itemBlock != null) {
+                                params.add(new ItemStack((Block) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
+                            } else if (gameObject.get().minecraftObject instanceof BlockAir) {
+                                params.add(gameObject.get().minecraftObject);
+                            } else {
+                                throw new InvalidRecipeException(
+                                        "Game Object [" + gameObject.get().minecraftObject + "] of type [BLOCK] in [" + name + "] in pack [" + pack
+                                                .getName() + "] has no given ItemBlock.");
+                            }
+                        } else if (gameObject.get().minecraftObject instanceof Item) {
+                            params.add(new ItemStack((Item) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
                         }
-                    } else if (gameObject.get().minecraftObject instanceof Item) {
-                        params.add(new ItemStack((Item) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
                     }
                 }
             }
+        } else {
+            //TODO Add params from smelting
         }
 
         if (params.isEmpty()) {
-            throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName() + "] has no parameters.");
+            throw new InvalidRecipeException("Recipe id [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName() + "] has no parameters.");
         }
 
-        if (clazz == ShapedRecipes.class) {
+        if (clazz == IShapedRecipe.class) {
             int index = 0;
             final Map<Object, Character> objectViaParamMap = Maps.newLinkedHashMap();
 
@@ -917,27 +940,12 @@ public class PackCreator {
                 combinedParams.add(entry.getKey());
             }
             params = combinedParams;
-        } else if (clazz != ShapelessRecipes.class) {
+        } else if (clazz != IShapelessRecipe.class || clazz != ISmeltRecipe.class) {
             throw new UnknownRecipeTypeException(
                     "Recipe type [" + clazz.getSimpleName() + "] with id [" + id + "] in [" + name + "] in pack [" + pack.getName()
                     + "] is not valid. Valid types are [SHAPED, SHAPELESS].");
         }
 
-        if (result instanceof Item) {
-            return new RecipeContainer(pack, name, clazz, id, new ItemStack((Item) result, amount, data), params);
-        } else if (result instanceof Block) {
-            return new RecipeContainer(pack, name, clazz, id, new ItemStack((Block) result, amount, data), params);
-        } else {
-            throw new InvalidRecipeException(
-                    "Result [" + result + "] for recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
-                    + "] is not a registered block or item.");
-        }
-    }
-
-    private static GrowthNode createGrowthNode(Pack pack, String name, ConfigurationNode node) {
-        final Pair<Double, Double>
-                chancePair =
-                PackUtil.getRange(Double.class, node.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0);
-        return new GrowthNode(new RangeProperty<>(Double.class, true, chancePair));
+        return new RecipeContainer<>(pack, name, id, RecipeManager.registerRecipe(clazz, result, params));
     }
 }

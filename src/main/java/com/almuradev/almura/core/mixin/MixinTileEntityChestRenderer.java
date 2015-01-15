@@ -5,8 +5,6 @@
  */
 package com.almuradev.almura.core.mixin;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.tileentity.TileEntityChestRenderer;
@@ -20,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.almuradev.almura.Configuration;
 
-@SideOnly(Side.CLIENT)
 @Mixin(value = TileEntityChestRenderer.class)
 public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRenderer {
 

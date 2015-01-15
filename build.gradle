@@ -45,7 +45,7 @@ repositories {
 // Project dependencies
 dependencies {
     compile 'com.flowpowered:flow-cerealization:0.1.0-SNAPSHOT'
-    compile 'net.malisis:malisiscore:1.7.10-0.10.4-SNAPSHOT:dev'
+    compile 'net.malisis:malisiscore:1.7.10-0.10.5-SNAPSHOT:dev'
     compile project('Mixin')
 }
 

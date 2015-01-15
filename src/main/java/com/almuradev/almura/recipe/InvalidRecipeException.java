@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.node.recipe;
+package com.almuradev.almura.recipe;
 
 public class InvalidRecipeException extends Exception {
 

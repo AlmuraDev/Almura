@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.core.mixin;
 
+import com.almuradev.almura.recipe.IShapelessRecipe;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(ShapelessRecipes.class)
-public abstract class MixinShapelessRecipes {
+public abstract class MixinShapelessRecipe implements IShapelessRecipe {
     @Shadow private List recipeItems;
 
     @Overwrite
@@ -53,5 +54,10 @@ public abstract class MixinShapelessRecipes {
         }
 
         return buffer.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return "ShapelessRecipes {items= " + recipeItems + "}";
     }
 }
