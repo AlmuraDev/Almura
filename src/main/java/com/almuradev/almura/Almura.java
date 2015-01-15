@@ -26,7 +26,7 @@ public class Almura {
     public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID);
     public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
     public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
-    public static String GUI_VERSION = "Build 38";
+    public static String GUI_VERSION = "Build 40";
     public static String PACK_VERSION = "1.2";
 
     @Instance

@@ -27,6 +27,7 @@ public class Configuration {
     //RENDER DISTANCE WITHIN SIGNS AND CHEST MIXINS
     public static int CHEST_RENDER_DISTANCE;
     public static int SIGN_RENDER_DISTANCE;
+    public static int ITEM_FRAME_RENDER_DISTANCE;
 
     private static YamlConfiguration reader;
 
@@ -57,6 +58,7 @@ public class Configuration {
         DISPLAY_ENHANCED_DEBUG = clientConfigurationNode.getChild("enhanced-debug").getBoolean(true);
         CHEST_RENDER_DISTANCE = clientConfigurationNode.getChild("chest-render-distance").getInt(32);
         SIGN_RENDER_DISTANCE = clientConfigurationNode.getChild("sign-render-distance").getInt(32);
+        ITEM_FRAME_RENDER_DISTANCE = clientConfigurationNode.getChild("item-frame-render-distance").getInt(32);
 
     }
 
@@ -81,6 +83,11 @@ public class Configuration {
         ConfigurationNode sign_render_distance = reader.getNode("client.sign-render-distance");
         sign_render_distance.setValue(SIGN_RENDER_DISTANCE);
         reader.setNode(sign_render_distance);
+        
+        // In-Game Render Distance for Item Frames
+        ConfigurationNode item_frame_render_distance = reader.getNode("client.item-frame-render-distance");
+        item_frame_render_distance.setValue(ITEM_FRAME_RENDER_DISTANCE);
+        reader.setNode(item_frame_render_distance);
 
         // Debug All
         ConfigurationNode debug_mode = reader.getNode("debug.all");
@@ -144,5 +151,9 @@ public class Configuration {
     
     public static void setSignRenderDinstance(int value) {
         SIGN_RENDER_DISTANCE = value;
+    }
+    
+    public static void setItemFrameRenderDinstance(int value) {
+        ITEM_FRAME_RENDER_DISTANCE = value;
     }
 }
