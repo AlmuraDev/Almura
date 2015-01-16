@@ -859,6 +859,12 @@ public class PackCreator {
     }
 
     private static <R extends IRecipe> RecipeContainer<R> createRecipeContainer(Pack pack, String name, Class<? extends R> clazz, int id, Object res, ConfigurationNode node) throws InvalidRecipeException, UnknownRecipeTypeException, DuplicateRecipeException {
+        if (clazz != IShapedRecipe.class || clazz != IShapelessRecipe.class || clazz != ISmeltRecipe.class) {
+            throw new UnknownRecipeTypeException(
+                    "Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName()
+                    + "] is not valid. Valid types are [SHAPED, SHAPELESS, SMELT].");
+        }
+
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
         final int data = node.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue().intValue());
 
@@ -882,9 +888,7 @@ public class PackCreator {
                     }
                     final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0], true);
                     if (!gameObject.isPresent()) {
-                        throw new InvalidRecipeException("Recipe id [" + id + "] in [" + name + "] in pack [" + pack.getName()
-                                                         + "] cannot be registered. Ingredient [" + identifierCombined
-                                                         + "] is not a registered block or item.");
+                        throw new InvalidRecipeException("Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName() + "] cannot be registered. Ingredient [" + identifierCombined + "] is not a registered block or item.");
                     } else {
                         if (gameObject.get().isBlock()) {
                             final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
@@ -893,9 +897,7 @@ public class PackCreator {
                             } else if (gameObject.get().minecraftObject instanceof BlockAir) {
                                 params.add(gameObject.get().minecraftObject);
                             } else {
-                                throw new InvalidRecipeException(
-                                        "Game Object [" + gameObject.get().minecraftObject + "] of type [BLOCK] in [" + name + "] in pack [" + pack
-                                                .getName() + "] has no given ItemBlock.");
+                                throw new InvalidRecipeException("Game Object [" + gameObject.get().minecraftObject + "] of type [BLOCK] in recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName() + "] has no registered ItemBlock.");
                             }
                         } else if (gameObject.get().minecraftObject instanceof Item) {
                             params.add(new ItemStack((Item) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
@@ -908,7 +910,7 @@ public class PackCreator {
         }
 
         if (params.isEmpty()) {
-            throw new InvalidRecipeException("Recipe id [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName() + "] has no parameters.");
+            throw new InvalidRecipeException("Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName() + "] has no parameters.");
         }
 
         if (clazz == IShapedRecipe.class) {
@@ -940,10 +942,6 @@ public class PackCreator {
                 combinedParams.add(entry.getKey());
             }
             params = combinedParams;
-        } else if (clazz != IShapelessRecipe.class || clazz != ISmeltRecipe.class) {
-            throw new UnknownRecipeTypeException(
-                    "Recipe type [" + clazz.getSimpleName() + "] with id [" + id + "] in [" + name + "] in pack [" + pack.getName()
-                    + "] is not valid. Valid types are [SHAPED, SHAPELESS].");
         }
 
         return new RecipeContainer<>(pack, name, id, RecipeManager.registerRecipe(clazz, result, params));
