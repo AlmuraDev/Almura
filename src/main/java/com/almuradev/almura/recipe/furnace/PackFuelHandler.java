@@ -8,14 +8,28 @@ package com.almuradev.almura.recipe.furnace;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.node.FuelNode;
 import cpw.mods.fml.common.IFuelHandler;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
 public class PackFuelHandler implements IFuelHandler {
 
     @Override
     public int getBurnTime(ItemStack fuel) {
-        if (fuel.getItem() instanceof INodeContainer) {
-            final FuelNode fuelNode = ((INodeContainer) fuel.getItem()).getNode(FuelNode.class);
+        INodeContainer nodeContainer = null;
+
+        if (fuel.getItem() instanceof ItemBlock) {
+            final ItemBlock itemBlock = (ItemBlock) fuel.getItem();
+            final Block block = itemBlock.field_150939_a;
+            if (block instanceof INodeContainer) {
+                nodeContainer = (INodeContainer) block;
+            }
+        } else if (fuel.getItem() instanceof INodeContainer) {
+            nodeContainer = (INodeContainer) fuel.getItem();
+        }
+
+        if (nodeContainer != null) {
+            final FuelNode fuelNode = nodeContainer.getNode(FuelNode.class);
             if (fuelNode != null) {
                 return fuelNode.getValue();
             }
