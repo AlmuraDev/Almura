@@ -66,7 +66,7 @@ public class RecipeManager {
 
     @SuppressWarnings("unchecked")
     public static <R extends IRecipe> Optional<R> findMatch(Class<? extends R> clazz, R recipe) {
-        if (clazz == IShapelessRecipe.class) {
+        if (clazz == IShapedRecipe.class) {
             return (Optional<R>) findMatching((ShapedRecipes) recipe);
         } else if (clazz == IShapelessRecipe.class) {
             return (Optional<R>) findMatching((ShapelessRecipes) recipe);
