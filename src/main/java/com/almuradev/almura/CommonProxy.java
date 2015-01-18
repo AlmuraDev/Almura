@@ -27,7 +27,6 @@ import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapedRecipes;
 import com.almuradev.almura.pack.node.recipe.QuantitiveShapelessRecipes;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
-import com.almuradev.almura.server.network.play.S01SpawnParticle;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
 import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInfo;
@@ -63,7 +62,6 @@ public class CommonProxy {
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
         Almura.NETWORK_FORGE.registerMessage(S00AdditionalWorldInfo.class, S00AdditionalWorldInfo.class, 0, Side.CLIENT);
-        Almura.NETWORK_FORGE.registerMessage(S01SpawnParticle.class, S01SpawnParticle.class, 1, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B00PlayerDisplayName.class, B00PlayerDisplayName.class, 0, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInfo.class, B02AdditionalWorldInfo.class, 2, Side.CLIENT);
