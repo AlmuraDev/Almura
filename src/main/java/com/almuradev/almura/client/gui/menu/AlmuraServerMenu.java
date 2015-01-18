@@ -29,7 +29,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
     private static final ServerData ALMURA_DEV_SERVER_DATA = new ServerData("Almura (Beta)", "69.4.96.139");
     private static final ServerData OBSIDIANBOX_LIVE_SERVER_DATA = new ServerData("ObsidianBox", "obsidianbox.org");
     private UIBackgroundContainer window;
-    private UIButton almuraLiveButton, almuraDevButton, obsidianboxLiveButton, anotherButton, backButton;
+    private UIButton almuraLiveButton, anotherButton, backButton;
     private UIImage logoImage;
     private UILabel buildLabel;
 
@@ -46,7 +46,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
     protected void setup() {
         // Create the window container
         window = new UIBackgroundContainer(this);
-        window.setSize(225, 225);
+        window.setSize(200, 225);
         window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         window.setColor(Integer.MIN_VALUE);
         window.setBackgroundAlpha(125);
@@ -82,29 +82,15 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         // Create the live Almura button
         almuraLiveButton = new UIButton(this, "Join " + ChatColor.GOLD + ALMURA_LIVE_SERVER_DATA.serverName);
         almuraLiveButton.setPosition(0, getPaddedY(logoImage, padding * 3), Anchor.CENTER | Anchor.TOP);
-        almuraLiveButton.setSize(205, 16);
+        almuraLiveButton.setSize(100, 16);
         almuraLiveButton.setName("button.server.almura.live");
         almuraLiveButton.setDisabled(false);
         almuraLiveButton.register(this);
-
-        // Create the dev Almura button
-        almuraDevButton = new UIButton(this, "Join " + ChatColor.AQUA + ALMURA_DEV_SERVER_DATA.serverName);
-        almuraDevButton.setPosition(10, getPaddedY(almuraLiveButton, padding), Anchor.LEFT | Anchor.TOP);
-        almuraDevButton.setSize(70, 16);
-        almuraDevButton.setName("button.server.almura.dev");
-        almuraDevButton.register(this);
-
-        // Create the live ObsidianBox button
-        obsidianboxLiveButton = new UIButton(this, "Join " + ChatColor.LIGHT_PURPLE + OBSIDIANBOX_LIVE_SERVER_DATA.serverName);
-        obsidianboxLiveButton.setPosition(-10, getPaddedY(almuraLiveButton, padding), Anchor.RIGHT | Anchor.TOP);
-        obsidianboxLiveButton.setSize(70, 16);
-        obsidianboxLiveButton.setName("button.server.obsidianbox.live");
-        obsidianboxLiveButton.register(this);
-
+        
         // Create the join another server button
         anotherButton = new UIButton(this, "Join another server");
-        anotherButton.setPosition(0, getPaddedY(obsidianboxLiveButton, padding), Anchor.CENTER | Anchor.TOP);
-        anotherButton.setSize(205, 16);
+        anotherButton.setPosition(0, getPaddedY(almuraLiveButton, padding), Anchor.CENTER | Anchor.TOP);
+        anotherButton.setSize(100, 16);
         anotherButton.setName("button.server.another");
         anotherButton.register(this);
 
@@ -115,7 +101,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         backButton.setName("button.back");
         backButton.register(this);
 
-        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, almuraLiveButton, almuraDevButton, obsidianboxLiveButton, anotherButton,
+        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, almuraLiveButton, anotherButton,
                    backButton);
 
         // Allow the window to move
