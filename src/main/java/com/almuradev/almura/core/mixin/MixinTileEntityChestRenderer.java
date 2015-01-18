@@ -5,18 +5,16 @@
  */
 package com.almuradev.almura.core.mixin;
 
+import com.almuradev.almura.Configuration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.tileentity.TileEntityChestRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntityChest;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.almuradev.almura.Configuration;
 
 @Mixin(value = TileEntityChestRenderer.class)
 public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRenderer {
@@ -28,7 +26,8 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
             viewer = Minecraft.getMinecraft().thePlayer;
         }
 
-        if (viewer != null && te.getDistanceFrom(viewer.posX, viewer.posY, viewer.posZ) > (Configuration.CHEST_RENDER_DISTANCE *16) && te.hasWorldObj()) {
+        if (viewer != null && te.getDistanceFrom(viewer.posX, viewer.posY, viewer.posZ) > (Configuration.CHEST_RENDER_DISTANCE * 16) && te
+                .hasWorldObj()) {
             ci.cancel();
         }
     }

@@ -7,7 +7,6 @@ package com.almuradev.almura.pack.container;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
@@ -30,6 +29,7 @@ import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -336,8 +336,9 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
                     if (prop.isPresent()) {
                         final Optional<PackModelContainer> propModelContainer = prop.get().getModelContainer();
                         if (propModelContainer.isPresent()) {
-                            collisionBoundingBox = propModelContainer.get().getPhysics().getCollisionBoundingBoxFromPool(collisionBoundingBox, world, x,
-                                                                                                                         y, z);
+                            collisionBoundingBox =
+                                    propModelContainer.get().getPhysics().getCollisionBoundingBoxFromPool(collisionBoundingBox, world, x,
+                                                                                                          y, z);
                         }
                     }
                 }

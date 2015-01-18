@@ -73,17 +73,17 @@ public class Configuration {
         ConfigurationNode enhanced_debug = reader.getNode("client.enhanced-debug");
         enhanced_debug.setValue(DISPLAY_ENHANCED_DEBUG);
         reader.setNode(enhanced_debug);
-        
+
         // In-Game Render Distance for Chests
         ConfigurationNode chest_render_distance = reader.getNode("client.chest-render-distance");
         chest_render_distance.setValue(CHEST_RENDER_DISTANCE);
         reader.setNode(chest_render_distance);
-        
+
         // In-Game Render Distance for Signs
         ConfigurationNode sign_render_distance = reader.getNode("client.sign-render-distance");
         sign_render_distance.setValue(SIGN_RENDER_DISTANCE);
         reader.setNode(sign_render_distance);
-        
+
         // In-Game Render Distance for Item Frames
         ConfigurationNode item_frame_render_distance = reader.getNode("client.item-frame-render-distance");
         item_frame_render_distance.setValue(ITEM_FRAME_RENDER_DISTANCE);
@@ -144,15 +144,15 @@ public class Configuration {
     public static void toggleDebugRecipesMode(boolean value) {
         DEBUG_RECIPES_MODE = value;
     }
-    
+
     public static void setChestRenderDinstance(int value) {
         CHEST_RENDER_DISTANCE = value;
     }
-    
+
     public static void setSignRenderDinstance(int value) {
         SIGN_RENDER_DISTANCE = value;
     }
-    
+
     public static void setItemFrameRenderDinstance(int value) {
         ITEM_FRAME_RENDER_DISTANCE = value;
     }

@@ -207,7 +207,8 @@ public class PackCreator {
 
             int length = shape.getFaces().length;
             for (int i = 0; i < 4 - length; i++) {
-                shape.addFaces(new PackMirrorFace[]{new PackMirrorFace((PackFace) copy.getFaces()[i >= copy.getFaces().length ? copy.getFaces().length - 1 : i])});
+                shape.addFaces(new PackMirrorFace[]{
+                        new PackMirrorFace((PackFace) copy.getFaces()[i >= copy.getFaces().length ? copy.getFaces().length - 1 : i])});
             }
 
             shape.applyMatrix();
@@ -251,9 +252,11 @@ public class PackCreator {
         final RenderNode renderNode = createRenderNode(pack, name, reader.getNode(PackKeys.NODE_RENDER.getKey()));
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        final PackBlock block = new PackBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
-                             creativeTabName,
-                             rotationNode, lightNode, renderNode);
+        final PackBlock
+                block =
+                new PackBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
+                              creativeTabName,
+                              rotationNode, lightNode, renderNode);
 
         if (reader.hasChild(PackKeys.NODE_FUEL.getKey())) {
             block.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
@@ -296,7 +299,9 @@ public class PackCreator {
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", description.get(0));
 
-        final PackItem item = new PackItem(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName);
+        final PackItem
+                item =
+                new PackItem(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName);
 
         if (reader.hasChild(PackKeys.NODE_FUEL.getKey())) {
             item.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
@@ -340,8 +345,10 @@ public class PackCreator {
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", description.get(0));
 
-        final PackFood food = new PackFood(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName,
-                            consumptionNode);
+        final PackFood
+                food =
+                new PackFood(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName,
+                             consumptionNode);
 
         if (reader.hasChild(PackKeys.NODE_FUEL.getKey())) {
             food.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
@@ -501,9 +508,11 @@ public class PackCreator {
         final ContainerNode containerNode = createContainerNode(pack, name, reader.getNode(PackKeys.NODE_CONTAINER.getKey()));
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-
-        final PackContainerBlock container = new PackContainerBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
-                                      creativeTabName, rotationNode, lightNode, renderNode, containerNode);
+        final PackContainerBlock
+                container =
+                new PackContainerBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance,
+                                       showInCreativeTab,
+                                       creativeTabName, rotationNode, lightNode, renderNode, containerNode);
 
         if (reader.hasNode(PackKeys.NODE_FUEL.getKey())) {
             container.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_CONTAINER.getKey())));
@@ -894,7 +903,9 @@ public class PackCreator {
         return new FuelNode(isEnabled, maxBurnTime);
     }
 
-    private static <R extends IRecipe> RecipeContainer<R> createRecipeContainer(Pack pack, String name, Class<? extends R> clazz, int id, Object res, ConfigurationNode node) throws InvalidRecipeException, UnknownRecipeTypeException, DuplicateRecipeException {
+    private static <R extends IRecipe> RecipeContainer<R> createRecipeContainer(Pack pack, String name, Class<? extends R> clazz, int id, Object res,
+                                                                                ConfigurationNode node)
+            throws InvalidRecipeException, UnknownRecipeTypeException, DuplicateRecipeException {
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
         final int data = node.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue().intValue());
 
@@ -918,7 +929,10 @@ public class PackCreator {
                     }
                     final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(identifierAmountSplit[0], true);
                     if (!gameObject.isPresent()) {
-                        throw new InvalidRecipeException("Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName() + "] cannot be registered. Ingredient [" + identifierCombined + "] is not a registered block or item.");
+                        throw new InvalidRecipeException(
+                                "Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack
+                                        .getName() + "] cannot be registered. Ingredient [" + identifierCombined
+                                + "] is not a registered block or item.");
                     } else {
                         if (gameObject.get().isBlock()) {
                             final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
@@ -927,7 +941,10 @@ public class PackCreator {
                             } else if (gameObject.get().minecraftObject instanceof BlockAir) {
                                 params.add(gameObject.get().minecraftObject);
                             } else {
-                                throw new InvalidRecipeException("Game Object [" + gameObject.get().minecraftObject + "] of type [BLOCK] in recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName() + "] has no registered ItemBlock.");
+                                throw new InvalidRecipeException(
+                                        "Game Object [" + gameObject.get().minecraftObject + "] of type [BLOCK] in recipe [" + id + "] of type ["
+                                        + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName()
+                                        + "] has no registered ItemBlock.");
                             }
                         } else if (gameObject.get().minecraftObject instanceof Item) {
                             params.add(new ItemStack((Item) gameObject.get().minecraftObject, ingredientAmount, gameObject.get().data));
@@ -964,7 +981,9 @@ public class PackCreator {
         }
 
         if (params.isEmpty()) {
-            throw new InvalidRecipeException("Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName() + "] has no parameters.");
+            throw new InvalidRecipeException(
+                    "Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName()
+                    + "] has no parameters.");
         }
 
         if (clazz == IShapedRecipe.class) {

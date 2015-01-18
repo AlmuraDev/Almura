@@ -23,10 +23,12 @@ import java.util.List;
 
 //TODO Check each Minecraft update
 public class RecipeManager {
+
     private static final List<ISmeltRecipe> SMELT_RECIPES = Lists.newArrayList();
 
     @SuppressWarnings("unchecked")
-    public static <R extends IRecipe> R registerRecipe(Pack pack, String owner, int id, Class<? extends R> clazz, ItemStack result, List params) throws UnknownRecipeTypeException, InvalidRecipeException, DuplicateRecipeException {
+    public static <R extends IRecipe> R registerRecipe(Pack pack, String owner, int id, Class<? extends R> clazz, ItemStack result, List params)
+            throws UnknownRecipeTypeException, InvalidRecipeException, DuplicateRecipeException {
         R recipe = null;
 
         if (clazz == IShapedRecipe.class) {
@@ -38,12 +40,15 @@ public class RecipeManager {
         }
 
         if (recipe == null) {
-            throw new UnknownRecipeTypeException("Recipe type [" + clazz.getSimpleName().toUpperCase() + "] is unknown. Valid types are [SHAPED, SHAPELESS, SMELT].");
+            throw new UnknownRecipeTypeException(
+                    "Recipe type [" + clazz.getSimpleName().toUpperCase() + "] is unknown. Valid types are [SHAPED, SHAPELESS, SMELT].");
         }
 
         final Optional<R> existing = findMatch(clazz, recipe);
         if (existing.isPresent()) {
-            throw new DuplicateRecipeException("Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + owner + "] in pack [" + pack.getName() + "] is a duplicate. Matches [" + existing.get() + "].");
+            throw new DuplicateRecipeException(
+                    "Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + owner + "] in pack [" + pack.getName()
+                    + "] is a duplicate. Matches [" + existing.get() + "].");
         }
 
         if (clazz == IShapedRecipe.class) {
@@ -51,7 +56,8 @@ public class RecipeManager {
         } else if (clazz == IShapelessRecipe.class) {
             CraftingManager.getInstance().getRecipeList().add(recipe);
         } else if (clazz == ISmeltRecipe.class) {
-            FurnaceRecipes.smelting().func_151394_a(((ISmeltRecipe) recipe).getInput(), ((ISmeltRecipe) recipe).getOutput(), ((ISmeltRecipe) recipe).getSmeltExperience());
+            FurnaceRecipes.smelting().func_151394_a(((ISmeltRecipe) recipe).getInput(), ((ISmeltRecipe) recipe).getOutput(),
+                                                    ((ISmeltRecipe) recipe).getSmeltExperience());
             SMELT_RECIPES.add((ISmeltRecipe) recipe);
         }
 
@@ -125,7 +131,8 @@ public class RecipeManager {
         return new ShapedRecipes(j, k, aitemstack, result);
     }
 
-    private static ShapelessRecipes createShapelessRecipe(Pack pack, String owner, int id, ItemStack result, Object... params) throws InvalidRecipeException {
+    private static ShapelessRecipes createShapelessRecipe(Pack pack, String owner, int id, ItemStack result, Object... params)
+            throws InvalidRecipeException {
         final List<ItemStack> stacks = Lists.newArrayList();
 
         for (Object object1 : params) {
@@ -135,7 +142,9 @@ public class RecipeManager {
                 stacks.add(new ItemStack((Item) object1));
             } else {
                 if (!(object1 instanceof Block)) {
-                    throw new InvalidRecipeException("Game Object [" + object1 + "] + in recipe ["+ id + "] of type [SHAPELESS] in [" + owner + "] in pack [" + pack.getName() + "] is not a block, item, or itemstack.");
+                    throw new InvalidRecipeException(
+                            "Game Object [" + object1 + "] + in recipe [" + id + "] of type [SHAPELESS] in [" + owner + "] in pack [" + pack.getName()
+                            + "] is not a block, item, or itemstack.");
                 }
                 stacks.add(new ItemStack((Block) object1));
             }

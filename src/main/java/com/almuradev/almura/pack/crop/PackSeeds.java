@@ -6,7 +6,6 @@
 package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
@@ -18,6 +17,7 @@ import com.almuradev.almura.pack.node.GrassNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;

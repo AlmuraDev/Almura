@@ -5,21 +5,17 @@
  */
 package com.almuradev.almura.core.mixin;
 
+import com.almuradev.almura.Configuration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.renderer.tileentity.RenderItemFrame;
 import net.minecraft.client.renderer.tileentity.TileEntitySignRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntitySign;
-
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.almuradev.almura.Configuration;
 
 @Mixin(TileEntitySignRenderer.class)
 public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRenderer {
@@ -31,7 +27,8 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
             viewer = Minecraft.getMinecraft().thePlayer;
         }
 
-        if (viewer != null && te.getDistanceFrom(viewer.posX, viewer.posY, viewer.posZ) > (Configuration.SIGN_RENDER_DISTANCE * 16) && te.hasWorldObj()) {
+        if (viewer != null && te.getDistanceFrom(viewer.posX, viewer.posY, viewer.posZ) > (Configuration.SIGN_RENDER_DISTANCE * 16) && te
+                .hasWorldObj()) {
             GL11.glDepthMask(true);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glPopMatrix();

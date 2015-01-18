@@ -128,7 +128,6 @@ public class Filesystem {
             throw new RuntimeException("Failed to create directory [" + CONFIG_MODELS_PATH + "].", e);
         }
 
-
         if (Configuration.IS_CLIENT) {
             try {
                 Files.createDirectories(CONFIG_IMAGES_PATH);

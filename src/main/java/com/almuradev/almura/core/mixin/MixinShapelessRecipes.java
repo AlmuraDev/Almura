@@ -20,7 +20,9 @@ import java.util.List;
 
 @Mixin(ShapelessRecipes.class)
 public abstract class MixinShapelessRecipes implements IShapelessRecipe {
-    @Shadow private List recipeItems;
+
+    @Shadow
+    private List recipeItems;
 
     @Overwrite
     @SuppressWarnings("unchecked")

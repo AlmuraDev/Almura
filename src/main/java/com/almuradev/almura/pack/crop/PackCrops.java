@@ -25,7 +25,6 @@ import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -90,7 +89,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         if (!canGrow) {
             return;
         }
-                
+
         final LightNode lightNode = stage.getNode(LightNode.class);
         final int minLightLevel = lightNode.getValue().getMin();
         final int maxLightLevel = lightNode.getValue().getMax();
@@ -116,14 +115,14 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
             }
         }
     }
-    
+
     private boolean isGrowthEven(World world, int x, int y, int z) { // Scans a 4 x 4 block radius
-        final int currentMetadata = world.getBlockMetadata(x, y, z);        
+        final int currentMetadata = world.getBlockMetadata(x, y, z);
         for (int l = x - 4; l <= x + 4; ++l) {
             for (int i1 = y; i1 <= y + 1; ++i1) {
                 for (int j1 = z - 4; j1 <= z + 4; ++j1) {
-                    if (world.getBlock(l,i1,j1) instanceof PackCrops) {
-                        if (world.getBlock(x,y,z).getUnlocalizedName().equalsIgnoreCase(world.getBlock(l,i1,j1).getUnlocalizedName())) {
+                    if (world.getBlock(l, i1, j1) instanceof PackCrops) {
+                        if (world.getBlock(x, y, z).getUnlocalizedName().equalsIgnoreCase(world.getBlock(l, i1, j1).getUnlocalizedName())) {
                             if (world.getBlockMetadata(l, i1, j1) < currentMetadata) {
                                 return false;
                             }
@@ -134,16 +133,16 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         }
         return true;
     }
-    
+
     @Override
     public boolean isFertile(World world, int x, int y, int z) {
-        if (world.getBlock(x, y, z).isFertile(world, x, y-1, z)) {
+        if (world.getBlock(x, y, z).isFertile(world, x, y - 1, z)) {
             return true;
         } else {
             return false;
-        }        
+        }
     }
-    
+
     @Override
     public void setBlockBoundsBasedOnState(IBlockAccess access, int x, int y, int z) {
         if (access != null) {

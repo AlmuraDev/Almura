@@ -15,7 +15,6 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.Inject;
 
 @Mixin(value = ContainerWorkbench.class)
 public abstract class MixinContainerWorkbench extends Container {

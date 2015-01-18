@@ -23,7 +23,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.init.Items;
 import net.minecraft.network.play.server.S2APacketParticles;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.IIcon;
@@ -153,7 +152,11 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockMo
         float d1 = 0.02f;
         float d2 = 0.02f;
 
-        MinecraftServer.getServer().getConfigurationManager().sendToAllNear(x, y, z, 50D, world.provider.dimensionId, new S2APacketParticles("happyVillager", (x + random.nextFloat()), (float) (y + random.nextFloat() * block.getBlockBoundsMaxY()), (z + random.nextFloat()), d0, d1, d2, 1, id));
+        MinecraftServer.getServer().getConfigurationManager().sendToAllNear(x, y, z, 50D, world.provider.dimensionId,
+                                                                            new S2APacketParticles("happyVillager", (x + random.nextFloat()),
+                                                                                                   (float) (y + random.nextFloat() * block
+                                                                                                           .getBlockBoundsMaxY()),
+                                                                                                   (z + random.nextFloat()), d0, d1, d2, 1, id));
     }
 
     /**

@@ -6,8 +6,6 @@
 package com.almuradev.almura.pack.container;
 
 import com.almuradev.almura.pack.node.ContainerNode;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -234,7 +232,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     public boolean isItemValidForSlot(int slot, ItemStack stack) {
         return true;
     }
-    
+
     public boolean hasEmptySlots() {
         return hasEmptySlots;
     }

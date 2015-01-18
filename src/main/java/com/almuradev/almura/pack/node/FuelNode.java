@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.node;
 
 public class FuelNode extends ToggleableNode<Integer> {
+
     private final int burnTime;
 
     public FuelNode(boolean isEnabled, int burnTime) {

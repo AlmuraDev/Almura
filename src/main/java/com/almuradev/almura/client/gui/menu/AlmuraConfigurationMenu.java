@@ -11,7 +11,6 @@ import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.google.common.eventbus.Subscribe;
-
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
@@ -78,13 +77,13 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
         chestRenderDistance = new UILabel(this, ChatColor.WHITE + "Chest Distance:");
         chestRenderDistance.setPosition(-55, titleLabel.getY() + (padding * 4 + 11), Anchor.RIGHT | Anchor.TOP);
-        
+
         signRenderDistance = new UILabel(this, ChatColor.WHITE + "Sign Distance:");
         signRenderDistance.setPosition(-55, almuraGuiCheckBox.getY() + (padding * 4 + 25), Anchor.RIGHT | Anchor.TOP);
-        
+
         itemFrameRenderDistance = new UILabel(this, ChatColor.WHITE + "Item Frame Distance:");
         itemFrameRenderDistance.setPosition(-55, signRenderDistance.getY() + (padding * 4 + 25), Anchor.RIGHT | Anchor.TOP);
-        
+
         // Chest Render Distance
         chestDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
         chestDistanceDownMenu.setPosition(-15, titleLabel.getY() + (padding * 4 + 10), Anchor.TOP | Anchor.RIGHT);
@@ -98,7 +97,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         }
         chestDistanceDownMenu.setName("select.chest");
         chestDistanceDownMenu.register(this);
-        
+
         // Sign Render Distance
         signDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
         signDistanceDownMenu.setPosition(-15, chestDistanceDownMenu.getY() + (padding * 4 + 25), Anchor.TOP | Anchor.RIGHT);
@@ -112,7 +111,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         }
         signDistanceDownMenu.setName("select.sign");
         signDistanceDownMenu.register(this);
-        
+
         // Sign Render Distance
         itemFrameDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
         itemFrameDistanceDownMenu.setPosition(-15, signDistanceDownMenu.getY() + (padding * 4 + 25), Anchor.TOP | Anchor.RIGHT);
@@ -126,7 +125,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         }
         itemFrameDistanceDownMenu.setName("select.itemFrame");
         itemFrameDistanceDownMenu.register(this);
-        
+
         // Create the almura GUI checkbox
         almuraDebugGuiCheckBox = new UICheckBox(this, ChatColor.WHITE + "Enhanced F3 Debug Menu");
         almuraDebugGuiCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
@@ -185,8 +184,10 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         cancelButton.setName("button.cancel");
         cancelButton.register(this);
 
-        window.add(titleLabel, uiTitleBar, signRenderDistance, itemFrameRenderDistance, chestRenderDistance, xButton, almuraGuiCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
-                   debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton, signDistanceDownMenu, chestDistanceDownMenu, itemFrameDistanceDownMenu);
+        window.add(titleLabel, uiTitleBar, signRenderDistance, itemFrameRenderDistance, chestRenderDistance, xButton, almuraGuiCheckBox,
+                   almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
+                   debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton, signDistanceDownMenu,
+                   chestDistanceDownMenu, itemFrameDistanceDownMenu);
 
         // Allow the window to move
         new UIMoveHandle(this, window);
@@ -238,50 +239,50 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
                 displayParent();
         }
     }
-    
+
     @Subscribe
     public void onSelection(UISelect.SelectEvent event) {
         String type = event.getComponent().getName().toLowerCase();
         if (type.equalsIgnoreCase("select.sign")) {
             switch (event.getNewValue().getLabel()) {
-            case "16":
-                Configuration.setSignRenderDinstance(16);
-                break;
-            case "32":
-                Configuration.setSignRenderDinstance(32);
-                break;
-            case "64":
-                Configuration.setSignRenderDinstance(64);
-                break;
+                case "16":
+                    Configuration.setSignRenderDinstance(16);
+                    break;
+                case "32":
+                    Configuration.setSignRenderDinstance(32);
+                    break;
+                case "64":
+                    Configuration.setSignRenderDinstance(64);
+                    break;
             }
         }
-        
+
         if (type.equalsIgnoreCase("select.chest")) {
             switch (event.getNewValue().getLabel()) {
-            case "16":
-                Configuration.setChestRenderDinstance(16);
-                break;
-            case "32":
-                Configuration.setChestRenderDinstance(32);
-                break;
-            case "64":
-                Configuration.setChestRenderDinstance(64);
-                break;
+                case "16":
+                    Configuration.setChestRenderDinstance(16);
+                    break;
+                case "32":
+                    Configuration.setChestRenderDinstance(32);
+                    break;
+                case "64":
+                    Configuration.setChestRenderDinstance(64);
+                    break;
             }
         }
-        
+
         if (type.equalsIgnoreCase("select.itemFrame")) {
             switch (event.getNewValue().getLabel()) {
-            case "16":
-                Configuration.setItemFrameRenderDinstance(16);
-                break;
-            case "32":
-                Configuration.setItemFrameRenderDinstance(32);
-                break;
-            case "64":
-                Configuration.setItemFrameRenderDinstance(64);
-                break;
+                case "16":
+                    Configuration.setItemFrameRenderDinstance(16);
+                    break;
+                case "32":
+                    Configuration.setItemFrameRenderDinstance(32);
+                    break;
+                case "64":
+                    Configuration.setItemFrameRenderDinstance(64);
+                    break;
             }
-        }        
-    }    
+        }
+    }
 }

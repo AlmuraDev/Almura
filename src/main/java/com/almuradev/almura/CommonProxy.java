@@ -5,8 +5,6 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.recipe.furnace.PackFuelHandler;
-import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.INodeContainer;
@@ -22,10 +20,12 @@ import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.mapper.EntityMapper;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.node.SoilNode;
+import com.almuradev.almura.recipe.furnace.PackFuelHandler;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
 import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInfo;
+import com.almuradev.almura.tabs.Tabs;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;

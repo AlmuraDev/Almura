@@ -6,17 +6,17 @@
 package com.almuradev.almura.pack.item;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.pack.INodeContainer;
-import com.almuradev.almura.pack.node.INode;
-import com.almuradev.almura.pack.node.event.AddNodeEvent;
-import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.IModelContainer;
+import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackModelContainer;
+import com.almuradev.almura.pack.node.INode;
+import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
@@ -40,11 +40,11 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IMode
     private final String identifier;
     private final Map<Integer, List<Integer>> textureCoordinates;
     private final String modelName;
+    private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private ClippedIcon[] clippedIcons;
     private String textureName;
     private Optional<PackModelContainer> modelContainer;
     private List<String> tooltip;
-    private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
 
     public PackItem(Pack pack, String identifier, List<String> tooltip, String textureName, String modelName, PackModelContainer modelContainer,
                     Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName) {

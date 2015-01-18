@@ -7,7 +7,6 @@ package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
@@ -28,6 +27,7 @@ import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
+import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -285,11 +285,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     public Optional<PackModelContainer> getModelContainer() {
         return modelContainer;
     }
-    
-    @Override
-    public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
-        return true;
-    }
 
     @Override
     public void setModelContainer(PackModelContainer modelContainer) {
@@ -302,6 +297,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
                 opaque = renderNode.isOpaque();
             }
         }
+    }
+
+    @Override
+    public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+        return true;
     }
 
     @Override

@@ -17,9 +17,13 @@ import java.util.Arrays;
 
 @Mixin(ShapedRecipes.class)
 public abstract class MixinShapedRecipes implements IShapedRecipe {
-    @Shadow private int recipeWidth;
-    @Shadow private int recipeHeight;
-    @Shadow private ItemStack[] recipeItems;
+
+    @Shadow
+    private int recipeWidth;
+    @Shadow
+    private int recipeHeight;
+    @Shadow
+    private ItemStack[] recipeItems;
 
     @Overwrite
     public boolean checkMatch(InventoryCrafting craftingInventory, int width, int length, boolean flag) {
