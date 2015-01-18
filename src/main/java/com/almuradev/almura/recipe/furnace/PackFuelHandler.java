@@ -10,7 +10,7 @@ import com.almuradev.almura.pack.node.FuelNode;
 import cpw.mods.fml.common.IFuelHandler;
 import net.minecraft.item.ItemStack;
 
-public class FuelHandler implements IFuelHandler {
+public class PackFuelHandler implements IFuelHandler {
 
     @Override
     public int getBurnTime(ItemStack fuel) {
