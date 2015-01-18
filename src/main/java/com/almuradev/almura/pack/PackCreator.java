@@ -71,7 +71,6 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -977,8 +976,6 @@ public class PackCreator {
                     params.add(new ItemStack((Item) gameObject.get().minecraftObject, 1, gameObject.get().data));
                 }
             }
-
-            TileEntityFurnace
             params.add(node.getChild(PackKeys.EXPERIENCE.getKey()).getFloat(PackKeys.EXPERIENCE.getDefaultValue()));
         }
 
