@@ -12,6 +12,7 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class QuantitiveShapelessRecipes extends ShapelessRecipes {
@@ -40,8 +41,10 @@ public class QuantitiveShapelessRecipes extends ShapelessRecipes {
                 if (slotStack != null) {
                     boolean isWithinGrid = false;
 
-                    for (Object obj : buffer) {
-                        ItemStack recipeStack = (ItemStack) obj;
+                    final Iterator iter = buffer.iterator();
+
+                    while (iter.hasNext()) {
+                        final ItemStack recipeStack = (ItemStack) iter.next();
 
                         if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize
                             || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
@@ -49,12 +52,12 @@ public class QuantitiveShapelessRecipes extends ShapelessRecipes {
                         }
 
                         isWithinGrid = true;
-                        buffer.remove(recipeStack);
+                        iter.remove();
                         break;
                     }
 
                     if (!isWithinGrid) {
-                        break;
+                        return false;
                     }
                 }
             }

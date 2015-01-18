@@ -2,8 +2,7 @@
   "package": "com.almuradev.almura.core.mixin",
   "mixins": [
     "MixinBlockTallGrass",
-    "MixinBlockWall",
-    "MixinContainerWorkbench"
+    "MixinBlockWall"
   ],
   "client": [
     "MixinTileEntityChestRenderer",
