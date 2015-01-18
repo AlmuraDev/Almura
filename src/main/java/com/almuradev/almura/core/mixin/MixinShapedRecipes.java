@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.Arrays;
 
 @Mixin(ShapedRecipes.class)
-public abstract class MixinShapedRecipe implements IShapedRecipe {
+public abstract class MixinShapedRecipes implements IShapedRecipe {
     @Shadow private int recipeWidth;
     @Shadow private int recipeHeight;
     @Shadow private ItemStack[] recipeItems;

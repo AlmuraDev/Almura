@@ -26,15 +26,15 @@ public class RecipeManager {
     private static final List<ISmeltRecipe> SMELT_RECIPES = Lists.newArrayList();
 
     @SuppressWarnings("unchecked")
-    public static <R extends IRecipe> R registerRecipe(Pack pack, String owner, int id, Class<? extends R> clazz, ItemStack result, Object... params) throws UnknownRecipeTypeException, InvalidRecipeException, DuplicateRecipeException {
+    public static <R extends IRecipe> R registerRecipe(Pack pack, String owner, int id, Class<? extends R> clazz, ItemStack result, List params) throws UnknownRecipeTypeException, InvalidRecipeException, DuplicateRecipeException {
         R recipe = null;
 
         if (clazz == IShapedRecipe.class) {
-            recipe = (R) createShapedRecipe(result, params);
+            recipe = (R) createShapedRecipe(result, params.toArray(new Object[params.size()]));
         } else if (clazz == IShapelessRecipe.class) {
-            recipe = (R) createShapelessRecipe(pack, owner, id, result, params);
+            recipe = (R) createShapelessRecipe(pack, owner, id, result, params.toArray(new Object[params.size()]));
         } else if (clazz == ISmeltRecipe.class) {
-            recipe = (R) createSmeltRecipe(result, params);
+            recipe = (R) createSmeltRecipe(result, params.toArray(new Object[params.size()]));
         }
 
         if (recipe == null) {

@@ -15,10 +15,11 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Mixin(ShapelessRecipes.class)
-public abstract class MixinShapelessRecipe implements IShapelessRecipe {
+public abstract class MixinShapelessRecipes implements IShapelessRecipe {
     @Shadow private List recipeItems;
 
     @Overwrite
@@ -33,8 +34,10 @@ public abstract class MixinShapelessRecipe implements IShapelessRecipe {
                 if (slotStack != null) {
                     boolean isWithinGrid = false;
 
-                    for (Object obj : buffer) {
-                        ItemStack recipeStack = (ItemStack) obj;
+                    final Iterator iter = buffer.iterator();
+
+                    while (iter.hasNext()) {
+                        final ItemStack recipeStack = (ItemStack) iter.next();
 
                         if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize
                             || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
@@ -42,12 +45,12 @@ public abstract class MixinShapelessRecipe implements IShapelessRecipe {
                         }
 
                         isWithinGrid = true;
-                        buffer.remove(recipeStack);
+                        iter.remove();
                         break;
                     }
 
                     if (!isWithinGrid) {
-                        break;
+                        return false;
                     }
                 }
             }

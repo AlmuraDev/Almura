@@ -859,12 +859,6 @@ public class PackCreator {
     }
 
     private static <R extends IRecipe> RecipeContainer<R> createRecipeContainer(Pack pack, String name, Class<? extends R> clazz, int id, Object res, ConfigurationNode node) throws InvalidRecipeException, UnknownRecipeTypeException, DuplicateRecipeException {
-        if (clazz != IShapedRecipe.class || clazz != IShapelessRecipe.class || clazz != ISmeltRecipe.class) {
-            throw new UnknownRecipeTypeException(
-                    "Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName()
-                    + "] is not valid. Valid types are [SHAPED, SHAPELESS, SMELT].");
-        }
-
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
         final int data = node.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue().intValue());
 
@@ -877,7 +871,7 @@ public class PackCreator {
 
         List<Object> params = Lists.newLinkedList();
 
-        if (clazz == IShapelessRecipe.class || clazz == IShapedRecipe.class) {
+        if (clazz == IShapedRecipe.class || clazz == IShapelessRecipe.class) {
             for (String itemsRaw : node.getChild(PackKeys.INGREDIENTS.getKey()).getStringList()) {
                 final String[] itemsSplit = itemsRaw.split(" ");
                 for (String identifierCombined : itemsSplit) {
@@ -944,6 +938,6 @@ public class PackCreator {
             params = combinedParams;
         }
 
-        return new RecipeContainer<>(pack, name, id, RecipeManager.registerRecipe(clazz, result, params));
+        return new RecipeContainer<>(pack, name, id, RecipeManager.registerRecipe(pack, name, id, clazz, result, params));
     }
 }

@@ -10,10 +10,13 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.tileentity.RenderItemFrame;
 import net.minecraft.entity.item.EntityItemFrame;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.almuradev.almura.Configuration;
 
 @Mixin(RenderItemFrame.class)
 public abstract class MixinRenderItemFrame extends Render {
@@ -24,7 +27,7 @@ public abstract class MixinRenderItemFrame extends Render {
             viewer = Minecraft.getMinecraft().thePlayer;
         }
 
-        if (viewer != null && entity.getDistanceSqToEntity(viewer) > 100) {
+        if (viewer != null && entity.getDistanceSqToEntity(viewer) > (Configuration.ITEM_FRAME_RENDER_DISTANCE *16)) {
             ci.cancel();
         }
     }
