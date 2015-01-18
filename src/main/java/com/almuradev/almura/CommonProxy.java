@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.recipe.furnace.FuelHandler;
 import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
@@ -63,6 +64,7 @@ public class CommonProxy {
         Almura.NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInfo.class, B02AdditionalWorldInfo.class, 2, Side.CLIENT);
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());
         GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");
+        GameRegistry.registerFuelHandler(new FuelHandler());
         FMLCommonHandler.instance().bus().register(this);
         Tabs.fakeStaticLoad();
 

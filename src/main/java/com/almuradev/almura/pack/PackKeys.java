@@ -95,6 +95,9 @@ public class PackKeys {
     public static final DefaultedKey<Boolean> USE_DISPLAY_NAME_AS_TITLE = new DefaultedKey<>("use-display-name-as-title", true);
     public static final DefaultedKey<Integer> MAX_STACK_SIZE = new DefaultedKey<>("max-stack-size", 64);
     public static final DefaultedKey<String> STATE = new DefaultedKey<>("state", "");
+    //FUEL NODE
+    public static final DefaultedKey<String> NODE_FUEL = new DefaultedKey<>("fuel", "");
+    public static final DefaultedKey<Integer> MAX_BURN_TIME = new DefaultedKey<>("max-burn-time", 1);
 
     public static class DefaultedKey<T> {
 

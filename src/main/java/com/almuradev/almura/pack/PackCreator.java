@@ -29,6 +29,7 @@ import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ConsumptionNode;
 import com.almuradev.almura.pack.node.ContainerNode;
 import com.almuradev.almura.pack.node.DropsNode;
+import com.almuradev.almura.pack.node.FuelNode;
 import com.almuradev.almura.pack.node.GrassNode;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.LightNode;
@@ -250,9 +251,15 @@ public class PackCreator {
         final RenderNode renderNode = createRenderNode(pack, name, reader.getNode(PackKeys.NODE_RENDER.getKey()));
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
+        final PackBlock block = new PackBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
                              creativeTabName,
                              rotationNode, lightNode, renderNode);
+
+        if (reader.hasChild(PackKeys.NODE_FUEL.getKey())) {
+            block.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
+        }
+
+        return block;
     }
 
     public static PackItem createItemFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -289,7 +296,13 @@ public class PackCreator {
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", description.get(0));
 
-        return new PackItem(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName);
+        final PackItem item = new PackItem(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName);
+
+        if (reader.hasChild(PackKeys.NODE_FUEL.getKey())) {
+            item.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
+        }
+
+        return item;
     }
 
     public static PackFood createFoodFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -327,8 +340,14 @@ public class PackCreator {
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", description.get(0));
 
-        return new PackFood(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName,
+        final PackFood food = new PackFood(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName,
                             consumptionNode);
+
+        if (reader.hasChild(PackKeys.NODE_FUEL.getKey())) {
+            food.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
+        }
+
+        return food;
     }
 
     public static PackCrops createCropFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
@@ -403,13 +422,17 @@ public class PackCreator {
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
         final String creativeTabName = node.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
 
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + identifier + ".name", description.get(0));
+
         final PackSeeds
                 seed =
                 new PackSeeds(pack, identifier, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab,
                               creativeTabName, crop, soil);
         seed.addNode(createGrassNode(pack, name, seed, node.getNode(PackKeys.NODE_GRASS.getKey())));
 
-        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + identifier + ".name", description.get(0));
+        if (node.hasNode(PackKeys.NODE_FUEL.getKey())) {
+            seed.addNode(createFuelNode(pack, identifier, node.getNode(PackKeys.NODE_FUEL.getKey())));
+        }
 
         return seed;
     }
@@ -478,8 +501,15 @@ public class PackCreator {
         final ContainerNode containerNode = createContainerNode(pack, name, reader.getNode(PackKeys.NODE_CONTAINER.getKey()));
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        return new PackContainerBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
+
+        final PackContainerBlock container = new PackContainerBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
                                       creativeTabName, rotationNode, lightNode, renderNode, containerNode);
+
+        if (reader.hasNode(PackKeys.NODE_FUEL.getKey())) {
+            container.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_CONTAINER.getKey())));
+        }
+
+        return container;
     }
 
     public static ContainerNode createContainerNode(Pack pack, String name, ConfigurationNode node) {
@@ -856,6 +886,12 @@ public class PackCreator {
                 chancePair =
                 PackUtil.getRange(Double.class, node.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0);
         return new GrowthNode(new RangeProperty<>(Double.class, true, chancePair));
+    }
+
+    private static FuelNode createFuelNode(Pack pack, String name, ConfigurationNode node) {
+        final boolean isEnabled = node.getChild(PackKeys.ENABLED.getKey()).getBoolean(true);
+        final int maxBurnTime = node.getChild(PackKeys.MAX_BURN_TIME.getKey()).getInt(PackKeys.MAX_BURN_TIME.getDefaultValue());
+        return new FuelNode(isEnabled, maxBurnTime);
     }
 
     private static <R extends IRecipe> RecipeContainer<R> createRecipeContainer(Pack pack, String name, Class<? extends R> clazz, int id, Object res, ConfigurationNode node) throws InvalidRecipeException, UnknownRecipeTypeException, DuplicateRecipeException {

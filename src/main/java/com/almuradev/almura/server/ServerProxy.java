@@ -26,6 +26,7 @@ public class ServerProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        event.player.closeScreen();
     }
 
     @SubscribeEvent
