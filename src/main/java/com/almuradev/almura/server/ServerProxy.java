@@ -15,21 +15,4 @@ import net.minecraftforge.common.MinecraftForge;
 public class ServerProxy extends CommonProxy {
 
     public static final String CLASSPATH = "com.almuradev.almura.server.ServerProxy";
-
-    @Override
-    public void onPreInitialization(FMLPreInitializationEvent event) {
-        super.onPreInitialization(event);
-
-        FMLCommonHandler.instance().bus().register(this);
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @SubscribeEvent
-    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        event.player.closeScreen();
-    }
-
-    @SubscribeEvent
-    public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-    }
 }
