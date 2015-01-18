@@ -31,6 +31,7 @@ public class PackKeys {
     public static final DefaultedKey<String> EXHAUSTION_CHANGE = new DefaultedKey<>("exhaustion-change", "");
     public static final DefaultedKey<String> CHANCE = new DefaultedKey<>("chance", "");
     public static final DefaultedKey<String> SHAPES = new DefaultedKey<>("shapes", "");
+    public static final DefaultedKey<String> RANGE_EXPERIENCE = new DefaultedKey<>("experience", "");
     //BOUNDS NODE
     public static final DefaultedKey<String> NODE_BOUNDS = new DefaultedKey<>("bounds", "");
     public static final DefaultedKey<Boolean> USE_VANILLA_COLLISION = new DefaultedKey<>("use-vanilla-collision", true);
@@ -76,7 +77,6 @@ public class PackKeys {
     public static final DefaultedKey<String> NODE_BREAK = new DefaultedKey<>("break", "");
     public static final DefaultedKey<String> TOOLS = new DefaultedKey<>("tools", "");
     public static final DefaultedKey<String> DROPS = new DefaultedKey<>("drops", "");
-    public static final DefaultedKey<String> EXPERIENCE = new DefaultedKey<>("experience", "");
     public static final DefaultedKey<String> BONUS = new DefaultedKey<>("bonus", "");
     //SOIL NODE
     public static final DefaultedKey<String> NODE_SOIL = new DefaultedKey<>("soil", "");
@@ -92,12 +92,13 @@ public class PackKeys {
     //CONTAINER NODE
     public static final DefaultedKey<String> NODE_CONTAINER = new DefaultedKey<>("container", "");
     public static final DefaultedKey<Integer> INVENTORY_SIZE = new DefaultedKey<>("inventory-size", 9);
-    public static final DefaultedKey<Boolean> USE_DISPLAY_NAME_AS_TITLE = new DefaultedKey<>("use-display-name-as-title", true);
     public static final DefaultedKey<Integer> MAX_STACK_SIZE = new DefaultedKey<>("max-stack-size", 64);
     public static final DefaultedKey<String> STATE = new DefaultedKey<>("state", "");
     //FUEL NODE
     public static final DefaultedKey<String> NODE_FUEL = new DefaultedKey<>("fuel", "");
     public static final DefaultedKey<Integer> MAX_BURN_TIME = new DefaultedKey<>("max-burn-time", 1);
+    public static final DefaultedKey<String> INPUT = new DefaultedKey<>("input", "");
+    public static final DefaultedKey<Float> EXPERIENCE = new DefaultedKey<>("experience", 0f);
 
     public static class DefaultedKey<T> {
 

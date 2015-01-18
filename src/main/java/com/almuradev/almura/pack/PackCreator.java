@@ -731,8 +731,8 @@ public class PackCreator {
             final RangeProperty<Integer>
                     experienceRange =
                     new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
-                                                                               toolConfigurationNode.getChild(PackKeys.EXPERIENCE.getKey())
-                                                                                       .getString(PackKeys.EXPERIENCE.getDefaultValue()), 0));
+                                                                               toolConfigurationNode.getChild(PackKeys.RANGE_EXPERIENCE.getKey())
+                                                                                       .getString(PackKeys.RANGE_EXPERIENCE.getDefaultValue()), 0));
             final RangeProperty<Float>
                     exhaustionRange =
                     new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
@@ -936,7 +936,31 @@ public class PackCreator {
                 }
             }
         } else {
-            //TODO Add params from smelting
+            final String itemRaw = node.getChild(PackKeys.INPUT.getKey()).getString(PackKeys.INPUT.getDefaultValue());
+            final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(itemRaw, true);
+            if (!gameObject.isPresent()) {
+                throw new InvalidRecipeException(
+                        "Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName()
+                        + "] cannot be registered. Input [" + itemRaw + "] is not a registered block or item.");
+            } else {
+                if (gameObject.get().isBlock()) {
+                    final Item itemBlock = Item.getItemFromBlock((Block) gameObject.get().minecraftObject);
+                    if (itemBlock != null) {
+                        params.add(new ItemStack((Block) gameObject.get().minecraftObject, 1, gameObject.get().data));
+                    } else if (gameObject.get().minecraftObject instanceof BlockAir) {
+                        params.add(gameObject.get().minecraftObject);
+                    } else {
+                        throw new InvalidRecipeException(
+                                "Game Object [" + gameObject.get().minecraftObject + "] of type [BLOCK] in recipe [" + id + "] of type [" + clazz
+                                        .getSimpleName().toUpperCase() + "] in [" + name + "] in pack [" + pack.getName()
+                                + "] has no registered ItemBlock.");
+                    }
+                } else if (gameObject.get().minecraftObject instanceof Item) {
+                    params.add(new ItemStack((Item) gameObject.get().minecraftObject, 1, gameObject.get().data));
+                }
+            }
+
+            params.add(node.getChild(PackKeys.EXPERIENCE.getKey()).getFloat(PackKeys.EXPERIENCE.getDefaultValue()));
         }
 
         if (params.isEmpty()) {

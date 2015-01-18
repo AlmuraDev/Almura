@@ -61,11 +61,11 @@ public class RecipeManager {
     @SuppressWarnings("unchecked")
     public static <R extends IRecipe> Optional<R> findMatch(Class<? extends R> clazz, R recipe) {
         if (clazz == IShapelessRecipe.class) {
-            return Optional.fromNullable((R) findMatching((ShapedRecipes) recipe));
+            return (Optional<R>) findMatching((ShapedRecipes) recipe);
         } else if (clazz == IShapelessRecipe.class) {
-            return Optional.fromNullable((R) findMatching((ShapelessRecipes) recipe));
+            return (Optional<R>) findMatching((ShapelessRecipes) recipe);
         } else if (clazz == ISmeltRecipe.class) {
-            return Optional.fromNullable((R) findMatching((SmeltRecipes) recipe));
+            return (Optional<R>) findMatching((SmeltRecipes) recipe);
         }
         return Optional.absent();
     }
@@ -144,12 +144,15 @@ public class RecipeManager {
         return new ShapelessRecipes(result, stacks);
     }
 
-    private static SmeltRecipes createSmeltRecipe(ItemStack result, Object params) {
-        return null;
+    private static SmeltRecipes createSmeltRecipe(ItemStack result, Object... params) {
+        final ItemStack input = (ItemStack) params[0];
+        final Float experience = (Float) params[1];
+
+        return new SmeltRecipes(input, result, experience);
     }
 
     @SuppressWarnings("unchecked")
-    private static Optional<ShapelessRecipes> findMatching(ShapelessRecipes recipe) {
+    private static Optional<? extends IRecipe> findMatching(ShapelessRecipes recipe) {
         for (Object registered : CraftingManager.getInstance().getRecipeList()) {
             final net.minecraft.item.crafting.IRecipe registeredRecipe = (net.minecraft.item.crafting.IRecipe) registered;
 
@@ -197,13 +200,13 @@ public class RecipeManager {
             }
 
             if (doesMatch) {
-                return Optional.of(registeredShapeless);
+                return Optional.of((IRecipe) registeredShapeless);
             }
         }
         return Optional.absent();
     }
 
-    private static Optional<ShapedRecipes> findMatching(ShapedRecipes recipe) {
+    private static Optional<? extends IRecipe> findMatching(ShapedRecipes recipe) {
         for (Object registered : CraftingManager.getInstance().getRecipeList()) {
             final net.minecraft.item.crafting.IRecipe registeredRecipe = (net.minecraft.item.crafting.IRecipe) registered;
 
@@ -245,13 +248,28 @@ public class RecipeManager {
             }
 
             if (doesMatch) {
-                return Optional.of(registeredShaped);
+                return Optional.of((IShapedRecipe) registeredShaped);
             }
         }
         return Optional.absent();
     }
 
-    private static Optional<SmeltRecipes> findMatching(SmeltRecipes recipe) {
-        return null;
+    private static Optional<? extends IRecipe> findMatching(SmeltRecipes recipe) {
+        //Check cache first
+        for (ISmeltRecipe registered : SMELT_RECIPES) {
+            if (registered.equals(recipe)) {
+                return Optional.of(registered);
+            }
+        }
+
+        final ItemStack resultStack = FurnaceRecipes.smelting().getSmeltingResult(recipe.getInput());
+        if (resultStack != null) {
+            final float experience = FurnaceRecipes.smelting().func_151398_b(recipe.getInput());
+            SmeltRecipes existing = new SmeltRecipes(recipe.getInput(), resultStack, experience);
+            SMELT_RECIPES.add(existing);
+            return Optional.of(existing);
+        }
+
+        return Optional.absent();
     }
 }
