@@ -12,8 +12,8 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class B00PlayerDisplayName implements IMessage, IMessageHandler<B00PlayerDisplayName, IMessage> {
 
@@ -42,7 +42,7 @@ public class B00PlayerDisplayName implements IMessage, IMessageHandler<B00Player
     @Override
     public IMessage onMessage(B00PlayerDisplayName message, MessageContext ctx) {
         if (ctx.side == Side.CLIENT) {
-            final EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(message.username);
+            final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(message.displayName);
             if (player != null) {
                 ClientProxy.PLAYER_DISPLAY_NAME_MAP.put(message.username, message.displayName);
                 player.refreshDisplayName();
