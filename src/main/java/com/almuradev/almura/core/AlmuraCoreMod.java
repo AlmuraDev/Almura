@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import java.util.Map;
 
-@SortingIndex(value = 1001)
+@SortingIndex(value = 9999)
 public final class AlmuraCoreMod implements IFMLLoadingPlugin {
 
     @SuppressWarnings("unchecked")

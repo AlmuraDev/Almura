@@ -114,8 +114,9 @@ public class IngameHUD extends AlmuraGui {
         //////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
         // Almura Title
-        final UILabel almuraTitle = new UILabel(this, "Almura");
+        final UILabel almuraTitle = new UILabel(this, "");
         almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
+        almuraTitle.setText("Almura");
         almuraTitle.setColor(0xffffffff);
         almuraTitle.setSize(7, 7);
         almuraTitle.setFontScale(1.0F);
