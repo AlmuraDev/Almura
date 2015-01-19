@@ -42,7 +42,7 @@ public class B00PlayerDisplayName implements IMessage, IMessageHandler<B00Player
     @Override
     public IMessage onMessage(B00PlayerDisplayName message, MessageContext ctx) {
         if (ctx.side == Side.CLIENT) {
-            final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(message.displayName);
+            final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(message.username);
             if (player != null) {
                 ClientProxy.PLAYER_DISPLAY_NAME_MAP.put(message.username, message.displayName);
                 player.refreshDisplayName();
