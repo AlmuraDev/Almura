@@ -99,6 +99,8 @@ public class PackKeys {
     public static final DefaultedKey<Integer> MAX_BURN_TIME = new DefaultedKey<>("max-burn-time", 1);
     public static final DefaultedKey<String> INPUT = new DefaultedKey<>("input", "");
     public static final DefaultedKey<Float> EXPERIENCE = new DefaultedKey<>("experience", 0f);
+    //FERTILIZER NODE
+    public static final DefaultedKey<String> NODE_FERTILIZER = new DefaultedKey<>("fertilizer", "");
 
     public static class DefaultedKey<T> {
 
