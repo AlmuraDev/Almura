@@ -11,6 +11,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -34,12 +35,12 @@ public class Almura {
     public static CommonProxy PROXY;
 
     @EventHandler
-    public void onPreInitialization(FMLPreInitializationEvent event) {
+    public void onPreInitializationEvent(FMLPreInitializationEvent event) {
         PROXY.onPreInitialization(event);
     }
 
     @EventHandler
-    public void onPostInitializationEvent(FMLPostInitializationEvent event) {
-        PROXY.onPostInitialization(event);
+    public void onInitializationEvent(FMLInitializationEvent event) {
+        PROXY.onInitialization(event);
     }
 }

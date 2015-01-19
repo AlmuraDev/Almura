@@ -30,7 +30,7 @@ public class PackFuelHandler implements IFuelHandler {
 
         if (nodeContainer != null) {
             final FuelNode fuelNode = nodeContainer.getNode(FuelNode.class);
-            if (fuelNode != null) {
+            if (fuelNode != null && fuelNode.isEnabled()) {
                 return fuelNode.getValue();
             }
         }

@@ -19,6 +19,7 @@ import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -54,8 +55,8 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void onPostInitialization(FMLPostInitializationEvent event) {
-        super.onPostInitialization(event);
+    public void onInitialization(FMLInitializationEvent event) {
+        super.onInitialization(event);
         final IngameHUD almuraHud = new IngameHUD(null);
         final IngameDebugHUD almuraDebugHud = new IngameDebugHUD(null);
         MinecraftForge.EVENT_BUS.register(almuraHud);

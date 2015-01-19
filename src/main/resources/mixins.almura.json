@@ -9,6 +9,8 @@
   "client": [
     "MixinTileEntityChestRenderer",
     "MixinTileEntitySignRenderer",
-    "MixinRenderItemFrame"
+    "MixinRenderItemFrame",
+    "MixinSimpleReloadableResourceManager",
+    "MixinTextureMap"
   ]
 }
