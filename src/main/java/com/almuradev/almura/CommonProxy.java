@@ -289,7 +289,7 @@ public class CommonProxy {
             }
             ItemStack recipeSlot = null;
             if (recipe instanceof ShapedRecipes) {
-                if (((ShapedRecipes) recipe).recipeItems.length < i) {
+                if (((ShapedRecipes) recipe).recipeItems.length <= i) {
                     continue;
                 }
                 recipeSlot = ((ShapedRecipes) recipe).recipeItems[i];
