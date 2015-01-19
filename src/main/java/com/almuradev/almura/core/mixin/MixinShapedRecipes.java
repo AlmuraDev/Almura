@@ -41,15 +41,22 @@ public abstract class MixinShapedRecipes implements IShapedRecipe {
                     }
                 }
 
-                final ItemStack slotStack = craftingInventory.getStackInRowAndColumn(k, l);
+                ItemStack slotStack = craftingInventory.getStackInRowAndColumn(k, l);
 
                 if (slotStack != null || recipeStack != null) {
                     if (slotStack == null || recipeStack == null) {
                         return false;
                     }
 
-                    if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize
-                        || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
+                    if (recipeStack.getItem() != slotStack.getItem()) {
+                        return false;
+                    }
+
+                    if (slotStack.stackSize < recipeStack.stackSize) {
+                        return false;
+                    }
+
+                    if (recipeStack.getItemDamage() != 32767 && recipeStack.getItemDamage() != slotStack.getItemDamage()) {
                         return false;
                     }
                 }
