@@ -265,7 +265,7 @@ public class CommonProxy {
         IRecipe recipe = null;
 
         for (Object obj : CraftingManager.getInstance().getRecipeList()) {
-            if (obj instanceof ShapedRecipes || obj instanceof ShapelessRecipes) {
+            if (obj instanceof com.almuradev.almura.recipe.IRecipe) {
                 if (((IRecipe) obj).matches((InventoryCrafting) event.craftMatrix, event.player.worldObj)) {
                     recipe = (IRecipe) obj;
                     break;
@@ -284,6 +284,9 @@ public class CommonProxy {
             }
             ItemStack recipeSlot = null;
             if (recipe instanceof ShapedRecipes) {
+                if (((ShapedRecipes) recipe).recipeItems.length < i) {
+                    continue;
+                }
                 recipeSlot = ((ShapedRecipes) recipe).recipeItems[i];
             } else {
                 for (Object obj : ((ShapelessRecipes) recipe).recipeItems) {
