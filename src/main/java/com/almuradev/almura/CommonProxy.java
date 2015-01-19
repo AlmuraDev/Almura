@@ -41,12 +41,15 @@ import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.BonemealEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,6 +69,7 @@ public class CommonProxy {
         GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");
         GameRegistry.registerFuelHandler(new PackFuelHandler());
         FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
         Tabs.fakeStaticLoad();
 
         Pack.loadAllContent();
@@ -208,6 +212,7 @@ public class CommonProxy {
                     for (Stage stage : ((PackCrops) block).getStages().values()) {
                         final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
                         stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
+                        stage.addNode(PackCreator.createFertilizerNode(pack, stage.getIdentifier(), stage.getId(), stageNode.getNode(PackKeys.NODE_FERTILIZER.getKey())));
                     }
                 } else {
                     //Break
@@ -307,6 +312,13 @@ public class CommonProxy {
             }
 
             slotStack.stackSize -= recipeSlot.stackSize - 1;
+        }
+    }
+
+    @SubscribeEvent
+    public void onBonemeal(BonemealEvent event) {
+        if (event.block instanceof PackCrops) {
+            event.setCanceled(true);
         }
     }
 }

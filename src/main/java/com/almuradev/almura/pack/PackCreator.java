@@ -29,6 +29,7 @@ import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ConsumptionNode;
 import com.almuradev.almura.pack.node.ContainerNode;
 import com.almuradev.almura.pack.node.DropsNode;
+import com.almuradev.almura.pack.node.FertilizerNode;
 import com.almuradev.almura.pack.node.FuelNode;
 import com.almuradev.almura.pack.node.GrassNode;
 import com.almuradev.almura.pack.node.GrowthNode;
@@ -43,6 +44,7 @@ import com.almuradev.almura.pack.node.property.BiomeProperty;
 import com.almuradev.almura.pack.node.property.BonusProperty;
 import com.almuradev.almura.pack.node.property.CollisionProperty;
 import com.almuradev.almura.pack.node.property.DropProperty;
+import com.almuradev.almura.pack.node.property.GameObjectProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
@@ -901,6 +903,27 @@ public class PackCreator {
         final boolean isEnabled = node.getChild(PackKeys.ENABLED.getKey()).getBoolean(true);
         final int maxBurnTime = node.getChild(PackKeys.MAX_BURN_TIME.getKey()).getInt(PackKeys.MAX_BURN_TIME.getDefaultValue());
         return new FuelNode(isEnabled, maxBurnTime);
+    }
+
+    public static FertilizerNode createFertilizerNode(Pack pack, String name, int stageId, ConfigurationNode node) {
+        final boolean isEnabled = node.getChild(PackKeys.ENABLED.getKey()).getBoolean(false);
+        final ConfigurationNode sourcesNode = node.getNode(PackKeys.SOURCES.getKey());
+        final Set<GameObjectProperty> value = Sets.newHashSet();
+
+        for (String rawSource : sourcesNode.getKeys(false)) {
+            final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(rawSource, true);
+            if (!gameObject.isPresent()) {
+                Almura.LOGGER
+                        .warn("Fertilizer [" + rawSource + "] in stage [" + stageId + "] in [" + name + "] in pack [" + pack.getName() + "] is not a registered block or item");
+                continue;
+            }
+
+            final ConfigurationNode sourceNode = sourcesNode.getNode(rawSource);
+            final RangeProperty<Integer> amountRange = new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class, sourceNode.getChild(PackKeys.AMOUNT.getKey()).getString(PackKeys.AMOUNT.getDefaultValue()), 1));
+            value.add(new VariableGameObjectProperty(gameObject.get(), amountRange));
+        }
+
+        return new FertilizerNode(isEnabled, value);
     }
 
     private static <R extends IRecipe> RecipeContainer<R> createRecipeContainer(Pack pack, String name, Class<? extends R> clazz, int id, Object res,
