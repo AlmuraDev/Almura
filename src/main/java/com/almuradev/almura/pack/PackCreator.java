@@ -237,9 +237,11 @@ public class PackCreator {
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
-                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+                    PackKeys.TEXTURE_COORDINATES.getKey(), false).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         } catch (NumberFormatException nfe) {
-            Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            if (reader.hasChild(PackKeys.TEXTURE_COORDINATES.getKey())) {
+                Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            }
             textureCoordinates = Maps.newHashMap();
         }
         final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
@@ -290,9 +292,11 @@ public class PackCreator {
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
-                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+                    PackKeys.TEXTURE_COORDINATES.getKey(), false).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         } catch (NumberFormatException nfe) {
-            Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            if (reader.hasChild(PackKeys.TEXTURE_COORDINATES.getKey())) {
+                Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            }
             textureCoordinates = Maps.newHashMap();
         }
         final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
@@ -335,9 +339,11 @@ public class PackCreator {
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
-                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+                    PackKeys.TEXTURE_COORDINATES.getKey(), false).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         } catch (NumberFormatException nfe) {
-            Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            if (reader.hasChild(PackKeys.TEXTURE_COORDINATES.getKey())) {
+                Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            }
             textureCoordinates = Maps.newHashMap();
         }
         final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
@@ -422,9 +428,11 @@ public class PackCreator {
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(node.getChild(
-                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+                    PackKeys.TEXTURE_COORDINATES.getKey(), false).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         } catch (NumberFormatException nfe) {
-            Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            if (node.hasChild(PackKeys.TEXTURE_COORDINATES.getKey())) {
+                Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            }
             textureCoordinates = Maps.newHashMap();
         }
         final boolean showInCreativeTab = node.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
@@ -462,10 +470,12 @@ public class PackCreator {
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(node.getChild(
-                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+                    PackKeys.TEXTURE_COORDINATES.getKey(), false).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         } catch (NumberFormatException nfe) {
-            Almura.LOGGER.warn("Failed parsing texture coordinates in stage [" + id + "] in [" + name + "] in pack [" + pack.getName() + "]. " + nfe
-                    .getMessage());
+            if (node.hasChild(PackKeys.TEXTURE_COORDINATES.getKey())) {
+                Almura.LOGGER.warn("Failed parsing texture coordinates in stage [" + id + "] in [" + name + "] in pack [" + pack.getName() + "]. " + nfe
+                        .getMessage());
+            }
             textureCoordinates = Maps.newHashMap();
         }
 
@@ -492,9 +502,11 @@ public class PackCreator {
         Map<Integer, List<Integer>> textureCoordinates;
         try {
             textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
-                    PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
+                    PackKeys.TEXTURE_COORDINATES.getKey(), false).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         } catch (NumberFormatException nfe) {
-            Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            if (reader.hasChild(PackKeys.TEXTURE_COORDINATES.getKey())) {
+                Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            }
             textureCoordinates = Maps.newHashMap();
         }
         final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
@@ -547,7 +559,7 @@ public class PackCreator {
         final Set<StateProperty> states = Sets.newHashSet();
         final ConfigurationNode statesConfigurationNode = node.getNode(PackKeys.STATE.getKey());
         for (String rawState : statesConfigurationNode.getKeys(false)) {
-            if (rawState.equalsIgnoreCase("full")) {
+            if ("FULL".equalsIgnoreCase(rawState.toUpperCase())) {
                 final ConfigurationNode stateConfigurationNode = statesConfigurationNode.getNode(rawState);
                 final boolean enabled = stateConfigurationNode.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
                 final String
@@ -563,7 +575,7 @@ public class PackCreator {
                     }
                 }
                 if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
-                    Almura.LOGGER.warn("Model [" + modelName + "] for state [full] in [" + name + "] in pack [" + pack.getName()
+                    Almura.LOGGER.warn("Model [" + modelName + "] for state [FULL] in [" + name + "] in pack [" + pack.getName()
                                        + "] was not found. Will render as a basic cube.");
                 }
                 Map<Integer, List<Integer>> textureCoordinates;
@@ -571,7 +583,9 @@ public class PackCreator {
                     textureCoordinates = PackUtil.parseCoordinatesFrom(stateConfigurationNode.getChild(
                             PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
                 } catch (NumberFormatException nfe) {
-                    Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+                    if (node.hasChild(PackKeys.TEXTURE_COORDINATES.getKey())) {
+                        Almura.LOGGER.warn("Failed parsing texture coordinates for state [FULL] in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+                    }
                     textureCoordinates = Maps.newHashMap();
                 }
 
