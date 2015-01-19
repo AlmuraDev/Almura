@@ -97,6 +97,10 @@ public class ClientProxy extends CommonProxy {
 
         if (displayName != null && !displayName.isEmpty()) {
             event.displayname = displayName;
+
+            if (event.entityPlayer == Minecraft.getMinecraft().thePlayer) {
+                IngameHUD.INSTANCE.playerTitle.setText(displayName);
+            }
         }
     }
 }
