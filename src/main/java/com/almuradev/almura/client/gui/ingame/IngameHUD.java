@@ -49,7 +49,7 @@ public class IngameHUD extends AlmuraGui {
     public static IngameHUD INSTANCE;
     public static boolean UPDATES_ENABLED = true;
     public UILabel worldDisplay, playerTitle, playerMode, playerCurrency;
-    public UILabel serverCount;
+    public UILabel serverCount, almuraTitle;
     private UIImage mapImage, worldImage, playerImage;
     private UILabel playerCoords;
     private UILabel playerCompass;
@@ -114,7 +114,7 @@ public class IngameHUD extends AlmuraGui {
         //////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
         // Almura Title
-        final UILabel almuraTitle = new UILabel(this, "");
+        almuraTitle = new UILabel(this, "");
         almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
         almuraTitle.setText("Almura");
         almuraTitle.setColor(0xffffffff);
@@ -415,6 +415,10 @@ public class IngameHUD extends AlmuraGui {
         mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT | Anchor.TOP);
         playerMode.setPosition(playerTitle.getX() + playerTitle.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);
         playerCurrency.setPosition(playerMode.getX() + playerMode.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);
+        if (firstPass) { //this is stupid as hell
+        	almuraTitle.setText("Almura");
+        	almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
+        }
         firstPass = false;
     }
 
