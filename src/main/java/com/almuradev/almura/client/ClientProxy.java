@@ -17,6 +17,7 @@ import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
+import com.google.common.collect.Maps;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -24,6 +25,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.settings.KeyBinding;
@@ -32,11 +34,14 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 
+import java.util.Map;
+
 public class ClientProxy extends CommonProxy {
 
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
     public static final BlockRenderer PACK_BLOCK_RENDERER = new BlockRenderer();
     public static final ItemRenderer PACK_ITEM_RENDERER = new ItemRenderer();
+    public static final Map<String, String> PLAYER_DISPLAY_NAME_MAP = Maps.newHashMap();
 
     public static final KeyBinding
             BINDING_CONFIG_GUI =
@@ -84,6 +89,15 @@ public class ClientProxy extends CommonProxy {
         Almura.LOGGER
                 .info("This computer can handle a maximum stitched texture size of width [" + Minecraft.getGLMaximumTextureSize() + "] and length ["
                       + Minecraft.getGLMaximumTextureSize() + "].");
+    }
+
+    @SubscribeEvent
+    public void onNameFormatEvent(net.minecraftforge.event.entity.player.PlayerEvent.NameFormat event) {
+        final String displayName = PLAYER_DISPLAY_NAME_MAP.get(event.username);
+
+        if (displayName != null && !displayName.isEmpty()) {
+            event.displayname = displayName;
+        }
     }
 }
 
