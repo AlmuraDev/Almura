@@ -5,9 +5,12 @@
  */
 package com.almuradev.almura.core.mixin;
 
+import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.recipe.IShapedRecipe;
 import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.ShapedRecipes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -24,6 +27,8 @@ public abstract class MixinShapedRecipes implements IShapedRecipe {
     private int recipeHeight;
     @Shadow
     private ItemStack[] recipeItems;
+
+    private boolean checkMultiQuantity = false;
 
     @Overwrite
     public boolean checkMatch(InventoryCrafting craftingInventory, int width, int length, boolean flag) {
@@ -52,7 +57,9 @@ public abstract class MixinShapedRecipes implements IShapedRecipe {
                         return false;
                     }
 
-                    if (slotStack.stackSize < recipeStack.stackSize) {
+                    if (checkMultiQuantity && slotStack.stackSize < recipeStack.stackSize) {
+                        System.out.println("Slot Stack Size: " + slotStack.stackSize);
+                        System.out.println("Recipe Stack Size: " + recipeStack.stackSize);
                         return false;
                     }
 
@@ -64,6 +71,16 @@ public abstract class MixinShapedRecipes implements IShapedRecipe {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean checkMultiQuantity() {
+        return checkMultiQuantity;
+    }
+
+    @Override
+    public void setCheckMultiQuantity(boolean checkMultiQuantity) {
+        this.checkMultiQuantity = checkMultiQuantity;
     }
 
     @Override

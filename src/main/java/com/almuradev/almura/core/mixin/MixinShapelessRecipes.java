@@ -25,6 +25,8 @@ public abstract class MixinShapelessRecipes implements IShapelessRecipe {
     @Shadow
     private List recipeItems;
 
+    private boolean checkMultiQuantity = false;
+
     @Overwrite
     @SuppressWarnings("unchecked")
     public boolean matches(InventoryCrafting craftingInventory, World world) {
@@ -42,7 +44,7 @@ public abstract class MixinShapelessRecipes implements IShapelessRecipe {
                     while (iter.hasNext()) {
                         final ItemStack recipeStack = (ItemStack) iter.next();
 
-                        if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize
+                        if (slotStack.getItem() != recipeStack.getItem() || (checkMultiQuantity && (slotStack.stackSize < recipeStack.stackSize))
                             || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
                             continue;
                         }
@@ -60,6 +62,16 @@ public abstract class MixinShapelessRecipes implements IShapelessRecipe {
         }
 
         return buffer.isEmpty();
+    }
+
+    @Override
+    public boolean checkMultiQuantity() {
+        return checkMultiQuantity;
+    }
+
+    @Override
+    public void setCheckMultiQuantity(boolean checkMultiQuantity) {
+        this.checkMultiQuantity = checkMultiQuantity;
     }
 
     @Override

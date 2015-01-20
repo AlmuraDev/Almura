@@ -38,4 +38,13 @@ public class SmeltRecipes implements ISmeltRecipe {
     public String toString() {
         return "SmeltRecipes {input=" + inputStack + ", output= " + outputStack + ", experience= " + smeltExperience + "}";
     }
+
+    @Override
+    public boolean checkMultiQuantity() {
+        return false;
+    }
+
+    @Override
+    public void setCheckMultiQuantity(boolean checkMultiQuantity) {
+    }
 }

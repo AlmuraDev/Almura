@@ -128,7 +128,10 @@ public class RecipeManager {
                 aitemstack[i1] = null;
             }
         }
-        return new ShapedRecipes(j, k, aitemstack, result);
+
+        final ShapedRecipes recipes = new ShapedRecipes(j, k, aitemstack, result);
+        ((IRecipe) recipes).setCheckMultiQuantity(true);
+        return recipes;
     }
 
     private static ShapelessRecipes createShapelessRecipe(Pack pack, String owner, int id, ItemStack result, Object... params)
@@ -150,7 +153,9 @@ public class RecipeManager {
             }
         }
 
-        return new ShapelessRecipes(result, stacks);
+        final ShapelessRecipes recipes = new ShapelessRecipes(result, stacks);
+        ((IRecipe) recipes).setCheckMultiQuantity(true);
+        return recipes;
     }
 
     private static SmeltRecipes createSmeltRecipe(ItemStack result, Object... params) {

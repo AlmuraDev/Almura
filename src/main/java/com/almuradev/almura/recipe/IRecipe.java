@@ -6,5 +6,6 @@
 package com.almuradev.almura.recipe;
 
 public interface IRecipe {
-
+    boolean checkMultiQuantity();
+    void setCheckMultiQuantity(boolean checkMultiQuantity);
 }

@@ -270,7 +270,7 @@ public class CommonProxy {
 
         for (Object obj : CraftingManager.getInstance().getRecipeList()) {
             if (obj instanceof com.almuradev.almura.recipe.IRecipe) {
-                if (((IRecipe) obj).matches((InventoryCrafting) event.craftMatrix, event.player.worldObj)) {
+                if (((com.almuradev.almura.recipe.IRecipe) obj).checkMultiQuantity() && ((IRecipe) obj).matches((InventoryCrafting) event.craftMatrix, event.player.worldObj)) {
                     recipe = (IRecipe) obj;
                     break;
                 }
