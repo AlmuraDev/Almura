@@ -39,6 +39,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemSeeds;
@@ -47,8 +48,12 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.network.play.server.S36PacketSignEditorOpen;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntitySign;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.BonemealEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -318,6 +323,19 @@ public class CommonProxy {
     public void onBonemeal(BonemealEvent event) {
         if (event.block instanceof PackCrops) {
             event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!event.world.isRemote && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+            final TileEntity te = event.world.getTileEntity(event.x, event.y, event.z);
+            if (te != null && te instanceof TileEntitySign) {
+                if (event.entityPlayer instanceof EntityPlayerMP) {
+                    ((EntityPlayerMP) event.entityPlayer).playerNetServerHandler
+                            .sendPacket(new S36PacketSignEditorOpen(te.xCoord, te.yCoord, te.zCoord));
+                }
+            }
         }
     }
 }

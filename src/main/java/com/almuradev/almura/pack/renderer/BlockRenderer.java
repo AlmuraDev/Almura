@@ -30,6 +30,7 @@ import net.malisis.core.renderer.element.shape.Cube;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
@@ -80,7 +81,6 @@ public class BlockRenderer extends MalisisRenderer {
                 handleScaling((IModel) shape);
             }
         }
-
         drawShape(shape, rp);
     }
 

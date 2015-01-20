@@ -4,13 +4,17 @@
     "MixinBlockTallGrass",
     "MixinBlockWall",
     "MixinShapedRecipes",
-    "MixinShapelessRecipes"
+    "MixinShapelessRecipes",
+    "tileentity.MixinTileEntitySign",
+    "MixinC12PacketUpdateSign",
+    "MixinNetHandlerPlayServer"
   ],
   "client": [
     "MixinTileEntityChestRenderer",
     "MixinTileEntitySignRenderer",
     "MixinRenderItemFrame",
     "MixinSimpleReloadableResourceManager",
-    "MixinTextureMap"
+    "MixinTextureMap",
+    "MixinGuiEditSign"
   ]
 }
