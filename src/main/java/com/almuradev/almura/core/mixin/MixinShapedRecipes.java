@@ -58,8 +58,6 @@ public abstract class MixinShapedRecipes implements IShapedRecipe {
                     }
 
                     if (checkMultiQuantity && slotStack.stackSize < recipeStack.stackSize) {
-                        System.out.println("Slot Stack Size: " + slotStack.stackSize);
-                        System.out.println("Recipe Stack Size: " + recipeStack.stackSize);
                         return false;
                     }
 
