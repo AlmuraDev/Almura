@@ -221,7 +221,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
                 setOptimizedConfig();
                 break;
             case "button.cancel":
-                displayParent();
+                close();
                 break;
             case "button.save":
                 try {
@@ -236,7 +236,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
                 } catch (ConfigurationException e) {
                     e.printStackTrace();
                 }
-                displayParent();
+                close();
         }
     }
 

@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.items.Items;
+import com.almuradev.almura.items.wands.FireballWand;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.INodeContainer;
@@ -75,6 +77,7 @@ public class CommonProxy {
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
         Tabs.fakeStaticLoad();
+        Items.fakeStaticLoad();
 
         Pack.loadAllContent();
     }

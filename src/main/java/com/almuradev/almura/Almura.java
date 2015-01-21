@@ -6,6 +6,7 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.client.ClientProxy;
+import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.server.ServerProxy;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -20,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = Almura.MOD_ID)
 public class Almura {
 
+    public static final Pack INTERNAL_PACK = new Pack("internal");
     public static final String MOD_ID = "almura";
     public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID);
     public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");

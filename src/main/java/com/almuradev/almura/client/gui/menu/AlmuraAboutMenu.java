@@ -110,7 +110,7 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
                 mc.displayGuiScreen(new GuiModList(this));
                 break;
             case "button.close":
-                displayParent();
+                close();
                 break;
         }
     }

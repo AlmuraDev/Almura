@@ -129,7 +129,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
                 mc.displayGuiScreen(new GuiMultiplayer(this));
                 break;
             case "button.back":
-                displayParent();
+                close();
         }
     }
 }

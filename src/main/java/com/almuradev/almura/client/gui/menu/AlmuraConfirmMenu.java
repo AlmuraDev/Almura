@@ -88,7 +88,7 @@ public class AlmuraConfirmMenu extends AlmuraBackgroundGui {
     public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.close":
-                displayParent();
+                close();
                 break;
         }
     }
