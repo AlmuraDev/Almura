@@ -12,7 +12,6 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +24,7 @@ public class Almura {
     public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID);
     public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
     public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
-    public static String GUI_VERSION = "Build 46";
+    public static String GUI_VERSION = "Build 47";
     public static String PACK_VERSION = "1.2";
 
     @Instance
