@@ -328,7 +328,7 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!event.world.isRemote && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+        if (!event.world.isRemote && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && event.entityPlayer.getHeldItem() == null && event.entityPlayer.isSneaking()) {
             final TileEntity te = event.world.getTileEntity(event.x, event.y, event.z);
             if (te != null && te instanceof TileEntitySign) {
                 if (event.entityPlayer instanceof EntityPlayerMP) {

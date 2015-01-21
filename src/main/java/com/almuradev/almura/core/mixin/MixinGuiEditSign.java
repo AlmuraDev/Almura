@@ -37,7 +37,7 @@ public abstract class MixinGuiEditSign extends GuiScreen {
         tileSign.lineBeingEdited = -1;
         ((IExtendedTileEntitySign) tileSign).setColumnBeingEdited(-1);
         ((IExtendedTileEntitySign) tileSign).recalculateText();
-        if (!mc.theWorld.isRemote) {
+        if (mc.theWorld.isRemote) {
             for (int i = 0; i < tileSign.signText.length; i++) {
                 final String line = tileSign.signText[i];
 
@@ -54,48 +54,30 @@ public abstract class MixinGuiEditSign extends GuiScreen {
             ALLOWED_CHARACTERS = new String(ChatAllowedCharacters.allowedCharacters);
         }
 
-        System.err.println("Key Typed Debug (GuiEditSign)");
-        System.err.println("-----------------------------");
-        System.err.println("Current char: " + c);
-        System.err.println("Current key: " + key);
-        System.err.println("Current EditLine: " + editLine);
-        System.err.println("Current EditColumn: " + editColumn);
-
         if (key == 200) { // Up
             editLine = editLine - 1 & 3;
             editColumn = tileSign.signText[editLine].length();
-            System.err.println("Current EditLine: " + editLine);
-            System.err.println("Current EditColumn: " + editColumn);
         }
 
-        System.err.println("Not Up");
         if (key == 208 || key == 28 || key == 156) { // Down
             editLine = editLine + 1 & 3;
             editColumn = tileSign.signText[editLine].length();
-            System.err.println("Current EditLine: " + editLine);
-            System.err.println("Current EditColumn: " + editColumn);
         }
-        System.err.println("Not Down");
+
         if (key == 205) { // Right
             editColumn++;
             if (editColumn > tileSign.signText[editLine].length()) {
                 editColumn--;
             }
-
-            System.err.println("Current EditLine: " + editLine);
-            System.err.println("Current EditColumn: " + editColumn);
         }
-        System.err.println("Not Right");
+
         if (key == 203) {// Left
             editColumn--;
             if (editColumn < 0) {
                 editColumn = 0;
             }
-
-            System.err.println("Current EditLine: " + editLine);
-            System.err.println("Current EditColumn: " + editColumn);
         }
-        System.err.println("Not Left");
+
         if (key == 14 && tileSign.signText[editLine].length() > 0) { // Backspace
             String line = tileSign.signText[editLine];
             int endColumnStart = Math.min(editColumn, line.length());
@@ -118,45 +100,30 @@ public abstract class MixinGuiEditSign extends GuiScreen {
                 }
             }
         }
-        System.err.println("Not Backspace");
 
-        System.err.println("Line Length: " + tileSign.signText[editLine].length());
-        System.err.println("Allowed Characters Reference: " + ALLOWED_CHARACTERS);
-        System.err.println("Index of char in Allowed Characters: " + ALLOWED_CHARACTERS.indexOf(c));
-
-        if ((ALLOWED_CHARACTERS.indexOf(c) > -1 || c > 32) && tileSign.signText[editLine].length() < 30) { // Enter
+        if (ChatAllowedCharacters.isAllowedCharacter(c) && tileSign.signText[editLine].length() < 30) { // Enter
             String line = tileSign.signText[editLine];
-            System.err.println("Line: " + line);
 
             // Prevent out of bounds on the substring call
             int endColumnStart = Math.min(editColumn, line.length());
-            System.err.println("EndColumnStart: " + endColumnStart);
 
             String before = "";
             if (endColumnStart > 0) {
                 before = line.substring(0, endColumnStart);
             }
 
-            System.err.println("Before: " + before);
             String after = "";
             if (line.length() - endColumnStart > 0) {
                 after = line.substring(endColumnStart, line.length());
             }
-            System.err.println("After: " + after);
 
             before += c;
-            System.err.println("Before: " + before);
 
             line = before + after;
-            System.err.println("Line: " + line);
             tileSign.signText[editLine] = line;
-            System.err.println(tileSign.signText[editLine]);
             endColumnStart++;
             editColumn = endColumnStart;
-            System.err.println("EditColumn: " + editColumn);
         }
-
-        System.err.println("Not Enter");
 
         if (key == 211) { // Delete
             String line = tileSign.signText[editLine];
@@ -171,8 +138,6 @@ public abstract class MixinGuiEditSign extends GuiScreen {
                 tileSign.signText[editLine] = line;
             }
         }
-
-        System.err.println("Not Delete");
 
         ((IExtendedTileEntitySign) tileSign).recalculateText();
     }

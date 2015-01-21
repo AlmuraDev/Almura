@@ -56,17 +56,18 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
                 // Almura Start - 15 -> 30
                 if (p_147343_1_.func_149589_f()[j].length() > 30)
                 {
-                    System.err.println(p_147343_1_.func_149589_f()[j].length());
                     flag = false;
                 }
                 else
                 {
                     for (i = 0; i < p_147343_1_.func_149589_f()[j].length(); ++i)
                     {
-                        System.err.println(ChatAllowedCharacters.isAllowedCharacter(p_147343_1_.func_149589_f()[j].charAt(i)));
-                        if (!ChatAllowedCharacters.isAllowedCharacter(p_147343_1_.func_149589_f()[j].charAt(i)))
-                        {
-                            flag = false;
+                        final char c = p_147343_1_.func_149589_f()[j].charAt(i);
+
+                        if (c != 167) {
+                            if (!ChatAllowedCharacters.isAllowedCharacter(c)) {
+                                flag = false;
+                            }
                         }
                     }
                 }
