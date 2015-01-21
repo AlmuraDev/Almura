@@ -42,7 +42,7 @@ public abstract class MixinGuiEditSign extends GuiScreen {
                 final String line = tileSign.signText[i];
 
                 if (line != null) {
-                    tileSign.signText[i] = line.replaceAll("(&([a-fA-F0-9]))", "\u00A7$2");
+                    tileSign.signText[i] = line.replaceAll("(&([a-zA-Z0-9]))", "\u00A7$2");
                 }
             }
         }
