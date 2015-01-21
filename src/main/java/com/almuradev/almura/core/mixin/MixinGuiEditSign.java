@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.core.mixin;
 
-import com.almuradev.almura.core.mixin.tileentity.IExtendedTileEntitySign;
+import com.almuradev.almura.extension.sign.IExtendedTileEntitySign;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;

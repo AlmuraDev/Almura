@@ -5,15 +5,14 @@
  */
 package com.almuradev.almura.core.mixin.tileentity;
 
+import com.almuradev.almura.extension.sign.CacheState;
+import com.almuradev.almura.extension.sign.IExtendedTileEntitySign;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TileEntitySign.class)
 public abstract class MixinTileEntitySign extends TileEntity implements IExtendedTileEntitySign {
@@ -21,7 +20,7 @@ public abstract class MixinTileEntitySign extends TileEntity implements IExtende
     @Shadow boolean field_145916_j;
 
     private int columnBeingEdited;
-    private CacheFlag flag;
+    private CacheState flag;
 
     @Override
     public int getColumnBeingEdited() {
@@ -35,24 +34,24 @@ public abstract class MixinTileEntitySign extends TileEntity implements IExtende
 
     @Override
     public void recalculateText() {
-        flag = CacheFlag.INVALID;
+        flag = CacheState.INVALID;
     }
 
     @Override
     public boolean hasText() {
-        if (flag == CacheFlag.TRUE) {
+        if (flag == CacheState.TRUE) {
             return true;
         }
 
-        flag = CacheFlag.FALSE;
+        flag = CacheState.FALSE;
 
         for (String aSignText : signText) {
             if (aSignText != null && !aSignText.isEmpty()) {
-                flag = CacheFlag.TRUE;
+                flag = CacheState.TRUE;
             }
         }
 
-        return flag != CacheFlag.FALSE;
+        return flag != CacheState.FALSE;
     }
 
     //TODO Ask Mumfrey
@@ -91,10 +90,5 @@ public abstract class MixinTileEntitySign extends TileEntity implements IExtende
         }
 
         recalculateText();
-    }
-    public static enum CacheFlag {
-        INVALID,
-        FALSE,
-        TRUE
     }
 }

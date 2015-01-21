@@ -6,7 +6,7 @@
 package com.almuradev.almura.core.mixin;
 
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.core.mixin.tileentity.IExtendedTileEntitySign;
+import com.almuradev.almura.extension.sign.IExtendedTileEntitySign;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.core.mixin.tileentity;
+package com.almuradev.almura.extension.sign;
 
 public interface IExtendedTileEntitySign {
     int getColumnBeingEdited();
