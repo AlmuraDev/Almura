@@ -148,15 +148,17 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockMo
      * @param random random
      */
     public void onGrown(World world, int x, int y, int z, Random random) {
-        float d0 = 0.02f;
-        float d1 = 0.02f;
-        float d2 = 0.02f;
+        if (!world.isRemote) {
+            float d0 = 0.02f;
+            float d1 = 0.02f;
+            float d2 = 0.02f;
 
-        MinecraftServer.getServer().getConfigurationManager().sendToAllNear(x, y, z, 50D, world.provider.dimensionId,
-                                                                            new S2APacketParticles("happyVillager", (x + random.nextFloat()),
-                                                                                                   (float) (y + random.nextFloat() * block
-                                                                                                           .getBlockBoundsMaxY()),
-                                                                                                   (z + random.nextFloat()), d0, d1, d2, 1, id));
+            MinecraftServer.getServer().getConfigurationManager().sendToAllNear(x, y, z, 50D, world.provider.dimensionId,
+                                                                                new S2APacketParticles("happyVillager", (x + random.nextFloat()),
+                                                                                                       (float) (y + random.nextFloat() * block
+                                                                                                               .getBlockBoundsMaxY()),
+                                                                                                       (z + random.nextFloat()), d0, d1, d2, 1, id));
+        }
     }
 
     /**
