@@ -149,7 +149,7 @@ public class InfoguideGui extends AlmuraGui {
                 mc.displayGuiScreen(new GuiModList(this));
                 break;
             case "button.close":
-                displayParent();
+                close();
                 break;
         }
     }

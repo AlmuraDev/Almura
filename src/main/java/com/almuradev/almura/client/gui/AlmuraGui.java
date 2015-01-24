@@ -12,7 +12,9 @@ import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.icon.GuiIcon;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.io.IOException;
@@ -39,6 +41,7 @@ public abstract class AlmuraGui extends MalisisGui {
     public AlmuraGui(AlmuraGui parent) {
         renderer.setDefaultTexture(TEXTURE_DEFAULT);
         this.parent = Optional.fromNullable(parent);
+        mc = Minecraft.getMinecraft();
     }
 
     /**
@@ -56,14 +59,23 @@ public abstract class AlmuraGui extends MalisisGui {
     protected abstract void setup();
 
     /**
-     * Displays the parent screen
+     * Closes the current screen and displays the parent screen
      */
-    protected void displayParent() {
-        if (parent.isPresent()) {
-            mc.displayGuiScreen(parent.get());
-        } else {
-            mc.displayGuiScreen(null);
+    @Override
+    public void close() {
+        Keyboard.enableRepeatEvents(false);
+        if (mc.thePlayer != null) {
+            mc.thePlayer.closeScreen();
         }
+        mc.displayGuiScreen(parent.isPresent() ? parent.get() : null);
+        mc.setIngameFocus();
+    }
+
+    protected int getPaddedX(UIComponent component, int padding) {
+        if (component == null) {
+            return 0;
+        }
+        return component.getX() + component.getWidth() + padding;
     }
 
     protected int getPaddedY(UIComponent component, int padding) {
