@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.items;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.items.wands.ExplosionWand;
 import com.almuradev.almura.items.wands.FireballWand;
 import com.almuradev.almura.items.wands.InformationWand;
@@ -22,5 +23,11 @@ public class Items {
     public static final ExplosionWand WAND_NUCLEAR = new ExplosionWand("wand.nuclear", "Nuclear Wand", "nuclear_wand", Tabs.TAB_TOOLS, 60);
 
     public static void fakeStaticLoad() {
+        Almura.INTERNAL_PACK.addItem(WAND_EXPLOSION);
+        Almura.INTERNAL_PACK.addItem(WAND_FIREBALL);
+        Almura.INTERNAL_PACK.addItem(WAND_INFORMATION);
+        Almura.INTERNAL_PACK.addItem(WAND_LIGHTNING);
+        Almura.INTERNAL_PACK.addItem(WAND_METADATA);
+        Almura.INTERNAL_PACK.addItem(WAND_NUCLEAR);
     }
 }
