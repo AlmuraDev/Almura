@@ -71,35 +71,6 @@ public class ItemRenderer extends MalisisRenderer {
     }
 
     @Override
-    public void applyTexture(Shape shape, RenderParameters parameters) {
-        for (Face f : shape.getFaces()) {
-            final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
-            final IClipContainer clipContainer = (IClipContainer) itemStack.getItem();
-            final PackFace face = (PackFace) f;
-            IIcon icon;
-
-            if (PackUtil.isEmptyClip(clipContainer.getClipIcons())) {
-                icon = super.getIcon(params);
-            } else if (face.getTextureId() >= clipContainer.getClipIcons().length) {
-                icon = clipContainer.getClipIcons()[0];
-            } else {
-                icon = clipContainer.getClipIcons()[face.getTextureId()];
-                if (icon == null) {
-                    icon = clipContainer.getClipIcons()[0];
-                }
-            }
-
-            if (icon != null) {
-                boolean flipU = params.flipU.get();
-                if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST) {
-                    flipU = !flipU;
-                }
-                f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
-            }
-        }
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
