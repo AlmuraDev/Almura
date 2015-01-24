@@ -85,53 +85,6 @@ public class BlockRenderer extends MalisisRenderer {
     }
 
     @Override
-    public void applyTexture(Shape shape, RenderParameters parameters) {
-        if (!(shape instanceof PackModelContainer.PackShape)) {
-            super.applyTexture(shape, parameters);
-            return;
-        }
-
-        final ContainerNode containerNode = ((INodeContainer) block).getNode(ContainerNode.class);
-        final Optional<StateProperty> renderState;
-        if (containerNode != null) {
-            renderState = containerNode.getByIdentifier("full");
-        } else {
-            renderState = Optional.absent();
-        }
-
-        final ClippedIcon[] clippedIcons = ((IBlockClipContainer) block).getClipIcons(world, x, y, z, blockMetadata);
-
-        for (Face f : shape.getFaces()) {
-            final RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
-            final PackFace face = (PackFace) f;
-            IIcon icon;
-
-            if (PackUtil.isEmptyClip(clippedIcons)) {
-                icon = renderState.isPresent() ? renderState.get().getStateIcon() : super.getIcon(params);
-            } else if (face.getTextureId() >= clippedIcons.length) {
-                icon = clippedIcons[0];
-            } else {
-                icon = clippedIcons[face.getTextureId()];
-                if (icon == null) {
-                    icon = clippedIcons[0];
-                }
-            }
-
-            if (icon != null) {
-                if (f instanceof PackMirrorFace) {
-                    icon = ((MalisisIcon) icon).copy().flip(true, false);
-                }
-
-                boolean flipU = params.flipU.get();
-                if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST) {
-                    flipU = !flipU;
-                }
-                f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
-            }
-        }
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
