@@ -52,6 +52,7 @@ public class Tabs {
     public static CreativeTabs TAB_DRINK = new AlmuraCreativeTabs("drinks", "Almura Drinks", ITEM_DRINKS);
     public static CreativeTabs TAB_INGREDIENTS = new AlmuraCreativeTabs("ingredients", "Almura Ingredients", ITEM_INGREDIENTS);
     public static CreativeTabs TAB_TOOLS = new AlmuraCreativeTabs("tool", "Almura Tools", ITEM_TOOL);
+    public static CreativeTabs TAB_OTHER = new AlmuraCreativeTabs("other", "Almura Other", null);
 
     public static void fakeStaticLoad() {
     }
