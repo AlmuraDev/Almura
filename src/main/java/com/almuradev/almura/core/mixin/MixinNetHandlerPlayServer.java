@@ -5,89 +5,67 @@
  */
 package com.almuradev.almura.core.mixin;
 
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.C12PacketUpdateSign;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ChatAllowedCharacters;
-import net.minecraft.world.WorldServer;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Arrays;
 
 @Mixin(NetHandlerPlayServer.class)
-public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer {
-    @Shadow
-    private MinecraftServer serverController;
+public abstract class MixinNetHandlerPlayServer {
+    String[] initialSignLines;
+    int counter = 0;
 
-    @Shadow
-    public EntityPlayerMP playerEntity;
+    @Inject(method = "processUpdateSign", at = @At(value = "JUMP", opcode = Opcodes.IF_ICMPGE, ordinal = 0, shift = At.Shift.BEFORE, by = -3))
+    public void onProcessUpdateSignStep1(C12PacketUpdateSign packet, CallbackInfo ci) {
+        counter++;
+        if (counter >= 6) {
+            counter = 0;
+            initialSignLines = null;
+        }
 
-    @Overwrite
-    public void processUpdateSign(C12PacketUpdateSign p_147343_1_) {
-        this.playerEntity.func_143004_u();
-        WorldServer worldserver = this.serverController.worldServerForDimension(this.playerEntity.dimension);
+        if (initialSignLines == null) {
+            System.out.println("Inject back 3 steps");
+            initialSignLines = Arrays.copyOf(packet.func_149589_f(), 4);
+        }
+    }
 
-        if (worldserver.blockExists(p_147343_1_.func_149588_c(), p_147343_1_.func_149586_d(), p_147343_1_.func_149585_e()))
-        {
-            TileEntity tileentity = worldserver.getTileEntity(p_147343_1_.func_149588_c(), p_147343_1_.func_149586_d(), p_147343_1_.func_149585_e());
+    @Inject(method = "processUpdateSign", at = @At(value = "JUMP", opcode = Opcodes.IF_ICMPGE, ordinal = 0, shift = At.Shift.AFTER))
+    public void onProcessUpdateSignPreLoop(C12PacketUpdateSign packet, CallbackInfo ci) {
+        System.out.println("Inject back 1 step");
 
-            if (tileentity instanceof TileEntitySign)
-            {
-                TileEntitySign tileentitysign = (TileEntitySign)tileentity;
+        for (int i = 0; i < packet.func_149589_f().length; i++) {
+            String line = packet.func_149589_f()[i];
+            if ("!?".equals(line)) {
+                //Swap out to pre-parsed line
+                packet.func_149589_f()[i] = initialSignLines[i];
 
-                if (!tileentitysign.func_145914_a() || tileentitysign.func_145911_b() != this.playerEntity)
-                {
-                    this.serverController.logWarning("Player " + this.playerEntity.getCommandSenderName() + " just tried to change non-editable sign");
-                    return;
+                boolean illegalLine = false;
+
+                // Perform Almura parsing
+                if (line.length() > 30) {
+                    illegalLine = true;
                 }
-            }
 
-            int i;
-            int j;
-
-            for (j = 0; j < 4; ++j)
-            {
-                boolean flag = true;
-
-                // Almura Start - 15 -> 30
-                if (p_147343_1_.func_149589_f()[j].length() > 30)
-                {
-                    flag = false;
-                }
-                else
-                {
-                    for (i = 0; i < p_147343_1_.func_149589_f()[j].length(); ++i)
-                    {
-                        final char c = p_147343_1_.func_149589_f()[j].charAt(i);
-
+                if (!illegalLine) {
+                    for (int j = 0; j < line.length(); ++j) {
+                        final char c = line.charAt(j);
                         if (c != 167) {
                             if (!ChatAllowedCharacters.isAllowedCharacter(c)) {
-                                flag = false;
+                                illegalLine = true;
                             }
                         }
                     }
                 }
 
-                if (!flag)
-                {
-                    // Almura Start - !? -> Invalid Chars
-                    p_147343_1_.func_149589_f()[j] = "InvalidChars";
+                if (illegalLine) {
+                    packet.func_149589_f()[i] = "Error!? :D";
                 }
-            }
-
-            if (tileentity instanceof TileEntitySign)
-            {
-                j = p_147343_1_.func_149588_c();
-                int k = p_147343_1_.func_149586_d();
-                i = p_147343_1_.func_149585_e();
-                TileEntitySign tileentitysign1 = (TileEntitySign)tileentity;
-                System.arraycopy(p_147343_1_.func_149589_f(), 0, tileentitysign1.signText, 0, 4);
-                tileentitysign1.markDirty();
-                worldserver.markBlockForUpdate(j, k, i);
             }
         }
     }

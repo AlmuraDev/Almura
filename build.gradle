@@ -102,12 +102,20 @@ processResources {
     }
 }
 
-def mixinSrg = "${tasks.reobf.temporaryDir}" + File.separator + 'mixins.srg'
-reobf.addExtraSrgFile mixinSrg
+task mixin {
+    ext.srg = "${tasks.mixin.temporaryDir}" + File.separator + 'mixins.srg'
+    ext.refMap = "${tasks.mixin.temporaryDir}" + File.separator + 'mixins.almura.refmap.json'
+}
+
+reobf.addExtraSrgFile tasks.mixin.ext.srg
 
 // Source compiler configuration
 tasks.withType(JavaCompile) {
-    options.compilerArgs += [ '-Xlint:all', '-Xlint:-path', '-Xlint:-processing', "-AreobfSrgFile=${tasks.reobf.srg}", "-AoutSrgFile=${mixinSrg}" ]
+    options.compilerArgs += [ '-Xlint:all', '-Xlint:-path', '-Xlint:-processing',
+                              "-AreobfSrgFile=${tasks.reobf.srg}",
+                              "-AoutSrgFile=${tasks.mixin.ext.srg}",
+                              "-AoutRefMapFile=${tasks.mixin.ext.refMap}"
+    ]
     options.deprecation = true
     options.encoding = 'utf8'
 }
