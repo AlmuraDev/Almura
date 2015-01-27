@@ -6,8 +6,7 @@
     "MixinShapedRecipes",
     "MixinShapelessRecipes",
     "tileentity.MixinTileEntitySign",
-    "MixinC12PacketUpdateSign",
-    "MixinNetHandlerPlayServer"
+    "MixinC12PacketUpdateSign"
   ],
   "client": [
     "MixinTileEntityChestRenderer",
