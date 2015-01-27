@@ -85,6 +85,13 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds' // Always check for new snapshots
 }
 
+task mixin {
+    ext.srg = "${tasks.mixin.temporaryDir}" + File.separator + 'mixins.srg'
+    ext.refMap = "${tasks.mixin.temporaryDir}" + File.separator + 'mixins.almura.refmap.json'
+}
+
+reobf.addExtraSrgFile tasks.mixin.ext.srg
+
 // Filter, process, and include resources
 processResources {
     // Include in final JAR
@@ -100,14 +107,9 @@ processResources {
                'url': url,
                'authorList': organization
     }
-}
 
-task mixin {
-    ext.srg = "${tasks.mixin.temporaryDir}" + File.separator + 'mixins.srg'
-    ext.refMap = "${tasks.mixin.temporaryDir}" + File.separator + 'mixins.almura.refmap.json'
+    from tasks.mixin.ext.refMap
 }
-
-reobf.addExtraSrgFile tasks.mixin.ext.srg
 
 // Source compiler configuration
 tasks.withType(JavaCompile) {
@@ -131,6 +133,17 @@ license {
     strictCheck true
     includes(["**/*.java"])
 }
+
+task copySrgs(type: Copy) {
+    doFirst {
+        delete 'build/srgs'
+    }
+
+    include '**/*.srg'
+    from tasks.reobf.srg.parentFile
+    into 'build/srgs'
+}
+setupDecompWorkspace.dependsOn copySrgs
 
 // JAR manifest configuration
 jar.manifest.mainAttributes(
