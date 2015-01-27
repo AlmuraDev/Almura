@@ -1,6 +1,5 @@
 {
   "package": "com.almuradev.almura.core.mixin",
-  "refmap": "mixins.almura.refmap.json",
   "mixins": [
     "MixinBlockTallGrass",
     "MixinBlockWall",
