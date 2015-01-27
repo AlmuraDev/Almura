@@ -27,7 +27,7 @@ public class Almura {
     public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
     public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
     public static String GUI_VERSION = "Build 47";
-    public static String PACK_VERSION = "1.2";
+    public static String PACK_VERSION = "1.3";
 
     @Instance
     public static Almura INSTANCE;
