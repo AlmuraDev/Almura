@@ -53,7 +53,7 @@ public class S00AdditionalWorldInfo implements IMessage, IMessageHandler<S00Addi
             } else {
                 IngameHUD.INSTANCE.worldDisplay.setText(Character.toUpperCase(message.worldName.charAt(0)) + message.worldName.substring(1));
             }
-            System.out.println("Packet Recieved: " + message.currentPlayers + " / " + message.maxPlayers);
+            System.out.println("Packet Received: " + message.currentPlayers + " / " + message.maxPlayers);
             IngameHUD.INSTANCE.serverCount.setText(message.currentPlayers + "/" + message.maxPlayers);
         }
         return null;
