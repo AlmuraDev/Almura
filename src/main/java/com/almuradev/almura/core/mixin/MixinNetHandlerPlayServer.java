@@ -19,26 +19,14 @@ import java.util.Arrays;
 @Mixin(NetHandlerPlayServer.class)
 public abstract class MixinNetHandlerPlayServer {
     String[] initialSignLines;
-    int counter = 0;
 
-    @Inject(method = "processUpdateSign", at = @At(value = "JUMP", opcode = Opcodes.IF_ICMPGE, ordinal = 0, shift = At.Shift.BEFORE, by = -3))
-    public void onProcessUpdateSignStep1(C12PacketUpdateSign packet, CallbackInfo ci) {
-        counter++;
-        if (counter >= 6) {
-            counter = 0;
-            initialSignLines = null;
-        }
-
-        if (initialSignLines == null) {
-            System.out.println("Inject back 3 steps");
-            initialSignLines = Arrays.copyOf(packet.func_149589_f(), 4);
-        }
+    @Inject(method = "processUpdateSign", at = @At(value = "JUMP", opcode = Opcodes.IF_ICMPGE, ordinal = 0, shift = At.Shift.BY, by = -4))
+    public void onProcessUpdateSignPreLoop(C12PacketUpdateSign packet, CallbackInfo ci) {
+        initialSignLines = Arrays.copyOf(packet.func_149589_f(), 4);
     }
 
-    @Inject(method = "processUpdateSign", at = @At(value = "JUMP", opcode = Opcodes.IF_ICMPGE, ordinal = 0, shift = At.Shift.AFTER))
-    public void onProcessUpdateSignPreLoop(C12PacketUpdateSign packet, CallbackInfo ci) {
-        System.out.println("Inject back 1 step");
-
+    @Inject(method = "processUpdateSign", at = @At(value = "JUMP", opcode = Opcodes.IFEQ, ordinal = 3, shift = At.Shift.BY, by = -2))
+    public void onProcessUpdateSignPostLoop(C12PacketUpdateSign packet, CallbackInfo ci) {
         for (int i = 0; i < packet.func_149589_f().length; i++) {
             String line = packet.func_149589_f()[i];
             if ("!?".equals(line)) {
