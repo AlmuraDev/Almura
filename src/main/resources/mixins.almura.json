@@ -8,7 +8,8 @@
     "tileentity.MixinTileEntitySign",
     "MixinC12PacketUpdateSign",
     "MixinNetHandlerPlayServer",
-    "MixinS33PacketUpdateSign"
+    "MixinS33PacketUpdateSign",
+    "MixinC01PacketChatMessage"    
   ],
   "client": [
     "MixinTileEntityChestRenderer",
@@ -16,6 +17,8 @@
     "MixinRenderItemFrame",
     "MixinSimpleReloadableResourceManager",
     "MixinTextureMap",
-    "MixinGuiEditSign"
+    "MixinGuiEditSign",
+    "MixinGuiChat",
+    "MixinEntityClientPlayerMP"
   ]
 }
