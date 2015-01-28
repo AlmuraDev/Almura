@@ -249,6 +249,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     //TODO Check this come 1.8
     @Override
     public void harvestBlock(World world, EntityPlayer player, int x, int y, int z, int metadata) {
+        player.addStat(StatList.mineBlockStatArray[getIdFromBlock(this)], 1);
         final Stage stage = stages.get(metadata);
         if (stage == null) {
             return;
@@ -258,7 +259,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
             return;
         }
 
-        player.addStat(StatList.mineBlockStatArray[getIdFromBlock(this)], 1);
         final ItemStack held = player.getHeldItem();
         ToolsNode found = null;
 
