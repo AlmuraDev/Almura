@@ -222,13 +222,13 @@ public class CommonProxy {
                 if (block instanceof PackCrops) {
                     for (Stage stage : ((PackCrops) block).getStages().values()) {
                         final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
-                        stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
+                        stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), block, false, stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
                         stage.addNode(PackCreator.createFertilizerNode(pack, stage.getIdentifier(), stage.getId(), stageNode.getNode(PackKeys.NODE_FERTILIZER.getKey())));
                     }
                 } else {
                     //Break
                     ((INodeContainer) block).addNode(
-                            PackCreator.createBreakNode(pack, ((IPackObject) block).getIdentifier(), reader.getNode(PackKeys.NODE_BREAK.getKey())));
+                            PackCreator.createBreakNode(pack, ((IPackObject) block).getIdentifier(), block, true, reader.getNode(PackKeys.NODE_BREAK.getKey())));
 
                 }
 

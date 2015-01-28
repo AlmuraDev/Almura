@@ -253,29 +253,38 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         if (stage == null) {
             return;
         }
+        final BreakNode breakNode = stage.getNode(BreakNode.class);
+        if (breakNode == null) {
+            return;
+        }
+
         player.addStat(StatList.mineBlockStatArray[getIdFromBlock(this)], 1);
         final ItemStack held = player.getHeldItem();
         ToolsNode found = null;
-        final BreakNode breakNode = stage.getNode(BreakNode.class);
-        for (ToolsNode toolsNode : breakNode.getValue()) {
-            if (toolsNode instanceof ToolsNode.OffHand) {
-                if (held == null) {
+
+        if (breakNode.isEnabled()) {
+            for (ToolsNode toolsNode : breakNode.getValue()) {
+                if (toolsNode instanceof ToolsNode.OffHand) {
+                    if (held == null) {
+                        found = toolsNode;
+                        break;
+                    }
+                    continue;
+                }
+                if (held != null && toolsNode.getTool().minecraftObject == held.getItem()) {
                     found = toolsNode;
                     break;
                 }
-                continue;
             }
-            if (held != null && toolsNode.getTool().minecraftObject == held.getItem()) {
-                found = toolsNode;
-                break;
-            }
-        }
 
-        if (found == null) {
-            found = breakNode.getToolByIdentifier("", "none");
             if (found == null) {
-                return;
+                found = breakNode.getToolByIdentifier("", "none");
+                if (found == null) {
+                    return;
+                }
             }
+        } else {
+            return;
         }
 
         player.addExhaustion(found.getExhaustionRange().getValueWithinRange());

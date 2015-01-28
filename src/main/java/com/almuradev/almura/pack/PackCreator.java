@@ -735,7 +735,7 @@ public class PackCreator {
         return new RenderNode(renderAsNormalBlock, renderAsOpaque);
     }
 
-    public static BreakNode createBreakNode(Pack pack, String name, ConfigurationNode root) {
+    public static BreakNode createBreakNode(Pack pack, String name, Block block, boolean addDefault, ConfigurationNode root) {
         final boolean breakEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(true);
         final ConfigurationNode toolsConfigurationNode = root.getNode(PackKeys.TOOLS.getKey());
         final Set<ToolsNode> tools = Sets.newHashSet();
@@ -805,6 +805,12 @@ public class PackCreator {
 
             tools.add(!tool.isPresent() ? new ToolsNode.OffHand(experienceRange, exhaustionRange, new DropsNode(drops))
                                         : new ToolsNode(tool.get(), experienceRange, exhaustionRange, new DropsNode(drops)));
+        }
+
+        if (tools.isEmpty() && addDefault) {
+            Set<DropProperty> temp = Sets.newConcurrentHashSet();
+            temp.add(new DropProperty(GameObjectMapper.getGameObject(Almura.MOD_ID, ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier(), false).get(), new RangeProperty<>(Integer.class, true, new ImmutablePair<>(1, 1)), 0, new BonusProperty<>(Integer.class, false, 0, 0, new RangeProperty<>(Double.class, false, new ImmutablePair<>(0D, 0D)))));
+            tools.add(new ToolsNode.OffHand(new RangeProperty<>(Integer.class, true, new ImmutablePair<>(1, 1)), new RangeProperty<>(Float.class, true, new ImmutablePair<>(0f, 0f)), new DropsNode(temp)));
         }
         return new BreakNode(breakEnabled, tools);
     }
