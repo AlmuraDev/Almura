@@ -11,6 +11,7 @@ import com.almuradev.almura.items.wands.FireballWand;
 import com.almuradev.almura.items.wands.InformationWand;
 import com.almuradev.almura.items.wands.LightningWand;
 import com.almuradev.almura.items.wands.MetadataWand;
+import com.almuradev.almura.items.wands.WireframeWand;
 import com.almuradev.almura.tabs.Tabs;
 
 public class Items {
@@ -21,6 +22,7 @@ public class Items {
     public static final LightningWand WAND_LIGHTNING = new LightningWand("wand.lightning", "Lightning Wand", "lightning_wand", Tabs.TAB_TOOLS);
     public static final MetadataWand WAND_METADATA = new MetadataWand("wand.metadata", "Metadata Wand", "metadata_wand", Tabs.TAB_TOOLS);
     public static final ExplosionWand WAND_NUCLEAR = new ExplosionWand("wand.nuclear", "Nuclear Wand", "nuclear_wand", Tabs.TAB_TOOLS, 60);
+    public static final WireframeWand WAND_WIREFRAME = new WireframeWand("wand.wireframe", "Wireframe Wand", "wireframe_wand", Tabs.TAB_TOOLS);
 
     public static void fakeStaticLoad() {
         Almura.INTERNAL_PACK.addItem(WAND_EXPLOSION);
@@ -29,5 +31,6 @@ public class Items {
         Almura.INTERNAL_PACK.addItem(WAND_LIGHTNING);
         Almura.INTERNAL_PACK.addItem(WAND_METADATA);
         Almura.INTERNAL_PACK.addItem(WAND_NUCLEAR);
+        Almura.INTERNAL_PACK.addItem(WAND_WIREFRAME);
     }
 }
