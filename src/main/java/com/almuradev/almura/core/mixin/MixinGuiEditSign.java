@@ -157,6 +157,9 @@ public abstract class MixinGuiEditSign extends GuiScreen {
         GL11.glPopMatrix();
         super.drawScreen(x, y, delta);
         for(int c = 0; c < 22; c++) {
+            if (c == 16) {
+                continue;
+            }
             ChatColor value = ChatColor.getByCode(c);
             String name = value.name().toLowerCase();
             boolean lastUnderscore = true;
