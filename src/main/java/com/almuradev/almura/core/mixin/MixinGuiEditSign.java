@@ -5,12 +5,16 @@
  */
 package com.almuradev.almura.core.mixin;
 
+import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.extension.sign.IExtendedTileEntitySign;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ChatAllowedCharacters;
+
 import org.lwjgl.opengl.GL11;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -152,7 +156,33 @@ public abstract class MixinGuiEditSign extends GuiScreen {
         ((IExtendedTileEntitySign) tileSign).setColumnBeingEdited(-1);
         GL11.glPopMatrix();
         super.drawScreen(x, y, delta);
+        for(int c = 0; c < 22; c++) {
+            ChatColor value = ChatColor.getByCode(c);
+            String name = value.name().toLowerCase();
+            boolean lastUnderscore = true;
+            String parsedName = "";
+            for(int chr = 0; chr < name.length(); chr++) {
+                if (c == 16) {
+                    continue;
+                }
+                char ch = name.charAt(chr);
+                if(lastUnderscore) {
+                    ch = Character.toUpperCase(ch);
+                }
+                if(ch == '_') {
+                    lastUnderscore = true;
+                    ch = ' ';
+                } else {
+                    lastUnderscore = false;
+                }
+                parsedName += ch;
+            }
+            char code = (char) ('0' + c);
+            if(c >= 10) {
+                code = (char) ('a' + c - 10);
+            }
+            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow("&" + code + " - " + value + parsedName, width - 90, 50 + c * 10, 0xffffffff);
+        }
         ci.cancel();
     }
-
 }
