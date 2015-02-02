@@ -37,6 +37,7 @@ import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.util.EntityUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.enchantment.EnchantmentHelper;

@@ -3,12 +3,11 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.core.mixin;
+package com.almuradev.almura.core.mixin.item.crafting;
 
 import com.almuradev.almura.recipe.IShapelessRecipe;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;

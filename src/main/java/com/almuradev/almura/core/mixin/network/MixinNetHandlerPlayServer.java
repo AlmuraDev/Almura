@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.core.mixin;
+package com.almuradev.almura.core.mixin.network;
 
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.client.C12PacketUpdateSign;
@@ -18,6 +18,7 @@ import java.util.Arrays;
 
 @Mixin(NetHandlerPlayServer.class)
 public abstract class MixinNetHandlerPlayServer {
+
     String[] initialSignLines;
 
     @Inject(method = "processUpdateSign", at = @At(value = "JUMP", opcode = Opcodes.IF_ICMPGE, ordinal = 0, shift = At.Shift.BY, by = -4))

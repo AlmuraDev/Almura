@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.core.mixin;
+package com.almuradev.almura.core.mixin.client.resources;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
@@ -20,6 +20,7 @@ import java.util.List;
 
 @Mixin(SimpleReloadableResourceManager.class)
 public abstract class MixinSimpleReloadableResourceManager implements IReloadableResourceManager {
+
     @Shadow
     public List reloadListeners;
 

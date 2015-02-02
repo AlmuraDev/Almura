@@ -1,24 +1,26 @@
 {
   "package": "com.almuradev.almura.core.mixin",
   "mixins": [
-    "MixinBlockTallGrass",
-    "MixinBlockWall",
-    "MixinShapedRecipes",
-    "MixinShapelessRecipes",
-    "tileentity.MixinTileEntitySign",
-    "MixinC12PacketUpdateSign",
-    "MixinNetHandlerPlayServer",
-    "MixinS33PacketUpdateSign",
-    "MixinC01PacketChatMessage"    
+    "block.MixinBlockTallGrass",
+    "block.MixinBlockWall",
+    "inventory.MixinContainerWorkbench",
+    "item.crafting.MixinShapedRecipes",
+    "item.crafting.MixinShapelessRecipes",
+    "network.play.client.MixinC01PacketChatMessage",
+    "network.play.client.MixinC12PacketUpdateSign",
+    "network.play.server.MixinS33PacketUpdateSign",
+    "network.MixinNetHandlerPlayServer",
+    "tileentity.MixinTileEntitySign"
+
   ],
   "client": [
-    "MixinTileEntityChestRenderer",
-    "MixinTileEntitySignRenderer",
-    "MixinRenderItemFrame",
-    "MixinSimpleReloadableResourceManager",
-    "MixinTextureMap",
-    "MixinGuiEditSign",
-    "MixinGuiChat",
-    "MixinEntityClientPlayerMP"
+    "client.entity.MixinEntityClientPlayerMP",
+    "client.gui.inventory.MixinGuiEditSign",
+    "client.gui.MixinGuiChat",
+    "client.renderer.texture.MixinTextureMap",
+    "client.renderer.tileentity.MixinRenderItemFrame",
+    "client.renderer.tileentity.MixinTileEntityChestRenderer",
+    "client.renderer.tileentity.MixinTileEntitySignRenderer",
+    "client.resources.MixinSimpleReloadableResourceManager"
   ]
 }

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.core.mixin;
+package com.almuradev.almura.core.mixin.network.play.server;
 
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -16,6 +16,7 @@ import java.io.IOException;
 
 @Mixin(S33PacketUpdateSign.class)
 public abstract class MixinS33PacketUpdateSign extends Packet {
+
     @Shadow
     private int field_149352_a;
     @Shadow
@@ -26,15 +27,13 @@ public abstract class MixinS33PacketUpdateSign extends Packet {
     private String[] field_149349_d;
 
     @Overwrite
-    public void readPacketData(PacketBuffer p_148837_1_) throws IOException
-    {
+    public void readPacketData(PacketBuffer p_148837_1_) throws IOException {
         this.field_149352_a = p_148837_1_.readInt();
         this.field_149350_b = p_148837_1_.readShort();
         this.field_149351_c = p_148837_1_.readInt();
         this.field_149349_d = new String[4];
 
-        for (int i = 0; i < 4; ++i)
-        {
+        for (int i = 0; i < 4; ++i) {
             this.field_149349_d[i] = p_148837_1_.readStringFromBuffer(30);
         }
     }

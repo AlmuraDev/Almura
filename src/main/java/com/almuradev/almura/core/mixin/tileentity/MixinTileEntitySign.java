@@ -10,15 +10,17 @@ import com.almuradev.almura.extension.sign.IExtendedTileEntitySign;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(TileEntitySign.class)
 public abstract class MixinTileEntitySign extends TileEntity implements IExtendedTileEntitySign {
-    @Shadow String[] signText;
-    @Shadow boolean field_145916_j;
+
+    @Shadow
+    String[] signText;
+    @Shadow
+    boolean field_145916_j;
 
     private int columnBeingEdited;
     private CacheState flag;
@@ -73,18 +75,15 @@ public abstract class MixinTileEntitySign extends TileEntity implements IExtende
 //    }
 
     @Overwrite
-    public void readFromNBT(NBTTagCompound p_145839_1_)
-    {
+    public void readFromNBT(NBTTagCompound p_145839_1_) {
         this.field_145916_j = false;
         super.readFromNBT(p_145839_1_);
 
-        for (int i = 0; i < 4; ++i)
-        {
+        for (int i = 0; i < 4; ++i) {
             this.signText[i] = p_145839_1_.getString("Text" + (i + 1));
 
             // Almura Start - 15 -> 30
-            if (this.signText[i].length() > 30)
-            {
+            if (this.signText[i].length() > 30) {
                 // Almura Start - 15 -> 30
                 this.signText[i] = this.signText[i].substring(0, 30);
             }

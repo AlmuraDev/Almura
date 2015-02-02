@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.core.mixin;
+package com.almuradev.almura.core.mixin.block;
 
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.node.GrassNode;

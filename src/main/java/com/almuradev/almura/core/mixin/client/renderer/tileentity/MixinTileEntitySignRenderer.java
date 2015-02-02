@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.core.mixin;
+package com.almuradev.almura.core.mixin.client.renderer.tileentity;
 
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.extension.sign.IExtendedTileEntitySign;
@@ -39,8 +39,8 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
         float var12;
 
         if (var9 == Blocks.standing_sign) {
-            GL11.glTranslatef((float)par2 + 0.5F, (float)par4 + 0.75F * var10, (float)par6 + 0.5F);
-            float var11 = (float)(par1TileEntitySign.getBlockMetadata() * 360) / 16.0F;
+            GL11.glTranslatef((float) par2 + 0.5F, (float) par4 + 0.75F * var10, (float) par6 + 0.5F);
+            float var11 = (float) (par1TileEntitySign.getBlockMetadata() * 360) / 16.0F;
             GL11.glRotatef(-var11, 0.0F, 1.0F, 0.0F);
             this.field_147514_c.signStick.showModel = true;
         } else {
@@ -59,7 +59,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
                 var12 = -90.0F;
             }
 
-            GL11.glTranslatef((float)par2 + 0.5F, (float)par4 + 0.75F * var10, (float)par6 + 0.5F);
+            GL11.glTranslatef((float) par2 + 0.5F, (float) par4 + 0.75F * var10, (float) par6 + 0.5F);
             GL11.glRotatef(-var12, 0.0F, 1.0F, 0.0F);
             GL11.glTranslatef(0.0F, -0.3125F, -0.4375F);
             this.field_147514_c.signStick.showModel = false;
@@ -76,7 +76,9 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
             if (viewer == null) {
                 viewer = Minecraft.getMinecraft().thePlayer;
             }
-            if (viewer != null && par1TileEntitySign.getDistanceFrom(viewer.posX, viewer.posY, viewer.posZ) < (Configuration.SIGN_RENDER_DISTANCE * 16) && par1TileEntitySign.hasWorldObj()) {
+            if (viewer != null && par1TileEntitySign.getDistanceFrom(viewer.posX, viewer.posY, viewer.posZ) < (Configuration.SIGN_RENDER_DISTANCE
+                                                                                                               * 16) && par1TileEntitySign
+                        .hasWorldObj()) {
                 // Almura End
                 FontRenderer var17 = this.func_147498_b();
                 var12 = 0.016666668F * var10;
@@ -95,7 +97,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
 
                     if (var14 == par1TileEntitySign.lineBeingEdited) {
                         // Almura Start
-                        int endColumnStart = Math.min(((IExtendedTileEntitySign) par1TileEntitySign).getColumnBeingEdited(),  var15.length());
+                        int endColumnStart = Math.min(((IExtendedTileEntitySign) par1TileEntitySign).getColumnBeingEdited(), var15.length());
                         String before = "";
                         if (endColumnStart > 0) {
                             before = var15.substring(0, endColumnStart);

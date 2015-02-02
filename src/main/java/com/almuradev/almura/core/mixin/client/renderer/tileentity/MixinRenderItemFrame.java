@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.core.mixin;
+package com.almuradev.almura.core.mixin.client.renderer.tileentity;
 
 import com.almuradev.almura.Configuration;
 import net.minecraft.client.Minecraft;
