@@ -9,6 +9,7 @@ import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -22,7 +23,6 @@ import java.text.DecimalFormat;
 public class IngameBlockInformation extends AlmuraGui {
 
     private final Block block;
-    private final ItemStack stack;
     private final int metadata;
     private final float hardness;
 
@@ -31,10 +31,9 @@ public class IngameBlockInformation extends AlmuraGui {
 
      * @param parent the {@link AlmuraGui} that we came from
      */
-    public IngameBlockInformation(AlmuraGui parent, Block block, ItemStack stack, int metadata, float hardness) {
+    public IngameBlockInformation(AlmuraGui parent, Block block, int metadata, float hardness) {
         super(parent);
         this.block = block;
-        this.stack = stack;
         this.metadata = metadata;
         this.hardness = hardness;
         setup();
@@ -50,13 +49,10 @@ public class IngameBlockInformation extends AlmuraGui {
         final int padding = 5;
         final DecimalFormat decimal = new DecimalFormat("#.##");
 
-        final UIImage blockImage = new UIImage(this, stack);
-        if (stack.getItem() == null) {
-            blockImage.setIcon(block.getIcon(0, 0));
-        }
+        final UIImage blockImage = new UIImage(this, new GuiTexture(UIImage.BLOCKS_TEXTURE), block.getIcon(0, metadata));
         blockImage.setPosition(padding, padding, Anchor.LEFT | Anchor.TOP);
 
-        final String localized = stack.getItem() == null ? block.getLocalizedName() : stack.getDisplayName();
+        final String localized = block.getLocalizedName();
         final UILabel localizedNameLabel = new UILabel(this, ChatColor.WHITE + getFormattedString(localized, 22, "..."));
         localizedNameLabel.setPosition(getPaddedX(blockImage, padding), padding + 3, Anchor.LEFT | Anchor.TOP);
 
