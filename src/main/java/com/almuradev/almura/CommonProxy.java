@@ -29,6 +29,7 @@ import com.almuradev.almura.server.network.play.S02OpenBlockWireframeGui;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
 import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInfo;
+import com.almuradev.almura.server.network.play.bukkit.B03ResidenceInformation;
 import com.almuradev.almura.tabs.Tabs;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
@@ -75,6 +76,7 @@ public class CommonProxy {
         Almura.NETWORK_BUKKIT.registerMessage(B00PlayerDisplayName.class, B00PlayerDisplayName.class, 0, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInfo.class, B02AdditionalWorldInfo.class, 2, Side.CLIENT);
+        Almura.NETWORK_BUKKIT.registerMessage(B03ResidenceInformation.class, B03ResidenceInformation.class, 3, Side.CLIENT);
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());
         GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");
         GameRegistry.registerFuelHandler(new PackFuelHandler());
