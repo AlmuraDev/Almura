@@ -44,7 +44,7 @@ public class InformationWand extends AlmuraItem {
             final int metadata = world.getBlockMetadata(x, y, z);
             final ItemStack stack = new ItemStack(block, 1, metadata);
 
-            if (block != null) {
+            if (block != null && stack.getItem() != null) {
                 ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S0BPacketAnimation(player, 0));
                 player.swingItem();
                 Almura.NETWORK_FORGE.sendTo(new S01OpenBlockInformationGui(stack, x, y, z, metadata, block.getBlockHardness(world, x, y, z)), (EntityPlayerMP) player);
