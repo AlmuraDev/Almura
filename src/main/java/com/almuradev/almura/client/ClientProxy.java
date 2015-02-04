@@ -9,6 +9,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
+import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
 import com.almuradev.almura.client.gui.menu.AlmuraMainMenu;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
@@ -21,11 +22,10 @@ import com.google.common.collect.Maps;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.settings.KeyBinding;
@@ -46,6 +46,9 @@ public class ClientProxy extends CommonProxy {
     public static final KeyBinding
             BINDING_CONFIG_GUI =
             new AlmuraBinding("key.almura.config", "Config", Keyboard.KEY_F4, "key.categories.almura", "Almura");
+    public static IngameDebugHUD HUD_DEBUG;
+    public static IngameHUD HUD_INGAME;
+    public static IngameResidenceHUD HUD_RESIDENCE;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -62,12 +65,9 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onInitialization(FMLInitializationEvent event) {
         super.onInitialization(event);
-        final IngameHUD almuraHud = new IngameHUD(null);
-        final IngameDebugHUD almuraDebugHud = new IngameDebugHUD(null);
-        MinecraftForge.EVENT_BUS.register(almuraHud);
-        MinecraftForge.EVENT_BUS.register(almuraDebugHud);
-        FMLCommonHandler.instance().bus().register(almuraHud);
-        FMLCommonHandler.instance().bus().register(almuraDebugHud);
+        HUD_DEBUG = new IngameDebugHUD();
+        HUD_INGAME = new IngameHUD();
+        HUD_RESIDENCE = new IngameResidenceHUD();
     }
 
     @SubscribeEvent
@@ -91,7 +91,7 @@ public class ClientProxy extends CommonProxy {
                       + Minecraft.getGLMaximumTextureSize() + "].");
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onNameFormatEvent(net.minecraftforge.event.entity.player.PlayerEvent.NameFormat event) {
         final String displayName = PLAYER_DISPLAY_NAME_MAP.get(event.username);
 
@@ -99,7 +99,7 @@ public class ClientProxy extends CommonProxy {
             event.displayname = displayName;
 
             if (event.entityPlayer == Minecraft.getMinecraft().thePlayer) {
-                IngameHUD.INSTANCE.playerTitle.setText(displayName);
+                HUD_INGAME.playerTitle.setText(displayName);
             }
         }
     }

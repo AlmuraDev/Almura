@@ -5,23 +5,25 @@
  */
 package com.almuradev.almura.server.network.play;
 
+import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
-public class S00AdditionalWorldInfo implements IMessage, IMessageHandler<S00AdditionalWorldInfo, IMessage> {
+public class S00AdditionalWorldInformation implements IMessage, IMessageHandler<S00AdditionalWorldInformation, IMessage> {
 
     public String worldName;
     public int currentPlayers, maxPlayers;
 
-    public S00AdditionalWorldInfo() {
+    public S00AdditionalWorldInformation() {
     }
 
-    public S00AdditionalWorldInfo(String worldName, int currentPlayers, int maxPlayers) {
+    public S00AdditionalWorldInformation(String worldName, int currentPlayers, int maxPlayers) {
         this.worldName = worldName;
         this.currentPlayers = currentPlayers;
         this.maxPlayers = maxPlayers;
@@ -41,20 +43,11 @@ public class S00AdditionalWorldInfo implements IMessage, IMessageHandler<S00Addi
         buf.writeInt(maxPlayers);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
-    public IMessage onMessage(S00AdditionalWorldInfo message, MessageContext ctx) {
+    public IMessage onMessage(S00AdditionalWorldInformation message, MessageContext ctx) {
         if (ctx.side == Side.CLIENT) {
-            if (message.worldName.equalsIgnoreCase("Dim1")) {
-                IngameHUD.INSTANCE.worldDisplay.setText("The End");
-            } else if (message.worldName.equalsIgnoreCase("Dim-1")) {
-                IngameHUD.INSTANCE.worldDisplay.setText("Nether");
-            } else if (message.worldName.equalsIgnoreCase("redrock_nether")) {
-                IngameHUD.INSTANCE.worldDisplay.setText("Redrock Nether");
-            } else {
-                IngameHUD.INSTANCE.worldDisplay.setText(Character.toUpperCase(message.worldName.charAt(0)) + message.worldName.substring(1));
-            }
-            System.out.println("Packet Received: " + message.currentPlayers + " / " + message.maxPlayers);
-            IngameHUD.INSTANCE.serverCount.setText(message.currentPlayers + "/" + message.maxPlayers);
+            ClientProxy.HUD_INGAME.serverCount.setText(message.currentPlayers + "/" + message.maxPlayers);
         }
         return null;
     }

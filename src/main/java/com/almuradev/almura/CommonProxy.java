@@ -6,7 +6,6 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.items.Items;
-import com.almuradev.almura.items.wands.FireballWand;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.INodeContainer;
@@ -23,12 +22,12 @@ import com.almuradev.almura.pack.mapper.EntityMapper;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.recipe.furnace.PackFuelHandler;
-import com.almuradev.almura.server.network.play.S00AdditionalWorldInfo;
+import com.almuradev.almura.server.network.play.S00AdditionalWorldInformation;
 import com.almuradev.almura.server.network.play.S01OpenBlockInformationGui;
 import com.almuradev.almura.server.network.play.S02OpenBlockWireframeGui;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
-import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInfo;
+import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInformation;
 import com.almuradev.almura.server.network.play.bukkit.B03ResidenceInformation;
 import com.almuradev.almura.tabs.Tabs;
 import com.flowpowered.cerealization.config.ConfigurationException;
@@ -70,12 +69,12 @@ import java.util.Map;
 public class CommonProxy {
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
-        Almura.NETWORK_FORGE.registerMessage(S00AdditionalWorldInfo.class, S00AdditionalWorldInfo.class, 0, Side.CLIENT);
+        Almura.NETWORK_FORGE.registerMessage(S00AdditionalWorldInformation.class, S00AdditionalWorldInformation.class, 0, Side.CLIENT);
         Almura.NETWORK_FORGE.registerMessage(S01OpenBlockInformationGui.class, S01OpenBlockInformationGui.class, 1, Side.CLIENT);
         Almura.NETWORK_FORGE.registerMessage(S02OpenBlockWireframeGui.class, S02OpenBlockWireframeGui.class, 2, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B00PlayerDisplayName.class, B00PlayerDisplayName.class, 0, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
-        Almura.NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInfo.class, B02AdditionalWorldInfo.class, 2, Side.CLIENT);
+        Almura.NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInformation.class, B02AdditionalWorldInformation.class, 2, Side.CLIENT);
         Almura.NETWORK_BUKKIT.registerMessage(B03ResidenceInformation.class, B03ResidenceInformation.class, 3, Side.CLIENT);
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());
         GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");

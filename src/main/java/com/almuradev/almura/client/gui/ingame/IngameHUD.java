@@ -9,44 +9,27 @@ import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.UIPropertyBar;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.*;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.client.gui.icon.GuiIcon;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.awt.*;
 import java.util.Objects;
 
 public class IngameHUD extends AlmuraGui {
-
-    private static final GuiIcon ICON_BAR = getIcon(0, 126, 256, 14);
-    private static final GuiIcon ICON_HEART = getIcon(149, 62, 26, 26);
-    private static final GuiIcon ICON_ARMOR = getIcon(64, 63, 20, 27);
-    private static final GuiIcon ICON_HUNGER = getIcon(198, 96, 28, 29);
-    private static final GuiIcon ICON_STAMINA = getIcon(99, 93, 32, 31);
-    private static final GuiIcon ICON_XP = getIcon(169, 98, 24, 24);
-    private static final GuiIcon ICON_PLAYER = getIcon(67, 92, 28, 32);
-    private static final GuiIcon ICON_COMPASS = getIcon(118, 66, 30, 26);
-    private static final GuiIcon ICON_MAP = getIcon(0, 95, 32, 26);
-    private static final GuiIcon ICON_WORLD = getIcon(133, 93, 32, 32);
-    private static final GuiIcon ICON_CLOCK = getIcon(86, 64, 28, 26);
-    private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
-    private static final Color greenBar = new Color(0f, 1f, 0f, 1f);
-    private static final Color orangeBar = new Color(0.8039f, 0.6784f, 0f, 1f);
-    private static final Color redBar = new Color(0.69f, 0.09f, 0.12f, 1f);
-    public static Minecraft MINECRAFT = Minecraft.getMinecraft();
-    public static IngameHUD INSTANCE;
+    private static final Color LIGHT_GREEN = new Color(0f, 1f, 0f, 1f);
+    private static final Color LIGHT_ORANGE = new Color(0.8039f, 0.6784f, 0f, 1f);
+    private static final Color RED = new Color(0.69f, 0.09f, 0.12f, 1f);
     public static boolean UPDATES_ENABLED = true;
     public UILabel worldDisplay, playerTitle, playerMode, playerCurrency;
     public UILabel serverCount, almuraTitle;
@@ -62,15 +45,15 @@ public class IngameHUD extends AlmuraGui {
     private boolean firstPass = true, playerIsCreative = false;
     private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE, playerCount = Integer.MAX_VALUE;
 
-    @SuppressWarnings("rawtypes")
-    public IngameHUD(AlmuraGui parent) {
-        super(parent);
+    public IngameHUD() {
+        super(null);
         setup();
+        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
     protected void setup() {
-        INSTANCE = this;
         guiscreenBackground = false;
 
         // Construct Hud with all elements
@@ -115,11 +98,6 @@ public class IngameHUD extends AlmuraGui {
 
         // Almura Title
         almuraTitle = new UILabel(this, "");
-        almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
-        almuraTitle.setText("Almura");
-        almuraTitle.setColor(0xffffffff);
-        almuraTitle.setSize(7, 7);
-        almuraTitle.setFontScale(1.0F);
 
         // Hunger Property
         hungerProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_HUNGER, ICON_BAR);
@@ -196,7 +174,7 @@ public class IngameHUD extends AlmuraGui {
         xpProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_XP, ICON_BAR);
         xpProperty.setPosition(-27, 28, Anchor.RIGHT | Anchor.TOP);
         xpProperty.setSize(105, 7);
-        xpProperty.setColor(greenBar.getRGB());
+        xpProperty.setColor(LIGHT_GREEN.getRGB());
 
         // XP Level Label
         xpLevel = new UILabel(this, "1");
@@ -213,18 +191,9 @@ public class IngameHUD extends AlmuraGui {
         addToScreen(gradientContainer);
     }
 
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        renderer.enableBlending();
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-
-    }
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTick(ClientTickEvent event) {
-        if (UPDATES_ENABLED && Configuration.DISPLAY_ENHANCED_GUI && MINECRAFT.thePlayer != null) {
+        if (UPDATES_ENABLED && Configuration.DISPLAY_ENHANCED_GUI && mc.thePlayer != null) {
             updateWidgets();
         }
     }
@@ -243,23 +212,22 @@ public class IngameHUD extends AlmuraGui {
         }
 
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
-            setWorldAndResolution(MINECRAFT, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+            setWorldAndResolution(mc, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }
 
-
     public void updateWidgets() {
         // Player Health
-        if (playerHealth != MINECRAFT.thePlayer.getHealth() / MINECRAFT.thePlayer.getMaxHealth() || firstPass) {
-            playerHealth = MINECRAFT.thePlayer.getHealth() / MINECRAFT.thePlayer.getMaxHealth();
+        if (playerHealth != mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth() || firstPass) {
+            playerHealth = mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth();
 
             if (playerHealth > 0.6) {
-                healthProperty.setColor(greenBar.getRGB());
+                healthProperty.setColor(LIGHT_GREEN.getRGB());
             } else if (playerHealth >= 0.3) {
-                healthProperty.setColor(orangeBar.getRGB());
+                healthProperty.setColor(LIGHT_ORANGE.getRGB());
             } else {
-                healthProperty.setColor(redBar.getRGB());
+                healthProperty.setColor(RED.getRGB());
             }
             healthProperty.setAmount(playerHealth);
         }
@@ -274,18 +242,18 @@ public class IngameHUD extends AlmuraGui {
                 armorProperty.setVisible(false);
             }
             if (playerArmor > 0.6) {
-                armorProperty.setColor(greenBar.getRGB());
+                armorProperty.setColor(LIGHT_GREEN.getRGB());
             } else if (playerArmor >= 0.3) {
-                armorProperty.setColor(orangeBar.getRGB());
+                armorProperty.setColor(LIGHT_ORANGE.getRGB());
             } else {
-                armorProperty.setColor(redBar.getRGB());
+                armorProperty.setColor(RED.getRGB());
             }
             armorProperty.setAmount(playerArmor);
         }
 
         // Player Hunger
-        if (playerHunger != MINECRAFT.thePlayer.getFoodStats().getFoodLevel() / (float) 20 || firstPass) {
-            playerHunger = MINECRAFT.thePlayer.getFoodStats().getFoodLevel() / (float) 20;
+        if (playerHunger != mc.thePlayer.getFoodStats().getFoodLevel() / (float) 20 || firstPass) {
+            playerHunger = mc.thePlayer.getFoodStats().getFoodLevel() / (float) 20;
             if (playerHunger > 0) {
                 hungerProperty.setAmount(playerHunger);
                 hungerProperty.setVisible(true);
@@ -293,18 +261,18 @@ public class IngameHUD extends AlmuraGui {
                 hungerProperty.setVisible(false);
             }
             if (playerHunger >= 0.6) {
-                hungerProperty.setColor(greenBar.getRGB());
+                hungerProperty.setColor(LIGHT_GREEN.getRGB());
             } else if (playerHunger >= 0.3) {
-                hungerProperty.setColor(orangeBar.getRGB());
+                hungerProperty.setColor(LIGHT_ORANGE.getRGB());
             } else {
-                hungerProperty.setColor(redBar.getRGB());
+                hungerProperty.setColor(RED.getRGB());
             }
             hungerProperty.setAmount(playerHunger);
         }
 
         // Player Stamina
-        if (playerStamina != MINECRAFT.thePlayer.getFoodStats().getSaturationLevel() / (float) 20 || firstPass) {
-            playerStamina = MINECRAFT.thePlayer.getFoodStats().getSaturationLevel() / (float) 20;
+        if (playerStamina != mc.thePlayer.getFoodStats().getSaturationLevel() / (float) 20 || firstPass) {
+            playerStamina = mc.thePlayer.getFoodStats().getSaturationLevel() / (float) 20;
             if (playerStamina > 0) {
                 staminaProperty.setAmount(playerStamina);
                 staminaProperty.setVisible(true);
@@ -313,18 +281,18 @@ public class IngameHUD extends AlmuraGui {
             }
 
             if (playerStamina >= 0.6) {
-                staminaProperty.setColor(greenBar.getRGB());
+                staminaProperty.setColor(LIGHT_GREEN.getRGB());
             } else if (playerStamina >= 0.3) {
-                staminaProperty.setColor(orangeBar.getRGB());
+                staminaProperty.setColor(LIGHT_ORANGE.getRGB());
             } else {
-                staminaProperty.setColor(redBar.getRGB());
+                staminaProperty.setColor(RED.getRGB());
             }
             staminaProperty.setAmount(playerStamina);
         }
 
         // Player Experience
-        if (playerExperience != MINECRAFT.thePlayer.experience || firstPass) {
-            playerExperience = MINECRAFT.thePlayer.experience;
+        if (playerExperience != mc.thePlayer.experience || firstPass) {
+            playerExperience = mc.thePlayer.experience;
             if (playerExperience > 0) {
                 xpProperty.setAmount(playerExperience);
                 xpProperty.setVisible(true);
@@ -333,14 +301,14 @@ public class IngameHUD extends AlmuraGui {
             }
         }
         // Player Experience level 
-        if (playerExperienceLevel != MINECRAFT.thePlayer.experienceLevel || firstPass) {
-            playerExperienceLevel = MINECRAFT.thePlayer.experienceLevel;
-            xpLevel.setText(Integer.toString(MINECRAFT.thePlayer.experienceLevel));
+        if (playerExperienceLevel != mc.thePlayer.experienceLevel || firstPass) {
+            playerExperienceLevel = mc.thePlayer.experienceLevel;
+            xpLevel.setText(Integer.toString(mc.thePlayer.experienceLevel));
         }
 
         // Player Mode
-        if (playerIsCreative != MINECRAFT.thePlayer.capabilities.isCreativeMode || firstPass) {
-            playerIsCreative = MINECRAFT.thePlayer.capabilities.isCreativeMode;
+        if (playerIsCreative != mc.thePlayer.capabilities.isCreativeMode || firstPass) {
+            playerIsCreative = mc.thePlayer.capabilities.isCreativeMode;
             if (playerIsCreative) {
                 playerMode.setText("(C)");
             } else {
@@ -356,18 +324,18 @@ public class IngameHUD extends AlmuraGui {
 
         boolean dirtyCoords = false;
 
-        if (x == Integer.MIN_VALUE || MINECRAFT.thePlayer.posX != MINECRAFT.thePlayer.prevPosX) {
-            x = MathHelper.floor_double(MINECRAFT.thePlayer.posX);
+        if (x == Integer.MIN_VALUE || mc.thePlayer.posX != mc.thePlayer.prevPosX) {
+            x = MathHelper.floor_double(mc.thePlayer.posX);
             dirtyCoords = true;
         }
 
-        if (y == Integer.MIN_VALUE || MINECRAFT.thePlayer.posY != MINECRAFT.thePlayer.prevPosY) {
-            y = MathHelper.floor_double(MINECRAFT.thePlayer.posY);
+        if (y == Integer.MIN_VALUE || mc.thePlayer.posY != mc.thePlayer.prevPosY) {
+            y = MathHelper.floor_double(mc.thePlayer.posY);
             dirtyCoords = true;
         }
 
-        if (z == Integer.MIN_VALUE || MINECRAFT.thePlayer.posZ != MINECRAFT.thePlayer.prevPosZ) {
-            z = MathHelper.floor_double(MINECRAFT.thePlayer.posZ);
+        if (z == Integer.MIN_VALUE || mc.thePlayer.posZ != mc.thePlayer.prevPosZ) {
+            z = MathHelper.floor_double(mc.thePlayer.posZ);
             dirtyCoords = true;
         }
 
@@ -383,12 +351,12 @@ public class IngameHUD extends AlmuraGui {
         }
 
         // Player Name
-        if (playerTitle.getText().isEmpty()) {
-            playerTitle.setText(MINECRAFT.thePlayer.getDisplayName());
+        if (playerTitle.getText().isEmpty() && firstPass) {
+            playerTitle.setText(mc.thePlayer.getDisplayName());
         }
 
         //World Name (SinglePlayer)
-        if (MINECRAFT.isSingleplayer()) {
+        if (mc.isSingleplayer()) {
             if (!rawWorldName.equals(MinecraftServer.getServer().getWorldName())) {
                 rawWorldName = MinecraftServer.getServer().getWorldName();
                 worldDisplay.setText(
@@ -397,13 +365,8 @@ public class IngameHUD extends AlmuraGui {
         }
 
         // Player Count
-        if (MINECRAFT.isSingleplayer() && firstPass) {
+        if (mc.isSingleplayer() && firstPass) {
             serverCount.setText("--");
-        } else {
-            if (((MINECRAFT.getIntegratedServer() != null && MINECRAFT.getIntegratedServer().getPublic()) || !MINECRAFT.isSingleplayer())
-                && playerCount != MINECRAFT.getNetHandler().playerInfoList.size()) {
-                // Gets packet update now, don't touch this.
-            }
         }
 
         // Alignment
@@ -415,9 +378,12 @@ public class IngameHUD extends AlmuraGui {
         mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT | Anchor.TOP);
         playerMode.setPosition(playerTitle.getX() + playerTitle.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);
         playerCurrency.setPosition(playerMode.getX() + playerMode.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);
-        if (firstPass) { //this is stupid as hell
-        	almuraTitle.setText("Almura");
-        	almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
+        if (firstPass) {
+            almuraTitle.setText("Almura");
+            almuraTitle.setColor(0xffffffff);
+            almuraTitle.setSize(7, 7);
+            almuraTitle.setFontScale(1.0F);
+            almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
         }
         firstPass = false;
     }
@@ -425,7 +391,7 @@ public class IngameHUD extends AlmuraGui {
     public float getArmorLevel() {
         int armorDamage = 0;
         int armorTotal = 0;
-        final ItemStack[] inv = MINECRAFT.thePlayer.inventory.armorInventory;
+        final ItemStack[] inv = mc.thePlayer.inventory.armorInventory;
 
         if (inv != null) {
             for (ItemStack armorItem : inv) {
@@ -444,7 +410,7 @@ public class IngameHUD extends AlmuraGui {
     }
 
     public String getCompass() {
-        int position = (int) ((((MINECRAFT.thePlayer.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 16);
+        int position = (int) ((((mc.thePlayer.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 16);
 
         return "" + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
@@ -457,7 +423,7 @@ public class IngameHUD extends AlmuraGui {
 
     public String getTime() {
         //Minecraft day is 23000 ticks, we use a 24hr scale, day starts at 6AM
-        int hours = (int) (MINECRAFT.thePlayer.worldObj.getWorldInfo().getWorldTime() / 1000) % 24;
+        int hours = (int) (mc.thePlayer.worldObj.getWorldInfo().getWorldTime() / 1000) % 24;
 
         if (hours >= 0 && hours <= 5) {
             return (String.format((6 + hours) + "am"));

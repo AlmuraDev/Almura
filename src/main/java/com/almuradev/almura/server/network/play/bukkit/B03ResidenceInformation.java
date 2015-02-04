@@ -1,14 +1,14 @@
 package com.almuradev.almura.server.network.play.bukkit;
 
-import com.almuradev.almura.Almura;
+import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.ingame.residence.ResidenceData;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
-
-import java.io.IOException;
 
 public class B03ResidenceInformation implements IMessage, IMessageHandler<B03ResidenceInformation, IMessage> {
 
@@ -73,10 +73,11 @@ public class B03ResidenceInformation implements IMessage, IMessageHandler<B03Res
     public void toBytes(ByteBuf buf) {
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public IMessage onMessage(B03ResidenceInformation message, MessageContext ctx) {
-        if (ctx.side.isClient()) {
-            // TODO: Open or close ResidenceGui based on ResidenceData.WITHIN_RESIDENCE
+        if (ctx.side.isClient() && ResidenceData.WITHIN_RESIDENCE) {
+            ClientProxy.HUD_RESIDENCE.refreshFromData();
         }
         return null;
     }

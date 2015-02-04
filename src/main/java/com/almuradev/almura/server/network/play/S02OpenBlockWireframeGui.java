@@ -17,9 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 
-/**
- * Created by Steven on 1/27/2015.
- */
 public class S02OpenBlockWireframeGui implements IMessage, IMessageHandler<S02OpenBlockWireframeGui, IMessage> {
 
     public AxisAlignedBB wireframe;
@@ -69,7 +66,6 @@ public class S02OpenBlockWireframeGui implements IMessage, IMessageHandler<S02Op
                                              Minecraft.getMinecraft().theWorld.getBlock(message.x, message.y, message.z),
                                              message.x, message.y, message.z, wireframe));
         }
-
         return null;
     }
 }

@@ -18,9 +18,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
 public class S01OpenBlockInformationGui implements IMessage, IMessageHandler<S01OpenBlockInformationGui, IMessage> {
+    public Block block;
     public int metadata;
     public float hardness;
-    public Block block;
 
     public S01OpenBlockInformationGui() {
     }
@@ -51,7 +51,6 @@ public class S01OpenBlockInformationGui implements IMessage, IMessageHandler<S01
         if (ctx.side.isClient()) {
             Minecraft.getMinecraft().displayGuiScreen(new IngameBlockInformation(null, message.block, message.metadata, message.hardness));
         }
-
         return null;
     }
 }

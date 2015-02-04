@@ -9,36 +9,38 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 public class IngameDebugHUD extends AlmuraGui {
 
     public static boolean UPDATES_ENABLED = false;
-    public static Minecraft MINECRAFT = Minecraft.getMinecraft();
-    public static Runtime RUNTIME = Runtime.getRuntime();
+    public static final Runtime RUNTIME = Runtime.getRuntime();
     public UILabel fps, memoryDebug, memoryAllocated, xLoc, yLoc, zLoc, directionLoc, biomeName, blockLight, skyLight, rawLight;
     private Chunk chunk;
     private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE, yaw = Integer.MIN_VALUE;
 
-    public IngameDebugHUD(AlmuraGui parent) {
-        super(parent);
+    public IngameDebugHUD() {
+        super(null);
         setup();
+        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
     protected void setup() {
-        guiscreenBackground = false; // prevent full screen black background.
+        guiscreenBackground = false;
 
         // Construct Hud with all elements
         final UIBackgroundContainer debugPanel = new UIBackgroundContainer(this);
@@ -111,25 +113,19 @@ public class IngameDebugHUD extends AlmuraGui {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTick(ClientTickEvent event) {
-        if (UPDATES_ENABLED && MINECRAFT.thePlayer != null && MINECRAFT.currentScreen == null && Configuration.DISPLAY_ENHANCED_DEBUG) {
+        if (UPDATES_ENABLED && mc.thePlayer != null && mc.currentScreen == null && Configuration.DISPLAY_ENHANCED_DEBUG) {
             updateWidgets();
         }
-    }
-
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        renderer.enableBlending();
-        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
         if (event.type == RenderGameOverlayEvent.ElementType.DEBUG && Configuration.DISPLAY_ENHANCED_DEBUG) {
-            if (UPDATES_ENABLED && MINECRAFT.thePlayer != null) {
+            if (UPDATES_ENABLED && mc.thePlayer != null) {
                 event.setCanceled(true);
 
-                if (MINECRAFT.currentScreen == null) {
-                    setWorldAndResolution(MINECRAFT, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+                if (mc.currentScreen == null) {
+                    setWorldAndResolution(mc, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
                     drawScreen(event.mouseX, event.mouseY, event.partialTicks);
                 }
             }
@@ -144,44 +140,44 @@ public class IngameDebugHUD extends AlmuraGui {
 
         boolean dirtyCoords = false;
 
-        if (x == Integer.MIN_VALUE || MINECRAFT.thePlayer.posX != MINECRAFT.thePlayer.prevPosX) {
-            x = MathHelper.floor_double(MINECRAFT.thePlayer.posX);
+        if (x == Integer.MIN_VALUE || mc.thePlayer.posX != mc.thePlayer.prevPosX) {
+            x = MathHelper.floor_double(mc.thePlayer.posX);
             xLoc.setText(ChatColor.GRAY + String
-                    .format("- x: %.5f (%d) // chunk: %d (%d)", MINECRAFT.thePlayer.posX, x, MINECRAFT.thePlayer.chunkCoordX, x & 15));
+                    .format("- x: %.5f (%d) // chunk: %d (%d)", mc.thePlayer.posX, x, mc.thePlayer.chunkCoordX, x & 15));
             dirtyCoords = true;
         }
 
-        if (y == Integer.MIN_VALUE || MINECRAFT.thePlayer.posY != MINECRAFT.thePlayer.prevPosY) {
-            y = MathHelper.floor_double(MINECRAFT.thePlayer.posY);
-            yLoc.setText(ChatColor.GRAY + String.format("- y: %.3f (%d) ", MINECRAFT.thePlayer.posY, y));
+        if (y == Integer.MIN_VALUE || mc.thePlayer.posY != mc.thePlayer.prevPosY) {
+            y = MathHelper.floor_double(mc.thePlayer.posY);
+            yLoc.setText(ChatColor.GRAY + String.format("- y: %.3f (%d) ", mc.thePlayer.posY, y));
             dirtyCoords = true;
         }
 
-        if (z == Integer.MIN_VALUE || MINECRAFT.thePlayer.posZ != MINECRAFT.thePlayer.prevPosZ) {
-            z = MathHelper.floor_double(MINECRAFT.thePlayer.posZ);
+        if (z == Integer.MIN_VALUE || mc.thePlayer.posZ != mc.thePlayer.prevPosZ) {
+            z = MathHelper.floor_double(mc.thePlayer.posZ);
             zLoc.setText(ChatColor.GRAY + String
-                    .format("- z: %.5f (%d) // chunk: %d (%d)", MINECRAFT.thePlayer.posZ, z, MINECRAFT.thePlayer.chunkCoordZ, z & 15));
+                    .format("- z: %.5f (%d) // chunk: %d (%d)", mc.thePlayer.posZ, z, mc.thePlayer.chunkCoordZ, z & 15));
             dirtyCoords = true;
         }
 
-        if (yaw == Integer.MIN_VALUE || MINECRAFT.thePlayer.rotationYawHead != MINECRAFT.thePlayer.prevRotationYawHead) {
-            yaw = MathHelper.floor_double((double) (MINECRAFT.thePlayer.rotationYawHead * 4.0F / 360.0F) + 0.5D) & 3;
+        if (yaw == Integer.MIN_VALUE || mc.thePlayer.rotationYawHead != mc.thePlayer.prevRotationYawHead) {
+            yaw = MathHelper.floor_double((double) (mc.thePlayer.rotationYawHead * 4.0F / 360.0F) + 0.5D) & 3;
             final String direction = Direction.directions[yaw];
             directionLoc.setText(ChatColor.GRAY + direction.substring(0, 1).toUpperCase() + direction.substring(1).toLowerCase());
         }
 
         if (dirtyCoords) {
-            if (chunk == null || x != (int) MINECRAFT.thePlayer.prevPosX || z != MINECRAFT.thePlayer.prevPosZ) {
-                chunk = MINECRAFT.thePlayer.worldObj.getChunkFromChunkCoords(MINECRAFT.thePlayer.chunkCoordX, MINECRAFT.thePlayer.chunkCoordZ);
+            if (chunk == null || x != (int) mc.thePlayer.prevPosX || z != mc.thePlayer.prevPosZ) {
+                chunk = mc.thePlayer.worldObj.getChunkFromChunkCoords(mc.thePlayer.chunkCoordX, mc.thePlayer.chunkCoordZ);
             }
 
-            biomeName.setText(ChatColor.GRAY + chunk.getBiomeGenForWorldCoords(x & 15, z & 15, MINECRAFT.theWorld.getWorldChunkManager()).biomeName);
+            biomeName.setText(ChatColor.GRAY + chunk.getBiomeGenForWorldCoords(x & 15, z & 15, mc.theWorld.getWorldChunkManager()).biomeName);
             blockLight.setText(ChatColor.GRAY + "- block: " + chunk.getSavedLightValue(EnumSkyBlock.Block, x & 15, y, z & 15));
             skyLight.setText(ChatColor.GRAY + "- sky: " + chunk.getSavedLightValue(EnumSkyBlock.Sky, x & 15, y, z & 15));
             rawLight.setText(ChatColor.GRAY + "- raw: " + chunk.getBlockLightValue(x & 15, y, z & 15, 0));
         }
 
-        final int displayFps = Minecraft.debugFPS;
+        final int displayFps = mc.debugFPS;
         fps.setText(ChatColor.GOLD + "" + displayFps);
         memoryDebug.setText(
                 ChatColor.GRAY + "Used: " + usedMemory * 100L / maxMemory + "% (" + usedMemory / 1024L / 1024L + "MB) of " + maxMemory / 1024L / 1024L

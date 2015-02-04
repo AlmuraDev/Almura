@@ -20,7 +20,18 @@ import java.awt.*;
 import java.io.IOException;
 
 public abstract class AlmuraGui extends MalisisGui {
-
+    public static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
+    public static final GuiIcon ICON_BAR;
+    public static final GuiIcon ICON_HEART;
+    public static final GuiIcon ICON_ARMOR;
+    public static final GuiIcon ICON_HUNGER;
+    public static final GuiIcon ICON_STAMINA;
+    public static final GuiIcon ICON_XP;
+    public static final GuiIcon ICON_PLAYER;
+    public static final GuiIcon ICON_COMPASS;
+    public static final GuiIcon ICON_MAP;
+    public static final GuiIcon ICON_WORLD;
+    public static final GuiIcon ICON_CLOCK;
     protected static final GuiTexture TEXTURE_DEFAULT;
     protected final Optional<AlmuraGui> parent;
 
@@ -32,6 +43,18 @@ public abstract class AlmuraGui extends MalisisGui {
         } catch (IOException e) {
             throw new RuntimeException("Failed load gui sprite sheet.", e);
         }
+
+        ICON_BAR = getIcon(0, 126, 256, 14);
+        ICON_HEART = getIcon(149, 62, 26, 26);
+        ICON_ARMOR = getIcon(64, 63, 20, 27);
+        ICON_HUNGER = getIcon(198, 96, 28, 29);
+        ICON_STAMINA = getIcon(99, 93, 32, 31);
+        ICON_XP = getIcon(169, 98, 24, 24);
+        ICON_PLAYER = getIcon(67, 92, 28, 32);
+        ICON_COMPASS = getIcon(118, 66, 30, 26);
+        ICON_MAP = getIcon(0, 95, 32, 26);
+        ICON_WORLD = getIcon(133, 93, 32, 32);
+        ICON_CLOCK = getIcon(86, 64, 28, 26);
     }
 
     /**
