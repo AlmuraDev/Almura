@@ -28,6 +28,8 @@ import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -180,11 +182,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
     @Override
     public boolean isFertile(World world, int x, int y, int z) {
-        if (world.getBlock(x, y, z).isFertile(world, x, y - 1, z)) {
-            return true;
-        } else {
-            return false;
-        }
+        return world.getBlock(x, y, z).isFertile(world, x, y - 1, z);
     }
 
     @Override
@@ -226,6 +224,10 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
+        //Almura can run last
+        if (!Loader.instance().hasReachedState(LoaderState.AVAILABLE)) {
+            return;
+        }
         blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
         for (Stage stage : stages.values()) {
             stage.registerBlockIcons(blockIcon, textureName, register);

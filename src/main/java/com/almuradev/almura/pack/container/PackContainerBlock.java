@@ -33,6 +33,8 @@ import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -151,6 +153,10 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
+        //Almura can run last
+        if (!Loader.instance().hasReachedState(LoaderState.AVAILABLE)) {
+            return;
+        }
         blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
         clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinates);
         for (StateProperty prop : containerNode.getValue()) {
