@@ -98,6 +98,11 @@ public class IngameHUD extends AlmuraGui {
 
         // Almura Title
         almuraTitle = new UILabel(this, "");
+        almuraTitle.setText("Almura");
+        almuraTitle.setColor(0xffffffff);
+        almuraTitle.setSize(7, 7);
+        almuraTitle.setFontScale(1.0F);
+        almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
 
         // Hunger Property
         hungerProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_HUNGER, ICON_BAR);
