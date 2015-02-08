@@ -23,6 +23,7 @@ public class Configuration {
     public static boolean DEBUG_RECIPES_MODE;
     //GUI
     public static boolean DISPLAY_ENHANCED_GUI;
+    public static boolean DISPLAY_RESIDENCE_HUD;
     public static boolean DISPLAY_ENHANCED_DEBUG;
     //RENDER DISTANCE WITHIN SIGNS AND CHEST MIXINS
     public static int CHEST_RENDER_DISTANCE;
@@ -55,6 +56,7 @@ public class Configuration {
 
         final ConfigurationNode clientConfigurationNode = reader.getNode("client");
         DISPLAY_ENHANCED_GUI = clientConfigurationNode.getChild("enhanced-gui").getBoolean(true);
+        DISPLAY_RESIDENCE_HUD = clientConfigurationNode.getChild("residence-hud").getBoolean(true);
         DISPLAY_ENHANCED_DEBUG = clientConfigurationNode.getChild("enhanced-debug").getBoolean(true);
         CHEST_RENDER_DISTANCE = clientConfigurationNode.getChild("chest-render-distance").getInt(32);
         SIGN_RENDER_DISTANCE = clientConfigurationNode.getChild("sign-render-distance").getInt(32);
@@ -68,6 +70,11 @@ public class Configuration {
         ConfigurationNode enhanced_gui = reader.getNode("client.enhanced-gui");
         enhanced_gui.setValue(DISPLAY_ENHANCED_GUI);
         reader.setNode(enhanced_gui);
+        
+        // In-Game Residence Hud
+        ConfigurationNode residence_hud = reader.getNode("client.residence-hud");
+        residence_hud.setValue(DISPLAY_RESIDENCE_HUD);
+        reader.setNode(residence_hud);
 
         // In-Game Almura GUI
         ConfigurationNode enhanced_debug = reader.getNode("client.enhanced-debug");
@@ -121,6 +128,10 @@ public class Configuration {
         DISPLAY_ENHANCED_GUI = value;
     }
 
+    public static void toggleResidenceHUD(boolean value) {
+        DISPLAY_RESIDENCE_HUD = value;
+    }
+    
     public static void toggleEnhancedDebug(boolean value) {
         DISPLAY_ENHANCED_DEBUG = value;
     }

@@ -26,10 +26,10 @@ import java.awt.*;
 public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
     private static final ServerData ALMURA_LIVE_SERVER_DATA = new ServerData("Almura", "srv1.almuramc.com");
-    private static final ServerData ALMURA_DEV_SERVER_DATA = new ServerData("Almura (Beta)", "69.4.96.139");
+    private static final ServerData ALMURA_DEV_SERVER_DATA = new ServerData("Almura (Dev)", "69.4.96.139");
     private static final ServerData OBSIDIANBOX_LIVE_SERVER_DATA = new ServerData("ObsidianBox", "obsidianbox.org");
     private UIBackgroundContainer window;
-    private UIButton almuraLiveButton, anotherButton, backButton;
+    private UIButton almuraLiveButton, almuraDevButton, anotherButton, backButton;
     private UIImage logoImage;
     private UILabel buildLabel;
 
@@ -87,9 +87,16 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         almuraLiveButton.setDisabled(false);
         almuraLiveButton.register(this);
         
+        // Create the beta Almura button
+        almuraDevButton = new UIButton(this, "Join " + ChatColor.AQUA + ALMURA_DEV_SERVER_DATA.serverName);
+        almuraDevButton.setPosition(0, getPaddedY(almuraLiveButton, padding), Anchor.CENTER | Anchor.TOP);
+        almuraDevButton.setSize(100, 16);
+        almuraDevButton.setName("button.server.almura.dev");
+        almuraDevButton.register(this);
+        
         // Create the join another server button
         anotherButton = new UIButton(this, "Join another server");
-        anotherButton.setPosition(0, getPaddedY(almuraLiveButton, padding), Anchor.CENTER | Anchor.TOP);
+        anotherButton.setPosition(0, getPaddedY(almuraDevButton, padding), Anchor.CENTER | Anchor.TOP);
         anotherButton.setSize(100, 16);
         anotherButton.setName("button.server.another");
         anotherButton.register(this);
@@ -101,7 +108,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         backButton.setName("button.back");
         backButton.register(this);
 
-        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, almuraLiveButton, anotherButton,
+        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, almuraLiveButton, almuraDevButton, anotherButton,
                    backButton);
 
         // Allow the window to move

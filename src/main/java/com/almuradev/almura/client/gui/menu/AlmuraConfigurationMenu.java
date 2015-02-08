@@ -26,7 +26,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
     private UIBackgroundContainer window, uiTitleBar;
     private UIButton graphicsButton, xButton, cancelButton, saveButton;
-    private UICheckBox almuraGuiCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
+    private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
             debugMappingsCheckBox, debugRecipesCheckBox;
     private UILabel titleLabel, chestRenderDistance, signRenderDistance, itemFrameRenderDistance;
     private AlmuraGui parent;
@@ -74,6 +74,12 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         almuraGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_GUI);
         almuraGuiCheckBox.setName("checkbox.gui.enhanced_gui");
         almuraGuiCheckBox.register(this);
+        
+        residenceHudCheckBox = new UICheckBox(this, ChatColor.WHITE + "Residence HUD");
+        residenceHudCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
+        residenceHudCheckBox.setChecked(Configuration.DISPLAY_RESIDENCE_HUD);
+        residenceHudCheckBox.setName("checkbox.gui.residence_hud");
+        residenceHudCheckBox.register(this);
 
         chestRenderDistance = new UILabel(this, ChatColor.WHITE + "Chest Distance:");
         chestRenderDistance.setPosition(-55, titleLabel.getY() + (padding * 4 + 11), Anchor.RIGHT | Anchor.TOP);
@@ -128,7 +134,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
         // Create the almura GUI checkbox
         almuraDebugGuiCheckBox = new UICheckBox(this, ChatColor.WHITE + "Enhanced F3 Debug Menu");
-        almuraDebugGuiCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
+        almuraDebugGuiCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4 + 15), Anchor.LEFT | Anchor.TOP);
         almuraDebugGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_DEBUG);
         almuraDebugGuiCheckBox.setName("checkbox.gui.enhanced_debug");
         almuraDebugGuiCheckBox.register(this);
@@ -184,7 +190,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         cancelButton.setName("button.cancel");
         cancelButton.register(this);
 
-        window.add(titleLabel, uiTitleBar, signRenderDistance, itemFrameRenderDistance, chestRenderDistance, xButton, almuraGuiCheckBox,
+        window.add(titleLabel, uiTitleBar, signRenderDistance, itemFrameRenderDistance, chestRenderDistance, xButton, almuraGuiCheckBox, residenceHudCheckBox,
                    almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
                    debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton, signDistanceDownMenu,
                    chestDistanceDownMenu, itemFrameDistanceDownMenu);
@@ -226,6 +232,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
             case "button.save":
                 try {
                     Configuration.toggleEnhancedGUI(almuraGuiCheckBox.isChecked());
+                    Configuration.toggleResidenceHUD(residenceHudCheckBox.isChecked());
                     Configuration.toggleEnhancedDebug(almuraDebugGuiCheckBox.isChecked());
                     Configuration.toggleDebugMode(debugModeCheckBox.isChecked());
                     Configuration.toggleDebugLanguageMode(debugLanguagesCheckBox.isChecked());
