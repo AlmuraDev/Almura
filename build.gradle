@@ -59,8 +59,7 @@ archivesBaseName = 'almura'
 // Version information
 ext.minecraftVersion = '1.7.10'
 ext.forgeVersion = '10.13.2.1277'
-ext.almuraVersion = '0.1.0'
-version = minecraftVersion.substring(0, 3) + '-' + forgeVersion.substring(forgeVersion.size() - 4) + '-' + almuraVersion
+version = minecraftVersion + '-' + forgeVersion.substring(forgeVersion.size() - 4)
 
 // Extended project information
 ext.projectName = 'Almura'
@@ -89,17 +88,6 @@ configurations.all {
 processResources {
     // Include in final JAR
     from 'LICENSE.txt'
-
-    // Replace variables
-    from('src/main/resources/mcmod.info') {
-        expand 'modid': projectName.toLowerCase(),
-               'name': projectName,
-               'description': project.ext.description,
-               'version': version,
-               'mcversion': minecraft.version,
-               'url': url,
-               'authorList': organization
-    }
 }
 
 def mixinSrg = "${tasks.reobf.temporaryDir}" + File.separator + 'mixins.srg'
