@@ -26,9 +26,12 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,6 +49,9 @@ public class ClientProxy extends CommonProxy {
     public static final KeyBinding
             BINDING_CONFIG_GUI =
             new AlmuraBinding("key.almura.config", "Config", Keyboard.KEY_F4, "key.categories.almura", "Almura");
+
+    public static final KeyBinding BINDING_OPEN_BACKPACK = new AlmuraBinding("key.almura.backpack", "Backpack", Keyboard.KEY_B, "key.categories.almura", "Almura");
+
     public static IngameDebugHUD HUD_DEBUG;
     public static IngameHUD HUD_INGAME;
     public static IngameResidenceHUD HUD_RESIDENCE;
@@ -58,6 +64,7 @@ public class ClientProxy extends CommonProxy {
         PACK_BLOCK_RENDERER.registerFor(PackCrops.class);
         PACK_BLOCK_RENDERER.registerFor(PackContainerBlock.class);
         ClientRegistry.registerKeyBinding(BINDING_CONFIG_GUI);
+        ClientRegistry.registerKeyBinding(BINDING_OPEN_BACKPACK);
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -81,6 +88,8 @@ public class ClientProxy extends CommonProxy {
     public void onKeyInput(KeyInputEvent event) {
         if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
             IngameDebugHUD.UPDATES_ENABLED = !IngameDebugHUD.UPDATES_ENABLED;
+        } else if (Keyboard.isKeyDown(BINDING_OPEN_BACKPACK.getKeyCode())) {
+            Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C01PacketChatMessage("/backpack"));
         }
     }
 

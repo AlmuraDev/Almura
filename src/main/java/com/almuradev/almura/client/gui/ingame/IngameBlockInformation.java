@@ -41,6 +41,7 @@ public class IngameBlockInformation extends AlmuraGui {
 
     @Override
     protected void setup() {
+        guiscreenBackground = false;
         final UIBackgroundContainer window = new UIBackgroundContainer(this, 175, 150);
         window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         window.setColor(Integer.MIN_VALUE);
