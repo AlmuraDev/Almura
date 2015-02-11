@@ -115,36 +115,6 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     }
 
     @Override
-    public void setBlockBoundsBasedOnState(IBlockAccess access, int x, int y, int z) {
-        if (access != null) {
-            if (modelContainer.isPresent()) {
-                AxisAlignedBB blockBoundsBB = modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1), access,
-                                                                                               x, y, z);
-                final TileEntity te = access.getTileEntity(x, y, z);
-                boolean full = false;
-
-                if (te != null && te instanceof PackContainerTileEntity) {
-                    full = ((PackContainerTileEntity) te).hasEmptySlots();
-                }
-
-                if (full) {
-                    Optional<StateProperty> prop = containerNode.getByIdentifier("full");
-
-                    if (prop.isPresent()) {
-                        final Optional<PackModelContainer> propModelContainer = prop.get().getModelContainer();
-                        if (propModelContainer.isPresent()) {
-                            blockBoundsBB = propModelContainer.get().getPhysics().getBlockBounds(blockBoundsBB, access, x, y, z);
-                        }
-                    }
-                }
-
-                setBlockBounds((float) blockBoundsBB.minX, (float) blockBoundsBB.minY, (float) blockBoundsBB.minZ, (float) blockBoundsBB.maxX,
-                               (float) blockBoundsBB.maxY, (float) blockBoundsBB.maxZ);
-            }
-        }
-    }
-
-    @Override
     @SideOnly(Side.CLIENT)
     public int getRenderType() {
         return renderId;
@@ -338,7 +308,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
         AxisAlignedBB collisionBoundingBox = super.getCollisionBoundingBoxFromPool(world, x, y, z);
 
         if (modelContainer.isPresent()) {
-            collisionBoundingBox = modelContainer.get().getPhysics().getCollisionBoundingBoxFromPool(collisionBoundingBox, world, x, y, z);
+            collisionBoundingBox = modelContainer.get().getPhysics().getCollision(collisionBoundingBox, world, x, y, z);
             final TileEntity te = world.getTileEntity(x, y, z);
             if (te != null && te instanceof PackContainerTileEntity) {
                 boolean full = ((PackContainerTileEntity) te).hasEmptySlots();
@@ -349,7 +319,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
                         final Optional<PackModelContainer> propModelContainer = prop.get().getModelContainer();
                         if (propModelContainer.isPresent()) {
                             collisionBoundingBox =
-                                    propModelContainer.get().getPhysics().getCollisionBoundingBoxFromPool(collisionBoundingBox, world, x,
+                                    propModelContainer.get().getPhysics().getCollision(collisionBoundingBox, world, x,
                                                                                                           y, z);
                         }
                     }
@@ -366,7 +336,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
         AxisAlignedBB wireframeBoundingBox = super.getCollisionBoundingBoxFromPool(world, x, y, z);
 
         if (modelContainer.isPresent()) {
-            wireframeBoundingBox = modelContainer.get().getPhysics().getSelectedBoundingBox(wireframeBoundingBox, world, x, y, z);
+            wireframeBoundingBox = modelContainer.get().getPhysics().getWireframe(wireframeBoundingBox, world, x, y, z);
             final TileEntity te = world.getTileEntity(x, y, z);
             if (te != null && te instanceof PackContainerTileEntity) {
                 boolean full = ((PackContainerTileEntity) te).hasEmptySlots();
@@ -376,7 +346,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
                     if (prop.isPresent()) {
                         final Optional<PackModelContainer> propModelContainer = prop.get().getModelContainer();
                         if (propModelContainer.isPresent()) {
-                            wireframeBoundingBox = propModelContainer.get().getPhysics().getSelectedBoundingBox(wireframeBoundingBox, world, x, y, z);
+                            wireframeBoundingBox = propModelContainer.get().getPhysics().getWireframe(wireframeBoundingBox, world, x, y, z);
                         }
                     }
                 }

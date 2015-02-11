@@ -15,66 +15,38 @@ import java.util.List;
 
 public final class PackPhysics {
 
-    private final boolean useVanillaCollision, useVanillaWireframe, useVanillaBlockBounds;
-    private final List<Double> collisionCoordinates, wireframeCoordinates, blockBoundsCoordinates;
+    private final boolean enableCollision, enableWireframe;
+    private final AxisAlignedBB collisionBB, wireframeBB;
 
-    public PackPhysics(boolean useVanillaCollision, boolean useVanillaWireframe, boolean useVanillaBlockBounds, List<Double> collisionCoordinates,
-                       List<Double> wireframeCoordinates, List<Double> blockBoundsCoordinates) {
-        this.useVanillaCollision = useVanillaCollision;
-        this.useVanillaWireframe = useVanillaWireframe;
-        this.useVanillaBlockBounds = useVanillaBlockBounds;
-        this.collisionCoordinates = collisionCoordinates;
-        this.wireframeCoordinates = wireframeCoordinates;
-        this.blockBoundsCoordinates = blockBoundsCoordinates;
+    public PackPhysics(boolean enableCollision, boolean enableWireframe, AxisAlignedBB collisionBB, AxisAlignedBB wireframeBB) {
+        this.enableCollision = enableCollision;
+        this.enableWireframe = enableWireframe;
+        this.collisionBB = collisionBB;
+        this.wireframeBB = wireframeBB;
     }
 
     public boolean useVanillaCollision() {
-        return useVanillaCollision;
+        return enableCollision;
     }
 
     public boolean useVanillaWireframe() {
-        return useVanillaWireframe;
+        return enableWireframe;
     }
 
-    public boolean useVanillaBlockBounds() {
-        return useVanillaBlockBounds;
-    }
-
-    public List<Double> getCollisionCoordinates() {
-        return collisionCoordinates;
-    }
-
-    public List<Double> getWireframeCoordinates() {
-        return wireframeCoordinates;
-    }
-
-    public List<Double> getBlockBoundsCoordinates() {
-        return blockBoundsCoordinates;
-    }
-
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(AxisAlignedBB fallback, World world, int x, int y, int z) {
-        if (useVanillaCollision || collisionCoordinates.size() != 6) {
+    public AxisAlignedBB getCollision(AxisAlignedBB fallback, World world, int x, int y, int z) {
+        if (enableCollision || collisionBB == null) {
             return fallback;
         }
-        return AxisAlignedBB.getBoundingBox(x + collisionCoordinates.get(0), y + collisionCoordinates.get(1), z + collisionCoordinates.get(2),
-                                            x + collisionCoordinates.get(3), y + collisionCoordinates.get(4), z + collisionCoordinates.get(5));
+        return AxisAlignedBB.getBoundingBox(x + collisionBB.minX, y + collisionBB.minY, z + collisionBB.minZ,
+                                            x + collisionBB.maxX, y + collisionBB.maxY, z + collisionBB.maxZ);
     }
 
     @SideOnly(Side.CLIENT)
-    public AxisAlignedBB getSelectedBoundingBox(AxisAlignedBB fallback, World world, int x, int y, int z) {
-        if (useVanillaWireframe || wireframeCoordinates.size() != 6) {
+    public AxisAlignedBB getWireframe(AxisAlignedBB fallback, World world, int x, int y, int z) {
+        if (enableWireframe || wireframeBB == null) {
             return fallback;
         }
-        return AxisAlignedBB.getBoundingBox(x + wireframeCoordinates.get(0), y + wireframeCoordinates.get(1), z + wireframeCoordinates.get(2),
-                                            x + wireframeCoordinates.get(3), y + wireframeCoordinates.get(4), z + wireframeCoordinates.get(5));
-    }
-
-    public AxisAlignedBB getBlockBounds(AxisAlignedBB fallback, IBlockAccess access, int x, int y, int z) {
-        if (useVanillaBlockBounds || blockBoundsCoordinates.size() != 6) {
-            return fallback;
-        }
-
-        return AxisAlignedBB.getBoundingBox(blockBoundsCoordinates.get(0), blockBoundsCoordinates.get(1), blockBoundsCoordinates.get(2),
-                                            blockBoundsCoordinates.get(3), blockBoundsCoordinates.get(4), blockBoundsCoordinates.get(5));
+        return AxisAlignedBB.getBoundingBox(x + wireframeBB.minX, y + wireframeBB.minY, z + wireframeBB.minZ,
+                                            x + wireframeBB.maxX, y + wireframeBB.maxY, z + wireframeBB.maxZ);
     }
 }

@@ -186,25 +186,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     }
 
     @Override
-    public void setBlockBoundsBasedOnState(IBlockAccess access, int x, int y, int z) {
-        if (access != null) {
-            final int metadata = access.getBlockMetadata(x, y, z);
-            final Stage stage = stages.get(metadata);
-            if (stage != null) {
-                final Optional<PackModelContainer> modelContainer = stage.getModelContainer();
-                if (modelContainer.isPresent()) {
-                    final AxisAlignedBB
-                            blockBoundsBB =
-                            modelContainer.get().getPhysics().getBlockBounds(AxisAlignedBB.getBoundingBox(0.5, 0, 0, 1, 0.25, 1),
-                                                                             access, x, y, z);
-                    setBlockBounds((float) blockBoundsBB.minX, (float) blockBoundsBB.minY, (float) blockBoundsBB.minZ, (float) blockBoundsBB.maxX,
-                                   (float) blockBoundsBB.maxY, (float) blockBoundsBB.maxZ);
-                }
-            }
-        }
-    }
-
-    @Override
     public int getRenderType() {
         return renderId;
     }
@@ -341,7 +322,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         if (stage != null) {
             final Optional<PackModelContainer> modelContainer = stage.getModelContainer(world, x, y, z, metadata);
             if (modelContainer.isPresent()) {
-                return modelContainer.get().getPhysics().getCollisionBoundingBoxFromPool(vanillaBB, world, x, y, z);
+                return modelContainer.get().getPhysics().getCollision(vanillaBB, world, x, y, z);
             }
         }
 
@@ -357,7 +338,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         if (stage != null) {
             final Optional<PackModelContainer> modelContainer = stage.getModelContainer(world, x, y, z, metadata);
             if (modelContainer.isPresent()) {
-                return modelContainer.get().getPhysics().getSelectedBoundingBox(vanillaBB, world, x, y, z);
+                return modelContainer.get().getPhysics().getWireframe(vanillaBB, world, x, y, z);
             }
         }
 
