@@ -9,7 +9,9 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import com.almuradev.almura.util.Query;
 import com.google.common.eventbus.Subscribe;
+
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -31,8 +33,10 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
     private UIBackgroundContainer window;
     private UIButton almuraLiveButton, almuraDevButton, anotherButton, backButton;
     private UIImage logoImage;
-    private UILabel buildLabel;
-
+    private UILabel buildLabel, liveServerTitle, liveServerOnline, devServerTitle, devServerOnline;
+    private Query liveServerQuery, devServerQuery = null;
+    private int padding = 4;
+    
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
 
@@ -77,38 +81,46 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
         buildLabel.setFontScale(0.65f);
 
-        final int padding = 4;
+
 
         // Create the live Almura button
-        almuraLiveButton = new UIButton(this, "Join " + ChatColor.GOLD + ALMURA_LIVE_SERVER_DATA.serverName);
-        almuraLiveButton.setPosition(0, getPaddedY(logoImage, padding * 3), Anchor.CENTER | Anchor.TOP);
-        almuraLiveButton.setSize(100, 16);
+        almuraLiveButton = new UIButton(this, "Join ");
+        almuraLiveButton.setPosition(-15, getPaddedY(logoImage, padding) + 10, Anchor.RIGHT | Anchor.TOP);
+        almuraLiveButton.setSize(40, 16);
         almuraLiveButton.setName("button.server.almura.live");
         almuraLiveButton.setDisabled(false);
         almuraLiveButton.register(this);
         
+        liveServerTitle = new UILabel(this, ChatColor.WHITE + "Public Server : ");
+        liveServerTitle.setPosition(20, getPaddedY(logoImage, padding) + 14, Anchor.LEFT | Anchor.TOP);
+
+        devServerTitle = new UILabel(this, ChatColor.WHITE + "Dev Server : ");
+        devServerTitle.setPosition(26, getPaddedY(almuraLiveButton, padding) + 8, Anchor.LEFT | Anchor.TOP);
+        
         // Create the beta Almura button
-        almuraDevButton = new UIButton(this, "Join " + ChatColor.AQUA + ALMURA_DEV_SERVER_DATA.serverName);
-        almuraDevButton.setPosition(0, getPaddedY(almuraLiveButton, padding), Anchor.CENTER | Anchor.TOP);
-        almuraDevButton.setSize(100, 16);
+        almuraDevButton = new UIButton(this, "Join ");
+        almuraDevButton.setPosition(-15, getPaddedY(almuraLiveButton, padding) + 5, Anchor.RIGHT | Anchor.TOP);
+        almuraDevButton.setSize(40, 16);
         almuraDevButton.setName("button.server.almura.dev");
         almuraDevButton.register(this);
         
         // Create the join another server button
         anotherButton = new UIButton(this, "Join another server");
-        anotherButton.setPosition(0, getPaddedY(almuraDevButton, padding), Anchor.CENTER | Anchor.TOP);
+        anotherButton.setPosition(0, getPaddedY(almuraDevButton, padding) + 15, Anchor.CENTER | Anchor.TOP);
         anotherButton.setSize(100, 16);
         anotherButton.setName("button.server.another");
         anotherButton.register(this);
 
         // Create the back button
         backButton = new UIButton(this, "Back");
-        backButton.setPosition(0, -padding, Anchor.CENTER | Anchor.BOTTOM);
+        backButton.setPosition(0, -10, Anchor.CENTER | Anchor.BOTTOM);
         backButton.setSize(50, 16);
         backButton.setName("button.back");
         backButton.register(this);
 
-        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, almuraLiveButton, almuraDevButton, anotherButton,
+        queryServers();
+
+        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle, devServerOnline, almuraDevButton, anotherButton,
                    backButton);
 
         // Allow the window to move
@@ -137,6 +149,48 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
                 break;
             case "button.back":
                 close();
+        }
+    }
+
+    public void queryServers() {
+        try {
+            // Live Server
+            liveServerQuery = new Query("srv1.almuramc.com", 25565);
+            if (liveServerQuery.pingServer()) {
+                liveServerQuery.sendQuery();
+                if (liveServerQuery.getPlayers() == null || liveServerQuery.getMaxPlayers() == null) {
+                    liveServerOnline = new UILabel(this, ChatColor.YELLOW + "Restarting...");
+                } else {
+                    liveServerOnline = new UILabel(this, ChatColor.GREEN + "Online " + ChatColor.BLUE + "(" + liveServerQuery.getPlayers() + "/" + liveServerQuery.getMaxPlayers() + ")");
+                }
+                almuraLiveButton.setDisabled(false);
+            } else {
+                liveServerOnline = new UILabel(this, ChatColor.RED + "Offline");
+                almuraLiveButton.setDisabled(true);
+            }
+            liveServerOnline.setPosition(85, liveServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
+            
+            // Dev Server
+            devServerQuery = new Query("69.4.96.139", 25565);
+            if (devServerQuery.pingServer()) {
+                devServerQuery.sendQuery();
+                if (devServerQuery.getPlayers() == null || devServerQuery.getMaxPlayers() == null) {
+                    devServerOnline = new UILabel(this, ChatColor.YELLOW + "Restarting...");
+                } else {
+                    devServerOnline = new UILabel(this, ChatColor.GREEN + "Online " + ChatColor.BLUE + "(" + devServerQuery.getPlayers() + "/" + devServerQuery.getMaxPlayers() + ")");
+                }
+                almuraDevButton.setDisabled(false);
+            } else {
+                devServerOnline = new UILabel(this, ChatColor.RED + "Offline");
+                almuraDevButton.setDisabled(true);
+            }
+            devServerOnline.setPosition(85, devServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
+
+        } catch (Exception e) {
+             // System.out.println("Exception: " + e);
+        } finally {
+           // Maybe do something eventually.
+           
         }
     }
 }
