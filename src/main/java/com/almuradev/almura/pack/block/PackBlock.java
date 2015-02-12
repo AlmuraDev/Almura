@@ -126,6 +126,24 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
 
     @Override
     @SideOnly(Side.CLIENT)
+    public IIcon getIcon(int side, int type) {
+        if (PackUtil.isEmptyClip(clippedIcons)) {
+            return super.getIcon(side, type);
+        }
+        ClippedIcon sideIcon;
+        if (side >= clippedIcons.length) {
+            sideIcon = clippedIcons[0];
+        } else {
+            sideIcon = clippedIcons[side];
+            if (sideIcon == null) {
+                sideIcon = clippedIcons[0];
+            }
+        }
+        return sideIcon;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
     public boolean renderAsNormalBlock() {
         return modelContainer == null && renderNode.getValue();
     }
@@ -299,11 +317,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public String getTextureName() {
         return textureName;
-    }
-    
-    @Override
-    public String getPackName() {
-        return pack.getName();
     }
 
     @Override

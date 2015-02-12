@@ -107,11 +107,6 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockMo
     public String getTextureName() {
         return block.getTextureName();
     }
-    
-    @Override
-    public String getPackName() {
-        return getPack().getName();
-    }
 
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIcon blockIcon, String textureName, IIconRegister register) {

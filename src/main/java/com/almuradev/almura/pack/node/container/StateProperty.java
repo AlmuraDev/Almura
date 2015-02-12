@@ -110,9 +110,4 @@ public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockCli
     public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
         return clippedIcons;
     }
-
-    @Override
-    public String getPackName() {
-        return getPack().getName();
-    }
 }

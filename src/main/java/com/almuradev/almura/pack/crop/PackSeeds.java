@@ -156,11 +156,6 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     public String getTextureName() {
         return textureName;
     }
-    
-    @Override
-    public String getPackName() {
-        return pack.getName();
-    }
 
     @Override
     @SuppressWarnings("unchecked")

@@ -161,11 +161,6 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     public String getTextureName() {
         return textureName;
     }
-    
-    @Override
-    public String getPackName() {
-        return pack.getName();
-    }
 
     @Override
     @SuppressWarnings("unchecked")

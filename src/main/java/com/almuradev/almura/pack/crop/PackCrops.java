@@ -398,11 +398,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     public String getTextureName() {
         return textureName;
     }
-    
-    @Override
-    public String getPackName() {
-        return pack.getName();
-    }
 
     @Override
     @SuppressWarnings("unchecked")
