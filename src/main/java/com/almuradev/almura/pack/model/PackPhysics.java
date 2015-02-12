@@ -37,23 +37,29 @@ public final class PackPhysics {
         if (!enableCollision || collisionBB == null) {
             return fallback;
         }
-        AxisAlignedBB def = AxisAlignedBB.getBoundingBox(x + collisionBB.minX, y + collisionBB.minY, z + collisionBB.minZ,
-                                                               x + collisionBB.maxX, y + collisionBB.maxY, z + collisionBB.maxZ);
+        AxisAlignedBB def = collisionBB.copy();
         final int metadata = world.getBlockMetadata(x, y, z);
 
-        if (metadata != 0 && metadata <= 3) {
-            def = def.copy();
-
+        if (metadata <= 3) {
             def.offset(-0.5, -0.5, -0.5);
             switch (metadata) {
-                case 1 : def = AxisAlignedBB.getBoundingBox(def.minZ, def.minY, def.maxX * -1, def.maxZ, def.maxY, def.minX * -1);
-                case 3 : def = AxisAlignedBB.getBoundingBox(def.maxX * -1, def.minY, def.maxZ * -1, def.minX * -1, def.maxY, def.minZ * -1);
-                case 2 : def = AxisAlignedBB.getBoundingBox(def.maxZ * -1, def.minY, def.minX, def.minZ * -1, def.maxY, def.maxX);
+                // East
+                case 3:
+                    def = AxisAlignedBB.getBoundingBox(def.minZ, def.minY, def.maxX * -1, def.maxZ, def.maxY, def.minX * -1);
+                    break;
+                // West
+                case 2:
+                    def = AxisAlignedBB.getBoundingBox(def.maxZ * -1, def.minY, def.maxX * -1, def.minZ * -1, def.maxY, def.minX * -1);
+                    break;
+                // North
+                case 0:
+                    def = AxisAlignedBB.getBoundingBox(def.minX, def.minY, def.maxZ * -1, def.maxX, def.maxY, def.minZ * -1);
+                    break;
             }
             def.offset(0.5, 0.5, 0.5);
         }
 
-        return def;
+        return AxisAlignedBB.getBoundingBox(x + def.minX, y + def.minY, z + def.minZ, x + def.maxX, y + def.maxY, z + def.maxZ);
     }
 
     @SideOnly(Side.CLIENT)
