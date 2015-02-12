@@ -9,6 +9,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
+import com.almuradev.almura.pack.IItemBlockInformation;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
@@ -70,7 +71,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackContainerBlock extends BlockContainer implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer {
+public class PackContainerBlock extends BlockContainer implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer,
+                                                                  IItemBlockInformation {
 
     public static int renderId;
     private final Pack pack;
@@ -79,6 +81,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     private final String modelName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String textureName;
+    private final List<String> tooltip;
     private final RenderNode renderNode;
     private final RotationNode rotationNode;
     private final ContainerNode containerNode;
@@ -87,7 +90,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     private BreakNode breakNode;
     private CollisionNode collisionNode;
 
-    public PackContainerBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String modelName,
+    public PackContainerBlock(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates, String modelName,
                               PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
                               RotationNode rotationNode, LightNode lightNode, RenderNode renderNode, ContainerNode containerNode) {
         super(Material.ground);
@@ -99,6 +102,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
         this.renderNode = renderNode;
         this.rotationNode = rotationNode;
         this.containerNode = containerNode;
+        this.tooltip = tooltip;
         setModelContainer(modelContainer);
         addNode(rotationNode);
         addNode(lightNode);
@@ -124,7 +128,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
-        //Almura can run last
+        // Almura can run last
         if (!Loader.instance().hasReachedState(LoaderState.AVAILABLE)) {
             return;
         }
@@ -145,27 +149,6 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
             }
         }
         return true;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getIcon(int side, int type) {
-        if (PackUtil.isEmptyClip(clippedIcons)) {
-            return super.getIcon(side, type);
-        }
-        ClippedIcon sideIcon;
-
-        if (side >= clippedIcons.length) {
-            sideIcon = clippedIcons[0];
-        } else {
-            sideIcon = clippedIcons[side];
-
-            if (sideIcon == null) {
-                sideIcon = clippedIcons[0];
-            }
-        }
-
-        return sideIcon;
     }
 
     @Override
@@ -317,17 +300,20 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
             collisionBoundingBox = modelContainer.get().getPhysics().getCollision(collisionBoundingBox, world, x, y, z);
             final TileEntity te = world.getTileEntity(x, y, z);
             if (te != null && te instanceof PackContainerTileEntity) {
-                boolean full = ((PackContainerTileEntity) te).hasEmptySlots();
-                if (full) {
-                    Optional<StateProperty> prop = containerNode.getByIdentifier("full");
+                Optional<StateProperty> property = null;
 
-                    if (prop.isPresent()) {
-                        final Optional<PackModelContainer> propModelContainer = prop.get().getModelContainer();
-                        if (propModelContainer.isPresent()) {
-                            collisionBoundingBox =
-                                    propModelContainer.get().getPhysics().getCollision(collisionBoundingBox, world, x,
-                                                                                                          y, z);
-                        }
+                if (((PackContainerTileEntity) te).isFull()) {
+                    property = containerNode.getByIdentifier("full");
+                } else if (!((PackContainerTileEntity) te).isEmpty()) {
+                    property = containerNode.getByIdentifier("has-contents");
+                }
+
+                if (property != null && property.isPresent()) {
+                    final Optional<PackModelContainer> propModelContainer = property.get().getModelContainer();
+                    if (propModelContainer.isPresent()) {
+                        collisionBoundingBox =
+                                propModelContainer.get().getPhysics().getCollision(collisionBoundingBox, world, x,
+                                                                                   y, z);
                     }
                 }
             }
@@ -339,21 +325,26 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     @SideOnly(Side.CLIENT)
     @Override
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
-        AxisAlignedBB wireframeBoundingBox = super.getCollisionBoundingBoxFromPool(world, x, y, z);
+        AxisAlignedBB wireframeBoundingBox = super.getSelectedBoundingBoxFromPool(world, x, y, z);
 
         if (modelContainer.isPresent()) {
             wireframeBoundingBox = modelContainer.get().getPhysics().getWireframe(wireframeBoundingBox, world, x, y, z);
             final TileEntity te = world.getTileEntity(x, y, z);
             if (te != null && te instanceof PackContainerTileEntity) {
-                boolean full = ((PackContainerTileEntity) te).hasEmptySlots();
-                if (full) {
-                    Optional<StateProperty> prop = containerNode.getByIdentifier("full");
+                Optional<StateProperty> property = null;
 
-                    if (prop.isPresent()) {
-                        final Optional<PackModelContainer> propModelContainer = prop.get().getModelContainer();
-                        if (propModelContainer.isPresent()) {
-                            wireframeBoundingBox = propModelContainer.get().getPhysics().getWireframe(wireframeBoundingBox, world, x, y, z);
-                        }
+                if (((PackContainerTileEntity) te).isFull()) {
+                    property = containerNode.getByIdentifier("full");
+                } else if (!((PackContainerTileEntity) te).isEmpty()) {
+                    property = containerNode.getByIdentifier("has-contents");
+                }
+
+                if (property != null && property.isPresent()) {
+                    final Optional<PackModelContainer> propModelContainer = property.get().getModelContainer();
+                    if (propModelContainer.isPresent()) {
+                        wireframeBoundingBox =
+                                propModelContainer.get().getPhysics().getWireframe(wireframeBoundingBox, world, x,
+                                                                                   y, z);
                     }
                 }
             }
@@ -401,11 +392,16 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
             if (containerNode != null) {
                 final TileEntity te = access.getTileEntity(x, y, z);
                 if (te != null && te instanceof PackContainerTileEntity) {
-                    if (!((PackContainerTileEntity) te).hasEmptySlots()) {
-                        final Optional<StateProperty> property = containerNode.getByIdentifier("full");
-                        if (property.isPresent()) {
-                            return property.get().getClipIcons(access, x, y, z, metadata);
-                        }
+                    Optional<StateProperty> property = null;
+
+                    if (((PackContainerTileEntity) te).isFull()) {
+                        property = containerNode.getByIdentifier("full");
+                    } else if (!((PackContainerTileEntity) te).isEmpty()) {
+                        property = containerNode.getByIdentifier("has-contents");
+                    }
+
+                    if (property != null && property.isPresent()) {
+                        return property.get().getClipIcons(access, x, y, z, metadata);
                     }
                 }
             }
@@ -416,12 +412,19 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     @Override
     public Optional<PackModelContainer> getModelContainer(IBlockAccess access, int x, int y, int z, int metadata) {
         if (access != null) {
-            final TileEntity te = access.getTileEntity(x, y, z);
-            if (te != null && te instanceof PackContainerTileEntity) {
-                if (!((PackContainerTileEntity) te).hasEmptySlots()) {
-                    final Optional<StateProperty> state = containerNode.getByIdentifier("full");
-                    if (state.isPresent()) {
-                        return state.get().getModelContainer();
+            if (containerNode != null) {
+                final TileEntity te = access.getTileEntity(x, y, z);
+                if (te != null && te instanceof PackContainerTileEntity) {
+                    Optional<StateProperty> property = null;
+
+                    if (((PackContainerTileEntity) te).isFull()) {
+                        property = containerNode.getByIdentifier("full");
+                    } else if (!((PackContainerTileEntity) te).isEmpty()) {
+                        property = containerNode.getByIdentifier("has-contents");
+                    }
+
+                    if (property != null && property.isPresent()) {
+                        return property.get().getModelContainer(access, x, y, z, metadata);
                     }
                 }
             }
@@ -516,5 +519,10 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     @Override
     public String toString() {
         return "PackContainerBlock {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
+    }
+
+    @Override
+    public List<String> getTooltip() {
+        return tooltip;
     }
 }

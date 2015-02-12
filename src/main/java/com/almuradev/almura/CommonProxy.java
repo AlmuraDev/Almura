@@ -8,6 +8,7 @@ package com.almuradev.almura;
 import com.almuradev.almura.items.Items;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
+import com.almuradev.almura.pack.IItemBlockInformation;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
@@ -18,6 +19,7 @@ import com.almuradev.almura.pack.container.PackContainerTileEntity;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
+import com.almuradev.almura.pack.item.PackItemBlock;
 import com.almuradev.almura.pack.mapper.EntityMapper;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.node.SoilNode;
@@ -131,7 +133,11 @@ public class CommonProxy {
         //Stage 1a -> Register blocks
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject) {
-                GameRegistry.registerBlock(block, ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
+                if (block instanceof IItemBlockInformation) {
+                    GameRegistry.registerBlock(block, PackItemBlock.class, ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
+                } else {
+                    GameRegistry.registerBlock(block, ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
+                }
             }
         }
 

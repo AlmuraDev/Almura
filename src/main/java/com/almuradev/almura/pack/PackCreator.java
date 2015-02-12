@@ -132,26 +132,6 @@ public class PackCreator {
             }
         }
 
-        final boolean
-                useCustomBlockBounds =
-                boundsConfigurationNode.getChild(PackKeys.USE_CUSTOM_BLOCK_BOUNDS.getKey()).getBoolean(PackKeys.USE_CUSTOM_BLOCK_BOUNDS.getDefaultValue());
-        List<Double> blockBoundsCoordinates = Lists.newLinkedList();
-
-        try {
-            blockBoundsCoordinates = PackUtil.parseStringToNumericList(Double.class, boundsConfigurationNode.getChild(PackKeys.BLOCK_BOX.getKey())
-                    .getString(PackKeys.BLOCK_BOX.getDefaultValue()), 6);
-        } catch (NumberFormatException e) {
-            if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
-                Almura.LOGGER
-                        .error("Model [" + name + "] has invalid " + PackKeys.BLOCK_BOX.getKey().toLowerCase() + " coordinates. "
-                               + e.getMessage(), e);
-            } else {
-                Almura.LOGGER
-                        .warn("Model [" + name + "] has invalid " + PackKeys.BLOCK_BOX.getKey().toLowerCase() + " coordinates. "
-                              + e.getMessage());
-            }
-        }
-
         AxisAlignedBB collisionBox = null;
         if (collisionCoordinates.size() == 6) {
             collisionBox = AxisAlignedBB.getBoundingBox(collisionCoordinates.get(0), collisionCoordinates.get(1), collisionCoordinates.get(2), collisionCoordinates.get(3), collisionCoordinates.get(4), collisionCoordinates.get(5));
@@ -230,7 +210,13 @@ public class PackCreator {
     }
 
     public static PackBlock createBlockFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
-        final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
+        final List<String> description = PackUtil.parseNewlineStringIntoList(
+                reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
+        final List<String> tooltip = Lists.newLinkedList();
+        if (description.size() > 1) {
+            tooltip.addAll(description);
+            tooltip.remove(0);
+        }
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
         final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         PackModelContainer modelContainer = null;
@@ -263,11 +249,11 @@ public class PackCreator {
         final RotationNode rotationNode = createRotationNode(pack, name, reader.getNode(PackKeys.NODE_ROTATE.getKey()));
         final LightNode lightNode = createLightNode(pack, name, reader.getNode(PackKeys.NODE_LIGHT.getKey()));
         final RenderNode renderNode = createRenderNode(pack, name, reader.getNode(PackKeys.NODE_RENDER.getKey()));
-        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", description.get(0));
 
         final PackBlock
                 block =
-                new PackBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
+                new PackBlock(pack, name, tooltip, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance, showInCreativeTab,
                               creativeTabName,
                               rotationNode, lightNode, renderNode);
 
@@ -495,7 +481,13 @@ public class PackCreator {
     }
 
     public static PackContainerBlock createContainerBlock(Pack pack, String name, YamlConfiguration reader) {
-        final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
+        final List<String> description = PackUtil.parseNewlineStringIntoList(
+                reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
+        final List<String> tooltip = Lists.newLinkedList();
+        if (description.size() > 1) {
+            tooltip.addAll(description);
+            tooltip.remove(0);
+        }
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
         final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         PackModelContainer modelContainer = null;
@@ -529,11 +521,11 @@ public class PackCreator {
         final LightNode lightNode = createLightNode(pack, name, reader.getNode(PackKeys.NODE_LIGHT.getKey()));
         final RenderNode renderNode = createRenderNode(pack, name, reader.getNode(PackKeys.NODE_RENDER.getKey()));
         final ContainerNode containerNode = createContainerNode(pack, name, reader.getNode(PackKeys.NODE_CONTAINER.getKey()));
-        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", description.get(0));
 
         final PackContainerBlock
                 container =
-                new PackContainerBlock(pack, name, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance,
+                new PackContainerBlock(pack, name, tooltip, textureName, textureCoordinates, modelName, modelContainer, hardness, resistance,
                                        showInCreativeTab,
                                        creativeTabName, rotationNode, lightNode, renderNode, containerNode);
 
@@ -568,7 +560,7 @@ public class PackCreator {
         final Set<StateProperty> states = Sets.newHashSet();
         final ConfigurationNode statesConfigurationNode = node.getNode(PackKeys.STATE.getKey());
         for (String rawState : statesConfigurationNode.getKeys(false)) {
-            if ("FULL".equalsIgnoreCase(rawState.toUpperCase())) {
+            if ("HAS-CONTENTS".equalsIgnoreCase(rawState.toUpperCase()) || "FULL".equalsIgnoreCase(rawState.toUpperCase())) {
                 final ConfigurationNode stateConfigurationNode = statesConfigurationNode.getNode(rawState);
                 final boolean enabled = stateConfigurationNode.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
                 final String
@@ -584,7 +576,7 @@ public class PackCreator {
                     }
                 }
                 if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
-                    Almura.LOGGER.warn("Model [" + modelName + "] for state [FULL] in [" + name + "] in pack [" + pack.getName()
+                    Almura.LOGGER.warn("Model [" + modelName + "] for state [" + rawState.toUpperCase() + "] in [" + name + "] in pack [" + pack.getName()
                                        + "] was not found. Will render as a basic cube.");
                 }
                 Map<Integer, List<Integer>> textureCoordinates;
@@ -593,7 +585,7 @@ public class PackCreator {
                             PackKeys.TEXTURE_COORDINATES.getKey(), true).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
                 } catch (NumberFormatException nfe) {
                     if (node.hasChild(PackKeys.TEXTURE_COORDINATES.getKey())) {
-                        Almura.LOGGER.warn("Failed parsing texture coordinates for state [FULL] in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+                        Almura.LOGGER.warn("Failed parsing texture coordinates for state [" + rawState.toUpperCase() + "] in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
                     }
                     textureCoordinates = Maps.newHashMap();
                 }

@@ -9,6 +9,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
+import com.almuradev.almura.pack.IItemBlockInformation;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
@@ -62,7 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer {
+public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer, IItemBlockInformation {
 
     public static int renderId;
     private final Pack pack;
@@ -73,12 +74,13 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private final String textureName;
     private ClippedIcon[] clippedIcons;
     private Optional<PackModelContainer> modelContainer;
+    private final List<String> tooltip;
     private RenderNode renderNode;
     private RotationNode rotationNode;
     private BreakNode breakNode;
     private CollisionNode collisionNode;
 
-    public PackBlock(Pack pack, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates, String modelName,
+    public PackBlock(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates, String modelName,
                      PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
                      RotationNode rotationNode, LightNode lightNode, RenderNode renderNode) {
         super(Material.ground);
@@ -89,6 +91,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         this.modelName = modelName;
         this.renderNode = addNode(renderNode);
         this.rotationNode = addNode(rotationNode);
+        this.tooltip = tooltip;
         setModelContainer(modelContainer);
         addNode(rotationNode);
         addNode(lightNode);
@@ -119,27 +122,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         }
         blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
         clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinates);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getIcon(int side, int type) {
-        if (PackUtil.isEmptyClip(clippedIcons)) {
-            return super.getIcon(side, type);
-        }
-        ClippedIcon sideIcon;
-
-        if (side >= clippedIcons.length) {
-            sideIcon = clippedIcons[0];
-        } else {
-            sideIcon = clippedIcons[side];
-
-            if (sideIcon == null) {
-                sideIcon = clippedIcons[0];
-            }
-        }
-
-        return sideIcon;
     }
 
     @Override
@@ -358,5 +340,10 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public String toString() {
         return "PackBlock {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
+    }
+
+    @Override
+    public List<String> getTooltip() {
+        return tooltip;
     }
 }
