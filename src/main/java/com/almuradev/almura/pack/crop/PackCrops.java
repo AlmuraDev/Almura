@@ -145,7 +145,9 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
                                 final BonemealEvent event = new BonemealEvent(player, world, this, x, y, z);
 
                                 if (MinecraftForge.EVENT_BUS.post(event)) {
-                                    --heldStack.stackSize;
+                                    if (!player.capabilities.isCreativeMode) {
+                                        --heldStack.stackSize;
+                                    }
 
                                     stage.onGrown(world, x, y, z, RangeProperty.RANDOM);
                                     final Stage newStage = stages.get(metadata + 1);
