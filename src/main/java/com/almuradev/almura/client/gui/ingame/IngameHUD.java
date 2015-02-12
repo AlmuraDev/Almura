@@ -8,7 +8,7 @@ package com.almuradev.almura.client.gui.ingame;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
-import com.almuradev.almura.client.gui.UIPropertyBar;
+import com.almuradev.almura.client.gui.components.UIPropertyBar;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.*;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;

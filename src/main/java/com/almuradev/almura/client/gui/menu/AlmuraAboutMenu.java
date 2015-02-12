@@ -8,12 +8,10 @@ package com.almuradev.almura.client.gui.menu;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import com.almuradev.almura.client.gui.components.UIForm;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.control.UIMoveHandle;
-import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 
@@ -21,9 +19,8 @@ import java.awt.*;
 
 public class AlmuraAboutMenu extends AlmuraBackgroundGui {
 
-    private UIBackgroundContainer window, uiTitleBar;
-    private UIButton modsButton, xButton, closeButton;
-    private UILabel titleLabel;
+    private UIForm form;
+    private UIButton modsButton, closeButton;
     private UITextField aboutUsLabel;
 
     /**
@@ -33,33 +30,14 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
      */
     public AlmuraAboutMenu(AlmuraGui parent) {
         super(parent);
+        setup();
     }
 
     @Override
     protected void setup() {
-        // Create the window container
-        window = new UIBackgroundContainer(this);
-        window.setSize(300, 225);
-        window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        window.setColor(Integer.MIN_VALUE);
-        window.setBackgroundAlpha(125);
-
-        final int padding = 4;
-
-        // Create the title & Window layout 
-        titleLabel = new UILabel(this, ChatColor.WHITE + "About Almura 2.0");
-        titleLabel.setPosition(0, padding + 1, Anchor.CENTER | Anchor.TOP);
-
-        uiTitleBar = new UIBackgroundContainer(this);
-        uiTitleBar.setSize(300, 1);
-        uiTitleBar.setPosition(0, 17, Anchor.CENTER | Anchor.TOP);
-        uiTitleBar.setColor(Color.gray.getRGB());
-
-        xButton = new UIButton(this, ChatColor.BOLD + "X");
-        xButton.setSize(5, 1);
-        xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
-        xButton.setName("button.close");
-        xButton.register(this);
+        // Create the form
+        form = new UIForm(this, 300, 225, "About");
+        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create About us multi-line label
         aboutUsLabel = new UITextField(this, "", true);
@@ -75,8 +53,8 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
                 + " gui enabled Minecraft experiences ever conceived. \r \r" + ChatColor.LIGHT_PURPLE + "More info to follow..." + ChatColor.RESET
                 + "";
 
-        aboutUsLabel.setSize(290, 100);
-        aboutUsLabel.setPosition(0, 25, Anchor.CENTER);
+        aboutUsLabel.setSize(290, form.getContentContainer().getHeight() - 30);
+        aboutUsLabel.setPosition(0, 5, Anchor.CENTER);
         aboutUsLabel.setText(fieldText);
         aboutUsLabel.setTextColor(Color.WHITE.getRGB());
         aboutUsLabel.setName("mline.aboutus");
@@ -95,12 +73,9 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
         closeButton.setName("button.close");
         closeButton.register(this);
 
-        window.add(titleLabel, uiTitleBar, xButton, aboutUsLabel, modsButton, closeButton);
+        form.getContentContainer().add(aboutUsLabel, modsButton, closeButton);
 
-        // Allow the window to move
-        new UIMoveHandle(this, window);
-
-        addToScreen(window);
+        addToScreen(form);
     }
 
     @Subscribe

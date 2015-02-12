@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import com.almuradev.almura.client.gui.components.UIForm;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -48,19 +49,14 @@ public class IngameBlockWireframe extends AlmuraGui {
     protected void setup() {
         guiscreenBackground = false;
 
-        final UIBackgroundContainer window = new UIBackgroundContainer(this, 175, 150);
-        window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        window.setColor(Integer.MIN_VALUE);
-        window.setBackgroundAlpha(125);
+        final UIForm form = new UIForm(this, 175, 150, "Wireframe Information");
+        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         final int padding = 5;
         final DecimalFormat decimal = new DecimalFormat("#.##");
 
-        final UILabel wireframeLabel = new UILabel(this, ChatColor.WHITE + "Wireframe Information");
-        wireframeLabel.setPosition(0, padding, Anchor.CENTER | Anchor.TOP);
-
         final UILabel minXLabel = new UILabel(this, ChatColor.GRAY + "Min X:");
-        minXLabel.setPosition(padding, getPaddedY(wireframeLabel, padding) + 2, Anchor.LEFT | Anchor.TOP);
+        minXLabel.setPosition(padding, padding * 2, Anchor.LEFT | Anchor.TOP);
 
         minXTextField = new UITextField(this, decimal.format(block.minX));
         minXTextField.setPosition(getPaddedX(minXLabel, padding + 2), minXLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
@@ -113,18 +109,15 @@ public class IngameBlockWireframe extends AlmuraGui {
         cancelButton.setName("button.cancel");
         cancelButton.register(this);
 
-        window.add(wireframeLabel,
-                   minXLabel, minXTextField,
-                   minYLabel, minYTextField,
-                   minZLabel, minZTextField,
-                   maxXLabel, maxXTextField,
-                   maxYLabel, maxYTextField,
-                   maxZLabel, maxZTextField,
-                   cancelButton, applyButton);
+        form.getContentContainer().add(minXLabel, minXTextField,
+                 minYLabel, minYTextField,
+                 minZLabel, minZTextField,
+                 maxXLabel, maxXTextField,
+                 maxYLabel, maxYTextField,
+                 maxZLabel, maxZTextField,
+                 cancelButton, applyButton);
 
-        new UIMoveHandle(this, window);
-
-        addToScreen(window);
+        addToScreen(form);
     }
 
     @Subscribe

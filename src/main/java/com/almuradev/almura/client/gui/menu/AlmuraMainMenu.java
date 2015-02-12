@@ -10,11 +10,10 @@ import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import com.almuradev.almura.client.gui.components.UIForm;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -22,7 +21,6 @@ import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiSelectWorld;
 import net.minecraft.util.ResourceLocation;
 
-import java.awt.*;
 import java.io.IOException;
 
 public class AlmuraMainMenu extends AlmuraBackgroundGui {
@@ -44,36 +42,18 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
      */
     public AlmuraMainMenu(AlmuraGui parent) {
         super(parent);
+        setup();
     }
 
     @Override
     protected void setup() {
-        // Create the window container
-        final UIBackgroundContainer window = new UIBackgroundContainer(this);
-        window.setSize(200, 225);
-        window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        window.setColor(Integer.MIN_VALUE);
-        window.setBackgroundAlpha(125);
-
-        // Create the title & Window layout 
-        final UILabel titleLabel = new UILabel(this, ChatColor.WHITE + "Welcome to Almura 2.0");
-        titleLabel.setPosition(0, 5, Anchor.CENTER | Anchor.TOP);
-
-        final UIBackgroundContainer uiTitleBar = new UIBackgroundContainer(this);
-        uiTitleBar.setSize(300, 1);
-        uiTitleBar.setPosition(0, 17, Anchor.CENTER | Anchor.TOP);
-        uiTitleBar.setColor(Color.gray.getRGB());
-
-        final UIButton xButton = new UIButton(this, ChatColor.BOLD + "X");
-        xButton.setSize(5, 1);
-        xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
-        xButton.setName("button.quit");
-        xButton.register(this);
+        // Create the form
+        final UIForm form = new UIForm(this, 200, 225, "Almura", false);
+        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the logo
         final UIImage logoImage = new UIImage(this, new GuiTexture(ALMURA_LOGO_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
-        logoImage.setPosition(0, 15);
         logoImage.setSize(65, 95);
 
         final int padding = 4;
@@ -135,13 +115,15 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         trademarkLabel.setPosition(0, -1, Anchor.CENTER | Anchor.BOTTOM);
         trademarkLabel.setFontScale(0.7f);
 
-        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
+        form.getContentContainer().add(logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
                    aboutButton, quitButton, copyrightLabel, trademarkLabel);
 
-        // Allow the window to move
-        new UIMoveHandle(this, window);
+        addToScreen(form);
+    }
 
-        addToScreen(window);
+    @Override
+    public void close() {
+        mc.shutdown();
     }
 
     @Subscribe
@@ -161,10 +143,9 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
                 break;
             case "button.about":
                 mc.displayGuiScreen(new AlmuraAboutMenu(this));
-                //mc.displayGuiScreen(new InfoguideGui(this));
                 break;
             case "button.quit":
-                mc.shutdown();
+                close();
         }
     }
 }

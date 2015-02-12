@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import com.almuradev.almura.client.gui.components.UIForm;
 import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
@@ -15,8 +16,6 @@ import com.google.common.eventbus.Subscribe;
 
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -50,34 +49,32 @@ public class IngameBlockInformation extends AlmuraGui {
     @Override
     protected void setup() {
         guiscreenBackground = false;
-        
+
         final int xPadding = 10;
         final int yPadding = 1;
-        int windowHeight = 105;
-        int windowWidth = 150;
+        int formHeight = 135;
+        int formWidth = 150;
         int newWindowWidth = 150;
         
         
-        final UIBackgroundContainer window = new UIBackgroundContainer(this, windowWidth, windowHeight);
-        window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        window.setColor(Integer.MIN_VALUE);
-        window.setBackgroundAlpha(200);
+        final UIForm form = new UIForm(this, formWidth, formHeight, "Block Information");
+        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         
         final DecimalFormat decimal = new DecimalFormat("#.##");
 
         final UIImage blockImage = new UIImage(this, new GuiTexture(UIImage.BLOCKS_TEXTURE), block.getIcon(0, metadata));
-        blockImage.setPosition(xPadding, yPadding, Anchor.LEFT | Anchor.TOP);
+        blockImage.setPosition(xPadding, (yPadding + 3) * 2, Anchor.LEFT | Anchor.TOP);
 
         final String localized = block.getLocalizedName();
         localizedNameLabel = new UILabel(this, ChatColor.WHITE + getFormattedString(localized, 22, "..."));
-        localizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), yPadding + 3, Anchor.LEFT | Anchor.TOP);
+        localizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), blockImage.getY(), Anchor.LEFT | Anchor.TOP);
 
         unlocalizedNameLabel = new UILabel(this, ChatColor.GRAY + getFormattedString(block.getUnlocalizedName(), 60, "..."));
         unlocalizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), getPaddedY(localizedNameLabel, 0), Anchor.LEFT | Anchor.TOP);
         unlocalizedNameLabel.setFontScale(0.5f);
 
         soundLabel = new UILabel(this, ChatColor.GRAY + "Step sound: " + ChatColor.BLUE + block.stepSound.soundName);
-        soundLabel.setPosition(xPadding, getPaddedY(unlocalizedNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+        soundLabel.setPosition(xPadding, getPaddedY(unlocalizedNameLabel, yPadding + 3), Anchor.LEFT | Anchor.TOP);
 
         metadataLabel = new UILabel(this, ChatColor.GRAY + "Metadata: " + ChatColor.BLUE + metadata);
         metadataLabel.setPosition(xPadding, getPaddedY(soundLabel, yPadding), Anchor.LEFT | Anchor.TOP);
@@ -101,7 +98,7 @@ public class IngameBlockInformation extends AlmuraGui {
             if (customBlock != null) {
                 textureNameLabel = new UILabel(this, ChatColor.GRAY + "Texture Name: " + ChatColor.BLUE + customBlock.getTextureName());
                 textureNameLabel.setPosition(xPadding, getPaddedY(blockBoundsLabel, yPadding), Anchor.LEFT | Anchor.TOP);
-                window.add(textureNameLabel);
+                form.getContentContainer().add(textureNameLabel);
 
                 if (block instanceof PackCrops) {
                     final PackCrops crop = (PackCrops) block;
@@ -111,22 +108,22 @@ public class IngameBlockInformation extends AlmuraGui {
                     modelNameLabel = new UILabel(this, ChatColor.GRAY + "Model Name: " + ChatColor.BLUE + customBlock.getModelName());
                 }
                 modelNameLabel.setPosition(xPadding, getPaddedY(textureNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
-                window.add(modelNameLabel);
+                form.getContentContainer().add(modelNameLabel);
 
                 packNameLabel = new UILabel(this, ChatColor.GRAY + "Pack Name: " + ChatColor.BLUE + customBlock.getPackName());
                 packNameLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
-                window.add(packNameLabel);
+                form.getContentContainer().add(packNameLabel);
                 
-                if (modelNameLabel.getWidth() >= (windowWidth - 20)) {
+                if (modelNameLabel.getWidth() >= (formWidth - 20)) {
                     newWindowWidth = modelNameLabel.getWidth() + 20;
                 } 
 
-                if (textureNameLabel.getWidth() >= (windowWidth - 20)) {
+                if (textureNameLabel.getWidth() >= (formWidth - 20)) {
                     newWindowWidth = textureNameLabel.getWidth() + 20;
                 }
 
-                windowWidth = newWindowWidth;
-                windowHeight = windowHeight+30;
+                formWidth = newWindowWidth;
+                formHeight = formHeight+30;
             }
         }        
         
@@ -138,8 +135,8 @@ public class IngameBlockInformation extends AlmuraGui {
             } else {                
                 harvestToolLabel.setPosition(xPadding, getPaddedY(blockBoundsLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             }
-            windowHeight = windowHeight + 10;
-            window.add(harvestToolLabel);
+            formHeight = formHeight + 10;
+            form.getContentContainer().add(harvestToolLabel);
         }
 
         final UIButton closeButton = new UIButton(this, "Close");
@@ -148,14 +145,12 @@ public class IngameBlockInformation extends AlmuraGui {
         closeButton.setName("button.close");
         closeButton.register(this);
 
-        window.setSize(windowWidth, windowHeight);
-        
-        window.add(blockImage, localizedNameLabel, unlocalizedNameLabel, soundLabel, metadataLabel, lightOpacityLabel, lightValueLabel, hardnessLabel,
-                   blockBoundsLabel, closeButton);
+        form.getContentContainer()
+                .add(blockImage, localizedNameLabel, unlocalizedNameLabel, soundLabel, metadataLabel, lightOpacityLabel, lightValueLabel,
+                     hardnessLabel,
+                     blockBoundsLabel, closeButton);
 
-        new UIMoveHandle(this, window);
-
-        addToScreen(window);
+        addToScreen(form);
     }
 
     @Subscribe

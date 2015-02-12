@@ -9,27 +9,24 @@ import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import com.almuradev.almura.client.gui.components.UIForm;
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 
-import java.awt.*;
 import java.util.Arrays;
 
 public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
-    private UIBackgroundContainer window, uiTitleBar;
-    private UIButton graphicsButton, xButton, cancelButton, saveButton;
+    private UIForm form;
+    private UIButton graphicsButton, cancelButton, saveButton;
     private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
             debugMappingsCheckBox, debugRecipesCheckBox;
-    private UILabel titleLabel, chestRenderDistance, signRenderDistance, itemFrameRenderDistance;
-    private AlmuraGui parent;
+    private UILabel chestRenderDistance, signRenderDistance, itemFrameRenderDistance;
     private UISelect chestDistanceDownMenu, signDistanceDownMenu, itemFrameDistanceDownMenu;
 
     /**
@@ -39,38 +36,20 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
      */
     public AlmuraConfigurationMenu(AlmuraGui parent) {
         super(parent);
-        this.parent = parent;
+        setup();
     }
 
     @Override
     protected void setup() {
-        // Create the window container
-        window = new UIBackgroundContainer(this);
-        window.setSize(300, 225);
-        window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        window.setColor(Integer.MIN_VALUE);
-        window.setBackgroundAlpha(125);
+        // Create the form
+        form = new UIForm(this, 300, 225, "Configuration");
+        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         final int padding = 4;
 
-        // Create the title & Window layout 
-        titleLabel = new UILabel(this, ChatColor.WHITE + "Almura Configuration");
-        titleLabel.setPosition(0, padding + 1, Anchor.CENTER | Anchor.TOP);
-
-        uiTitleBar = new UIBackgroundContainer(this);
-        uiTitleBar.setSize(300, 1);
-        uiTitleBar.setPosition(0, 17, Anchor.CENTER | Anchor.TOP);
-        uiTitleBar.setColor(Color.gray.getRGB());
-
-        xButton = new UIButton(this, ChatColor.BOLD + "X");
-        xButton.setSize(5, 1);
-        xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
-        xButton.setName("button.cancel");
-        xButton.register(this);
-
         // Create the almura GUI checkbox
         almuraGuiCheckBox = new UICheckBox(this, ChatColor.WHITE + "Enhanced In-Game HUD");
-        almuraGuiCheckBox.setPosition(padding, titleLabel.getY() + (padding * 4 + 10), Anchor.LEFT | Anchor.TOP);
+        almuraGuiCheckBox.setPosition(padding, padding * 2, Anchor.LEFT | Anchor.TOP);
         almuraGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_GUI);
         almuraGuiCheckBox.setName("checkbox.gui.enhanced_gui");
         almuraGuiCheckBox.register(this);
@@ -82,7 +61,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         residenceHudCheckBox.register(this);
 
         chestRenderDistance = new UILabel(this, ChatColor.WHITE + "Chest Distance:");
-        chestRenderDistance.setPosition(-55, titleLabel.getY() + (padding * 4 + 11), Anchor.RIGHT | Anchor.TOP);
+        chestRenderDistance.setPosition(-55, padding * 2, Anchor.RIGHT | Anchor.TOP);
 
         signRenderDistance = new UILabel(this, ChatColor.WHITE + "Sign Distance:");
         signRenderDistance.setPosition(-55, almuraGuiCheckBox.getY() + (padding * 4 + 25), Anchor.RIGHT | Anchor.TOP);
@@ -92,7 +71,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
         // Chest Render Distance
         chestDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
-        chestDistanceDownMenu.setPosition(-15, titleLabel.getY() + (padding * 4 + 10), Anchor.TOP | Anchor.RIGHT);
+        chestDistanceDownMenu.setPosition(-15, padding * 2, Anchor.TOP | Anchor.RIGHT);
         chestDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.CHEST_RENDER_DISTANCE == 16) {
             chestDistanceDownMenu.select(0);
@@ -190,15 +169,14 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         cancelButton.setName("button.cancel");
         cancelButton.register(this);
 
-        window.add(titleLabel, uiTitleBar, signRenderDistance, itemFrameRenderDistance, chestRenderDistance, xButton, almuraGuiCheckBox, residenceHudCheckBox,
-                   almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
-                   debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton, signDistanceDownMenu,
-                   chestDistanceDownMenu, itemFrameDistanceDownMenu);
+        form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, almuraGuiCheckBox,
+                                       residenceHudCheckBox,
+                                       almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
+                                       debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton,
+                                       signDistanceDownMenu,
+                                       chestDistanceDownMenu, itemFrameDistanceDownMenu);
 
-        // Allow the window to move
-        new UIMoveHandle(this, window);
-
-        addToScreen(window);
+        addToScreen(form);
     }
 
     public void setOptimizedConfig() {
@@ -217,7 +195,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         this.mc.scheduleResourcesRefresh();
         this.mc.gameSettings.saveOptions();
 
-        mc.displayGuiScreen(new AlmuraConfirmMenu(parent, "Optimized Configuration Applied.", "Almura 2.0"));
+        mc.displayGuiScreen(new AlmuraConfirmMenu(parent.isPresent() ? parent.get() : null, "Optimized Configuration Applied.", "Almura 2.0"));
     }
 
     @Subscribe

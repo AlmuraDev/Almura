@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui;
+package com.almuradev.almura.client.gui.components;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;

@@ -9,14 +9,13 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import com.almuradev.almura.client.gui.components.UIForm;
 import com.almuradev.almura.util.Query;
 import com.google.common.eventbus.Subscribe;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -29,8 +28,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
     private static final ServerData ALMURA_LIVE_SERVER_DATA = new ServerData("Almura", "srv1.almuramc.com");
     private static final ServerData ALMURA_DEV_SERVER_DATA = new ServerData("Almura (Dev)", "69.4.96.139");
-    private static final ServerData OBSIDIANBOX_LIVE_SERVER_DATA = new ServerData("ObsidianBox", "obsidianbox.org");
-    private UIBackgroundContainer window;
+    private UIForm form;
     private UIButton almuraLiveButton, almuraDevButton, anotherButton, backButton;
     private UIImage logoImage;
     private UILabel buildLabel, liveServerTitle, liveServerOnline, devServerTitle, devServerOnline;
@@ -44,44 +42,24 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
      */
     public AlmuraServerMenu(AlmuraGui parent) {
         super(parent);
+        setup();
     }
 
     @Override
     protected void setup() {
-        // Create the window container
-        window = new UIBackgroundContainer(this);
-        window.setSize(200, 225);
-        window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        window.setColor(Integer.MIN_VALUE);
-        window.setBackgroundAlpha(125);
-
-        // Create the title & Window layout 
-        final UILabel titleLabel = new UILabel(this, ChatColor.WHITE + "Welcome to Almura 2.0");
-        titleLabel.setPosition(0, 5, Anchor.CENTER | Anchor.TOP);
-
-        final UIBackgroundContainer uiTitleBar = new UIBackgroundContainer(this);
-        uiTitleBar.setSize(300, 1);
-        uiTitleBar.setPosition(0, 17, Anchor.CENTER | Anchor.TOP);
-        uiTitleBar.setColor(Color.gray.getRGB());
-
-        final UIButton xButton = new UIButton(this, ChatColor.BOLD + "X");
-        xButton.setSize(5, 1);
-        xButton.setPosition(-3, 1, Anchor.RIGHT | Anchor.TOP);
-        xButton.setName("button.back");
-        xButton.register(this);
+        // Create the form
+        form = new UIForm(this, 200, 225, "Multiplayer");
+        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the logo
         logoImage = new UIImage(this, new GuiTexture(AlmuraMainMenu.ALMURA_LOGO_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
         logoImage.setSize(65, 95);
-        logoImage.setPosition(0, 15);
 
         // Create the build label
         buildLabel = new UILabel(this, ChatColor.GRAY + Almura.GUI_VERSION);
         buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
         buildLabel.setFontScale(0.65f);
-
-
 
         // Create the live Almura button
         almuraLiveButton = new UIButton(this, "Join ");
@@ -120,13 +98,11 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
         queryServers();
 
-        window.add(titleLabel, uiTitleBar, xButton, logoImage, buildLabel, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle, devServerOnline, almuraDevButton, anotherButton,
-                   backButton);
+        form.getContentContainer().add(logoImage, buildLabel, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle,
+                 devServerOnline, almuraDevButton, anotherButton,
+                 backButton);
 
-        // Allow the window to move
-        new UIMoveHandle(this, window);
-
-        addToScreen(window);
+        addToScreen(form);
     }
 
     @Subscribe
@@ -139,10 +115,6 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
             case "button.server.almura.dev":
                 FMLClientHandler.instance().setupServerList();
                 FMLClientHandler.instance().connectToServer(this, ALMURA_DEV_SERVER_DATA);
-                break;
-            case "button.server.obsidianbox.live":
-                FMLClientHandler.instance().setupServerList();
-                FMLClientHandler.instance().connectToServer(this, OBSIDIANBOX_LIVE_SERVER_DATA);
                 break;
             case "button.server.another":
                 mc.displayGuiScreen(new GuiMultiplayer(this));
