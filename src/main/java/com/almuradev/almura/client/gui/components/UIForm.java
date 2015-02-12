@@ -65,11 +65,11 @@ public class UIForm extends UIBackgroundContainer {
 
         setSize(width, height);
 
-        titleContainer.setSize(UIComponent.INHERITED, TITLE_BAR_HEIGHT);
+        titleContainer.setSize(INHERITED, TITLE_BAR_HEIGHT);
         titleContainer.setColor(3428032);
         titleContainer.register(this);
 
-        contentContainer.setSize(UIComponent.INHERITED, getHeight() - TITLE_BAR_HEIGHT);
+        contentContainer.setSize(INHERITED, getHeight() - TITLE_BAR_HEIGHT);
         contentContainer.setPosition(0, TITLE_BAR_HEIGHT);
         contentContainer.setBackgroundAlpha(0);
 
@@ -106,7 +106,7 @@ public class UIForm extends UIBackgroundContainer {
      * @return The UIForm
      */
     @Override
-    public UIBackgroundContainer setTitle(String title) {
+    public UIForm setTitle(String title) {
         titleLabel.setText(title);
         return this;
     }
@@ -136,6 +136,13 @@ public class UIForm extends UIBackgroundContainer {
         }
         Minecraft.getMinecraft().displayGuiScreen(getGui());
         Minecraft.getMinecraft().setIngameFocus();
+    }
+
+    @Override
+    public UIForm setSize(int width, int height) {
+        super.setSize(width, height);
+        contentContainer.setSize(INHERITED, getHeight() - TITLE_BAR_HEIGHT);
+        return this;
     }
 
     private class DraggableBackgroundContainer extends UIBackgroundContainer {

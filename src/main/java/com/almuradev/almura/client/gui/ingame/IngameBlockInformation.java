@@ -55,7 +55,7 @@ public class IngameBlockInformation extends AlmuraGui {
         int formHeight = 135;
         int formWidth = 150;
         int newWindowWidth = 150;
-        
+
         
         final UIForm form = new UIForm(this, formWidth, formHeight, "Block Information");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
@@ -123,21 +123,23 @@ public class IngameBlockInformation extends AlmuraGui {
                 }
 
                 formWidth = newWindowWidth;
-                formHeight = formHeight+30;
+                formHeight += 30;
             }
-        }        
+        }
         
         final String harvestTool = block.getHarvestTool(metadata);
         if (harvestTool != null && !harvestTool.isEmpty()) {
-            harvestToolLabel = new UILabel(this, ChatColor.GRAY + "Harvest tool: " + harvestTool);
-            if (block instanceof PackBlock) {                
+            harvestToolLabel = new UILabel(this, ChatColor.GRAY + "Harvest tool: " + ChatColor.BLUE + harvestTool);
+            if (block instanceof PackBlock) {
                 harvestToolLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);                
-            } else {                
+            } else {
                 harvestToolLabel.setPosition(xPadding, getPaddedY(blockBoundsLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             }
-            formHeight = formHeight + 10;
+            formHeight += 10;
             form.getContentContainer().add(harvestToolLabel);
         }
+
+        form.setSize(formWidth, formHeight);
 
         final UIButton closeButton = new UIButton(this, "Close");
         closeButton.setSize(50, 14);
