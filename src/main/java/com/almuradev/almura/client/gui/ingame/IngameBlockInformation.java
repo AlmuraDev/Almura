@@ -7,7 +7,11 @@ package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
+import com.almuradev.almura.pack.IModelContainer;
+import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.block.PackBlock;
+import com.almuradev.almura.pack.crop.PackCrops;
+import com.almuradev.almura.pack.crop.Stage;
 import com.google.common.eventbus.Subscribe;
 
 import net.malisis.core.client.gui.Anchor;
@@ -28,6 +32,7 @@ public class IngameBlockInformation extends AlmuraGui {
     private final int metadata;
     private final float hardness;
     private UILabel localizedNameLabel, unlocalizedNameLabel, soundLabel, metadataLabel, lightOpacityLabel, lightValueLabel, hardnessLabel, blockBoundsLabel, textureNameLabel, modelNameLabel, harvestToolLabel;
+    private IModelContainer customBlock;
     
 
     /**
@@ -46,73 +51,96 @@ public class IngameBlockInformation extends AlmuraGui {
     @Override
     protected void setup() {
         guiscreenBackground = false;
-        final UIBackgroundContainer window = new UIBackgroundContainer(this, 200, 150);
+        
+        final int xPadding = 10;
+        final int yPadding = 1;
+        int windowHeight = 125;
+        int windowWidth = 150;
+        
+        final UIBackgroundContainer window = new UIBackgroundContainer(this, windowWidth, windowHeight);
         window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         window.setColor(Integer.MIN_VALUE);
         window.setBackgroundAlpha(200);
-
-        final int padding = 1;
+        
         final DecimalFormat decimal = new DecimalFormat("#.##");
 
         final UIImage blockImage = new UIImage(this, new GuiTexture(UIImage.BLOCKS_TEXTURE), block.getIcon(0, metadata));
-        blockImage.setPosition(padding, padding, Anchor.LEFT | Anchor.TOP);
+        blockImage.setPosition(xPadding, yPadding, Anchor.LEFT | Anchor.TOP);
 
         final String localized = block.getLocalizedName();
         localizedNameLabel = new UILabel(this, ChatColor.WHITE + getFormattedString(localized, 22, "..."));
-        localizedNameLabel.setPosition(getPaddedX(blockImage, padding), padding + 3, Anchor.LEFT | Anchor.TOP);
+        localizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), yPadding + 3, Anchor.LEFT | Anchor.TOP);
 
         unlocalizedNameLabel = new UILabel(this, ChatColor.GRAY + getFormattedString(block.getUnlocalizedName(), 60, "..."));
-        unlocalizedNameLabel.setPosition(getPaddedX(blockImage, padding), getPaddedY(localizedNameLabel, 0), Anchor.LEFT | Anchor.TOP);
+        unlocalizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), getPaddedY(localizedNameLabel, 0), Anchor.LEFT | Anchor.TOP);
         unlocalizedNameLabel.setFontScale(0.5f);
 
         soundLabel = new UILabel(this, ChatColor.GRAY + "Step sound: " + ChatColor.BLUE + block.stepSound.soundName);
-        soundLabel.setPosition(padding, getPaddedY(unlocalizedNameLabel, padding), Anchor.LEFT | Anchor.TOP);
+        soundLabel.setPosition(xPadding, getPaddedY(unlocalizedNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
         metadataLabel = new UILabel(this, ChatColor.GRAY + "Metadata: " + ChatColor.BLUE + metadata);
-        metadataLabel.setPosition(padding, getPaddedY(soundLabel, padding), Anchor.LEFT | Anchor.TOP);
+        metadataLabel.setPosition(xPadding, getPaddedY(soundLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
         lightOpacityLabel = new UILabel(this, ChatColor.GRAY + "Light opacity: " + ChatColor.BLUE + block.getLightOpacity());
-        lightOpacityLabel.setPosition(padding, getPaddedY(metadataLabel, padding), Anchor.LEFT | Anchor.TOP);
+        lightOpacityLabel.setPosition(xPadding, getPaddedY(metadataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
-        lightValueLabel = new UILabel(this, ChatColor.GRAY + "Light value: " + block.getLightValue());
-        lightValueLabel.setPosition(padding, getPaddedY(lightOpacityLabel, padding), Anchor.LEFT | Anchor.TOP);
+        lightValueLabel = new UILabel(this, ChatColor.GRAY + "Light value: " + ChatColor.BLUE + block.getLightValue());
+        lightValueLabel.setPosition(xPadding, getPaddedY(lightOpacityLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
-        hardnessLabel = new UILabel(this, ChatColor.GRAY + "Hardness: " + decimal.format(hardness));
-        hardnessLabel.setPosition(padding, getPaddedY(lightValueLabel, padding), Anchor.LEFT | Anchor.TOP);        
+        hardnessLabel = new UILabel(this, ChatColor.GRAY + "Hardness: " + ChatColor.BLUE + decimal.format(hardness));
+        hardnessLabel.setPosition(xPadding, getPaddedY(lightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);        
 
-        blockBoundsLabel = new UILabel(this, ChatColor.GRAY + String.format("Block bounds: %1$sx%2$sx%3$s", decimal.format(block.getBlockBoundsMaxX()), decimal.format(block.getBlockBoundsMaxY()), decimal.format(block.getBlockBoundsMaxZ())));
-        blockBoundsLabel.setPosition(padding, getPaddedY(hardnessLabel, padding), Anchor.LEFT | Anchor.TOP);      
-        
-        if (block instanceof PackBlock) {
-            final PackBlock pBlock = (PackBlock) block;
-            if (pBlock != null) {
-                textureNameLabel = new UILabel(this, ChatColor.GRAY + "Texture Name: " + pBlock.getTextureName());
-                textureNameLabel.setPosition(padding, getPaddedY(blockBoundsLabel, padding), Anchor.LEFT | Anchor.TOP);
+        blockBoundsLabel = new UILabel(this, ChatColor.GRAY + String.format("Block bounds: %1$sx%2$sx%3$s", ChatColor.BLUE + decimal.format(block.getBlockBoundsMaxX()), decimal.format(block.getBlockBoundsMaxY()), decimal.format(block.getBlockBoundsMaxZ())));
+        blockBoundsLabel.setPosition(xPadding, getPaddedY(hardnessLabel, yPadding), Anchor.LEFT | Anchor.TOP);      
+                       
+        if (block instanceof IModelContainer) {
+
+            IModelContainer customBlock = (IModelContainer) block;
+
+            if (customBlock != null) {
+                textureNameLabel = new UILabel(this, ChatColor.GRAY + "Texture Name: " + ChatColor.BLUE + customBlock.getTextureName());
+                textureNameLabel.setPosition(xPadding, getPaddedY(blockBoundsLabel, yPadding), Anchor.LEFT | Anchor.TOP);
                 window.add(textureNameLabel);
 
-                modelNameLabel = new UILabel(this, ChatColor.GRAY + "Model Name: " + pBlock.getModelName());
-                modelNameLabel.setPosition(padding, getPaddedY(textureNameLabel, padding), Anchor.LEFT | Anchor.TOP);
+                if (block instanceof PackCrops) {
+                    final PackCrops crop = (PackCrops) block;
+                    final Stage stage = crop.getStages().get(metadata);
+                    modelNameLabel = new UILabel(this, ChatColor.GRAY + "Model Name: " + ChatColor.BLUE + stage.getModelName());
+                } else {
+                    modelNameLabel = new UILabel(this, ChatColor.GRAY + "Model Name: " + ChatColor.BLUE + customBlock.getModelName());
+                }
+                modelNameLabel.setPosition(xPadding, getPaddedY(textureNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
                 window.add(modelNameLabel);
+
+                if (modelNameLabel.getWidth() >= windowWidth) {
+                    windowWidth = modelNameLabel.getWidth() + 20;
+                } else if (textureNameLabel.getWidth() >= windowWidth) {
+                    windowWidth = textureNameLabel.getWidth() + 20;
+                }
+
+                windowHeight = windowHeight+25;
             }
-        }
+        }        
         
         final String harvestTool = block.getHarvestTool(metadata);
         if (harvestTool != null && !harvestTool.isEmpty()) {
             harvestToolLabel = new UILabel(this, ChatColor.GRAY + "Harvest tool: " + harvestTool);
             if (block instanceof PackBlock) {                
-                harvestToolLabel.setPosition(padding, getPaddedY(modelNameLabel, padding), Anchor.LEFT | Anchor.TOP);                
+                harvestToolLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);                
             } else {                
-                harvestToolLabel.setPosition(padding, getPaddedY(blockBoundsLabel, padding), Anchor.LEFT | Anchor.TOP);
+                harvestToolLabel.setPosition(xPadding, getPaddedY(blockBoundsLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             }
             window.add(harvestToolLabel);
         }
 
         final UIButton closeButton = new UIButton(this, "Close");
         closeButton.setSize(50, 14);
-        closeButton.setPosition(-padding, -padding, Anchor.RIGHT | Anchor.BOTTOM);
+        closeButton.setPosition(-4, -4, Anchor.RIGHT | Anchor.BOTTOM);
         closeButton.setName("button.close");
         closeButton.register(this);
 
+        window.setSize(windowWidth, windowHeight);
+        
         window.add(blockImage, localizedNameLabel, unlocalizedNameLabel, soundLabel, metadataLabel, lightOpacityLabel, lightValueLabel, hardnessLabel,
                    blockBoundsLabel, closeButton);
 
