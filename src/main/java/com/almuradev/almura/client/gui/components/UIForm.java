@@ -20,6 +20,7 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 
 public class UIForm extends UIBackgroundContainer {
+
     private static final int TITLE_BAR_HEIGHT = 13;
     private final UIBackgroundContainer contentContainer;
     private final DraggableBackgroundContainer titleContainer;
@@ -146,6 +147,7 @@ public class UIForm extends UIBackgroundContainer {
     }
 
     private class DraggableBackgroundContainer extends UIBackgroundContainer {
+
         private CloseButton titleCloseButton;
 
         public DraggableBackgroundContainer(AlmuraGui parent, String title, boolean showCloseButton) {
@@ -198,6 +200,7 @@ public class UIForm extends UIBackgroundContainer {
     }
 
     private class CloseButton extends UIButton {
+
         public CloseButton(AlmuraGui gui) {
             super(gui, "");
             width = 23;

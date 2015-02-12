@@ -10,7 +10,8 @@ import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.components.UIPropertyBar;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.*;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -27,6 +28,7 @@ import java.awt.*;
 import java.util.Objects;
 
 public class IngameHUD extends AlmuraGui {
+
     private static final Color LIGHT_GREEN = new Color(0f, 1f, 0f, 1f);
     private static final Color LIGHT_ORANGE = new Color(0.8039f, 0.6784f, 0f, 1f);
     private static final Color RED = new Color(0.69f, 0.09f, 0.12f, 1f);

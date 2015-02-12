@@ -12,7 +12,6 @@ import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.components.UIForm;
 import com.almuradev.almura.util.Query;
 import com.google.common.eventbus.Subscribe;
-
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -50,7 +49,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
     private UIImage logoImage;
     private UILabel buildLabel, liveServerTitle, liveServerOnline, devServerTitle, devServerOnline;
     private int padding = 4;
-    
+
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
 
@@ -84,10 +83,10 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         almuraLiveButton.setName("button.server.almura.live");
         almuraLiveButton.setDisabled(true);
         almuraLiveButton.register(this);
-        
+
         liveServerTitle = new UILabel(this, ChatColor.WHITE + "Public Server : ");
         liveServerTitle.setPosition(20, getPaddedY(logoImage, padding) + 14, Anchor.LEFT | Anchor.TOP);
-        
+
         liveServerOnline = new UILabel(this, ChatColor.YELLOW + "Updating...");
         liveServerOnline.setPosition(85, liveServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
 
@@ -104,7 +103,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         almuraDevButton.setName("button.server.almura.dev");
         almuraDevButton.setDisabled(true);
         almuraDevButton.register(this);
-        
+
         // Create the join another server button
         anotherButton = new UIButton(this, "Join another server");
         anotherButton.setPosition(0, getPaddedY(almuraDevButton, padding) + 15, Anchor.CENTER | Anchor.TOP);
@@ -120,7 +119,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         backButton.register(this);
 
         form.getContentContainer().add(logoImage, buildLabel, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle,
-                 devServerOnline, almuraDevButton, anotherButton, backButton);
+                                       devServerOnline, almuraDevButton, anotherButton, backButton);
 
         addToScreen(form);
 
@@ -160,8 +159,9 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
                 if (QUERY_LIVE_SERVER.getPlayers() == null || QUERY_LIVE_SERVER.getMaxPlayers() == null) {
                     liveServerOnline.setText(ChatColor.YELLOW + "Restarting...");
                 } else {
-                    liveServerOnline.setText(ChatColor.GREEN + "Online " + ChatColor.BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER
-                            .getMaxPlayers() + ")");
+                    liveServerOnline
+                            .setText(ChatColor.GREEN + "Online " + ChatColor.BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER
+                                    .getMaxPlayers() + ")");
                 }
                 almuraLiveButton.setDisabled(false);
             } else {
@@ -169,15 +169,15 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
                 almuraLiveButton.setDisabled(true);
             }
 
-            
             // Dev Server
             if (QUERY_DEV_SERVER.pingServer()) {
                 QUERY_DEV_SERVER.sendQuery();
                 if (QUERY_DEV_SERVER.getPlayers() == null || QUERY_DEV_SERVER.getMaxPlayers() == null) {
                     devServerOnline.setText(ChatColor.YELLOW + "Restarting...");
                 } else {
-                    devServerOnline.setText(ChatColor.GREEN + "Online " + ChatColor.BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER
-                            .getMaxPlayers() + ")");
+                    devServerOnline
+                            .setText(ChatColor.GREEN + "Online " + ChatColor.BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER
+                                    .getMaxPlayers() + ")");
                 }
                 almuraDevButton.setDisabled(false);
             } else {

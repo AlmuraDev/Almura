@@ -70,7 +70,7 @@ public class Configuration {
         ConfigurationNode enhanced_gui = reader.getNode("client.enhanced-gui");
         enhanced_gui.setValue(DISPLAY_ENHANCED_GUI);
         reader.setNode(enhanced_gui);
-        
+
         // In-Game Residence Hud
         ConfigurationNode residence_hud = reader.getNode("client.residence-hud");
         residence_hud.setValue(DISPLAY_RESIDENCE_HUD);
@@ -131,7 +131,7 @@ public class Configuration {
     public static void toggleResidenceHUD(boolean value) {
         DISPLAY_RESIDENCE_HUD = value;
     }
-    
+
     public static void toggleEnhancedDebug(boolean value) {
         DISPLAY_ENHANCED_DEBUG = value;
     }

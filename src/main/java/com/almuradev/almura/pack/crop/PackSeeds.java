@@ -20,7 +20,6 @@ import com.almuradev.almura.pack.renderer.PackIcon;
 import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.relauncher.Side;
@@ -151,7 +150,7 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     public String getModelName() {
         return modelName;
     }
-    
+
     @Override
     public String getTextureName() {
         return textureName;

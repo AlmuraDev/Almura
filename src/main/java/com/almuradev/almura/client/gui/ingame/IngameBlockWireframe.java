@@ -10,8 +10,6 @@ import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.components.UIForm;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.control.UIMoveHandle;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
@@ -110,12 +108,12 @@ public class IngameBlockWireframe extends AlmuraGui {
         cancelButton.register(this);
 
         form.getContentContainer().add(minXLabel, minXTextField,
-                 minYLabel, minYTextField,
-                 minZLabel, minZTextField,
-                 maxXLabel, maxXTextField,
-                 maxYLabel, maxYTextField,
-                 maxZLabel, maxZTextField,
-                 cancelButton, applyButton);
+                                       minYLabel, minYTextField,
+                                       minZLabel, minZTextField,
+                                       maxXLabel, maxXTextField,
+                                       maxYLabel, maxYTextField,
+                                       maxZLabel, maxZTextField,
+                                       cancelButton, applyButton);
 
         addToScreen(form);
     }

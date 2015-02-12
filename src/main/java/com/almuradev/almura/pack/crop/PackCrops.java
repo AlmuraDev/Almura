@@ -23,12 +23,10 @@ import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.GameObjectProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
-import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.relauncher.Side;
@@ -42,7 +40,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBed;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
@@ -126,7 +123,8 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_,
+                                    float p_149727_9_) {
         final int metadata = world.getBlockMetadata(x, y, z);
         if (metadata < stages.size() - 1) {
             final Stage stage = stages.get(world.getBlockMetadata(x, y, z));
@@ -393,7 +391,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     public String getModelName() {
         return "";
     }
-    
+
     @Override
     public String getTextureName() {
         return textureName;

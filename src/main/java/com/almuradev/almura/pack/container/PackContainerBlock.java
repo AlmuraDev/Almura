@@ -34,7 +34,6 @@ import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.relauncher.Side;
@@ -54,7 +53,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -90,7 +88,8 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     private BreakNode breakNode;
     private CollisionNode collisionNode;
 
-    public PackContainerBlock(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates, String modelName,
+    public PackContainerBlock(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
+                              String modelName,
                               PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
                               RotationNode rotationNode, LightNode lightNode, RenderNode renderNode, ContainerNode containerNode) {
         super(Material.ground);
@@ -518,7 +517,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     public String getModelName() {
         return modelName;
     }
-    
+
     @Override
     public String getTextureName() {
         return textureName;

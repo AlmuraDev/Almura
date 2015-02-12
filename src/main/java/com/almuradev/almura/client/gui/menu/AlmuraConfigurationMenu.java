@@ -53,7 +53,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         almuraGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_GUI);
         almuraGuiCheckBox.setName("checkbox.gui.enhanced_gui");
         almuraGuiCheckBox.register(this);
-        
+
         residenceHudCheckBox = new UICheckBox(this, ChatColor.WHITE + "Residence HUD");
         residenceHudCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         residenceHudCheckBox.setChecked(Configuration.DISPLAY_RESIDENCE_HUD);

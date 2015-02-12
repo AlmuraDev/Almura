@@ -6,8 +6,12 @@
 package com.almuradev.almura.extension.sign;
 
 public interface IExtendedTileEntitySign {
+
     int getColumnBeingEdited();
+
     void setColumnBeingEdited(int column);
+
     void recalculateText();
+
     boolean hasText();
 }

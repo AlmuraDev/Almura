@@ -14,7 +14,6 @@ import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.Stage;
 import com.google.common.eventbus.Subscribe;
-
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -29,10 +28,11 @@ public class IngameBlockInformation extends AlmuraGui {
     private final Block block;
     private final int metadata;
     private final float hardness;
-    private UILabel localizedNameLabel, unlocalizedNameLabel, soundLabel, metadataLabel, lightOpacityLabel, lightValueLabel, hardnessLabel, blockBoundsLabel, textureNameLabel, packNameLabel, modelNameLabel, harvestToolLabel;
+    private UILabel localizedNameLabel, unlocalizedNameLabel, soundLabel, metadataLabel, lightOpacityLabel, lightValueLabel, hardnessLabel,
+            blockBoundsLabel, textureNameLabel, packNameLabel, modelNameLabel, harvestToolLabel;
     @SuppressWarnings("unused")
     private IModelContainer customBlock;
-    
+
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
@@ -47,6 +47,14 @@ public class IngameBlockInformation extends AlmuraGui {
         setup();
     }
 
+    private static String getFormattedString(String raw, int length, String suffix) {
+        if (raw.trim().length() <= length) {
+            return raw;
+        } else {
+            return raw.substring(0, Math.min(raw.length(), length)).trim() + suffix;
+        }
+    }
+
     @Override
     protected void setup() {
         guiscreenBackground = false;
@@ -57,10 +65,9 @@ public class IngameBlockInformation extends AlmuraGui {
         int formWidth = 150;
         int newWindowWidth = 150;
 
-        
         final UIForm form = new UIForm(this, formWidth, formHeight, "Block Information");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        
+
         final DecimalFormat decimal = new DecimalFormat("#.##");
 
         final UIImage blockImage = new UIImage(this, new GuiTexture(UIImage.BLOCKS_TEXTURE), block.getIcon(0, metadata));
@@ -87,10 +94,13 @@ public class IngameBlockInformation extends AlmuraGui {
         lightValueLabel.setPosition(xPadding, getPaddedY(lightOpacityLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
         hardnessLabel = new UILabel(this, ChatColor.GRAY + "Hardness: " + ChatColor.BLUE + decimal.format(hardness));
-        hardnessLabel.setPosition(xPadding, getPaddedY(lightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);        
+        hardnessLabel.setPosition(xPadding, getPaddedY(lightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
-        blockBoundsLabel = new UILabel(this, ChatColor.GRAY + String.format("Block bounds: %1$sx%2$sx%3$s", ChatColor.BLUE + decimal.format(block.getBlockBoundsMaxX()), decimal.format(block.getBlockBoundsMaxY()), decimal.format(block.getBlockBoundsMaxZ())));
-        blockBoundsLabel.setPosition(xPadding, getPaddedY(hardnessLabel, yPadding), Anchor.LEFT | Anchor.TOP);      
+        blockBoundsLabel =
+                new UILabel(this, ChatColor.GRAY + String
+                        .format("Block bounds: %1$sx%2$sx%3$s", ChatColor.BLUE + decimal.format(block.getBlockBoundsMaxX()),
+                                decimal.format(block.getBlockBoundsMaxY()), decimal.format(block.getBlockBoundsMaxZ())));
+        blockBoundsLabel.setPosition(xPadding, getPaddedY(hardnessLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
         if (block instanceof IModelContainer && block instanceof IPackObject) {
 
@@ -125,12 +135,12 @@ public class IngameBlockInformation extends AlmuraGui {
             formWidth = newWindowWidth;
             formHeight += 30;
         }
-        
+
         final String harvestTool = block.getHarvestTool(metadata);
         if (harvestTool != null && !harvestTool.isEmpty()) {
             harvestToolLabel = new UILabel(this, ChatColor.GRAY + "Harvest tool: " + ChatColor.BLUE + harvestTool);
             if (block instanceof PackBlock) {
-                harvestToolLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);                
+                harvestToolLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             } else {
                 harvestToolLabel.setPosition(xPadding, getPaddedY(blockBoundsLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             }
@@ -160,14 +170,6 @@ public class IngameBlockInformation extends AlmuraGui {
             case "button.close":
                 close();
                 break;
-        }
-    }
-
-    private static String getFormattedString(String raw, int length, String suffix) {
-        if (raw.trim().length() <= length) {
-            return raw;
-        } else {
-            return raw.substring(0, Math.min(raw.length(), length)).trim() + suffix;
         }
     }
 }

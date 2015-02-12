@@ -6,7 +6,6 @@
 package com.almuradev.almura.pack.container;
 
 import com.almuradev.almura.pack.node.ContainerNode;
-import net.minecraft.block.BlockHopper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -243,6 +242,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     @Override
     public void closeInventory() {
         if (!worldObj.isRemote) {
+            handleInventoryChange();
             markDirty();
         }
     }

@@ -20,6 +20,7 @@ import java.awt.*;
 import java.io.IOException;
 
 public abstract class AlmuraGui extends MalisisGui {
+
     public static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
     public static final GuiIcon ICON_EMPTY;
     public static final GuiIcon ICON_BAR;
@@ -87,6 +88,20 @@ public abstract class AlmuraGui extends MalisisGui {
         return TEXTURE_DEFAULT.getIcon(x, y, width, height);
     }
 
+    public static int getPaddedX(UIComponent component, int padding) {
+        if (component == null) {
+            return 0;
+        }
+        return component.getX() + component.getWidth() + padding;
+    }
+
+    public static int getPaddedY(UIComponent component, int padding) {
+        if (component == null) {
+            return 0;
+        }
+        return component.getY() + component.getHeight() + padding;
+    }
+
     protected abstract void setup();
 
     /**
@@ -100,19 +115,5 @@ public abstract class AlmuraGui extends MalisisGui {
         }
         mc.displayGuiScreen(parent.isPresent() ? parent.get() : null);
         mc.setIngameFocus();
-    }
-
-    public static int getPaddedX(UIComponent component, int padding) {
-        if (component == null) {
-            return 0;
-        }
-        return component.getX() + component.getWidth() + padding;
-    }
-
-    public static int getPaddedY(UIComponent component, int padding) {
-        if (component == null) {
-            return 0;
-        }
-        return component.getY() + component.getHeight() + padding;
     }
 }

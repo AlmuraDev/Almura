@@ -26,8 +26,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.settings.KeyBinding;
@@ -50,7 +48,9 @@ public class ClientProxy extends CommonProxy {
             BINDING_CONFIG_GUI =
             new AlmuraBinding("key.almura.config", "Config", Keyboard.KEY_F4, "key.categories.almura", "Almura");
 
-    public static final KeyBinding BINDING_OPEN_BACKPACK = new AlmuraBinding("key.almura.backpack", "Backpack", Keyboard.KEY_B, "key.categories.almura", "Almura");
+    public static final KeyBinding
+            BINDING_OPEN_BACKPACK =
+            new AlmuraBinding("key.almura.backpack", "Backpack", Keyboard.KEY_B, "key.categories.almura", "Almura");
 
     public static IngameDebugHUD HUD_DEBUG;
     public static IngameHUD HUD_INGAME;

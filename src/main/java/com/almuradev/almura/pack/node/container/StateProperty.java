@@ -14,7 +14,6 @@ import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.property.IProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.base.Optional;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;

@@ -40,7 +40,6 @@ import net.malisis.core.renderer.icon.ClippedIcon;
 import net.malisis.core.util.EntityUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -72,15 +71,16 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private final String modelName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String textureName;
+    private final List<String> tooltip;
     private ClippedIcon[] clippedIcons;
     private Optional<PackModelContainer> modelContainer;
-    private final List<String> tooltip;
     private RenderNode renderNode;
     private RotationNode rotationNode;
     private BreakNode breakNode;
     private CollisionNode collisionNode;
 
-    public PackBlock(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates, String modelName,
+    public PackBlock(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
+                     String modelName,
                      PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
                      RotationNode rotationNode, LightNode lightNode, RenderNode renderNode) {
         super(Material.ground);
@@ -313,7 +313,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     public String getModelName() {
         return modelName;
     }
-    
+
     @Override
     public String getTextureName() {
         return textureName;

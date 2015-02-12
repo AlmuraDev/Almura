@@ -6,7 +6,6 @@
 package com.almuradev.almura.server.network.play;
 
 import com.almuradev.almura.client.gui.ingame.IngameBlockInformation;
-import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -15,9 +14,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
 
 public class S01OpenBlockInformationGui implements IMessage, IMessageHandler<S01OpenBlockInformationGui, IMessage> {
+
     public Block block;
     public int metadata;
     public float hardness;

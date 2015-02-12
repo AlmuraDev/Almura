@@ -10,16 +10,11 @@ import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.INodeContainer;
-import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
-import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.model.IModel;
 import com.almuradev.almura.pack.model.PackFace;
-import com.almuradev.almura.pack.model.PackMirrorFace;
 import com.almuradev.almura.pack.model.PackModelContainer;
-import com.almuradev.almura.pack.node.ContainerNode;
 import com.almuradev.almura.pack.node.RotationNode;
-import com.almuradev.almura.pack.node.container.StateProperty;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.google.common.base.Optional;
 import net.malisis.core.renderer.MalisisRenderer;
@@ -30,9 +25,7 @@ import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.Vertex;
 import net.malisis.core.renderer.element.shape.Cube;
 import net.malisis.core.renderer.icon.ClippedIcon;
-import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.block.Block;
-import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
@@ -108,19 +101,17 @@ public class BlockRenderer extends MalisisRenderer {
     }
 
     @Override
-    public void applyTexture(Shape shape, RenderParameters parameters)
-    {
+    public void applyTexture(Shape shape, RenderParameters parameters) {
         //shape.applyMatrix();
-        for (Face f : shape.getFaces())
-        {
+        for (Face f : shape.getFaces()) {
             face = f;
             RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
             IIcon icon = getIcon(params);
-            if (icon != null)
-            {
+            if (icon != null) {
                 boolean flipU = params.flipU.get();
-                if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST)
+                if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST) {
                     flipU = !flipU;
+                }
                 f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
             }
         }

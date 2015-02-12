@@ -116,7 +116,7 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         trademarkLabel.setFontScale(0.7f);
 
         form.getContentContainer().add(logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
-                   aboutButton, quitButton, copyrightLabel, trademarkLabel);
+                                       aboutButton, quitButton, copyrightLabel, trademarkLabel);
 
         addToScreen(form);
     }

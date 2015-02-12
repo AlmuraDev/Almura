@@ -8,5 +8,6 @@ package com.almuradev.almura.pack;
 import java.util.List;
 
 public interface IItemBlockInformation {
+
     List<String> getTooltip();
 }

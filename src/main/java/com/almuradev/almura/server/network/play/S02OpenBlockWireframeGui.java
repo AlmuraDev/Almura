@@ -40,7 +40,9 @@ public class S02OpenBlockWireframeGui implements IMessage, IMessageHandler<S02Op
         x = buf.readInt();
         y = buf.readInt();
         z = buf.readInt();
-        wireframe = AxisAlignedBB.getBoundingBox(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble());
+        wireframe =
+                AxisAlignedBB
+                        .getBoundingBox(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble());
     }
 
     @Override

@@ -6,7 +6,6 @@
 package com.almuradev.almura.server.network.play;
 
 import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
