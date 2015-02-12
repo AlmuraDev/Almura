@@ -233,7 +233,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         if (rotationNode.isEnabled() && (rotationNode.isDefaultRotate() || rotationNode.isDefaultMirrorRotate())) {
             final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
             final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
-            rotateBlock()
             world.setBlockMetadataWithNotify(x, y, z, RotationMeta.Rotation.getState(cameraDir, playerDir).getId(), 3);
         }
     }

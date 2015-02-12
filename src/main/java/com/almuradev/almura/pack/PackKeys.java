@@ -34,9 +34,9 @@ public class PackKeys {
     public static final DefaultedKey<String> RANGE_EXPERIENCE = new DefaultedKey<>("experience", "");
     //BOUNDS NODE
     public static final DefaultedKey<String> NODE_BOUNDS = new DefaultedKey<>("bounds", "");
-    public static final DefaultedKey<Boolean> USE_VANILLA_COLLISION = new DefaultedKey<>("use-vanilla-collision", true);
-    public static final DefaultedKey<Boolean> USE_VANILLA_WIREFRAME = new DefaultedKey<>("use-vanilla-wireframe", true);
-    public static final DefaultedKey<Boolean> USE_VANILLA_BLOCK = new DefaultedKey<>("use-vanilla-block-bounds", true);
+    public static final DefaultedKey<Boolean> ENABLE_COLLISION = new DefaultedKey<>("enable-collision", true);
+    public static final DefaultedKey<Boolean> ENABLE_WIREFRAME = new DefaultedKey<>("enable-wireframe", true);
+    public static final DefaultedKey<Boolean> USE_CUSTOM_BLOCK_BOUNDS = new DefaultedKey<>("use-custom-block-bounds", true);
     public static final DefaultedKey<String> COLLISION_BOX = new DefaultedKey<>("collision-box", "");
     public static final DefaultedKey<String> WIREFRAME_BOX = new DefaultedKey<>("wireframe-box", "");
     public static final DefaultedKey<String> BLOCK_BOX = new DefaultedKey<>("block-bounds", "");

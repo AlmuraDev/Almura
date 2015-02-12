@@ -73,6 +73,7 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -93,9 +94,9 @@ public class PackCreator {
         final ConfigurationNode boundsConfigurationNode = reader.getNode(PackKeys.NODE_BOUNDS.getKey());
 
         final boolean
-                useVanillaCollision =
-                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_COLLISION.getKey())
-                        .getBoolean(PackKeys.USE_VANILLA_COLLISION.getDefaultValue());
+                enableCollision =
+                boundsConfigurationNode.getChild(PackKeys.ENABLE_COLLISION.getKey())
+                        .getBoolean(PackKeys.ENABLE_COLLISION.getDefaultValue());
         List<Double> collisionCoordinates = Lists.newLinkedList();
 
         try {
@@ -113,9 +114,9 @@ public class PackCreator {
         }
 
         final boolean
-                useVanillaWireframe =
-                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_WIREFRAME.getKey())
-                        .getBoolean(PackKeys.USE_VANILLA_WIREFRAME.getDefaultValue());
+                enableWireframe =
+                boundsConfigurationNode.getChild(PackKeys.ENABLE_WIREFRAME.getKey())
+                        .getBoolean(PackKeys.ENABLE_WIREFRAME.getDefaultValue());
         List<Double> wireframeCoordinates = Lists.newLinkedList();
 
         try {
@@ -132,8 +133,8 @@ public class PackCreator {
         }
 
         final boolean
-                useVanillaBlockBounds =
-                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_BLOCK.getKey()).getBoolean(PackKeys.USE_VANILLA_BLOCK.getDefaultValue());
+                useCustomBlockBounds =
+                boundsConfigurationNode.getChild(PackKeys.USE_CUSTOM_BLOCK_BOUNDS.getKey()).getBoolean(PackKeys.USE_CUSTOM_BLOCK_BOUNDS.getDefaultValue());
         List<Double> blockBoundsCoordinates = Lists.newLinkedList();
 
         try {
@@ -151,8 +152,16 @@ public class PackCreator {
             }
         }
 
-        return new PackModelContainer(name, new PackPhysics(useVanillaCollision, useVanillaWireframe, useVanillaBlockBounds, collisionCoordinates,
-                                                            wireframeCoordinates, blockBoundsCoordinates));
+        AxisAlignedBB collisionBox = null;
+        if (collisionCoordinates.size() == 6) {
+            collisionBox = AxisAlignedBB.getBoundingBox(collisionCoordinates.get(0), collisionCoordinates.get(1), collisionCoordinates.get(2), collisionCoordinates.get(3), collisionCoordinates.get(4), collisionCoordinates.get(5));
+        }
+        AxisAlignedBB wireframeBox = null;
+        if (wireframeCoordinates.size() == 6) {
+            wireframeBox = AxisAlignedBB.getBoundingBox(wireframeCoordinates.get(0), wireframeCoordinates.get(1), wireframeCoordinates.get(2), wireframeCoordinates.get(3), wireframeCoordinates.get(4), wireframeCoordinates.get(5));
+        }
+
+        return new PackModelContainer(name, new PackPhysics(enableCollision, enableWireframe, collisionBox, wireframeBox));
     }
 
     @SideOnly(Side.CLIENT)
