@@ -49,7 +49,7 @@ public class RotationMeta {
             } else if (camera.getOpposite() == ForgeDirection.UP) {
                 metadata = 8 + player.getOpposite().ordinal() - 2;
             } else {
-                metadata = camera.getOpposite().ordinal() - 2;
+                metadata = player.getOpposite().ordinal() - 2;
             }
 
             return getState(metadata);

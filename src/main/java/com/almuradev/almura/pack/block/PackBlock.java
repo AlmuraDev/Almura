@@ -231,9 +231,14 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack item) {
         if (rotationNode.isEnabled() && (rotationNode.isDefaultRotate() || rotationNode.isDefaultMirrorRotate())) {
-            final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
             final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
-            world.setBlockMetadataWithNotify(x, y, z, RotationMeta.Rotation.getState(cameraDir, playerDir).getId(), 3);
+
+            if (rotationNode.isDefaultMirrorRotate()) {
+                final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
+                world.setBlockMetadataWithNotify(x, y, z, RotationMeta.Rotation.getState(cameraDir, playerDir).getId(), 3);
+            } else {
+                world.setBlockMetadataWithNotify(x, y, z, RotationMeta.Rotation.getState(ForgeDirection.NORTH, playerDir).getId(), 3);
+            }
         }
     }
 
