@@ -31,7 +31,7 @@ public class IngameBlockInformation extends AlmuraGui {
     private final Block block;
     private final int metadata;
     private final float hardness;
-    private UILabel localizedNameLabel, unlocalizedNameLabel, soundLabel, metadataLabel, lightOpacityLabel, lightValueLabel, hardnessLabel, blockBoundsLabel, textureNameLabel, modelNameLabel, harvestToolLabel;
+    private UILabel localizedNameLabel, unlocalizedNameLabel, soundLabel, metadataLabel, lightOpacityLabel, lightValueLabel, hardnessLabel, blockBoundsLabel, textureNameLabel, packNameLabel, modelNameLabel, harvestToolLabel;
     private IModelContainer customBlock;
     
 
@@ -54,8 +54,10 @@ public class IngameBlockInformation extends AlmuraGui {
         
         final int xPadding = 10;
         final int yPadding = 1;
-        int windowHeight = 125;
+        int windowHeight = 105;
         int windowWidth = 150;
+        int newWindowWidth = 150;
+        
         
         final UIBackgroundContainer window = new UIBackgroundContainer(this, windowWidth, windowHeight);
         window.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
@@ -92,11 +94,11 @@ public class IngameBlockInformation extends AlmuraGui {
 
         blockBoundsLabel = new UILabel(this, ChatColor.GRAY + String.format("Block bounds: %1$sx%2$sx%3$s", ChatColor.BLUE + decimal.format(block.getBlockBoundsMaxX()), decimal.format(block.getBlockBoundsMaxY()), decimal.format(block.getBlockBoundsMaxZ())));
         blockBoundsLabel.setPosition(xPadding, getPaddedY(hardnessLabel, yPadding), Anchor.LEFT | Anchor.TOP);      
-                       
+
         if (block instanceof IModelContainer) {
 
             IModelContainer customBlock = (IModelContainer) block;
-
+            
             if (customBlock != null) {
                 textureNameLabel = new UILabel(this, ChatColor.GRAY + "Texture Name: " + ChatColor.BLUE + customBlock.getTextureName());
                 textureNameLabel.setPosition(xPadding, getPaddedY(blockBoundsLabel, yPadding), Anchor.LEFT | Anchor.TOP);
@@ -112,13 +114,20 @@ public class IngameBlockInformation extends AlmuraGui {
                 modelNameLabel.setPosition(xPadding, getPaddedY(textureNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
                 window.add(modelNameLabel);
 
-                if (modelNameLabel.getWidth() >= windowWidth) {
-                    windowWidth = modelNameLabel.getWidth() + 20;
-                } else if (textureNameLabel.getWidth() >= windowWidth) {
-                    windowWidth = textureNameLabel.getWidth() + 20;
+                packNameLabel = new UILabel(this, ChatColor.GRAY + "Pack Name: " + ChatColor.BLUE + customBlock.getPackName());
+                packNameLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+                window.add(packNameLabel);
+                
+                if (modelNameLabel.getWidth() >= (windowWidth - 20)) {
+                    newWindowWidth = modelNameLabel.getWidth() + 20;
+                } 
+
+                if (textureNameLabel.getWidth() >= (windowWidth - 20)) {
+                    newWindowWidth = textureNameLabel.getWidth() + 20;
                 }
 
-                windowHeight = windowHeight+25;
+                windowWidth = newWindowWidth;
+                windowHeight = windowHeight+30;
             }
         }        
         
@@ -130,6 +139,7 @@ public class IngameBlockInformation extends AlmuraGui {
             } else {                
                 harvestToolLabel.setPosition(xPadding, getPaddedY(blockBoundsLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             }
+            windowHeight = windowHeight + 10;
             window.add(harvestToolLabel);
         }
 

@@ -17,4 +17,8 @@ public interface IModelContainer {
     String getModelName();
     
     String getTextureName();
+    
+    String getPackName();
+    
+    String getIdentifier();
 }

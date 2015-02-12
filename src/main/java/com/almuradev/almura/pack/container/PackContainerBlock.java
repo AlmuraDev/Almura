@@ -502,6 +502,11 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     public String getTextureName() {
         return textureName;
     }
+    
+    @Override
+    public String getPackName() {
+        return pack.getName();
+    }
 
     @Override
     public TileEntity createNewTileEntity(World world, int metadata) {

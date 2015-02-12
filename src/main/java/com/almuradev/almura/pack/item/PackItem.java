@@ -128,6 +128,11 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IMode
     public String getTextureName() {
         return textureName;
     }
+    
+    @Override
+    public String getPackName() {
+        return pack.getName();
+    }
 
     @Override
     @SuppressWarnings("unchecked")
