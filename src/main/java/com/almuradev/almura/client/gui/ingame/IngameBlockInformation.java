@@ -8,7 +8,6 @@ package com.almuradev.almura.client.gui.ingame;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.pack.IModelContainer;
-import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.Stage;
@@ -22,7 +21,6 @@ import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
 
 import java.text.DecimalFormat;
 
@@ -32,6 +30,7 @@ public class IngameBlockInformation extends AlmuraGui {
     private final int metadata;
     private final float hardness;
     private UILabel localizedNameLabel, unlocalizedNameLabel, soundLabel, metadataLabel, lightOpacityLabel, lightValueLabel, hardnessLabel, blockBoundsLabel, textureNameLabel, packNameLabel, modelNameLabel, harvestToolLabel;
+    @SuppressWarnings("unused")
     private IModelContainer customBlock;
     
 
