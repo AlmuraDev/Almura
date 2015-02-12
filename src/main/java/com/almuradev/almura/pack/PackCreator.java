@@ -95,8 +95,8 @@ public class PackCreator {
 
         final boolean
                 enableCollision =
-                boundsConfigurationNode.getChild(PackKeys.ENABLE_COLLISION.getKey())
-                        .getBoolean(PackKeys.ENABLE_COLLISION.getDefaultValue());
+                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_COLLISION.getKey())
+                        .getBoolean(PackKeys.USE_VANILLA_COLLISION.getDefaultValue());
         List<Double> collisionCoordinates = Lists.newLinkedList();
 
         try {
@@ -115,8 +115,8 @@ public class PackCreator {
 
         final boolean
                 enableWireframe =
-                boundsConfigurationNode.getChild(PackKeys.ENABLE_WIREFRAME.getKey())
-                        .getBoolean(PackKeys.ENABLE_WIREFRAME.getDefaultValue());
+                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_WIREFRAME.getKey())
+                        .getBoolean(PackKeys.USE_VANILLA_WIREFRAME.getDefaultValue());
         List<Double> wireframeCoordinates = Lists.newLinkedList();
 
         try {
