@@ -22,8 +22,6 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.multiplayer.ServerData;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
     private static final ServerData DATA_LIVE_SERVER = new ServerData("Almura", "srv1.almuramc.com");
@@ -90,13 +88,13 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         liveServerTitle = new UILabel(this, ChatColor.WHITE + "Public Server : ");
         liveServerTitle.setPosition(20, getPaddedY(logoImage, padding) + 14, Anchor.LEFT | Anchor.TOP);
         
-        liveServerOnline = new UILabel(this, ChatColor.RED + "Offline");
+        liveServerOnline = new UILabel(this, ChatColor.YELLOW + "Updating...");
         liveServerOnline.setPosition(85, liveServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
 
         devServerTitle = new UILabel(this, ChatColor.WHITE + "Dev Server : ");
         devServerTitle.setPosition(26, getPaddedY(almuraLiveButton, padding) + 8, Anchor.LEFT | Anchor.TOP);
 
-        devServerOnline = new UILabel(this, ChatColor.RED + "Offline");
+        devServerOnline = new UILabel(this, ChatColor.YELLOW + "Updating...");
         devServerOnline.setPosition(85, devServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
 
         // Create the beta Almura button
