@@ -1,5 +1,7 @@
 package com.almuradev.almura.util;
 
+import net.minecraft.client.multiplayer.ServerData;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -12,6 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * TODO When Almura is a Sponge plugin, use the Query event and remove this
+ */
 public class Query {
 
     private InetSocketAddress address;
@@ -28,7 +33,11 @@ public class Query {
     public Query(InetSocketAddress address) {
         this.address = address;
     }
-    
+
+    public Query(ServerData template, int port) {
+        this(template.serverIP, port);
+    }
+
     public void sendQuery() throws IOException {
         sendQueryRequest();
     }
@@ -40,7 +49,7 @@ public class Query {
             socket.close();
             online = true;
             return true;
-        } catch(IOException e) {}
+        } catch(IOException ignored) {}
         online = false;
         return false;
     }
@@ -60,29 +69,28 @@ public class Query {
     }
     
     private void sendQueryRequest() throws IOException {
-        final DatagramSocket socket = new DatagramSocket();
-        try {
+        try (DatagramSocket socket = new DatagramSocket()) {
             final byte[] receiveData = new byte[10240];
             socket.setSoTimeout(1000);
             sendPacket(socket, address, 0xFE, 0xFD, 0x09, 0x01, 0x01, 0x01, 0x01);
             final int challengeInteger;
             {
                 receivePacket(socket, receiveData);
-                byte byte1 = -1;
+                byte byte1;
                 int i = 0;
                 byte[] buffer = new byte[8];
-                for(int count = 5; (byte1 = receiveData[count++]) != 0;)
+                for (int count = 5; (byte1 = receiveData[count++]) != 0; )
                     buffer[i++] = byte1;
                 challengeInteger = Integer.parseInt(new String(buffer).trim());
             }
-            sendPacket(socket, address, 0xFE, 0xFD, 0x00, 0x01, 0x01, 0x01, 0x01, challengeInteger >> 24, challengeInteger >> 16, challengeInteger >> 8, challengeInteger, 0x00, 0x00, 0x00, 0x00);
-            System.out.println("Send Packet: " + address);
+            sendPacket(socket, address, 0xFE, 0xFD, 0x00, 0x01, 0x01, 0x01, 0x01, challengeInteger >> 24, challengeInteger >> 16,
+                       challengeInteger >> 8, challengeInteger, 0x00, 0x00, 0x00, 0x00);
             final int length = receivePacket(socket, receiveData).getLength();
-            values = new HashMap<String, String>();
+            values = new HashMap<>();
             final AtomicInteger cursor = new AtomicInteger(5);
-            while(cursor.get() < length) {
+            while (cursor.get() < length) {
                 final String s = readString(receiveData, cursor);
-                if(s.length() == 0)
+                if (s.length() == 0)
                     break;
                 else {
                     final String v = readString(receiveData, cursor);
@@ -96,28 +104,24 @@ public class Query {
                 }
             }
             readString(receiveData, cursor);
-            final Set<String> players = new HashSet<String>();
-            while(cursor.get() < length) {
+            final Set<String> players = new HashSet<>();
+            while (cursor.get() < length) {
                 final String name = readString(receiveData, cursor);
-                if(name.length() > 0)
+                if (name.length() > 0)
                     players.add(name);
             }
             onlineUsernames = players.toArray(new String[players.size()]);
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.out.println("Exception: " + e);
-        }
-        
-        finally {
-            socket.close();
         }
     }
   
-    private final static void sendPacket(DatagramSocket socket, InetSocketAddress targetAddress, byte... data) throws IOException {
+    private static void sendPacket(DatagramSocket socket, InetSocketAddress targetAddress, byte... data) throws IOException {
         DatagramPacket sendPacket = new DatagramPacket(data, data.length, targetAddress.getAddress(), targetAddress.getPort());
         socket.send(sendPacket);
     }
    
-    private final static void sendPacket(DatagramSocket socket, InetSocketAddress targetAddress, int... data) throws IOException {
+    private static void sendPacket(DatagramSocket socket, InetSocketAddress targetAddress, int... data) throws IOException {
         final byte[] d = new byte[data.length];
         int i = 0;
         for(int j : data)
@@ -125,13 +129,13 @@ public class Query {
         sendPacket(socket, targetAddress, d);
     }
 
-    private final static DatagramPacket receivePacket(DatagramSocket socket, byte[] buffer) throws IOException {
+    private static DatagramPacket receivePacket(DatagramSocket socket, byte[] buffer) throws IOException {
         final DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
         socket.receive(dp);
         return dp;
     }
 
-    private final static String readString(byte[] array, AtomicInteger cursor) {
+    private static String readString(byte[] array, AtomicInteger cursor) {
         final int startPosition = cursor.incrementAndGet();
         for(; cursor.get() < array.length && array[cursor.get()] != 0; cursor.incrementAndGet())
             ;
