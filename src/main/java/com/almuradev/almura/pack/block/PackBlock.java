@@ -308,6 +308,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     public String getModelName() {
         return modelName;
     }
+    
+    @Override
+    public String getTextureName() {
+        return textureName;
+    }
 
     @Override
     @SuppressWarnings("unchecked")

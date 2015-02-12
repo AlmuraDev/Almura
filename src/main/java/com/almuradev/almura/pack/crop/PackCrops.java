@@ -28,6 +28,7 @@ import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.relauncher.Side;
@@ -389,6 +390,11 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     @Override
     public String getModelName() {
         return "";
+    }
+    
+    @Override
+    public String getTextureName() {
+        return textureName;
     }
 
     @Override
