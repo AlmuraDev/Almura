@@ -106,7 +106,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
         // Create the join another server button
         anotherButton = new UIButton(this, "Join another server");
-        anotherButton.setPosition(0, getPaddedY(almuraDevButton, padding) + 15, Anchor.CENTER | Anchor.TOP);
+        anotherButton.setPosition(0, getPaddedY(almuraDevButton, padding) + 5, Anchor.CENTER | Anchor.TOP);
         anotherButton.setSize(100, 16);
         anotherButton.setName("button.server.another");
         anotherButton.register(this);
