@@ -43,7 +43,7 @@ public class IngameResidenceHUD extends AlmuraGui {
 
         // Player Display Name
         title = new UILabel(this, ChatColor.AQUA + "Residence Info");
-        title.setPosition(-18, 0, Anchor.CENTER | Anchor.TOP);
+        title.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
         title.setColor(0xffffffff);
         title.setSize(7, 7);
         title.setFontScale(0.8F);
