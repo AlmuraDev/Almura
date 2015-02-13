@@ -24,6 +24,8 @@ public class UIForm extends UIBackgroundContainer {
     private static final int TITLE_BAR_HEIGHT = 13;
     private final UIBackgroundContainer contentContainer;
     private final DraggableBackgroundContainer titleContainer;
+    private int dragX, dragY;
+    private boolean dragging = false;
 
     /**
      * Creates a form with no title that has a close button
@@ -166,11 +168,22 @@ public class UIForm extends UIBackgroundContainer {
 
             add(titleLabel);
         }
-
+        
+        @Subscribe
+        public void onPress(MouseEvent.Press event) {
+        	if (titleCloseButton != null && titleCloseButton.isInsideBounds(event.getX(), event.getY())) {
+                dragging = false;
+        		return;
+            }
+        	dragging = true;
+        	dragX = relativeX(event.getX());
+        	dragY = relativeY(event.getY());
+        }
+       
         @Subscribe
         public void onDrag(MouseEvent.Drag event) {
             // Do not drag if not the left mouse button
-            if (event.getButton() != MouseButton.LEFT) {
+            if (!dragging || event.getButton() != MouseButton.LEFT) {
                 return;
             }
 
@@ -184,8 +197,8 @@ public class UIForm extends UIBackgroundContainer {
                 return;
             }
 
-            final int xPos = event.getX();
-            final int yPos = event.getY();
+            final int xPos = parentContainer.relativeX(event.getX()) - dragX;
+            final int yPos = parentContainer.relativeY(event.getY()) - dragY;
 
             getParent().setPosition(xPos < 0 ? 0 : xPos, yPos < 0 ? 0 : yPos, Anchor.NONE);
         }
