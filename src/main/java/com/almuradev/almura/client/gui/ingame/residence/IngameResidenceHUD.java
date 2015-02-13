@@ -92,7 +92,6 @@ public class IngameResidenceHUD extends AlmuraGui {
         resLeaseExpire.setFontScale(0.7F);
 
         resPane.add(title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire);
-        title.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
         addToScreen(resPane);
     }
 
