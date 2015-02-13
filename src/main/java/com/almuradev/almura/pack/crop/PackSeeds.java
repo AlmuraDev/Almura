@@ -152,11 +152,6 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
     }
 
     @Override
-    public String getTextureName() {
-        return textureName;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T extends INode<?>> T addNode(T node) {
         boolean exists = nodes.put((Class<? extends INode<?>>) node.getClass(), node) != null;

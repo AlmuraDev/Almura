@@ -106,7 +106,7 @@ public class IngameBlockInformation extends AlmuraGui {
 
             IModelContainer modelContainer = (IModelContainer) block;
 
-            textureNameLabel = new UILabel(this, ChatColor.GRAY + "Texture Name: " + ChatColor.BLUE + modelContainer.getTextureName());
+            textureNameLabel = new UILabel(this, ChatColor.GRAY + "Texture Name: " + ChatColor.BLUE + block.getTextureName());
             textureNameLabel.setPosition(xPadding, getPaddedY(blockBoundsLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             form.getContentContainer().add(textureNameLabel);
 

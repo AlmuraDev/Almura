@@ -124,11 +124,6 @@ public class PackItem extends Item implements IPackObject, IClipContainer, IMode
     }
 
     @Override
-    public String getTextureName() {
-        return textureName;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T extends INode<?>> T addNode(T node) {
         nodes.put((Class<? extends INode<?>>) node.getClass(), node);

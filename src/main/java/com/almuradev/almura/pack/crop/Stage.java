@@ -102,11 +102,6 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockMo
         return modelName;
     }
 
-    @Override
-    public String getTextureName() {
-        return block.getTextureName();
-    }
-
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIcon blockIcon, String textureName, IIconRegister register) {
         clippedIcons = PackUtil.generateClippedIconsFromCoordinates(blockIcon, textureName, textureCoordinatesByFace);

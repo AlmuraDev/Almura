@@ -157,11 +157,6 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
-    public String getTextureName() {
-        return textureName;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T extends INode<?>> T addNode(T node) {
         nodes.put((Class<? extends INode<?>>) node.getClass(), node);
