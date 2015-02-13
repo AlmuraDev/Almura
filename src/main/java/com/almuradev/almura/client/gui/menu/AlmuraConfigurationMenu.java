@@ -191,11 +191,9 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         this.mc.gameSettings.snooperEnabled = false;
         this.mc.gameSettings.renderDistanceChunks = 12;
         this.mc.gameSettings.viewBobbing = false;
-
-        this.mc.scheduleResourcesRefresh();
         this.mc.gameSettings.saveOptions();
 
-        mc.displayGuiScreen(new AlmuraConfirmMenu(parent.isPresent() ? parent.get() : null, "Optimized Configuration Applied.", "Almura 2.0"));
+        mc.displayGuiScreen(new AlmuraConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to apply settings.", "Almura 2.0"));
     }
 
     @Subscribe
