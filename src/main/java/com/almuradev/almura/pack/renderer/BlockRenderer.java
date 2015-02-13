@@ -10,6 +10,7 @@ import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.IClipContainer;
 import com.almuradev.almura.pack.INodeContainer;
+import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.model.IModel;
 import com.almuradev.almura.pack.model.PackFace;
@@ -91,30 +92,20 @@ public class BlockRenderer extends MalisisRenderer {
                 clippedIcons = ((IClipContainer) block).getClipIcons();
             }
 
-            if (pface.getTextureId() > clippedIcons.length) {
-                params.icon.set(clippedIcons[0]);
-            } else {
-                params.icon.set(clippedIcons[pface.getTextureId()]);
+            if (!PackUtil.isEmptyClip(clippedIcons)) {
+                if (pface.getTextureId() >= clippedIcons.length) {
+                    params.icon.set(clippedIcons[0]);
+                } else {
+                    final ClippedIcon toSet = clippedIcons[pface.getTextureId()];
+                    if (toSet == null) {
+                        params.icon.set(clippedIcons[0]);
+                    } else {
+                        params.icon.set(toSet);
+                    }
+                }
             }
         }
         return super.getIcon(params);
-    }
-
-    @Override
-    public void applyTexture(Shape shape, RenderParameters parameters) {
-        //shape.applyMatrix();
-        for (Face f : shape.getFaces()) {
-            face = f;
-            RenderParameters params = RenderParameters.merge(f.getParameters(), parameters);
-            IIcon icon = getIcon(params);
-            if (icon != null) {
-                boolean flipU = params.flipU.get();
-                if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST) {
-                    flipU = !flipU;
-                }
-                f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
-            }
-        }
     }
 
     @Override
