@@ -27,6 +27,7 @@ import net.malisis.core.renderer.element.Vertex;
 import net.malisis.core.renderer.element.shape.Cube;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
@@ -82,7 +83,7 @@ public class BlockRenderer extends MalisisRenderer {
 
     @Override
     protected IIcon getIcon(RenderParameters params) {
-        if (face != null) {
+        if (face instanceof PackFace) {
             final PackFace pface = (PackFace) face;
             final ClippedIcon[] clippedIcons;
 
