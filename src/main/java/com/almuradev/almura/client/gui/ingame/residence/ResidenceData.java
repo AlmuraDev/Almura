@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.gui.ingame.residence;
 
 public class ResidenceData {
+
     public static boolean WITHIN_RESIDENCE = false;
     public static String NAME;
     public static String OWNER_NAME;

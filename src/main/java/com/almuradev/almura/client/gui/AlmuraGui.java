@@ -20,7 +20,9 @@ import java.awt.*;
 import java.io.IOException;
 
 public abstract class AlmuraGui extends MalisisGui {
+
     public static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
+    public static final GuiIcon ICON_EMPTY;
     public static final GuiIcon ICON_BAR;
     public static final GuiIcon ICON_HEART;
     public static final GuiIcon ICON_ARMOR;
@@ -32,7 +34,10 @@ public abstract class AlmuraGui extends MalisisGui {
     public static final GuiIcon ICON_MAP;
     public static final GuiIcon ICON_WORLD;
     public static final GuiIcon ICON_CLOCK;
-    protected static final GuiTexture TEXTURE_DEFAULT;
+    public static final GuiIcon ICON_CLOSE_NORMAL;
+    public static final GuiIcon ICON_CLOSE_HOVER;
+    public static final GuiIcon ICON_CLOSE_PRESSED;
+    public static final GuiTexture TEXTURE_DEFAULT;
     protected final Optional<AlmuraGui> parent;
 
     static {
@@ -44,6 +49,7 @@ public abstract class AlmuraGui extends MalisisGui {
             throw new RuntimeException("Failed load gui sprite sheet.", e);
         }
 
+        ICON_EMPTY = getIcon(283, 141, 1, 1);
         ICON_BAR = getIcon(0, 126, 256, 14);
         ICON_HEART = getIcon(149, 62, 26, 26);
         ICON_ARMOR = getIcon(64, 63, 20, 27);
@@ -55,6 +61,9 @@ public abstract class AlmuraGui extends MalisisGui {
         ICON_MAP = getIcon(0, 95, 32, 26);
         ICON_WORLD = getIcon(133, 93, 32, 32);
         ICON_CLOCK = getIcon(86, 64, 28, 26);
+        ICON_CLOSE_NORMAL = getIcon(239, 69, 45, 19);
+        ICON_CLOSE_HOVER = getIcon(239, 88, 45, 19);
+        ICON_CLOSE_PRESSED = getIcon(239, 107, 45, 19);
     }
 
     /**
@@ -75,8 +84,22 @@ public abstract class AlmuraGui extends MalisisGui {
      * @param height in pixels
      * @return the icon
      */
-    protected static GuiIcon getIcon(int x, int y, int width, int height) {
+    public static GuiIcon getIcon(int x, int y, int width, int height) {
         return TEXTURE_DEFAULT.getIcon(x, y, width, height);
+    }
+
+    public static int getPaddedX(UIComponent component, int padding) {
+        if (component == null) {
+            return 0;
+        }
+        return component.getX() + component.getWidth() + padding;
+    }
+
+    public static int getPaddedY(UIComponent component, int padding) {
+        if (component == null) {
+            return 0;
+        }
+        return component.getY() + component.getHeight() + padding;
     }
 
     protected abstract void setup();
@@ -92,19 +115,5 @@ public abstract class AlmuraGui extends MalisisGui {
         }
         mc.displayGuiScreen(parent.isPresent() ? parent.get() : null);
         mc.setIngameFocus();
-    }
-
-    protected int getPaddedX(UIComponent component, int padding) {
-        if (component == null) {
-            return 0;
-        }
-        return component.getX() + component.getWidth() + padding;
-    }
-
-    protected int getPaddedY(UIComponent component, int padding) {
-        if (component == null) {
-            return 0;
-        }
-        return component.getY() + component.getHeight() + padding;
     }
 }

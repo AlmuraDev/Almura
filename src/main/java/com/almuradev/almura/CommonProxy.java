@@ -8,6 +8,7 @@ package com.almuradev.almura;
 import com.almuradev.almura.items.Items;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
+import com.almuradev.almura.pack.IItemBlockInformation;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
@@ -18,6 +19,7 @@ import com.almuradev.almura.pack.container.PackContainerTileEntity;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
+import com.almuradev.almura.pack.item.PackItemBlock;
 import com.almuradev.almura.pack.mapper.EntityMapper;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.node.SoilNode;
@@ -131,7 +133,12 @@ public class CommonProxy {
         //Stage 1a -> Register blocks
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject) {
-                GameRegistry.registerBlock(block, ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
+                if (block instanceof IItemBlockInformation) {
+                    GameRegistry.registerBlock(block, PackItemBlock.class,
+                                               ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
+                } else {
+                    GameRegistry.registerBlock(block, ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
+                }
             }
         }
 
@@ -223,13 +230,16 @@ public class CommonProxy {
                 if (block instanceof PackCrops) {
                     for (Stage stage : ((PackCrops) block).getStages().values()) {
                         final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
-                        stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), block, false, stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
-                        stage.addNode(PackCreator.createFertilizerNode(pack, stage.getIdentifier(), stage.getId(), stageNode.getNode(PackKeys.NODE_FERTILIZER.getKey())));
+                        stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), block, false,
+                                                                  stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
+                        stage.addNode(PackCreator.createFertilizerNode(pack, stage.getIdentifier(), stage.getId(),
+                                                                       stageNode.getNode(PackKeys.NODE_FERTILIZER.getKey())));
                     }
                 } else {
                     //Break
                     ((INodeContainer) block).addNode(
-                            PackCreator.createBreakNode(pack, ((IPackObject) block).getIdentifier(), block, true, reader.getNode(PackKeys.NODE_BREAK.getKey())));
+                            PackCreator.createBreakNode(pack, ((IPackObject) block).getIdentifier(), block, true,
+                                                        reader.getNode(PackKeys.NODE_BREAK.getKey())));
 
                 }
 
@@ -283,7 +293,8 @@ public class CommonProxy {
 
         for (Object obj : CraftingManager.getInstance().getRecipeList()) {
             if (obj instanceof com.almuradev.almura.recipe.IRecipe) {
-                if (((com.almuradev.almura.recipe.IRecipe) obj).checkMultiQuantity() && ((IRecipe) obj).matches((InventoryCrafting) event.craftMatrix, event.player.worldObj)) {
+                if (((com.almuradev.almura.recipe.IRecipe) obj).checkMultiQuantity() && ((IRecipe) obj)
+                        .matches((InventoryCrafting) event.craftMatrix, event.player.worldObj)) {
                     recipe = (IRecipe) obj;
                     break;
                 }
@@ -336,7 +347,8 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!event.world.isRemote && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && event.entityPlayer.getHeldItem() == null && event.entityPlayer.isSneaking()) {
+        if (!event.world.isRemote && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && event.entityPlayer.getHeldItem() == null
+            && event.entityPlayer.isSneaking()) {
             final TileEntity te = event.world.getTileEntity(event.x, event.y, event.z);
             if (te != null && te instanceof TileEntitySign) {
                 if (event.entityPlayer instanceof EntityPlayerMP) {

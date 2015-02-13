@@ -25,8 +25,8 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class IngameDebugHUD extends AlmuraGui {
 
-    public static boolean UPDATES_ENABLED = false;
     public static final Runtime RUNTIME = Runtime.getRuntime();
+    public static boolean UPDATES_ENABLED = false;
     public UILabel fps, memoryDebug, memoryAllocated, xLoc, yLoc, zLoc, directionLoc, biomeName, blockLight, skyLight, rawLight;
     private Chunk chunk;
     private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE, yaw = Integer.MIN_VALUE;

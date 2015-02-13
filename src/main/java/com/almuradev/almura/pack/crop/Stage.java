@@ -19,7 +19,6 @@ import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -102,15 +101,10 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockMo
     public String getModelName() {
         return modelName;
     }
-    
+
     @Override
     public String getTextureName() {
         return block.getTextureName();
-    }
-    
-    @Override
-    public String getPackName() {
-        return getPack().getName();
     }
 
     @SideOnly(Side.CLIENT)

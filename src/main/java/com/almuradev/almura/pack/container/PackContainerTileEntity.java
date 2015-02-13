@@ -23,12 +23,13 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     private static final String TAG_INT_MAX_STACK_SIZE = "MaxStackSize";
     private static final String TAG_LIST_ITEMS = "Items";
     private static final String TAG_BYTE_SLOT = "Slot";
-    private static final String TAG_BOOLEAN_FULL = "Full";
+    private static final String TAG_BOOLEAN_IS_EMPTY = "Is_Empty";
+    private static final String TAG_BOOLEAN_IS_FULL = "Is_Full";
     private ItemStack[] contents;
     private String title = null;
     private int size = Integer.MIN_VALUE;
     private int maxStackSize = Integer.MIN_VALUE;
-    private boolean hasEmptySlots = true;
+    private boolean isEmpty = true, isFull, hasContents;
 
     public PackContainerTileEntity() {
     }
@@ -77,9 +78,15 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
                 }
             }
         }
-        if (compound.hasKey(TAG_BOOLEAN_FULL)) {
-            hasEmptySlots = compound.getBoolean(TAG_BOOLEAN_FULL);
+
+        if (compound.hasKey(TAG_BOOLEAN_IS_EMPTY)) {
+            isEmpty = compound.getBoolean(TAG_BOOLEAN_IS_EMPTY);
         }
+        if (compound.hasKey(TAG_BOOLEAN_IS_FULL)) {
+            isFull = compound.getBoolean(TAG_BOOLEAN_IS_FULL);
+        }
+
+        hasContents = !isEmpty;
     }
 
     @Override
@@ -101,30 +108,38 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
         }
 
         compound.setTag(TAG_LIST_ITEMS, nbttaglist);
-        boolean hasEmptySlots = false;
-        for (ItemStack stack : contents) {
-            if (stack == null) {
-                hasEmptySlots = true;
-            }
+        compound.setBoolean(TAG_BOOLEAN_IS_EMPTY, isEmpty);
+        compound.setBoolean(TAG_BOOLEAN_IS_FULL, isFull);
+    }
+
+    @Override
+    public void markDirty() {
+        if (!worldObj.isRemote) {
+            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
         }
-        this.hasEmptySlots = hasEmptySlots;
-        compound.setBoolean(TAG_BOOLEAN_FULL, hasEmptySlots);
+        super.markDirty();
     }
 
     @Override
     public Packet getDescriptionPacket() {
         final NBTTagCompound sync = new NBTTagCompound();
-        sync.setBoolean(TAG_BOOLEAN_FULL, hasEmptySlots);
+        sync.setBoolean(TAG_BOOLEAN_IS_EMPTY, isEmpty);
+        sync.setBoolean(TAG_BOOLEAN_IS_FULL, isFull);
         return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, sync);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-        if (pkt.func_148857_g().hasKey(TAG_BOOLEAN_FULL)) {
-            hasEmptySlots = pkt.func_148857_g().getBoolean(TAG_BOOLEAN_FULL);
-
-            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        if (pkt.func_148857_g().hasKey(TAG_BOOLEAN_IS_EMPTY)) {
+            isEmpty = pkt.func_148857_g().getBoolean(TAG_BOOLEAN_IS_EMPTY);
         }
+        if (pkt.func_148857_g().hasKey(TAG_BOOLEAN_IS_FULL)) {
+            isFull = pkt.func_148857_g().getBoolean(TAG_BOOLEAN_IS_FULL);
+        }
+
+        hasContents = !isEmpty;
+
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     @Override
@@ -147,6 +162,9 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
             if (slotStack.stackSize <= amount) {
                 itemstack = slotStack;
                 contents[slot] = null;
+                if (!worldObj.isRemote) {
+                    handleInventoryChange();
+                }
                 markDirty();
                 return itemstack;
             } else {
@@ -156,6 +174,9 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
                     contents[slot] = null;
                 }
 
+                if (!worldObj.isRemote) {
+                    handleInventoryChange();
+                }
                 markDirty();
                 return itemstack;
             }
@@ -168,6 +189,9 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     public ItemStack getStackInSlotOnClosing(int slot) {
         ItemStack slotStack = contents[slot];
         if (slotStack != null) {
+            if (!worldObj.isRemote) {
+                handleInventoryChange();
+            }
             contents[slot] = null;
             return slotStack;
         } else {
@@ -183,6 +207,9 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
             stack.stackSize = getInventoryStackLimit();
         }
 
+        if (!worldObj.isRemote) {
+            handleInventoryChange();
+        }
         markDirty();
     }
 
@@ -215,16 +242,8 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     @Override
     public void closeInventory() {
         if (!worldObj.isRemote) {
-            boolean hasEmptySlots = false;
-
-            for (ItemStack stack : contents) {
-                if (stack == null) {
-                    hasEmptySlots = true;
-                }
-            }
-
-            this.hasEmptySlots = hasEmptySlots;
-            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+            handleInventoryChange();
+            markDirty();
         }
     }
 
@@ -233,11 +252,39 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
         return true;
     }
 
-    public boolean hasEmptySlots() {
-        return hasEmptySlots;
+    public boolean isEmpty() {
+        return isEmpty;
+    }
+
+    public boolean isFull() {
+        return isFull;
+    }
+
+    public boolean hasContents() {
+        return hasContents;
     }
 
     public ItemStack[] getContents() {
         return contents;
+    }
+
+    private void handleInventoryChange() {
+        boolean empty = true, full = true, contents = false;
+
+        for (ItemStack stack : getContents()) {
+            if (stack == null) {
+                full = false;
+                continue;
+            } else if (stack.stackSize != stack.getMaxStackSize()) {
+                full = false;
+            }
+
+            empty = false;
+            contents = true;
+        }
+
+        isEmpty = empty;
+        isFull = full;
+        hasContents = contents;
     }
 }

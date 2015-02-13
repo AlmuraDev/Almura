@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.client.gui;
 
+import com.almuradev.almura.client.gui.components.UIBackground;
 import net.malisis.core.renderer.animation.Animation;
 import net.malisis.core.renderer.animation.transformation.SizeTransform;
 import net.minecraft.client.Minecraft;
@@ -24,8 +25,6 @@ public abstract class AlmuraBackgroundGui extends AlmuraGui {
         background.register(this);
         addToScreen(background);
         animate(background.animation);
-
-        setup();
     }
 
 

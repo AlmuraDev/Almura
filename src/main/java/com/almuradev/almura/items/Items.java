@@ -18,7 +18,9 @@ public class Items {
 
     public static final ExplosionWand WAND_EXPLOSION = new ExplosionWand("wand.explosion", "Explosion Wand", "explosion_wand", Tabs.TAB_TOOLS, 5);
     public static final FireballWand WAND_FIREBALL = new FireballWand("wand.fireball", "Fireball Wand", "fireball_wand", Tabs.TAB_TOOLS);
-    public static final InformationWand WAND_INFORMATION = new InformationWand("wand.information", "Information Wand", "information_wand", Tabs.TAB_TOOLS);
+    public static final InformationWand
+            WAND_INFORMATION =
+            new InformationWand("wand.information", "Information Wand", "information_wand", Tabs.TAB_TOOLS);
     public static final LightningWand WAND_LIGHTNING = new LightningWand("wand.lightning", "Lightning Wand", "lightning_wand", Tabs.TAB_TOOLS);
     public static final MetadataWand WAND_METADATA = new MetadataWand("wand.metadata", "Metadata Wand", "metadata_wand", Tabs.TAB_TOOLS);
     public static final ExplosionWand WAND_NUCLEAR = new ExplosionWand("wand.nuclear", "Nuclear Wand", "nuclear_wand", Tabs.TAB_TOOLS, 60);

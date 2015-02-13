@@ -46,7 +46,8 @@ public class InformationWand extends AlmuraItem {
             if (block != null) {
                 ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S0BPacketAnimation(player, 0));
                 player.swingItem();
-                Almura.NETWORK_FORGE.sendTo(new S01OpenBlockInformationGui(block, metadata, block.getBlockHardness(world, x, y, z)), (EntityPlayerMP) player);
+                Almura.NETWORK_FORGE
+                        .sendTo(new S01OpenBlockInformationGui(block, metadata, block.getBlockHardness(world, x, y, z)), (EntityPlayerMP) player);
             }
         }
         return false;
