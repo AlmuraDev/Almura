@@ -22,6 +22,7 @@ public class IngameResidenceHUD extends AlmuraGui {
     public static final Minecraft MINECRAFT = Minecraft.getMinecraft();
     public UILabel title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire;
     public UIBackgroundContainer resPane;
+    private boolean firstDraw = true;
 
     public IngameResidenceHUD() {
         super(null);
@@ -34,7 +35,7 @@ public class IngameResidenceHUD extends AlmuraGui {
         guiscreenBackground = false;
 
         // Construct Hud with all elements
-        resPane = new UIBackgroundContainer(this, 120, 55);
+        resPane = new UIBackgroundContainer(this, 90, 55);
         resPane.setAnchor(Anchor.RIGHT | Anchor.BOTTOM);
         resPane.setColor(Integer.MIN_VALUE);
         resPane.setBackgroundAlpha(125);
@@ -91,7 +92,7 @@ public class IngameResidenceHUD extends AlmuraGui {
         resLeaseExpire.setFontScale(0.7F);
 
         resPane.add(title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire);
-
+        title.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
         addToScreen(resPane);
     }
 
@@ -103,6 +104,10 @@ public class IngameResidenceHUD extends AlmuraGui {
 
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             setWorldAndResolution(MINECRAFT, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+            if (firstDraw) { // This is used to fix alignment issues.
+            	title.setText(ChatColor.AQUA + "Residence Info");
+            	firstDraw = false;
+            }
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }
@@ -118,5 +123,13 @@ public class IngameResidenceHUD extends AlmuraGui {
         resBank.setText("Vault: " + ResidenceData.VAULT);
         resLeaseCost.setText("Lease Cost: " + ChatColor.BLUE + ResidenceData.LEASE_COST);
         resLeaseExpire.setText(ChatColor.YELLOW + ResidenceData.LEASE_EXPIRATION);
+        int originalWidth = resPane.getWidth();
+        if (resOwnerOnline.getWidth() + 20 > originalWidth) {
+        	resPane.setSize(resOwnerOnline.getWidth() + 10, resPane.getHeight());
+        }
+
+        if (resLeaseExpire.getWidth() + 20 > originalWidth) {
+        	resPane.setSize(resLeaseExpire.getWidth() + 10, resPane.getHeight());
+        }
     }
 }
