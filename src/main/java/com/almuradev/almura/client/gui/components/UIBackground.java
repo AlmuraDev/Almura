@@ -56,10 +56,10 @@ public class UIBackground extends UIImage {
             } catch (IOException e) {
                 if (Configuration.DEBUG_MODE) {
                     Almura.LOGGER.warn("Failed to filter background images (jpg/png) for TimeState [" + state
-                                       + "]. Using default texture for that TimeState.", e);
+                            + "]. Using default texture for that TimeState.", e);
                 } else {
                     Almura.LOGGER.warn("Failed to filter background images (jpg/png) for TimeState [" + state
-                                       + "]. Using default texture for that TimeState.");
+                            + "]. Using default texture for that TimeState.");
                 }
             }
         }

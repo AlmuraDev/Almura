@@ -22,8 +22,8 @@ import java.util.Map;
 
 /**
  * minecraft:
- *     dye:
- *         bonemeal: 15
+ * dye:
+ * bonemeal: 15
  */
 public class GameObjectMapper {
 
@@ -39,7 +39,7 @@ public class GameObjectMapper {
             for (Map.Entry<String, GameObject> objectEntry : modEntry.getValue().entrySet()) {
                 if (objectEntry.getKey().equalsIgnoreCase(name)) {
                     Almura.LOGGER.warn("Duplicate [" + name + "] for Minecraft object [" + gameObject + "] for mod [" + modEntry.getKey()
-                                       + "]. Only one remapped name is allowed!");
+                            + "]. Only one remapped name is allowed!");
                     return false;
                 }
             }
@@ -77,11 +77,11 @@ public class GameObjectMapper {
                 for (String remapped : objectConfigurationNode.getKeys(false)) {
                     final Object value = objectConfigurationNode.getChild(remapped).getValue();
                     if (add(modid, found.get().minecraftObject, remapped, value) && (Configuration.DEBUG_MODE
-                                                                                     || Configuration.DEBUG_MAPPINGS_MODE)) {
+                            || Configuration.DEBUG_MAPPINGS_MODE)) {
                         Almura.LOGGER
                                 .info("Registered mapping [" + remapped + "] with value [" + value + "] for object [" + found.get().minecraftObject
-                                      + "] for mod [" + modid
-                                      + "].");
+                                        + "] for mod [" + modid
+                                        + "].");
                     }
                 }
             }

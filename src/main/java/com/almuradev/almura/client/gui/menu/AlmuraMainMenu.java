@@ -37,7 +37,7 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
-
+     *
      * @param parent the {@link AlmuraGui} that we came from
      */
     public AlmuraMainMenu(AlmuraGui parent) {
@@ -116,7 +116,7 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         trademarkLabel.setFontScale(0.7f);
 
         form.getContentContainer().add(logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
-                                       aboutButton, quitButton, copyrightLabel, trademarkLabel);
+                aboutButton, quitButton, copyrightLabel, trademarkLabel);
 
         addToScreen(form);
     }

@@ -12,11 +12,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -121,7 +117,7 @@ public class Query {
                 challengeInteger = Integer.parseInt(new String(buffer).trim());
             }
             sendPacket(socket, address, 0xFE, 0xFD, 0x00, 0x01, 0x01, 0x01, 0x01, challengeInteger >> 24, challengeInteger >> 16,
-                       challengeInteger >> 8, challengeInteger, 0x00, 0x00, 0x00, 0x00);
+                    challengeInteger >> 8, challengeInteger, 0x00, 0x00, 0x00, 0x00);
             final int length = receivePacket(socket, receiveData).getLength();
             values = new HashMap<>();
             final AtomicInteger cursor = new AtomicInteger(5);

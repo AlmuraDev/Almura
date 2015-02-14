@@ -97,7 +97,7 @@ public class ClientProxy extends CommonProxy {
     public void onTextureStitchEventPre(TextureStitchEvent.Pre event) {
         Almura.LOGGER
                 .info("This computer can handle a maximum stitched texture size of width [" + Minecraft.getGLMaximumTextureSize() + "] and length ["
-                      + Minecraft.getGLMaximumTextureSize() + "].");
+                        + Minecraft.getGLMaximumTextureSize() + "].");
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

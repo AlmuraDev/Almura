@@ -25,8 +25,8 @@ import java.util.Set;
 
 /**
  * minecraft:
- *     Player: player
- *     Zombie: zombie
+ * Player: player
+ * Zombie: zombie
  */
 public class EntityMapper {
 

@@ -34,7 +34,7 @@ public class ExplosionWand extends AlmuraItem {
         if (!world.isRemote) {
             // Fire PlayerInteractEvent
             final PlayerInteractEvent event = new PlayerInteractEvent(player, PlayerInteractEvent.Action.RIGHT_CLICK_AIR, (int) player.posX,
-                                                                      (int) player.posY, (int) player.posZ, -1, world);
+                    (int) player.posY, (int) player.posZ, -1, world);
             MinecraftForge.EVENT_BUS.post(event);
 
             // Return if the event was cancelled
@@ -55,13 +55,13 @@ public class ExplosionWand extends AlmuraItem {
                 itemStack.stackTagCompound.setDouble("posZ", player.posZ);
                 itemStack.stackTagCompound.setBoolean("primed", true);
                 player.addChatComponentMessage(new ChatComponentText(String.format("Primed detonation at [%1$s] [%2$s] [%3$s]",
-                                                                                   DECIMAL_FORMAT.format(player.posX),
-                                                                                   DECIMAL_FORMAT.format(player.posY),
-                                                                                   DECIMAL_FORMAT.format(player.posZ))));
+                        DECIMAL_FORMAT.format(player.posX),
+                        DECIMAL_FORMAT.format(player.posY),
+                        DECIMAL_FORMAT.format(player.posZ))));
             } else {
                 world.createExplosion(player, itemStack.getTagCompound().getDouble("posX"),
-                                      itemStack.getTagCompound().getDouble("posY"),
-                                      itemStack.getTagCompound().getDouble("posZ"), explosionStrength, true);
+                        itemStack.getTagCompound().getDouble("posY"),
+                        itemStack.getTagCompound().getDouble("posZ"), explosionStrength, true);
                 itemStack.stackTagCompound.setBoolean("primed", false);
                 player.addChatComponentMessage(new ChatComponentText("Detonation! You can now set a new prime location."));
             }

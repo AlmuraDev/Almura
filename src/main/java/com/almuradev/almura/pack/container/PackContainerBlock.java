@@ -7,24 +7,10 @@ package com.almuradev.almura.pack.container;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.pack.IBlockClipContainer;
-import com.almuradev.almura.pack.IBlockModelContainer;
-import com.almuradev.almura.pack.IItemBlockInformation;
-import com.almuradev.almura.pack.INodeContainer;
-import com.almuradev.almura.pack.IPackObject;
-import com.almuradev.almura.pack.Pack;
-import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.RotationMeta;
+import com.almuradev.almura.pack.*;
 import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
-import com.almuradev.almura.pack.node.BreakNode;
-import com.almuradev.almura.pack.node.CollisionNode;
-import com.almuradev.almura.pack.node.ContainerNode;
-import com.almuradev.almura.pack.node.INode;
-import com.almuradev.almura.pack.node.LightNode;
-import com.almuradev.almura.pack.node.RenderNode;
-import com.almuradev.almura.pack.node.RotationNode;
-import com.almuradev.almura.pack.node.ToolsNode;
+import com.almuradev.almura.pack.node.*;
 import com.almuradev.almura.pack.node.container.StateProperty;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
@@ -70,7 +56,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 public class PackContainerBlock extends BlockContainer implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer,
-                                                                  IItemBlockInformation {
+        IItemBlockInformation {
 
     public static int renderId;
     private final Pack pack;
@@ -203,7 +189,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
                         itemstack.stackSize -= j1;
                         item =
                                 new EntityItem(world, (double) ((float) x + f), (double) ((float) y + f1), (double) ((float) z + f2),
-                                               new ItemStack(itemstack.getItem(), j1, itemstack.getItemDamage()));
+                                        new ItemStack(itemstack.getItem(), j1, itemstack.getItemDamage()));
                         float f3 = 0.05F;
                         item.motionX = (double) ((float) RangeProperty.RANDOM.nextGaussian() * f3);
                         item.motionY = (double) ((float) RangeProperty.RANDOM.nextGaussian() * f3 + 0.2F);
@@ -330,7 +316,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
                     if (propModelContainer.isPresent()) {
                         collisionBoundingBox =
                                 propModelContainer.get().getPhysics().getCollision(collisionBoundingBox, world, x,
-                                                                                   y, z);
+                                        y, z);
                     }
                 }
             }
@@ -361,7 +347,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
                     if (propModelContainer.isPresent()) {
                         wireframeBoundingBox =
                                 propModelContainer.get().getPhysics().getWireframe(wireframeBoundingBox, world, x,
-                                                                                   y, z);
+                                        y, z);
                     }
                 }
             }

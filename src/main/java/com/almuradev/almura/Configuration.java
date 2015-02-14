@@ -156,15 +156,15 @@ public class Configuration {
         DEBUG_RECIPES_MODE = value;
     }
 
-    public static void setChestRenderDinstance(int value) {
+    public static void setChestRenderDistance(int value) {
         CHEST_RENDER_DISTANCE = value;
     }
 
-    public static void setSignRenderDinstance(int value) {
+    public static void setSignRenderDistance(int value) {
         SIGN_RENDER_DISTANCE = value;
     }
 
-    public static void setItemFrameRenderDinstance(int value) {
+    public static void setItemFrameRenderDistance(int value) {
         ITEM_FRAME_RENDER_DISTANCE = value;
     }
 }

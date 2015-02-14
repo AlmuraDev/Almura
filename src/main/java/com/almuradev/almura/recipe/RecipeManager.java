@@ -48,7 +48,7 @@ public class RecipeManager {
         if (existing.isPresent()) {
             throw new DuplicateRecipeException(
                     "Recipe [" + id + "] of type [" + clazz.getSimpleName().toUpperCase() + "] in [" + owner + "] in pack [" + pack.getName()
-                    + "] is a duplicate. Matches [" + existing.get() + "].");
+                            + "] is a duplicate. Matches [" + existing.get() + "].");
         }
 
         if (clazz == IShapedRecipe.class) {
@@ -57,7 +57,7 @@ public class RecipeManager {
             CraftingManager.getInstance().getRecipeList().add(recipe);
         } else if (clazz == ISmeltRecipe.class) {
             FurnaceRecipes.smelting().func_151394_a(((ISmeltRecipe) recipe).getInput(), ((ISmeltRecipe) recipe).getOutput(),
-                                                    ((ISmeltRecipe) recipe).getSmeltExperience());
+                    ((ISmeltRecipe) recipe).getSmeltExperience());
             SMELT_RECIPES.add((ISmeltRecipe) recipe);
         }
 
@@ -147,7 +147,7 @@ public class RecipeManager {
                 if (!(object1 instanceof Block)) {
                     throw new InvalidRecipeException(
                             "Game Object [" + object1 + "] + in recipe [" + id + "] of type [SHAPELESS] in [" + owner + "] in pack [" + pack.getName()
-                            + "] is not a block, item, or itemstack.");
+                                    + "] is not a block, item, or itemstack.");
                 }
                 stacks.add(new ItemStack((Block) object1));
             }
@@ -199,7 +199,7 @@ public class RecipeManager {
                         // b. Registered stack size is greater than or equal to recipe stack size
                         // c. Damage values match
                         if (unknownStack.getItem() == recipeStack.getItem() && unknownStack.stackSize != recipeStack.stackSize
-                            && unknownStack.getItemDamage() == recipeStack.getItemDamage()) {
+                                && unknownStack.getItemDamage() == recipeStack.getItemDamage()) {
                             items.remove(rStack);
                         }
                     }
@@ -251,7 +251,7 @@ public class RecipeManager {
                     // b. Registered stack size is less than recipe stack size
                     // c. Damage values don't match
                     if (unknownStack.getItem() != recipeStack.getItem() || unknownStack.stackSize != recipeStack.stackSize
-                        || unknownStack.getItemDamage() != recipeStack.getItemDamage()) {
+                            || unknownStack.getItemDamage() != recipeStack.getItemDamage()) {
                         doesMatch = false;
                         break;
                     }

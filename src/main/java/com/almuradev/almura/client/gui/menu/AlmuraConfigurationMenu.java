@@ -22,16 +22,12 @@ import java.util.Arrays;
 
 public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
-    private UIForm form;
-    private UIButton graphicsButton, cancelButton, saveButton;
     private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
             debugMappingsCheckBox, debugRecipesCheckBox;
-    private UILabel chestRenderDistance, signRenderDistance, itemFrameRenderDistance;
-    private UISelect chestDistanceDownMenu, signDistanceDownMenu, itemFrameDistanceDownMenu;
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
-
+     *
      * @param parent the {@link AlmuraGui} that we came from
      */
     public AlmuraConfigurationMenu(AlmuraGui parent) {
@@ -42,7 +38,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
     @Override
     protected void setup() {
         // Create the form
-        form = new UIForm(this, 300, 225, "Configuration");
+        final UIForm form = new UIForm(this, 300, 225, "Configuration");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         final int padding = 4;
@@ -60,17 +56,17 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         residenceHudCheckBox.setName("checkbox.gui.residence_hud");
         residenceHudCheckBox.register(this);
 
-        chestRenderDistance = new UILabel(this, ChatColor.WHITE + "Chest Distance:");
+        final UILabel chestRenderDistance = new UILabel(this, ChatColor.WHITE + "Chest Distance:");
         chestRenderDistance.setPosition(-55, padding * 2, Anchor.RIGHT | Anchor.TOP);
 
-        signRenderDistance = new UILabel(this, ChatColor.WHITE + "Sign Distance:");
+        final UILabel signRenderDistance = new UILabel(this, ChatColor.WHITE + "Sign Distance:");
         signRenderDistance.setPosition(-55, almuraGuiCheckBox.getY() + (padding * 4 + 25), Anchor.RIGHT | Anchor.TOP);
 
-        itemFrameRenderDistance = new UILabel(this, ChatColor.WHITE + "Item Frame Distance:");
+        final UILabel itemFrameRenderDistance = new UILabel(this, ChatColor.WHITE + "Item Frame Distance:");
         itemFrameRenderDistance.setPosition(-55, signRenderDistance.getY() + (padding * 4 + 25), Anchor.RIGHT | Anchor.TOP);
 
         // Chest Render Distance
-        chestDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
+        final UISelect chestDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
         chestDistanceDownMenu.setPosition(-15, padding * 2, Anchor.TOP | Anchor.RIGHT);
         chestDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.CHEST_RENDER_DISTANCE == 16) {
@@ -84,7 +80,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         chestDistanceDownMenu.register(this);
 
         // Sign Render Distance
-        signDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
+        final UISelect signDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
         signDistanceDownMenu.setPosition(-15, chestDistanceDownMenu.getY() + (padding * 4 + 25), Anchor.TOP | Anchor.RIGHT);
         signDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.SIGN_RENDER_DISTANCE == 16) {
@@ -98,7 +94,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         signDistanceDownMenu.register(this);
 
         // Sign Render Distance
-        itemFrameDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
+        final UISelect itemFrameDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
         itemFrameDistanceDownMenu.setPosition(-15, signDistanceDownMenu.getY() + (padding * 4 + 25), Anchor.TOP | Anchor.RIGHT);
         itemFrameDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.ITEM_FRAME_RENDER_DISTANCE == 16) {
@@ -149,51 +145,34 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         debugRecipesCheckBox.setName("checkbox.gui.debug_recipes");
 
         // Set Optimized Client Settings
-        graphicsButton = new UIButton(this, "Load Optimized Settings");
+        final UIButton graphicsButton = new UIButton(this, "Load Optimized Settings");
         graphicsButton.setSize(50, 16);
         graphicsButton.setPosition(padding, -padding, Anchor.LEFT | Anchor.BOTTOM);
         graphicsButton.setName("button.graphics");
         graphicsButton.register(this);
 
         // Create the save button
-        saveButton = new UIButton(this, "Save");
+        final UIButton saveButton = new UIButton(this, "Save");
         saveButton.setSize(50, 16);
         saveButton.setPosition(-padding, -padding, Anchor.RIGHT | Anchor.BOTTOM);
         saveButton.setName("button.save");
         saveButton.register(this);
 
         // Create the cancel button
-        cancelButton = new UIButton(this, "Cancel");
+        final UIButton cancelButton = new UIButton(this, "Cancel");
         cancelButton.setSize(50, 16);
         cancelButton.setPosition(-((padding * 2) + saveButton.getWidth()), -padding, Anchor.RIGHT | Anchor.BOTTOM);
         cancelButton.setName("button.cancel");
         cancelButton.register(this);
 
         form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, almuraGuiCheckBox,
-                                       residenceHudCheckBox,
-                                       almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
-                                       debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton,
-                                       signDistanceDownMenu,
-                                       chestDistanceDownMenu, itemFrameDistanceDownMenu);
+                residenceHudCheckBox,
+                almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
+                debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton,
+                signDistanceDownMenu,
+                chestDistanceDownMenu, itemFrameDistanceDownMenu);
 
         addToScreen(form);
-    }
-
-    public void setOptimizedConfig() {
-        this.mc.gameSettings.ambientOcclusion = 0;
-        this.mc.gameSettings.mipmapLevels = 0;
-        this.mc.gameSettings.guiScale = 3;
-        this.mc.gameSettings.advancedOpengl = true;
-        this.mc.gameSettings.anisotropicFiltering = 0;
-        this.mc.gameSettings.limitFramerate = 120;
-        this.mc.gameSettings.enableVsync = false;
-        this.mc.gameSettings.clouds = false;
-        this.mc.gameSettings.snooperEnabled = false;
-        this.mc.gameSettings.renderDistanceChunks = 12;
-        this.mc.gameSettings.viewBobbing = false;
-        this.mc.gameSettings.saveOptions();
-
-        mc.displayGuiScreen(new AlmuraConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to apply settings.", "Almura 2.0"));
     }
 
     @Subscribe
@@ -229,13 +208,13 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         if (type.equalsIgnoreCase("select.sign")) {
             switch (event.getNewValue().getLabel()) {
                 case "16":
-                    Configuration.setSignRenderDinstance(16);
+                    Configuration.setSignRenderDistance(16);
                     break;
                 case "32":
-                    Configuration.setSignRenderDinstance(32);
+                    Configuration.setSignRenderDistance(32);
                     break;
                 case "64":
-                    Configuration.setSignRenderDinstance(64);
+                    Configuration.setSignRenderDistance(64);
                     break;
             }
         }
@@ -243,13 +222,13 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         if (type.equalsIgnoreCase("select.chest")) {
             switch (event.getNewValue().getLabel()) {
                 case "16":
-                    Configuration.setChestRenderDinstance(16);
+                    Configuration.setChestRenderDistance(16);
                     break;
                 case "32":
-                    Configuration.setChestRenderDinstance(32);
+                    Configuration.setChestRenderDistance(32);
                     break;
                 case "64":
-                    Configuration.setChestRenderDinstance(64);
+                    Configuration.setChestRenderDistance(64);
                     break;
             }
         }
@@ -257,15 +236,32 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         if (type.equalsIgnoreCase("select.itemFrame")) {
             switch (event.getNewValue().getLabel()) {
                 case "16":
-                    Configuration.setItemFrameRenderDinstance(16);
+                    Configuration.setItemFrameRenderDistance(16);
                     break;
                 case "32":
-                    Configuration.setItemFrameRenderDinstance(32);
+                    Configuration.setItemFrameRenderDistance(32);
                     break;
                 case "64":
-                    Configuration.setItemFrameRenderDinstance(64);
+                    Configuration.setItemFrameRenderDistance(64);
                     break;
             }
         }
+    }
+
+    public void setOptimizedConfig() {
+        mc.gameSettings.ambientOcclusion = 0;
+        mc.gameSettings.mipmapLevels = 0;
+        mc.gameSettings.guiScale = 3;
+        mc.gameSettings.advancedOpengl = true;
+        mc.gameSettings.anisotropicFiltering = 0;
+        mc.gameSettings.limitFramerate = 120;
+        mc.gameSettings.enableVsync = false;
+        mc.gameSettings.clouds = false;
+        mc.gameSettings.snooperEnabled = false;
+        mc.gameSettings.renderDistanceChunks = 12;
+        mc.gameSettings.viewBobbing = false;
+        mc.gameSettings.saveOptions();
+
+        mc.displayGuiScreen(new AlmuraConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to apply settings.", "Almura"));
     }
 }

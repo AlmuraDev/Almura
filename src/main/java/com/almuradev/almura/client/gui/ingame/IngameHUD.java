@@ -101,7 +101,11 @@ public class IngameHUD extends AlmuraGui {
         //////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
         // Almura Title
-        almuraTitle = new UILabel(this, "");
+        almuraTitle = new UILabel(this, "Almura");
+        almuraTitle.setColor(0xffffffff);
+        almuraTitle.setSize(7, 7);
+        almuraTitle.setFontScale(1.0F);
+        almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
 
         // Hunger Property
         hungerProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_HUNGER, ICON_BAR);
@@ -133,7 +137,7 @@ public class IngameHUD extends AlmuraGui {
         worldImage.setSize(8, 8);
 
         // World Display Label
-        worldDisplay = new UILabel(this, "WORLD");
+        worldDisplay = new UILabel(this, "World");
         worldDisplay.setPosition(-5, 5, Anchor.RIGHT | Anchor.TOP);
         worldDisplay.setColor(0xffffffff);
         worldDisplay.setSize(15, 7);
@@ -189,8 +193,8 @@ public class IngameHUD extends AlmuraGui {
 
         gradientContainer
                 .add(playerTitle, playerMode, playerCurrency, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty,
-                     mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage,
-                     worldTime, xpLevel);
+                        mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage,
+                        worldTime, xpLevel);
 
         addToScreen(gradientContainer);
     }
@@ -226,6 +230,13 @@ public class IngameHUD extends AlmuraGui {
     }
 
     public void updateWidgets() {
+        if (firstPass) {
+            almuraTitle.setColor(0xffffffff);
+            almuraTitle.setSize(7, 7);
+            almuraTitle.setFontScale(1.0F);
+            almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
+        }
+
         // Player Health
         if (playerHealth != mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth() || firstPass) {
             playerHealth = mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth();
@@ -386,13 +397,6 @@ public class IngameHUD extends AlmuraGui {
         mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT | Anchor.TOP);
         playerMode.setPosition(playerTitle.getX() + playerTitle.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);
         playerCurrency.setPosition(playerMode.getX() + playerMode.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);
-        if (firstPass) {
-            almuraTitle.setText("Almura");
-            almuraTitle.setColor(0xffffffff);
-            almuraTitle.setSize(7, 7);
-            almuraTitle.setFontScale(1.0F);
-            almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
-        }
         firstPass = false;
     }
 
@@ -421,12 +425,12 @@ public class IngameHUD extends AlmuraGui {
         int position = (int) ((((mc.thePlayer.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 16);
 
         return "" + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
-               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
-               + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
-               + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
-               + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
-               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
-               + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
+                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
+                + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
+                + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
+                + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
+                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
+                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
     }
 
     public String getTime() {

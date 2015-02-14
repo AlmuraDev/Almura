@@ -5,26 +5,26 @@
  */
 package com.almuradev.almura.client.renderer.accessories;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.entity.player.EntityPlayer;
 
 public abstract class Accessory {
-	private ModelBiped model;
+    private ModelBiped model;
 
-	public Accessory(ModelBiped model) {
-		this.model = model;
-	}
+    public Accessory(ModelBiped model) {
+        this.model = model;
+    }
 
-	public ModelBiped getModel() {
-		return model;
-	}
+    public ModelBiped getModel() {
+        return model;
+    }
 
-	public void render(EntityPlayer player, float f) {
-	}
+    public void render(EntityPlayer player, float f) {
+    }
 
-	public void render(EntityPlayer player, float f, float par2) {
-		render(player, f);
-	}
+    public void render(EntityPlayer player, float f, float par2) {
+        render(player, f);
+    }
 
-	public abstract AccessoryType getType();
+    public abstract AccessoryType getType();
 }

@@ -138,7 +138,7 @@ public class Pack {
                     default:
                         Almura.LOGGER
                                 .warn("Unknown type [" + type + "] in file [" + path.getFileName()
-                                      + "]. Valid types are [ITEM, FOOD, BLOCK, CROP, CONTAINER].");
+                                        + "]. Valid types are [ITEM, FOOD, BLOCK, CROP, CONTAINER].");
                         continue;
                 }
                 entry.close();

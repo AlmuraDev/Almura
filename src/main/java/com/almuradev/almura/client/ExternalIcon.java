@@ -13,14 +13,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import javax.imageio.ImageIO;
 
 public class ExternalIcon extends MalisisIcon {
 
@@ -58,14 +57,14 @@ public class ExternalIcon extends MalisisIcon {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                     Almura.LOGGER
                             .error("Failed to load icon [" + textureName
-                                   + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH
-                                   + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.",
-                                   e);
+                                            + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH
+                                            + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.",
+                                    e);
                 } else {
                     Almura.LOGGER.warn(
                             "Failed to load icon [" + textureName
-                            + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH
-                            + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
+                                    + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH
+                                    + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
                 }
             } else {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {

@@ -32,7 +32,7 @@ public class InformationWand extends AlmuraItem {
             final PlayerInteractEvent
                     event =
                     new PlayerInteractEvent(player, PlayerInteractEvent.Action.RIGHT_CLICK_AIR, (int) player.posX, (int) player.posY,
-                                            (int) player.posZ, -1, world);
+                            (int) player.posZ, -1, world);
             MinecraftForge.EVENT_BUS.post(event);
 
             // Return if the event was cancelled

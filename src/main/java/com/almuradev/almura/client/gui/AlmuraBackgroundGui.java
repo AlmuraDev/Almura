@@ -16,7 +16,7 @@ public abstract class AlmuraBackgroundGui extends AlmuraGui {
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}
-
+     *
      * @param parent the {@link AlmuraGui} that we came from
      */
     public AlmuraBackgroundGui(AlmuraGui parent) {
@@ -33,8 +33,8 @@ public abstract class AlmuraBackgroundGui extends AlmuraGui {
         if (this.width != width || this.height != height) {
             background.animation =
                     new Animation(background,
-                                  new SizeTransform((int) (width * UIBackground.ZOOM_LEVEL), (int) (height * UIBackground.ZOOM_LEVEL), width, height)
-                                          .forTicks(UIBackground.ANIMATION_SPEED));
+                            new SizeTransform((int) (width * UIBackground.ZOOM_LEVEL), (int) (height * UIBackground.ZOOM_LEVEL), width, height)
+                                    .forTicks(UIBackground.ANIMATION_SPEED));
             animate(background.animation);
         }
         super.setWorldAndResolution(minecraft, width, height);

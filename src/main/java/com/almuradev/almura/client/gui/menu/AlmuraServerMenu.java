@@ -44,15 +44,14 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         }
     });
 
-    private UIForm form;
-    private UIButton almuraLiveButton, almuraDevButton, anotherButton, backButton;
-    private UIImage logoImage;
-    private UILabel buildLabel, liveServerTitle, liveServerOnline, devServerTitle, devServerOnline;
-    private int padding = 4;
+    private UIButton almuraLiveButton;
+    private UIButton almuraDevButton;
+    private UILabel liveServerOnline;
+    private UILabel devServerOnline;
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
-
+     *
      * @param parent the {@link AlmuraGui} that we came from
      */
     public AlmuraServerMenu(AlmuraGui parent) {
@@ -63,18 +62,20 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
     @Override
     protected void setup() {
         // Create the form
-        form = new UIForm(this, 200, 225, "Multiplayer");
+        final UIForm form = new UIForm(this, 200, 225, "Multiplayer");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the logo
-        logoImage = new UIImage(this, new GuiTexture(AlmuraMainMenu.ALMURA_LOGO_LOCATION), null);
+        final UIImage logoImage = new UIImage(this, new GuiTexture(AlmuraMainMenu.ALMURA_LOGO_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
         logoImage.setSize(65, 95);
 
         // Create the build label
-        buildLabel = new UILabel(this, ChatColor.GRAY + Almura.GUI_VERSION);
+        final UILabel buildLabel = new UILabel(this, ChatColor.GRAY + Almura.GUI_VERSION);
         buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
         buildLabel.setFontScale(0.65f);
+
+        final int padding = 4;
 
         // Create the live Almura button
         almuraLiveButton = new UIButton(this, "Join ");
@@ -84,13 +85,13 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         almuraLiveButton.setDisabled(true);
         almuraLiveButton.register(this);
 
-        liveServerTitle = new UILabel(this, ChatColor.WHITE + "Public Server : ");
+        UILabel liveServerTitle = new UILabel(this, ChatColor.WHITE + "Public Server : ");
         liveServerTitle.setPosition(20, getPaddedY(logoImage, padding) + 14, Anchor.LEFT | Anchor.TOP);
 
         liveServerOnline = new UILabel(this, ChatColor.YELLOW + "Updating...");
         liveServerOnline.setPosition(85, liveServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
 
-        devServerTitle = new UILabel(this, ChatColor.WHITE + "Dev Server : ");
+        UILabel devServerTitle = new UILabel(this, ChatColor.WHITE + "Dev Server : ");
         devServerTitle.setPosition(26, getPaddedY(almuraLiveButton, padding) + 8, Anchor.LEFT | Anchor.TOP);
 
         devServerOnline = new UILabel(this, ChatColor.YELLOW + "Updating...");
@@ -105,21 +106,21 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         almuraDevButton.register(this);
 
         // Create the join another server button
-        anotherButton = new UIButton(this, "Join another server");
+        UIButton anotherButton = new UIButton(this, "Join another server");
         anotherButton.setPosition(0, getPaddedY(almuraDevButton, padding) + 5, Anchor.CENTER | Anchor.TOP);
         anotherButton.setSize(100, 16);
         anotherButton.setName("button.server.another");
         anotherButton.register(this);
 
         // Create the back button
-        backButton = new UIButton(this, "Back");
+        UIButton backButton = new UIButton(this, "Back");
         backButton.setPosition(0, -10, Anchor.CENTER | Anchor.BOTTOM);
         backButton.setSize(50, 16);
         backButton.setName("button.back");
         backButton.register(this);
 
         form.getContentContainer().add(logoImage, buildLabel, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle,
-                                       devServerOnline, almuraDevButton, anotherButton, backButton);
+                devServerOnline, almuraDevButton, anotherButton, backButton);
 
         addToScreen(form);
 

@@ -105,8 +105,8 @@ public class IngameDebugHUD extends AlmuraGui {
         version.setFontScale(0.7f);
 
         debugPanel.add(debugTitle, fpsLabel, fps, memoryLabel, memoryDebug, memoryAllocated, directionLabel, xLoc, yLoc, zLoc, facingLabel,
-                       directionLoc,
-                       biomeLabel, biomeName, lightLabel, blockLight, skyLight, rawLight, version);
+                directionLoc,
+                biomeLabel, biomeName, lightLabel, blockLight, skyLight, rawLight, version);
 
         addToScreen(debugPanel);
     }
@@ -181,7 +181,7 @@ public class IngameDebugHUD extends AlmuraGui {
         fps.setText(ChatColor.GOLD + "" + displayFps);
         memoryDebug.setText(
                 ChatColor.GRAY + "Used: " + usedMemory * 100L / maxMemory + "% (" + usedMemory / 1024L / 1024L + "MB) of " + maxMemory / 1024L / 1024L
-                + "MB");
+                        + "MB");
         memoryAllocated.setText(ChatColor.GRAY + "Allocated memory: " + totalMemory * 100L / maxMemory + "% (" + totalMemory / 1024L / 1024L + "MB)");
     }
 }

@@ -32,7 +32,7 @@ public class WireframeWand extends AlmuraItem {
             final PlayerInteractEvent
                     event =
                     new PlayerInteractEvent(player, PlayerInteractEvent.Action.RIGHT_CLICK_AIR, (int) player.posX, (int) player.posY,
-                                            (int) player.posZ, -1, world);
+                            (int) player.posZ, -1, world);
             MinecraftForge.EVENT_BUS.post(event);
 
             // Return if the event was cancelled
@@ -48,7 +48,7 @@ public class WireframeWand extends AlmuraItem {
                 ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S0BPacketAnimation(player, 0));
                 player.swingItem();
                 Almura.NETWORK_FORGE.sendTo(new S02OpenBlockWireframeGui(stack, x, y, z, block.getSelectedBoundingBoxFromPool(world, x, y, z)),
-                                            (EntityPlayerMP) player);
+                        (EntityPlayerMP) player);
             }
         }
         return false;

@@ -68,6 +68,7 @@ public abstract class AlmuraGui extends MalisisGui {
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
+     *
      * @param parent the {@link AlmuraGui} that we came from
      */
     public AlmuraGui(AlmuraGui parent) {
@@ -78,9 +79,10 @@ public abstract class AlmuraGui extends MalisisGui {
 
     /**
      * Snips out a {@link net.malisis.core.client.gui.icon.GuiIcon} based on the texture coordinates and size
-     * @param x in pixels
-     * @param y in pixels
-     * @param width in pixels
+     *
+     * @param x      in pixels
+     * @param y      in pixels
+     * @param width  in pixels
      * @param height in pixels
      * @return the icon
      */

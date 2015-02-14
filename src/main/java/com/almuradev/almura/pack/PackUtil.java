@@ -67,9 +67,9 @@ public class PackUtil {
 
                 clippedIcons[i] =
                         new ClippedIcon((MalisisIcon) source, (float) (coordinatesList.get(0) / dimension.getWidth()),
-                                        (float) (coordinatesList.get(1) / dimension.getHeight()),
-                                        (float) (coordinatesList.get(2) / dimension.getWidth()),
-                                        (float) (coordinatesList.get(3) / dimension.getHeight()));
+                                (float) (coordinatesList.get(1) / dimension.getHeight()),
+                                (float) (coordinatesList.get(2) / dimension.getWidth()),
+                                (float) (coordinatesList.get(3) / dimension.getHeight()));
             }
         }
         return clippedIcons;
@@ -111,11 +111,11 @@ public class PackUtil {
             if (clazz == Integer.class) {
                 minAmount =
                         (N) ((minNeg) ? new Integer(0 - Math.abs(Integer.parseInt(split[minIndex])))
-                                      : new Integer(Integer.parseInt(split[minIndex])));
+                                : new Integer(Integer.parseInt(split[minIndex])));
                 if (maxIndex != Integer.MIN_VALUE) {
                     maxAmount =
                             (N) ((maxNeg) ? new Integer(0 - Math.abs(Integer.parseInt(split[maxIndex])))
-                                          : new Integer(Integer.parseInt(split[maxIndex])));
+                                    : new Integer(Integer.parseInt(split[maxIndex])));
                 } else {
                     maxAmount = minAmount;
                 }
@@ -128,11 +128,11 @@ public class PackUtil {
             } else if (clazz == Double.class) {
                 minAmount =
                         (N) ((minNeg) ? new Double(0 - Math.abs(Double.parseDouble(split[minIndex])))
-                                      : new Double(Double.parseDouble(split[minIndex])));
+                                : new Double(Double.parseDouble(split[minIndex])));
                 if (maxIndex != Integer.MIN_VALUE) {
                     maxAmount =
                             (N) ((maxNeg) ? new Double(0 - Math.abs(Double.parseDouble(split[maxIndex])))
-                                          : new Double(Double.parseDouble(split[maxIndex])));
+                                    : new Double(Double.parseDouble(split[maxIndex])));
                 } else {
                     maxAmount = minAmount;
                 }
@@ -147,7 +147,7 @@ public class PackUtil {
                 if (maxIndex != Integer.MIN_VALUE) {
                     maxAmount =
                             (N) ((maxNeg) ? new Float(0 - Math.abs(Float.parseFloat(split[maxIndex])))
-                                          : new Float(Float.parseFloat(split[maxIndex])));
+                                    : new Float(Float.parseFloat(split[maxIndex])));
                 } else {
                     maxAmount = minAmount;
                 }

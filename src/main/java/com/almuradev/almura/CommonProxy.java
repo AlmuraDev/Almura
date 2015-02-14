@@ -8,12 +8,7 @@ package com.almuradev.almura;
 import com.almuradev.almura.items.Items;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.IItemBlockInformation;
-import com.almuradev.almura.pack.INodeContainer;
-import com.almuradev.almura.pack.IPackObject;
-import com.almuradev.almura.pack.Pack;
-import com.almuradev.almura.pack.PackCreator;
-import com.almuradev.almura.pack.PackKeys;
+import com.almuradev.almura.pack.*;
 import com.almuradev.almura.pack.container.AlmuraContainerHandler;
 import com.almuradev.almura.pack.container.PackContainerTileEntity;
 import com.almuradev.almura.pack.crop.PackCrops;
@@ -135,7 +130,7 @@ public class CommonProxy {
             if (block instanceof IPackObject) {
                 if (block instanceof IItemBlockInformation) {
                     GameRegistry.registerBlock(block, PackItemBlock.class,
-                                               ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
+                            ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
                 } else {
                     GameRegistry.registerBlock(block, ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block).getIdentifier());
                 }
@@ -162,13 +157,13 @@ public class CommonProxy {
                 final InputStream
                         entry =
                         Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
-                                                       ((IPackObject) block).getIdentifier() + ".yml"));
+                                ((IPackObject) block).getIdentifier() + ".yml"));
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
 
                 if (block instanceof PackCrops) {
                     final SoilNode soilNode = PackCreator.createSoilNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(),
-                                                                         reader.getNode(PackKeys.NODE_SOIL.getKey()));
+                            reader.getNode(PackKeys.NODE_SOIL.getKey()));
                     if (soilNode != null) {
                         //For seeds to work, they require a soil
                         ((INodeContainer) block).addNode(soilNode);
@@ -179,13 +174,13 @@ public class CommonProxy {
                                 seed =
                                 PackCreator
                                         .createCropSeed(((PackCrops) block).getPack(), ((IPackObject) block).getIdentifier(),
-                                                        (Block) soilNode.getSoil().minecraftObject, (PackCrops) block,
-                                                        textureName,
-                                                        reader.getNode(PackKeys.NODE_SEED.getKey()));
+                                                (Block) soilNode.getSoil().minecraftObject, (PackCrops) block,
+                                                textureName,
+                                                reader.getNode(PackKeys.NODE_SEED.getKey()));
                         if (GameRegistry.findItem(Almura.MOD_ID, seed.getPack().getName() + "\\" + seed.getIdentifier()) != null) {
                             Almura.LOGGER.error("Crop [" + ((PackCrops) block).getIdentifier() + "] in [" + ((PackCrops) block).getPack().getName()
-                                                + "] is trying to add seed [" + seed.getIdentifier()
-                                                + "] but it already exists. You may only have one seed per crop.");
+                                    + "] is trying to add seed [" + seed.getIdentifier()
+                                    + "] but it already exists. You may only have one seed per crop.");
                         } else {
                             GameRegistry.registerItem(seed, seed.getPack().getName() + "\\" + seed.getIdentifier());
                             seedsToAdd.add(seed);
@@ -194,14 +189,14 @@ public class CommonProxy {
                         for (Stage stage : ((PackCrops) block).getStages().values()) {
                             final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
                             stage.addNode(PackCreator.createCollisionNode(pack, stage.getIdentifier(),
-                                                                          stageNode.getNode(PackKeys.NODE_COLLISION.getKey())));
+                                    stageNode.getNode(PackKeys.NODE_COLLISION.getKey())));
                         }
                     }
                 } else {
                     //Collision
                     ((INodeContainer) block).addNode(
                             PackCreator.createCollisionNode(pack, ((IPackObject) block).getIdentifier(),
-                                                            reader.getNode(PackKeys.NODE_COLLISION.getKey())));
+                                    reader.getNode(PackKeys.NODE_COLLISION.getKey())));
 
                 }
 
@@ -223,7 +218,7 @@ public class CommonProxy {
                 final InputStream
                         entry =
                         Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
-                                                       ((IPackObject) block).getIdentifier() + ".yml"));
+                                ((IPackObject) block).getIdentifier() + ".yml"));
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
 
@@ -231,22 +226,22 @@ public class CommonProxy {
                     for (Stage stage : ((PackCrops) block).getStages().values()) {
                         final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
                         stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), block, false,
-                                                                  stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
+                                stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
                         stage.addNode(PackCreator.createFertilizerNode(pack, stage.getIdentifier(), stage.getId(),
-                                                                       stageNode.getNode(PackKeys.NODE_FERTILIZER.getKey())));
+                                stageNode.getNode(PackKeys.NODE_FERTILIZER.getKey())));
                     }
                 } else {
                     //Break
                     ((INodeContainer) block).addNode(
                             PackCreator.createBreakNode(pack, ((IPackObject) block).getIdentifier(), block, true,
-                                                        reader.getNode(PackKeys.NODE_BREAK.getKey())));
+                                    reader.getNode(PackKeys.NODE_BREAK.getKey())));
 
                 }
 
                 //Recipes
                 ((INodeContainer) block).addNode(
                         PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), block,
-                                                     reader.getNode(PackKeys.NODE_RECIPES.getKey())));
+                                reader.getNode(PackKeys.NODE_RECIPES.getKey())));
 
                 entry.close();
             }
@@ -259,11 +254,11 @@ public class CommonProxy {
                 if (item instanceof PackSeeds) {
                     entry =
                             Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
-                                                           ((PackCrops) ((ItemSeeds) item).field_150925_a).getIdentifier() + ".yml"));
+                                    ((PackCrops) ((ItemSeeds) item).field_150925_a).getIdentifier() + ".yml"));
                 } else {
                     entry =
                             Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
-                                                           ((IPackObject) item).getIdentifier() + ".yml"));
+                                    ((IPackObject) item).getIdentifier() + ".yml"));
                 }
                 final YamlConfiguration reader = new YamlConfiguration(entry);
                 reader.load();
@@ -271,12 +266,12 @@ public class CommonProxy {
                     //Recipes
                     ((INodeContainer) item).addNode(
                             PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), item,
-                                                         reader.getNode(PackKeys.NODE_SEED.getKey(), PackKeys.NODE_RECIPES.getKey())));
+                                    reader.getNode(PackKeys.NODE_SEED.getKey(), PackKeys.NODE_RECIPES.getKey())));
                 } else {
                     //Recipes
                     ((INodeContainer) item).addNode(
                             PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), item,
-                                                         reader.getNode(PackKeys.NODE_RECIPES.getKey())));
+                                    reader.getNode(PackKeys.NODE_RECIPES.getKey())));
                 }
 
                 entry.close();
@@ -321,7 +316,7 @@ public class CommonProxy {
                     final ItemStack recipeStack = (ItemStack) obj;
 
                     if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize
-                        || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
+                            || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
                         continue;
                     }
 
@@ -348,7 +343,7 @@ public class CommonProxy {
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!event.world.isRemote && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && event.entityPlayer.getHeldItem() == null
-            && event.entityPlayer.isSneaking()) {
+                && event.entityPlayer.isSneaking()) {
             final TileEntity te = event.world.getTileEntity(event.x, event.y, event.z);
             if (te != null && te instanceof TileEntitySign) {
                 if (event.entityPlayer instanceof EntityPlayerMP) {

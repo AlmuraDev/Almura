@@ -5,13 +5,7 @@
  */
 package com.almuradev.almura.pack.crop;
 
-import com.almuradev.almura.pack.IBlockClipContainer;
-import com.almuradev.almura.pack.IBlockModelContainer;
-import com.almuradev.almura.pack.INodeContainer;
-import com.almuradev.almura.pack.IPackObject;
-import com.almuradev.almura.pack.IState;
-import com.almuradev.almura.pack.Pack;
-import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.*;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
@@ -129,10 +123,11 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockMo
 
     /**
      * Called when a stage is growing into another stage
-     * @param world the world
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z z coordinate
+     *
+     * @param world  the world
+     * @param x      x coordinate
+     * @param y      y coordinate
+     * @param z      z coordinate
      * @param random random
      */
     public void onGrowth(World world, int x, int y, int z, Random random) {
@@ -141,10 +136,11 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockMo
 
     /**
      * Called when a stage has achieved growth (the stage has become the current stage)
-     * @param world the world
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z z coordinate
+     *
+     * @param world  the world
+     * @param x      x coordinate
+     * @param y      y coordinate
+     * @param z      z coordinate
      * @param random random
      */
     public void onGrown(World world, int x, int y, int z, Random random) {
@@ -154,19 +150,20 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockMo
             float d2 = 0.02f;
 
             MinecraftServer.getServer().getConfigurationManager().sendToAllNear(x, y, z, 50D, world.provider.dimensionId,
-                                                                                new S2APacketParticles("happyVillager", (x + random.nextFloat()),
-                                                                                                       (float) (y + random.nextFloat() * block
-                                                                                                               .getBlockBoundsMaxY()),
-                                                                                                       (z + random.nextFloat()), d0, d1, d2, 1, id));
+                    new S2APacketParticles("happyVillager", (x + random.nextFloat()),
+                            (float) (y + random.nextFloat() * block
+                                    .getBlockBoundsMaxY()),
+                            (z + random.nextFloat()), d0, d1, d2, 1, id));
         }
     }
 
     /**
      * Called when {@link PackCrops} is ticked. Never called for the final stage.
-     * @param world the world
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z z coordinate
+     *
+     * @param world  the world
+     * @param x      x coordinate
+     * @param y      y coordinate
+     * @param z      z coordinate
      * @param random random
      */
     public void onTick(World world, int x, int y, int z, Random random) {

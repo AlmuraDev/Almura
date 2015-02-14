@@ -23,7 +23,6 @@ public class UIForm extends UIBackgroundContainer {
 
     private static final int TITLE_BAR_HEIGHT = 13;
     private final UIBackgroundContainer contentContainer;
-    private final DraggableBackgroundContainer titleContainer;
     private int dragX, dragY;
     private boolean dragging = false;
 
@@ -31,7 +30,7 @@ public class UIForm extends UIBackgroundContainer {
      * Creates a form with no title that has a close button
      *
      * @param parent The parent {@link AlmuraGui}
-     * @param width The width of the form
+     * @param width  The width of the form
      * @param height The height of the form
      */
     public UIForm(AlmuraGui parent, int width, int height) {
@@ -42,9 +41,9 @@ public class UIForm extends UIBackgroundContainer {
      * Creates a form with a title that has a close buton
      *
      * @param parent The parent {@link AlmuraGui}
-     * @param width The width of the form
+     * @param width  The width of the form
      * @param height The height of the form
-     * @param title The title of the form
+     * @param title  The title of the form
      */
     public UIForm(AlmuraGui parent, int width, int height, String title) {
         this(parent, width, height, title, true);
@@ -53,17 +52,17 @@ public class UIForm extends UIBackgroundContainer {
     /**
      * Creates a form with a title that may or may not show a close button
      *
-     * @param parent The parent {@link AlmuraGui}
-     * @param width The width of the form
-     * @param height The height of the form
-     * @param title The title of the form
+     * @param parent          The parent {@link AlmuraGui}
+     * @param width           The width of the form
+     * @param height          The height of the form
+     * @param title           The title of the form
      * @param showCloseButton Specifies if this form has a close button
      */
     public UIForm(AlmuraGui parent, int width, int height, String title, boolean showCloseButton) {
         super(parent);
 
         // Setup controls
-        titleContainer = new DraggableBackgroundContainer(parent, title, showCloseButton);
+        final DraggableBackgroundContainer titleContainer = new DraggableBackgroundContainer(parent, title, showCloseButton);
         contentContainer = new UIBackgroundContainer(parent);
 
         setSize(width, height);
@@ -95,6 +94,7 @@ public class UIForm extends UIBackgroundContainer {
 
     /**
      * Gets the title of the form
+     *
      * @return The title of the form
      */
     @Override

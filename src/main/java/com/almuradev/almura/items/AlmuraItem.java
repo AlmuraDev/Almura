@@ -25,8 +25,8 @@ public class AlmuraItem extends Item implements IPackObject {
      * Creates an item that that registers the name (in ENGLISH_AMERICAN) and registers the item in the game registry.
      *
      * @param unlocalizedName the unlocalized name
-     * @param displayName the localized english american name
-     * @param textureName the texture name
+     * @param displayName     the localized english american name
+     * @param textureName     the texture name
      */
     public AlmuraItem(String unlocalizedName, String displayName, String textureName) {
         this(unlocalizedName, displayName, textureName, null);
@@ -37,9 +37,9 @@ public class AlmuraItem extends Item implements IPackObject {
      * This also sets the creative tab.
      *
      * @param unlocalizedName the unlocalized name
-     * @param displayName the localized english american name
-     * @param textureName the texture name
-     * @param creativeTab the creative tab
+     * @param displayName     the localized english american name
+     * @param textureName     the texture name
+     * @param creativeTab     the creative tab
      */
     public AlmuraItem(String unlocalizedName, String displayName, String textureName, CreativeTabs creativeTab) {
         setUnlocalizedName(unlocalizedName);

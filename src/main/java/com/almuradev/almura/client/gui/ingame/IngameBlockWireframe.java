@@ -29,7 +29,7 @@ public class IngameBlockWireframe extends AlmuraGui {
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
-
+     *
      * @param parent the {@link AlmuraGui} that we came from
      */
     public IngameBlockWireframe(AlmuraGui parent, World world, Block block, int x, int y, int z, AxisAlignedBB wireframe) {
@@ -108,12 +108,12 @@ public class IngameBlockWireframe extends AlmuraGui {
         cancelButton.register(this);
 
         form.getContentContainer().add(minXLabel, minXTextField,
-                                       minYLabel, minYTextField,
-                                       minZLabel, minZTextField,
-                                       maxXLabel, maxXTextField,
-                                       maxYLabel, maxYTextField,
-                                       maxZLabel, maxZTextField,
-                                       cancelButton, applyButton);
+                minYLabel, minYTextField,
+                minZLabel, minZTextField,
+                maxXLabel, maxXTextField,
+                maxYLabel, maxYTextField,
+                maxZLabel, maxZTextField,
+                cancelButton, applyButton);
 
         addToScreen(form);
     }

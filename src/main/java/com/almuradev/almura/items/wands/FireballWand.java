@@ -30,7 +30,7 @@ public class FireballWand extends AlmuraItem {
             final PlayerInteractEvent
                     event =
                     new PlayerInteractEvent(player, PlayerInteractEvent.Action.RIGHT_CLICK_AIR, (int) player.posX, (int) player.posY,
-                                            (int) player.posZ, -1, world);
+                            (int) player.posZ, -1, world);
             MinecraftForge.EVENT_BUS.post(event);
 
             // Return if the event was cancelled
@@ -45,8 +45,8 @@ public class FireballWand extends AlmuraItem {
             final Vec3 look = player.getLookVec();
             final EntityLargeFireball fireball = new EntityLargeFireball(world, player, 1, 1, 1);
             fireball.setPosition(player.posX + look.xCoord,
-                                 player.posY + look.yCoord + 1,
-                                 player.posZ + look.zCoord);
+                    player.posY + look.yCoord + 1,
+                    player.posZ + look.zCoord);
             fireball.accelerationX = look.xCoord * 0.1;
             fireball.accelerationY = look.yCoord * 0.1;
             fireball.accelerationZ = look.zCoord * 0.1;

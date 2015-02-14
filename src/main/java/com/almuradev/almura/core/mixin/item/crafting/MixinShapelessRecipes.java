@@ -44,7 +44,7 @@ public abstract class MixinShapelessRecipes implements IShapelessRecipe {
                         final ItemStack recipeStack = (ItemStack) iter.next();
 
                         if (slotStack.getItem() != recipeStack.getItem() || (checkMultiQuantity && (slotStack.stackSize < recipeStack.stackSize))
-                            || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
+                                || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
                             continue;
                         }
 

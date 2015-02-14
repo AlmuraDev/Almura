@@ -77,8 +77,8 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
                 viewer = Minecraft.getMinecraft().thePlayer;
             }
             if (viewer != null && par1TileEntitySign.getDistanceFrom(viewer.posX, viewer.posY, viewer.posZ) < (Configuration.SIGN_RENDER_DISTANCE
-                                                                                                               * 16) && par1TileEntitySign
-                        .hasWorldObj()) {
+                    * 16) && par1TileEntitySign
+                    .hasWorldObj()) {
                 // Almura End
                 FontRenderer var17 = this.func_147498_b();
                 var12 = 0.016666668F * var10;

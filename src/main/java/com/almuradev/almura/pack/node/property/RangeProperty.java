@@ -49,7 +49,7 @@ public class RangeProperty<T extends Number> implements IProperty<Boolean> {
             return (T) new Float(min.floatValue() + (max.floatValue() - min.floatValue()) * RANDOM.nextFloat());
         } else if (typeClass == Double.class) {
             return (T) new Double(Math.random() < 0.5 ? ((1 - Math.random()) * (max.doubleValue() - min.doubleValue()) + min.doubleValue())
-                                                      : (Math.random() * (max.doubleValue() - min.doubleValue()) + min.doubleValue()));
+                    : (Math.random() * (max.doubleValue() - min.doubleValue()) + min.doubleValue()));
         } else if (typeClass == Integer.class) {
             return (T) new Integer(RANDOM.nextInt((max.intValue() - min.intValue()) + 1) + min.intValue());
         } else {
