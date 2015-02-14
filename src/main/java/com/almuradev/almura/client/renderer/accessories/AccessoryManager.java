@@ -5,15 +5,12 @@
  */
 package com.almuradev.almura.client.renderer.accessories;
 
-import com.almuradev.almura.client.ChatColor;
-import com.almuradev.almura.client.HDImageBufferDownload;
-import com.almuradev.almura.client.VIP;
+import com.almuradev.almura.client.renderer.accessories.type.*;
+import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.renderer.ThreadDownloadImageData;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -24,24 +21,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class AccessoryHandler {
+public class AccessoryManager {
     private static Map<String, Set<Pair<Accessory, String>>> sacs = new HashMap<String, Set<Pair<Accessory, String>>>();
-    private static Set<String> downloaded = new HashSet<String>();
-    private static RenderPlayer renderer = (RenderPlayer) RenderManager.instance.entityRenderMap.get(EntityPlayer.class);
-    private static ModelBiped modelBipedMain = ((RenderPlayer) RenderManager.instance.entityRenderMap.get(EntityPlayer.class)).modelBipedMain;
-    private static Map<String, VIP> vips;
+    private static final RenderPlayer RENDERER_PLAYER = (RenderPlayer) RenderManager.instance.entityRenderMap.get(EntityPlayer.class);
+    private static final ModelBiped MODEL_PLAYER_MAIN = ((RenderPlayer) RenderManager.instance.entityRenderMap.get(EntityPlayer.class)).modelBipedMain;
 
-    private AccessoryHandler() {
+    private AccessoryManager() {
     }
 
     public static void addAccessory(String player, Accessory n, String url) {
         TextureManager tm = Minecraft.getMinecraft().getTextureManager();
-        Object texture = new ThreadDownloadImageData(null, url, (ResourceLocation) null, new HDImageBufferDownload());
-        tm.loadTexture(new ResourceLocation("accessories/" + n.getType().toString()), (ITextureObject) texture);
 
         Set<Pair<Accessory, String>> acs = sacs.get(player);
         if (acs == null) {
-            acs = new HashSet<Pair<Accessory, String>>();
+            acs = new HashSet<>();
         }
 
         Set<Pair<Accessory, String>> toRemove = new HashSet<Pair<Accessory, String>>();
@@ -68,16 +61,7 @@ public class AccessoryHandler {
     }
 
     public static void addVIPAccessoriesFor(EntityPlayer player) {
-        String cleanUserName = ChatColor.stripColor(player.getDisplayName());
-        VIP vip = getVIP(cleanUserName);
-
-        if (vip == null) {
-            return;
-        }
-        Map<String, String> vAcs = vip.Accessories();
-        if (vAcs == null) {
-            return;
-        }
+        Map<String, String> vAcs = Maps.newHashMap();
         String that = vAcs.get("tophat");
         String nhat = vAcs.get("notchhat");
         String brace = vAcs.get("bracelet");
@@ -86,25 +70,25 @@ public class AccessoryHandler {
         String glasses = vAcs.get("sunglasses");
         String tail = vAcs.get("tail");
         if (that != null) {
-            addAccessory(player.getDisplayName(), new TopHat(modelBipedMain), that);
+            addAccessory(player.getDisplayName(), new TopHat(MODEL_PLAYER_MAIN), that);
         }
         if (nhat != null) {
-            addAccessory(player.getDisplayName(), new NotchHat(modelBipedMain), nhat);
+            addAccessory(player.getDisplayName(), new NotchHat(MODEL_PLAYER_MAIN), nhat);
         }
         if (brace != null) {
-            addAccessory(player.getDisplayName(), new Bracelet(modelBipedMain), brace);
+            addAccessory(player.getDisplayName(), new Bracelet(MODEL_PLAYER_MAIN), brace);
         }
         if (wings != null) {
-            addAccessory(player.getDisplayName(), new Wings(modelBipedMain), wings);
+            addAccessory(player.getDisplayName(), new Wings(MODEL_PLAYER_MAIN), wings);
         }
         if (ears != null) {
-            addAccessory(player.getDisplayName(), new Ears(modelBipedMain), ears);
+            addAccessory(player.getDisplayName(), new Ears(MODEL_PLAYER_MAIN), ears);
         }
         if (glasses != null) {
-            addAccessory(player.getDisplayName(), new Sunglasses(modelBipedMain), glasses);
+            addAccessory(player.getDisplayName(), new Sunglasses(MODEL_PLAYER_MAIN), glasses);
         }
         if (tail != null) {
-            addAccessory(player.getDisplayName(), new Tail(modelBipedMain), tail);
+            addAccessory(player.getDisplayName(), new Tail(MODEL_PLAYER_MAIN), tail);
         }
     }
 
@@ -117,25 +101,25 @@ public class AccessoryHandler {
         Accessory toCreate;
         switch (type) {
             case BRACELET:
-                toCreate = new Bracelet(modelBipedMain);
+                toCreate = new Bracelet(MODEL_PLAYER_MAIN);
                 break;
             case EARS:
-                toCreate = new Ears(modelBipedMain);
+                toCreate = new Ears(MODEL_PLAYER_MAIN);
                 break;
             case NOTCHHAT:
-                toCreate = new NotchHat(modelBipedMain);
+                toCreate = new NotchHat(MODEL_PLAYER_MAIN);
                 break;
             case SUNGLASSES:
-                toCreate = new Sunglasses(modelBipedMain);
+                toCreate = new Sunglasses(MODEL_PLAYER_MAIN);
                 break;
             case TAIL:
-                toCreate = new Tail(modelBipedMain);
+                toCreate = new Tail(MODEL_PLAYER_MAIN);
                 break;
             case TOPHAT:
-                toCreate = new TopHat(modelBipedMain);
+                toCreate = new TopHat(MODEL_PLAYER_MAIN);
                 break;
             case WINGS:
-                toCreate = new Wings(modelBipedMain);
+                toCreate = new Wings(MODEL_PLAYER_MAIN);
                 break;
             default:
                 toCreate = null;
@@ -177,37 +161,5 @@ public class AccessoryHandler {
         }
 
         return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static VIP getVIP(String username) {
-        return null;
-        /*
-        if (vips == null) {
-            vips = new ConcurrentHashMap<String, VIP>();
-            YamlConfiguration config = VIP.getYAML();
-            for (String key : config.getKeys()) {
-                try {
-                    Map<String, Object> values = (Map<String, Object>) config.getProperty(key);
-                    key = key.toLowerCase();
-                    String title = (String) values.get("title");
-                    title = VIP.formatChatColors(title);
-                    String cape = (String) values.get("cape");
-                    String armor = (String) values.get("armor");
-                    float scale = 1f;
-                    if (values.containsKey("scale")) {
-                        scale = ((Number) values.get("scale")).floatValue();
-                    }
-                    Map<String, Integer> particles = (Map<String, Integer>) values.get("particles");
-                    Map<String, String> acs = (Map<String, String>) values.get("accessories");
-                    VIP vip = new VIP(key, title, cape, particles, acs, armor, scale);
-                    vips.put(key, vip);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return vips.get(username.toLowerCase()); */
     }
 }

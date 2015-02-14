@@ -3,8 +3,10 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.renderer.accessories;
+package com.almuradev.almura.client.renderer.accessories.type;
 
+import com.almuradev.almura.client.renderer.accessories.Accessory;
+import com.almuradev.almura.client.renderer.accessories.AccessoryType;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
