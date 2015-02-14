@@ -168,18 +168,18 @@ public class UIForm extends UIBackgroundContainer {
 
             add(titleLabel);
         }
-        
+
         @Subscribe
         public void onPress(MouseEvent.Press event) {
-        	if (titleCloseButton != null && titleCloseButton.isInsideBounds(event.getX(), event.getY())) {
+            if (titleCloseButton != null && titleCloseButton.isInsideBounds(event.getX(), event.getY())) {
                 dragging = false;
-        		return;
+                return;
             }
-        	dragging = true;
-        	dragX = relativeX(event.getX());
-        	dragY = relativeY(event.getY());
+            dragging = true;
+            dragX = relativeX(event.getX());
+            dragY = relativeY(event.getY());
         }
-       
+
         @Subscribe
         public void onDrag(MouseEvent.Drag event) {
             // Do not drag if not the left mouse button
