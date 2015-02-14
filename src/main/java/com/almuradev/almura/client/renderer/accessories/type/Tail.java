@@ -26,7 +26,7 @@ public class Tail implements IAccessory<ModelBiped> {
     }
 
     @Override
-    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         GL11.glPushMatrix();
         GL11.glTranslatef(0.0F, 0.75F, 0.125F);
         double d = (player.field_71091_bM + (player.field_71094_bP - player.field_71091_bM) * (double) partialTicks) - (player.prevPosX + (player.posX - player.prevPosX) * (double) partialTicks);
@@ -56,7 +56,7 @@ public class Tail implements IAccessory<ModelBiped> {
         GL11.glRotatef(f11 / 2.0F, 0.0F, 0.0F, 1.0F);
         GL11.glRotatef(-f11 / 2.0F, 0.0F, 0.0F, 0.0F);
         GL11.glRotatef(180F, 0.0F, 1.0F, 0.0F);
-        tail.render(partialTicks);
+        tail.render(scale);
         GL11.glPopMatrix();
     }
 

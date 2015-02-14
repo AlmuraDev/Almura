@@ -33,27 +33,27 @@ public class Bracelet implements IAccessory<ModelBiped> {
     }
 
     @Override
-    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         bipedFrontBracelet.rotateAngleY = root.bipedLeftArm.rotateAngleY;
         bipedFrontBracelet.rotateAngleX = root.bipedLeftArm.rotateAngleX;
         bipedFrontBracelet.rotationPointX = 0.0F;
         bipedFrontBracelet.rotationPointY = 0.0F;
-        bipedFrontBracelet.render(partialTicks);
+        bipedFrontBracelet.render(scale);
         bipedLeftBracelet.rotateAngleY = root.bipedLeftArm.rotateAngleY;
         bipedLeftBracelet.rotateAngleX = root.bipedLeftArm.rotateAngleX;
         bipedLeftBracelet.rotationPointX = 0.0F;
         bipedLeftBracelet.rotationPointY = 0.0F;
-        bipedLeftBracelet.render(partialTicks);
+        bipedLeftBracelet.render(scale);
         bipedBackBracelet.rotateAngleY = root.bipedLeftArm.rotateAngleY;
         bipedBackBracelet.rotateAngleX = root.bipedLeftArm.rotateAngleX;
         bipedBackBracelet.rotationPointX = 0.0F;
         bipedBackBracelet.rotationPointY = 0.0F;
-        bipedBackBracelet.render(partialTicks);
+        bipedBackBracelet.render(scale);
         bipedRightBracelet.rotateAngleY = root.bipedLeftArm.rotateAngleY;
         bipedRightBracelet.rotateAngleX = root.bipedLeftArm.rotateAngleX;
         bipedRightBracelet.rotationPointX = 0.0F;
         bipedRightBracelet.rotationPointY = 0.0F;
-        bipedRightBracelet.render(partialTicks);
+        bipedRightBracelet.render(scale);
     }
 
     @Override

@@ -20,7 +20,7 @@ public interface IAccessory<M extends ModelBase> {
     void onAttached(EntityPlayer player, ResourceLocation textureLocation, M root);
 
     @SideOnly(Side.CLIENT)
-    void onRender(EntityPlayer player, ResourceLocation textureLocation, M root, float partialTicks);
+    void onRender(EntityPlayer player, ResourceLocation textureLocation, M root, float scale, float partialTicks);
 
     String getName();
 }

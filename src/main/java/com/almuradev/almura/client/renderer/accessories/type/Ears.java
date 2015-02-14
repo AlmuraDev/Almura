@@ -22,12 +22,12 @@ public class Ears implements IAccessory<ModelBiped> {
     }
 
     @Override
-    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         bipedEars2.rotateAngleY = root.bipedHead.rotateAngleY;
         bipedEars2.rotateAngleX = root.bipedHead.rotateAngleX;
         bipedEars2.rotationPointX = 0.0F;
         bipedEars2.rotationPointY = 0.0F;
-        bipedEars2.render(partialTicks);
+        bipedEars2.render(scale);
     }
 
     @Override

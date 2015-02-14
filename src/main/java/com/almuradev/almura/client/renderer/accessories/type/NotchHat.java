@@ -25,17 +25,17 @@ public class NotchHat implements IAccessory<ModelBiped> {
     }
 
     @Override
-    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         NotchHatTop.rotateAngleY = root.bipedHead.rotateAngleY;
         NotchHatTop.rotateAngleX = root.bipedHead.rotateAngleX;
         NotchHatTop.rotationPointX = 0.0F;
         NotchHatTop.rotationPointY = 0.0F;
-        NotchHatTop.render(partialTicks);
+        NotchHatTop.render(scale);
         NotchHatBottom.rotateAngleY = root.bipedHead.rotateAngleY;
         NotchHatBottom.rotateAngleX = root.bipedHead.rotateAngleX;
         NotchHatBottom.rotationPointX = 0.0F;
         NotchHatBottom.rotationPointY = 0.0F;
-        NotchHatBottom.render(partialTicks);
+        NotchHatBottom.render(scale);
     }
 
     @Override

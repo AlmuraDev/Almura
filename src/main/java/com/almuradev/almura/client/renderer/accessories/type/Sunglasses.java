@@ -40,28 +40,28 @@ public class Sunglasses implements IAccessory<ModelBiped> {
     }
 
     @Override
-    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         sunglassesFront.rotateAngleY = root.bipedHead.rotateAngleY;
         sunglassesFront.rotateAngleX = root.bipedHead.rotateAngleX;
-        sunglassesFront.render(partialTicks);
+        sunglassesFront.render(scale);
         sunglassesFront2.rotateAngleY = root.bipedHead.rotateAngleY;
         sunglassesFront2.rotateAngleX = root.bipedHead.rotateAngleX;
-        sunglassesFront2.render(partialTicks);
+        sunglassesFront2.render(scale);
         sunglassesBridge.rotateAngleY = root.bipedHead.rotateAngleY;
         sunglassesBridge.rotateAngleX = root.bipedHead.rotateAngleX;
-        sunglassesBridge.render(partialTicks);
+        sunglassesBridge.render(scale);
         rightSunglasses.rotateAngleY = root.bipedHead.rotateAngleY;
         rightSunglasses.rotateAngleX = root.bipedHead.rotateAngleX;
-        rightSunglasses.render(partialTicks);
+        rightSunglasses.render(scale);
         leftSunglasses.rotateAngleY = root.bipedHead.rotateAngleY;
         leftSunglasses.rotateAngleX = root.bipedHead.rotateAngleX;
-        leftSunglasses.render(partialTicks);
+        leftSunglasses.render(scale);
         leftSunglassesBridge.rotateAngleY = root.bipedHead.rotateAngleY;
         leftSunglassesBridge.rotateAngleX = root.bipedHead.rotateAngleX;
-        leftSunglassesBridge.render(partialTicks);
+        leftSunglassesBridge.render(scale);
         rightSunglassesBridge.rotateAngleY = root.bipedHead.rotateAngleY;
         rightSunglassesBridge.rotateAngleX = root.bipedHead.rotateAngleX;
-        rightSunglassesBridge.render(partialTicks);
+        rightSunglassesBridge.render(scale);
     }
 
     @Override

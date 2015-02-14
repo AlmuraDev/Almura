@@ -25,17 +25,17 @@ public class TopHat implements IAccessory<ModelBiped> {
     }
 
     @Override
-    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         bipedBottomHat.rotateAngleY = root.bipedHead.rotateAngleY;
         bipedBottomHat.rotateAngleX = root.bipedHead.rotateAngleX;
         bipedBottomHat.rotationPointX = 0.0F;
         bipedBottomHat.rotationPointY = 0.0F;
-        bipedBottomHat.render(partialTicks);
+        bipedBottomHat.render(scale);
         bipedTopHat.rotateAngleY = root.bipedHead.rotateAngleY;
         bipedTopHat.rotateAngleX = root.bipedHead.rotateAngleX;
         bipedTopHat.rotationPointX = 0.0F;
         bipedTopHat.rotationPointY = 0.0F;
-        bipedTopHat.render(partialTicks);
+        bipedTopHat.render(scale);
     }
 
     @Override

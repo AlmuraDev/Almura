@@ -145,25 +145,25 @@ public class Wings implements IAccessory<ModelBiped> {
     }
 
     @Override
-    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
-        leftWingPart1.render(partialTicks);
-        leftWingPart2.render(partialTicks);
-        leftWingPart3.render(partialTicks);
-        leftWingPart4.render(partialTicks);
-        leftWingPart5.render(partialTicks);
-        leftWingPart6.render(partialTicks);
-        leftWingPart7.render(partialTicks);
-        leftWingPart8.render(partialTicks);
-        leftWingPart0.render(partialTicks);
-        rightWingPart0.render(partialTicks);
-        rightWingPart1.render(partialTicks);
-        rightWingPart2.render(partialTicks);
-        rightWingPart3.render(partialTicks);
-        rightWingPart4.render(partialTicks);
-        rightWingPart5.render(partialTicks);
-        rightWingPart6.render(partialTicks);
-        rightWingPart7.render(partialTicks);
-        rightWingPart8.render(partialTicks);
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
+        leftWingPart1.render(scale);
+        leftWingPart2.render(scale);
+        leftWingPart3.render(scale);
+        leftWingPart4.render(scale);
+        leftWingPart5.render(scale);
+        leftWingPart6.render(scale);
+        leftWingPart7.render(scale);
+        leftWingPart8.render(scale);
+        leftWingPart0.render(scale);
+        rightWingPart0.render(scale);
+        rightWingPart1.render(scale);
+        rightWingPart2.render(scale);
+        rightWingPart3.render(scale);
+        rightWingPart4.render(scale);
+        rightWingPart5.render(scale);
+        rightWingPart6.render(scale);
+        rightWingPart7.render(scale);
+        rightWingPart8.render(scale);
     }
 
     @Override
