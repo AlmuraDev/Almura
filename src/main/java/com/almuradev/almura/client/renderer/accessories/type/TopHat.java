@@ -5,40 +5,41 @@
  */
 package com.almuradev.almura.client.renderer.accessories.type;
 
-import com.almuradev.almura.client.renderer.accessories.Accessory;
-import com.almuradev.almura.client.renderer.accessories.AccessoryType;
+import com.almuradev.almura.client.renderer.accessories.IAccessory;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 
-public class TopHat extends Accessory {
-    public ModelRenderer bipedBottomHat;
-    public ModelRenderer bipedTopHat;
+public class TopHat implements IAccessory<ModelBiped> {
 
-    public TopHat(ModelBiped model) {
-        super(model);
-        bipedBottomHat = new ModelRenderer(model, 0, 0);
+    private ModelRenderer bipedBottomHat;
+    private ModelRenderer bipedTopHat;
+    
+    @Override
+    public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
+        bipedBottomHat = new ModelRenderer(root, 0, 0);
         bipedBottomHat.addBox(-5.5F, -9F, -5.5F, 11, 2, 11);
-        bipedTopHat = new ModelRenderer(model, 0, 13);
-        bipedTopHat.addBox(-3.5F, -17F, -3.5F, 7, 8, 7);
+        bipedTopHat = new ModelRenderer(root, 0, 13);
+        bipedTopHat.addBox(-3.5F, -17F, -3.5F, 7, 8, 7);   
     }
 
     @Override
-    public void render(EntityPlayer plr, float f) {
-        bipedBottomHat.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        bipedBottomHat.rotateAngleX = getModel().bipedHead.rotateAngleX;
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
+        bipedBottomHat.rotateAngleY = root.bipedHead.rotateAngleY;
+        bipedBottomHat.rotateAngleX = root.bipedHead.rotateAngleX;
         bipedBottomHat.rotationPointX = 0.0F;
         bipedBottomHat.rotationPointY = 0.0F;
-        bipedBottomHat.render(f);
-        bipedTopHat.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        bipedTopHat.rotateAngleX = getModel().bipedHead.rotateAngleX;
+        bipedBottomHat.render(partialTicks);
+        bipedTopHat.rotateAngleY = root.bipedHead.rotateAngleY;
+        bipedTopHat.rotateAngleX = root.bipedHead.rotateAngleX;
         bipedTopHat.rotationPointX = 0.0F;
         bipedTopHat.rotationPointY = 0.0F;
-        bipedTopHat.render(f);
+        bipedTopHat.render(partialTicks);
     }
 
     @Override
-    public AccessoryType getType() {
-        return AccessoryType.TOPHAT;
+    public String getName() {
+        return "tophat";
     }
 }

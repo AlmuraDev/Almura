@@ -5,66 +5,67 @@
  */
 package com.almuradev.almura.client.renderer.accessories.type;
 
-import com.almuradev.almura.client.renderer.accessories.Accessory;
-import com.almuradev.almura.client.renderer.accessories.AccessoryType;
+import com.almuradev.almura.client.renderer.accessories.IAccessory;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 
-public class Sunglasses extends Accessory {
-    public ModelRenderer SunglassesFront;
-    public ModelRenderer SunglassesFront2;
-    public ModelRenderer SunglassesBridge;
-    public ModelRenderer RightSunglasses;
-    public ModelRenderer LeftSunglasses;
-    public ModelRenderer RightSunglassesBridge;
-    public ModelRenderer LeftSunglassesBridge;
+public class Sunglasses implements IAccessory<ModelBiped> {
 
-    public Sunglasses(ModelBiped acs) {
-        super(acs);
-        SunglassesFront = new ModelRenderer(acs, 0, 0);
-        SunglassesFront.addBox(-3F, -4F, -5F, 2, 2, 1);
-        SunglassesFront2 = new ModelRenderer(acs, 6, 0);
-        SunglassesFront2.addBox(1F, -4F, -5F, 2, 2, 1);
-        SunglassesBridge = new ModelRenderer(acs, 0, 4);
-        SunglassesBridge.addBox(-1F, -4F, -5F, 2, 1, 1);
-        RightSunglasses = new ModelRenderer(acs, 0, 6);
-        RightSunglasses.addBox(4.0F, -4.0F, -4.0F, 1, 1, 4);
-        LeftSunglasses = new ModelRenderer(acs, 12, 0);
-        LeftSunglasses.addBox(-5.0F, -4.0F, -4.0F, 1, 1, 4);
-        LeftSunglassesBridge = new ModelRenderer(acs, 6, 5);
-        LeftSunglassesBridge.addBox(-5.0F, -4.0F, -5.0F, 2, 1, 1);
-        RightSunglassesBridge = new ModelRenderer(acs, 6, 7);
-        RightSunglassesBridge.addBox(3.0F, -4.0F, -5.0F, 2, 1, 1);
+    private ModelRenderer sunglassesFront;
+    private ModelRenderer sunglassesFront2;
+    private ModelRenderer sunglassesBridge;
+    private ModelRenderer rightSunglasses;
+    private ModelRenderer leftSunglasses;
+    private ModelRenderer rightSunglassesBridge;
+    private ModelRenderer leftSunglassesBridge;
+
+    @Override
+    public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
+        sunglassesFront = new ModelRenderer(root, 0, 0);
+        sunglassesFront.addBox(-3F, -4F, -5F, 2, 2, 1);
+        sunglassesFront2 = new ModelRenderer(root, 6, 0);
+        sunglassesFront2.addBox(1F, -4F, -5F, 2, 2, 1);
+        sunglassesBridge = new ModelRenderer(root, 0, 4);
+        sunglassesBridge.addBox(-1F, -4F, -5F, 2, 1, 1);
+        rightSunglasses = new ModelRenderer(root, 0, 6);
+        rightSunglasses.addBox(4.0F, -4.0F, -4.0F, 1, 1, 4);
+        leftSunglasses = new ModelRenderer(root, 12, 0);
+        leftSunglasses.addBox(-5.0F, -4.0F, -4.0F, 1, 1, 4);
+        leftSunglassesBridge = new ModelRenderer(root, 6, 5);
+        leftSunglassesBridge.addBox(-5.0F, -4.0F, -5.0F, 2, 1, 1);
+        rightSunglassesBridge = new ModelRenderer(root, 6, 7);
+        rightSunglassesBridge.addBox(3.0F, -4.0F, -5.0F, 2, 1, 1);   
     }
 
     @Override
-    public void render(EntityPlayer plr, float f) {
-        SunglassesFront.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        SunglassesFront.rotateAngleX = getModel().bipedHead.rotateAngleX;
-        SunglassesFront.render(f);
-        SunglassesFront2.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        SunglassesFront2.rotateAngleX = getModel().bipedHead.rotateAngleX;
-        SunglassesFront2.render(f);
-        SunglassesBridge.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        SunglassesBridge.rotateAngleX = getModel().bipedHead.rotateAngleX;
-        SunglassesBridge.render(f);
-        RightSunglasses.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        RightSunglasses.rotateAngleX = getModel().bipedHead.rotateAngleX;
-        RightSunglasses.render(f);
-        LeftSunglasses.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        LeftSunglasses.rotateAngleX = getModel().bipedHead.rotateAngleX;
-        LeftSunglasses.render(f);
-        LeftSunglassesBridge.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        LeftSunglassesBridge.rotateAngleX = getModel().bipedHead.rotateAngleX;
-        LeftSunglassesBridge.render(f);
-        RightSunglassesBridge.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        RightSunglassesBridge.rotateAngleX = getModel().bipedHead.rotateAngleX;
-        RightSunglassesBridge.render(f);
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
+        sunglassesFront.rotateAngleY = root.bipedHead.rotateAngleY;
+        sunglassesFront.rotateAngleX = root.bipedHead.rotateAngleX;
+        sunglassesFront.render(partialTicks);
+        sunglassesFront2.rotateAngleY = root.bipedHead.rotateAngleY;
+        sunglassesFront2.rotateAngleX = root.bipedHead.rotateAngleX;
+        sunglassesFront2.render(partialTicks);
+        sunglassesBridge.rotateAngleY = root.bipedHead.rotateAngleY;
+        sunglassesBridge.rotateAngleX = root.bipedHead.rotateAngleX;
+        sunglassesBridge.render(partialTicks);
+        rightSunglasses.rotateAngleY = root.bipedHead.rotateAngleY;
+        rightSunglasses.rotateAngleX = root.bipedHead.rotateAngleX;
+        rightSunglasses.render(partialTicks);
+        leftSunglasses.rotateAngleY = root.bipedHead.rotateAngleY;
+        leftSunglasses.rotateAngleX = root.bipedHead.rotateAngleX;
+        leftSunglasses.render(partialTicks);
+        leftSunglassesBridge.rotateAngleY = root.bipedHead.rotateAngleY;
+        leftSunglassesBridge.rotateAngleX = root.bipedHead.rotateAngleX;
+        leftSunglassesBridge.render(partialTicks);
+        rightSunglassesBridge.rotateAngleY = root.bipedHead.rotateAngleY;
+        rightSunglassesBridge.rotateAngleX = root.bipedHead.rotateAngleX;
+        rightSunglassesBridge.render(partialTicks);
     }
 
     @Override
-    public AccessoryType getType() {
-        return AccessoryType.SUNGLASSES;
+    public String getName() {
+        return "sunglasses";
     }
 }

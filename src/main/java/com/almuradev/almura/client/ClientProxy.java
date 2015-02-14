@@ -11,6 +11,7 @@ import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
 import com.almuradev.almura.client.gui.menu.AlmuraMainMenu;
+import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
@@ -20,6 +21,7 @@ import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -27,15 +29,24 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 
 import java.util.Map;
+import java.util.Set;
 
 public class ClientProxy extends CommonProxy {
 
@@ -109,6 +120,17 @@ public class ClientProxy extends CommonProxy {
 
             if (event.entityPlayer == Minecraft.getMinecraft().thePlayer) {
                 HUD_INGAME.playerTitle.setText(displayName);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent
+    public void onRenderPlayerSpecialPost(RenderPlayerEvent.Specials.Post event) {
+        final Set<AccessoryManager.TexturedAccessory> playerAccessories = AccessoryManager.getAccessories(event.entityPlayer.getCommandSenderName());
+        if (playerAccessories != null) {
+            for (AccessoryManager.TexturedAccessory accessory : playerAccessories) {
+                accessory.accessoryType.onRender(event.entityPlayer, accessory.textureLocation, AccessoryManager.PLAYER_RENDERER.modelBipedMain, 0.0625F);
             }
         }
     }

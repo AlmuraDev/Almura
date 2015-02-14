@@ -5,32 +5,33 @@
  */
 package com.almuradev.almura.client.renderer.accessories.type;
 
-import com.almuradev.almura.client.renderer.accessories.Accessory;
-import com.almuradev.almura.client.renderer.accessories.AccessoryType;
+import com.almuradev.almura.client.renderer.accessories.IAccessory;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 
-public class Ears extends Accessory {
-    public ModelRenderer bipedEars2;
+public class Ears implements IAccessory<ModelBiped> {
 
-    public Ears(ModelBiped mb) {
-        super(mb);
-        bipedEars2 = new ModelRenderer(mb, 0, 0);
+    private ModelRenderer bipedEars2;
+
+    @Override
+    public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
+        bipedEars2 = new ModelRenderer(root, 0, 0);
         bipedEars2.addBox(-3F, -6F, -1F, 6, 6, 1);
     }
 
     @Override
-    public void render(EntityPlayer plr, float f) {
-        bipedEars2.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        bipedEars2.rotateAngleX = getModel().bipedHead.rotateAngleX;
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
+        bipedEars2.rotateAngleY = root.bipedHead.rotateAngleY;
+        bipedEars2.rotateAngleX = root.bipedHead.rotateAngleX;
         bipedEars2.rotationPointX = 0.0F;
         bipedEars2.rotationPointY = 0.0F;
-        bipedEars2.render(f);
+        bipedEars2.render(partialTicks);
     }
 
     @Override
-    public AccessoryType getType() {
-        return AccessoryType.EARS;
+    public String getName() {
+        return "ears";
     }
 }

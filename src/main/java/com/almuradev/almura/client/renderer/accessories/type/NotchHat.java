@@ -5,40 +5,41 @@
  */
 package com.almuradev.almura.client.renderer.accessories.type;
 
-import com.almuradev.almura.client.renderer.accessories.Accessory;
-import com.almuradev.almura.client.renderer.accessories.AccessoryType;
+import com.almuradev.almura.client.renderer.accessories.IAccessory;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 
-public class NotchHat extends Accessory {
-    public ModelRenderer NotchHatTop;
-    public ModelRenderer NotchHatBottom;
+public class NotchHat implements IAccessory<ModelBiped> {
 
-    public NotchHat(ModelBiped mb) {
-        super(mb);
-        NotchHatTop = new ModelRenderer(mb, 0, 0);
+    private ModelRenderer NotchHatTop;
+    private ModelRenderer NotchHatBottom;
+
+    @Override
+    public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
+        NotchHatTop = new ModelRenderer(root, 0, 0);
         NotchHatTop.addBox(-5F, -9F, -5F, 10, 1, 10);
-        NotchHatBottom = new ModelRenderer(mb, 0, 11);
+        NotchHatBottom = new ModelRenderer(root, 0, 11);
         NotchHatBottom.addBox(-4F, -13F, -4F, 8, 4, 8);
     }
 
     @Override
-    public void render(EntityPlayer plr, float f) {
-        NotchHatTop.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        NotchHatTop.rotateAngleX = getModel().bipedHead.rotateAngleX;
+    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float partialTicks) {
+        NotchHatTop.rotateAngleY = root.bipedHead.rotateAngleY;
+        NotchHatTop.rotateAngleX = root.bipedHead.rotateAngleX;
         NotchHatTop.rotationPointX = 0.0F;
         NotchHatTop.rotationPointY = 0.0F;
-        NotchHatTop.render(f);
-        NotchHatBottom.rotateAngleY = getModel().bipedHead.rotateAngleY;
-        NotchHatBottom.rotateAngleX = getModel().bipedHead.rotateAngleX;
+        NotchHatTop.render(partialTicks);
+        NotchHatBottom.rotateAngleY = root.bipedHead.rotateAngleY;
+        NotchHatBottom.rotateAngleX = root.bipedHead.rotateAngleX;
         NotchHatBottom.rotationPointX = 0.0F;
         NotchHatBottom.rotationPointY = 0.0F;
-        NotchHatBottom.render(f);
+        NotchHatBottom.render(partialTicks);
     }
 
     @Override
-    public AccessoryType getType() {
-        return AccessoryType.NOTCHHAT;
+    public String getName() {
+        return "notchhat";
     }
 }

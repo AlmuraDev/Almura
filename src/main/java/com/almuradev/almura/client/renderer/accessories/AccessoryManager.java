@@ -5,161 +5,100 @@
  */
 package com.almuradev.almura.client.renderer.accessories;
 
+import com.almuradev.almura.Almura;
+import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.renderer.accessories.type.*;
 import com.google.common.collect.Maps;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBiped;
+import com.google.common.collect.Sets;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 public class AccessoryManager {
-    private static Map<String, Set<Pair<Accessory, String>>> sacs = new HashMap<String, Set<Pair<Accessory, String>>>();
-    private static final RenderPlayer RENDERER_PLAYER = (RenderPlayer) RenderManager.instance.entityRenderMap.get(EntityPlayer.class);
-    private static final ModelBiped MODEL_PLAYER_MAIN = ((RenderPlayer) RenderManager.instance.entityRenderMap.get(EntityPlayer.class)).modelBipedMain;
+    public static final RenderPlayer PLAYER_RENDERER = (RenderPlayer) RenderManager.instance.entityRenderMap.get(EntityPlayer.class);
+    private static Map<String, Class<? extends IAccessory<?>>> ACCESSORY_TYPES_BY_NAME = Maps.newHashMap();
+    private static Map<String, Set<TexturedAccessory>> ACCESSORIES_BY_PLAYERS = Maps.newHashMap();
+
+    static {
+        register("bracelet", Bracelet.class);
+        register("ears", Ears.class);
+        register("notchhat", NotchHat.class);
+        register("sunglasses", Sunglasses.class);
+        register("tail", Tail.class);
+        register("tophat", TopHat.class);
+        register("wings", Wings.class);
+
+        try {
+            for (Path path : Files.newDirectoryStream(Paths.get(Filesystem.CONFIG_IMAGES_PATH.toString(), "accessories"), Filesystem.IMAGE_FILES_ONLY_FILTER)) {
+                Filesystem.registerTexture(Almura.MOD_ID, "accessory_" + path.getFileName().toString().split(".png")[0].split(".jpg")[0], path);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private AccessoryManager() {
     }
 
-    public static void addAccessory(String player, Accessory n, String url) {
-        TextureManager tm = Minecraft.getMinecraft().getTextureManager();
+    public static void register(String identifier, Class<? extends IAccessory<?>> clazz) {
+        ACCESSORY_TYPES_BY_NAME.put(identifier, clazz);
+    }
 
-        Set<Pair<Accessory, String>> acs = sacs.get(player);
-        if (acs == null) {
-            acs = new HashSet<>();
+    @SuppressWarnings("unchecked")
+    public static void addAccessory(EntityPlayer player, ResourceLocation textureLocation, String accessoryIdentifier) {
+        final Class<? extends IAccessory<? extends ModelBase>> accessoryClazz = ACCESSORY_TYPES_BY_NAME.get(accessoryIdentifier);
+        final IAccessory accessory;
+
+        if (accessoryClazz != null) {
+            try {
+                accessory = accessoryClazz.newInstance();
+            } catch (Exception e) {
+                Almura.LOGGER.info("Could not create instance of accessory [" + accessoryIdentifier + "]. Does it have an empty constructor?");
+                return;
+            }
+            Set<TexturedAccessory> playerAccessories = ACCESSORIES_BY_PLAYERS.get(player.getCommandSenderName());
+            if (playerAccessories == null) {
+                playerAccessories = Sets.newHashSet();
+                ACCESSORIES_BY_PLAYERS.put(player.getCommandSenderName(), playerAccessories);
+            }
+            playerAccessories.add(new TexturedAccessory(textureLocation, accessory));
+            accessory.onAttached(player, textureLocation, PLAYER_RENDERER.modelBipedMain);
         }
+    }
 
-        Set<Pair<Accessory, String>> toRemove = new HashSet<Pair<Accessory, String>>();
-        for (Pair<Accessory, String> pr : acs) {
-            if (pr.getLeft().getType().equals(n.getType())) {
-                toRemove.add(pr);
+    public static void removeAccessory(EntityPlayer player, String accessoryIdentifier) {
+        final Set<TexturedAccessory> playerAccessories = ACCESSORIES_BY_PLAYERS.get(player.getCommandSenderName());
+        if (playerAccessories != null) {
+            final Iterator<TexturedAccessory> iterator = playerAccessories.iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().accessoryType.getName().equalsIgnoreCase(accessoryIdentifier)) {
+                    iterator.remove();
+                }
             }
         }
-
-        acs.removeAll(toRemove);
-        acs.add(Pair.of(n, url));
-        sacs.put(player, acs);
     }
 
-    public static void renderAllAccessories(EntityPlayer player, float f, float par2) {
-        Set<Pair<Accessory, String>> acs = sacs.get(player.getDisplayName());
-        if (acs == null) {
-            return;
-        }
-        for (Pair<Accessory, String> a : acs) {
-            RenderManager.instance.renderEngine.bindTexture(new ResourceLocation("accessories/" + a.getLeft().getType().toString()));
-            a.getLeft().render(player, f, par2);
-        }
+    public static Set<TexturedAccessory> getAccessories(String player) {
+        return ACCESSORIES_BY_PLAYERS.get(player);
     }
 
-    public static void addVIPAccessoriesFor(EntityPlayer player) {
-        Map<String, String> vAcs = Maps.newHashMap();
-        String that = vAcs.get("tophat");
-        String nhat = vAcs.get("notchhat");
-        String brace = vAcs.get("bracelet");
-        String wings = vAcs.get("wings");
-        String ears = vAcs.get("ears");
-        String glasses = vAcs.get("sunglasses");
-        String tail = vAcs.get("tail");
-        if (that != null) {
-            addAccessory(player.getDisplayName(), new TopHat(MODEL_PLAYER_MAIN), that);
-        }
-        if (nhat != null) {
-            addAccessory(player.getDisplayName(), new NotchHat(MODEL_PLAYER_MAIN), nhat);
-        }
-        if (brace != null) {
-            addAccessory(player.getDisplayName(), new Bracelet(MODEL_PLAYER_MAIN), brace);
-        }
-        if (wings != null) {
-            addAccessory(player.getDisplayName(), new Wings(MODEL_PLAYER_MAIN), wings);
-        }
-        if (ears != null) {
-            addAccessory(player.getDisplayName(), new Ears(MODEL_PLAYER_MAIN), ears);
-        }
-        if (glasses != null) {
-            addAccessory(player.getDisplayName(), new Sunglasses(MODEL_PLAYER_MAIN), glasses);
-        }
-        if (tail != null) {
-            addAccessory(player.getDisplayName(), new Tail(MODEL_PLAYER_MAIN), tail);
-        }
-    }
+    public static final class TexturedAccessory {
+        public final ResourceLocation textureLocation;
+        public final IAccessory accessoryType;
 
-    public static void addAccessoryType(String player, AccessoryType type, String url) {
-        Set<Pair<Accessory, String>> acs = sacs.get(player);
-        if (acs == null) {
-            acs = new HashSet<Pair<Accessory, String>>();
-            sacs.put(player, acs);
+        public TexturedAccessory(ResourceLocation textureLocation, IAccessory accessoryType) {
+            this.textureLocation = textureLocation;
+            this.accessoryType = accessoryType;
         }
-        Accessory toCreate;
-        switch (type) {
-            case BRACELET:
-                toCreate = new Bracelet(MODEL_PLAYER_MAIN);
-                break;
-            case EARS:
-                toCreate = new Ears(MODEL_PLAYER_MAIN);
-                break;
-            case NOTCHHAT:
-                toCreate = new NotchHat(MODEL_PLAYER_MAIN);
-                break;
-            case SUNGLASSES:
-                toCreate = new Sunglasses(MODEL_PLAYER_MAIN);
-                break;
-            case TAIL:
-                toCreate = new Tail(MODEL_PLAYER_MAIN);
-                break;
-            case TOPHAT:
-                toCreate = new TopHat(MODEL_PLAYER_MAIN);
-                break;
-            case WINGS:
-                toCreate = new Wings(MODEL_PLAYER_MAIN);
-                break;
-            default:
-                toCreate = null;
-                break;
-        }
-        if (toCreate != null) {
-            addAccessory(player, toCreate, url);
-        }
-    }
-
-    public static void removeAccessoryType(String player, AccessoryType type) {
-        Set<Pair<Accessory, String>> acs = sacs.get(player);
-        if (acs == null) {
-            return;
-        }
-        Pair<Accessory, String> toRemove = null;
-        for (Pair<Accessory, String> accessory : acs) {
-            if (accessory.getLeft().getType().equals(type)) {
-                toRemove = accessory;
-                break;
-            }
-        }
-        acs.remove(toRemove);
-    }
-
-    public static boolean isHandled(String username) {
-        return sacs.containsKey(username);
-    }
-
-    public static boolean hasAccessory(String username, AccessoryType type) {
-        if (!sacs.containsKey(username)) {
-            return false;
-        }
-
-        for (Pair<Accessory, String> accessory : sacs.get(username)) {
-            if (accessory.getLeft().getType().equals(type)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
