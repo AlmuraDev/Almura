@@ -14,48 +14,45 @@ import net.minecraft.util.ResourceLocation;
 
 public class Bracelet implements IAccessory<ModelBiped> {
 
-    private ModelRenderer bipedFrontBracelet;
-    private ModelRenderer bipedLeftBracelet;
-    private ModelRenderer bipedBackBracelet;
-    private ModelRenderer bipedRightBracelet;
+    private ModelRenderer front;
+    private ModelRenderer left;
+    private ModelRenderer right;
+    private ModelRenderer back;
 
     @Override
     public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
-        bipedFrontBracelet = new ModelRenderer(root, 0, 0);
-        bipedFrontBracelet.addBox(4F, 9F, -3F, 4, 1, 1);
-        bipedLeftBracelet = new ModelRenderer(root, 10, 0);
-        bipedLeftBracelet.addBox(3F, 9F, -3F, 1, 1, 6);
-        bipedBackBracelet = new ModelRenderer(root, 0, 2);
-        bipedBackBracelet.addBox(4F, 9F, 2F, 4, 1, 1);
-        bipedBackBracelet.setRotationPoint(0F, 0F, 0F);
-        bipedRightBracelet = new ModelRenderer(root, 0, 4);
-        bipedRightBracelet.addBox(8F, 9F, -3F, 1, 1, 6);
-        bipedRightBracelet.setRotationPoint(0F, 0F, 0F);
+        front = new ModelRenderer(root, 0, 0);
+        front.addBox(4F, 9F, -3F, 4, 1, 1);
+
+        left = new ModelRenderer(root, 10, 0);
+        left.addBox(3F, 9F, -3F, 1, 1, 6);
+
+        right = new ModelRenderer(root, 0, 2);
+        right.addBox(4F, 9F, 2F, 4, 1, 1);
+
+        back = new ModelRenderer(root, 0, 4);
+        back.addBox(8F, 9F, -3F, 1, 1, 6);
     }
 
     @Override
     public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
-        bipedFrontBracelet.rotateAngleY = root.bipedLeftArm.rotateAngleY;
-        bipedFrontBracelet.rotateAngleX = root.bipedLeftArm.rotateAngleX;
-        bipedFrontBracelet.rotationPointX = 0.0F;
-        bipedFrontBracelet.rotationPointY = 0.0F;
-        bipedFrontBracelet.render(scale);
-        bipedLeftBracelet.rotateAngleY = root.bipedLeftArm.rotateAngleY;
-        bipedLeftBracelet.rotateAngleX = root.bipedLeftArm.rotateAngleX;
-        bipedLeftBracelet.rotationPointX = 0.0F;
-        bipedLeftBracelet.rotationPointY = 0.0F;
-        bipedLeftBracelet.render(scale);
-        bipedBackBracelet.rotateAngleY = root.bipedLeftArm.rotateAngleY;
-        bipedBackBracelet.rotateAngleX = root.bipedLeftArm.rotateAngleX;
-        bipedBackBracelet.rotationPointX = 0.0F;
-        bipedBackBracelet.rotationPointY = 0.0F;
-        bipedBackBracelet.render(scale);
-        bipedRightBracelet.rotateAngleY = root.bipedLeftArm.rotateAngleY;
-        bipedRightBracelet.rotateAngleX = root.bipedLeftArm.rotateAngleX;
-        bipedRightBracelet.rotationPointX = 0.0F;
-        bipedRightBracelet.rotationPointY = 0.0F;
-        bipedRightBracelet.render(scale);
+
+        front.rotateAngleY = root.bipedLeftArm.rotateAngleY;
+        front.rotateAngleX = root.bipedLeftArm.rotateAngleX;
+        front.render(scale);
+
+        left.rotateAngleY = root.bipedLeftArm.rotateAngleY;
+        left.rotateAngleX = root.bipedLeftArm.rotateAngleX;
+        left.render(scale);
+
+        right.rotateAngleY = root.bipedLeftArm.rotateAngleY;
+        right.rotateAngleX = root.bipedLeftArm.rotateAngleX;
+        right.render(scale);
+
+        back.rotateAngleY = root.bipedLeftArm.rotateAngleY;
+        back.rotateAngleX = root.bipedLeftArm.rotateAngleX;
+        back.render(scale);
     }
 
     @Override

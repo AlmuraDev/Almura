@@ -14,69 +14,69 @@ import net.minecraft.util.ResourceLocation;
 
 public class Sunglasses implements IAccessory<ModelBiped> {
 
-    private ModelRenderer sunglassesFront;
-    private ModelRenderer sunglassesFront2;
-    private ModelRenderer sunglassesBridge;
-    private ModelRenderer rightSunglasses;
-    private ModelRenderer leftSunglasses;
-    private ModelRenderer rightSunglassesBridge;
-    private ModelRenderer leftSunglassesBridge;
+    private ModelRenderer shadeRight;
+    private ModelRenderer shadeLeft;
+    private ModelRenderer bridge;
+    private ModelRenderer leftTemple;
+    private ModelRenderer rightTemple;
+    private ModelRenderer leftTempleBridge;
+    private ModelRenderer rightTempleBridge;
 
     @Override
     public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
-        sunglassesFront = new ModelRenderer(root, 0, 0);
-        sunglassesFront.addBox(-3F, -4F, -5F, 2, 2, 1);
-        sunglassesFront.setTextureSize(32, 32);
+        shadeRight = new ModelRenderer(root, 0, 0);
+        shadeRight.addBox(-3F, -4F, -5F, 2, 2, 1);
 
-        sunglassesFront2 = new ModelRenderer(root, 6, 0);
-        sunglassesFront2.addBox(1F, -4F, -5F, 2, 2, 1);
-        sunglassesFront2.setTextureSize(32, 32);
+        shadeLeft = new ModelRenderer(root, 6, 0);
+        shadeLeft.addBox(1F, -4F, -5F, 2, 2, 1);
 
-        sunglassesBridge = new ModelRenderer(root, 0, 4);
-        sunglassesBridge.addBox(-1F, -4F, -5F, 2, 1, 1);
-        sunglassesBridge.setTextureSize(32, 32);
+        bridge = new ModelRenderer(root, 0, 4);
+        bridge.addBox(-1F, -4F, -5F, 2, 1, 1);
 
-        rightSunglasses = new ModelRenderer(root, 0, 6);
-        rightSunglasses.addBox(4.0F, -4.0F, -4.0F, 1, 1, 4);
-        rightSunglasses.setTextureSize(32, 32);
+        leftTemple = new ModelRenderer(root, 0, 6);
+        leftTemple.addBox(4.0F, -4.0F, -4.0F, 1, 1, 4);
 
-        rightSunglassesBridge = new ModelRenderer(root, 6, 7);
-        rightSunglassesBridge.addBox(3.0F, -4.0F, -5.0F, 2, 1, 1);
-        rightSunglassesBridge.setTextureSize(32, 32);
+        leftTempleBridge = new ModelRenderer(root, 6, 7);
+        leftTempleBridge.addBox(3.0F, -4.0F, -5.0F, 2, 1, 1);
 
-        leftSunglasses = new ModelRenderer(root, 12, 0);
-        leftSunglasses.addBox(-5.0F, -4.0F, -4.0F, 1, 1, 4);
-        leftSunglasses.setTextureSize(32, 32);
+        rightTemple = new ModelRenderer(root, 12, 0);
+        rightTemple.addBox(-5.0F, -4.0F, -4.0F, 1, 1, 4);
 
-        leftSunglassesBridge = new ModelRenderer(root, 6, 5);
-        leftSunglassesBridge.addBox(-5.0F, -4.0F, -5.0F, 2, 1, 1);
-        leftSunglassesBridge.setTextureSize(32, 32);
+        rightTempleBridge = new ModelRenderer(root, 6, 5);
+        rightTempleBridge.addBox(-5.0F, -4.0F, -5.0F, 2, 1, 1);
     }
 
     @Override
     public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
-        sunglassesFront.rotateAngleY = root.bipedHead.rotateAngleY;
-        sunglassesFront.rotateAngleX = root.bipedHead.rotateAngleX;
-        sunglassesFront.render(scale);
-        sunglassesFront2.rotateAngleY = root.bipedHead.rotateAngleY;
-        sunglassesFront2.rotateAngleX = root.bipedHead.rotateAngleX;
-        sunglassesFront2.render(scale);
-        sunglassesBridge.rotateAngleY = root.bipedHead.rotateAngleY;
-        sunglassesBridge.rotateAngleX = root.bipedHead.rotateAngleX;
-        sunglassesBridge.render(scale);
-        rightSunglasses.rotateAngleY = root.bipedHead.rotateAngleY;
-        rightSunglasses.rotateAngleX = root.bipedHead.rotateAngleX;
-        rightSunglasses.render(scale);
-        leftSunglasses.rotateAngleY = root.bipedHead.rotateAngleY;
-        leftSunglasses.rotateAngleX = root.bipedHead.rotateAngleX;
-        leftSunglasses.render(scale);
-        leftSunglassesBridge.rotateAngleY = root.bipedHead.rotateAngleY;
-        leftSunglassesBridge.rotateAngleX = root.bipedHead.rotateAngleX;
-        leftSunglassesBridge.render(scale);
-        rightSunglassesBridge.rotateAngleY = root.bipedHead.rotateAngleY;
-        rightSunglassesBridge.rotateAngleX = root.bipedHead.rotateAngleX;
-        rightSunglassesBridge.render(scale);
+
+        shadeRight.rotateAngleY = root.bipedHead.rotateAngleY;
+        shadeRight.rotateAngleX = root.bipedHead.rotateAngleX;
+        shadeRight.render(scale);
+
+        shadeLeft.rotateAngleY = root.bipedHead.rotateAngleY;
+        shadeLeft.rotateAngleX = root.bipedHead.rotateAngleX;
+        shadeLeft.render(scale);
+
+        bridge.rotateAngleY = root.bipedHead.rotateAngleY;
+        bridge.rotateAngleX = root.bipedHead.rotateAngleX;
+        bridge.render(scale);
+
+        leftTemple.rotateAngleY = root.bipedHead.rotateAngleY;
+        leftTemple.rotateAngleX = root.bipedHead.rotateAngleX;
+        leftTemple.render(scale);
+
+        rightTemple.rotateAngleY = root.bipedHead.rotateAngleY;
+        rightTemple.rotateAngleX = root.bipedHead.rotateAngleX;
+        rightTemple.render(scale);
+
+        rightTempleBridge.rotateAngleY = root.bipedHead.rotateAngleY;
+        rightTempleBridge.rotateAngleX = root.bipedHead.rotateAngleX;
+        rightTempleBridge.render(scale);
+
+        leftTempleBridge.rotateAngleY = root.bipedHead.rotateAngleY;
+        leftTempleBridge.rotateAngleX = root.bipedHead.rotateAngleX;
+        leftTempleBridge.render(scale);
     }
 
     @Override

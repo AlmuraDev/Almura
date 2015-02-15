@@ -14,7 +14,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-// TODO Math may not be correct anymore
 public class Tail implements IAccessory<ModelBiped> {
 
     private ModelRenderer tail;

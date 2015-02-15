@@ -106,6 +106,7 @@ public class AccessoryManager {
         } else {
             addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_sunglasses_black"), "sunglasses");
             addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_cathat_in_the_hat"), "cathat");
+            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_pp-wg-9"), "wings");
         }
     }
 

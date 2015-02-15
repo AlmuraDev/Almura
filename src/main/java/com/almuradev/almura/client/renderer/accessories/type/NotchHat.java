@@ -14,31 +14,29 @@ import net.minecraft.util.ResourceLocation;
 
 public class NotchHat implements IAccessory<ModelBiped> {
 
-    private ModelRenderer notchHatTop;
-    private ModelRenderer notchHatBottom;
+    private ModelRenderer bottom;
+    private ModelRenderer top;
 
     @Override
     public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
-        notchHatTop = new ModelRenderer(root, 0, 0);
-        notchHatTop.addBox(-5F, -9F, -5F, 10, 1, 10);
+        bottom = new ModelRenderer(root, 0, 0);
+        bottom.addBox(-5F, -9F, -5F, 10, 1, 10);
 
-        notchHatBottom = new ModelRenderer(root, 0, 11);
-        notchHatBottom.addBox(-4F, -13F, -4F, 8, 4, 8);
+        top = new ModelRenderer(root, 0, 11);
+        top.addBox(-4F, -13F, -4F, 8, 4, 8);
     }
 
     @Override
     public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
-        notchHatTop.rotateAngleY = root.bipedHead.rotateAngleY;
-        notchHatTop.rotateAngleX = root.bipedHead.rotateAngleX;
-        notchHatTop.rotationPointX = 0.0F;
-        notchHatTop.rotationPointY = 0.0F;
-        notchHatTop.render(scale);
-        notchHatBottom.rotateAngleY = root.bipedHead.rotateAngleY;
-        notchHatBottom.rotateAngleX = root.bipedHead.rotateAngleX;
-        notchHatBottom.rotationPointX = 0.0F;
-        notchHatBottom.rotationPointY = 0.0F;
-        notchHatBottom.render(scale);
+
+        bottom.rotateAngleY = root.bipedHead.rotateAngleY;
+        bottom.rotateAngleX = root.bipedHead.rotateAngleX;
+        bottom.render(scale);
+
+        top.rotateAngleY = root.bipedHead.rotateAngleY;
+        top.rotateAngleX = root.bipedHead.rotateAngleX;
+        top.render(scale);
     }
 
     @Override

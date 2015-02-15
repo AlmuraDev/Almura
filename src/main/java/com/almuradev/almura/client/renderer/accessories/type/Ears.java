@@ -14,22 +14,21 @@ import net.minecraft.util.ResourceLocation;
 
 public class Ears implements IAccessory<ModelBiped> {
 
-    private ModelRenderer bipedEars2;
+    private ModelRenderer ears;
 
     @Override
     public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
-        bipedEars2 = new ModelRenderer(root, 0, 0);
-        bipedEars2.addBox(-3F, -6F, -1F, 6, 6, 1);
+        ears = new ModelRenderer(root, 0, 0);
+        ears.addBox(-3F, -6F, -1F, 6, 6, 1);
     }
 
     @Override
     public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
-        bipedEars2.rotateAngleY = root.bipedHead.rotateAngleY;
-        bipedEars2.rotateAngleX = root.bipedHead.rotateAngleX;
-        bipedEars2.rotationPointX = 0.0F;
-        bipedEars2.rotationPointY = 0.0F;
-        bipedEars2.render(scale);
+
+        ears.rotateAngleY = root.bipedHead.rotateAngleY;
+        ears.rotateAngleX = root.bipedHead.rotateAngleX;
+        ears.render(scale);
     }
 
     @Override
