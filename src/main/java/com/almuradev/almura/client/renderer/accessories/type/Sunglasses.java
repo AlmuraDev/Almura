@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.renderer.accessories.type;
 
 import com.almuradev.almura.client.renderer.accessories.IAccessory;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,6 +42,7 @@ public class Sunglasses implements IAccessory<ModelBiped> {
 
     @Override
     public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
+        Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
         sunglassesFront.rotateAngleY = root.bipedHead.rotateAngleY;
         sunglassesFront.rotateAngleX = root.bipedHead.rotateAngleX;
         sunglassesFront.render(scale);

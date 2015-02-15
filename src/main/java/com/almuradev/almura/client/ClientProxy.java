@@ -119,13 +119,7 @@ public class ClientProxy extends CommonProxy {
     @SuppressWarnings("unchecked")
     @SubscribeEvent
     public void onRenderPlayerSpecialPost(RenderPlayerEvent.Specials.Post event) {
-        final Set<AccessoryManager.TexturedAccessory> playerAccessories = AccessoryManager.getAccessories(event.entityPlayer.getCommandSenderName());
-        if (playerAccessories != null) {
-            for (AccessoryManager.TexturedAccessory accessory : playerAccessories) {
-                Minecraft.getMinecraft().getTextureManager().bindTexture(accessory.textureLocation);
-                accessory.accessoryType.onRender(event.entityPlayer, accessory.textureLocation, AccessoryManager.PLAYER_RENDERER.modelBipedMain, 0.0625F, event.partialRenderTick);
-            }
-        }
+        AccessoryManager.onRenderSpecialTick(event);
     }
 }
 

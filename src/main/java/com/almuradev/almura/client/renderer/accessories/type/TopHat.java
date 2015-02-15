@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.renderer.accessories.type;
 
 import com.almuradev.almura.client.renderer.accessories.IAccessory;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,6 +27,7 @@ public class TopHat implements IAccessory<ModelBiped> {
 
     @Override
     public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
+        Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
         bipedBottomHat.rotateAngleY = root.bipedHead.rotateAngleY;
         bipedBottomHat.rotateAngleX = root.bipedHead.rotateAngleX;
         bipedBottomHat.rotationPointX = 0.0F;

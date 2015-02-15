@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,6 +38,8 @@ public class AccessoryManager {
         register("tail", Tail.class);
         register("tophat", TopHat.class);
         register("wings", Wings.class);
+        register("cloak", Cloak.class);
+        register("skin", Skin.class);
 
         try {
             for (Path path : Files.newDirectoryStream(Paths.get(Filesystem.CONFIG_IMAGES_PATH.toString(), "accessories"), Filesystem.IMAGE_FILES_ONLY_FILTER)) {
@@ -90,6 +93,16 @@ public class AccessoryManager {
 
     public static Set<TexturedAccessory> getAccessories(String player) {
         return ACCESSORIES_BY_PLAYERS.get(player);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void onRenderSpecialTick(RenderPlayerEvent.Specials.Post event) {
+        final Set<AccessoryManager.TexturedAccessory> playerAccessories = AccessoryManager.getAccessories(event.entityPlayer.getCommandSenderName());
+        if (playerAccessories != null) {
+            for (AccessoryManager.TexturedAccessory accessory : playerAccessories) {
+                accessory.accessoryType.onRender(event.entityPlayer, accessory.textureLocation, AccessoryManager.PLAYER_RENDERER.modelBipedMain, 0.0625F, event.partialRenderTick);
+            }
+        }
     }
 
     public static final class TexturedAccessory {

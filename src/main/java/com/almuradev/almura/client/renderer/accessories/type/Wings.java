@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.renderer.accessories.type;
 
 import com.almuradev.almura.client.renderer.accessories.IAccessory;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -146,6 +147,7 @@ public class Wings implements IAccessory<ModelBiped> {
 
     @Override
     public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
+        Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
         leftWingPart1.render(scale);
         leftWingPart2.render(scale);
         leftWingPart3.render(scale);
