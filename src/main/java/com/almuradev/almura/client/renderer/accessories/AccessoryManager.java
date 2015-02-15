@@ -41,6 +41,7 @@ public class AccessoryManager {
         register("cloak", Cloak.class);
         register("skin", Skin.class);
         register("cathat", CatHat.class);
+        register("halo", Halo.class);
 
         try {
             for (Path path : Files.newDirectoryStream(Paths.get(Filesystem.CONFIG_IMAGES_PATH.toString(), "accessories"), Filesystem.IMAGE_FILES_ONLY_FILTER)) {
