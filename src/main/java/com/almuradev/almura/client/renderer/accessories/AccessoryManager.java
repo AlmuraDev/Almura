@@ -103,10 +103,6 @@ public class AccessoryManager {
             for (AccessoryManager.TexturedAccessory accessory : playerAccessories) {
                 accessory.accessoryType.onRender(event.entityPlayer, accessory.textureLocation, AccessoryManager.PLAYER_RENDERER.modelBipedMain, 0.0625F, event.partialRenderTick);
             }
-        } else {
-            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_sunglasses_black"), "sunglasses");
-            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_cathat_in_the_hat"), "cathat");
-            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_pp-wg-9"), "wings");
         }
     }
 
