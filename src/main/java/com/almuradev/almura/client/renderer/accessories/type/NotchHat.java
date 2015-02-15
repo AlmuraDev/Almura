@@ -14,30 +14,31 @@ import net.minecraft.util.ResourceLocation;
 
 public class NotchHat implements IAccessory<ModelBiped> {
 
-    private ModelRenderer NotchHatTop;
-    private ModelRenderer NotchHatBottom;
+    private ModelRenderer notchHatTop;
+    private ModelRenderer notchHatBottom;
 
     @Override
     public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
-        NotchHatTop = new ModelRenderer(root, 0, 0);
-        NotchHatTop.addBox(-5F, -9F, -5F, 10, 1, 10);
-        NotchHatBottom = new ModelRenderer(root, 0, 11);
-        NotchHatBottom.addBox(-4F, -13F, -4F, 8, 4, 8);
+        notchHatTop = new ModelRenderer(root, 0, 0);
+        notchHatTop.addBox(-5F, -9F, -5F, 10, 1, 10);
+
+        notchHatBottom = new ModelRenderer(root, 0, 11);
+        notchHatBottom.addBox(-4F, -13F, -4F, 8, 4, 8);
     }
 
     @Override
     public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
-        NotchHatTop.rotateAngleY = root.bipedHead.rotateAngleY;
-        NotchHatTop.rotateAngleX = root.bipedHead.rotateAngleX;
-        NotchHatTop.rotationPointX = 0.0F;
-        NotchHatTop.rotationPointY = 0.0F;
-        NotchHatTop.render(scale);
-        NotchHatBottom.rotateAngleY = root.bipedHead.rotateAngleY;
-        NotchHatBottom.rotateAngleX = root.bipedHead.rotateAngleX;
-        NotchHatBottom.rotationPointX = 0.0F;
-        NotchHatBottom.rotationPointY = 0.0F;
-        NotchHatBottom.render(scale);
+        notchHatTop.rotateAngleY = root.bipedHead.rotateAngleY;
+        notchHatTop.rotateAngleX = root.bipedHead.rotateAngleX;
+        notchHatTop.rotationPointX = 0.0F;
+        notchHatTop.rotationPointY = 0.0F;
+        notchHatTop.render(scale);
+        notchHatBottom.rotateAngleY = root.bipedHead.rotateAngleY;
+        notchHatBottom.rotateAngleX = root.bipedHead.rotateAngleX;
+        notchHatBottom.rotationPointX = 0.0F;
+        notchHatBottom.rotationPointY = 0.0F;
+        notchHatBottom.render(scale);
     }
 
     @Override

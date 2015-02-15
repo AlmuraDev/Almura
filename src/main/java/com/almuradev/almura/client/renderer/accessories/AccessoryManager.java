@@ -40,6 +40,7 @@ public class AccessoryManager {
         register("wings", Wings.class);
         register("cloak", Cloak.class);
         register("skin", Skin.class);
+        register("cathat", CatHat.class);
 
         try {
             for (Path path : Files.newDirectoryStream(Paths.get(Filesystem.CONFIG_IMAGES_PATH.toString(), "accessories"), Filesystem.IMAGE_FILES_ONLY_FILTER)) {
@@ -102,6 +103,9 @@ public class AccessoryManager {
             for (AccessoryManager.TexturedAccessory accessory : playerAccessories) {
                 accessory.accessoryType.onRender(event.entityPlayer, accessory.textureLocation, AccessoryManager.PLAYER_RENDERER.modelBipedMain, 0.0625F, event.partialRenderTick);
             }
+        } else {
+            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_sunglasses_black"), "sunglasses");
+            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_cathat_in_the_hat"), "cathat");
         }
     }
 

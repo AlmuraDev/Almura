@@ -26,18 +26,31 @@ public class Sunglasses implements IAccessory<ModelBiped> {
     public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
         sunglassesFront = new ModelRenderer(root, 0, 0);
         sunglassesFront.addBox(-3F, -4F, -5F, 2, 2, 1);
+        sunglassesFront.setTextureSize(32, 32);
+
         sunglassesFront2 = new ModelRenderer(root, 6, 0);
         sunglassesFront2.addBox(1F, -4F, -5F, 2, 2, 1);
+        sunglassesFront2.setTextureSize(32, 32);
+
         sunglassesBridge = new ModelRenderer(root, 0, 4);
         sunglassesBridge.addBox(-1F, -4F, -5F, 2, 1, 1);
+        sunglassesBridge.setTextureSize(32, 32);
+
         rightSunglasses = new ModelRenderer(root, 0, 6);
         rightSunglasses.addBox(4.0F, -4.0F, -4.0F, 1, 1, 4);
+        rightSunglasses.setTextureSize(32, 32);
+
+        rightSunglassesBridge = new ModelRenderer(root, 6, 7);
+        rightSunglassesBridge.addBox(3.0F, -4.0F, -5.0F, 2, 1, 1);
+        rightSunglassesBridge.setTextureSize(32, 32);
+
         leftSunglasses = new ModelRenderer(root, 12, 0);
         leftSunglasses.addBox(-5.0F, -4.0F, -4.0F, 1, 1, 4);
+        leftSunglasses.setTextureSize(32, 32);
+
         leftSunglassesBridge = new ModelRenderer(root, 6, 5);
         leftSunglassesBridge.addBox(-5.0F, -4.0F, -5.0F, 2, 1, 1);
-        rightSunglassesBridge = new ModelRenderer(root, 6, 7);
-        rightSunglassesBridge.addBox(3.0F, -4.0F, -5.0F, 2, 1, 1);   
+        leftSunglassesBridge.setTextureSize(32, 32);
     }
 
     @Override
