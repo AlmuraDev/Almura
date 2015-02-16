@@ -13,9 +13,7 @@ import com.google.common.collect.Sets;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.client.renderer.entity.RenderSkeleton;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -30,7 +28,6 @@ import java.util.Set;
 
 public class AccessoryManager {
     public static final RenderPlayer PLAYER_RENDERER = (RenderPlayer) RenderManager.instance.entityRenderMap.get(EntityPlayer.class);
-    public static final RenderSkeleton SKELETON_RENDERER = (RenderSkeleton) RenderManager.instance.entityRenderMap.get(EntitySkeleton.class);
     private static Map<String, Class<? extends IAccessory<?>>> ACCESSORY_TYPES_BY_NAME = Maps.newHashMap();
     private static Map<String, Set<TexturedAccessory>> ACCESSORIES_BY_ENTITIES = Maps.newHashMap();
 
