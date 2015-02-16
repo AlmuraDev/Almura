@@ -9,7 +9,7 @@ import com.almuradev.almura.client.renderer.accessories.IAccessory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 
 public class Wings implements IAccessory<ModelBiped> {
@@ -34,7 +34,7 @@ public class Wings implements IAccessory<ModelBiped> {
     private ModelRenderer rightWingPart8;
 
     @Override
-    public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
+    public void onAttached(EntityLivingBase base, ResourceLocation textureLocation, ModelBiped root) {
         leftWingPart1 = new ModelRenderer(root, 56, 0);
         leftWingPart1.addBox(-1F, 1F, 3F, 1, 10, 1);
         setRotation(leftWingPart1, 0F, 0.5007752F, 0.0174533F);
@@ -109,7 +109,7 @@ public class Wings implements IAccessory<ModelBiped> {
     }
 
     @Override
-    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
+    public void onRender(EntityLivingBase base, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
 
         leftWingPart1.render(scale);

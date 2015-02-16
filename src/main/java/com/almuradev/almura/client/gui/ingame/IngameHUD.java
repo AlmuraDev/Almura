@@ -9,7 +9,6 @@ import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.components.UIPropertyBar;
-
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -211,9 +210,9 @@ public class IngameHUD extends AlmuraGui {
         if (!Configuration.DISPLAY_ENHANCED_GUI || !UPDATES_ENABLED) {
             return;
         }
-        
+
         if (!Configuration.DISPLAY_ENHANCED_DEBUG && Minecraft.getMinecraft().gameSettings.showDebugInfo) {
-        	return;
+            return;
         }
         switch (event.type) {
             case HEALTH:
@@ -222,7 +221,7 @@ public class IngameHUD extends AlmuraGui {
             case EXPERIENCE:
                 event.setCanceled(true);
         }
-       
+
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             setWorldAndResolution(mc, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);

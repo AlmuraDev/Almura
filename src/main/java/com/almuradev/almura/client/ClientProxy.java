@@ -38,7 +38,6 @@ import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 
 import java.util.Map;
-import java.util.Set;
 
 public class ClientProxy extends CommonProxy {
 
@@ -81,14 +80,14 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onGuiOpen(GuiOpenEvent event) {
+    public void onGuiOpenEvent(GuiOpenEvent event) {
         if (event.gui instanceof GuiMainMenu) {
             event.gui = new AlmuraMainMenu(null);
         }
     }
 
     @SubscribeEvent
-    public void onKeyInput(KeyInputEvent event) {
+    public void onKeyInputEvent(KeyInputEvent event) {
         if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
             IngameDebugHUD.UPDATES_ENABLED = !IngameDebugHUD.UPDATES_ENABLED;
         } else if (Keyboard.isKeyDown(BINDING_OPEN_BACKPACK.getKeyCode())) {
@@ -97,7 +96,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onTextureStitchEventPre(TextureStitchEvent.Pre event) {
+    public void onTextureStitchEventPreEvent(TextureStitchEvent.Pre event) {
         Almura.LOGGER
                 .info("This computer can handle a maximum stitched texture size of width [" + Minecraft.getGLMaximumTextureSize() + "] and length ["
                         + Minecraft.getGLMaximumTextureSize() + "].");
@@ -118,8 +117,8 @@ public class ClientProxy extends CommonProxy {
 
     @SuppressWarnings("unchecked")
     @SubscribeEvent
-    public void onRenderPlayerSpecialPost(RenderPlayerEvent.Specials.Post event) {
-        AccessoryManager.onRenderSpecialTick(event);
+    public void onRenderPlayerSpecialPostEvent(RenderPlayerEvent.Specials.Post event) {
+        AccessoryManager.onRenderPlayerSpecialEventPost(event);
     }
 }
 

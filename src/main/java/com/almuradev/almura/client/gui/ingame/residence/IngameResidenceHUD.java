@@ -104,8 +104,8 @@ public class IngameResidenceHUD extends AlmuraGui {
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             setWorldAndResolution(MINECRAFT, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
             if (firstDraw) { // This is used to fix alignment issues.
-            	title.setText(ChatColor.AQUA + "Residence Info");
-            	firstDraw = false;
+                title.setText(ChatColor.AQUA + "Residence Info");
+                firstDraw = false;
             }
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
@@ -124,11 +124,11 @@ public class IngameResidenceHUD extends AlmuraGui {
         resLeaseExpire.setText(ChatColor.YELLOW + ResidenceData.LEASE_EXPIRATION);
         int originalWidth = resPane.getWidth();
         if (resOwnerOnline.getWidth() + 20 > originalWidth) {
-        	resPane.setSize(resOwnerOnline.getWidth() + 10, resPane.getHeight());
+            resPane.setSize(resOwnerOnline.getWidth() + 10, resPane.getHeight());
         }
 
         if (resLeaseExpire.getWidth() + 20 > originalWidth) {
-        	resPane.setSize(resLeaseExpire.getWidth() + 10, resPane.getHeight());
+            resPane.setSize(resLeaseExpire.getWidth() + 10, resPane.getHeight());
         }
     }
 }

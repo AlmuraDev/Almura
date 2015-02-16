@@ -13,6 +13,9 @@ import com.google.common.collect.Sets;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.client.renderer.entity.RenderSkeleton;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -27,8 +30,9 @@ import java.util.Set;
 
 public class AccessoryManager {
     public static final RenderPlayer PLAYER_RENDERER = (RenderPlayer) RenderManager.instance.entityRenderMap.get(EntityPlayer.class);
+    public static final RenderSkeleton SKELETON_RENDERER = (RenderSkeleton) RenderManager.instance.entityRenderMap.get(EntitySkeleton.class);
     private static Map<String, Class<? extends IAccessory<?>>> ACCESSORY_TYPES_BY_NAME = Maps.newHashMap();
-    private static Map<String, Set<TexturedAccessory>> ACCESSORIES_BY_PLAYERS = Maps.newHashMap();
+    private static Map<String, Set<TexturedAccessory>> ACCESSORIES_BY_ENTITIES = Maps.newHashMap();
 
     static {
         register("bracelet", Bracelet.class);
@@ -60,7 +64,7 @@ public class AccessoryManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static void addAccessory(EntityPlayer player, ResourceLocation textureLocation, String accessoryIdentifier) {
+    public static void addAccessory(EntityLivingBase base, ResourceLocation textureLocation, String accessoryIdentifier) {
         final Class<? extends IAccessory<? extends ModelBase>> accessoryClazz = ACCESSORY_TYPES_BY_NAME.get(accessoryIdentifier);
         final IAccessory accessory;
 
@@ -71,18 +75,18 @@ public class AccessoryManager {
                 Almura.LOGGER.info("Could not create instance of accessory [" + accessoryIdentifier + "]. Does it have an empty constructor?");
                 return;
             }
-            Set<TexturedAccessory> playerAccessories = ACCESSORIES_BY_PLAYERS.get(player.getCommandSenderName());
-            if (playerAccessories == null) {
-                playerAccessories = Sets.newHashSet();
-                ACCESSORIES_BY_PLAYERS.put(player.getCommandSenderName(), playerAccessories);
+            Set<TexturedAccessory> entityAccessories = ACCESSORIES_BY_ENTITIES.get(base.getCommandSenderName());
+            if (entityAccessories == null) {
+                entityAccessories = Sets.newHashSet();
+                ACCESSORIES_BY_ENTITIES.put(base.getCommandSenderName(), entityAccessories);
             }
-            playerAccessories.add(new TexturedAccessory(textureLocation, accessory));
-            accessory.onAttached(player, textureLocation, PLAYER_RENDERER.modelBipedMain);
+            entityAccessories.add(new TexturedAccessory(textureLocation, accessory));
+            accessory.onAttached(base, textureLocation, PLAYER_RENDERER.modelBipedMain);
         }
     }
 
     public static void removeAccessory(EntityPlayer player, String accessoryIdentifier) {
-        final Set<TexturedAccessory> playerAccessories = ACCESSORIES_BY_PLAYERS.get(player.getCommandSenderName());
+        final Set<TexturedAccessory> playerAccessories = ACCESSORIES_BY_ENTITIES.get(player.getCommandSenderName());
         if (playerAccessories != null) {
             final Iterator<TexturedAccessory> iterator = playerAccessories.iterator();
             while (iterator.hasNext()) {
@@ -94,15 +98,15 @@ public class AccessoryManager {
     }
 
     public static Set<TexturedAccessory> getAccessories(String player) {
-        return ACCESSORIES_BY_PLAYERS.get(player);
+        return ACCESSORIES_BY_ENTITIES.get(player);
     }
 
     @SuppressWarnings("unchecked")
-    public static void onRenderSpecialTick(RenderPlayerEvent.Specials.Post event) {
-        final Set<AccessoryManager.TexturedAccessory> playerAccessories = AccessoryManager.getAccessories(event.entityPlayer.getCommandSenderName());
-        if (playerAccessories != null) {
-            for (AccessoryManager.TexturedAccessory accessory : playerAccessories) {
-                accessory.accessoryType.onRender(event.entityPlayer, accessory.textureLocation, AccessoryManager.PLAYER_RENDERER.modelBipedMain, 0.0625F, event.partialRenderTick);
+    public static void onRenderPlayerSpecialEventPost(RenderPlayerEvent.Specials.Post event) {
+        final Set<AccessoryManager.TexturedAccessory> entityAccessories = AccessoryManager.getAccessories(event.entityPlayer.getCommandSenderName());
+        if (entityAccessories != null) {
+            for (AccessoryManager.TexturedAccessory accessory : entityAccessories) {
+                accessory.accessoryType.onRender(event.entityPlayer, accessory.textureLocation, PLAYER_RENDERER.modelBipedMain, 0.0625F, event.partialRenderTick);
             }
         }
     }

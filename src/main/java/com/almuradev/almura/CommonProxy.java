@@ -278,7 +278,7 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
-    public void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
+    public void onItemCraftedEvent(PlayerEvent.ItemCraftedEvent event) {
         if (!(event.craftMatrix instanceof InventoryCrafting)) {
             return;
         }
@@ -332,14 +332,14 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
-    public void onBonemeal(BonemealEvent event) {
+    public void onBonemealEvent(BonemealEvent event) {
         if (event.block instanceof PackCrops) {
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
         if (!event.world.isRemote && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && event.entityPlayer.getHeldItem() == null
                 && event.entityPlayer.isSneaking()) {
             final TileEntity te = event.world.getTileEntity(event.x, event.y, event.z);

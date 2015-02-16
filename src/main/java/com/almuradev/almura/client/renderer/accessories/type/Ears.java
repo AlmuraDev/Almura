@@ -9,7 +9,7 @@ import com.almuradev.almura.client.renderer.accessories.IAccessory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 
 public class Ears implements IAccessory<ModelBiped> {
@@ -17,13 +17,13 @@ public class Ears implements IAccessory<ModelBiped> {
     private ModelRenderer ears;
 
     @Override
-    public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
+    public void onAttached(EntityLivingBase base, ResourceLocation textureLocation, ModelBiped root) {
         ears = new ModelRenderer(root, 0, 0);
         ears.addBox(-3F, -6F, -1F, 6, 6, 1);
     }
 
     @Override
-    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
+    public void onRender(EntityLivingBase base, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
 
         ears.rotateAngleY = root.bipedHead.rotateAngleY;

@@ -3,6 +3,7 @@
   "mixins": [
     "block.MixinBlockTallGrass",
     "block.MixinBlockWall",
+    "entity.MixinEntityLivingBase",
     "inventory.MixinContainerWorkbench",
     "item.crafting.MixinShapedRecipes",
     "item.crafting.MixinShapelessRecipes",
@@ -18,6 +19,7 @@
     "client.gui.inventory.MixinGuiEditSign",
     "client.gui.MixinGuiChat",
     "client.renderer.texture.MixinTextureMap",
+    "client.renderer.entity.MixinRender",
     "client.renderer.tileentity.MixinRenderItemFrame",
     "client.renderer.tileentity.MixinTileEntityChestRenderer",
     "client.renderer.tileentity.MixinTileEntitySignRenderer",

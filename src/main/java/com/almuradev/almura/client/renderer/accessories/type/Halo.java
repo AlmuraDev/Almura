@@ -4,7 +4,7 @@ import com.almuradev.almura.client.renderer.accessories.IAccessory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 
 public class Halo implements IAccessory<ModelBiped> {
@@ -14,7 +14,7 @@ public class Halo implements IAccessory<ModelBiped> {
     private ModelRenderer back;
 
     @Override
-    public void onAttached(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root) {
+    public void onAttached(EntityLivingBase base, ResourceLocation textureLocation, ModelBiped root) {
         right = new ModelRenderer(root, 0, 2);
         right.addBox(-3F, -14F, -2F, 1, 1, 4);
 
@@ -29,7 +29,7 @@ public class Halo implements IAccessory<ModelBiped> {
     }
 
     @Override
-    public void onRender(EntityPlayer player, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
+    public void onRender(EntityLivingBase base, ResourceLocation textureLocation, ModelBiped root, float scale, float partialTicks) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
 
         right.rotateAngleY = root.bipedHead.rotateAngleY;
