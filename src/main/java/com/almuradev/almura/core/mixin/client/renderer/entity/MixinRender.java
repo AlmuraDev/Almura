@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.core.mixin.client.renderer.entity;
 
 import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
@@ -26,10 +31,7 @@ public abstract class MixinRender {
         double d3 = p_147906_1_.getDistanceSqToEntity(this.renderManager.livingPlayer);
 
         if (d3 <= (double) (p_147906_9_ * p_147906_9_)) {
-            System.out.println(p_147906_1_ instanceof IExtendedEntityLivingBase);
             if (p_147906_1_ instanceof IExtendedEntityLivingBase) {
-                System.out.println(((IExtendedEntityLivingBase) p_147906_1_).getTitle());
-
                 if (((IExtendedEntityLivingBase) p_147906_1_).getTitle() != null && !((IExtendedEntityLivingBase) p_147906_1_).getTitle().isEmpty()) {
                     drawNameplate(p_147906_1_, ((IExtendedEntityLivingBase) p_147906_1_).getTitle(), p_147906_3_, p_147906_5_, p_147906_7_, p_147906_9_);
 
