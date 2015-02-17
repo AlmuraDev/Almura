@@ -182,6 +182,9 @@ public class Configuration {
         mc.gameSettings.snooperEnabled = false;
         mc.gameSettings.renderDistanceChunks = 12;
         mc.gameSettings.viewBobbing = false;
+        if (!mc.gameSettings.resourcePacks.contains("Almura Preferred Font.zip")) {
+        	mc.gameSettings.resourcePacks.add("Almura Preferred Font.zip");
+        }
         mc.gameSettings.saveOptions();
 
         try {

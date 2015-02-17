@@ -179,7 +179,8 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
     public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.graphics":
-                setOptimizedConfig();
+                Configuration.setOptimizedConfig();
+                mc.displayGuiScreen(new AlmuraConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to apply settings.", "Almura"));
                 break;
             case "button.cancel":
                 close();
@@ -246,22 +247,5 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
                     break;
             }
         }
-    }
-
-    public void setOptimizedConfig() {
-        mc.gameSettings.ambientOcclusion = 0;
-        mc.gameSettings.mipmapLevels = 0;
-        mc.gameSettings.guiScale = 3;
-        mc.gameSettings.advancedOpengl = true;
-        mc.gameSettings.anisotropicFiltering = 0;
-        mc.gameSettings.limitFramerate = 120;
-        mc.gameSettings.enableVsync = false;
-        mc.gameSettings.clouds = false;
-        mc.gameSettings.snooperEnabled = false;
-        mc.gameSettings.renderDistanceChunks = 12;
-        mc.gameSettings.viewBobbing = false;
-        mc.gameSettings.saveOptions();
-
-        mc.displayGuiScreen(new AlmuraConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to apply settings.", "Almura"));
     }
 }

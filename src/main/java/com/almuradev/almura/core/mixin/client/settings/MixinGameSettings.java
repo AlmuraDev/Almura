@@ -30,9 +30,8 @@ public abstract class MixinGameSettings {
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
 		}
-    	if (Configuration.FIRST_LAUNCH) {
+    	if (Configuration.FIRST_LAUNCH && (!resourcePacks.contains("Almura Preferred Font.zip"))) {
             resourcePacks.add("Almura Preferred Font.zip");
         }
-
     }
 }
