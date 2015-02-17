@@ -190,11 +190,9 @@ public class Configuration {
         mc.gameSettings.renderDistanceChunks = 12;
         mc.gameSettings.viewBobbing = false;
         mc.gameSettings.saveOptions();
-        
-        System.out.println("[Almura] - Set Optimized Configuration");
-        
+
         ConfigurationNode first_Launch = reader.getNode("client.first-launch");
-        first_Launch.setValue(FIRST_LAUNCH);
+        first_Launch.setValue(false);
         reader.setNode(first_Launch);
 
         try {
