@@ -7,6 +7,7 @@ package com.almuradev.almura.client;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
@@ -19,7 +20,10 @@ import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
+import com.flowpowered.cerealization.config.ConfigurationException;
+import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.google.common.collect.Maps;
+
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -35,6 +39,7 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
+
 import org.lwjgl.input.Keyboard;
 
 import java.util.Map;
@@ -82,7 +87,11 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onGuiOpenEvent(GuiOpenEvent event) {
         if (event.gui instanceof GuiMainMenu) {
-            event.gui = new AlmuraMainMenu(null);
+        	if (Configuration.FIRST_LAUNCH) {
+        		Configuration.setOptimizedConfig();
+        		Configuration.setFirstLaunched(false);
+        	}
+        	event.gui = new AlmuraMainMenu(null);
         }
     }
 

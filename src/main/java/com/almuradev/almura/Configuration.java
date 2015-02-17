@@ -62,9 +62,6 @@ public class Configuration {
         SIGN_RENDER_DISTANCE = clientConfigurationNode.getChild("sign-render-distance").getInt(32);
         ITEM_FRAME_RENDER_DISTANCE = clientConfigurationNode.getChild("item-frame-render-distance").getInt(32);
         FIRST_LAUNCH = clientConfigurationNode.getChild("first-launch").getBoolean(true);
-        if (FIRST_LAUNCH) {
-            setOptimizedConfig();
-        }
     }
 
     public static void save() throws ConfigurationException {
@@ -171,7 +168,8 @@ public class Configuration {
         ITEM_FRAME_RENDER_DISTANCE = value;
     }
     
-    public static void setOptimizedConfig() {
+    @SuppressWarnings("unchecked")
+	public static void setOptimizedConfig() {
         Minecraft mc = Minecraft.getMinecraft();
         mc.gameSettings.ambientOcclusion = 0;
         mc.gameSettings.mipmapLevels = 0;
@@ -186,14 +184,22 @@ public class Configuration {
         mc.gameSettings.viewBobbing = false;
         mc.gameSettings.saveOptions();
 
-        ConfigurationNode first_Launch = reader.getNode("client.first-launch");
-        first_Launch.setValue(false);
-        reader.setNode(first_Launch);
-
         try {
             reader.save();
         } catch (ConfigurationException e) {
             e.printStackTrace();
         }
+    }
+    
+    public static void setFirstLaunched(boolean value) {
+    	 ConfigurationNode first_Launch = reader.getNode("client.first-launch");
+         first_Launch.setValue(value);
+         reader.setNode(first_Launch);
+
+         try {
+             reader.save();
+         } catch (ConfigurationException e) {
+             e.printStackTrace();
+         }
     }
 }

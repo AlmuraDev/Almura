@@ -28,6 +28,7 @@ import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -63,12 +64,9 @@ import java.util.Map;
 public class CommonProxy {
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
-        try {
-            Configuration.load();
-        } catch (ConfigurationException e) {
-            e.printStackTrace();
+    	if (Configuration.FIRST_LAUNCH) {
+    		Configuration.setOptimizedConfig();
         }
-
         Almura.NETWORK_FORGE.registerMessage(S00AdditionalWorldInformation.class, S00AdditionalWorldInformation.class, 0, Side.CLIENT);
         Almura.NETWORK_FORGE.registerMessage(S01OpenBlockInformationGui.class, S01OpenBlockInformationGui.class, 1, Side.CLIENT);
         Almura.NETWORK_FORGE.registerMessage(S02OpenBlockWireframeGui.class, S02OpenBlockWireframeGui.class, 2, Side.CLIENT);
