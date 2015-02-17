@@ -5,9 +5,12 @@
  */
 package com.almuradev.almura;
 
+import net.minecraft.client.Minecraft;
+
 import com.flowpowered.cerealization.config.ConfigurationException;
 import com.flowpowered.cerealization.config.ConfigurationNode;
 import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Configuration {
@@ -29,6 +32,8 @@ public class Configuration {
     public static int CHEST_RENDER_DISTANCE;
     public static int SIGN_RENDER_DISTANCE;
     public static int ITEM_FRAME_RENDER_DISTANCE;
+    //First Launch Configuration Check
+    public static boolean FIRST_LAUNCH;
 
     private static YamlConfiguration reader;
 
@@ -61,7 +66,10 @@ public class Configuration {
         CHEST_RENDER_DISTANCE = clientConfigurationNode.getChild("chest-render-distance").getInt(32);
         SIGN_RENDER_DISTANCE = clientConfigurationNode.getChild("sign-render-distance").getInt(32);
         ITEM_FRAME_RENDER_DISTANCE = clientConfigurationNode.getChild("item-frame-render-distance").getInt(32);
-
+        FIRST_LAUNCH = clientConfigurationNode.getChild("first-launch").getBoolean(true);
+        if (FIRST_LAUNCH) {
+            setOptimizedConfig();
+        }
     }
 
     public static void save() throws ConfigurationException {
@@ -166,5 +174,33 @@ public class Configuration {
 
     public static void setItemFrameRenderDistance(int value) {
         ITEM_FRAME_RENDER_DISTANCE = value;
+    }
+    
+    public static void setOptimizedConfig() {
+        Minecraft mc = Minecraft.getMinecraft();
+        mc.gameSettings.ambientOcclusion = 0;
+        mc.gameSettings.mipmapLevels = 0;
+        mc.gameSettings.guiScale = 3;
+        mc.gameSettings.advancedOpengl = true;
+        mc.gameSettings.anisotropicFiltering = 0;
+        mc.gameSettings.limitFramerate = 120;
+        mc.gameSettings.enableVsync = false;
+        mc.gameSettings.clouds = false;
+        mc.gameSettings.snooperEnabled = false;
+        mc.gameSettings.renderDistanceChunks = 12;
+        mc.gameSettings.viewBobbing = false;
+        mc.gameSettings.saveOptions();
+        
+        System.out.println("[Almura] - Set Optimized Configuration");
+        
+        ConfigurationNode first_Launch = reader.getNode("client.first-launch");
+        first_Launch.setValue(FIRST_LAUNCH);
+        reader.setNode(first_Launch);
+
+        try {
+            reader.save();
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+        }
     }
 }
