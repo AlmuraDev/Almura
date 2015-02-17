@@ -41,11 +41,6 @@ public class Configuration {
         DEBUG_LANGUAGES_MODE = false;
         DEBUG_PACKS_MODE = false;
         DISPLAY_ENHANCED_GUI = true;
-        try {
-            load();
-        } catch (ConfigurationException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static void load() throws ConfigurationException {

@@ -23,6 +23,7 @@
     "client.renderer.tileentity.MixinRenderItemFrame",
     "client.renderer.tileentity.MixinTileEntityChestRenderer",
     "client.renderer.tileentity.MixinTileEntitySignRenderer",
-    "client.resources.MixinSimpleReloadableResourceManager"
+    "client.resources.MixinSimpleReloadableResourceManager",
+    "client.settings.MixinGameSettings"
   ]
 }

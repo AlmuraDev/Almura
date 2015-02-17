@@ -63,6 +63,12 @@ import java.util.Map;
 public class CommonProxy {
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
+        try {
+            Configuration.load();
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+        }
+
         Almura.NETWORK_FORGE.registerMessage(S00AdditionalWorldInformation.class, S00AdditionalWorldInformation.class, 0, Side.CLIENT);
         Almura.NETWORK_FORGE.registerMessage(S01OpenBlockInformationGui.class, S01OpenBlockInformationGui.class, 1, Side.CLIENT);
         Almura.NETWORK_FORGE.registerMessage(S02OpenBlockWireframeGui.class, S02OpenBlockWireframeGui.class, 2, Side.CLIENT);
