@@ -221,6 +221,7 @@ public class UIForm extends UIBackgroundContainer {
             shape = new SimpleGuiShape();
             icon = AlmuraGui.ICON_CLOSE_NORMAL;
             iconHovered = AlmuraGui.ICON_CLOSE_HOVER;
+            iconPressed = AlmuraGui.ICON_CLOSE_PRESSED;
         }
     }
 }
