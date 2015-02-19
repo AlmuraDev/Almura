@@ -13,10 +13,18 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements IExtendedEntityLivingBase {
-    String title;
+    private String customName, title;
 
     public MixinEntityLivingBase(World p_i1582_1_) {
         super(p_i1582_1_);
+    }
+
+    public String getServerName() {
+        return customName;
+    }
+
+    public void setServerName(String serverName) {
+        this.customName = serverName;
     }
 
     public String getTitle() {

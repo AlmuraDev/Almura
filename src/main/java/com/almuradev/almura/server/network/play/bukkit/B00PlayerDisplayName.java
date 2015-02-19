@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.server.network.play.bukkit;
 
-import com.almuradev.almura.client.ClientProxy;
+import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -21,11 +21,6 @@ public class B00PlayerDisplayName implements IMessage, IMessageHandler<B00Player
     public String username, displayName;
 
     public B00PlayerDisplayName() {
-    }
-
-    public B00PlayerDisplayName(String username, String displayName) {
-        this.username = username;
-        this.displayName = displayName;
     }
 
     @Override
@@ -44,7 +39,12 @@ public class B00PlayerDisplayName implements IMessage, IMessageHandler<B00Player
         if (ctx.side == Side.CLIENT) {
             final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(message.username);
             if (player != null) {
-                ClientProxy.PLAYER_DISPLAY_NAME_MAP.put(message.username, message.displayName);
+                System.out.println(message.displayName);
+                final String[] split = message.displayName.split("\\n");
+                ((IExtendedEntityLivingBase) player).setServerName(split[0]);
+                if (split.length > 1) {
+                    ((IExtendedEntityLivingBase) player).setTitle(split[1]);
+                }
                 player.refreshDisplayName();
             }
         }

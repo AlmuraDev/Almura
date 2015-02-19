@@ -12,7 +12,7 @@ import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
 import com.almuradev.almura.client.gui.menu.AlmuraMainMenu;
-import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
+import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
@@ -20,9 +20,6 @@ import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
-import com.flowpowered.cerealization.config.ConfigurationException;
-import com.flowpowered.cerealization.config.ConfigurationNode;
-import com.google.common.collect.Maps;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -34,6 +31,7 @@ import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -42,14 +40,11 @@ import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.input.Keyboard;
 
-import java.util.Map;
-
 public class ClientProxy extends CommonProxy {
 
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
     public static final BlockRenderer PACK_BLOCK_RENDERER = new BlockRenderer();
     public static final ItemRenderer PACK_ITEM_RENDERER = new ItemRenderer();
-    public static final Map<String, String> PLAYER_DISPLAY_NAME_MAP = Maps.newHashMap();
 
     public static final KeyBinding
             BINDING_CONFIG_GUI =
@@ -113,13 +108,13 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onNameFormatEvent(net.minecraftforge.event.entity.player.PlayerEvent.NameFormat event) {
-        final String displayName = PLAYER_DISPLAY_NAME_MAP.get(event.username);
+        final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(event.username);
 
-        if (displayName != null && !displayName.isEmpty()) {
-            event.displayname = displayName;
+        if (((IExtendedEntityLivingBase) player).getServerName() != null && !((IExtendedEntityLivingBase) player).getServerName().isEmpty()) {
+            event.displayname = ((IExtendedEntityLivingBase) player).getServerName();
 
             if (event.entityPlayer == Minecraft.getMinecraft().thePlayer) {
-                HUD_INGAME.playerTitle.setText(displayName);
+                HUD_INGAME.playerTitle.setText(event.displayname);
             }
         }
     }
@@ -127,7 +122,7 @@ public class ClientProxy extends CommonProxy {
     @SuppressWarnings("unchecked")
     @SubscribeEvent
     public void onRenderPlayerSpecialPostEvent(RenderPlayerEvent.Specials.Post event) {
-        AccessoryManager.onRenderPlayerSpecialEventPost(event);
+        //AccessoryManager.onRenderPlayerSpecialEventPost(event);
     }
 }
 
