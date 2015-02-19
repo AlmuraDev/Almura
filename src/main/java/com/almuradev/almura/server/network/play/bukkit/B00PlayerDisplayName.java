@@ -39,7 +39,6 @@ public class B00PlayerDisplayName implements IMessage, IMessageHandler<B00Player
         if (ctx.side == Side.CLIENT) {
             final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(message.username);
             if (player != null) {
-                System.out.println(message.displayName);
                 final String[] split = message.displayName.split("\\n");
                 ((IExtendedEntityLivingBase) player).setServerName(split[0]);
                 if (split.length > 1) {
