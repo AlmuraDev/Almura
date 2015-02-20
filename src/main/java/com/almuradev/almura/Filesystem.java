@@ -43,6 +43,8 @@ public class Filesystem {
     public static final Path CONFIG_GUI_SPRITESHEET_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "gui.png");
     public static final Path CONFIG_GUI_LOGO_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "almura.png");
     public static final Path CONFIG_MODELS_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "models");
+    public static final Path CONFIG_ACCESSORIES_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "accessories");
+
     public static DirectoryStream.Filter<Path> DIRECTORIES_ONLY_FILTER = new DirectoryStream.Filter<Path>() {
         @Override
         public boolean accept(Path entry) throws IOException {
@@ -135,6 +137,12 @@ public class Filesystem {
                 Files.createDirectories(CONFIG_BACKGROUNDS_PATH);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to create directory [" + CONFIG_BACKGROUNDS_PATH + "].", e);
+            }
+
+            try {
+                Files.createDirectories(CONFIG_ACCESSORIES_PATH);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to create directory [" + CONFIG_ACCESSORIES_PATH + "].", e);
             }
         }
     }

@@ -68,7 +68,8 @@ public class UIForm extends UIBackgroundContainer {
         setSize(width, height);
 
         titleContainer.setSize(INHERITED, TITLE_BAR_HEIGHT);
-        titleContainer.setColor(3428032);
+        titleContainer.setColor(9283583);
+        titleContainer.setBackgroundAlpha(175);
         titleContainer.register(this);
 
         contentContainer.setSize(INHERITED, getHeight() - TITLE_BAR_HEIGHT);

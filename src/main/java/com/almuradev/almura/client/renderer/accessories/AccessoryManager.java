@@ -45,7 +45,7 @@ public class AccessoryManager {
         register("halo", Halo.class);
 
         try {
-            for (Path path : Files.newDirectoryStream(Paths.get(Filesystem.CONFIG_IMAGES_PATH.toString(), "accessories"), Filesystem.IMAGE_FILES_ONLY_FILTER)) {
+            for (Path path : Files.newDirectoryStream(Filesystem.CONFIG_ACCESSORIES_PATH, Filesystem.IMAGE_FILES_ONLY_FILTER)) {
                 Filesystem.registerTexture(Almura.MOD_ID, "accessory_" + path.getFileName().toString().split(".png")[0].split(".jpg")[0], path);
             }
         } catch (IOException e) {
@@ -105,6 +105,11 @@ public class AccessoryManager {
             for (AccessoryManager.TexturedAccessory accessory : entityAccessories) {
                 accessory.accessoryType.onRender(event.entityPlayer, accessory.textureLocation, PLAYER_RENDERER.modelBipedMain, 0.0625F, event.partialRenderTick);
             }
+        } else {
+            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_AlmuraCape"), "cloak");
+            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_ninjazidane"), "skin");
+            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_sunglasses_black"), "sunglasses");
+            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_halo_yellow"), "halo");
         }
     }
 

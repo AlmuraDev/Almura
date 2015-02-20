@@ -12,6 +12,7 @@ import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
 import com.almuradev.almura.client.gui.menu.AlmuraMainMenu;
+import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
 import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
@@ -108,6 +109,10 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onNameFormatEvent(net.minecraftforge.event.entity.player.PlayerEvent.NameFormat event) {
+        //Race condition check
+        if (Minecraft.getMinecraft().theWorld == null) {
+            return;
+        }
         final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(event.username);
 
         if (((IExtendedEntityLivingBase) player).getServerName() != null && !((IExtendedEntityLivingBase) player).getServerName().isEmpty()) {
@@ -122,7 +127,7 @@ public class ClientProxy extends CommonProxy {
     @SuppressWarnings("unchecked")
     @SubscribeEvent
     public void onRenderPlayerSpecialPostEvent(RenderPlayerEvent.Specials.Post event) {
-        //AccessoryManager.onRenderPlayerSpecialEventPost(event);
+        AccessoryManager.onRenderPlayerSpecialEventPost(event);
     }
 }
 
