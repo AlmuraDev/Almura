@@ -58,7 +58,7 @@ archivesBaseName = 'almura'
 
 // Version information
 ext.minecraftVersion = '1.7.10'
-ext.forgeVersion = '10.13.2.1277'
+ext.forgeVersion = '10.13.2.1291'
 version = minecraftVersion + '-' + forgeVersion.substring(forgeVersion.size() - 4)
 
 // Extended project information
