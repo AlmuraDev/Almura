@@ -105,11 +105,6 @@ public class AccessoryManager {
             for (AccessoryManager.TexturedAccessory accessory : entityAccessories) {
                 accessory.accessoryType.onRender(event.entityPlayer, accessory.textureLocation, PLAYER_RENDERER.modelBipedMain, 0.0625F, event.partialRenderTick);
             }
-        } else {
-            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_AlmuraCape"), "cloak");
-            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_ninjazidane"), "skin");
-            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_sunglasses_black"), "sunglasses");
-            addAccessory(event.entityPlayer, new ResourceLocation(Almura.MOD_ID, "accessory_halo_yellow"), "halo");
         }
     }
 
