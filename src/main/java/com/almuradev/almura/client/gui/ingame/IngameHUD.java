@@ -61,7 +61,7 @@ public class IngameHUD extends AlmuraGui {
 
         // Construct Hud with all elements
         final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
-        gradientContainer.setSize(UIComponent.INHERITED, 40);
+        gradientContainer.setSize(UIComponent.INHERITED, 34);
         gradientContainer.setColor(Integer.MIN_VALUE);
         gradientContainer.setTopAlpha(180);
         gradientContainer.setBottomAlpha(180);
@@ -89,12 +89,12 @@ public class IngameHUD extends AlmuraGui {
 
         // Health Property
         healthProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_HEART, ICON_BAR);
-        healthProperty.setPosition(5, 17, Anchor.LEFT | Anchor.TOP);
+        healthProperty.setPosition(5, 14, Anchor.LEFT | Anchor.TOP);
         healthProperty.setSize(105, 7);
 
         // Armor Property
         armorProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_ARMOR, ICON_BAR);
-        armorProperty.setPosition(5, 28, Anchor.LEFT | Anchor.TOP);
+        armorProperty.setPosition(5, 24, Anchor.LEFT | Anchor.TOP);
         armorProperty.setSize(105, 7);
 
         //////////////////////////////// CENTER COLUMN //////////////////////////////////////
@@ -108,12 +108,12 @@ public class IngameHUD extends AlmuraGui {
 
         // Hunger Property
         hungerProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_HUNGER, ICON_BAR);
-        hungerProperty.setPosition(-2, 17, Anchor.CENTER | Anchor.TOP);
+        hungerProperty.setPosition(-2, 14, Anchor.CENTER | Anchor.TOP);
         hungerProperty.setSize(105, 7);
 
         // Stamina Property
         staminaProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_STAMINA, ICON_BAR);
-        staminaProperty.setPosition(-2, 28, Anchor.CENTER | Anchor.TOP);
+        staminaProperty.setPosition(-2, 24, Anchor.CENTER | Anchor.TOP);
         staminaProperty.setSize(105, 7);
 
         //////////////////////////////// RIGHT COLUMN //////////////////////////////////////
@@ -144,48 +144,48 @@ public class IngameHUD extends AlmuraGui {
 
         // Player Image
         playerImage = new UIImage(this, TEXTURE_DEFAULT, ICON_PLAYER);
-        playerImage.setPosition(-125, 16, Anchor.RIGHT | Anchor.TOP);
+        playerImage.setPosition(-125, 13, Anchor.RIGHT | Anchor.TOP);
         playerImage.setSize(8, 8);
 
         // Player Count Label
         serverCount = new UILabel(this, "--");
-        serverCount.setPosition(-110, 17, Anchor.RIGHT | Anchor.TOP);
+        serverCount.setPosition(-110, 14, Anchor.RIGHT | Anchor.TOP);
         serverCount.setColor(0xffffffff);
         serverCount.setFontScale(0.8F);
 
         // Compass Image
         final UIImage compassImage = new UIImage(this, TEXTURE_DEFAULT, ICON_COMPASS);
-        compassImage.setPosition(-73, 16, Anchor.RIGHT | Anchor.TOP);
+        compassImage.setPosition(-73, 13, Anchor.RIGHT | Anchor.TOP);
         compassImage.setSize(8, 8);
 
         // Player Compass Label
         playerCompass = new UILabel(this, "");
-        playerCompass.setPosition(-51, 17, Anchor.RIGHT | Anchor.TOP);
+        playerCompass.setPosition(-51, 14, Anchor.RIGHT | Anchor.TOP);
         playerCompass.setColor(0xffffffff);
         playerCompass.setSize(35, 7);
         playerCompass.setFontScale(0.8F);
 
         // Clock Image
         final UIImage clockImage = new UIImage(this, TEXTURE_DEFAULT, ICON_CLOCK);
-        clockImage.setPosition(-25, 15, Anchor.RIGHT | Anchor.TOP);
+        clockImage.setPosition(-25, 12, Anchor.RIGHT | Anchor.TOP);
         clockImage.setSize(7, 7);
 
         // World Time Label
         worldTime = new UILabel(this, "7pm");
-        worldTime.setPosition(-5, 16, Anchor.RIGHT | Anchor.TOP);
+        worldTime.setPosition(-5, 13, Anchor.RIGHT | Anchor.TOP);
         worldTime.setColor(0xffffffff);
         worldTime.setSize(15, 7);
         worldTime.setFontScale(0.8F);
 
         // XP Property
         xpProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_XP, ICON_BAR);
-        xpProperty.setPosition(-27, 28, Anchor.RIGHT | Anchor.TOP);
+        xpProperty.setPosition(-27, 23, Anchor.RIGHT | Anchor.TOP);
         xpProperty.setSize(105, 7);
         xpProperty.setColor(LIGHT_GREEN.getRGB());
 
         // XP Level Label
         xpLevel = new UILabel(this, "1");
-        xpLevel.setPosition(-5, 28, Anchor.RIGHT | Anchor.TOP);
+        xpLevel.setPosition(-5, 23, Anchor.RIGHT | Anchor.TOP);
         xpLevel.setColor(0xffffffff);
         xpLevel.setSize(15, 7);
         xpLevel.setFontScale(0.8F);

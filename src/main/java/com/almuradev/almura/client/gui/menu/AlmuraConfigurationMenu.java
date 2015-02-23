@@ -23,7 +23,7 @@ import java.util.Arrays;
 public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
     private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
-            debugMappingsCheckBox, debugRecipesCheckBox;
+            debugMappingsCheckBox, debugRecipesCheckBox, chatNotificationCheckBox;
 
     /**
      * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
@@ -60,10 +60,10 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         chestRenderDistance.setPosition(-55, padding * 2, Anchor.RIGHT | Anchor.TOP);
 
         final UILabel signRenderDistance = new UILabel(this, ChatColor.WHITE + "Sign Distance:");
-        signRenderDistance.setPosition(-55, almuraGuiCheckBox.getY() + (padding * 4 + 25), Anchor.RIGHT | Anchor.TOP);
+        signRenderDistance.setPosition(-55, almuraGuiCheckBox.getY() + (padding * 4), Anchor.RIGHT | Anchor.TOP);
 
         final UILabel itemFrameRenderDistance = new UILabel(this, ChatColor.WHITE + "Item Frame Distance:");
-        itemFrameRenderDistance.setPosition(-55, signRenderDistance.getY() + (padding * 4 + 25), Anchor.RIGHT | Anchor.TOP);
+        itemFrameRenderDistance.setPosition(-55, signRenderDistance.getY() + (padding * 4), Anchor.RIGHT | Anchor.TOP);
 
         // Chest Render Distance
         final UISelect chestDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
@@ -81,7 +81,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
         // Sign Render Distance
         final UISelect signDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
-        signDistanceDownMenu.setPosition(-15, chestDistanceDownMenu.getY() + (padding * 4 + 25), Anchor.TOP | Anchor.RIGHT);
+        signDistanceDownMenu.setPosition(-15, chestDistanceDownMenu.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
         signDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.SIGN_RENDER_DISTANCE == 16) {
             signDistanceDownMenu.select(0);
@@ -95,7 +95,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
         // Sign Render Distance
         final UISelect itemFrameDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
-        itemFrameDistanceDownMenu.setPosition(-15, signDistanceDownMenu.getY() + (padding * 4 + 25), Anchor.TOP | Anchor.RIGHT);
+        itemFrameDistanceDownMenu.setPosition(-15, signDistanceDownMenu.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
         itemFrameDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.ITEM_FRAME_RENDER_DISTANCE == 16) {
             itemFrameDistanceDownMenu.select(0);
@@ -114,9 +114,15 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         almuraDebugGuiCheckBox.setName("checkbox.gui.enhanced_debug");
         almuraDebugGuiCheckBox.register(this);
 
+        // Chat Notifications Checkbox
+        chatNotificationCheckBox = new UICheckBox(this, ChatColor.WHITE + "Chat Notifications");
+        chatNotificationCheckBox.setPosition(padding, almuraDebugGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
+        chatNotificationCheckBox.setChecked(Configuration.CHAT_NOTIFICATIONS);
+        chatNotificationCheckBox.setName("checkbox.gui.chat_notification");
+        
         // Create the debug mode checkbox
         debugModeCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Mode (All)");
-        debugModeCheckBox.setPosition(padding, almuraDebugGuiCheckBox.getY() + (padding * 4) + 20, Anchor.LEFT | Anchor.TOP);
+        debugModeCheckBox.setPosition(padding, chatNotificationCheckBox.getY() + (padding * 4) + 40, Anchor.LEFT | Anchor.TOP);
         debugModeCheckBox.setChecked(Configuration.DEBUG_MODE);
         debugModeCheckBox.setName("checkbox.gui.debug_mode");
 
@@ -169,8 +175,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
                 residenceHudCheckBox,
                 almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
                 debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton,
-                signDistanceDownMenu,
-                chestDistanceDownMenu, itemFrameDistanceDownMenu);
+                chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu, chestDistanceDownMenu);
 
         addToScreen(form);
     }
@@ -195,6 +200,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
                     Configuration.toggleDebugPacksMode(debugPacksCheckBox.isChecked());
                     Configuration.toggleDebugMappingsMode(debugMappingsCheckBox.isChecked());
                     Configuration.toggleDebugRecipesMode(debugRecipesCheckBox.isChecked());
+                    Configuration.setChatNotifications(chatNotificationCheckBox.isChecked());
                     Configuration.save();
                 } catch (ConfigurationException e) {
                     e.printStackTrace();

@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.core.mixin.client.gui;
 
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ChatColor;
 import com.google.common.collect.Lists;
 
@@ -129,33 +130,35 @@ public abstract class MixinGuiNewChat extends Gui {
                                 boolean hasNickName = false;
                                 String s = chatline.func_151461_a().getFormattedText();
                                 // Almura Add
-                                String newChat = chatline.func_151461_a().getUnformattedText();
-                                String[] split = newChat.toLowerCase().split(":");
-                                String[] splitDisplayName = newChat.split(":");
-                                String nickName = "";
-                                if (split.length == 1) {
-                                    split = newChat.toLowerCase().split(">");
-                                }
-                                if (split.length > 1) {
-                                    String name = this.mc.thePlayer.getCommandSenderName().toLowerCase();
-                                    String displayName = this.mc.thePlayer.getDisplayName();
-                                    if (displayName.contains("~")) {
-                                        splitDisplayName = displayName.toLowerCase().split("~");
-                                        nickName = ChatColor.stripColor(splitDisplayName[1]);
-                                        hasNickName = true;
+                                if (Configuration.CHAT_NOTIFICATIONS) {
+                                    String newChat = chatline.func_151461_a().getUnformattedText();
+                                    String[] split = newChat.toLowerCase().split(":");
+                                    String[] splitDisplayName = newChat.split(":");
+                                    String nickName = "";
+                                    if (split.length == 1) {
+                                        split = newChat.toLowerCase().split(">");
                                     }
-                                    
-                                    if (!split[0].contains(name)) {
-                                        for (int part = 1; part < split.length; part++) {
-                                            if (split[part].contains(name)) {
-                                                mentioned = true;
-                                                break;
-                                            }
-                                            
-                                            if (hasNickName) {
-                                                if (split[part].contains(nickName)) {
+                                    if (split.length > 1) {
+                                        String name = this.mc.thePlayer.getCommandSenderName().toLowerCase();
+                                        String displayName = this.mc.thePlayer.getDisplayName();
+                                        if (displayName.contains("~")) {
+                                            splitDisplayName = displayName.toLowerCase().split("~");
+                                            nickName = ChatColor.stripColor(splitDisplayName[1]);
+                                            hasNickName = true;
+                                        }
+
+                                        if (!split[0].contains(name)) {
+                                            for (int part = 1; part < split.length; part++) {
+                                                if (split[part].contains(name)) {
                                                     mentioned = true;
                                                     break;
+                                                }
+
+                                                if (hasNickName) {
+                                                    if (split[part].contains(nickName)) {
+                                                        mentioned = true;
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         }

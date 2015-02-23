@@ -28,6 +28,7 @@ public class Configuration {
     public static boolean DISPLAY_ENHANCED_GUI;
     public static boolean DISPLAY_RESIDENCE_HUD;
     public static boolean DISPLAY_ENHANCED_DEBUG;
+    public static boolean CHAT_NOTIFICATIONS;
     //RENDER DISTANCE WITHIN SIGNS AND CHEST MIXINS
     public static int CHEST_RENDER_DISTANCE;
     public static int SIGN_RENDER_DISTANCE;
@@ -62,6 +63,7 @@ public class Configuration {
         SIGN_RENDER_DISTANCE = clientConfigurationNode.getChild("sign-render-distance").getInt(32);
         ITEM_FRAME_RENDER_DISTANCE = clientConfigurationNode.getChild("item-frame-render-distance").getInt(32);
         FIRST_LAUNCH = clientConfigurationNode.getChild("first-launch").getBoolean(true);
+        CHAT_NOTIFICATIONS = clientConfigurationNode.getChild("chat-notifications").getBoolean(true);
     }
 
     public static void save() throws ConfigurationException {
@@ -120,6 +122,11 @@ public class Configuration {
         ConfigurationNode debug_recipes = reader.getNode("debug.recipes");
         debug_recipes.setValue(DEBUG_RECIPES_MODE);
         reader.setNode(debug_recipes);
+        
+        // Chat Notifications
+        ConfigurationNode chat_notifications = reader.getNode("client.chat-notifications");
+        chat_notifications.setValue(CHAT_NOTIFICATIONS);
+        reader.setNode(chat_notifications);
 
         reader.save();
     }
@@ -166,6 +173,10 @@ public class Configuration {
 
     public static void setItemFrameRenderDistance(int value) {
         ITEM_FRAME_RENDER_DISTANCE = value;
+    }
+    
+    public static void setChatNotifications(boolean value) {
+        CHAT_NOTIFICATIONS = value;
     }
     
     @SuppressWarnings("unchecked")

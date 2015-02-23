@@ -112,7 +112,6 @@ public class IngameResidenceHUD extends AlmuraGui {
     }
 
     public void refreshFromData() {
-        resName.setText("Name: " + ChatColor.GREEN + ResidenceData.NAME);
         if (ResidenceData.OWNER_NAME.equalsIgnoreCase("mcsnetworks")) {
             resOwner.setText("Owner: " + ChatColor.RED + "~Dockter");
         } else {
@@ -129,6 +128,27 @@ public class IngameResidenceHUD extends AlmuraGui {
 
         if (resLeaseExpire.getWidth() + 20 > originalWidth) {
             resPane.setSize(resLeaseExpire.getWidth() + 10, resPane.getHeight());
+        }
+        
+        // Window re-arrangement if server-owned.
+        if (ResidenceData.OWNER_NAME.equalsIgnoreCase("almura_admin")) {
+            title.setText("Protected Server-Owned Area");
+            resName.setText("Area Name: " + ChatColor.GREEN + ResidenceData.NAME);
+            resOwner.setVisible(false);
+            resOwnerOnline.setVisible(false);
+            resBank.setVisible(false);
+            resLeaseCost.setVisible(false);
+            resLeaseExpire.setVisible(true);
+            resPane.setSize(resPane.getWidth(), 20);
+        } else {
+            title.setText("Residence Info");
+            resName.setText("Name: " + ChatColor.GREEN + ResidenceData.NAME);
+            resOwner.setVisible(true);
+            resOwnerOnline.setVisible(true);
+            resBank.setVisible(true);
+            resLeaseCost.setVisible(true);
+            resLeaseExpire.setVisible(true);
+            resPane.setSize(resPane.getWidth(), 55);
         }
     }
 }
