@@ -18,6 +18,7 @@
     "client.entity.MixinEntityClientPlayerMP",
     "client.gui.inventory.MixinGuiEditSign",
     "client.gui.MixinGuiChat",
+    "client.gui.MixinGuiNewChat",
     "client.renderer.texture.MixinTextureMap",
     "client.renderer.entity.MixinRender",
     "client.renderer.tileentity.MixinRenderItemFrame",
