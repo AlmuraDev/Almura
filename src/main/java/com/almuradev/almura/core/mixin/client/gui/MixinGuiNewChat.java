@@ -5,7 +5,9 @@
  */
 package com.almuradev.almura.core.mixin.client.gui;
 
+import com.almuradev.almura.client.ChatColor;
 import com.google.common.collect.Lists;
+
 import net.minecraft.block.BlockNote;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
@@ -18,6 +20,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -123,25 +126,34 @@ public abstract class MixinGuiNewChat extends Gui {
                                 byte b0 = 0;
                                 int j2 = -j1 * 9;
                                 boolean mentioned = false;
+                                boolean hasNickName = false;
                                 String s = chatline.func_151461_a().getFormattedText();
                                 // Almura Add
                                 String newChat = chatline.func_151461_a().getUnformattedText();
                                 String[] split = newChat.toLowerCase().split(":");
+                                String[] splitDisplayName = newChat.split(":");
+                                String nickName = "";
                                 if (split.length == 1) {
                                     split = newChat.toLowerCase().split(">");
                                 }
                                 if (split.length > 1) {
                                     String name = this.mc.thePlayer.getCommandSenderName().toLowerCase();
                                     String displayName = this.mc.thePlayer.getDisplayName();
-                                    String[] customName = displayName.toLowerCase().split("~");
+                                    if (displayName.contains("~")) {
+                                        splitDisplayName = displayName.toLowerCase().split("~");
+                                        nickName = ChatColor.stripColor(splitDisplayName[1]);
+                                        hasNickName = true;
+                                    }
+                                    
                                     if (!split[0].contains(name)) {
                                         for (int part = 1; part < split.length; part++) {
                                             if (split[part].contains(name)) {
                                                 mentioned = true;
                                                 break;
                                             }
-                                            if (customName.length > 1) {
-                                                if (split[part].contains(customName[1])) {
+                                            
+                                            if (hasNickName) {
+                                                if (split[part].contains(nickName)) {
                                                     mentioned = true;
                                                     break;
                                                 }
