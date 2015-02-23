@@ -100,6 +100,7 @@ public abstract class MixinGuiNewChat extends Gui {
                                 int j2 = -j1 * 9;
                                 boolean mentioned = false;
                                 String s = chatline.func_151461_a().getFormattedText();
+                                // Almura Add
                                 String newChat = chatline.func_151461_a().getUnformattedText();
                                 if (true) {
                                     String[] split = newChat.toLowerCase().split(":");                                    
@@ -133,6 +134,7 @@ public abstract class MixinGuiNewChat extends Gui {
                                 else {
                                     drawRect(b0, j2 - 9, b0 + i1 + 4, j2, i2 / 2 << 24);
                                 }
+                                // End Almura
                                 GL11.glEnable(GL11.GL_BLEND); // FORGE: BugFix MC-36812 Chat Opacity Broken in 1.7.x
                                 this.mc.fontRenderer.drawStringWithShadow(s, b0, j2 - 8, 16777215 + (i2 << 24));
                                 GL11.glDisable(GL11.GL_ALPHA_TEST);
