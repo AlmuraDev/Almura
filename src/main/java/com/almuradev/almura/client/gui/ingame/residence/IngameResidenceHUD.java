@@ -139,7 +139,7 @@ public class IngameResidenceHUD extends AlmuraGui {
             resBank.setVisible(false);
             resLeaseCost.setVisible(false);
             resLeaseExpire.setVisible(true);
-            resPane.setSize(resPane.getWidth(), 20);
+            resPane.setSize(90, 20);
         } else {
             title.setText("Residence Info");
             resName.setText("Name: " + ChatColor.GREEN + ResidenceData.NAME);
