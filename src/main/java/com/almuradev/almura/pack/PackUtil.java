@@ -17,7 +17,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -41,7 +41,7 @@ public class PackUtil {
     }
 
     public static ClippedIcon[] generateClippedIconsFromCoordinates(IIcon source, String textureName,
-                                                                    Map<Integer, List<Integer>> textureCoordinates) {
+            Map<Integer, List<Integer>> textureCoordinates) {
         final ClippedIcon[] clippedIcons = new ClippedIcon[textureCoordinates.size()];
         Dimension dimension = null;
 

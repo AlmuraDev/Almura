@@ -6,10 +6,8 @@
 package com.almuradev.almura.core.mixin.client.settings;
 
 import com.almuradev.almura.Configuration;
-import com.flowpowered.cerealization.config.ConfigurationException;
-
+import com.flowpowered.cerealization.config.IOException;
 import net.minecraft.client.settings.GameSettings;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,17 +18,18 @@ import java.util.List;
 
 @Mixin(GameSettings.class)
 public abstract class MixinGameSettings {
+
     @Shadow
     public List resourcePacks;
 
     @Inject(method = "loadOptions", at = @At(value = "RETURN"))
     public void onLoadOptions(CallbackInfo ci) {
         try {
-			Configuration.load();
-		} catch (ConfigurationException e) {
-			e.printStackTrace();
-		}
-    	if (Configuration.FIRST_LAUNCH && (!resourcePacks.contains("Almura Preferred Font.zip"))) {
+            Configuration.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (Configuration.FIRST_LAUNCH && (!resourcePacks.contains("Almura Preferred Font.zip"))) {
             resourcePacks.add("Almura Preferred Font.zip");
         }
     }

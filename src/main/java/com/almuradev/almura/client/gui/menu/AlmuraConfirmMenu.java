@@ -14,7 +14,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class AlmuraConfirmMenu extends AlmuraBackgroundGui {
 

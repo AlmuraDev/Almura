@@ -6,9 +6,12 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.items.Items;
-import com.almuradev.almura.lang.LanguageRegistry;
-import com.almuradev.almura.lang.Languages;
-import com.almuradev.almura.pack.*;
+import com.almuradev.almura.pack.IItemBlockInformation;
+import com.almuradev.almura.pack.INodeContainer;
+import com.almuradev.almura.pack.IPackObject;
+import com.almuradev.almura.pack.Pack;
+import com.almuradev.almura.pack.PackCreator;
+import com.almuradev.almura.pack.PackKeys;
 import com.almuradev.almura.pack.container.AlmuraContainerHandler;
 import com.almuradev.almura.pack.container.PackContainerTileEntity;
 import com.almuradev.almura.pack.crop.PackCrops;
@@ -22,13 +25,15 @@ import com.almuradev.almura.recipe.furnace.PackFuelHandler;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInformation;
 import com.almuradev.almura.server.network.play.S01OpenBlockInformationGui;
 import com.almuradev.almura.server.network.play.S02OpenBlockWireframeGui;
-import com.almuradev.almura.server.network.play.bukkit.*;
+import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
+import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
+import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInformation;
+import com.almuradev.almura.server.network.play.bukkit.B03ResidenceInformation;
+import com.almuradev.almura.server.network.play.bukkit.B04PlayerAccessories;
 import com.almuradev.almura.tabs.Tabs;
-import com.flowpowered.cerealization.config.ConfigurationException;
-import com.flowpowered.cerealization.config.ConfigurationNode;
-import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
+import com.almuradev.almurasdk.lang.LanguageRegistry;
+import com.almuradev.almurasdk.lang.Languages;
 import com.google.common.collect.Lists;
-
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -53,6 +58,7 @@ import net.minecraft.tileentity.TileEntitySign;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import ninja.leaping.configurate.ConfigurationNode;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,8 +70,8 @@ import java.util.Map;
 public class CommonProxy {
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
-    	if (Configuration.FIRST_LAUNCH) {
-    		Configuration.setOptimizedConfig();
+        if (Configuration.FIRST_LAUNCH) {
+            Configuration.setOptimizedConfig();
         }
         Almura.NETWORK_FORGE.registerMessage(S00AdditionalWorldInformation.class, S00AdditionalWorldInformation.class, 0, Side.CLIENT);
         Almura.NETWORK_FORGE.registerMessage(S01OpenBlockInformationGui.class, S01OpenBlockInformationGui.class, 1, Side.CLIENT);
@@ -89,20 +95,20 @@ public class CommonProxy {
     public void onInitialization(FMLInitializationEvent event) {
         try {
             GameObjectMapper.load();
-        } catch (ConfigurationException e) {
+        } catch (IOException e) {
             Almura.LOGGER.error("Failed to load mappings file in the config folder.", e);
         }
 
         try {
             EntityMapper.load();
-        } catch (ConfigurationException e) {
+        } catch (IOException e) {
             Almura.LOGGER.error("Failed to load entity_mappings file in the config folder.", e);
         }
 
         for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
             try {
                 onPostCreate(entry.getValue());
-            } catch (IOException | ConfigurationException e) {
+            } catch (IOException | IOException e) {
                 e.printStackTrace();
             }
         }
@@ -110,7 +116,7 @@ public class CommonProxy {
         for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
             try {
                 onLoadFinished(entry.getValue());
-            } catch (IOException | ConfigurationException e) {
+            } catch (IOException | IOException e) {
                 e.printStackTrace();
             }
         }
@@ -150,7 +156,7 @@ public class CommonProxy {
     }
 
     //Stage 2 loader
-    private void onPostCreate(Pack pack) throws IOException, ConfigurationException {
+    private void onPostCreate(Pack pack) throws IOException, IOException {
         final List<Item> seedsToAdd = Lists.newArrayList();
 
         //Stage 2a -> Collision, Seeds, Stage (Collision)
@@ -213,7 +219,7 @@ public class CommonProxy {
     }
 
     //Stage 3 loader
-    private void onLoadFinished(Pack pack) throws IOException, ConfigurationException {
+    private void onLoadFinished(Pack pack) throws IOException, IOException {
         //Stage 3a -> Block Break, Recipes
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {

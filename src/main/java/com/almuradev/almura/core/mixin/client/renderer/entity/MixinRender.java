@@ -27,13 +27,15 @@ public abstract class MixinRender {
     abstract FontRenderer getFontRendererFromRenderManager();
 
     @Overwrite
-    protected void func_147906_a(Entity p_147906_1_, String p_147906_2_, double p_147906_3_, double p_147906_5_, double p_147906_7_, int p_147906_9_) {
+    protected void func_147906_a(Entity p_147906_1_, String p_147906_2_, double p_147906_3_, double p_147906_5_, double p_147906_7_,
+            int p_147906_9_) {
         double d3 = p_147906_1_.getDistanceSqToEntity(this.renderManager.livingPlayer);
 
         if (d3 <= (double) (p_147906_9_ * p_147906_9_)) {
             if (p_147906_1_ instanceof IExtendedEntityLivingBase) {
                 if (((IExtendedEntityLivingBase) p_147906_1_).getTitle() != null && !((IExtendedEntityLivingBase) p_147906_1_).getTitle().isEmpty()) {
-                    drawNameplate(p_147906_1_, ((IExtendedEntityLivingBase) p_147906_1_).getTitle(), p_147906_3_, p_147906_5_, p_147906_7_, p_147906_9_);
+                    drawNameplate(p_147906_1_, ((IExtendedEntityLivingBase) p_147906_1_).getTitle(), p_147906_3_, p_147906_5_, p_147906_7_,
+                            p_147906_9_);
 
                     p_147906_5_ += ((float) this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * 0.025);
                 }

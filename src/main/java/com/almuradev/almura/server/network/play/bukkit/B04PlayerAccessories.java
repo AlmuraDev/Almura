@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
 public class B04PlayerAccessories implements IMessage, IMessageHandler<B04PlayerAccessories, IMessage> {
+
     public boolean add;
     public String username;
     public String accessoryIdentifier;
@@ -42,7 +43,8 @@ public class B04PlayerAccessories implements IMessage, IMessageHandler<B04Player
             final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(message.username);
             if (player != null) {
                 if (message.add) {
-                    AccessoryManager.addAccessory(player, new ResourceLocation(Almura.MOD_ID, "accessory_" + message.textureName), message.accessoryIdentifier);
+                    AccessoryManager.addAccessory(player, new ResourceLocation(Almura.MOD_ID, "accessory_" + message.textureName),
+                            message.accessoryIdentifier);
                 } else {
                     AccessoryManager.removeAccessory(player, message.accessoryIdentifier);
                 }

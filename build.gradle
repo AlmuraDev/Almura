@@ -64,7 +64,9 @@ configurations.all {
 }
 
 dependencies {
-    compile 'com.almuradev:almurasdk:1.7.10-1307-SNAPSHOT'
+    compile ('com.almuradev:almurasdk:1.7.10-1307-SNAPSHOT') {
+        transitive = true
+    }
 }
 
 processResources {

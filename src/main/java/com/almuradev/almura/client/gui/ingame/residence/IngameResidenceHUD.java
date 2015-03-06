@@ -129,7 +129,7 @@ public class IngameResidenceHUD extends AlmuraGui {
         if (resLeaseExpire.getWidth() + 20 > originalWidth) {
             resPane.setSize(resLeaseExpire.getWidth() + 10, resPane.getHeight());
         }
-        
+
         // Window re-arrangement if server-owned.
         if (ResidenceData.OWNER_NAME.equalsIgnoreCase("almura_admin")) {
             title.setText("Protected Server-Owned Area");

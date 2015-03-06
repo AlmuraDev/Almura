@@ -8,12 +8,10 @@ package com.almuradev.almura.pack.mapper;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
-import com.flowpowered.cerealization.config.ConfigurationException;
-import com.flowpowered.cerealization.config.ConfigurationNode;
-import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.common.registry.GameRegistry;
+import ninja.leaping.configurate.ConfigurationNode;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -60,7 +58,7 @@ public class GameObjectMapper {
         return Optional.absent();
     }
 
-    public static void load() throws ConfigurationException {
+    public static void load() throws IOException {
         final YamlConfiguration reader = new YamlConfiguration(Filesystem.CONFIG_MAPPINGS_PATH.toFile());
         reader.load();
 

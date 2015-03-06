@@ -26,7 +26,7 @@ public class WireframeWand extends AlmuraItem {
 
     @Override
     public boolean onItemUse(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int side, float pointX, float pointY,
-                             float pointZ) {
+            float pointZ) {
         if (!world.isRemote) {
             // Fire PlayerInteractEvent
             final PlayerInteractEvent

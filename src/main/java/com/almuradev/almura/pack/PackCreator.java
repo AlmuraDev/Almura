@@ -7,8 +7,6 @@ package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.lang.LanguageRegistry;
-import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
@@ -23,13 +21,43 @@ import com.almuradev.almura.pack.model.PackFace;
 import com.almuradev.almura.pack.model.PackMirrorFace;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.model.PackPhysics;
-import com.almuradev.almura.pack.node.*;
+import com.almuradev.almura.pack.node.BiomeNode;
+import com.almuradev.almura.pack.node.BreakNode;
+import com.almuradev.almura.pack.node.CollisionNode;
+import com.almuradev.almura.pack.node.ConsumptionNode;
+import com.almuradev.almura.pack.node.ContainerNode;
+import com.almuradev.almura.pack.node.DropsNode;
+import com.almuradev.almura.pack.node.FertilizerNode;
+import com.almuradev.almura.pack.node.FuelNode;
+import com.almuradev.almura.pack.node.GrassNode;
+import com.almuradev.almura.pack.node.GrowthNode;
+import com.almuradev.almura.pack.node.LightNode;
+import com.almuradev.almura.pack.node.RecipeNode;
+import com.almuradev.almura.pack.node.RenderNode;
+import com.almuradev.almura.pack.node.RotationNode;
+import com.almuradev.almura.pack.node.SoilNode;
+import com.almuradev.almura.pack.node.ToolsNode;
 import com.almuradev.almura.pack.node.container.StateProperty;
-import com.almuradev.almura.pack.node.property.*;
-import com.almuradev.almura.recipe.*;
-import com.flowpowered.cerealization.config.ConfigurationException;
-import com.flowpowered.cerealization.config.ConfigurationNode;
-import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
+import com.almuradev.almura.pack.node.property.BiomeProperty;
+import com.almuradev.almura.pack.node.property.BonusProperty;
+import com.almuradev.almura.pack.node.property.CollisionProperty;
+import com.almuradev.almura.pack.node.property.DropProperty;
+import com.almuradev.almura.pack.node.property.GameObjectProperty;
+import com.almuradev.almura.pack.node.property.RangeProperty;
+import com.almuradev.almura.pack.node.property.RotationProperty;
+import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
+import com.almuradev.almura.recipe.DuplicateRecipeException;
+import com.almuradev.almura.recipe.IRecipe;
+import com.almuradev.almura.recipe.IShapedRecipe;
+import com.almuradev.almura.recipe.IShapelessRecipe;
+import com.almuradev.almura.recipe.ISmeltRecipe;
+import com.almuradev.almura.recipe.InvalidRecipeException;
+import com.almuradev.almura.recipe.RecipeContainer;
+import com.almuradev.almura.recipe.RecipeManager;
+import com.almuradev.almura.recipe.UnknownRecipeTypeException;
+import com.almuradev.almurasdk.lang.LanguageRegistry;
+import com.almuradev.almurasdk.lang.Languages;
+import com.flowpowered.cerealization.config.IOException;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -46,17 +74,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
+import ninja.leaping.configurate.ConfigurationNode;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class PackCreator {
 
     private static final char[] RECIPE_MATRIX_PLACEHOLDER = new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'};
 
-    public static PackModelContainer createModelContainerFromReader(String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackModelContainer createModelContainerFromReader(String name, YamlConfiguration reader) throws IOException {
         final ConfigurationNode boundsConfigurationNode = reader.getNode(PackKeys.NODE_BOUNDS.getKey());
 
         final boolean
@@ -116,7 +149,7 @@ public class PackCreator {
 
     @SideOnly(Side.CLIENT)
     public static void loadShapeIntoModelContainer(PackModelContainer modelContainer, String name, YamlConfiguration reader)
-            throws ConfigurationException {
+            throws IOException {
         final ConfigurationNode modelConfigurationNode = reader.getNode(PackKeys.SHAPES.getKey());
         final List<PackFace> faces = Lists.newLinkedList();
 
@@ -179,7 +212,7 @@ public class PackCreator {
         modelContainer.setModel(shape);
     }
 
-    public static PackBlock createBlockFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackBlock createBlockFromReader(Pack pack, String name, YamlConfiguration reader) throws IOException {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
                 reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
@@ -235,7 +268,7 @@ public class PackCreator {
         return block;
     }
 
-    public static PackItem createItemFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackItem createItemFromReader(Pack pack, String name, YamlConfiguration reader) throws IOException {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
                 reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
@@ -282,7 +315,7 @@ public class PackCreator {
         return item;
     }
 
-    public static PackFood createFoodFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackFood createFoodFromReader(Pack pack, String name, YamlConfiguration reader) throws IOException {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
                 reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
@@ -331,7 +364,7 @@ public class PackCreator {
         return food;
     }
 
-    public static PackCrops createCropFromReader(Pack pack, String name, YamlConfiguration reader) throws ConfigurationException {
+    public static PackCrops createCropFromReader(Pack pack, String name, YamlConfiguration reader) throws IOException {
         final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
 
@@ -370,7 +403,7 @@ public class PackCreator {
     }
 
     public static PackSeeds createCropSeed(Pack pack, String name, Block soil, PackCrops crop, String textureName, ConfigurationNode node)
-            throws ConfigurationException {
+            throws IOException {
         final String identifier = crop.getIdentifier() + "\\seed";
         final List<String> description = PackUtil.parseNewlineStringIntoList(
                 node.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
@@ -932,7 +965,7 @@ public class PackCreator {
     }
 
     private static <R extends IRecipe> RecipeContainer<R> createRecipeContainer(Pack pack, String name, Class<? extends R> clazz, int id, Object res,
-                                                                                ConfigurationNode node)
+            ConfigurationNode node)
             throws InvalidRecipeException, UnknownRecipeTypeException, DuplicateRecipeException {
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
         final int data = node.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue().intValue());

@@ -8,15 +8,14 @@ package com.almuradev.almura.pack.mapper;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
-import com.flowpowered.cerealization.config.ConfigurationException;
-import com.flowpowered.cerealization.config.ConfigurationNode;
-import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
+import com.flowpowered.cerealization.config.IOException;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
+import ninja.leaping.configurate.ConfigurationNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -112,7 +111,7 @@ public class EntityMapper {
         return Optional.<Class<? extends Entity>>fromNullable(entityClazz);
     }
 
-    public static void load() throws ConfigurationException {
+    public static void load() throws IOException {
         final YamlConfiguration reader = new YamlConfiguration(Filesystem.CONFIG_ENTITY_MAPPINGS_PATH.toFile());
         reader.load();
 

@@ -9,8 +9,6 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.model.PackModelContainer;
-import com.flowpowered.cerealization.config.ConfigurationException;
-import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -56,7 +54,7 @@ public class Pack {
 
                     final PackModelContainer modelContainer = loadModelContainer(name, path, shape);
                     MODEL_CONTAINERS.add(modelContainer);
-                } catch (IOException | ConfigurationException e) {
+                } catch (IOException | IOException e) {
                     Almura.LOGGER.error("Failed to load model container [" + path + "] in [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
                 }
             }
@@ -78,7 +76,7 @@ public class Pack {
         }
     }
 
-    public static PackModelContainer loadModelContainer(String name, Path root, boolean shape) throws ConfigurationException, IOException {
+    public static PackModelContainer loadModelContainer(String name, Path root, boolean shape) throws IOException, IOException {
         final InputStream entry = Files.newInputStream(root);
         final YamlConfiguration reader = new YamlConfiguration(entry);
         reader.load();
@@ -142,7 +140,7 @@ public class Pack {
                         continue;
                 }
                 entry.close();
-            } catch (IOException | ConfigurationException e) {
+            } catch (IOException | IOException e) {
                 if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
                     Almura.LOGGER.error("Failed to load [" + path + "] for pack [" + pack.getName() + "].", e);
                 } else {

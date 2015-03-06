@@ -7,10 +7,10 @@ package com.almuradev.almura.items;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ExternalIcon;
-import com.almuradev.almura.lang.LanguageRegistry;
-import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
+import com.almuradev.almurasdk.lang.LanguageRegistry;
+import com.almuradev.almurasdk.lang.Languages;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

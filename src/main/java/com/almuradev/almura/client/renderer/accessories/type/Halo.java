@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 
 public class Halo implements IAccessory<ModelBiped> {
+
     private ModelRenderer right;
     private ModelRenderer front;
     private ModelRenderer left;

@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 
 public class CatHat implements IAccessory<ModelBiped> {
+
     private ModelRenderer bottom;
     private ModelRenderer top;
 

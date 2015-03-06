@@ -5,7 +5,12 @@
  */
 package com.almuradev.almura.pack.item;
 
-import com.almuradev.almura.pack.*;
+import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.IModelContainer;
+import com.almuradev.almura.pack.INodeContainer;
+import com.almuradev.almura.pack.IPackObject;
+import com.almuradev.almura.pack.Pack;
+import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.ConsumptionNode;
 import com.almuradev.almura.pack.node.INode;
@@ -48,8 +53,8 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     private List<String> tooltip;
 
     public PackFood(Pack pack, String identifier, List<String> tooltip, String textureName, String modelName, PackModelContainer modelContainer,
-                    Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName,
-                    ConsumptionNode consumptionNode) {
+            Map<Integer, List<Integer>> textureCoordinates, boolean showInCreativeTab, String creativeTabName,
+            ConsumptionNode consumptionNode) {
         super(-1, -1, consumptionNode.isWolfFavorite());
         this.pack = pack;
         this.identifier = identifier;

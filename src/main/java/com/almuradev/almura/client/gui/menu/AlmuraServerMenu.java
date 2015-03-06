@@ -10,7 +10,7 @@ import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.components.UIForm;
-import com.almuradev.almura.util.Query;
+import com.almuradev.almurasdk.util.Query;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;

@@ -25,7 +25,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Objects;
 
 public class IngameHUD extends AlmuraGui {

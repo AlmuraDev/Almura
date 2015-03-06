@@ -58,21 +58,22 @@ public abstract class MixinTileEntitySign extends TileEntity implements IExtende
     }
 
     //TODO Ask Mumfrey
-//    @Inject(method = "readFromNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/tileentity/TileEntitySign;readFromNBT(Lnet/minecraft/nbt/NBTTagCompound)V", shift = At.Shift.AFTER), cancellable = true)
-//    public void onReadFromNBT(NBTTagCompound compound, CallbackInfo ci) {
-//        for (int l = 0; l < 4; ++l) {
-//            signText[l] = compound.getString("Text" + (l + 1));
-//
-//            final String line = signText[l];
-//            if (line.length() > 30) {
-//                signText[l] = line.substring(0, 30);
-//            }
-//        }
-//
-//        recalculateText();
-//
-//        ci.cancel();
-//    }
+    //    @Inject(method = "readFromNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/tileentity/TileEntitySign;readFromNBT
+    // (Lnet/minecraft/nbt/NBTTagCompound)V", shift = At.Shift.AFTER), cancellable = true)
+    //    public void onReadFromNBT(NBTTagCompound compound, CallbackInfo ci) {
+    //        for (int l = 0; l < 4; ++l) {
+    //            signText[l] = compound.getString("Text" + (l + 1));
+    //
+    //            final String line = signText[l];
+    //            if (line.length() > 30) {
+    //                signText[l] = line.substring(0, 30);
+    //            }
+    //        }
+    //
+    //        recalculateText();
+    //
+    //        ci.cancel();
+    //    }
 
     @Overwrite
     public void readFromNBT(NBTTagCompound p_145839_1_) {

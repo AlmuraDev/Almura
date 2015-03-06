@@ -119,7 +119,8 @@ public class IngameBlockInformation extends AlmuraGui {
             modelNameLabel.setPosition(xPadding, getPaddedY(textureNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             form.getContentContainer().add(modelNameLabel);
 
-            final UILabel packNameLabel = new UILabel(this, ChatColor.GRAY + "Pack Name: " + ChatColor.BLUE + ((IPackObject) block).getPack().getName());
+            final UILabel packNameLabel =
+                    new UILabel(this, ChatColor.GRAY + "Pack Name: " + ChatColor.BLUE + ((IPackObject) block).getPack().getName());
             packNameLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             form.getContentContainer().add(packNameLabel);
 

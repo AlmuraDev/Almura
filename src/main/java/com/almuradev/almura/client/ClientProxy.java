@@ -14,14 +14,13 @@ import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
 import com.almuradev.almura.client.gui.menu.AlmuraMainMenu;
 import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
 import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
-import com.almuradev.almura.lang.LanguageRegistry;
-import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
-
+import com.almuradev.almurasdk.lang.LanguageRegistry;
+import com.almuradev.almurasdk.lang.Languages;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -38,7 +37,6 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
-
 import org.lwjgl.input.Keyboard;
 
 public class ClientProxy extends CommonProxy {
@@ -83,11 +81,11 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onGuiOpenEvent(GuiOpenEvent event) {
         if (event.gui instanceof GuiMainMenu) {
-        	if (Configuration.FIRST_LAUNCH) {
-        		Configuration.setOptimizedConfig();
-        		Configuration.setFirstLaunched(false);
-        	}
-        	event.gui = new AlmuraMainMenu(null);
+            if (Configuration.FIRST_LAUNCH) {
+                Configuration.setOptimizedConfig();
+                Configuration.setFirstLaunched(false);
+            }
+            event.gui = new AlmuraMainMenu(null);
         }
     }
 

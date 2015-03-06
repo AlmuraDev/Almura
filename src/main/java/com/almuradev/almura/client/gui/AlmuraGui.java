@@ -16,7 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.IOException;
 
 public abstract class AlmuraGui extends MalisisGui {

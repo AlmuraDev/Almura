@@ -6,6 +6,7 @@
 package com.almuradev.almura.extension.entity;
 
 public interface IExtendedEntityLivingBase {
+
     String getServerName();
 
     void setServerName(String serverName);

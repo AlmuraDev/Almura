@@ -5,13 +5,15 @@
  */
 package com.almuradev.almura;
 
-import net.minecraft.client.Minecraft;
-
-import com.flowpowered.cerealization.config.ConfigurationException;
-import com.flowpowered.cerealization.config.ConfigurationNode;
-import com.flowpowered.cerealization.config.yaml.YamlConfiguration;
-
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
+import org.yaml.snakeyaml.DumperOptions;
+
+import java.io.IOException;
 
 public class Configuration {
 
@@ -36,7 +38,8 @@ public class Configuration {
     //First Launch Configuration Check
     public static boolean FIRST_LAUNCH;
 
-    private static YamlConfiguration reader;
+    private static YAMLConfigurationLoader reader;
+    private static ConfigurationNode root;
 
     static {
         DEBUG_LANGUAGES_MODE = false;
@@ -44,18 +47,19 @@ public class Configuration {
         DISPLAY_ENHANCED_GUI = true;
     }
 
-    public static void load() throws ConfigurationException {
-        reader = new YamlConfiguration(Filesystem.CONFIG_SETTINGS_PATH.toFile());
-        reader.load();
+    public static void load() throws IOException {
+        reader = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_SETTINGS_PATH.toFile()).setFlowStyle(DumperOptions.FlowStyle.BLOCK)
+                .build();
+        root = reader.load();
 
-        final ConfigurationNode debugConfigurationNode = reader.getNode("debug");
+        final ConfigurationNode debugConfigurationNode = root.getNode("debug");
         DEBUG_MODE = debugConfigurationNode.getChild("all").getBoolean(false);
         DEBUG_LANGUAGES_MODE = debugConfigurationNode.getChild("language").getBoolean(false);
         DEBUG_PACKS_MODE = debugConfigurationNode.getChild("pack").getBoolean(false);
         DEBUG_MAPPINGS_MODE = debugConfigurationNode.getChild("mappings").getBoolean(false);
         DEBUG_RECIPES_MODE = debugConfigurationNode.getChild("recipes").getBoolean(false);
 
-        final ConfigurationNode clientConfigurationNode = reader.getNode("client");
+        final ConfigurationNode clientConfigurationNode = root.getNode("client");
         DISPLAY_ENHANCED_GUI = clientConfigurationNode.getChild("enhanced-gui").getBoolean(true);
         DISPLAY_RESIDENCE_HUD = clientConfigurationNode.getChild("residence-hud").getBoolean(true);
         DISPLAY_ENHANCED_DEBUG = clientConfigurationNode.getChild("enhanced-debug").getBoolean(true);
@@ -66,69 +70,56 @@ public class Configuration {
         CHAT_NOTIFICATIONS = clientConfigurationNode.getChild("chat-notifications").getBoolean(true);
     }
 
-    public static void save() throws ConfigurationException {
-        reader.getConfiguration();
+    public static void save() throws IOException {
         // In-Game Almura GUI
-        ConfigurationNode enhanced_gui = reader.getNode("client.enhanced-gui");
+        ConfigurationNode enhanced_gui = root.getNode("client.enhanced-gui");
         enhanced_gui.setValue(DISPLAY_ENHANCED_GUI);
-        reader.setNode(enhanced_gui);
 
         // In-Game Residence Hud
-        ConfigurationNode residence_hud = reader.getNode("client.residence-hud");
+        ConfigurationNode residence_hud = root.getNode("client.residence-hud");
         residence_hud.setValue(DISPLAY_RESIDENCE_HUD);
-        reader.setNode(residence_hud);
 
         // In-Game Almura GUI
-        ConfigurationNode enhanced_debug = reader.getNode("client.enhanced-debug");
+        ConfigurationNode enhanced_debug = root.getNode("client.enhanced-debug");
         enhanced_debug.setValue(DISPLAY_ENHANCED_DEBUG);
-        reader.setNode(enhanced_debug);
 
         // In-Game Render Distance for Chests
-        ConfigurationNode chest_render_distance = reader.getNode("client.chest-render-distance");
+        ConfigurationNode chest_render_distance = root.getNode("client.chest-render-distance");
         chest_render_distance.setValue(CHEST_RENDER_DISTANCE);
-        reader.setNode(chest_render_distance);
 
         // In-Game Render Distance for Signs
-        ConfigurationNode sign_render_distance = reader.getNode("client.sign-render-distance");
+        ConfigurationNode sign_render_distance = root.getNode("client.sign-render-distance");
         sign_render_distance.setValue(SIGN_RENDER_DISTANCE);
-        reader.setNode(sign_render_distance);
 
         // In-Game Render Distance for Item Frames
-        ConfigurationNode item_frame_render_distance = reader.getNode("client.item-frame-render-distance");
+        ConfigurationNode item_frame_render_distance = root.getNode("client.item-frame-render-distance");
         item_frame_render_distance.setValue(ITEM_FRAME_RENDER_DISTANCE);
-        reader.setNode(item_frame_render_distance);
 
         // Debug All
-        ConfigurationNode debug_mode = reader.getNode("debug.all");
+        ConfigurationNode debug_mode = root.getNode("debug.all");
         debug_mode.setValue(DEBUG_MODE);
-        reader.setNode(debug_mode);
 
         // Debug Language Mode
-        ConfigurationNode debug_language = reader.getNode("debug.language");
+        ConfigurationNode debug_language = root.getNode("debug.language");
         debug_language.setValue(DEBUG_LANGUAGES_MODE);
-        reader.setNode(debug_language);
 
         // Debug Packs Mode
-        ConfigurationNode debug_packs = reader.getNode("debug.pack");
+        ConfigurationNode debug_packs = root.getNode("debug.pack");
         debug_packs.setValue(DEBUG_PACKS_MODE);
-        reader.setNode(debug_packs);
 
         // Debug Mappings Mode
-        ConfigurationNode debug_mappings = reader.getNode("debug.mappings");
+        ConfigurationNode debug_mappings = root.getNode("debug.mappings");
         debug_mappings.setValue(DEBUG_MAPPINGS_MODE);
-        reader.setNode(debug_mappings);
 
         // Debug Recipes Mode
-        ConfigurationNode debug_recipes = reader.getNode("debug.recipes");
+        ConfigurationNode debug_recipes = root.getNode("debug.recipes");
         debug_recipes.setValue(DEBUG_RECIPES_MODE);
-        reader.setNode(debug_recipes);
-        
-        // Chat Notifications
-        ConfigurationNode chat_notifications = reader.getNode("client.chat-notifications");
-        chat_notifications.setValue(CHAT_NOTIFICATIONS);
-        reader.setNode(chat_notifications);
 
-        reader.save();
+        // Chat Notifications
+        ConfigurationNode chat_notifications = root.getNode("client.chat-notifications");
+        chat_notifications.setValue(CHAT_NOTIFICATIONS);
+
+        reader.save(root);
     }
 
     public static void toggleEnhancedGUI(boolean value) {
@@ -174,14 +165,15 @@ public class Configuration {
     public static void setItemFrameRenderDistance(int value) {
         ITEM_FRAME_RENDER_DISTANCE = value;
     }
-    
+
     public static void setChatNotifications(boolean value) {
         CHAT_NOTIFICATIONS = value;
     }
-    
+
     @SuppressWarnings("unchecked")
-	public static void setOptimizedConfig() {
-        Minecraft mc = Minecraft.getMinecraft();
+    @SideOnly(Side.CLIENT)
+    public static void setOptimizedConfig() {
+        final Minecraft mc = Minecraft.getMinecraft();
         mc.gameSettings.ambientOcclusion = 0;
         mc.gameSettings.mipmapLevels = 0;
         mc.gameSettings.guiScale = 3;
@@ -194,26 +186,19 @@ public class Configuration {
         mc.gameSettings.renderDistanceChunks = 12;
         mc.gameSettings.viewBobbing = false;
         if (!mc.gameSettings.resourcePacks.contains("Almura Preferred Font.zip")) {
-        	mc.gameSettings.resourcePacks.add("Almura Preferred Font.zip");
+            mc.gameSettings.resourcePacks.add("Almura Preferred Font.zip");
         }
         mc.gameSettings.saveOptions();
+    }
+
+    public static void setFirstLaunched(boolean value) {
+        ConfigurationNode first_Launch = root.getNode("client.first-launch");
+        first_Launch.setValue(value);
 
         try {
-            reader.save();
-        } catch (ConfigurationException e) {
+            reader.save(root);
+        } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    
-    public static void setFirstLaunched(boolean value) {
-    	 ConfigurationNode first_Launch = reader.getNode("client.first-launch");
-         first_Launch.setValue(value);
-         reader.setNode(first_Launch);
-
-         try {
-             reader.save();
-         } catch (ConfigurationException e) {
-             e.printStackTrace();
-         }
     }
 }

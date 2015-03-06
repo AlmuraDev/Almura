@@ -7,10 +7,24 @@ package com.almuradev.almura.pack.container;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.pack.*;
+import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockModelContainer;
+import com.almuradev.almura.pack.IItemBlockInformation;
+import com.almuradev.almura.pack.INodeContainer;
+import com.almuradev.almura.pack.IPackObject;
+import com.almuradev.almura.pack.Pack;
+import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
-import com.almuradev.almura.pack.node.*;
+import com.almuradev.almura.pack.node.BreakNode;
+import com.almuradev.almura.pack.node.CollisionNode;
+import com.almuradev.almura.pack.node.ContainerNode;
+import com.almuradev.almura.pack.node.INode;
+import com.almuradev.almura.pack.node.LightNode;
+import com.almuradev.almura.pack.node.RenderNode;
+import com.almuradev.almura.pack.node.RotationNode;
+import com.almuradev.almura.pack.node.ToolsNode;
 import com.almuradev.almura.pack.node.container.StateProperty;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
@@ -75,9 +89,9 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     private CollisionNode collisionNode;
 
     public PackContainerBlock(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
-                              String modelName,
-                              PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
-                              RotationNode rotationNode, LightNode lightNode, RenderNode renderNode, ContainerNode containerNode) {
+            String modelName,
+            PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
+            RotationNode rotationNode, LightNode lightNode, RenderNode renderNode, ContainerNode containerNode) {
         super(Material.ground);
         this.pack = pack;
         this.identifier = identifier;
@@ -126,7 +140,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_,
-                                    float p_149727_9_) {
+            float p_149727_9_) {
         if (!world.isRemote) {
             final TileEntity te = world.getTileEntity(x, y, z);
             if (te != null && te instanceof PackContainerTileEntity) {

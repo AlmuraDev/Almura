@@ -17,7 +17,7 @@ public class RotationNode extends ToggleableNode<EnumMap<RotationMeta.Rotation, 
     private final EnumMap<RotationMeta.Rotation, RotationProperty> value;
 
     public RotationNode(boolean isEnabled, boolean defaultRotate, boolean defaultMirrorRotate,
-                        EnumMap<RotationMeta.Rotation, RotationProperty> value) {
+            EnumMap<RotationMeta.Rotation, RotationProperty> value) {
         super(isEnabled);
         this.defaultRotate = defaultRotate;
         this.defaultMirrorRotate = defaultMirrorRotate;

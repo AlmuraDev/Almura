@@ -5,19 +5,20 @@
  */
 package com.almuradev.almura.core;
 
+import com.almuradev.almurasdk.core.CommonAccessTransformer;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import java.util.Map;
 
-@SortingIndex(value = 9999)
+@SortingIndex(10001)
+@MCVersion("1.7.10")
 public final class AlmuraCoreMod implements IFMLLoadingPlugin {
 
-    @SuppressWarnings("unchecked")
     public AlmuraCoreMod() {
-        MixinBootstrap.init();
         MixinEnvironment.getCurrentEnvironment().addConfiguration("mixins.almura.json");
     }
 
@@ -44,6 +45,6 @@ public final class AlmuraCoreMod implements IFMLLoadingPlugin {
 
     @Override
     public String getAccessTransformerClass() {
-        return AlmuraAccessTransformer.CLASSPATH;
+        return CommonAccessTransformer.class.getName();
     }
 }

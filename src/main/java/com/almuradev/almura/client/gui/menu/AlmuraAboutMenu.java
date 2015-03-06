@@ -15,7 +15,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class AlmuraAboutMenu extends AlmuraBackgroundGui {
 
@@ -40,13 +40,17 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
 
         String
                 fieldText =
-                "Almura 2.0 began June 1st, 2014.  Based on the idea that we could finally get away from the broken and abandoned Spoutcraft client a brilliant developer came to Almura and said,"
+                "Almura 2.0 began June 1st, 2014.  Based on the idea that we could finally get away from the broken and abandoned Spoutcraft client"
+                        + " a brilliant developer came to Almura and said,"
                         + " \"Why don't you get rid of that out of date client and move into the present?\" This brilliant developer's name is "
-                        + ChatColor.AQUA + "Zidane" + ChatColor.RESET + ". Along with him and another outstanding developer " + ChatColor.AQUA + "Grinch"
+                        + ChatColor.AQUA + "Zidane" + ChatColor.RESET + ". Along with him and another outstanding developer " + ChatColor.AQUA
+                        + "Grinch"
                         + ChatColor.RESET + ","
-                        + " Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + ChatColor.GOLD + "Dockter's"
+                        + " Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + ChatColor.GOLD
+                        + "Dockter's"
                         + ChatColor.RESET + " content and gui abilities, built, in our opinion, one of the best content loading /"
-                        + " gui enabled Minecraft experiences ever conceived. \r \r" + ChatColor.LIGHT_PURPLE + "More info to follow..." + ChatColor.RESET
+                        + " gui enabled Minecraft experiences ever conceived. \r \r" + ChatColor.LIGHT_PURPLE + "More info to follow..."
+                        + ChatColor.RESET
                         + "";
 
         aboutUsLabel.setSize(290, form.getContentContainer().getHeight() - 30);

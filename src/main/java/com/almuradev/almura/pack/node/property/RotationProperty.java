@@ -15,7 +15,7 @@ public class RotationProperty implements IProperty<Boolean> {
     private final RotationMeta.Direction x, y, z;
 
     public RotationProperty(boolean enabled, RotationMeta.Rotation rotation, float angle, RotationMeta.Direction x, RotationMeta.Direction y,
-                            RotationMeta.Direction z) {
+            RotationMeta.Direction z) {
         this.enabled = enabled;
         this.rotation = rotation;
         this.angle = angle;

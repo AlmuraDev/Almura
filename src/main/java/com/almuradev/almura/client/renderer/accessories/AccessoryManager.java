@@ -7,7 +7,17 @@ package com.almuradev.almura.client.renderer.accessories;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.client.renderer.accessories.type.*;
+import com.almuradev.almura.client.renderer.accessories.type.Bracelet;
+import com.almuradev.almura.client.renderer.accessories.type.CatHat;
+import com.almuradev.almura.client.renderer.accessories.type.Cloak;
+import com.almuradev.almura.client.renderer.accessories.type.Ears;
+import com.almuradev.almura.client.renderer.accessories.type.Halo;
+import com.almuradev.almura.client.renderer.accessories.type.NotchHat;
+import com.almuradev.almura.client.renderer.accessories.type.Skin;
+import com.almuradev.almura.client.renderer.accessories.type.Sunglasses;
+import com.almuradev.almura.client.renderer.accessories.type.Tail;
+import com.almuradev.almura.client.renderer.accessories.type.TopHat;
+import com.almuradev.almura.client.renderer.accessories.type.Wings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.minecraft.client.model.ModelBase;
@@ -21,12 +31,12 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 public class AccessoryManager {
+
     public static final RenderPlayer PLAYER_RENDERER = (RenderPlayer) RenderManager.instance.entityRenderMap.get(EntityPlayer.class);
     private static Map<String, Class<? extends IAccessory<?>>> ACCESSORY_TYPES_BY_NAME = Maps.newHashMap();
     private static Map<String, Set<TexturedAccessory>> ACCESSORIES_BY_ENTITIES = Maps.newHashMap();
@@ -103,12 +113,14 @@ public class AccessoryManager {
         final Set<AccessoryManager.TexturedAccessory> entityAccessories = AccessoryManager.getAccessories(event.entityPlayer.getCommandSenderName());
         if (entityAccessories != null) {
             for (AccessoryManager.TexturedAccessory accessory : entityAccessories) {
-                accessory.accessoryType.onRender(event.entityPlayer, accessory.textureLocation, PLAYER_RENDERER.modelBipedMain, 0.0625F, event.partialRenderTick);
+                accessory.accessoryType
+                        .onRender(event.entityPlayer, accessory.textureLocation, PLAYER_RENDERER.modelBipedMain, 0.0625F, event.partialRenderTick);
             }
         }
     }
 
     public static final class TexturedAccessory {
+
         public final ResourceLocation textureLocation;
         public final IAccessory accessoryType;
 

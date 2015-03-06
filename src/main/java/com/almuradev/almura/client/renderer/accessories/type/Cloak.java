@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 
 public class Cloak implements IAccessory<ModelBiped> {
+
     @Override
     public void onAttached(EntityLivingBase base, ResourceLocation textureLocation, ModelBiped root) {
         if (base instanceof AbstractClientPlayer) {

@@ -10,7 +10,7 @@ import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.components.UIForm;
-import com.flowpowered.cerealization.config.ConfigurationException;
+import com.flowpowered.cerealization.config.IOException;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -119,7 +119,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         chatNotificationCheckBox.setPosition(padding, almuraDebugGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         chatNotificationCheckBox.setChecked(Configuration.CHAT_NOTIFICATIONS);
         chatNotificationCheckBox.setName("checkbox.gui.chat_notification");
-        
+
         // Create the debug mode checkbox
         debugModeCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Mode (All)");
         debugModeCheckBox.setPosition(padding, chatNotificationCheckBox.getY() + (padding * 4) + 40, Anchor.LEFT | Anchor.TOP);
@@ -185,7 +185,8 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.graphics":
                 Configuration.setOptimizedConfig();
-                mc.displayGuiScreen(new AlmuraConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to apply settings.", "Almura"));
+                mc.displayGuiScreen(new AlmuraConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.",
+                        "Please restart your game to apply settings.", "Almura"));
                 break;
             case "button.cancel":
                 close();
@@ -202,7 +203,7 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
                     Configuration.toggleDebugRecipesMode(debugRecipesCheckBox.isChecked());
                     Configuration.setChatNotifications(chatNotificationCheckBox.isChecked());
                     Configuration.save();
-                } catch (ConfigurationException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
                 close();

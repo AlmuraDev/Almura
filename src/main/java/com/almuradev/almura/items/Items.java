@@ -6,7 +6,12 @@
 package com.almuradev.almura.items;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.items.wands.*;
+import com.almuradev.almura.items.wands.ExplosionWand;
+import com.almuradev.almura.items.wands.FireballWand;
+import com.almuradev.almura.items.wands.InformationWand;
+import com.almuradev.almura.items.wands.LightningWand;
+import com.almuradev.almura.items.wands.MetadataWand;
+import com.almuradev.almura.items.wands.WireframeWand;
 import com.almuradev.almura.tabs.Tabs;
 
 public class Items {

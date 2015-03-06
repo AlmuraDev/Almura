@@ -5,7 +5,11 @@
  */
 package com.almuradev.almura.pack.node.container;
 
-import com.almuradev.almura.pack.*;
+import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockModelContainer;
+import com.almuradev.almura.pack.IPackObject;
+import com.almuradev.almura.pack.Pack;
+import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.property.IProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
@@ -34,7 +38,7 @@ public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockCli
     private IIcon stateIcon;
 
     public StateProperty(Pack pack, boolean enabled, String identifier, String textureName, Map<Integer, List<Integer>> textureCoordinates,
-                         String modelName, PackModelContainer modelContainer) {
+            String modelName, PackModelContainer modelContainer) {
         this.pack = pack;
         this.enabled = enabled;
         this.identifier = identifier;
