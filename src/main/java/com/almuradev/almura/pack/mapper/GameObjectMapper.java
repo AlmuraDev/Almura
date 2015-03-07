@@ -12,10 +12,13 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.common.registry.GameRegistry;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.yaml.snakeyaml.DumperOptions;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -59,23 +62,23 @@ public class GameObjectMapper {
     }
 
     public static void load() throws IOException {
-        final YamlConfiguration reader = new YamlConfiguration(Filesystem.CONFIG_MAPPINGS_PATH.toFile());
-        reader.load();
+        final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_MAPPINGS_PATH.toFile()).setFlowStyle(
+                DumperOptions.FlowStyle.BLOCK).build().load();
 
-        for (String modid : reader.getKeys(false)) {
-            final ConfigurationNode modidConfigurationNode = reader.getNode(modid);
-            for (String rawObjectIdentifier : modidConfigurationNode.getKeys(false)) {
+        for (Map.Entry<Object, ? extends ConfigurationNode> modidEntry : reader.getChildrenMap().entrySet()) {
+            final String modid = (String) modidEntry.getKey();
+            for (Map.Entry<Object, ? extends ConfigurationNode> rawObjectEntry : modidEntry.getValue().getChildrenMap().entrySet()) {
+                final String rawObjectIdentifier = (String) rawObjectEntry.getKey();
                 final Optional<GameObject> found = getGameObject(modid + "\\" + rawObjectIdentifier, false);
                 if (!found.isPresent()) {
                     Almura.LOGGER.warn("Object [" + rawObjectIdentifier + "] is neither a block or item registered to mod [" + modid + "].");
                     continue;
                 }
-
-                final ConfigurationNode objectConfigurationNode = modidConfigurationNode.getNode(rawObjectIdentifier);
-                for (String remapped : objectConfigurationNode.getKeys(false)) {
-                    final Object value = objectConfigurationNode.getChild(remapped).getValue();
-                    if (add(modid, found.get().minecraftObject, remapped, value) && (Configuration.DEBUG_MODE
-                            || Configuration.DEBUG_MAPPINGS_MODE)) {
+                for (Map.Entry<Object, ? extends ConfigurationNode> remappedEntry : rawObjectEntry.getValue().getChildrenMap().entrySet()) {
+                    final String remapped = (String) remappedEntry.getKey();
+                    final int value = remappedEntry.getValue().getInt(0);
+                    if (add(modid, found.get().minecraftObject, remapped, value) && (Configuration.DEBUG_ALL
+                            || Configuration.DEBUG_MAPPINGS)) {
                         Almura.LOGGER
                                 .info("Registered mapping [" + remapped + "] with value [" + value + "] for object [" + found.get().minecraftObject
                                         + "] for mod [" + modid

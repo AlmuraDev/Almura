@@ -141,7 +141,7 @@ public class Pack {
                 }
                 entry.close();
             } catch (IOException | IOException e) {
-                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                     Almura.LOGGER.error("Failed to load [" + path + "] for pack [" + pack.getName() + "].", e);
                 } else {
                     Almura.LOGGER.error("Failed to load [" + path + "] for pack [" + pack.getName() + "].");

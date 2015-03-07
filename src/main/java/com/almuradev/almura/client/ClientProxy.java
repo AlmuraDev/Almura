@@ -39,6 +39,8 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 
+import java.io.IOException;
+
 public class ClientProxy extends CommonProxy {
 
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
@@ -83,7 +85,11 @@ public class ClientProxy extends CommonProxy {
         if (event.gui instanceof GuiMainMenu) {
             if (Configuration.FIRST_LAUNCH) {
                 Configuration.setOptimizedConfig();
-                Configuration.setFirstLaunched(false);
+                try {
+                    Configuration.setFirstLaunch(true);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             event.gui = new AlmuraMainMenu(null);
         }

@@ -10,6 +10,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.yaml.snakeyaml.DumperOptions;
 
@@ -19,155 +20,101 @@ public class Configuration {
 
     public static final boolean IS_SERVER = FMLCommonHandler.instance().getEffectiveSide().isServer();
     public static final boolean IS_CLIENT = FMLCommonHandler.instance().getEffectiveSide().isClient();
-
+    private static final Object[] PATH_CLIENT_FIRST_LAUNCH = new String[]{"client", "first-launch"};
+    private static final Object[] PATH_CLIENT_ENHANCED_GUI = new String[]{"client", "enhanced-gui"};
+    private static final Object[] PATH_CLIENT_ENHANCED_DEBUG = new String[]{"client", "enhanced-debug"};
+    private static final Object[] PATH_CLIENT_RESIDENCE_HUD = new String[]{"client", "residence-hud"};
+    private static final Object[] PATH_CLIENT_CHEST_RENDER_DISTANCE = new String[]{"client", "chest-render-distance"};
+    private static final Object[] PATH_CLIENT_ITEM_FRAME_RENDER_DISTANCE = new String[]{"client", "item-frame-render-distance"};
+    private static final Object[] PATH_CLIENT_SIGN_RENDER_DISTANCE = new String[]{"client", "sign-render-distance"};
+    private static final Object[] PATH_CLIENT_CHAT_NOTIFICATIONS = new String[]{"client", "chat-notifications"};
+    private static final Object[] PATH_DEBUG_ALL = new String[]{"debug", "all"};
+    private static final Object[] PATH_DEBUG_LANGUAGE = new String[]{"debug", "language"};
+    private static final Object[] PATH_DEBUG_MAPPINGS = new String[]{"debug", "mappings"};
+    private static final Object[] PATH_DEBUG_PACK = new String[]{"debug", "pack"};
+    private static final Object[] PATH_DEBUG_RECIPES = new String[]{"debug", "recipes"};
     //DEBUG
-    public static boolean DEBUG_MODE;
-    public static boolean DEBUG_LANGUAGES_MODE;
-    public static boolean DEBUG_PACKS_MODE;
-    public static boolean DEBUG_MAPPINGS_MODE;
-    public static boolean DEBUG_RECIPES_MODE;
+    public static boolean DEBUG_ALL;
+    public static boolean DEBUG_LANGUAGES;
+    public static boolean DEBUG_MAPPINGS;
+    public static boolean DEBUG_PACKS;
+    public static boolean DEBUG_RECIPES;
     //GUI
-    public static boolean DISPLAY_ENHANCED_GUI;
-    public static boolean DISPLAY_RESIDENCE_HUD;
-    public static boolean DISPLAY_ENHANCED_DEBUG;
-    public static boolean CHAT_NOTIFICATIONS;
+    public static boolean DISPLAY_ENHANCED_GUI = true;
+    public static boolean DISPLAY_RESIDENCE_HUD = true;
+    public static boolean DISPLAY_ENHANCED_DEBUG = true;
+    public static boolean CHAT_NOTIFICATIONS = true;
     //RENDER DISTANCE WITHIN SIGNS AND CHEST MIXINS
-    public static int CHEST_RENDER_DISTANCE;
-    public static int SIGN_RENDER_DISTANCE;
-    public static int ITEM_FRAME_RENDER_DISTANCE;
-    //First Launch Configuration Check
-    public static boolean FIRST_LAUNCH;
+    public static int DISTANCE_RENDER_CHEST;
+    public static int DISTANCE_RENDER_ITEM_FRAME;
+    public static int DISTANCE_RENDER_SIGN;
+    //FIRST LAUNCH
+    public static boolean FIRST_LAUNCH = true;
 
-    private static YAMLConfigurationLoader reader;
+    private static ConfigurationLoader loader;
     private static ConfigurationNode root;
 
-    static {
-        DEBUG_LANGUAGES_MODE = false;
-        DEBUG_PACKS_MODE = false;
-        DISPLAY_ENHANCED_GUI = true;
-    }
-
     public static void load() throws IOException {
-        reader = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_SETTINGS_PATH.toFile()).setFlowStyle(DumperOptions.FlowStyle.BLOCK)
-                .build();
-        root = reader.load();
+        loader = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_SETTINGS_PATH.toFile()).setFlowStyle
+                (DumperOptions.FlowStyle.BLOCK).build();
+        root = loader.load();
 
-        final ConfigurationNode debugConfigurationNode = root.getNode("debug");
-        DEBUG_MODE = debugConfigurationNode.getChild("all").getBoolean(false);
-        DEBUG_LANGUAGES_MODE = debugConfigurationNode.getChild("language").getBoolean(false);
-        DEBUG_PACKS_MODE = debugConfigurationNode.getChild("pack").getBoolean(false);
-        DEBUG_MAPPINGS_MODE = debugConfigurationNode.getChild("mappings").getBoolean(false);
-        DEBUG_RECIPES_MODE = debugConfigurationNode.getChild("recipes").getBoolean(false);
+        FIRST_LAUNCH = root.getNode(PATH_CLIENT_FIRST_LAUNCH).getBoolean(true);
 
-        final ConfigurationNode clientConfigurationNode = root.getNode("client");
-        DISPLAY_ENHANCED_GUI = clientConfigurationNode.getChild("enhanced-gui").getBoolean(true);
-        DISPLAY_RESIDENCE_HUD = clientConfigurationNode.getChild("residence-hud").getBoolean(true);
-        DISPLAY_ENHANCED_DEBUG = clientConfigurationNode.getChild("enhanced-debug").getBoolean(true);
-        CHEST_RENDER_DISTANCE = clientConfigurationNode.getChild("chest-render-distance").getInt(32);
-        SIGN_RENDER_DISTANCE = clientConfigurationNode.getChild("sign-render-distance").getInt(32);
-        ITEM_FRAME_RENDER_DISTANCE = clientConfigurationNode.getChild("item-frame-render-distance").getInt(32);
-        FIRST_LAUNCH = clientConfigurationNode.getChild("first-launch").getBoolean(true);
-        CHAT_NOTIFICATIONS = clientConfigurationNode.getChild("chat-notifications").getBoolean(true);
+        DISPLAY_ENHANCED_GUI = root.getNode(PATH_CLIENT_ENHANCED_GUI).getBoolean(true);
+
+        DISPLAY_ENHANCED_DEBUG = root.getNode(PATH_CLIENT_ENHANCED_DEBUG).getBoolean(true);
+
+        DISPLAY_RESIDENCE_HUD = root.getNode(PATH_CLIENT_RESIDENCE_HUD).getBoolean(true);
+
+        DISTANCE_RENDER_CHEST = root.getNode(PATH_CLIENT_CHEST_RENDER_DISTANCE).getInt(32);
+
+        DISTANCE_RENDER_SIGN = root.getNode(PATH_CLIENT_ITEM_FRAME_RENDER_DISTANCE).getInt(32);
+
+        DISTANCE_RENDER_ITEM_FRAME = root.getNode(PATH_CLIENT_SIGN_RENDER_DISTANCE).getInt(32);
+
+        CHAT_NOTIFICATIONS = root.getNode(PATH_CLIENT_CHAT_NOTIFICATIONS).getBoolean(true);
+
+        DEBUG_ALL = root.getNode(PATH_DEBUG_ALL).getBoolean(false);
+
+        DEBUG_LANGUAGES = root.getNode(PATH_DEBUG_LANGUAGE).getBoolean(false);
+
+        DEBUG_MAPPINGS = root.getNode(PATH_DEBUG_MAPPINGS).getBoolean(false);
+
+        DEBUG_PACKS = root.getNode(PATH_DEBUG_PACK).getBoolean(false);
+
+        DEBUG_RECIPES = root.getNode(PATH_DEBUG_RECIPES).getBoolean(false);
     }
 
     public static void save() throws IOException {
-        // In-Game Almura GUI
-        ConfigurationNode enhanced_gui = root.getNode("client.enhanced-gui");
-        enhanced_gui.setValue(DISPLAY_ENHANCED_GUI);
+        root.getNode(PATH_CLIENT_ENHANCED_GUI).setValue(DISPLAY_ENHANCED_GUI);
 
-        // In-Game Residence Hud
-        ConfigurationNode residence_hud = root.getNode("client.residence-hud");
-        residence_hud.setValue(DISPLAY_RESIDENCE_HUD);
+        root.getNode(PATH_CLIENT_ENHANCED_DEBUG).setValue(DISPLAY_ENHANCED_DEBUG);
 
-        // In-Game Almura GUI
-        ConfigurationNode enhanced_debug = root.getNode("client.enhanced-debug");
-        enhanced_debug.setValue(DISPLAY_ENHANCED_DEBUG);
+        root.getNode(PATH_CLIENT_RESIDENCE_HUD).setValue(DISPLAY_RESIDENCE_HUD);
 
-        // In-Game Render Distance for Chests
-        ConfigurationNode chest_render_distance = root.getNode("client.chest-render-distance");
-        chest_render_distance.setValue(CHEST_RENDER_DISTANCE);
+        root.getNode(PATH_CLIENT_CHEST_RENDER_DISTANCE).setValue(DISTANCE_RENDER_CHEST);
 
-        // In-Game Render Distance for Signs
-        ConfigurationNode sign_render_distance = root.getNode("client.sign-render-distance");
-        sign_render_distance.setValue(SIGN_RENDER_DISTANCE);
+        root.getNode(PATH_CLIENT_ITEM_FRAME_RENDER_DISTANCE).setValue(DISTANCE_RENDER_SIGN);
 
-        // In-Game Render Distance for Item Frames
-        ConfigurationNode item_frame_render_distance = root.getNode("client.item-frame-render-distance");
-        item_frame_render_distance.setValue(ITEM_FRAME_RENDER_DISTANCE);
+        root.getNode(PATH_CLIENT_SIGN_RENDER_DISTANCE).setValue(DISTANCE_RENDER_ITEM_FRAME);
 
-        // Debug All
-        ConfigurationNode debug_mode = root.getNode("debug.all");
-        debug_mode.setValue(DEBUG_MODE);
+        root.getNode(PATH_DEBUG_ALL).setValue(DEBUG_ALL);
 
-        // Debug Language Mode
-        ConfigurationNode debug_language = root.getNode("debug.language");
-        debug_language.setValue(DEBUG_LANGUAGES_MODE);
+        root.getNode(PATH_DEBUG_LANGUAGE).setValue(DEBUG_LANGUAGES);
 
-        // Debug Packs Mode
-        ConfigurationNode debug_packs = root.getNode("debug.pack");
-        debug_packs.setValue(DEBUG_PACKS_MODE);
+        root.getNode(PATH_DEBUG_MAPPINGS).setValue(DEBUG_MAPPINGS);
 
-        // Debug Mappings Mode
-        ConfigurationNode debug_mappings = root.getNode("debug.mappings");
-        debug_mappings.setValue(DEBUG_MAPPINGS_MODE);
+        root.getNode(PATH_DEBUG_PACK).setValue(DEBUG_PACKS);
 
-        // Debug Recipes Mode
-        ConfigurationNode debug_recipes = root.getNode("debug.recipes");
-        debug_recipes.setValue(DEBUG_RECIPES_MODE);
+        root.getNode(PATH_DEBUG_RECIPES).setValue(DEBUG_RECIPES);
 
-        // Chat Notifications
-        ConfigurationNode chat_notifications = root.getNode("client.chat-notifications");
-        chat_notifications.setValue(CHAT_NOTIFICATIONS);
-
-        reader.save(root);
+        loader.save(root);
     }
 
-    public static void toggleEnhancedGUI(boolean value) {
-        DISPLAY_ENHANCED_GUI = value;
-    }
-
-    public static void toggleResidenceHUD(boolean value) {
-        DISPLAY_RESIDENCE_HUD = value;
-    }
-
-    public static void toggleEnhancedDebug(boolean value) {
-        DISPLAY_ENHANCED_DEBUG = value;
-    }
-
-    public static void toggleDebugMode(boolean value) {
-        DEBUG_MODE = value;
-    }
-
-    public static void toggleDebugLanguageMode(boolean value) {
-        DEBUG_LANGUAGES_MODE = value;
-    }
-
-    public static void toggleDebugPacksMode(boolean value) {
-        DEBUG_PACKS_MODE = value;
-    }
-
-    public static void toggleDebugMappingsMode(boolean value) {
-        DEBUG_MAPPINGS_MODE = value;
-    }
-
-    public static void toggleDebugRecipesMode(boolean value) {
-        DEBUG_RECIPES_MODE = value;
-    }
-
-    public static void setChestRenderDistance(int value) {
-        CHEST_RENDER_DISTANCE = value;
-    }
-
-    public static void setSignRenderDistance(int value) {
-        SIGN_RENDER_DISTANCE = value;
-    }
-
-    public static void setItemFrameRenderDistance(int value) {
-        ITEM_FRAME_RENDER_DISTANCE = value;
-    }
-
-    public static void setChatNotifications(boolean value) {
-        CHAT_NOTIFICATIONS = value;
+    public static void setFirstLaunch(boolean value) throws IOException {
+        root.getNode(PATH_CLIENT_FIRST_LAUNCH).setValue(value);
+        loader.save(root);
     }
 
     @SuppressWarnings("unchecked")
@@ -191,14 +138,51 @@ public class Configuration {
         mc.gameSettings.saveOptions();
     }
 
-    public static void setFirstLaunched(boolean value) {
-        ConfigurationNode first_Launch = root.getNode("client.first-launch");
-        first_Launch.setValue(value);
+    public static void toggleEnhancedGUI(boolean value) {
+        DISPLAY_ENHANCED_GUI = value;
+    }
 
-        try {
-            reader.save(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void toggleResidenceHUD(boolean value) {
+        DISPLAY_RESIDENCE_HUD = value;
+    }
+
+    public static void toggleEnhancedDebug(boolean value) {
+        DISPLAY_ENHANCED_DEBUG = value;
+    }
+
+    public static void toggleDebugMode(boolean value) {
+        DEBUG_ALL = value;
+    }
+
+    public static void toggleDebugLanguageMode(boolean value) {
+        DEBUG_LANGUAGES = value;
+    }
+
+    public static void toggleDebugPacksMode(boolean value) {
+        DEBUG_PACKS = value;
+    }
+
+    public static void toggleDebugMappingsMode(boolean value) {
+        DEBUG_MAPPINGS = value;
+    }
+
+    public static void toggleDebugRecipesMode(boolean value) {
+        DEBUG_RECIPES = value;
+    }
+
+    public static void setChestRenderDistance(int value) {
+        DISTANCE_RENDER_CHEST = value;
+    }
+
+    public static void setItemFrameRenderDistance(int value) {
+        DISTANCE_RENDER_ITEM_FRAME = value;
+    }
+
+    public static void setSignRenderDistance(int value) {
+        DISTANCE_RENDER_SIGN = value;
+    }
+
+    public static void setChatNotifications(boolean value) {
+        CHAT_NOTIFICATIONS = value;
     }
 }

@@ -53,7 +53,7 @@ public class PackIcon extends MalisisIcon {
             return false;
         } catch (RuntimeException e) {
             if (e.getMessage().equalsIgnoreCase("broken aspect ratio and not an animation")) {
-                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                     Almura.LOGGER
                             .error("Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "]  used by [" + object
                                             .getIdentifier() + "] requested by pack ["
@@ -68,7 +68,7 @@ public class PackIcon extends MalisisIcon {
                                     + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
                 }
             } else {
-                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                     Almura.LOGGER
                             .error("Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "] used by [" + object
                                     .getIdentifier() + "] requested by pack ["
@@ -81,7 +81,7 @@ public class PackIcon extends MalisisIcon {
                 }
             }
         } catch (IOException e1) {
-            if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+            if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                 Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "] used by [" + object
                         .getIdentifier() + "] requested by pack ["
                         + object.getPack().getName() + "]", e1);

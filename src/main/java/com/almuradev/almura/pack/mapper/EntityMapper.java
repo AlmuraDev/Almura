@@ -134,7 +134,7 @@ public class EntityMapper {
                 final ConfigurationNode identifierConfigurationNode = modidConfigurationNode.getNode(identifier);
                 final String remapped = identifierConfigurationNode.getString();
 
-                if (add(modid, identifier, remapped) && (Configuration.DEBUG_MODE || Configuration.DEBUG_MAPPINGS_MODE)) {
+                if (add(modid, identifier, remapped) && (Configuration.DEBUG_ALL || Configuration.DEBUG_MAPPINGS)) {
                     Almura.LOGGER.info("Registered entity mapping [" + remapped + "] to [" + identifier + "] for mod [" + modid + "].");
                 }
             }

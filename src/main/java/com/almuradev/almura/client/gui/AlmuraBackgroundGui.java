@@ -6,20 +6,16 @@
 package com.almuradev.almura.client.gui;
 
 import com.almuradev.almura.client.gui.components.UIBackground;
+import com.almuradev.almurasdk.client.gui.SimpleGui;
 import net.malisis.core.renderer.animation.Animation;
 import net.malisis.core.renderer.animation.transformation.SizeTransform;
 import net.minecraft.client.Minecraft;
 
-public abstract class AlmuraBackgroundGui extends AlmuraGui {
+public abstract class AlmuraBackgroundGui extends SimpleGui {
 
     protected final UIBackground background = new UIBackground(this);
 
-    /**
-     * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}
-     *
-     * @param parent the {@link AlmuraGui} that we came from
-     */
-    public AlmuraBackgroundGui(AlmuraGui parent) {
+    public AlmuraBackgroundGui(SimpleGui parent) {
         super(parent);
 
         background.register(this);

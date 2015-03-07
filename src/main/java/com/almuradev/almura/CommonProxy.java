@@ -108,7 +108,7 @@ public class CommonProxy {
         for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
             try {
                 onPostCreate(entry.getValue());
-            } catch (IOException | IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -116,7 +116,7 @@ public class CommonProxy {
         for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
             try {
                 onLoadFinished(entry.getValue());
-            } catch (IOException | IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

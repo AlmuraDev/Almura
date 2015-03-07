@@ -69,11 +69,11 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         final UISelect chestDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
         chestDistanceDownMenu.setPosition(-15, padding * 2, Anchor.TOP | Anchor.RIGHT);
         chestDistanceDownMenu.setMaxExpandedWidth(30);
-        if (Configuration.CHEST_RENDER_DISTANCE == 16) {
+        if (Configuration.DISTANCE_RENDER_CHEST == 16) {
             chestDistanceDownMenu.select(0);
-        } else if (Configuration.CHEST_RENDER_DISTANCE == 32) {
+        } else if (Configuration.DISTANCE_RENDER_CHEST == 32) {
             chestDistanceDownMenu.select(1);
-        } else if (Configuration.CHEST_RENDER_DISTANCE == 64) {
+        } else if (Configuration.DISTANCE_RENDER_CHEST == 64) {
             chestDistanceDownMenu.select(2);
         }
         chestDistanceDownMenu.setName("select.chest");
@@ -83,11 +83,11 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         final UISelect signDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
         signDistanceDownMenu.setPosition(-15, chestDistanceDownMenu.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
         signDistanceDownMenu.setMaxExpandedWidth(30);
-        if (Configuration.SIGN_RENDER_DISTANCE == 16) {
+        if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 16) {
             signDistanceDownMenu.select(0);
-        } else if (Configuration.SIGN_RENDER_DISTANCE == 32) {
+        } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 32) {
             signDistanceDownMenu.select(1);
-        } else if (Configuration.SIGN_RENDER_DISTANCE == 64) {
+        } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 64) {
             signDistanceDownMenu.select(2);
         }
         signDistanceDownMenu.setName("select.sign");
@@ -97,11 +97,11 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         final UISelect itemFrameDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
         itemFrameDistanceDownMenu.setPosition(-15, signDistanceDownMenu.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
         itemFrameDistanceDownMenu.setMaxExpandedWidth(30);
-        if (Configuration.ITEM_FRAME_RENDER_DISTANCE == 16) {
+        if (Configuration.DISTANCE_RENDER_SIGN == 16) {
             itemFrameDistanceDownMenu.select(0);
-        } else if (Configuration.SIGN_RENDER_DISTANCE == 32) {
+        } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 32) {
             itemFrameDistanceDownMenu.select(1);
-        } else if (Configuration.SIGN_RENDER_DISTANCE == 64) {
+        } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 64) {
             itemFrameDistanceDownMenu.select(2);
         }
         itemFrameDistanceDownMenu.setName("select.itemFrame");
@@ -123,31 +123,31 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         // Create the debug mode checkbox
         debugModeCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Mode (All)");
         debugModeCheckBox.setPosition(padding, chatNotificationCheckBox.getY() + (padding * 4) + 40, Anchor.LEFT | Anchor.TOP);
-        debugModeCheckBox.setChecked(Configuration.DEBUG_MODE);
+        debugModeCheckBox.setChecked(Configuration.DEBUG_ALL);
         debugModeCheckBox.setName("checkbox.gui.debug_mode");
 
         // Create the debug languages checkbox
         debugLanguagesCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Languages");
         debugLanguagesCheckBox.setPosition(padding, debugModeCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
-        debugLanguagesCheckBox.setChecked(Configuration.DEBUG_LANGUAGES_MODE);
+        debugLanguagesCheckBox.setChecked(Configuration.DEBUG_LANGUAGES);
         debugLanguagesCheckBox.setName("checkbox.gui.debug_languages");
 
         // Create the debug packs checkbox
         debugPacksCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Content Loading");
         debugPacksCheckBox.setPosition(padding, debugLanguagesCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
-        debugPacksCheckBox.setChecked(Configuration.DEBUG_PACKS_MODE);
+        debugPacksCheckBox.setChecked(Configuration.DEBUG_PACKS);
         debugPacksCheckBox.setName("checkbox.gui.debug_packs");
 
         // Create the debug mappings checkbox
         debugMappingsCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Entity / Item Mappings");
         debugMappingsCheckBox.setPosition(padding, debugPacksCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
-        debugMappingsCheckBox.setChecked(Configuration.DEBUG_MAPPINGS_MODE);
+        debugMappingsCheckBox.setChecked(Configuration.DEBUG_MAPPINGS);
         debugMappingsCheckBox.setName("checkbox.gui.debug_mappings");
 
         // Create the debug recipes checkbox
         debugRecipesCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Recipe Loading");
         debugRecipesCheckBox.setPosition(padding, debugMappingsCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
-        debugRecipesCheckBox.setChecked(Configuration.DEBUG_RECIPES_MODE);
+        debugRecipesCheckBox.setChecked(Configuration.DEBUG_RECIPES);
         debugRecipesCheckBox.setName("checkbox.gui.debug_recipes");
 
         // Set Optimized Client Settings
@@ -244,13 +244,13 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         if (type.equalsIgnoreCase("select.itemFrame")) {
             switch (event.getNewValue().getLabel()) {
                 case "16":
-                    Configuration.setItemFrameRenderDistance(16);
+                    Configuration.setDistanceRenderSign(16);
                     break;
                 case "32":
-                    Configuration.setItemFrameRenderDistance(32);
+                    Configuration.setDistanceRenderSign(32);
                     break;
                 case "64":
-                    Configuration.setItemFrameRenderDistance(64);
+                    Configuration.setDistanceRenderSign(64);
                     break;
             }
         }

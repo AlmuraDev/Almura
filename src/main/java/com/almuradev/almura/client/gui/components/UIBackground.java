@@ -48,13 +48,13 @@ public class UIBackground extends UIImage {
             }
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(statePath, Filesystem.IMAGE_FILES_ONLY_FILTER)) {
                 for (Path path : stream) {
-                    if (Configuration.DEBUG_MODE) {
+                    if (Configuration.DEBUG_ALL) {
                         Almura.LOGGER.info("Filtered [" + path + "] for TimeState [" + state + "].");
                     }
                     backgrounds.add(new GuiTexture(Filesystem.registerTexture(Almura.MOD_ID, path.toString(), path)));
                 }
             } catch (IOException e) {
-                if (Configuration.DEBUG_MODE) {
+                if (Configuration.DEBUG_ALL) {
                     Almura.LOGGER.warn("Failed to filter background images (jpg/png) for TimeState [" + state
                             + "]. Using default texture for that TimeState.", e);
                 } else {

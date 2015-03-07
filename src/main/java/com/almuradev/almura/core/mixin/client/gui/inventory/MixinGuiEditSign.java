@@ -5,8 +5,10 @@
  */
 package com.almuradev.almura.core.mixin.client.gui.inventory;
 
-import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.extension.sign.IExtendedTileEntitySign;
+import com.almuradev.almurasdk.util.Color;
+import com.almuradev.almurasdk.util.Colors;
+import com.google.common.base.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiEditSign;
@@ -159,8 +161,8 @@ public abstract class MixinGuiEditSign extends GuiScreen {
             if (c == 16) {
                 continue;
             }
-            ChatColor value = ChatColor.getByCode(c);
-            String name = value.name().toLowerCase();
+            Optional<Color> value = Colors.getByCode(c);
+            String name = value.get().getName();
             boolean lastUnderscore = true;
             String parsedName = "";
             for (int chr = 0; chr < name.length(); chr++) {

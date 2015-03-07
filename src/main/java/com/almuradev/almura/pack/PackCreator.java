@@ -103,7 +103,7 @@ public class PackCreator {
                     PackUtil.parseStringToNumericList(Double.class, boundsConfigurationNode.getChild(PackKeys.COLLISION_BOX.getKey())
                             .getString(PackKeys.COLLISION_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
-            if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+            if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                 Almura.LOGGER.error("Model [" + name + "] has invalid " + PackKeys.COLLISION_BOX.getKey().toLowerCase() + " coordinates. " + e
                         .getMessage(), e);
             } else {
@@ -122,7 +122,7 @@ public class PackCreator {
             wireframeCoordinates = PackUtil.parseStringToNumericList(Double.class, boundsConfigurationNode.getChild(PackKeys.WIREFRAME_BOX.getKey())
                     .getString(PackKeys.WIREFRAME_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
-            if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+            if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                 Almura.LOGGER.error("Model [" + name + "] has invalid " + PackKeys.WIREFRAME_BOX.getKey().toLowerCase() + " coordinates. " + e
                         .getMessage(), e);
             } else {
@@ -165,7 +165,7 @@ public class PackCreator {
                 try {
                     coordinates.addAll(PackUtil.parseStringToNumericList(Double.class, rawCoordinate, 3));
                 } catch (NumberFormatException nfe) {
-                    if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                    if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                         Almura.LOGGER.error("Could not parse vertex in model [" + name + "]. Value: [" + rawCoordinate + "]", nfe);
                     } else {
                         Almura.LOGGER.warn("Could not parse vertex in model [" + name + "]. Value: [" + rawCoordinate + "]");
@@ -228,7 +228,7 @@ public class PackCreator {
                 modelContainer = mContainer;
             }
         }
-        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+        if (modelContainer == null && (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS)) {
             Almura.LOGGER
                     .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube.");
         }
@@ -284,7 +284,7 @@ public class PackCreator {
                 modelContainer = mContainer;
             }
         }
-        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+        if (modelContainer == null && (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS)) {
             Almura.LOGGER
                     .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic item.");
         }
@@ -331,7 +331,7 @@ public class PackCreator {
                 modelContainer = mContainer;
             }
         }
-        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+        if (modelContainer == null && (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS)) {
             Almura.LOGGER
                     .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube");
         }
@@ -419,7 +419,7 @@ public class PackCreator {
                 modelContainer = mContainer;
             }
         }
-        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+        if (modelContainer == null && (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS)) {
             Almura.LOGGER
                     .warn("Model [" + modelName + "] for seed in [" + crop.getIdentifier() + "] in pack [" + pack.getName()
                             + "] was not found. Will render as a basic item.");
@@ -462,7 +462,7 @@ public class PackCreator {
                 modelContainer = mContainer;
             }
         }
-        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+        if (modelContainer == null && (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS)) {
             Almura.LOGGER.warn("Model [" + modelName + "] in stage [" + id + "] in [" + name + "] in pack [" + pack.getName()
                     + "] was not found. Will render as a basic cube.");
         }
@@ -501,7 +501,7 @@ public class PackCreator {
                 modelContainer = mContainer;
             }
         }
-        if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+        if (modelContainer == null && (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS)) {
             Almura.LOGGER
                     .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube.");
         }
@@ -580,7 +580,7 @@ public class PackCreator {
                         modelContainer = mContainer;
                     }
                 }
-                if (modelContainer == null && (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE)) {
+                if (modelContainer == null && (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS)) {
                     Almura.LOGGER
                             .warn("Model [" + modelName + "] for state [" + rawState.toUpperCase() + "] in [" + name + "] in pack [" + pack.getName()
                                     + "] was not found. Will render as a basic cube.");
@@ -610,7 +610,7 @@ public class PackCreator {
             try {
                 id = Integer.parseInt(entry.getKey());
             } catch (NumberFormatException e) {
-                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                     Almura.LOGGER
                             .error("Recipe id [" + entry.getKey() + "] in [" + name + "] in pack [" + pack.getName() + "] is not a valid number.", e);
                 } else {
@@ -633,7 +633,7 @@ public class PackCreator {
                         break;
                 }
             } catch (UnknownRecipeTypeException | InvalidRecipeException | DuplicateRecipeException e) {
-                if (Configuration.DEBUG_MODE || Configuration.DEBUG_PACKS_MODE) {
+                if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                     Almura.LOGGER.error(e.getMessage(), e);
                 } else {
                     Almura.LOGGER.warn(e.getMessage());

@@ -18,6 +18,7 @@ import com.almuradev.almura.client.renderer.accessories.type.Sunglasses;
 import com.almuradev.almura.client.renderer.accessories.type.Tail;
 import com.almuradev.almura.client.renderer.accessories.type.TopHat;
 import com.almuradev.almura.client.renderer.accessories.type.Wings;
+import com.almuradev.almurasdk.FileSystem;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.minecraft.client.model.ModelBase;
@@ -55,8 +56,8 @@ public class AccessoryManager {
         register("halo", Halo.class);
 
         try {
-            for (Path path : Files.newDirectoryStream(Filesystem.CONFIG_ACCESSORIES_PATH, Filesystem.IMAGE_FILES_ONLY_FILTER)) {
-                Filesystem.registerTexture(Almura.MOD_ID, "accessory_" + path.getFileName().toString().split(".png")[0].split(".jpg")[0], path);
+            for (Path path : Files.newDirectoryStream(Filesystem.CONFIG_ACCESSORIES_PATH, FileSystem.FILTER_IMAGE_FILES_ONLY)) {
+                FileSystem.registerTexture(Almura.MOD_ID, "accessory_" + path.getFileName().toString().split(".png")[0].split(".jpg")[0], path);
             }
         } catch (IOException e) {
             e.printStackTrace();
