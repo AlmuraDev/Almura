@@ -86,7 +86,7 @@ public class ClientProxy extends CommonProxy {
             if (Configuration.FIRST_LAUNCH) {
                 Configuration.setOptimizedConfig();
                 try {
-                    Configuration.setFirstLaunch(true);
+                    Configuration.setFirstLaunch(false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

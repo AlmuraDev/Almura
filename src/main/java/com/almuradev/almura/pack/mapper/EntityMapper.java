@@ -8,7 +8,6 @@ package com.almuradev.almura.pack.mapper;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
-import com.flowpowered.cerealization.config.IOException;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -16,9 +15,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -112,13 +113,13 @@ public class EntityMapper {
     }
 
     public static void load() throws IOException {
-        final YamlConfiguration reader = new YamlConfiguration(Filesystem.CONFIG_ENTITY_MAPPINGS_PATH.toFile());
-        reader.load();
+        final ConfigurationNode root = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_ENTITY_MAPPINGS_PATH.toFile()).build().load();
 
-        for (String modid : reader.getKeys(false)) {
-            final ConfigurationNode modidConfigurationNode = reader.getNode(modid);
+        for (Map.Entry<Object, ? extends ConfigurationNode> modidEntry : root.getChildrenMap().entrySet()) {
+            final String modid = (String) modidEntry.getKey();
 
-            for (String identifier : modidConfigurationNode.getKeys(false)) {
+            for (Map.Entry<Object, ? extends ConfigurationNode> identifierEntry : modidEntry.getValue().getChildrenMap().entrySet()) {
+                final String identifier = (String) identifierEntry.getKey();
                 Optional<Class<? extends Entity>> exists;
 
                 if ("minecraft".equalsIgnoreCase(modid) && identifier.equalsIgnoreCase("Player")) {
@@ -131,8 +132,7 @@ public class EntityMapper {
                     Almura.LOGGER.warn("Identifier [" + identifier + "] is not a registered entity for mod [" + modid + "].");
                 }
 
-                final ConfigurationNode identifierConfigurationNode = modidConfigurationNode.getNode(identifier);
-                final String remapped = identifierConfigurationNode.getString();
+                final String remapped = identifierEntry.getValue().getString();
 
                 if (add(modid, identifier, remapped) && (Configuration.DEBUG_ALL || Configuration.DEBUG_MAPPINGS)) {
                     Almura.LOGGER.info("Registered entity mapping [" + remapped + "] to [" + identifier + "] for mod [" + modid + "].");

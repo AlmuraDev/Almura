@@ -6,7 +6,6 @@
 package com.almuradev.almura.core.mixin.client.settings;
 
 import com.almuradev.almura.Configuration;
-import com.flowpowered.cerealization.config.IOException;
 import net.minecraft.client.settings.GameSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.IOException;
 import java.util.List;
 
 @Mixin(GameSettings.class)

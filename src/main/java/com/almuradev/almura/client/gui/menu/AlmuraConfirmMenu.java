@@ -5,49 +5,42 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
-import com.almuradev.almura.client.gui.AlmuraGui;
-import com.almuradev.almura.client.gui.components.UIForm;
+import com.almuradev.almurasdk.client.gui.SimpleGui;
+import com.almuradev.almurasdk.client.gui.components.UIForm;
+import com.almuradev.almurasdk.util.Colors;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 
-import java.awt.Color;
-
 public class AlmuraConfirmMenu extends AlmuraBackgroundGui {
 
     private String message1, message2, title;
 
-    /**
-     * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
-     *
-     * @param parent the {@link AlmuraGui} that we came from
-     */
-    public AlmuraConfirmMenu(AlmuraGui parent, String message1, String message2, String title) {
+    public AlmuraConfirmMenu(SimpleGui parent, String message1, String message2, String title) {
         super(parent);
         this.message1 = message1;
         this.message2 = message2;
         this.title = title;
-        setup();
+        buildGui();
     }
 
     @Override
-    protected void setup() {
+    protected void buildGui() {
         // Create the form
         final UIForm form = new UIForm(this, 200, 100, title);
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the message label
-        final UILabel messageLabel1 = new UILabel(this, ChatColor.AQUA + message1);
+        final UILabel messageLabel1 = new UILabel(this, Colors.AQUA + message1);
         messageLabel1.setFontScale(1.0F);
-        messageLabel1.setColor(Color.white.getRGB());
+        messageLabel1.setColor(Colors.WHITE.getGuiColorCode());
         messageLabel1.setPosition(0, -5, Anchor.CENTER | Anchor.MIDDLE);
 
-        final UILabel messageLabel2 = new UILabel(this, ChatColor.WHITE + message2);
+        final UILabel messageLabel2 = new UILabel(this, Colors.WHITE + message2);
         messageLabel2.setFontScale(1.0F);
-        messageLabel2.setColor(Color.white.getRGB());
+        messageLabel2.setColor(Colors.WHITE.getGuiColorCode());
         messageLabel2.setPosition(0, +5, Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the close button

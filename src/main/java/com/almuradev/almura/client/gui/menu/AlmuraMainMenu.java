@@ -7,10 +7,10 @@ package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.client.ChatColor;
-import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
-import com.almuradev.almura.client.gui.AlmuraGui;
-import com.almuradev.almura.client.gui.components.UIForm;
+import com.almuradev.almurasdk.FileSystem;
+import com.almuradev.almurasdk.client.gui.SimpleGui;
+import com.almuradev.almurasdk.client.gui.components.UIForm;
+import com.almuradev.almurasdk.util.Colors;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -23,30 +23,25 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 
-public class AlmuraMainMenu extends AlmuraBackgroundGui {
+public class AlmuraMainMenu extends SimpleGui {
 
     protected static final ResourceLocation ALMURA_LOGO_LOCATION;
 
     static {
         try {
-            ALMURA_LOGO_LOCATION = Filesystem.registerTexture(Almura.MOD_ID, "textures/gui/almura.png", Filesystem.CONFIG_GUI_LOGO_PATH);
+            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/almura.png", Filesystem.CONFIG_GUI_LOGO_PATH);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load logo.", e);
         }
     }
 
-    /**
-     * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
-     *
-     * @param parent the {@link AlmuraGui} that we came from
-     */
-    public AlmuraMainMenu(AlmuraGui parent) {
+    public AlmuraMainMenu(SimpleGui parent) {
         super(parent);
-        setup();
+        buildGui();
     }
 
     @Override
-    protected void setup() {
+    protected void buildGui() {
         // Create the form
         final UIForm form = new UIForm(this, 200, 225, "Almura", false);
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
@@ -59,19 +54,19 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         final int padding = 4;
 
         // Create the build label
-        final UILabel buildLabel = new UILabel(this, ChatColor.GRAY + Almura.GUI_VERSION);
+        final UILabel buildLabel = new UILabel(this, Colors.GRAY + Almura.GUI_VERSION);
         buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
         buildLabel.setFontScale(0.65f);
 
         // Create the singleplayer button
-        final UIButton singleplayerButton = new UIButton(this, ChatColor.AQUA + "Singleplayer");
+        final UIButton singleplayerButton = new UIButton(this, Colors.AQUA + "Singleplayer");
         singleplayerButton.setSize(180, 16);
         singleplayerButton.setPosition(0, getPaddedY(logoImage, padding * 3), Anchor.CENTER | Anchor.TOP);
         singleplayerButton.setName("button.singleplayer");
         singleplayerButton.register(this);
 
         // Create the multiplayer button
-        final UIButton multiplayerButton = new UIButton(this, ChatColor.AQUA + "Multiplayer");
+        final UIButton multiplayerButton = new UIButton(this, Colors.AQUA + "Multiplayer");
         multiplayerButton.setSize(180, 16);
         multiplayerButton.setPosition(0, getPaddedY(singleplayerButton, padding), Anchor.CENTER | Anchor.TOP);
         multiplayerButton.setName("button.multiplayer");
@@ -106,12 +101,12 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         quitButton.register(this);
 
         // Create the copyright label
-        final UILabel copyrightLabel = new UILabel(this, ChatColor.GRAY + "Copyright AlmuraDev 2012 - 2015 ");
+        final UILabel copyrightLabel = new UILabel(this, Colors.GRAY + "Copyright AlmuraDev 2012 - 2015 ");
         copyrightLabel.setPosition(0, -9, Anchor.CENTER | Anchor.BOTTOM);
         copyrightLabel.setFontScale(0.7f);
 
         // Create the trademark label
-        final UILabel trademarkLabel = new UILabel(this, ChatColor.GRAY + "Minecraft is a registered trademark of Mojang AB");
+        final UILabel trademarkLabel = new UILabel(this, Colors.GRAY + "Minecraft is a registered trademark of Mojang AB");
         trademarkLabel.setPosition(0, -1, Anchor.CENTER | Anchor.BOTTOM);
         trademarkLabel.setFontScale(0.7f);
 
@@ -122,7 +117,7 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         mc.shutdown();
     }
 

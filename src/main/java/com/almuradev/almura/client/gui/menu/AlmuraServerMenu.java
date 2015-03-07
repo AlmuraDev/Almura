@@ -6,10 +6,10 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
-import com.almuradev.almura.client.gui.AlmuraGui;
-import com.almuradev.almura.client.gui.components.UIForm;
+import com.almuradev.almurasdk.client.gui.SimpleGui;
+import com.almuradev.almurasdk.client.gui.components.UIForm;
+import com.almuradev.almurasdk.util.Colors;
 import com.almuradev.almurasdk.util.Query;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -49,18 +49,13 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
     private UILabel liveServerOnline;
     private UILabel devServerOnline;
 
-    /**
-     * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
-     *
-     * @param parent the {@link AlmuraGui} that we came from
-     */
-    public AlmuraServerMenu(AlmuraGui parent) {
+    public AlmuraServerMenu(SimpleGui parent) {
         super(parent);
-        setup();
+        buildGui();
     }
 
     @Override
-    protected void setup() {
+    protected void buildGui() {
         // Create the form
         final UIForm form = new UIForm(this, 200, 225, "Multiplayer");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
@@ -71,7 +66,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         logoImage.setSize(65, 95);
 
         // Create the build label
-        final UILabel buildLabel = new UILabel(this, ChatColor.GRAY + Almura.GUI_VERSION);
+        final UILabel buildLabel = new UILabel(this, Colors.GRAY + Almura.GUI_VERSION);
         buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
         buildLabel.setFontScale(0.65f);
 
@@ -85,16 +80,16 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         almuraLiveButton.setDisabled(true);
         almuraLiveButton.register(this);
 
-        UILabel liveServerTitle = new UILabel(this, ChatColor.WHITE + "Public Server : ");
+        UILabel liveServerTitle = new UILabel(this, Colors.WHITE + "Public Server : ");
         liveServerTitle.setPosition(20, getPaddedY(logoImage, padding) + 14, Anchor.LEFT | Anchor.TOP);
 
-        liveServerOnline = new UILabel(this, ChatColor.YELLOW + "Updating...");
+        liveServerOnline = new UILabel(this, Colors.YELLOW + "Updating...");
         liveServerOnline.setPosition(85, liveServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
 
-        UILabel devServerTitle = new UILabel(this, ChatColor.WHITE + "Dev Server : ");
+        UILabel devServerTitle = new UILabel(this, Colors.WHITE + "Dev Server : ");
         devServerTitle.setPosition(26, getPaddedY(almuraLiveButton, padding) + 8, Anchor.LEFT | Anchor.TOP);
 
-        devServerOnline = new UILabel(this, ChatColor.YELLOW + "Updating...");
+        devServerOnline = new UILabel(this, Colors.YELLOW + "Updating...");
         devServerOnline.setPosition(85, devServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
 
         // Create the beta Almura button
@@ -128,7 +123,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         QUERIER.interrupt();
         super.close();
     }
@@ -158,15 +153,15 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
             if (QUERY_LIVE_SERVER.pingServer()) {
                 QUERY_LIVE_SERVER.sendQuery();
                 if (QUERY_LIVE_SERVER.getPlayers() == null || QUERY_LIVE_SERVER.getMaxPlayers() == null) {
-                    liveServerOnline.setText(ChatColor.YELLOW + "Restarting...");
+                    liveServerOnline.setText(Colors.YELLOW + "Restarting...");
                 } else {
                     liveServerOnline
-                            .setText(ChatColor.GREEN + "Online " + ChatColor.BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER
+                            .setText(Colors.GREEN + "Online " + Colors.BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER
                                     .getMaxPlayers() + ")");
                 }
                 almuraLiveButton.setDisabled(false);
             } else {
-                liveServerOnline.setText(ChatColor.RED + "Offline");
+                liveServerOnline.setText(Colors.RED + "Offline");
                 almuraLiveButton.setDisabled(true);
             }
 
@@ -174,15 +169,15 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
             if (QUERY_DEV_SERVER.pingServer()) {
                 QUERY_DEV_SERVER.sendQuery();
                 if (QUERY_DEV_SERVER.getPlayers() == null || QUERY_DEV_SERVER.getMaxPlayers() == null) {
-                    devServerOnline.setText(ChatColor.YELLOW + "Restarting...");
+                    devServerOnline.setText(Colors.YELLOW + "Restarting...");
                 } else {
                     devServerOnline
-                            .setText(ChatColor.GREEN + "Online " + ChatColor.BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER
+                            .setText(Colors.GREEN + "Online " + Colors.BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER
                                     .getMaxPlayers() + ")");
                 }
                 almuraDevButton.setDisabled(false);
             } else {
-                devServerOnline.setText(ChatColor.RED + "Offline");
+                devServerOnline.setText(Colors.RED + "Offline");
                 almuraDevButton.setDisabled(true);
             }
 

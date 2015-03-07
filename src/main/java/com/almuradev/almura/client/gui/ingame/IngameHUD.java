@@ -6,9 +6,10 @@
 package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.client.ChatColor;
-import com.almuradev.almura.client.gui.AlmuraGui;
 import com.almuradev.almura.client.gui.components.UIPropertyBar;
+import com.almuradev.almurasdk.client.gui.SimpleGui;
+import com.almuradev.almurasdk.util.Color;
+import com.almuradev.almurasdk.util.Colors;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -25,14 +26,15 @@ import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.awt.Color;
 import java.util.Objects;
 
-public class IngameHUD extends AlmuraGui {
+public class IngameHUD extends SimpleGui {
 
-    private static final Color LIGHT_GREEN = new Color(0f, 1f, 0f, 1f);
-    private static final Color LIGHT_ORANGE = new Color(0.8039f, 0.6784f, 0f, 1f);
-    private static final Color RED = new Color(0.69f, 0.09f, 0.12f, 1f);
+    private static final Color LIGHT_GREEN = new Color("light_green", 65280);
+    private static final Color ORANGE = new Color("orange", 16753920);
+    private static final Color LIGHT_ORANGE = new Color("light_orange", 13413376);
+    private static final Color RED = new Color("red", 11474462);
+    private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
     public static boolean UPDATES_ENABLED = true;
     public UILabel worldDisplay, playerTitle, playerMode, playerCurrency;
     public UILabel serverCount, almuraTitle;
@@ -49,14 +51,13 @@ public class IngameHUD extends AlmuraGui {
     private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE, playerCount = Integer.MAX_VALUE;
 
     public IngameHUD() {
-        super(null);
-        setup();
+        buildGui();
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
-    protected void setup() {
+    protected void buildGui() {
         guiscreenBackground = false;
 
         // Construct Hud with all elements
@@ -84,16 +85,16 @@ public class IngameHUD extends AlmuraGui {
         // Player Display Name
         playerCurrency = new UILabel(this, " ");
         playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 4, 2, Anchor.LEFT | Anchor.TOP);
-        playerCurrency.setColor(Color.ORANGE.getRGB());
+        playerCurrency.setColor(ORANGE.getGuiColorCode());
         playerCurrency.setSize(7, 7);
 
         // Health Property
-        healthProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_HEART, ICON_BAR);
+        healthProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_HEART, ICON_BAR);
         healthProperty.setPosition(5, 14, Anchor.LEFT | Anchor.TOP);
         healthProperty.setSize(105, 7);
 
         // Armor Property
-        armorProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_ARMOR, ICON_BAR);
+        armorProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_ARMOR, ICON_BAR);
         armorProperty.setPosition(5, 24, Anchor.LEFT | Anchor.TOP);
         armorProperty.setSize(105, 7);
 
@@ -107,19 +108,19 @@ public class IngameHUD extends AlmuraGui {
         almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
 
         // Hunger Property
-        hungerProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_HUNGER, ICON_BAR);
+        hungerProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_HUNGER, ICON_BAR);
         hungerProperty.setPosition(-2, 14, Anchor.CENTER | Anchor.TOP);
         hungerProperty.setSize(105, 7);
 
         // Stamina Property
-        staminaProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_STAMINA, ICON_BAR);
+        staminaProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_STAMINA, ICON_BAR);
         staminaProperty.setPosition(-2, 24, Anchor.CENTER | Anchor.TOP);
         staminaProperty.setSize(105, 7);
 
         //////////////////////////////// RIGHT COLUMN //////////////////////////////////////
 
         // Map Image
-        mapImage = new UIImage(this, TEXTURE_DEFAULT, ICON_MAP);
+        mapImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_MAP);
         mapImage.setPosition(-205, 4, Anchor.RIGHT | Anchor.TOP);
         mapImage.setSize(8, 8);
 
@@ -131,7 +132,7 @@ public class IngameHUD extends AlmuraGui {
         playerCoords.setFontScale(0.8F);
 
         // World Image
-        worldImage = new UIImage(this, TEXTURE_DEFAULT, ICON_WORLD);
+        worldImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_WORLD);
         worldImage.setPosition(-45, 4, Anchor.RIGHT | Anchor.TOP);
         worldImage.setSize(8, 8);
 
@@ -143,7 +144,7 @@ public class IngameHUD extends AlmuraGui {
         worldDisplay.setFontScale(0.8F);
 
         // Player Image
-        playerImage = new UIImage(this, TEXTURE_DEFAULT, ICON_PLAYER);
+        playerImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_PLAYER);
         playerImage.setPosition(-125, 13, Anchor.RIGHT | Anchor.TOP);
         playerImage.setSize(8, 8);
 
@@ -154,7 +155,7 @@ public class IngameHUD extends AlmuraGui {
         serverCount.setFontScale(0.8F);
 
         // Compass Image
-        final UIImage compassImage = new UIImage(this, TEXTURE_DEFAULT, ICON_COMPASS);
+        final UIImage compassImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_COMPASS);
         compassImage.setPosition(-73, 13, Anchor.RIGHT | Anchor.TOP);
         compassImage.setSize(8, 8);
 
@@ -166,7 +167,7 @@ public class IngameHUD extends AlmuraGui {
         playerCompass.setFontScale(0.8F);
 
         // Clock Image
-        final UIImage clockImage = new UIImage(this, TEXTURE_DEFAULT, ICON_CLOCK);
+        final UIImage clockImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_CLOCK);
         clockImage.setPosition(-25, 12, Anchor.RIGHT | Anchor.TOP);
         clockImage.setSize(7, 7);
 
@@ -178,10 +179,10 @@ public class IngameHUD extends AlmuraGui {
         worldTime.setFontScale(0.8F);
 
         // XP Property
-        xpProperty = new UIPropertyBar(this, TEXTURE_DEFAULT, ICON_XP, ICON_BAR);
+        xpProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_XP, ICON_BAR);
         xpProperty.setPosition(-27, 23, Anchor.RIGHT | Anchor.TOP);
         xpProperty.setSize(105, 7);
-        xpProperty.setColor(LIGHT_GREEN.getRGB());
+        xpProperty.setColor(LIGHT_GREEN.getGuiColorCode());
 
         // XP Level Label
         xpLevel = new UILabel(this, "1");
@@ -241,11 +242,11 @@ public class IngameHUD extends AlmuraGui {
             playerHealth = mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth();
 
             if (playerHealth > 0.6) {
-                healthProperty.setColor(LIGHT_GREEN.getRGB());
+                healthProperty.setColor(LIGHT_GREEN.getGuiColorCode());
             } else if (playerHealth >= 0.3) {
-                healthProperty.setColor(LIGHT_ORANGE.getRGB());
+                healthProperty.setColor(LIGHT_ORANGE.getGuiColorCode());
             } else {
-                healthProperty.setColor(RED.getRGB());
+                healthProperty.setColor(RED.getGuiColorCode());
             }
             healthProperty.setAmount(playerHealth);
         }
@@ -260,11 +261,11 @@ public class IngameHUD extends AlmuraGui {
                 armorProperty.setVisible(false);
             }
             if (playerArmor > 0.6) {
-                armorProperty.setColor(LIGHT_GREEN.getRGB());
+                armorProperty.setColor(LIGHT_GREEN.getGuiColorCode());
             } else if (playerArmor >= 0.3) {
-                armorProperty.setColor(LIGHT_ORANGE.getRGB());
+                armorProperty.setColor(LIGHT_ORANGE.getGuiColorCode());
             } else {
-                armorProperty.setColor(RED.getRGB());
+                armorProperty.setColor(RED.getGuiColorCode());
             }
             armorProperty.setAmount(playerArmor);
         }
@@ -279,11 +280,11 @@ public class IngameHUD extends AlmuraGui {
                 hungerProperty.setVisible(false);
             }
             if (playerHunger >= 0.6) {
-                hungerProperty.setColor(LIGHT_GREEN.getRGB());
+                hungerProperty.setColor(LIGHT_GREEN.getGuiColorCode());
             } else if (playerHunger >= 0.3) {
-                hungerProperty.setColor(LIGHT_ORANGE.getRGB());
+                hungerProperty.setColor(LIGHT_ORANGE.getGuiColorCode());
             } else {
-                hungerProperty.setColor(RED.getRGB());
+                hungerProperty.setColor(RED.getGuiColorCode());
             }
             hungerProperty.setAmount(playerHunger);
         }
@@ -299,11 +300,11 @@ public class IngameHUD extends AlmuraGui {
             }
 
             if (playerStamina >= 0.6) {
-                staminaProperty.setColor(LIGHT_GREEN.getRGB());
+                staminaProperty.setColor(LIGHT_GREEN.getGuiColorCode());
             } else if (playerStamina >= 0.3) {
-                staminaProperty.setColor(LIGHT_ORANGE.getRGB());
+                staminaProperty.setColor(LIGHT_ORANGE.getGuiColorCode());
             } else {
-                staminaProperty.setColor(RED.getRGB());
+                staminaProperty.setColor(RED.getGuiColorCode());
             }
             staminaProperty.setAmount(playerStamina);
         }
@@ -423,13 +424,13 @@ public class IngameHUD extends AlmuraGui {
     public String getCompass() {
         int position = (int) ((((mc.thePlayer.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 16);
 
-        return "" + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
-                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
-                + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
-                + ChatColor.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
-                + ChatColor.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
-                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
-                + ChatColor.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
+        return "" + Colors.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
+                + Colors.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
+                + Colors.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
+                + Colors.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
+                + Colors.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
+                + Colors.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
+                + Colors.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
     }
 
     public String getTime() {

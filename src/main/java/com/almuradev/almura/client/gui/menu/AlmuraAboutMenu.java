@@ -5,32 +5,25 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import com.almuradev.almura.client.ChatColor;
 import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
-import com.almuradev.almura.client.gui.AlmuraGui;
-import com.almuradev.almura.client.gui.components.UIForm;
+import com.almuradev.almurasdk.client.gui.SimpleGui;
+import com.almuradev.almurasdk.client.gui.components.UIForm;
+import com.almuradev.almurasdk.util.Colors;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 
-import java.awt.Color;
-
 public class AlmuraAboutMenu extends AlmuraBackgroundGui {
 
-    /**
-     * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
-     *
-     * @param parent the {@link AlmuraGui} that we came from
-     */
-    public AlmuraAboutMenu(AlmuraGui parent) {
+    public AlmuraAboutMenu(SimpleGui parent) {
         super(parent);
-        setup();
+        buildGui();
     }
 
     @Override
-    protected void setup() {
+    protected void buildGui() {
         // Create the form
         final UIForm form = new UIForm(this, 300, 225, "About");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
@@ -43,20 +36,20 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
                 "Almura 2.0 began June 1st, 2014.  Based on the idea that we could finally get away from the broken and abandoned Spoutcraft client"
                         + " a brilliant developer came to Almura and said,"
                         + " \"Why don't you get rid of that out of date client and move into the present?\" This brilliant developer's name is "
-                        + ChatColor.AQUA + "Zidane" + ChatColor.RESET + ". Along with him and another outstanding developer " + ChatColor.AQUA
+                        + Colors.AQUA + "Zidane" + Colors.RESET + ". Along with him and another outstanding developer " + Colors.AQUA
                         + "Grinch"
-                        + ChatColor.RESET + ","
-                        + " Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + ChatColor.GOLD
+                        + Colors.RESET + ","
+                        + " Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + Colors.GOLD
                         + "Dockter's"
-                        + ChatColor.RESET + " content and gui abilities, built, in our opinion, one of the best content loading /"
-                        + " gui enabled Minecraft experiences ever conceived. \r \r" + ChatColor.LIGHT_PURPLE + "More info to follow..."
-                        + ChatColor.RESET
+                        + Colors.RESET + " content and gui abilities, built, in our opinion, one of the best content loading /"
+                        + " gui enabled Minecraft experiences ever conceived. \r \r" + Colors.LIGHT_PURPLE + "More info to follow..."
+                        + Colors.RESET
                         + "";
 
         aboutUsLabel.setSize(290, form.getContentContainer().getHeight() - 30);
         aboutUsLabel.setPosition(0, 5, Anchor.CENTER);
         aboutUsLabel.setText(fieldText);
-        aboutUsLabel.setTextColor(Color.WHITE.getRGB());
+        aboutUsLabel.setTextColor(Colors.WHITE.getGuiColorCode());
         aboutUsLabel.setName("mline.aboutus");
 
         // Create the mods button

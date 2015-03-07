@@ -6,11 +6,9 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.client.ChatColor;
-import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
-import com.almuradev.almura.client.gui.AlmuraGui;
-import com.almuradev.almura.client.gui.components.UIForm;
-import com.flowpowered.cerealization.config.IOException;
+import com.almuradev.almurasdk.client.gui.SimpleGui;
+import com.almuradev.almurasdk.client.gui.components.UIForm;
+import com.almuradev.almurasdk.util.Colors;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -18,25 +16,21 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 
+import java.io.IOException;
 import java.util.Arrays;
 
-public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
+public class AlmuraConfigurationMenu extends SimpleGui {
 
     private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
             debugMappingsCheckBox, debugRecipesCheckBox, chatNotificationCheckBox;
 
-    /**
-     * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
-     *
-     * @param parent the {@link AlmuraGui} that we came from
-     */
-    public AlmuraConfigurationMenu(AlmuraGui parent) {
+    public AlmuraConfigurationMenu(SimpleGui parent) {
         super(parent);
-        setup();
+        buildGui();
     }
 
     @Override
-    protected void setup() {
+    protected void buildGui() {
         // Create the form
         final UIForm form = new UIForm(this, 300, 225, "Configuration");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
@@ -44,25 +38,25 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         final int padding = 4;
 
         // Create the almura GUI checkbox
-        almuraGuiCheckBox = new UICheckBox(this, ChatColor.WHITE + "Enhanced In-Game HUD");
+        almuraGuiCheckBox = new UICheckBox(this, Colors.WHITE + "Enhanced In-Game HUD");
         almuraGuiCheckBox.setPosition(padding, padding * 2, Anchor.LEFT | Anchor.TOP);
         almuraGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_GUI);
         almuraGuiCheckBox.setName("checkbox.gui.enhanced_gui");
         almuraGuiCheckBox.register(this);
 
-        residenceHudCheckBox = new UICheckBox(this, ChatColor.WHITE + "Residence HUD");
+        residenceHudCheckBox = new UICheckBox(this, Colors.WHITE + "Residence HUD");
         residenceHudCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         residenceHudCheckBox.setChecked(Configuration.DISPLAY_RESIDENCE_HUD);
         residenceHudCheckBox.setName("checkbox.gui.residence_hud");
         residenceHudCheckBox.register(this);
 
-        final UILabel chestRenderDistance = new UILabel(this, ChatColor.WHITE + "Chest Distance:");
+        final UILabel chestRenderDistance = new UILabel(this, Colors.WHITE + "Chest Distance:");
         chestRenderDistance.setPosition(-55, padding * 2, Anchor.RIGHT | Anchor.TOP);
 
-        final UILabel signRenderDistance = new UILabel(this, ChatColor.WHITE + "Sign Distance:");
+        final UILabel signRenderDistance = new UILabel(this, Colors.WHITE + "Sign Distance:");
         signRenderDistance.setPosition(-55, almuraGuiCheckBox.getY() + (padding * 4), Anchor.RIGHT | Anchor.TOP);
 
-        final UILabel itemFrameRenderDistance = new UILabel(this, ChatColor.WHITE + "Item Frame Distance:");
+        final UILabel itemFrameRenderDistance = new UILabel(this, Colors.WHITE + "Item Frame Distance:");
         itemFrameRenderDistance.setPosition(-55, signRenderDistance.getY() + (padding * 4), Anchor.RIGHT | Anchor.TOP);
 
         // Chest Render Distance
@@ -108,44 +102,44 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         itemFrameDistanceDownMenu.register(this);
 
         // Create the almura GUI checkbox
-        almuraDebugGuiCheckBox = new UICheckBox(this, ChatColor.WHITE + "Enhanced F3 Debug Menu");
+        almuraDebugGuiCheckBox = new UICheckBox(this, Colors.WHITE + "Enhanced F3 Debug Menu");
         almuraDebugGuiCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4 + 15), Anchor.LEFT | Anchor.TOP);
         almuraDebugGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_DEBUG);
         almuraDebugGuiCheckBox.setName("checkbox.gui.enhanced_debug");
         almuraDebugGuiCheckBox.register(this);
 
         // Chat Notifications Checkbox
-        chatNotificationCheckBox = new UICheckBox(this, ChatColor.WHITE + "Chat Notifications");
+        chatNotificationCheckBox = new UICheckBox(this, Colors.WHITE + "Chat Notifications");
         chatNotificationCheckBox.setPosition(padding, almuraDebugGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         chatNotificationCheckBox.setChecked(Configuration.CHAT_NOTIFICATIONS);
         chatNotificationCheckBox.setName("checkbox.gui.chat_notification");
 
         // Create the debug mode checkbox
-        debugModeCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Mode (All)");
+        debugModeCheckBox = new UICheckBox(this, Colors.WHITE + "Debug Mode (All)");
         debugModeCheckBox.setPosition(padding, chatNotificationCheckBox.getY() + (padding * 4) + 40, Anchor.LEFT | Anchor.TOP);
         debugModeCheckBox.setChecked(Configuration.DEBUG_ALL);
         debugModeCheckBox.setName("checkbox.gui.debug_mode");
 
         // Create the debug languages checkbox
-        debugLanguagesCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Languages");
+        debugLanguagesCheckBox = new UICheckBox(this, Colors.WHITE + "Debug Languages");
         debugLanguagesCheckBox.setPosition(padding, debugModeCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugLanguagesCheckBox.setChecked(Configuration.DEBUG_LANGUAGES);
         debugLanguagesCheckBox.setName("checkbox.gui.debug_languages");
 
         // Create the debug packs checkbox
-        debugPacksCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Content Loading");
+        debugPacksCheckBox = new UICheckBox(this, Colors.WHITE + "Debug Content Loading");
         debugPacksCheckBox.setPosition(padding, debugLanguagesCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugPacksCheckBox.setChecked(Configuration.DEBUG_PACKS);
         debugPacksCheckBox.setName("checkbox.gui.debug_packs");
 
         // Create the debug mappings checkbox
-        debugMappingsCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Entity / Item Mappings");
+        debugMappingsCheckBox = new UICheckBox(this, Colors.WHITE + "Debug Entity / Item Mappings");
         debugMappingsCheckBox.setPosition(padding, debugPacksCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugMappingsCheckBox.setChecked(Configuration.DEBUG_MAPPINGS);
         debugMappingsCheckBox.setName("checkbox.gui.debug_mappings");
 
         // Create the debug recipes checkbox
-        debugRecipesCheckBox = new UICheckBox(this, ChatColor.WHITE + "Debug Recipe Loading");
+        debugRecipesCheckBox = new UICheckBox(this, Colors.WHITE + "Debug Recipe Loading");
         debugRecipesCheckBox.setPosition(padding, debugMappingsCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugRecipesCheckBox.setChecked(Configuration.DEBUG_RECIPES);
         debugRecipesCheckBox.setName("checkbox.gui.debug_recipes");
@@ -213,46 +207,47 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
     @Subscribe
     public void onSelection(UISelect.SelectEvent event) {
         String type = event.getComponent().getName().toLowerCase();
-        if (type.equalsIgnoreCase("select.sign")) {
-            switch (event.getNewValue().getLabel()) {
-                case "16":
-                    Configuration.setSignRenderDistance(16);
-                    break;
-                case "32":
-                    Configuration.setSignRenderDistance(32);
-                    break;
-                case "64":
-                    Configuration.setSignRenderDistance(64);
-                    break;
-            }
-        }
+        switch (event.getComponent().getName()) {
+            case "select.chest":
+                switch (event.getNewValue().getLabel()) {
+                    case "16":
+                        Configuration.setChestRenderDistance(16);
+                        break;
+                    case "32":
+                        Configuration.setChestRenderDistance(32);
+                        break;
+                    case "64":
+                        Configuration.setChestRenderDistance(64);
+                        break;
+                }
+                break;
+            case "select.itemframe":
+                switch (event.getNewValue().getLabel()) {
+                    case "16":
+                        Configuration.setItemFrameRenderDistance(16);
+                        break;
+                    case "32":
+                        Configuration.setItemFrameRenderDistance(32);
+                        break;
+                    case "64":
+                        Configuration.setItemFrameRenderDistance(64);
+                        break;
+                }
+                break;
+            case "select.sign":
+                switch (event.getNewValue().getLabel()) {
+                    case "16":
+                        Configuration.setSignRenderDistance(16);
+                        break;
+                    case "32":
+                        Configuration.setSignRenderDistance(32);
+                        break;
+                    case "64":
+                        Configuration.setSignRenderDistance(64);
+                        break;
+                }
+                break;
 
-        if (type.equalsIgnoreCase("select.chest")) {
-            switch (event.getNewValue().getLabel()) {
-                case "16":
-                    Configuration.setChestRenderDistance(16);
-                    break;
-                case "32":
-                    Configuration.setChestRenderDistance(32);
-                    break;
-                case "64":
-                    Configuration.setChestRenderDistance(64);
-                    break;
-            }
-        }
-
-        if (type.equalsIgnoreCase("select.itemFrame")) {
-            switch (event.getNewValue().getLabel()) {
-                case "16":
-                    Configuration.setDistanceRenderSign(16);
-                    break;
-                case "32":
-                    Configuration.setDistanceRenderSign(32);
-                    break;
-                case "64":
-                    Configuration.setDistanceRenderSign(64);
-                    break;
-            }
         }
     }
 }

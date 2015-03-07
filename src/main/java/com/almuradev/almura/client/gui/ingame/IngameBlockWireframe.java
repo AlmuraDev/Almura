@@ -5,9 +5,9 @@
  */
 package com.almuradev.almura.client.gui.ingame;
 
-import com.almuradev.almura.client.ChatColor;
-import com.almuradev.almura.client.gui.AlmuraGui;
-import com.almuradev.almura.client.gui.components.UIForm;
+import com.almuradev.almurasdk.client.gui.SimpleGui;
+import com.almuradev.almurasdk.client.gui.components.UIForm;
+import com.almuradev.almurasdk.util.Colors;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 import java.text.DecimalFormat;
 
-public class IngameBlockWireframe extends AlmuraGui {
+public class IngameBlockWireframe extends SimpleGui {
 
     private final World world;
     private final Block block;
@@ -27,24 +27,18 @@ public class IngameBlockWireframe extends AlmuraGui {
     private UITextField minXTextField, minYTextField, minZTextField, maxXTextField, maxYTextField, maxZTextField;
     private AxisAlignedBB wireframe;
 
-    /**
-     * Creates an gui with a parent screen and calls {@link AlmuraGui#setup}, if the parent is null then no background will be added
-     *
-     * @param parent the {@link AlmuraGui} that we came from
-     */
-    public IngameBlockWireframe(AlmuraGui parent, World world, Block block, int x, int y, int z, AxisAlignedBB wireframe) {
-        super(parent);
+    public IngameBlockWireframe(World world, Block block, int x, int y, int z, AxisAlignedBB wireframe) {
         this.world = world;
         this.block = block;
         this.x = x;
         this.y = y;
         this.z = z;
         this.wireframe = wireframe;
-        setup();
+        buildGui();
     }
 
     @Override
-    protected void setup() {
+    protected void buildGui() {
         guiscreenBackground = false;
 
         final UIForm form = new UIForm(this, 175, 150, "Wireframe Information");
@@ -53,42 +47,42 @@ public class IngameBlockWireframe extends AlmuraGui {
         final int padding = 5;
         final DecimalFormat decimal = new DecimalFormat("#.##");
 
-        final UILabel minXLabel = new UILabel(this, ChatColor.GRAY + "Min X:");
+        final UILabel minXLabel = new UILabel(this, Colors.GRAY + "Min X:");
         minXLabel.setPosition(padding, padding * 2, Anchor.LEFT | Anchor.TOP);
 
         minXTextField = new UITextField(this, decimal.format(block.minX));
         minXTextField.setPosition(getPaddedX(minXLabel, padding + 2), minXLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         minXTextField.setSize(50, 12);
 
-        final UILabel minYLabel = new UILabel(this, ChatColor.GRAY + "Min Y:");
+        final UILabel minYLabel = new UILabel(this, Colors.GRAY + "Min Y:");
         minYLabel.setPosition(padding, getPaddedY(minXTextField, padding) + 2, Anchor.LEFT | Anchor.TOP);
 
         minYTextField = new UITextField(this, decimal.format(block.minY));
         minYTextField.setPosition(getPaddedX(minYLabel, padding + 2), minYLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         minYTextField.setSize(50, 12);
 
-        final UILabel minZLabel = new UILabel(this, ChatColor.GRAY + "Min Z:");
+        final UILabel minZLabel = new UILabel(this, Colors.GRAY + "Min Z:");
         minZLabel.setPosition(padding, getPaddedY(minYTextField, padding) + 2, Anchor.LEFT | Anchor.TOP);
 
         minZTextField = new UITextField(this, decimal.format(block.minZ));
         minZTextField.setPosition(getPaddedX(minZLabel, padding + 2), minZLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         minZTextField.setSize(50, 12);
 
-        final UILabel maxXLabel = new UILabel(this, ChatColor.GRAY + "Max X:");
+        final UILabel maxXLabel = new UILabel(this, Colors.GRAY + "Max X:");
         maxXLabel.setPosition(padding, getPaddedY(minZTextField, padding) + 2, Anchor.LEFT | Anchor.TOP);
 
         maxXTextField = new UITextField(this, decimal.format(block.maxX));
         maxXTextField.setPosition(getPaddedX(maxXLabel, padding), maxXLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         maxXTextField.setSize(50, 12);
 
-        final UILabel maxYLabel = new UILabel(this, ChatColor.GRAY + "Max Y:");
+        final UILabel maxYLabel = new UILabel(this, Colors.GRAY + "Max Y:");
         maxYLabel.setPosition(padding, getPaddedY(maxXTextField, padding) + 2, Anchor.LEFT | Anchor.TOP);
 
         maxYTextField = new UITextField(this, decimal.format(block.maxY));
         maxYTextField.setPosition(getPaddedX(maxYLabel, padding), maxYLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         maxYTextField.setSize(50, 12);
 
-        final UILabel maxZLabel = new UILabel(this, ChatColor.GRAY + "Max Z:");
+        final UILabel maxZLabel = new UILabel(this, Colors.GRAY + "Max Z:");
         maxZLabel.setPosition(padding, getPaddedY(maxYTextField, padding) + 2, Anchor.LEFT | Anchor.TOP);
 
         maxZTextField = new UITextField(this, decimal.format(block.maxZ));

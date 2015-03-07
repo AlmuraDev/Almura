@@ -6,7 +6,7 @@
 package com.almuradev.almura.core.mixin.client.gui;
 
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.client.ChatColor;
+import com.almuradev.almurasdk.util.Colors;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -126,7 +126,6 @@ public abstract class MixinGuiNewChat extends Gui {
                                 if (Configuration.CHAT_NOTIFICATIONS) {
                                     String newChat = chatline.func_151461_a().getUnformattedText();
                                     String[] split = newChat.toLowerCase().split(":");
-                                    String[] splitDisplayName = newChat.split(":");
                                     String nickName = "";
                                     if (split.length == 1) {
                                         split = newChat.toLowerCase().split(">");
@@ -135,8 +134,8 @@ public abstract class MixinGuiNewChat extends Gui {
                                         String name = this.mc.thePlayer.getCommandSenderName().toLowerCase();
                                         String displayName = this.mc.thePlayer.getDisplayName();
                                         if (displayName.contains("~")) {
-                                            splitDisplayName = displayName.toLowerCase().split("~");
-                                            nickName = ChatColor.stripColor(splitDisplayName[1]);
+                                            final String[] splitDisplayName = displayName.toLowerCase().split("~");
+                                            nickName = Colors.stripColors(splitDisplayName[1]);
                                             hasNickName = true;
                                         }
 

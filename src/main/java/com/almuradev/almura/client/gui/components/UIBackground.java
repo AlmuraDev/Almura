@@ -8,6 +8,7 @@ package com.almuradev.almura.client.gui.components;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
+import com.almuradev.almurasdk.FileSystem;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.malisis.core.client.gui.Anchor;
@@ -46,12 +47,12 @@ public class UIBackground extends UIImage {
                 backgrounds = Lists.newArrayList();
                 STATE_TEXTURES.put(state, backgrounds);
             }
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(statePath, Filesystem.IMAGE_FILES_ONLY_FILTER)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(statePath, FileSystem.FILTER_IMAGE_FILES_ONLY)) {
                 for (Path path : stream) {
                     if (Configuration.DEBUG_ALL) {
                         Almura.LOGGER.info("Filtered [" + path + "] for TimeState [" + state + "].");
                     }
-                    backgrounds.add(new GuiTexture(Filesystem.registerTexture(Almura.MOD_ID, path.toString(), path)));
+                    backgrounds.add(new GuiTexture(FileSystem.registerTexture(Almura.MOD_ID, path.toString(), path)));
                 }
             } catch (IOException e) {
                 if (Configuration.DEBUG_ALL) {
