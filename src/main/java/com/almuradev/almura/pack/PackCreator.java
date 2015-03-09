@@ -57,7 +57,6 @@ import com.almuradev.almura.recipe.RecipeManager;
 import com.almuradev.almura.recipe.UnknownRecipeTypeException;
 import com.almuradev.almurasdk.lang.LanguageRegistry;
 import com.almuradev.almurasdk.lang.Languages;
-import com.flowpowered.cerealization.config.IOException;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -79,6 +78,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -89,7 +89,7 @@ public class PackCreator {
 
     private static final char[] RECIPE_MATRIX_PLACEHOLDER = new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'};
 
-    public static PackModelContainer createModelContainerFromReader(String name, YamlConfiguration reader) throws IOException {
+    public static PackModelContainer createModelContainerFromReader(String name, ConfigurationNode reader) throws IOException {
         final ConfigurationNode boundsConfigurationNode = reader.getNode(PackKeys.NODE_BOUNDS.getKey());
 
         final boolean
@@ -148,7 +148,7 @@ public class PackCreator {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void loadShapeIntoModelContainer(PackModelContainer modelContainer, String name, YamlConfiguration reader)
+    public static void loadShapeIntoModelContainer(PackModelContainer modelContainer, String name, ConfigurationNode reader)
             throws IOException {
         final ConfigurationNode modelConfigurationNode = reader.getNode(PackKeys.SHAPES.getKey());
         final List<PackFace> faces = Lists.newLinkedList();
@@ -212,7 +212,7 @@ public class PackCreator {
         modelContainer.setModel(shape);
     }
 
-    public static PackBlock createBlockFromReader(Pack pack, String name, YamlConfiguration reader) throws IOException {
+    public static PackBlock createBlockFromReader(Pack pack, String name, ConfigurationNode reader) throws IOException {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
                 reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
@@ -268,7 +268,7 @@ public class PackCreator {
         return block;
     }
 
-    public static PackItem createItemFromReader(Pack pack, String name, YamlConfiguration reader) throws IOException {
+    public static PackItem createItemFromReader(Pack pack, String name, ConfigurationNode reader) throws IOException {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
                 reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
@@ -293,7 +293,7 @@ public class PackCreator {
             textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
                     PackKeys.TEXTURE_COORDINATES.getKey(), false).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         } catch (NumberFormatException nfe) {
-            if (reader.hasChild(PackKeys.TEXTURE_COORDINATES.getKey())) {
+            if (!reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
                 Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
             }
             textureCoordinates = Maps.newHashMap();
@@ -308,14 +308,14 @@ public class PackCreator {
                 item =
                 new PackItem(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName);
 
-        if (reader.hasChild(PackKeys.NODE_FUEL.getKey())) {
+        if (!reader.getChild(PackKeys.NODE_FUEL.getKey()).isVirtual()) {
             item.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
         }
 
         return item;
     }
 
-    public static PackFood createFoodFromReader(Pack pack, String name, YamlConfiguration reader) throws IOException {
+    public static PackFood createFoodFromReader(Pack pack, String name, ConfigurationNode reader) throws IOException {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
                 reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
@@ -340,7 +340,7 @@ public class PackCreator {
             textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(
                     PackKeys.TEXTURE_COORDINATES.getKey(), false).getStringList(PackKeys.TEXTURE_COORDINATES.getDefaultValue()));
         } catch (NumberFormatException nfe) {
-            if (reader.hasChild(PackKeys.TEXTURE_COORDINATES.getKey())) {
+            if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
                 Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
             }
             textureCoordinates = Maps.newHashMap();
@@ -357,14 +357,14 @@ public class PackCreator {
                 new PackFood(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName,
                         consumptionNode);
 
-        if (reader.hasChild(PackKeys.NODE_FUEL.getKey())) {
+        if (!reader.getNode(PackKeys.NODE_FUEL.getKey()).isVirtual()) {
             food.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
         }
 
         return food;
     }
 
-    public static PackCrops createCropFromReader(Pack pack, String name, YamlConfiguration reader) throws IOException {
+    public static PackCrops createCropFromReader(Pack pack, String name, ConfigurationNode reader) throws IOException {
         final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
         final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
 
@@ -485,7 +485,7 @@ public class PackCreator {
         return new Stage(crop, id, textureCoordinates, modelName, modelContainer, growthNode, lightNode);
     }
 
-    public static PackContainerBlock createContainerBlock(Pack pack, String name, YamlConfiguration reader) {
+    public static PackContainerBlock createContainerBlock(Pack pack, String name, ConfigurationNode reader) {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
                 reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
@@ -968,7 +968,7 @@ public class PackCreator {
             ConfigurationNode node)
             throws InvalidRecipeException, UnknownRecipeTypeException, DuplicateRecipeException {
         final int amount = node.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
-        final int data = node.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue().intValue());
+        final int data = node.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue());
 
         final ItemStack result;
         if (res instanceof Block) {

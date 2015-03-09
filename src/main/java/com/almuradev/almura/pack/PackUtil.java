@@ -8,6 +8,7 @@ package com.almuradev.almura.pack;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
+import com.almuradev.almurasdk.FileSystem;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -47,7 +48,7 @@ public class PackUtil {
 
         try {
             dimension =
-                    Filesystem.getImageDimension(Files.newInputStream(
+                    FileSystem.getImageDimension(Files.newInputStream(
                             Paths.get(Filesystem.CONFIG_IMAGES_PATH.toString(), textureName + ".png")));
         } catch (IOException e) {
             if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {

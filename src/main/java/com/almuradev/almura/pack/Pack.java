@@ -9,10 +9,14 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.model.PackModelContainer;
+import com.almuradev.almurasdk.FileSystem;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +49,7 @@ public class Pack {
     }
 
     public static void loadAllContent() {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_MODELS_PATH, Filesystem.MODEL_FILES_ONLY_FILTER)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_MODELS_PATH, Filesystem.FILTER_MODEL_FILES_ONLY)) {
             for (Path path : stream) {
                 try {
                     String name = path.getFileName().toString();
@@ -54,7 +58,7 @@ public class Pack {
 
                     final PackModelContainer modelContainer = loadModelContainer(name, path, shape);
                     MODEL_CONTAINERS.add(modelContainer);
-                } catch (IOException | IOException e) {
+                } catch (IOException e) {
                     Almura.LOGGER.error("Failed to load model container [" + path + "] in [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
                 }
             }
@@ -62,7 +66,7 @@ public class Pack {
             throw new RuntimeException("Failed filtering model files from [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
         }
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_YML_PATH, Filesystem.DIRECTORIES_ONLY_FILTER)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_YML_PATH, FileSystem.FILTER_DIRECTORIES_ONLY)) {
             for (Path path : stream) {
                 final Pack pack = loadPack(path);
                 PACKS.put(pack.getName(), pack);
@@ -76,10 +80,8 @@ public class Pack {
         }
     }
 
-    public static PackModelContainer loadModelContainer(String name, Path root, boolean shape) throws IOException, IOException {
-        final InputStream entry = Files.newInputStream(root);
-        final YamlConfiguration reader = new YamlConfiguration(entry);
-        reader.load();
+    public static PackModelContainer loadModelContainer(String name, Path root, boolean shape) throws IOException {
+        final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(root.toFile()).build().load();
 
         final PackModelContainer modelContainer = PackCreator.createModelContainerFromReader(name, reader);
         if (Configuration.IS_CLIENT && shape) {
@@ -94,7 +96,7 @@ public class Pack {
 
         List<Path> streamed = Lists.newArrayList();
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, Filesystem.YML_FILES_ONLY_FILTER)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, FileSystem.FILTER_YAML_FILES_ONLY)) {
             for (Path path : stream) {
                 streamed.add(path);
             }
@@ -104,9 +106,7 @@ public class Pack {
 
         for (Path path : streamed) {
             try {
-                final InputStream entry = Files.newInputStream(path);
-                final YamlConfiguration reader = new YamlConfiguration(entry);
-                reader.load();
+                final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(root.toFile()).build().load();
 
                 final String type = reader.getChild(PackKeys.TYPE.getKey()).getString(PackKeys.TYPE.getDefaultValue()).toUpperCase();
 
@@ -137,10 +137,8 @@ public class Pack {
                         Almura.LOGGER
                                 .warn("Unknown type [" + type + "] in file [" + path.getFileName()
                                         + "]. Valid types are [ITEM, FOOD, BLOCK, CROP, CONTAINER].");
-                        continue;
                 }
-                entry.close();
-            } catch (IOException | IOException e) {
+            } catch (IOException e) {
                 if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                     Almura.LOGGER.error("Failed to load [" + path + "] for pack [" + pack.getName() + "].", e);
                 } else {

@@ -8,6 +8,7 @@ package com.almuradev.almura;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,6 +27,13 @@ public class Filesystem {
     public static final Path CONFIG_GUI_LOGO_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "almura.png");
     public static final Path CONFIG_MODELS_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "models");
     public static final Path CONFIG_ACCESSORIES_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "accessories");
+
+    public static DirectoryStream.Filter<Path> FILTER_MODEL_FILES_ONLY = new DirectoryStream.Filter<Path>() {
+        @Override
+        public boolean accept(Path entry) throws IOException {
+            return !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".shape"));
+        }
+    };
 
     static {
         if (Files.notExists(CONFIG_SETTINGS_PATH)) {

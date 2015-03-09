@@ -59,10 +59,12 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
@@ -162,12 +164,8 @@ public class CommonProxy {
         //Stage 2a -> Collision, Seeds, Stage (Collision)
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
-                final InputStream
-                        entry =
-                        Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
-                                ((IPackObject) block).getIdentifier() + ".yml"));
-                final YamlConfiguration reader = new YamlConfiguration(entry);
-                reader.load();
+                final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
+                        ((IPackObject) block).getIdentifier() + ".yml").toFile()).build().load();
 
                 if (block instanceof PackCrops) {
                     final SoilNode soilNode = PackCreator.createSoilNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(),
@@ -207,8 +205,6 @@ public class CommonProxy {
                                     reader.getNode(PackKeys.NODE_COLLISION.getKey())));
 
                 }
-
-                entry.close();
             }
         }
 
@@ -223,12 +219,8 @@ public class CommonProxy {
         //Stage 3a -> Block Break, Recipes
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
-                final InputStream
-                        entry =
-                        Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
-                                ((IPackObject) block).getIdentifier() + ".yml"));
-                final YamlConfiguration reader = new YamlConfiguration(entry);
-                reader.load();
+                final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
+                        ((IPackObject) block).getIdentifier() + ".yml").toFile()).build().load();
 
                 if (block instanceof PackCrops) {
                     for (Stage stage : ((PackCrops) block).getStages().values()) {
@@ -250,26 +242,20 @@ public class CommonProxy {
                 ((INodeContainer) block).addNode(
                         PackCreator.createRecipeNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(), block,
                                 reader.getNode(PackKeys.NODE_RECIPES.getKey())));
-
-                entry.close();
             }
         }
 
         //Stage 3b -> Item Recipes
         for (Item item : pack.getItems()) {
             if (item instanceof IPackObject && item instanceof INodeContainer) {
-                final InputStream entry;
+                final Path path;
                 if (item instanceof PackSeeds) {
-                    entry =
-                            Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
-                                    ((PackCrops) ((ItemSeeds) item).field_150925_a).getIdentifier() + ".yml"));
+                    path = Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((PackCrops) ((ItemSeeds) item).field_150925_a).getIdentifier() + ".yml");
                 } else {
-                    entry =
-                            Files.newInputStream(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
-                                    ((IPackObject) item).getIdentifier() + ".yml"));
+                    path = Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((IPackObject) item).getIdentifier() + ".yml");
                 }
-                final YamlConfiguration reader = new YamlConfiguration(entry);
-                reader.load();
+                final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(path.toFile()).build().load();
+
                 if (item instanceof PackSeeds) {
                     //Recipes
                     ((INodeContainer) item).addNode(
@@ -281,8 +267,6 @@ public class CommonProxy {
                             PackCreator.createRecipeNode(((IPackObject) item).getPack(), ((IPackObject) item).getIdentifier(), item,
                                     reader.getNode(PackKeys.NODE_RECIPES.getKey())));
                 }
-
-                entry.close();
             }
         }
     }

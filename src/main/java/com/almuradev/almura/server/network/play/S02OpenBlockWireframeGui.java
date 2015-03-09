@@ -64,7 +64,7 @@ public class S02OpenBlockWireframeGui implements IMessage, IMessageHandler<S02Op
     public IMessage onMessage(S02OpenBlockWireframeGui message, MessageContext ctx) {
         if (ctx.side.isClient()) {
             Minecraft.getMinecraft().displayGuiScreen(
-                    new IngameBlockWireframe(null, Minecraft.getMinecraft().theWorld,
+                    new IngameBlockWireframe(Minecraft.getMinecraft().theWorld,
                             Minecraft.getMinecraft().theWorld.getBlock(message.x, message.y, message.z),
                             message.x, message.y, message.z, wireframe));
         }

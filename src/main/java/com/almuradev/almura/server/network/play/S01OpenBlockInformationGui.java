@@ -48,7 +48,7 @@ public class S01OpenBlockInformationGui implements IMessage, IMessageHandler<S01
     @Override
     public IMessage onMessage(S01OpenBlockInformationGui message, MessageContext ctx) {
         if (ctx.side.isClient()) {
-            Minecraft.getMinecraft().displayGuiScreen(new IngameBlockInformation(null, message.block, message.metadata, message.hardness));
+            Minecraft.getMinecraft().displayGuiScreen(new IngameBlockInformation(message.block, message.metadata, message.hardness));
         }
         return null;
     }
