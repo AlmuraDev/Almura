@@ -34,17 +34,12 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
         String
                 fieldText =
                 "Almura 2.0 began June 1st, 2014.  Based on the idea that we could finally get away from the broken and abandoned Spoutcraft client"
-                        + " a brilliant developer came to Almura and said,"
-                        + " \"Why don't you get rid of that out of date client and move into the present?\" This brilliant developer's name is "
-                        + Colors.AQUA + "Zidane" + Colors.RESET + ". Along with him and another outstanding developer " + Colors.AQUA
-                        + "Grinch"
-                        + Colors.RESET + ","
-                        + " Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + Colors.GOLD
-                        + "Dockter's"
+                        + " a brilliant developer came to Almura and said, \"Why don't you get rid of that out of date client and move into the "
+                        + "present?\" This brilliant developer's name is " + Colors.AQUA + "Zidane" + Colors.RESET + ". Along with him and another "
+                        + "outstanding developer " + Colors.AQUA + "Grinch" + Colors.RESET
+                        + ", Almura 2.0 was born.  Using the forge client as our basis these two developers, along with " + Colors.GOLD + "Dockter's"
                         + Colors.RESET + " content and gui abilities, built, in our opinion, one of the best content loading /"
-                        + " gui enabled Minecraft experiences ever conceived. \r \r" + Colors.LIGHT_PURPLE + "More info to follow..."
-                        + Colors.RESET
-                        + "";
+                        + " gui enabled Minecraft experiences ever conceived.\n\n" + Colors.LIGHT_PURPLE + "More info to follow...";
 
         aboutUsLabel.setSize(290, form.getContentContainer().getHeight() - 30);
         aboutUsLabel.setPosition(0, 5, Anchor.CENTER);

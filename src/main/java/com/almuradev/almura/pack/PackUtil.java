@@ -29,16 +29,16 @@ import java.util.Map;
 public class PackUtil {
 
     public static Map<Integer, List<Integer>> parseCoordinatesFrom(List<String> value) throws NumberFormatException {
-        final Map<Integer, List<Integer>> textureCoordinatesByFace = Maps.newHashMap();
+        final Map<Integer, List<Integer>> textureCoordinates = Maps.newHashMap();
 
         for (int i = 0; i < value.size(); i++) {
-            textureCoordinatesByFace.put(i, parseStringToNumericList(Integer.class, value.get(i), 4));
+            textureCoordinates.put(i, parseStringToNumericList(Integer.class, value.get(i), 4));
         }
 
-        if (textureCoordinatesByFace.isEmpty()) {
+        if (textureCoordinates.isEmpty()) {
             throw new NumberFormatException("No texture coordinates were provided.");
         }
-        return textureCoordinatesByFace;
+        return textureCoordinates;
     }
 
     public static ClippedIcon[] generateClippedIconsFromCoordinates(IIcon source, String textureName,
@@ -66,6 +66,9 @@ public class PackUtil {
             for (int i = 0; i < textureCoordinates.size(); i++) {
                 final List<Integer> coordinatesList = textureCoordinates.get(i);
 
+                if (coordinatesList.size() != 4) {
+                    continue;
+                }
                 clippedIcons[i] =
                         new ClippedIcon((MalisisIcon) source, (float) (coordinatesList.get(0) / dimension.getWidth()),
                                 (float) (coordinatesList.get(1) / dimension.getHeight()),

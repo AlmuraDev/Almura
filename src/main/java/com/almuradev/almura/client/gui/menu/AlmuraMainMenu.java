@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almurasdk.FileSystem;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
@@ -23,7 +24,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 
-public class AlmuraMainMenu extends SimpleGui {
+public class AlmuraMainMenu extends AlmuraBackgroundGui {
 
     protected static final ResourceLocation ALMURA_LOGO_LOCATION;
 
@@ -118,6 +119,7 @@ public class AlmuraMainMenu extends SimpleGui {
 
     @Override
     public void onClose() {
+        super.onClose();
         mc.shutdown();
     }
 

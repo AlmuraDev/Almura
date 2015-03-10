@@ -15,11 +15,9 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -106,7 +104,7 @@ public class Pack {
 
         for (Path path : streamed) {
             try {
-                final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(root.toFile()).build().load();
+                final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(path.toFile()).build().load();
 
                 final String type = reader.getChild(PackKeys.TYPE.getKey()).getString(PackKeys.TYPE.getDefaultValue()).toUpperCase();
 

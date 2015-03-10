@@ -62,8 +62,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -164,8 +162,9 @@ public class CommonProxy {
         //Stage 2a -> Collision, Seeds, Stage (Collision)
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
-                final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
-                        ((IPackObject) block).getIdentifier() + ".yml").toFile()).build().load();
+                final ConfigurationNode reader = YAMLConfigurationLoader.builder()
+                        .setFile(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
+                                ((IPackObject) block).getIdentifier() + ".yml").toFile()).build().load();
 
                 if (block instanceof PackCrops) {
                     final SoilNode soilNode = PackCreator.createSoilNode(((IPackObject) block).getPack(), ((IPackObject) block).getIdentifier(),
@@ -215,20 +214,21 @@ public class CommonProxy {
     }
 
     //Stage 3 loader
-    private void onLoadFinished(Pack pack) throws IOException, IOException {
+    private void onLoadFinished(Pack pack) throws IOException {
         //Stage 3a -> Block Break, Recipes
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
-                final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
-                        ((IPackObject) block).getIdentifier() + ".yml").toFile()).build().load();
+                final ConfigurationNode reader = YAMLConfigurationLoader.builder()
+                        .setFile(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
+                                ((IPackObject) block).getIdentifier() + ".yml").toFile()).build().load();
 
                 if (block instanceof PackCrops) {
                     for (Stage stage : ((PackCrops) block).getStages().values()) {
-                        final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
-                        stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), block, false,
-                                stageNode.getNode(PackKeys.NODE_BREAK.getKey())));
-                        stage.addNode(PackCreator.createFertilizerNode(pack, stage.getIdentifier(), stage.getId(),
-                                stageNode.getNode(PackKeys.NODE_FERTILIZER.getKey())));
+                        final ConfigurationNode stageNode = reader.getNode(PackKeys.NODE_STAGES.getKey(), stage.getId());
+                        stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), block, false, stageNode.getNode(PackKeys
+                                .NODE_BREAK.getKey())));
+                        stage.addNode(PackCreator.createFertilizerNode(pack, stage.getIdentifier(), stage.getId(), stageNode.getNode(PackKeys
+                                .NODE_FERTILIZER.getKey())));
                     }
                 } else {
                     //Break
@@ -250,9 +250,11 @@ public class CommonProxy {
             if (item instanceof IPackObject && item instanceof INodeContainer) {
                 final Path path;
                 if (item instanceof PackSeeds) {
-                    path = Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((PackCrops) ((ItemSeeds) item).field_150925_a).getIdentifier() + ".yml");
+                    path = Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
+                            ((PackCrops) ((ItemSeeds) item).field_150925_a).getIdentifier() + ".yml");
                 } else {
-                    path = Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(), ((IPackObject) item).getIdentifier() + ".yml");
+                    path = Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
+                            ((IPackObject) item).getIdentifier() + ".yml");
                 }
                 final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(path.toFile()).build().load();
 

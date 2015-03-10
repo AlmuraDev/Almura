@@ -19,6 +19,7 @@ import java.util.Map;
 public final class AlmuraCoreMod implements IFMLLoadingPlugin {
 
     public AlmuraCoreMod() {
+        MixinBootstrap.init();
         MixinEnvironment.getCurrentEnvironment().addConfiguration("mixins.almura.json");
     }
 

@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
@@ -19,7 +20,7 @@ import net.malisis.core.client.gui.component.interaction.UISelect;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class AlmuraConfigurationMenu extends SimpleGui {
+public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
     private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
             debugMappingsCheckBox, debugRecipesCheckBox, chatNotificationCheckBox;

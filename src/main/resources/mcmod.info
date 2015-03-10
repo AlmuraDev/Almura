@@ -11,6 +11,6 @@
   "authorList": [ "AlmuraDev" ],
   "parent": "",
   "screenshots": [],
-  "dependencies": [ "MinecraftForge", "AlmuraSDK" ]
+  "dependencies": [ "MinecraftForge", "almurasdk" ]
 }]
 

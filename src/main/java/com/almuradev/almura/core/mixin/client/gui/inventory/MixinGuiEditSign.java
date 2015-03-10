@@ -162,13 +162,13 @@ public abstract class MixinGuiEditSign extends GuiScreen {
                 continue;
             }
             Optional<Color> value = Colors.getByCode(c);
+            if (!value.isPresent()) {
+                value = Optional.of(Colors.BLACK);
+            }
             String name = value.get().getName();
             boolean lastUnderscore = true;
             String parsedName = "";
             for (int chr = 0; chr < name.length(); chr++) {
-                if (c == 16) {
-                    continue;
-                }
                 char ch = name.charAt(chr);
                 if (lastUnderscore) {
                     ch = Character.toUpperCase(ch);
@@ -185,7 +185,7 @@ public abstract class MixinGuiEditSign extends GuiScreen {
             if (c >= 10) {
                 code = (char) ('a' + c - 10);
             }
-            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow("&" + code + " - " + value + parsedName, width - 90, 50 + c * 10, 0xffffffff);
+            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow("&" + code + " - " + value.get() + parsedName, width - 90, 50 + c * 10, 0xffffffff);
         }
         ci.cancel();
     }

@@ -6,7 +6,8 @@
 package com.almuradev.almura.tabs;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.client.ExternalIcon;
+import com.almuradev.almura.Filesystem;
+import com.almuradev.almurasdk.client.util.ExternalIcon;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -23,6 +24,6 @@ public class AlmuraTabItem extends Item {
 
     @Override
     public void registerIcons(IIconRegister register) {
-        itemIcon = new ExternalIcon(iconString).register((TextureMap) register);
+        itemIcon = new ExternalIcon(getIconString(), Filesystem.CONFIG_IMAGES_PATH).register((TextureMap) register);
     }
 }

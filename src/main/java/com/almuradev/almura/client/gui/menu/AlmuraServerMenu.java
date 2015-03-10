@@ -124,8 +124,8 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
     @Override
     public void onClose() {
+        super.onClose();
         QUERIER.interrupt();
-        super.close();
     }
 
     @Subscribe
