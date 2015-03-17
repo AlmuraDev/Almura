@@ -37,6 +37,9 @@ ext.packaging = 'jar'
 ext.url = 'http://github.com/AlmuraDev'
 ext.description = 'The official mod for the Almura Client and Server'
 ext.organization = 'AlmuraDev'
+ext.mixinSrg = new File(project.buildDir, "tmp/mixins/mixins.srg")
+ext.mixinRefMap = new File(project.buildDir, "tmp/mixins/mixins.almura.refmap.json")
+reobf.addExtraSrgFile project.mixinSrg
 
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
@@ -84,20 +87,32 @@ license {
     includes(["**/*.java"])
 }
 
-def mixinSrg = "${tasks.reobf.temporaryDir}" + File.separator + 'mixins.srg'
-reobf.addExtraSrgFile mixinSrg
-
 compileJava{
     options.compilerArgs += [
             '-Xlint:all',
             '-Xlint:-path',
             '-Xlint:-processing',
-            "-AreobfSrgFile=${tasks.reobf.srg}",
-            "-AoutSrgFile=${mixinSrg}"
+			"-AoutSrgFile=${project.mixinSrg.getCanonicalPath()}", 
+            "-AoutRefMapFile=${project.mixinRefMap.getCanonicalPath()}" 
+
     ]
     options.deprecation = true
     options.encoding = 'utf8'
 }
+
+afterEvaluate {
+    tasks.compileJava.options.compilerArgs += "-AreobfSrgFile=${tasks.reobf.srg}"
+}
+
+task copySrgs(type: Copy, dependsOn: "genSrgs") {
+    from plugins.getPlugin("forge").delayedFile("{SRG_DIR}")
+
+    include '**/*.srg'
+    into 'build/srgs'
+}
+
+setupDecompWorkspace.dependsOn copySrgs
+setupDevWorkspace.dependsOn copySrgs
 
 def manifestEntries = [
         "Built-By": System.properties['user.name'],
@@ -110,5 +125,6 @@ def manifestEntries = [
 ]
 
 jar {
+	from project.ext.mixinRefMap;
     manifest.mainAttributes(manifestEntries)
 }
