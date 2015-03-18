@@ -47,7 +47,7 @@ __Client__
 |     Property      | Value                                                      |
 |:-----------------:|:-----------------------------------------------------------|
 |    Main class     | GradleStart                                                |
-|    VM options     | -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin -Dfml.coreMods.load=com.almuradev.almura.core.AlmuraCoreMod |
+|    VM options     | -Xincgc -Xmx1024M -Xms1024M -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin,com.almuradev.almurasdk.core.AlmuraSDKCoreMod,com.almuradev.almura.core.AlmuraCoreMod |
 | Working directory | ./run (Included in project)                         |
 | Module classpath  | Almura (IntelliJ Only)                                     |
 
@@ -56,7 +56,7 @@ __Server__
 |     Property      | Value                              |
 |:-----------------:|:-----------------------------------|
 |    Main class     | GradleStartServer                  |
-|    VM options     | -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin -Dfml.coreMods.load=com.almuradev.almura.core.AlmuraCoreMod |
+|    VM options     | -Xincgc -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin,com.almuradev.almurasdk.core.AlmuraSDKCoreMod,com.almuradev.almura.core.AlmuraCoreMod |
 | Working directory | ./run (Included in project) |
 | Module classpath  | Almura (IntelliJ Only)             |
 
@@ -64,7 +64,7 @@ __Server__
 ## Building
 __Note:__ If you do not have [Gradle] installed then use ./gradlew for Unix systems or Git Bash and gradlew.bat for Windows systems in place of any 'gradle' command.
 
-In order to build Almura you simply need to run the `gradle` command. You can find the compiled JAR files in `./build/libs` but in most cases you'll only need 'almura-x.x-xxxx-x.x.x.jar'.
+In order to build Almura you simply need to run the `gradle` command. You can find the compiled JAR files in `./build/libs` but in most cases you'll only need 'almura-x.x-xxxx.jar'.
 
 ## FAQ
 __Why do I get `javac: source release 1.7 requires target release 1.7` in IntelliJ when running the client configuration?__
