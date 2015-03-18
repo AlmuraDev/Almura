@@ -1,0 +1,11 @@
+sudo: false
+language: java
+jdk: openjdk7
+notifications:
+  email: false
+  webhooks:
+    - http://n.tkte.ch/h/4015/Imx73SAk-RAIF3nc9sZb_JWb
+install: true
+script:
+  - gradle setupCIWorkspace
+  - gradle build
