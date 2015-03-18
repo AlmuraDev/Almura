@@ -24,7 +24,7 @@ __For [IntelliJ]__
   3. Click File > Import Module and select the **build.gradle** file for Almura.
 
 ## Running
-__Note 1:__ The following is aimed to help you setup run configurations for Eclipse and IntelliJ, if you do not want to be able to run Almura directly from your IDE then you can skip this.
+__Note:__ The following is aimed to help you setup run configurations for Eclipse and IntelliJ, if you do not want to be able to run Almura directly from your IDE then you can skip this.
 
 __For [Eclipse]__  
   1. Go to **Run > Run Configurations**.  
