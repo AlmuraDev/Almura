@@ -113,6 +113,11 @@ public class Configuration {
     }
 
     public static void setFirstLaunch(boolean value) throws IOException {
+        if (root == null) {
+            loader = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_SETTINGS_PATH.toFile()).setFlowStyle
+                    (DumperOptions.FlowStyle.BLOCK).build();
+            root = loader.load();
+        }
         root.getNode(PATH_CLIENT_FIRST_LAUNCH).setValue(value);
         loader.save(root);
     }

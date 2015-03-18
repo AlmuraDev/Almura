@@ -37,7 +37,7 @@ ext.packaging = 'jar'
 ext.url = 'http://github.com/AlmuraDev'
 ext.description = 'The official mod for the Almura Client and Server'
 ext.organization = 'AlmuraDev'
-ext.mixinSrg = new File(project.buildDir, "tmp/mixins/mixins.srg")
+ext.mixinSrg = new File(project.buildDir, "tmp/mixins/mixins.almura.srg")
 ext.mixinRefMap = new File(project.buildDir, "tmp/mixins/mixins.almura.refmap.json")
 reobf.addExtraSrgFile project.mixinSrg
 
@@ -60,10 +60,6 @@ repositories {
 minecraft {
     version = project.ext.minecraftVersion + '-' + project.ext.forgeVersion + '-' + project.ext.minecraftVersion
     runDir = "run/"
-}
-
-configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds' // Always check for new snapshots
 }
 
 dependencies {
@@ -124,5 +120,6 @@ def manifestEntries = [
 ]
 
 jar {
+    from project.mixinRefMap
     manifest.mainAttributes(manifestEntries)
 }

@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura.core;
 
-import com.almuradev.almurasdk.core.CommonAccessTransformer;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
@@ -46,6 +45,6 @@ public final class AlmuraCoreMod implements IFMLLoadingPlugin {
 
     @Override
     public String getAccessTransformerClass() {
-        return CommonAccessTransformer.class.getName();
+        return AlmuraAccessTransformer.class.getName();
     }
 }
