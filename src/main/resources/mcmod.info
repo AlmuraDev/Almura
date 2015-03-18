@@ -1,7 +1,7 @@
 [{
   "modid": "almura",
   "name": "Almura",
-  "description": "The official mod of the Almura Client and Server",
+  "description": "The official mod of the Almura Client and Server.",
   "version": "1.7.10-1307",
   "credits": "",
   "logoFile": "",
@@ -11,6 +11,7 @@
   "authorList": [ "AlmuraDev" ],
   "parent": "",
   "screenshots": [],
-  "dependencies": [ "MinecraftForge", "almurasdk" ]
+  "requiredMods": [ "AlmuraSDK" ],
+  "dependencies": [ "AlmuraSDK" ],
+  "useDependencyInformation": "true"
 }]
-

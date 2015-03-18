@@ -94,7 +94,6 @@ compileJava{
             '-Xlint:-processing',
 			"-AoutSrgFile=${project.mixinSrg.getCanonicalPath()}", 
             "-AoutRefMapFile=${project.mixinRefMap.getCanonicalPath()}" 
-
     ]
     options.deprecation = true
     options.encoding = 'utf8'
@@ -125,6 +124,5 @@ def manifestEntries = [
 ]
 
 jar {
-	from project.ext.mixinRefMap;
     manifest.mainAttributes(manifestEntries)
 }
