@@ -60,6 +60,7 @@ repositories {
 minecraft {
     version = project.ext.minecraftVersion + '-' + project.ext.forgeVersion + '-' + project.ext.minecraftVersion
     runDir = "run/"
+    mappings = "stable_12"
 }
 
 dependencies {
