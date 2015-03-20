@@ -26,8 +26,7 @@ public abstract class MixinRender {
     @Shadow
     abstract FontRenderer getFontRendererFromRenderManager();
 
-    @Overwrite
-    protected void func_147906_a(Entity p_147906_1_, String p_147906_2_, double p_147906_3_, double p_147906_5_, double p_147906_7_,
+    protected void renderLivingLabel(Entity p_147906_1_, String p_147906_2_, double p_147906_3_, double p_147906_5_, double p_147906_7_,
             int p_147906_9_) {
         double d3 = p_147906_1_.getDistanceSqToEntity(this.renderManager.livingPlayer);
 

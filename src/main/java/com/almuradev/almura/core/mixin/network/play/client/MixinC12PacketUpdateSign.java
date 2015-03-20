@@ -18,27 +18,27 @@ import java.io.IOException;
 public abstract class MixinC12PacketUpdateSign extends Packet {
 
     @Shadow
-    private int field_149593_a;
+    private int x;
 
     @Shadow
-    private int field_149591_b;
+    private int y;
 
     @Shadow
-    private int field_149592_c;
+    private int z;
 
     @Shadow
-    private String[] field_149590_d;
+    private String[] lines;
 
     @Overwrite
     public void readPacketData(PacketBuffer p_148837_1_) throws IOException {
-        this.field_149593_a = p_148837_1_.readInt();
-        this.field_149591_b = p_148837_1_.readShort();
-        this.field_149592_c = p_148837_1_.readInt();
-        this.field_149590_d = new String[4];
+        this.x = p_148837_1_.readInt();
+        this.y = p_148837_1_.readShort();
+        this.z = p_148837_1_.readInt();
+        this.lines = new String[4];
 
         for (int i = 0; i < 4; ++i) {
             // Almura Start - 15 -> 30
-            this.field_149590_d[i] = p_148837_1_.readStringFromBuffer(30);
+            this.lines[i] = p_148837_1_.readStringFromBuffer(30);
         }
     }
 }

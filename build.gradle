@@ -27,11 +27,7 @@ apply plugin: "signing"
 group = 'com.almuradev'
 archivesBaseName = 'almura'
 
-ext.minecraftVersion = '1.7.10'
-ext.forgeVersion = '10.13.2.1307'
-version = minecraftVersion + '-' + forgeVersion.substring(forgeVersion.size() - 4)
-
-ext.projectName = 'Almura'
+ext.name = 'Almura'
 ext.inceptionYear = '2014'
 ext.packaging = 'jar'
 ext.url = 'http://github.com/AlmuraDev'
@@ -39,6 +35,10 @@ ext.description = 'The official mod for the Almura Client and Server'
 ext.organization = 'AlmuraDev'
 ext.mixinSrg = new File(project.buildDir, "tmp/mixins/mixins.almura.srg")
 ext.mixinRefMap = new File(project.buildDir, "tmp/mixins/mixins.almura.refmap.json")
+ext.minecraftVersion = '1.7.10'
+ext.forgeVersion = '10.13.2.1307'
+version = minecraftVersion + '-' + forgeVersion.substring(forgeVersion.size() - 4)
+
 reobf.addExtraSrgFile project.mixinSrg
 
 sourceCompatibility = '1.7'
@@ -64,7 +64,7 @@ minecraft {
 }
 
 dependencies {
-    compile ('com.almuradev:almurasdk:1.7.10-1307-SNAPSHOT') {
+    compile ('com.almuradev:almurasdk:1.7.10-1307-1-SNAPSHOT') {
         transitive = true
     }
 }

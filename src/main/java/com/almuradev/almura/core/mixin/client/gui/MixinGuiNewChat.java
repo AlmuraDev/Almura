@@ -36,38 +36,37 @@ public abstract class MixinGuiNewChat extends Gui {
     @Shadow
     public List field_146253_i;
     @Shadow
-    public int field_146250_j;
+    public int scrollPos;
     @Shadow
-    public boolean field_146251_k;
+    public boolean isScrolled;
     @Shadow
     public List chatLines;
 
     @Shadow
-    public abstract int func_146232_i();
+    public abstract int getLineCount();
 
     @Shadow
     public abstract boolean getChatOpen();
 
     @Shadow
-    public abstract float func_146244_h();
+    public abstract float getChatScale();
 
     @Shadow
-    public abstract int func_146228_f();
+    public abstract int getChatWidth();
 
     @Shadow
     public abstract void deleteChatLine(int line);
 
     @Shadow
-    public abstract String func_146235_b(String str);
+    public abstract String formatColors(String str);
 
     @Shadow
     public abstract void scroll(int amount);
 
-    @Overwrite
     public void drawChat(int p_146230_1_) {
 
         if (Minecraft.getMinecraft().gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
-            int j = this.func_146232_i();
+            int j = this.getLineCount();
             boolean flag = false;
             int k = 0;
             int l = this.field_146253_i.size();
@@ -78,8 +77,8 @@ public abstract class MixinGuiNewChat extends Gui {
                     flag = true;
                 }
 
-                float f1 = this.func_146244_h();
-                int i1 = MathHelper.ceiling_float_int((float) this.func_146228_f() / f1);
+                float f1 = this.getChatScale();
+                int i1 = MathHelper.ceiling_float_int((float) this.getChatWidth() / f1);
                 GL11.glPushMatrix();
                 GL11.glTranslatef(2.0F, 20.0F, 0.0F);
                 GL11.glScalef(f1, f1, 1.0F);
@@ -87,8 +86,8 @@ public abstract class MixinGuiNewChat extends Gui {
                 int k1;
                 int i2;
 
-                for (j1 = 0; j1 + this.field_146250_j < this.field_146253_i.size() && j1 < j; ++j1) {
-                    ChatLine chatline = (ChatLine) this.field_146253_i.get(j1 + this.field_146250_j);
+                for (j1 = 0; j1 + this.scrollPos < this.field_146253_i.size() && j1 < j; ++j1) {
+                    ChatLine chatline = (ChatLine) this.field_146253_i.get(j1 + this.scrollPos);
 
                     if (chatline != null) {
                         k1 = p_146230_1_ - chatline.getUpdatedCounter();
@@ -176,12 +175,12 @@ public abstract class MixinGuiNewChat extends Gui {
                     GL11.glTranslatef(-3.0F, 0.0F, 0.0F);
                     int k2 = l * j1 + l;
                     k1 = k * j1 + k;
-                    int l2 = this.field_146250_j * k1 / l;
+                    int l2 = this.scrollPos * k1 / l;
                     int l1 = k1 * k1 / k2;
 
                     if (k2 != k1) {
                         i2 = l2 > 0 ? 170 : 96;
-                        int i3 = this.field_146251_k ? 13382451 : 3355562;
+                        int i3 = this.isScrolled ? 13382451 : 3355562;
                         drawRect(0, -l2, 2, -l2 - l1, i3 + (i2 << 24));
                         drawRect(2, -l2, 1, -l2 - l1, 13421772 + (i2 << 24));
                     }
@@ -192,13 +191,12 @@ public abstract class MixinGuiNewChat extends Gui {
         }
     }
 
-    @Overwrite
-    private void func_146237_a(IChatComponent p_146237_1_, int p_146237_2_, int p_146237_3_, boolean p_146237_4_) {
+    private void setChatLine(IChatComponent p_146237_1_, int p_146237_2_, int p_146237_3_, boolean p_146237_4_) {
         if (p_146237_2_ != 0) {
             this.deleteChatLine(p_146237_2_);
         }
 
-        int k = MathHelper.floor_float((float) this.func_146228_f() / this.func_146244_h());
+        int k = MathHelper.floor_float((float) this.getChatWidth() / this.getChatScale());
         int l = 0;
         ChatComponentText chatcomponenttext = new ChatComponentText("");
         ArrayList arraylist = Lists.newArrayList();
@@ -206,7 +204,7 @@ public abstract class MixinGuiNewChat extends Gui {
 
         for (int i1 = 0; i1 < arraylist1.size(); ++i1) {
             IChatComponent ichatcomponent1 = (IChatComponent) arraylist1.get(i1);
-            String s = this.func_146235_b(ichatcomponent1.getChatStyle().getFormattingCode() + ichatcomponent1.getUnformattedTextForChat());
+            String s = this.formatColors(ichatcomponent1.getChatStyle().getFormattingCode() + ichatcomponent1.getUnformattedTextForChat());
             int j1 = this.mc.fontRendererObj.getStringWidth(s);
             ChatComponentText chatcomponenttext1 = new ChatComponentText(s);
             chatcomponenttext1.setChatStyle(ichatcomponent1.getChatStyle().createShallowCopy());
@@ -257,8 +255,8 @@ public abstract class MixinGuiNewChat extends Gui {
              this.field_146253_i.add(0, new ChatLine(p_146237_3_, ichatcomponent2, p_146237_2_))) {
             ichatcomponent2 = (IChatComponent) iterator.next();
 
-            if (flag2 && this.field_146250_j > 0) {
-                this.field_146251_k = true;
+            if (flag2 && this.scrollPos > 0) {
+                this.isScrolled = true;
                 this.scroll(1);
             }
         }

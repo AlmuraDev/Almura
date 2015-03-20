@@ -29,7 +29,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
     private static ResourceLocation field_147513_b;
 
     @Shadow
-    private ModelSign field_147514_c;
+    private ModelSign model;
 
     @Overwrite
     public void renderTileEntityAt(TileEntitySign par1TileEntitySign, double par2, double par4, double par6, float p_147500_8_) {
@@ -42,7 +42,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
             GL11.glTranslatef((float) par2 + 0.5F, (float) par4 + 0.75F * var10, (float) par6 + 0.5F);
             float var11 = (float) (par1TileEntitySign.getBlockMetadata() * 360) / 16.0F;
             GL11.glRotatef(-var11, 0.0F, 1.0F, 0.0F);
-            this.field_147514_c.signStick.showModel = true;
+            this.model.signStick.showModel = true;
         } else {
             int var16 = par1TileEntitySign.getBlockMetadata();
             var12 = 0.0F;
@@ -62,13 +62,13 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
             GL11.glTranslatef((float) par2 + 0.5F, (float) par4 + 0.75F * var10, (float) par6 + 0.5F);
             GL11.glRotatef(-var12, 0.0F, 1.0F, 0.0F);
             GL11.glTranslatef(0.0F, -0.3125F, -0.4375F);
-            this.field_147514_c.signStick.showModel = false;
+            this.model.signStick.showModel = false;
         }
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/entity/sign.png"));
         GL11.glPushMatrix();
         GL11.glScalef(var10, -var10, -var10);
-        this.field_147514_c.renderSign();
+        this.model.renderSign();
         GL11.glPopMatrix();
         // Almura Start
         if (((IExtendedTileEntitySign) par1TileEntitySign).hasText()) {

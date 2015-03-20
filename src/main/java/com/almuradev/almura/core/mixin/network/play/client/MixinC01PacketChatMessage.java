@@ -18,10 +18,10 @@ import java.io.IOException;
 public abstract class MixinC01PacketChatMessage extends Packet {
 
     @Shadow
-    private String field_149440_a;
+    private String message;
 
     @Overwrite
     public void readPacketData(PacketBuffer p_148837_1_) throws IOException {
-        this.field_149440_a = p_148837_1_.readStringFromBuffer(1000);
+        this.message = p_148837_1_.readStringFromBuffer(1000);
     }
 }

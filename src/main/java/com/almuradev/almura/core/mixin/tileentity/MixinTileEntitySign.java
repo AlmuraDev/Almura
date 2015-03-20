@@ -20,7 +20,7 @@ public abstract class MixinTileEntitySign extends TileEntity implements IExtende
     @Shadow
     String[] signText;
     @Shadow
-    boolean field_145916_j;
+    boolean isEditable;
 
     private int columnBeingEdited;
     private CacheState flag;
@@ -77,7 +77,7 @@ public abstract class MixinTileEntitySign extends TileEntity implements IExtende
 
     @Overwrite
     public void readFromNBT(NBTTagCompound p_145839_1_) {
-        this.field_145916_j = false;
+        this.isEditable = false;
         super.readFromNBT(p_145839_1_);
 
         for (int i = 0; i < 4; ++i) {
