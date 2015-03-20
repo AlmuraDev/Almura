@@ -12,13 +12,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.0'
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
     }
 }
-
-evaluationDependsOn('Mixin')
 
 defaultTasks 'licenseFormat', 'build'
 
@@ -26,7 +23,6 @@ apply plugin: "forge"
 apply plugin: "license"
 apply plugin: "maven"
 apply plugin: "signing"
-apply plugin: 'com.github.johnrengelman.shadow'
 
 group = 'com.almuradev'
 archivesBaseName = 'almura'
@@ -39,10 +35,11 @@ ext.projectName = 'Almura'
 ext.inceptionYear = '2014'
 ext.packaging = 'jar'
 ext.url = 'http://github.com/AlmuraDev'
-ext.description = 'The official mod for the Almura Client and Server.'
+ext.description = 'The official mod for the Almura Client and Server'
 ext.organization = 'AlmuraDev'
-ext.mixinSrg = new File(project.buildDir, "tmp/mixins/mixins.srg")
+ext.mixinSrg = new File(project.buildDir, "tmp/mixins/mixins.almura.srg")
 ext.mixinRefMap = new File(project.buildDir, "tmp/mixins/mixins.almura.refmap.json")
+reobf.addExtraSrgFile project.mixinSrg
 
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
@@ -69,22 +66,7 @@ dependencies {
     compile ('com.almuradev:almurasdk:1.7.10-1307-SNAPSHOT') {
         transitive = true
     }
-    compile project('Mixin')
 }
-
-shadowJar  {
-    duplicatesStrategy 'exclude'
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-    exclude 'GradleStart**'
-    dependencies {
-        include(project('Mixin'))
-    }
-    from project.mixinRefMap
-    classifier = ''
-}
-
-reobf.dependsOn shadowJar
 
 processResources {
     from 'LICENSE.txt'
@@ -101,15 +83,7 @@ license {
     includes(["**/*.java"])
 }
 
-reobf {
-    reobf.addExtraSrgFile project.mixinSrg
-
-    reobf(shadowJar) { spec ->
-        spec.classpath = configurations.compile
-    }
-}
-
-compileJava {
+compileJava{
     options.compilerArgs += [
             '-Xlint:all',
             '-Xlint:-path',
@@ -146,5 +120,6 @@ def manifestEntries = [
 ]
 
 jar {
+    from project.mixinRefMap
     manifest.mainAttributes(manifestEntries)
 }
