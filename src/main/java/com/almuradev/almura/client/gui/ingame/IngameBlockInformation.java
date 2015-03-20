@@ -33,7 +33,6 @@ public class IngameBlockInformation extends SimpleGui {
         this.block = block;
         this.metadata = metadata;
         this.hardness = hardness;
-        buildGui();
     }
 
     private static String getFormattedString(String raw, int length, String suffix) {
@@ -45,7 +44,7 @@ public class IngameBlockInformation extends SimpleGui {
     }
 
     @Override
-    protected void buildGui() {
+    public void construct() {
         guiscreenBackground = false;
 
         final int xPadding = 10;

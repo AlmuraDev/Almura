@@ -20,7 +20,7 @@ public class PackFuelHandler implements IFuelHandler {
 
         if (fuel.getItem() instanceof ItemBlock) {
             final ItemBlock itemBlock = (ItemBlock) fuel.getItem();
-            final Block block = itemBlock.field_150939_a;
+            final Block block = itemBlock.blockInstance;
             if (block instanceof INodeContainer) {
                 nodeContainer = (INodeContainer) block;
             }

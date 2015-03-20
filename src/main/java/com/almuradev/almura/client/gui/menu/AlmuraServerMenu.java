@@ -51,11 +51,10 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
 
     public AlmuraServerMenu(SimpleGui parent) {
         super(parent);
-        buildGui();
     }
 
     @Override
-    protected void buildGui() {
+    public void construct() {
         // Create the form
         final UIForm form = new UIForm(this, 200, 225, "Multiplayer");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);

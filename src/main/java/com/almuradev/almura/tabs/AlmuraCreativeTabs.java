@@ -45,14 +45,14 @@ public class AlmuraCreativeTabs extends CreativeTabs {
             public int compare(ItemStack o1, ItemStack o2) {
                 final IPackObject object1;
                 if (o1.getItem() instanceof ItemBlock) {
-                    object1 = (IPackObject) ((ItemBlock) o1.getItem()).field_150939_a;
+                    object1 = (IPackObject) ((ItemBlock) o1.getItem()).blockInstance;
                 } else {
                     object1 = (IPackObject) o1.getItem();
                 }
 
                 final IPackObject object2;
                 if (o2.getItem() instanceof ItemBlock) {
-                    object2 = (IPackObject) ((ItemBlock) o2.getItem()).field_150939_a;
+                    object2 = (IPackObject) ((ItemBlock) o2.getItem()).blockInstance;
                 } else {
                     object2 = (IPackObject) o2.getItem();
                 }

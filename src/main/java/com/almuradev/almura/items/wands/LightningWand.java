@@ -71,6 +71,6 @@ public class LightningWand extends AlmuraItem {
         double reachDistance = 20.0D;
 
         Vec3 vec31 = vec3.addVector((double) f7 * reachDistance, (double) f6 * reachDistance, (double) f8 * reachDistance);
-        return world.func_147447_a(vec3, vec31, bool, !bool, false);
+        return world.rayTraceBlocks(vec3, vec31, bool, !bool, false);
     }
 }

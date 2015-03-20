@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiEditSign.class)
 public abstract class MixinGuiEditSign extends GuiScreen {
 
-    private static String ALLOWED_CHARACTERS = new String(ChatAllowedCharacters.allowedCharacters);
+    private static String ALLOWED_CHARACTERS = new String(ChatAllowedCharacters.allowedCharactersArray);
 
     @Shadow
     private TileEntitySign tileSign;
@@ -56,7 +56,7 @@ public abstract class MixinGuiEditSign extends GuiScreen {
     @Overwrite
     protected void keyTyped(char c, int key) {
         if (ALLOWED_CHARACTERS == null) {
-            ALLOWED_CHARACTERS = new String(ChatAllowedCharacters.allowedCharacters);
+            ALLOWED_CHARACTERS = new String(ChatAllowedCharacters.allowedCharactersArray);
         }
 
         if (key == 200) { // Up
@@ -185,7 +185,7 @@ public abstract class MixinGuiEditSign extends GuiScreen {
             if (c >= 10) {
                 code = (char) ('a' + c - 10);
             }
-            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow("&" + code + " - " + value.get() + parsedName, width - 90, 50 + c * 10, 0xffffffff);
+            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow("&" + code + " - " + value.get() + parsedName, width - 90, 50 + c * 10, 0xffffffff);
         }
         ci.cancel();
     }

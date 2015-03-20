@@ -110,8 +110,8 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
                 --itemStack.stackSize;
                 Block block1 = Blocks.farmland;
                 world.playSoundEffect((double) ((float) x + 0.5F), (double) ((float) y + 0.5F), (double) ((float) z + 0.5F),
-                        block1.stepSound.getStepResourcePath(), (block1.stepSound.getVolume() + 1.0F) / 2.0F,
-                        block1.stepSound.getPitch() * 0.8F);
+                        block1.stepSound.getStepSound(), (block1.stepSound.getVolume() + 1.0F) / 2.0F,
+                        block1.stepSound.getFrequency() * 0.8F);
                 return true;
             } else {
                 return false;

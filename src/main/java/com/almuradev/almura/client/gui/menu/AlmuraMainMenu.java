@@ -38,11 +38,10 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
 
     public AlmuraMainMenu(SimpleGui parent) {
         super(parent);
-        buildGui();
     }
 
     @Override
-    protected void buildGui() {
+    public void construct() {
         // Create the form
         final UIForm form = new UIForm(this, 200, 225, "Almura", false);
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);

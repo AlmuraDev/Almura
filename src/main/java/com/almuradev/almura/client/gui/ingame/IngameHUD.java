@@ -51,13 +51,12 @@ public class IngameHUD extends SimpleGui {
     private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE, playerCount = Integer.MAX_VALUE;
 
     public IngameHUD() {
-        buildGui();
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
-    protected void buildGui() {
+    public void construct() {
         guiscreenBackground = false;
 
         // Construct Hud with all elements
@@ -408,8 +407,8 @@ public class IngameHUD extends SimpleGui {
         if (inv != null) {
             for (ItemStack armorItem : inv) {
                 if (armorItem != null) {
-                    armorTotal += armorItem.getMaxDamage();
-                    armorDamage += armorItem.getItemDamage();
+                    armorTotal += armorItem.getMetadata();
+                    armorDamage += armorItem.getMetadata();
                 }
             }
         }

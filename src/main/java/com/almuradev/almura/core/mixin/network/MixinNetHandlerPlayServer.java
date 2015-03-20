@@ -23,16 +23,16 @@ public abstract class MixinNetHandlerPlayServer {
 
     @Inject(method = "processUpdateSign", at = @At(value = "JUMP", opcode = Opcodes.IF_ICMPGE, ordinal = 0, shift = At.Shift.BY, by = -4))
     public void onProcessUpdateSignPreLoop(C12PacketUpdateSign packet, CallbackInfo ci) {
-        initialSignLines = Arrays.copyOf(packet.func_149589_f(), 4);
+        initialSignLines = Arrays.copyOf(packet.getLines(), 4);
     }
 
     @Inject(method = "processUpdateSign", at = @At(value = "JUMP", opcode = Opcodes.IFEQ, ordinal = 3, shift = At.Shift.BY, by = -2))
     public void onProcessUpdateSignPostLoop(C12PacketUpdateSign packet, CallbackInfo ci) {
-        for (int i = 0; i < packet.func_149589_f().length; i++) {
-            String line = packet.func_149589_f()[i];
+        for (int i = 0; i < packet.getLines().length; i++) {
+            String line = packet.getLines()[i];
             if ("!?".equals(line)) {
                 //Swap out to pre-parsed line
-                packet.func_149589_f()[i] = initialSignLines[i];
+                packet.getLines()[i] = initialSignLines[i];
 
                 boolean illegalLine = false;
 
@@ -53,7 +53,7 @@ public abstract class MixinNetHandlerPlayServer {
                 }
 
                 if (illegalLine) {
-                    packet.func_149589_f()[i] = "Error!? :D";
+                    packet.getLines()[i] = "Error!? :D";
                 }
             }
         }

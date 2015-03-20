@@ -96,8 +96,8 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         addNode(rotationNode);
         addNode(lightNode);
         addNode(renderNode);
-        setBlockName(pack.getName() + "\\" + identifier);
-        setBlockTextureName(Almura.MOD_ID + ":images/" + textureName);
+        setUnlocalizedName(pack.getName() + "\\" + identifier);
+        setTextureName(Almura.MOD_ID + ":images/" + textureName);
         setHardness(hardness);
         setResistance(resistance);
         setLightLevel(lightNode.getEmission());
@@ -115,7 +115,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister register) {
+    public void registerIcons(IIconRegister register) {
         //Almura can run last
         if (!Loader.instance().hasReachedState(LoaderState.AVAILABLE)) {
             return;
@@ -150,7 +150,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
 
     @Override
     public boolean isOpaqueCube() {
-        return opaque;
+        return fullBlock;
     }
 
     //TODO Check this come 1.8
@@ -297,9 +297,9 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
 
         if (Configuration.IS_CLIENT && this.modelContainer.isPresent()) {
             if (this.modelContainer.get().getModel().isPresent()) {
-                opaque = false;
+                fullBlock = false;
             } else {
-                opaque = renderNode.isOpaque();
+                fullBlock = renderNode.isOpaque();
             }
         }
     }

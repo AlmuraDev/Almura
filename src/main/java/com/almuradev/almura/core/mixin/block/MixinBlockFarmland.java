@@ -24,7 +24,7 @@ public abstract class MixinBlockFarmland extends Block {
     }
 
     public void updateTick(World world, int x, int y, int z, Random random) {
-        if (!this.func_149821_m(world, x, y, z) && !world.canLightningStrikeAt(x, y + 1, z)) {
+        if (!this.func_149821_m(world, x, y, z) && !world.isRainingAt(x, y + 1, z)) {
             int l = world.getBlockMetadata(x, y, z);
 
             if (l > 0) {

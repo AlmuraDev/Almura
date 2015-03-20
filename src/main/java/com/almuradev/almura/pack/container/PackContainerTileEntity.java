@@ -130,11 +130,11 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
 
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-        if (pkt.func_148857_g().hasKey(TAG_BOOLEAN_IS_EMPTY)) {
-            isEmpty = pkt.func_148857_g().getBoolean(TAG_BOOLEAN_IS_EMPTY);
+        if (pkt.getNbtCompound().hasKey(TAG_BOOLEAN_IS_EMPTY)) {
+            isEmpty = pkt.getNbtCompound().getBoolean(TAG_BOOLEAN_IS_EMPTY);
         }
-        if (pkt.func_148857_g().hasKey(TAG_BOOLEAN_IS_FULL)) {
-            isFull = pkt.func_148857_g().getBoolean(TAG_BOOLEAN_IS_FULL);
+        if (pkt.getNbtCompound().hasKey(TAG_BOOLEAN_IS_FULL)) {
+            isFull = pkt.getNbtCompound().getBoolean(TAG_BOOLEAN_IS_FULL);
         }
 
         hasContents = !isEmpty;
@@ -219,7 +219,7 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     }
 
     @Override
-    public boolean hasCustomInventoryName() {
+    public boolean isCustomInventoryName() {
         return title != null;
     }
 
@@ -235,12 +235,12 @@ public class PackContainerTileEntity extends TileEntity implements IInventory {
     }
 
     @Override
-    public void openInventory() {
+    public void openChest() {
 
     }
 
     @Override
-    public void closeInventory() {
+    public void closeChest() {
         if (!worldObj.isRemote) {
             handleInventoryChange();
             markDirty();

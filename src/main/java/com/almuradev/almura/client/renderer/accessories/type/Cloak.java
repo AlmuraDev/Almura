@@ -17,7 +17,7 @@ public class Cloak implements IAccessory<ModelBiped> {
     @Override
     public void onAttached(EntityLivingBase base, ResourceLocation textureLocation, ModelBiped root) {
         if (base instanceof AbstractClientPlayer) {
-            ((AbstractClientPlayer) base).func_152121_a(MinecraftProfileTexture.Type.CAPE, textureLocation);
+            ((AbstractClientPlayer) base).onSkinAvailable(MinecraftProfileTexture.Type.CAPE, textureLocation);
         }
     }
 

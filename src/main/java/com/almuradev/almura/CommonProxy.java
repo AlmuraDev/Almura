@@ -310,7 +310,7 @@ public class CommonProxy {
                     final ItemStack recipeStack = (ItemStack) obj;
 
                     if (slotStack.getItem() != recipeStack.getItem() || slotStack.stackSize < recipeStack.stackSize
-                            || slotStack.getItemDamage() != 32767 && slotStack.getItemDamage() != recipeStack.getItemDamage()) {
+                            || slotStack.getMetadata() != 32767 && slotStack.getMetadata() != recipeStack.getMetadata()) {
                         continue;
                     }
 

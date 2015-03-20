@@ -34,11 +34,10 @@ public class IngameBlockWireframe extends SimpleGui {
         this.y = y;
         this.z = z;
         this.wireframe = wireframe;
-        buildGui();
     }
 
     @Override
-    protected void buildGui() {
+    public void construct() {
         guiscreenBackground = false;
 
         final UIForm form = new UIForm(this, 175, 150, "Wireframe Information");

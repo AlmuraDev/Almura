@@ -56,7 +56,7 @@ public class RecipeManager {
         } else if (clazz == IShapelessRecipe.class) {
             CraftingManager.getInstance().getRecipeList().add(recipe);
         } else if (clazz == ISmeltRecipe.class) {
-            FurnaceRecipes.smelting().func_151394_a(((ISmeltRecipe) recipe).getInput(), ((ISmeltRecipe) recipe).getOutput(),
+            FurnaceRecipes.instance().addSmeltingRecipe(((ISmeltRecipe) recipe).getInput(), ((ISmeltRecipe) recipe).getOutput(),
                     ((ISmeltRecipe) recipe).getSmeltExperience());
             SMELT_RECIPES.add((ISmeltRecipe) recipe);
         }
@@ -199,7 +199,7 @@ public class RecipeManager {
                         // b. Registered stack size is greater than or equal to recipe stack size
                         // c. Damage values match
                         if (unknownStack.getItem() == recipeStack.getItem() && unknownStack.stackSize != recipeStack.stackSize
-                                && unknownStack.getItemDamage() == recipeStack.getItemDamage()) {
+                                && unknownStack.getMetadata() == recipeStack.getMetadata()) {
                             items.remove(rStack);
                         }
                     }
@@ -251,7 +251,7 @@ public class RecipeManager {
                     // b. Registered stack size is less than recipe stack size
                     // c. Damage values don't match
                     if (unknownStack.getItem() != recipeStack.getItem() || unknownStack.stackSize != recipeStack.stackSize
-                            || unknownStack.getItemDamage() != recipeStack.getItemDamage()) {
+                            || unknownStack.getMetadata() != recipeStack.getMetadata()) {
                         doesMatch = false;
                         break;
                     }
@@ -276,9 +276,9 @@ public class RecipeManager {
             }
         }
 
-        final ItemStack resultStack = FurnaceRecipes.smelting().getSmeltingResult(recipe.getInput());
+        final ItemStack resultStack = FurnaceRecipes.instance().getSmeltingResult(recipe.getInput());
         if (resultStack != null) {
-            final float experience = FurnaceRecipes.smelting().func_151398_b(recipe.getInput());
+            final float experience = FurnaceRecipes.instance().getSmeltingExperience(recipe.getInput());
             SmeltRecipes existing = new SmeltRecipes(recipe.getInput(), resultStack, experience);
             SMELT_RECIPES.add(existing);
             return Optional.of(existing);

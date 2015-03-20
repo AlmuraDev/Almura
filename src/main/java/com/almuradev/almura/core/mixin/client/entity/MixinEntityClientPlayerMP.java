@@ -34,7 +34,7 @@ public abstract class MixinEntityClientPlayerMP extends EntityPlayerSP {
         if (p_71165_1_.length() > 1000) {
             p_71165_1_ = p_71165_1_.substring(0, 1000);
         }
-        message.field_149440_a = p_71165_1_;
+        message.message = p_71165_1_;
         this.sendQueue.addToSendQueue(message);
         ci.cancel();
     }

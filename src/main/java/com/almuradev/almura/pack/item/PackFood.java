@@ -103,8 +103,8 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
-    public ItemStack onEaten(ItemStack stack, World world, EntityPlayer player) {
-        final ItemStack result = super.onEaten(stack, world, player);
+    public ItemStack onItemUseFinish(ItemStack stack, World world, EntityPlayer player) {
+        final ItemStack result = super.onItemUseFinish(stack, world, player);
         if (!world.isRemote) {
             final float change = consumption.getHealthRange().getValueWithinRange();
             if (change < 0) {
@@ -117,12 +117,12 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     }
 
     @Override
-    public int func_150905_g(ItemStack stack) {
+    public int getHealAmount(ItemStack stack) {
         return consumption.getFoodRange().getValueWithinRange();
     }
 
     @Override
-    public float func_150906_h(ItemStack stack) {
+    public float getSaturationModifier(ItemStack stack) {
         return consumption.getSaturationRange().getValueWithinRange();
     }
 

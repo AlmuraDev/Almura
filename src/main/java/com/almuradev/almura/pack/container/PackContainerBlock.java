@@ -107,8 +107,8 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
         addNode(lightNode);
         addNode(renderNode);
         addNode(containerNode);
-        setBlockName(pack.getName() + "\\" + identifier);
-        setBlockTextureName(Almura.MOD_ID + ":images/" + textureName);
+        setUnlocalizedName(pack.getName() + "\\" + identifier);
+        setTextureName(Almura.MOD_ID + ":images/" + textureName);
         setHardness(hardness);
         setResistance(resistance);
         setLightLevel(lightNode.getEmission());
@@ -126,7 +126,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister register) {
+    public void registerIcons(IIconRegister register) {
         // Almura can run last
         if (!Loader.instance().hasReachedState(LoaderState.AVAILABLE)) {
             return;
@@ -176,7 +176,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
 
     @Override
     public boolean isOpaqueCube() {
-        return opaque;
+        return fullBlock;
     }
 
     //TODO Check this come 1.8
@@ -203,7 +203,7 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
                         itemstack.stackSize -= j1;
                         item =
                                 new EntityItem(world, (double) ((float) x + f), (double) ((float) y + f1), (double) ((float) z + f2),
-                                        new ItemStack(itemstack.getItem(), j1, itemstack.getItemDamage()));
+                                        new ItemStack(itemstack.getItem(), j1, itemstack.getMetadata()));
                         float f3 = 0.05F;
                         item.motionX = (double) ((float) RangeProperty.RANDOM.nextGaussian() * f3);
                         item.motionY = (double) ((float) RangeProperty.RANDOM.nextGaussian() * f3 + 0.2F);
@@ -506,9 +506,9 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
 
         if (Configuration.IS_CLIENT && this.modelContainer.isPresent()) {
             if (this.modelContainer.get().getModel().isPresent()) {
-                opaque = false;
+                fullBlock = false;
             } else {
-                opaque = renderNode.isOpaque();
+                fullBlock = renderNode.isOpaque();
             }
         }
     }

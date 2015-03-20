@@ -121,10 +121,10 @@ public abstract class MixinGuiNewChat extends Gui {
                                 int j2 = -j1 * 9;
                                 boolean mentioned = false;
                                 boolean hasNickName = false;
-                                String s = chatline.func_151461_a().getFormattedText();
+                                String s = chatline.getChatComponent().getFormattedText();
                                 // Almura Add
                                 if (Configuration.CHAT_NOTIFICATIONS) {
-                                    String newChat = chatline.func_151461_a().getUnformattedText();
+                                    String newChat = chatline.getChatComponent().getUnformattedText();
                                     String[] split = newChat.toLowerCase().split(":");
                                     String nickName = "";
                                     if (split.length == 1) {
@@ -164,7 +164,7 @@ public abstract class MixinGuiNewChat extends Gui {
                                 }
                                 // End Almura
                                 GL11.glEnable(GL11.GL_BLEND); // FORGE: BugFix MC-36812 Chat Opacity Broken in 1.7.x
-                                this.mc.fontRenderer.drawStringWithShadow(s, b0, j2 - 8, 16777215 + (i2 << 24));
+                                this.mc.fontRendererObj.drawStringWithShadow(s, b0, j2 - 8, 16777215 + (i2 << 24));
                                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                             }
                         }
@@ -172,7 +172,7 @@ public abstract class MixinGuiNewChat extends Gui {
                 }
 
                 if (flag) {
-                    j1 = this.mc.fontRenderer.FONT_HEIGHT;
+                    j1 = this.mc.fontRendererObj.FONT_HEIGHT;
                     GL11.glTranslatef(-3.0F, 0.0F, 0.0F);
                     int k2 = l * j1 + l;
                     k1 = k * j1 + k;
@@ -207,19 +207,19 @@ public abstract class MixinGuiNewChat extends Gui {
         for (int i1 = 0; i1 < arraylist1.size(); ++i1) {
             IChatComponent ichatcomponent1 = (IChatComponent) arraylist1.get(i1);
             String s = this.func_146235_b(ichatcomponent1.getChatStyle().getFormattingCode() + ichatcomponent1.getUnformattedTextForChat());
-            int j1 = this.mc.fontRenderer.getStringWidth(s);
+            int j1 = this.mc.fontRendererObj.getStringWidth(s);
             ChatComponentText chatcomponenttext1 = new ChatComponentText(s);
             chatcomponenttext1.setChatStyle(ichatcomponent1.getChatStyle().createShallowCopy());
             boolean flag1 = false;
 
             if (l + j1 > k) {
-                String s1 = this.mc.fontRenderer.trimStringToWidth(s, k - l, false);
+                String s1 = this.mc.fontRendererObj.trimStringToWidth(s, k - l, false);
                 String s2 = s1.length() < s.length() ? s.substring(s1.length()) : null;
 
                 if (s2 != null && s2.length() > 0) {
                     int k1 = s1.lastIndexOf(" ");
 
-                    if (k1 >= 0 && this.mc.fontRenderer.getStringWidth(s.substring(0, k1)) > 0) {
+                    if (k1 >= 0 && this.mc.fontRendererObj.getStringWidth(s.substring(0, k1)) > 0) {
                         s1 = s.substring(0, k1);
                         s2 = s.substring(k1);
                     }
@@ -229,7 +229,7 @@ public abstract class MixinGuiNewChat extends Gui {
                     arraylist1.add(i1 + 1, chatcomponenttext2);
                 }
 
-                j1 = this.mc.fontRenderer.getStringWidth(s1);
+                j1 = this.mc.fontRendererObj.getStringWidth(s1);
                 chatcomponenttext1 = new ChatComponentText(s1);
                 chatcomponenttext1.setChatStyle(ichatcomponent1.getChatStyle().createShallowCopy());
                 flag1 = true;
@@ -297,7 +297,7 @@ public abstract class MixinGuiNewChat extends Gui {
             }
 
             if (mentioned) {
-                Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("note.harp"), 1.0f));
+                Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.createPositionedSoundRecord(new ResourceLocation("note.harp"), 1.0f));
             }
             // Almura end
 

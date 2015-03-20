@@ -72,8 +72,8 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         this.identifier = identifier;
         this.stages = stages;
         this.textureName = textureName;
-        setBlockName(pack.getName() + "\\" + identifier);
-        setBlockTextureName(Almura.MOD_ID + ":images/" + textureName);
+        setUnlocalizedName(pack.getName() + "\\" + identifier);
+        setTextureName(Almura.MOD_ID + ":images/" + textureName);
         setTickRandomly(true);
     }
 
@@ -137,9 +137,9 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
                         if (heldStack != null && heldStack.getItem() != null) {
                             final Item heldItem = heldStack.getItem();
 
-                            final Object minecraftObject = heldItem instanceof ItemBlock ? ((ItemBlock) heldItem).field_150939_a : heldItem;
+                            final Object minecraftObject = heldItem instanceof ItemBlock ? ((ItemBlock) heldItem).blockInstance : heldItem;
 
-                            if (minecraftObject == prop.getSource().minecraftObject && heldStack.getItemDamage() == prop.getSource().data) {
+                            if (minecraftObject == prop.getSource().minecraftObject && heldStack.getMetadata() == prop.getSource().data) {
                                 final BonemealEvent event = new BonemealEvent(player, world, this, x, y, z);
 
                                 if (MinecraftForge.EVENT_BUS.post(event)) {
@@ -205,7 +205,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister register) {
+    public void registerIcons(IIconRegister register) {
         //Almura can run last
         if (!Loader.instance().hasReachedState(LoaderState.AVAILABLE)) {
             return;

@@ -27,11 +27,10 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
     public AlmuraConfigurationMenu(SimpleGui parent) {
         super(parent);
-        buildGui();
     }
 
     @Override
-    protected void buildGui() {
+    public void construct() {
         // Create the form
         final UIForm form = new UIForm(this, 300, 225, "Configuration");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
@@ -61,43 +60,43 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         itemFrameRenderDistance.setPosition(-55, signRenderDistance.getY() + (padding * 4), Anchor.RIGHT | Anchor.TOP);
 
         // Chest Render Distance
-        final UISelect chestDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
+        final UISelect<Integer> chestDistanceDownMenu = new UISelect<>(this, 30, Arrays.asList(16, 32, 64));
         chestDistanceDownMenu.setPosition(-15, padding * 2, Anchor.TOP | Anchor.RIGHT);
         chestDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.DISTANCE_RENDER_CHEST == 16) {
-            chestDistanceDownMenu.select(0);
+            chestDistanceDownMenu.select(16);
         } else if (Configuration.DISTANCE_RENDER_CHEST == 32) {
-            chestDistanceDownMenu.select(1);
+            chestDistanceDownMenu.select(32);
         } else if (Configuration.DISTANCE_RENDER_CHEST == 64) {
-            chestDistanceDownMenu.select(2);
+            chestDistanceDownMenu.select(64);
         }
         chestDistanceDownMenu.setName("select.chest");
         chestDistanceDownMenu.register(this);
 
         // Sign Render Distance
-        final UISelect signDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
+        final UISelect<Integer> signDistanceDownMenu = new UISelect<>(this, 30, Arrays.asList(16, 32, 64));
         signDistanceDownMenu.setPosition(-15, chestDistanceDownMenu.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
         signDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 16) {
-            signDistanceDownMenu.select(0);
+            signDistanceDownMenu.select(16);
         } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 32) {
-            signDistanceDownMenu.select(1);
+            signDistanceDownMenu.select(32);
         } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 64) {
-            signDistanceDownMenu.select(2);
+            signDistanceDownMenu.select(64);
         }
         signDistanceDownMenu.setName("select.sign");
         signDistanceDownMenu.register(this);
 
         // Sign Render Distance
-        final UISelect itemFrameDistanceDownMenu = new UISelect(this, 30, UISelect.Option.fromList(Arrays.asList("16", "32", "64")));
+        final UISelect<Integer> itemFrameDistanceDownMenu = new UISelect<>(this, 30, Arrays.asList(16, 32, 64));
         itemFrameDistanceDownMenu.setPosition(-15, signDistanceDownMenu.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
         itemFrameDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.DISTANCE_RENDER_SIGN == 16) {
-            itemFrameDistanceDownMenu.select(0);
+            itemFrameDistanceDownMenu.select(16);
         } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 32) {
-            itemFrameDistanceDownMenu.select(1);
+            itemFrameDistanceDownMenu.select(32);
         } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 64) {
-            itemFrameDistanceDownMenu.select(2);
+            itemFrameDistanceDownMenu.select(64);
         }
         itemFrameDistanceDownMenu.setName("select.itemFrame");
         itemFrameDistanceDownMenu.register(this);
@@ -210,43 +209,13 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         String type = event.getComponent().getName().toLowerCase();
         switch (event.getComponent().getName()) {
             case "select.chest":
-                switch (event.getNewValue().getLabel()) {
-                    case "16":
-                        Configuration.setChestRenderDistance(16);
-                        break;
-                    case "32":
-                        Configuration.setChestRenderDistance(32);
-                        break;
-                    case "64":
-                        Configuration.setChestRenderDistance(64);
-                        break;
-                }
+                Configuration.setChestRenderDistance((Integer) event.getNewValue());
                 break;
             case "select.itemframe":
-                switch (event.getNewValue().getLabel()) {
-                    case "16":
-                        Configuration.setItemFrameRenderDistance(16);
-                        break;
-                    case "32":
-                        Configuration.setItemFrameRenderDistance(32);
-                        break;
-                    case "64":
-                        Configuration.setItemFrameRenderDistance(64);
-                        break;
-                }
+                Configuration.setItemFrameRenderDistance((Integer) event.getNewValue());
                 break;
             case "select.sign":
-                switch (event.getNewValue().getLabel()) {
-                    case "16":
-                        Configuration.setSignRenderDistance(16);
-                        break;
-                    case "32":
-                        Configuration.setSignRenderDistance(32);
-                        break;
-                    case "64":
-                        Configuration.setSignRenderDistance(64);
-                        break;
-                }
+                Configuration.setSignRenderDistance((Integer) event.getNewValue());
                 break;
 
         }

@@ -33,13 +33,12 @@ public class IngameDebugHUD extends SimpleGui {
     private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE, yaw = Integer.MIN_VALUE;
 
     public IngameDebugHUD() {
-        buildGui();
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
-    protected void buildGui() {
+    public void construct() {
         guiscreenBackground = false;
 
         // Construct Hud with all elements

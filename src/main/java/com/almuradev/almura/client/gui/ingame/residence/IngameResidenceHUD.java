@@ -26,11 +26,10 @@ public class IngameResidenceHUD extends SimpleGui {
 
     public IngameResidenceHUD() {
         super(null);
-        buildGui();
     }
 
     @Override
-    protected void buildGui() {
+    public void construct() {
         guiscreenBackground = false;
 
         // Construct Hud with all elements
