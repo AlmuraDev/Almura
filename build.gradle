@@ -31,7 +31,6 @@ ext.name = 'Almura'
 ext.inceptionYear = '2014'
 ext.packaging = 'jar'
 ext.url = 'http://github.com/AlmuraDev'
-ext.description = 'The official mod for the Almura Client and Server'
 ext.organization = 'AlmuraDev'
 ext.mixinSrg = new File(project.buildDir, "tmp/mixins/mixins.almura.srg")
 ext.mixinRefMap = new File(project.buildDir, "tmp/mixins/mixin.refmap.json")
