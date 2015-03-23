@@ -64,7 +64,7 @@ minecraft {
 }
 
 dependencies {
-    compile ('com.almuradev:almurasdk:1.7.10-1342-1-SNAPSHOT') {
+    compile ('com.almuradev:almurasdk:1.7.10-1342-1-SNAPSHOT:dev') {
         transitive = true
     }
 }
