@@ -17,12 +17,14 @@ public abstract class AlmuraBackgroundGui extends SimpleGui {
 
     public AlmuraBackgroundGui(SimpleGui parent) {
         super(parent);
+    }
 
+    @Override
+    public void construct() {
         background.register(this);
         addToScreen(background);
         animate(background.animation);
     }
-
 
     @Override
     public void setWorldAndResolution(Minecraft minecraft, int width, int height) {

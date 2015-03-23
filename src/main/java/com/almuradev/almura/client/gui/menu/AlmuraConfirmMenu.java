@@ -23,10 +23,13 @@ public class AlmuraConfirmMenu extends AlmuraBackgroundGui {
         this.message1 = message1;
         this.message2 = message2;
         this.title = title;
+        construct();
     }
 
     @Override
     public void construct() {
+        super.construct();
+
         // Create the form
         final UIForm form = new UIForm(this, 200, 100, title);
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);

@@ -27,10 +27,13 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
 
     public AlmuraConfigurationMenu(SimpleGui parent) {
         super(parent);
+        construct();
     }
 
     @Override
     public void construct() {
+        super.construct();
+
         // Create the form
         final UIForm form = new UIForm(this, 300, 225, "Configuration");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);

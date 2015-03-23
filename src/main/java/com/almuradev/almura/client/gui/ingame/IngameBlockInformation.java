@@ -33,6 +33,7 @@ public class IngameBlockInformation extends SimpleGui {
         this.block = block;
         this.metadata = metadata;
         this.hardness = hardness;
+        construct();
     }
 
     private static String getFormattedString(String raw, int length, String suffix) {

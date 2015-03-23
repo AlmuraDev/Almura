@@ -34,7 +34,7 @@ ext.url = 'http://github.com/AlmuraDev'
 ext.description = 'The official mod for the Almura Client and Server'
 ext.organization = 'AlmuraDev'
 ext.mixinSrg = new File(project.buildDir, "tmp/mixins/mixins.almura.srg")
-ext.mixinRefMap = new File(project.buildDir, "tmp/mixins/mixins.almura.refmap.json")
+ext.mixinRefMap = new File(project.buildDir, "tmp/mixins/mixin.refmap.json")
 ext.minecraftVersion = '1.7.10'
 ext.forgeVersion = '10.13.2.1307'
 version = minecraftVersion + '-' + forgeVersion.substring(forgeVersion.size() - 4)
@@ -84,7 +84,7 @@ license {
     includes(["**/*.java"])
 }
 
-compileJava{
+compileJava {
     options.compilerArgs += [
             '-Xlint:all',
             '-Xlint:-path',

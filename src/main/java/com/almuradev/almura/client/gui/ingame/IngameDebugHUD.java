@@ -35,6 +35,7 @@ public class IngameDebugHUD extends SimpleGui {
     public IngameDebugHUD() {
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
+        construct();
     }
 
     @Override

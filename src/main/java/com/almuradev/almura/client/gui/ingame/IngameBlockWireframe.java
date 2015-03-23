@@ -34,6 +34,7 @@ public class IngameBlockWireframe extends SimpleGui {
         this.y = y;
         this.z = z;
         this.wireframe = wireframe;
+        construct();
     }
 
     @Override

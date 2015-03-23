@@ -53,6 +53,7 @@ public class IngameHUD extends SimpleGui {
     public IngameHUD() {
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
+        construct();
     }
 
     @Override

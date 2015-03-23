@@ -91,7 +91,9 @@ public class ClientProxy extends CommonProxy {
                     e.printStackTrace();
                 }
             }
-            event.gui = new AlmuraMainMenu(null);
+            final AlmuraMainMenu mainMenuGui = new AlmuraMainMenu(null);
+            mainMenuGui.construct();
+            event.gui = mainMenuGui;
         }
     }
 
