@@ -94,13 +94,13 @@ public class PackCreator {
 
         final boolean
                 enableCollision =
-                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_COLLISION.getKey())
+                boundsConfigurationNode.getNode(PackKeys.USE_VANILLA_COLLISION.getKey())
                         .getBoolean(PackKeys.USE_VANILLA_COLLISION.getDefaultValue());
         List<Double> collisionCoordinates = Lists.newLinkedList();
 
         try {
             collisionCoordinates =
-                    PackUtil.parseStringToNumericList(Double.class, boundsConfigurationNode.getChild(PackKeys.COLLISION_BOX.getKey())
+                    PackUtil.parseStringToNumericList(Double.class, boundsConfigurationNode.getNode(PackKeys.COLLISION_BOX.getKey())
                             .getString(PackKeys.COLLISION_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
@@ -114,12 +114,12 @@ public class PackCreator {
 
         final boolean
                 enableWireframe =
-                boundsConfigurationNode.getChild(PackKeys.USE_VANILLA_WIREFRAME.getKey())
+                boundsConfigurationNode.getNode(PackKeys.USE_VANILLA_WIREFRAME.getKey())
                         .getBoolean(PackKeys.USE_VANILLA_WIREFRAME.getDefaultValue());
         List<Double> wireframeCoordinates = Lists.newLinkedList();
 
         try {
-            wireframeCoordinates = PackUtil.parseStringToNumericList(Double.class, boundsConfigurationNode.getChild(PackKeys.WIREFRAME_BOX.getKey())
+            wireframeCoordinates = PackUtil.parseStringToNumericList(Double.class, boundsConfigurationNode.getNode(PackKeys.WIREFRAME_BOX.getKey())
                     .getString(PackKeys.WIREFRAME_BOX.getDefaultValue()), 6);
         } catch (NumberFormatException e) {
             if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
@@ -154,8 +154,8 @@ public class PackCreator {
         final List<PackFace> faces = Lists.newLinkedList();
 
         for (ConfigurationNode node : modelConfigurationNode.getChildrenList()) {
-            final String rawCoordinateString = node.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).getString("");
-            final int textureIndex = node.getChild(PackKeys.TEXTURE.getKey()).getInt(0);
+            final String rawCoordinateString = node.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getString("");
+            final int textureIndex = node.getNode(PackKeys.TEXTURE.getKey()).getInt(0);
 
             final List<Vertex> vertices = Lists.newLinkedList();
             for (String rawCoordinate : rawCoordinateString.substring(0, rawCoordinateString.length()).split("\n")) {
@@ -212,14 +212,14 @@ public class PackCreator {
 
     public static PackBlock createBlockFromReader(Pack pack, String name, ConfigurationNode reader) throws IOException {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
-                reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
+                reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
         if (description.size() > 1) {
             tooltip.addAll(description);
             tooltip.remove(0);
         }
-        final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
-        final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String textureName = reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+        final String modelName = reader.getNode(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         PackModelContainer modelContainer = null;
         for (PackModelContainer mContainer : Pack.getModelContainers()) {
             if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
@@ -232,20 +232,20 @@ public class PackCreator {
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
-            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
                     .FUNCTION_STRING_TRANSFORMER));
         } catch (NumberFormatException nfe) {
-            if (!reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
+            if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
                 Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
             }
             textureCoordinates = Maps.newHashMap();
         }
-        final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
+        final boolean showInCreativeTab = reader.getNode(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
-        final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
+        final String creativeTabName = reader.getNode(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
 
-        final float hardness = reader.getChild(PackKeys.HARDNESS.getKey()).getFloat(PackKeys.HARDNESS.getDefaultValue());
-        final float resistance = reader.getChild(PackKeys.RESISTANCE.getKey()).getFloat(PackKeys.RESISTANCE.getDefaultValue());
+        final float hardness = reader.getNode(PackKeys.HARDNESS.getKey()).getFloat(PackKeys.HARDNESS.getDefaultValue());
+        final float resistance = reader.getNode(PackKeys.RESISTANCE.getKey()).getFloat(PackKeys.RESISTANCE.getDefaultValue());
 
         final RotationNode rotationNode = createRotationNode(pack, name, reader.getNode(PackKeys.NODE_ROTATE.getKey()));
         final LightNode lightNode = createLightNode(pack, name, reader.getNode(PackKeys.NODE_LIGHT.getKey()));
@@ -259,7 +259,7 @@ public class PackCreator {
                         creativeTabName,
                         rotationNode, lightNode, renderNode);
 
-        if (!reader.getChild(PackKeys.NODE_FUEL.getKey()).isVirtual()) {
+        if (!reader.getNode(PackKeys.NODE_FUEL.getKey()).isVirtual()) {
             block.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
         }
 
@@ -268,14 +268,14 @@ public class PackCreator {
 
     public static PackItem createItemFromReader(Pack pack, String name, ConfigurationNode reader) throws IOException {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
-                reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
+                reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
         if (description.size() > 1) {
             tooltip.addAll(description);
             tooltip.remove(0);
         }
-        final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
-        final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String textureName = reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+        final String modelName = reader.getNode(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         PackModelContainer modelContainer = null;
         for (PackModelContainer mContainer : Pack.getModelContainers()) {
             if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
@@ -288,17 +288,17 @@ public class PackCreator {
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
-            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
                     .FUNCTION_STRING_TRANSFORMER));
         } catch (NumberFormatException nfe) {
-            if (!reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
+            if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
                 Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
             }
             textureCoordinates = Maps.newHashMap();
         }
-        final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
+        final boolean showInCreativeTab = reader.getNode(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
-        final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
+        final String creativeTabName = reader.getNode(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", description.get(0));
 
@@ -306,7 +306,7 @@ public class PackCreator {
                 item =
                 new PackItem(pack, name, tooltip, textureName, modelName, modelContainer, textureCoordinates, showInCreativeTab, creativeTabName);
 
-        if (!reader.getChild(PackKeys.NODE_FUEL.getKey()).isVirtual()) {
+        if (!reader.getNode(PackKeys.NODE_FUEL.getKey()).isVirtual()) {
             item.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
         }
 
@@ -315,14 +315,14 @@ public class PackCreator {
 
     public static PackFood createFoodFromReader(Pack pack, String name, ConfigurationNode reader) throws IOException {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
-                reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
+                reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
         if (description.size() > 1) {
             tooltip.addAll(description);
             tooltip.remove(0);
         }
-        final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
-        final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String textureName = reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+        final String modelName = reader.getNode(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         PackModelContainer modelContainer = null;
         for (PackModelContainer mContainer : Pack.getModelContainers()) {
             if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
@@ -335,7 +335,7 @@ public class PackCreator {
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
-            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
                     .FUNCTION_STRING_TRANSFORMER));
         } catch (NumberFormatException nfe) {
             if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
@@ -343,9 +343,9 @@ public class PackCreator {
             }
             textureCoordinates = Maps.newHashMap();
         }
-        final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
+        final boolean showInCreativeTab = reader.getNode(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
-        final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
+        final String creativeTabName = reader.getNode(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
         final ConsumptionNode consumptionNode = createConsumptionNode(pack, name, reader.getNode(PackKeys.NODE_CONSUMPTION.getKey()));
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + name + ".name", description.get(0));
@@ -363,10 +363,10 @@ public class PackCreator {
     }
 
     public static PackCrops createCropFromReader(Pack pack, String name, ConfigurationNode reader) throws IOException {
-        final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
-        final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+        final String title = reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
+        final String textureName = reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
 
-        final int levelRequired = reader.getChild(PackKeys.LEVEL_REQUIRED.getKey()).getInt(PackKeys.LEVEL_REQUIRED.getDefaultValue());
+        final int levelRequired = reader.getNode(PackKeys.LEVEL_REQUIRED.getKey()).getInt(PackKeys.LEVEL_REQUIRED.getDefaultValue());
 
         final Map<Integer, Stage> stages = Maps.newHashMap();
 
@@ -374,8 +374,8 @@ public class PackCreator {
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", title);
 
-        for (Map.Entry<Object, ? extends ConfigurationNode> stageConfigurationEntry : reader.getNode(PackKeys.NODE_STAGES.getKey()).getChildrenMap
-                ().entrySet()) {
+        for (Map.Entry<Object, ? extends ConfigurationNode> stageConfigurationEntry : reader.getNode(PackKeys.NODE_STAGES.getKey()).getChildrenMap()
+                .entrySet()) {
             final int stageId = (Integer) stageConfigurationEntry.getKey();
 
             if (stageId < 0 || stageId > 15) {
@@ -398,13 +398,13 @@ public class PackCreator {
             throws IOException {
         final String identifier = crop.getIdentifier() + "\\seed";
         final List<String> description = PackUtil.parseNewlineStringIntoList(
-                reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
+                reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
         if (description.size() > 1) {
             tooltip.addAll(description);
             tooltip.remove(0);
         }
-        final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String modelName = reader.getNode(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         PackModelContainer modelContainer = null;
         for (PackModelContainer mContainer : Pack.getModelContainers()) {
             if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
@@ -418,17 +418,17 @@ public class PackCreator {
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
-            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
                     .FUNCTION_STRING_TRANSFORMER));
         } catch (NumberFormatException nfe) {
-            if (!reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
+            if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
                 Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
             }
             textureCoordinates = Maps.newHashMap();
         }
-        final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
+        final boolean showInCreativeTab = reader.getNode(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
-        final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
+        final String creativeTabName = reader.getNode(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
 
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "item." + pack.getName() + "\\" + identifier + ".name", description.get(0));
 
@@ -447,7 +447,7 @@ public class PackCreator {
 
     @SuppressWarnings("unchecked")
     public static Stage createCropStage(Pack pack, String name, PackCrops crop, int id, ConfigurationNode reader) {
-        final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String modelName = reader.getNode(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         PackModelContainer modelContainer = null;
         for (PackModelContainer mContainer : Pack.getModelContainers()) {
             if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
@@ -460,10 +460,10 @@ public class PackCreator {
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
-            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
                     .FUNCTION_STRING_TRANSFORMER));
         } catch (NumberFormatException nfe) {
-            if (!reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
+            if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
                 Almura.LOGGER
                         .warn("Failed parsing texture coordinates in stage [" + id + "] in [" + name + "] in pack [" + pack.getName() + "]. " + nfe
                                 .getMessage());
@@ -479,14 +479,14 @@ public class PackCreator {
 
     public static PackContainerBlock createContainerBlock(Pack pack, String name, ConfigurationNode reader) {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
-                reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
+                reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
         if (description.size() > 1) {
             tooltip.addAll(description);
             tooltip.remove(0);
         }
-        final String textureName = reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
-        final String modelName = reader.getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        final String textureName = reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+        final String modelName = reader.getNode(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         PackModelContainer modelContainer = null;
         for (PackModelContainer mContainer : Pack.getModelContainers()) {
             if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
@@ -499,20 +499,20 @@ public class PackCreator {
         }
         Map<Integer, List<Integer>> textureCoordinates;
         try {
-            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
                     .FUNCTION_STRING_TRANSFORMER));
         } catch (NumberFormatException nfe) {
-            if (!reader.getChild(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
+            if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
                 Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
             }
             textureCoordinates = Maps.newHashMap();
         }
-        final boolean showInCreativeTab = reader.getChild(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
+        final boolean showInCreativeTab = reader.getNode(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
                 PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
-        final String creativeTabName = reader.getChild(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
+        final String creativeTabName = reader.getNode(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
 
-        final float hardness = reader.getChild(PackKeys.HARDNESS.getKey()).getFloat(PackKeys.HARDNESS.getDefaultValue());
-        final float resistance = reader.getChild(PackKeys.RESISTANCE.getKey()).getFloat(PackKeys.RESISTANCE.getDefaultValue());
+        final float hardness = reader.getNode(PackKeys.HARDNESS.getKey()).getFloat(PackKeys.HARDNESS.getDefaultValue());
+        final float resistance = reader.getNode(PackKeys.RESISTANCE.getKey()).getFloat(PackKeys.RESISTANCE.getDefaultValue());
 
         final RotationNode rotationNode = createRotationNode(pack, name, reader.getNode(PackKeys.NODE_ROTATE.getKey()));
         final LightNode lightNode = createLightNode(pack, name, reader.getNode(PackKeys.NODE_LIGHT.getKey()));
@@ -534,7 +534,7 @@ public class PackCreator {
     }
 
     public static ContainerNode createContainerNode(Pack pack, String name, ConfigurationNode reader) {
-        int size = reader.getChild(PackKeys.INVENTORY_SIZE.getKey()).getInt(PackKeys.INVENTORY_SIZE.getDefaultValue());
+        int size = reader.getNode(PackKeys.INVENTORY_SIZE.getKey()).getInt(PackKeys.INVENTORY_SIZE.getDefaultValue());
         int correctSize = size;
         boolean invalid = true;
         if (size < 9) {
@@ -552,8 +552,8 @@ public class PackCreator {
                     + "] is invalid. Must be a multiple of [9] that does not exceed [54]. This has been set to [" + correctSize + "].");
         }
 
-        final String title = reader.getChild(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
-        final int maxStackSize = reader.getChild(PackKeys.MAX_STACK_SIZE.getKey()).getInt(PackKeys.MAX_STACK_SIZE.getDefaultValue());
+        final String title = reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue());
+        final int maxStackSize = reader.getNode(PackKeys.MAX_STACK_SIZE.getKey()).getInt(PackKeys.MAX_STACK_SIZE.getDefaultValue());
         final Set<StateProperty> states = Sets.newHashSet();
         final ConfigurationNode statesConfigurationNode = reader.getNode(PackKeys.STATE.getKey());
         for (Map.Entry<Object, ? extends ConfigurationNode> stateConfigurationNodes : statesConfigurationNode.getChildrenMap().entrySet()) {
@@ -564,11 +564,11 @@ public class PackCreator {
                         stateConfigurationNodes.getValue().getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
                 final String
                         textureName =
-                        stateConfigurationNodes.getValue().getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue())
+                        stateConfigurationNodes.getValue().getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue())
                                 .split(".png")[0];
                 final String
                         modelName =
-                        stateConfigurationNodes.getValue().getChild(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue())
+                        stateConfigurationNodes.getValue().getNode(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue())
                                 .split(".shape")[0];
                 PackModelContainer modelContainer = null;
                 for (PackModelContainer mContainer : Pack.getModelContainers()) {
@@ -584,11 +584,11 @@ public class PackCreator {
                 Map<Integer, List<Integer>> textureCoordinates;
                 try {
                     textureCoordinates = PackUtil.parseCoordinatesFrom(
-                            stateConfigurationNodes.getValue().getChild(PackKeys.TEXTURE_COORDINATES.getKey())
+                            stateConfigurationNodes.getValue().getNode(PackKeys.TEXTURE_COORDINATES.getKey())
                                     .getList(Functions
                                             .FUNCTION_STRING_TRANSFORMER));
                 } catch (NumberFormatException nfe) {
-                    if (!stateConfigurationNodes.getValue().getChild(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
+                    if (!stateConfigurationNodes.getValue().getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
                         Almura.LOGGER.warn("Failed parsing texture coordinates for state [" + rawState.toUpperCase() + "] in [" + name + "] in pack ["
                                 + pack.getName() + "]. " + nfe.getMessage());
                     }
@@ -617,7 +617,7 @@ public class PackCreator {
                 }
                 continue;
             }
-            final String type = entry.getValue().getChild(PackKeys.TYPE.getKey()).getString(PackKeys.TYPE.getDefaultValue()).toUpperCase();
+            final String type = entry.getValue().getNode(PackKeys.TYPE.getKey()).getString(PackKeys.TYPE.getDefaultValue()).toUpperCase();
             try {
                 switch (type) {
                     case "SHAPED":
@@ -642,15 +642,15 @@ public class PackCreator {
     }
 
     public static RotationNode createRotationNode(Pack pack, String name, ConfigurationNode root) {
-        final boolean rotationEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(true);
-        final boolean defaultRotateEnabled = root.getChild(PackKeys.DEFAULT_ROTATE.getKey()).getBoolean(PackKeys.DEFAULT_ROTATE.getDefaultValue());
-        final boolean defaultMirrorRotateEnabled = root.getChild(PackKeys.DEFAULT_MIRROR_ROTATE.getKey()).getBoolean(
+        final boolean rotationEnabled = root.getNode(PackKeys.ENABLED.getKey()).getBoolean(true);
+        final boolean defaultRotateEnabled = root.getNode(PackKeys.DEFAULT_ROTATE.getKey()).getBoolean(PackKeys.DEFAULT_ROTATE.getDefaultValue());
+        final boolean defaultMirrorRotateEnabled = root.getNode(PackKeys.DEFAULT_MIRROR_ROTATE.getKey()).getBoolean(
                 PackKeys.DEFAULT_MIRROR_ROTATE.getDefaultValue());
         final EnumMap<RotationMeta.Rotation, RotationProperty> rotationProperties = Maps.newEnumMap(RotationMeta.Rotation.class);
 
         final ConfigurationNode directionRotationNode = root.getNode(PackKeys.DIRECTION.getKey());
-        for (ConfigurationNode specificDirectionRotationNode : directionRotationNode.getChildrenList()) {
-            final String rawRotation = specificDirectionRotationNode.getString("");
+        for (Map.Entry<Object, ? extends ConfigurationNode> entry : directionRotationNode.getChildrenMap().entrySet()) {
+            final String rawRotation = (String) entry.getKey();
             final RotationMeta.Rotation rotation = RotationMeta.Rotation.getState(rawRotation);
             if (rotation == null) {
                 Almura.LOGGER.warn("Rotation [" + rawRotation + "] in [" + name + "] in pack [" + pack.getName() + "] is not valid.");
@@ -658,20 +658,20 @@ public class PackCreator {
             }
             final boolean
                     specificDirectionRotationEnabled =
-                    specificDirectionRotationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
-            final float angle = specificDirectionRotationNode.getChild(PackKeys.ANGLE.getKey()).getFloat(PackKeys.ANGLE.getDefaultValue());
+                    entry.getValue().getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+            final float angle = entry.getValue().getNode(PackKeys.ANGLE.getKey()).getFloat(PackKeys.ANGLE.getDefaultValue());
             final RotationMeta.Direction
                     directionX =
                     RotationMeta.Direction.getState(
-                            specificDirectionRotationNode.getChild(PackKeys.DIRECTION_X.getKey()).getString(PackKeys.DIRECTION_X.getDefaultValue()));
+                            entry.getValue().getNode(PackKeys.DIRECTION_X.getKey()).getString(PackKeys.DIRECTION_X.getDefaultValue()));
             final RotationMeta.Direction
                     directionY =
                     RotationMeta.Direction.getState(
-                            specificDirectionRotationNode.getChild(PackKeys.DIRECTION_Y.getKey()).getString(PackKeys.DIRECTION_Y.getDefaultValue()));
+                            entry.getValue().getNode(PackKeys.DIRECTION_Y.getKey()).getString(PackKeys.DIRECTION_Y.getDefaultValue()));
             final RotationMeta.Direction
                     directionZ =
                     RotationMeta.Direction.getState(
-                            specificDirectionRotationNode.getChild(PackKeys.DIRECTION_Z.getKey()).getString(PackKeys.DIRECTION_Z.getDefaultValue()));
+                            entry.getValue().getNode(PackKeys.DIRECTION_Z.getKey()).getString(PackKeys.DIRECTION_Z.getDefaultValue()));
             final RotationProperty
                     rotationProperty =
                     new RotationProperty(specificDirectionRotationEnabled, rotation, angle, directionX, directionY, directionZ);
@@ -682,14 +682,14 @@ public class PackCreator {
     }
 
     public static LightNode createLightNode(Pack pack, String name, ConfigurationNode root) {
-        float emission = root.getChild(PackKeys.EMISSION.getKey()).getFloat(PackKeys.EMISSION.getDefaultValue());
+        float emission = root.getNode(PackKeys.EMISSION.getKey()).getFloat(PackKeys.EMISSION.getDefaultValue());
         if (emission < 0f) {
             emission = 0f;
         }
         if (emission > 1f) {
             emission = emission / 15f;
         }
-        int opacity = root.getChild(PackKeys.OPACITY.getKey()).getInt(PackKeys.OPACITY.getDefaultValue());
+        int opacity = root.getNode(PackKeys.OPACITY.getKey()).getInt(PackKeys.OPACITY.getDefaultValue());
         if (opacity < 0) {
             opacity = 0;
         }
@@ -697,19 +697,19 @@ public class PackCreator {
             opacity = 255;
         }
         final ConfigurationNode lightRequiredConfigurationNode = root.getNode(PackKeys.REQUIRED.getKey());
-        final boolean enabled = lightRequiredConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
-        final int min = lightRequiredConfigurationNode.getChild(PackKeys.MIN.getKey()).getInt(PackKeys.MIN.getDefaultValue());
-        final int max = lightRequiredConfigurationNode.getChild(PackKeys.MAX.getKey()).getInt(PackKeys.MAX.getDefaultValue());
+        final boolean enabled = lightRequiredConfigurationNode.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+        final int min = lightRequiredConfigurationNode.getNode(PackKeys.MIN.getKey()).getInt(PackKeys.MIN.getDefaultValue());
+        final int max = lightRequiredConfigurationNode.getNode(PackKeys.MAX.getKey()).getInt(PackKeys.MAX.getDefaultValue());
         return new LightNode(emission, opacity, new RangeProperty<>(Integer.class, enabled, min, max));
     }
 
     @SuppressWarnings("unchecked")
     public static CollisionNode createCollisionNode(Pack pack, String name, ConfigurationNode root) {
-        final boolean collisionEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+        final boolean collisionEnabled = root.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
         final ConfigurationNode collisionSourcesConfigurationNode = root.getNode(PackKeys.SOURCES.getKey());
         final Set<CollisionProperty> collisionProperties = Sets.newHashSet();
-        for (ConfigurationNode collisionSourceConfigurationNode : collisionSourcesConfigurationNode.getChildrenList()) {
-            final String rawCollisionSource = collisionSourceConfigurationNode.getString("");
+        for (Map.Entry<Object, ? extends ConfigurationNode> entry : collisionSourcesConfigurationNode.getChildrenMap().entrySet()) {
+            final String rawCollisionSource = (String) entry.getKey();
             final Pair<String, String> collisionSourceModidIdenfifier = GameObjectMapper.parseModidIdentifierFrom(rawCollisionSource);
             final Optional<Class<? extends Entity>> entityClazz = EntityMapper.getEntityClassRemapped(collisionSourceModidIdenfifier.getKey(),
                     collisionSourceModidIdenfifier.getValue());
@@ -719,14 +719,13 @@ public class PackCreator {
                 continue;
             }
             final boolean
-                    enabled =
-                    collisionSourceConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+                    enabled = entry.getValue().getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
 
             final RangeProperty<Float>
                     healthRange =
                     new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
-                            collisionSourceConfigurationNode
-                                    .getChild(PackKeys.HEALTH_CHANGE.getKey())
+                            entry.getValue()
+                                    .getNode(PackKeys.HEALTH_CHANGE.getKey())
                                     .getString(PackKeys.HEALTH_CHANGE.getDefaultValue()), 0f));
             collisionProperties.add(new CollisionProperty(enabled, entityClazz.get(), healthRange));
         }
@@ -735,13 +734,13 @@ public class PackCreator {
     }
 
     public static RenderNode createRenderNode(Pack pack, String name, ConfigurationNode root) {
-        final boolean renderAsNormalBlock = root.getChild(PackKeys.NORMAL_CUBE.getKey()).getBoolean(PackKeys.NORMAL_CUBE.getDefaultValue());
-        final boolean renderAsOpaque = root.getChild(PackKeys.OPAQUE.getKey()).getBoolean(PackKeys.OPAQUE.getDefaultValue());
+        final boolean renderAsNormalBlock = root.getNode(PackKeys.NORMAL_CUBE.getKey()).getBoolean(PackKeys.NORMAL_CUBE.getDefaultValue());
+        final boolean renderAsOpaque = root.getNode(PackKeys.OPAQUE.getKey()).getBoolean(PackKeys.OPAQUE.getDefaultValue());
         return new RenderNode(renderAsNormalBlock, renderAsOpaque);
     }
 
     public static BreakNode createBreakNode(Pack pack, String name, Block block, boolean addDefault, ConfigurationNode root) {
-        final boolean breakEnabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(true);
+        final boolean breakEnabled = root.getNode(PackKeys.ENABLED.getKey()).getBoolean(true);
         final ConfigurationNode toolsConfigurationNode = root.getNode(PackKeys.TOOLS.getKey());
         final Set<ToolsNode> tools = Sets.newHashSet();
 
@@ -761,12 +760,12 @@ public class PackCreator {
             final RangeProperty<Integer>
                     experienceRange =
                     new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
-                            toolConfigurationNodes.getValue().getChild(PackKeys.RANGE_EXPERIENCE.getKey())
+                            toolConfigurationNodes.getValue().getNode(PackKeys.RANGE_EXPERIENCE.getKey())
                                     .getString(PackKeys.RANGE_EXPERIENCE.getDefaultValue()), 0));
             final RangeProperty<Float>
                     exhaustionRange =
                     new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
-                            toolConfigurationNodes.getValue().getChild(PackKeys.EXHAUSTION_CHANGE.getKey())
+                            toolConfigurationNodes.getValue().getNode(PackKeys.EXHAUSTION_CHANGE.getKey())
                                     .getString(PackKeys.EXHAUSTION_CHANGE.getDefaultValue()),
                             0.025F));
             final ConfigurationNode dropsConfigurationNode = toolConfigurationNodes.getValue().getNode(PackKeys.DROPS.getKey());
@@ -787,22 +786,22 @@ public class PackCreator {
                 final RangeProperty<Integer>
                         amountRange =
                         new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
-                                dropConfigurationNodes.getValue().getChild(PackKeys.AMOUNT.getKey())
+                                dropConfigurationNodes.getValue().getNode(PackKeys.AMOUNT.getKey())
                                         .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
-                final int data = dropConfigurationNodes.getValue().getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue());
+                final int data = dropConfigurationNodes.getValue().getNode(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue());
                 final ConfigurationNode bonusConfigurationNode = dropConfigurationNodes.getValue().getNode(PackKeys.BONUS.getKey());
                 final boolean
                         bonusEnabled =
-                        bonusConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+                        bonusConfigurationNode.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
                 final RangeProperty<Integer>
                         bonusAmountRange =
                         new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
-                                bonusConfigurationNode.getChild(PackKeys.AMOUNT.getKey())
+                                bonusConfigurationNode.getNode(PackKeys.AMOUNT.getKey())
                                         .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
                 final RangeProperty<Double>
                         bonusChanceRange =
                         new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class,
-                                bonusConfigurationNode.getChild(PackKeys.CHANCE.getKey())
+                                bonusConfigurationNode.getNode(PackKeys.CHANCE.getKey())
                                         .getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
                 drops.add(new DropProperty(drop.get(), amountRange, data,
                         new BonusProperty<>(Integer.class, bonusEnabled, bonusAmountRange, bonusChanceRange)));
@@ -830,28 +829,28 @@ public class PackCreator {
         final RangeProperty<Integer>
                 foodRange =
                 new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
-                        root.getChild(PackKeys.FOOD_CHANGE.getKey())
+                        root.getNode(PackKeys.FOOD_CHANGE.getKey())
                                 .getString(PackKeys.FOOD_CHANGE.getDefaultValue()), 0));
         final RangeProperty<Float>
                 saturationRange =
                 new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
-                        root.getChild(PackKeys.SATURATION_CHANGE.getKey())
+                        root.getNode(PackKeys.SATURATION_CHANGE.getKey())
                                 .getString(PackKeys.SATURATION_CHANGE.getDefaultValue()), 0f));
 
         final RangeProperty<Float>
                 healthRange =
                 new RangeProperty<>(Float.class, true, PackUtil.getRange(Float.class,
-                        root.getChild(PackKeys.HEALTH_CHANGE.getKey())
+                        root.getNode(PackKeys.HEALTH_CHANGE.getKey())
                                 .getString(PackKeys.HEALTH_CHANGE.getDefaultValue()), 0f));
 
-        final boolean wolfFavorite = root.getChild(PackKeys.WOLF_FAVORITE.getKey()).getBoolean(PackKeys.WOLF_FAVORITE.getDefaultValue());
-        final boolean alwaysEdible = root.getChild(PackKeys.ALWAYS_EDIBLE.getKey()).getBoolean(PackKeys.ALWAYS_EDIBLE.getDefaultValue());
+        final boolean wolfFavorite = root.getNode(PackKeys.WOLF_FAVORITE.getKey()).getBoolean(PackKeys.WOLF_FAVORITE.getDefaultValue());
+        final boolean alwaysEdible = root.getNode(PackKeys.ALWAYS_EDIBLE.getKey()).getBoolean(PackKeys.ALWAYS_EDIBLE.getDefaultValue());
         return new ConsumptionNode(true, foodRange, saturationRange, healthRange, alwaysEdible, wolfFavorite);
     }
 
     public static GrassNode createGrassNode(Pack pack, String name, PackSeeds seed, ConfigurationNode root) {
-        final boolean enabled = root.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
-        final String amountRaw = root.getChild(PackKeys.AMOUNT.getKey()).getString(PackKeys.AMOUNT.getDefaultValue());
+        final boolean enabled = root.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+        final String amountRaw = root.getNode(PackKeys.AMOUNT.getKey()).getString(PackKeys.AMOUNT.getDefaultValue());
         Pair<Integer, Integer> amountPair;
         try {
             amountPair = PackUtil.getRange(Integer.class, amountRaw, 1);
@@ -861,7 +860,7 @@ public class PackCreator {
                             + "] is not valid. Should be in the format of 1-3.");
             amountPair = new ImmutablePair<>(1, 1);
         }
-        final String chanceRaw = root.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue());
+        final String chanceRaw = root.getNode(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue());
         Pair<Double, Double> chancePair;
         try {
             chancePair = PackUtil.getRange(Double.class, chanceRaw, 100.0);
@@ -879,7 +878,7 @@ public class PackCreator {
     public static SoilNode createSoilNode(Pack pack, String name, ConfigurationNode node) {
         final Pair<String, String>
                 soilSourceModidIdentifier =
-                GameObjectMapper.parseModidIdentifierFrom(node.getChild(PackKeys.SOURCE.getKey()).getString(PackKeys.SOURCE.getDefaultValue()));
+                GameObjectMapper.parseModidIdentifierFrom(node.getNode(PackKeys.SOURCE.getKey()).getString(PackKeys.SOURCE.getDefaultValue()));
         final Optional<GameObject>
                 source =
                 GameObjectMapper.getGameObject(soilSourceModidIdentifier.getKey(), soilSourceModidIdentifier.getValue(), false);
@@ -897,7 +896,7 @@ public class PackCreator {
         }
 
         final ConfigurationNode biomeConfigurationNode = node.getNode(PackKeys.NODE_BIOME.getKey());
-        final boolean biomeNodeEnabled = biomeConfigurationNode.getChild(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+        final boolean biomeNodeEnabled = biomeConfigurationNode.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
         final ConfigurationNode biomeSourcesConfigurationNode = biomeConfigurationNode.getNode(PackKeys.SOURCES.getKey());
         final Set<BiomeProperty> biomes = Sets.newHashSet();
         for (Map.Entry<Object, ? extends ConfigurationNode> biomeSourceConfigurationNodes : biomeSourcesConfigurationNode.getChildrenMap()
@@ -911,11 +910,11 @@ public class PackCreator {
             }
             final Pair<Double, Double>
                     temperaturePair =
-                    PackUtil.getRange(Double.class, biomeSourceConfigurationNodes.getValue().getChild(PackKeys.TEMPERATURE_REQUIRED.getKey())
+                    PackUtil.getRange(Double.class, biomeSourceConfigurationNodes.getValue().getNode(PackKeys.TEMPERATURE_REQUIRED.getKey())
                             .getString(PackKeys.TEMPERATURE_REQUIRED.getDefaultValue()), 100.0);
             final Pair<Double, Double>
                     humidityPair =
-                    PackUtil.getRange(Double.class, biomeSourceConfigurationNodes.getValue().getChild(PackKeys.HUMIDITY_REQUIRED.getKey())
+                    PackUtil.getRange(Double.class, biomeSourceConfigurationNodes.getValue().getNode(PackKeys.HUMIDITY_REQUIRED.getKey())
                             .getString(PackKeys.HUMIDITY_REQUIRED.getDefaultValue()), 100.0);
             biomes.add(new BiomeProperty(biome, new RangeProperty<>(Double.class, true, temperaturePair),
                     new RangeProperty<>(Double.class, true, humidityPair)));
@@ -927,18 +926,18 @@ public class PackCreator {
     private static GrowthNode createGrowthNode(Pack pack, String name, ConfigurationNode reader) {
         final Pair<Double, Double>
                 chancePair =
-                PackUtil.getRange(Double.class, reader.getChild(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0);
+                PackUtil.getRange(Double.class, reader.getNode(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0);
         return new GrowthNode(new RangeProperty<>(Double.class, true, chancePair));
     }
 
     private static FuelNode createFuelNode(Pack pack, String name, ConfigurationNode reader) {
-        final boolean isEnabled = reader.getChild(PackKeys.ENABLED.getKey()).getBoolean(true);
-        final int maxBurnTime = reader.getChild(PackKeys.MAX_BURN_TIME.getKey()).getInt(PackKeys.MAX_BURN_TIME.getDefaultValue());
+        final boolean isEnabled = reader.getNode(PackKeys.ENABLED.getKey()).getBoolean(true);
+        final int maxBurnTime = reader.getNode(PackKeys.MAX_BURN_TIME.getKey()).getInt(PackKeys.MAX_BURN_TIME.getDefaultValue());
         return new FuelNode(isEnabled, maxBurnTime);
     }
 
     public static FertilizerNode createFertilizerNode(Pack pack, String name, int stageId, ConfigurationNode reader) {
-        final boolean isEnabled = reader.getChild(PackKeys.ENABLED.getKey()).getBoolean(false);
+        final boolean isEnabled = reader.getNode(PackKeys.ENABLED.getKey()).getBoolean(false);
         final Set<GameObjectProperty> value = Sets.newHashSet();
 
         for (Map.Entry<Object, ? extends ConfigurationNode> fertilizerSourceNodes : reader.getNode(PackKeys.SOURCES.getKey()).getChildrenMap()
@@ -955,7 +954,7 @@ public class PackCreator {
             final RangeProperty<Integer>
                     amountRange =
                     new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
-                            fertilizerSourceNodes.getValue().getChild(PackKeys.AMOUNT
+                            fertilizerSourceNodes.getValue().getNode(PackKeys.AMOUNT
                                     .getKey())
                                     .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
             value.add(new VariableGameObjectProperty(gameObject.get(), amountRange));
@@ -967,8 +966,8 @@ public class PackCreator {
     private static <R extends IRecipe> RecipeContainer<R> createRecipeContainer(Pack pack, String name, Class<? extends R> clazz, int id, Object res,
             ConfigurationNode reader)
             throws InvalidRecipeException, UnknownRecipeTypeException, DuplicateRecipeException {
-        final int amount = reader.getChild(PackKeys.AMOUNT.getKey()).getInt(1);
-        final int data = reader.getChild(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue());
+        final int amount = reader.getNode(PackKeys.AMOUNT.getKey()).getInt(1);
+        final int data = reader.getNode(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue());
 
         final ItemStack result;
         if (res instanceof Block) {
@@ -980,7 +979,7 @@ public class PackCreator {
         List<Object> params = Lists.newLinkedList();
 
         if (clazz == IShapedRecipe.class || clazz == IShapelessRecipe.class) {
-            for (String itemsRaw : reader.getChild(PackKeys.INGREDIENTS.getKey()).getList(Functions.FUNCTION_STRING_TRANSFORMER)) {
+            for (String itemsRaw : reader.getNode(PackKeys.INGREDIENTS.getKey()).getList(Functions.FUNCTION_STRING_TRANSFORMER)) {
                 final String[] itemsSplit = itemsRaw.split(" ");
                 for (String identifierCombined : itemsSplit) {
                     final String[] identifierAmountSplit = identifierCombined.split(StringEscapeUtils.escapeJava(":"));
@@ -1014,7 +1013,7 @@ public class PackCreator {
                 }
             }
         } else {
-            final String itemRaw = reader.getChild(PackKeys.INPUT.getKey()).getString(PackKeys.INPUT.getDefaultValue());
+            final String itemRaw = reader.getNode(PackKeys.INPUT.getKey()).getString(PackKeys.INPUT.getDefaultValue());
             final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(itemRaw, true);
             if (!gameObject.isPresent()) {
                 throw new InvalidRecipeException(
@@ -1037,7 +1036,7 @@ public class PackCreator {
                     params.add(new ItemStack((Item) gameObject.get().minecraftObject, 1, gameObject.get().data));
                 }
             }
-            params.add(reader.getChild(PackKeys.EXPERIENCE.getKey()).getFloat(PackKeys.EXPERIENCE.getDefaultValue()));
+            params.add(reader.getNode(PackKeys.EXPERIENCE.getKey()).getFloat(PackKeys.EXPERIENCE.getDefaultValue()));
         }
 
         if (params.isEmpty()) {

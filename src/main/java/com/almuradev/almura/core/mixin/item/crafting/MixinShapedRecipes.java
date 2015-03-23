@@ -59,9 +59,9 @@ public abstract class MixinShapedRecipes implements IShapedRecipe {
                     }
 
                     if (recipeStack.getMetadata() != 32767 && recipeStack.getMetadata() != slotStack.getMetadata()) {
-                    return false;
+                        return false;
+                    }
                 }
-            }
             }
         }
 

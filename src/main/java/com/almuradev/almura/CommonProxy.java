@@ -174,7 +174,7 @@ public class CommonProxy {
                         ((INodeContainer) block).addNode(soilNode);
                         final String
                                 textureName =
-                                reader.getChild(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+                                reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
                         final PackSeeds
                                 seed =
                                 PackCreator
@@ -192,7 +192,7 @@ public class CommonProxy {
                         }
 
                         for (Stage stage : ((PackCrops) block).getStages().values()) {
-                            final ConfigurationNode stageNode = reader.getChild(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
+                            final ConfigurationNode stageNode = reader.getNode(PackKeys.NODE_STAGES.getKey()).getNode("" + stage.getId());
                             stage.addNode(PackCreator.createCollisionNode(pack, stage.getIdentifier(),
                                     stageNode.getNode(PackKeys.NODE_COLLISION.getKey())));
                         }

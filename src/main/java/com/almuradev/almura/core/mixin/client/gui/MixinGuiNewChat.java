@@ -20,7 +20,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.awt.Color;
@@ -295,7 +294,8 @@ public abstract class MixinGuiNewChat extends Gui {
             }
 
             if (mentioned) {
-                Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.createPositionedSoundRecord(new ResourceLocation("note.harp"), 1.0f));
+                Minecraft.getMinecraft().getSoundHandler()
+                        .playSound(PositionedSoundRecord.createPositionedSoundRecord(new ResourceLocation("note.harp"), 1.0f));
             }
             // Almura end
 

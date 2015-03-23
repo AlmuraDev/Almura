@@ -106,7 +106,7 @@ public class Pack {
             try {
                 final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(path.toFile()).build().load();
 
-                final String type = reader.getChild(PackKeys.TYPE.getKey()).getString(PackKeys.TYPE.getDefaultValue()).toUpperCase();
+                final String type = reader.getNode(PackKeys.TYPE.getKey()).getString(PackKeys.TYPE.getDefaultValue()).toUpperCase();
 
                 final String name = path.getFileName().toString().split(".yml")[0];
 

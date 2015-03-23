@@ -185,7 +185,8 @@ public abstract class MixinGuiEditSign extends GuiScreen {
             if (c >= 10) {
                 code = (char) ('a' + c - 10);
             }
-            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow("&" + code + " - " + value.get() + parsedName, width - 90, 50 + c * 10, 0xffffffff);
+            Minecraft.getMinecraft().fontRendererObj
+                    .drawStringWithShadow("&" + code + " - " + value.get() + parsedName, width - 90, 50 + c * 10, 0xffffffff);
         }
         ci.cancel();
     }
