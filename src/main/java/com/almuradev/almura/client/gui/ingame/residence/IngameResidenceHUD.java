@@ -26,6 +26,7 @@ public class IngameResidenceHUD extends SimpleGui {
 
     public IngameResidenceHUD() {
         super(null);
+        construct();
     }
 
     @Override
