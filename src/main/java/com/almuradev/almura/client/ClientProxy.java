@@ -63,6 +63,9 @@ public class ClientProxy extends CommonProxy {
     @SuppressWarnings("unchecked")
     public void onPreInitialization(FMLPreInitializationEvent event) {
         super.onPreInitialization(event);
+        if (Configuration.FIRST_LAUNCH) {
+            Configuration.setOptimizedConfig();
+        }
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
         PACK_BLOCK_RENDERER.registerFor(PackCrops.class);
         PACK_BLOCK_RENDERER.registerFor(PackContainerBlock.class);
