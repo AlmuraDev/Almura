@@ -6,7 +6,7 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
+import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
@@ -21,7 +21,7 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.multiplayer.ServerData;
 
-public class AlmuraServerMenu extends AlmuraBackgroundGui {
+public class DynamicServerMenu extends DynamicBackgroundGui {
 
     private static final ServerData DATA_LIVE_SERVER = new ServerData("Almura", "srv1.almuramc.com");
     private static final ServerData DATA_DEV_SERVER = new ServerData("Almura (Dev)", "69.4.96.139");
@@ -49,7 +49,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
     private UILabel liveServerOnline;
     private UILabel devServerOnline;
 
-    public AlmuraServerMenu(SimpleGui parent) {
+    public DynamicServerMenu(SimpleGui parent) {
         super(parent);
         construct();
     }
@@ -63,7 +63,7 @@ public class AlmuraServerMenu extends AlmuraBackgroundGui {
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the logo
-        final UIImage logoImage = new UIImage(this, new GuiTexture(AlmuraMainMenu.ALMURA_LOGO_LOCATION), null);
+        final UIImage logoImage = new UIImage(this, new GuiTexture(DynamicMainMenu.ALMURA_LOGO_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
         logoImage.setSize(65, 95);
 

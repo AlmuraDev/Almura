@@ -25,7 +25,6 @@ public class IngameResidenceHUD extends SimpleGui {
     private boolean firstDraw = true;
 
     public IngameResidenceHUD() {
-        super(null);
         construct();
     }
 

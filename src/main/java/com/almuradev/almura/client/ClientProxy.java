@@ -11,7 +11,7 @@ import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
-import com.almuradev.almura.client.gui.menu.AlmuraMainMenu;
+import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
 import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
 import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
 import com.almuradev.almura.pack.block.PackBlock;
@@ -94,9 +94,7 @@ public class ClientProxy extends CommonProxy {
                     e.printStackTrace();
                 }
             }
-            final AlmuraMainMenu mainMenuGui = new AlmuraMainMenu(null);
-            mainMenuGui.construct();
-            event.gui = mainMenuGui;
+            event.gui = new DynamicMainMenu(null);
         }
     }
 

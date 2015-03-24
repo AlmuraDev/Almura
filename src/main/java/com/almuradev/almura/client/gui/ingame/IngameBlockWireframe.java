@@ -95,11 +95,11 @@ public class IngameBlockWireframe extends SimpleGui {
         applyButton.setName("button.apply");
         applyButton.register(this);
 
-        final UIButton cancelButton = new UIButton(this, "Cancel");
-        cancelButton.setSize(50, 14);
-        cancelButton.setPosition(-(getPaddedX(applyButton, padding) + padding), -padding, Anchor.RIGHT | Anchor.BOTTOM);
-        cancelButton.setName("button.cancel");
-        cancelButton.register(this);
+        final UIButton closeButton = new UIButton(this, "Close");
+        closeButton.setSize(50, 14);
+        closeButton.setPosition(-(getPaddedX(applyButton, padding) + padding), -padding, Anchor.RIGHT | Anchor.BOTTOM);
+        closeButton.setName("button.close");
+        closeButton.register(this);
 
         form.getContentContainer().add(minXLabel, minXTextField,
                 minYLabel, minYTextField,
@@ -107,7 +107,7 @@ public class IngameBlockWireframe extends SimpleGui {
                 maxXLabel, maxXTextField,
                 maxYLabel, maxYTextField,
                 maxZLabel, maxZTextField,
-                cancelButton, applyButton);
+                closeButton, applyButton);
 
         addToScreen(form);
     }
@@ -126,7 +126,7 @@ public class IngameBlockWireframe extends SimpleGui {
                 } catch (Exception e) {
                     break;
                 }
-            case "button.cancel":
+            case "button.close":
                 close();
         }
     }

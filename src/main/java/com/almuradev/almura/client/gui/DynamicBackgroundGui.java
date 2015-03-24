@@ -11,11 +11,14 @@ import net.malisis.core.renderer.animation.Animation;
 import net.malisis.core.renderer.animation.transformation.SizeTransform;
 import net.minecraft.client.Minecraft;
 
-public abstract class AlmuraBackgroundGui extends SimpleGui {
+public abstract class DynamicBackgroundGui extends SimpleGui {
 
     protected final UIBackground background = new UIBackground(this);
 
-    public AlmuraBackgroundGui(SimpleGui parent) {
+    public DynamicBackgroundGui() {
+    }
+
+    public DynamicBackgroundGui(SimpleGui parent) {
         super(parent);
     }
 

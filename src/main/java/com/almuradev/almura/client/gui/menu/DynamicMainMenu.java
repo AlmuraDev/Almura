@@ -7,7 +7,7 @@ package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
-import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
+import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.FileSystem;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
@@ -24,7 +24,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 
-public class AlmuraMainMenu extends AlmuraBackgroundGui {
+public class DynamicMainMenu extends DynamicBackgroundGui {
 
     protected static final ResourceLocation ALMURA_LOGO_LOCATION;
 
@@ -36,7 +36,7 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
         }
     }
 
-    public AlmuraMainMenu(SimpleGui parent) {
+    public DynamicMainMenu(SimpleGui parent) {
         super(parent);
         construct();
     }
@@ -127,21 +127,21 @@ public class AlmuraMainMenu extends AlmuraBackgroundGui {
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
-        switch (event.getComponent().getName().toLowerCase()) {
+        switch (event.getComponent().getName()) {
             case "button.singleplayer":
                 mc.displayGuiScreen(new GuiSelectWorld(this));
                 break;
             case "button.multiplayer":
-                mc.displayGuiScreen(new AlmuraServerMenu(this));
+                mc.displayGuiScreen(new DynamicServerMenu(this));
                 break;
             case "button.options":
                 mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
                 break;
             case "button.configuration":
-                mc.displayGuiScreen(new AlmuraConfigurationMenu(this));
+                mc.displayGuiScreen(new DynamicConfigurationMenu(this));
                 break;
             case "button.about":
-                mc.displayGuiScreen(new AlmuraAboutMenu(this));
+                mc.displayGuiScreen(new DynamicAboutMenu(this));
                 break;
             case "button.quit":
                 close();

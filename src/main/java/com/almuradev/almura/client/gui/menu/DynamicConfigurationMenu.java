@@ -6,7 +6,7 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
+import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
@@ -20,12 +20,12 @@ import net.malisis.core.client.gui.component.interaction.UISelect;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
+public class DynamicConfigurationMenu extends DynamicBackgroundGui {
 
     private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
             debugMappingsCheckBox, debugRecipesCheckBox, chatNotificationCheckBox;
 
-    public AlmuraConfigurationMenu(SimpleGui parent) {
+    public DynamicConfigurationMenu(SimpleGui parent) {
         super(parent);
         construct();
     }
@@ -44,13 +44,13 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         almuraGuiCheckBox = new UICheckBox(this, Colors.WHITE + "Enhanced In-Game HUD");
         almuraGuiCheckBox.setPosition(padding, padding * 2, Anchor.LEFT | Anchor.TOP);
         almuraGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_GUI);
-        almuraGuiCheckBox.setName("checkbox.gui.enhanced_gui");
+        almuraGuiCheckBox.setName("checkbox.enhanced_gui");
         almuraGuiCheckBox.register(this);
 
         residenceHudCheckBox = new UICheckBox(this, Colors.WHITE + "Residence HUD");
         residenceHudCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         residenceHudCheckBox.setChecked(Configuration.DISPLAY_RESIDENCE_HUD);
-        residenceHudCheckBox.setName("checkbox.gui.residence_hud");
+        residenceHudCheckBox.setName("checkbox.residence_hud");
         residenceHudCheckBox.register(this);
 
         final UILabel chestRenderDistance = new UILabel(this, Colors.WHITE + "Chest Distance:");
@@ -108,44 +108,44 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         almuraDebugGuiCheckBox = new UICheckBox(this, Colors.WHITE + "Enhanced F3 Debug Menu");
         almuraDebugGuiCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4 + 15), Anchor.LEFT | Anchor.TOP);
         almuraDebugGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_DEBUG);
-        almuraDebugGuiCheckBox.setName("checkbox.gui.enhanced_debug");
+        almuraDebugGuiCheckBox.setName("checkbox.enhanced_debug");
         almuraDebugGuiCheckBox.register(this);
 
         // Chat Notifications Checkbox
         chatNotificationCheckBox = new UICheckBox(this, Colors.WHITE + "Chat Notifications");
         chatNotificationCheckBox.setPosition(padding, almuraDebugGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         chatNotificationCheckBox.setChecked(Configuration.CHAT_NOTIFICATIONS);
-        chatNotificationCheckBox.setName("checkbox.gui.chat_notification");
+        chatNotificationCheckBox.setName("checkbox.chat_notification");
 
         // Create the debug mode checkbox
         debugModeCheckBox = new UICheckBox(this, Colors.WHITE + "Debug Mode (All)");
         debugModeCheckBox.setPosition(padding, chatNotificationCheckBox.getY() + (padding * 4) + 40, Anchor.LEFT | Anchor.TOP);
         debugModeCheckBox.setChecked(Configuration.DEBUG_ALL);
-        debugModeCheckBox.setName("checkbox.gui.debug_mode");
+        debugModeCheckBox.setName("checkbox.debug_mode");
 
         // Create the debug languages checkbox
         debugLanguagesCheckBox = new UICheckBox(this, Colors.WHITE + "Debug Languages");
         debugLanguagesCheckBox.setPosition(padding, debugModeCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugLanguagesCheckBox.setChecked(Configuration.DEBUG_LANGUAGES);
-        debugLanguagesCheckBox.setName("checkbox.gui.debug_languages");
+        debugLanguagesCheckBox.setName("checkbox.debug_languages");
 
         // Create the debug packs checkbox
         debugPacksCheckBox = new UICheckBox(this, Colors.WHITE + "Debug Content Loading");
         debugPacksCheckBox.setPosition(padding, debugLanguagesCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugPacksCheckBox.setChecked(Configuration.DEBUG_PACKS);
-        debugPacksCheckBox.setName("checkbox.gui.debug_packs");
+        debugPacksCheckBox.setName("checkbox.debug_packs");
 
         // Create the debug mappings checkbox
         debugMappingsCheckBox = new UICheckBox(this, Colors.WHITE + "Debug Entity / Item Mappings");
         debugMappingsCheckBox.setPosition(padding, debugPacksCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugMappingsCheckBox.setChecked(Configuration.DEBUG_MAPPINGS);
-        debugMappingsCheckBox.setName("checkbox.gui.debug_mappings");
+        debugMappingsCheckBox.setName("checkbox.debug_mappings");
 
         // Create the debug recipes checkbox
         debugRecipesCheckBox = new UICheckBox(this, Colors.WHITE + "Debug Recipe Loading");
         debugRecipesCheckBox.setPosition(padding, debugMappingsCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         debugRecipesCheckBox.setChecked(Configuration.DEBUG_RECIPES);
-        debugRecipesCheckBox.setName("checkbox.gui.debug_recipes");
+        debugRecipesCheckBox.setName("checkbox.debug_recipes");
 
         // Set Optimized Client Settings
         final UIButton graphicsButton = new UIButton(this, "Load Optimized Settings");
@@ -161,17 +161,17 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         saveButton.setName("button.save");
         saveButton.register(this);
 
-        // Create the cancel button
-        final UIButton cancelButton = new UIButton(this, "Cancel");
-        cancelButton.setSize(50, 16);
-        cancelButton.setPosition(-((padding * 2) + saveButton.getWidth()), -padding, Anchor.RIGHT | Anchor.BOTTOM);
-        cancelButton.setName("button.cancel");
-        cancelButton.register(this);
+        // Create the back button
+        final UIButton backButton = new UIButton(this, "Back");
+        backButton.setSize(50, 16);
+        backButton.setPosition(-((padding * 2) + saveButton.getWidth()), -padding, Anchor.RIGHT | Anchor.BOTTOM);
+        backButton.setName("button.back");
+        backButton.register(this);
 
         form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, almuraGuiCheckBox,
                 residenceHudCheckBox,
                 almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
-                debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, cancelButton, saveButton,
+                debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, backButton, saveButton,
                 chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu, chestDistanceDownMenu);
 
         addToScreen(form);
@@ -182,10 +182,10 @@ public class AlmuraConfigurationMenu extends AlmuraBackgroundGui {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.graphics":
                 Configuration.setOptimizedConfig();
-                mc.displayGuiScreen(new AlmuraConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.",
-                        "Please restart your game to apply settings.", "Almura"));
+                mc.displayGuiScreen(new DynamicConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to"
+                        + " apply settings.", "Almura"));
                 break;
-            case "button.cancel":
+            case "button.back":
                 close();
                 break;
             case "button.save":

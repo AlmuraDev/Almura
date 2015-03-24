@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
+import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
@@ -14,11 +14,11 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 
-public class AlmuraConfirmMenu extends AlmuraBackgroundGui {
+public class DynamicConfirmMenu extends DynamicBackgroundGui {
 
     private String message1, message2, title;
 
-    public AlmuraConfirmMenu(SimpleGui parent, String message1, String message2, String title) {
+    public DynamicConfirmMenu(SimpleGui parent, String message1, String message2, String title) {
         super(parent);
         this.message1 = message1;
         this.message2 = message2;
@@ -59,7 +59,7 @@ public class AlmuraConfirmMenu extends AlmuraBackgroundGui {
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
-        switch (event.getComponent().getName().toLowerCase()) {
+        switch (event.getComponent().getName()) {
             case "button.close":
                 close();
                 break;

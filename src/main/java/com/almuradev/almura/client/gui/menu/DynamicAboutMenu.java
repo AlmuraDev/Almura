@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import com.almuradev.almura.client.gui.AlmuraBackgroundGui;
+import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
@@ -15,9 +15,9 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 
-public class AlmuraAboutMenu extends AlmuraBackgroundGui {
+public class DynamicAboutMenu extends DynamicBackgroundGui {
 
-    public AlmuraAboutMenu(SimpleGui parent) {
+    public DynamicAboutMenu(SimpleGui parent) {
         super(parent);
         construct();
     }
@@ -47,7 +47,7 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
         aboutUsLabel.setPosition(0, 5, Anchor.CENTER);
         aboutUsLabel.setText(fieldText);
         aboutUsLabel.setTextColor(Colors.WHITE.getGuiColorCode());
-        aboutUsLabel.setName("mline.aboutus");
+        aboutUsLabel.setName("multiline_label.about_us");
 
         // Create the mods button
         final UIButton modsButton = new UIButton(this, "Mods");
@@ -56,14 +56,14 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
         modsButton.setName("button.mods");
         modsButton.register(this);
 
-        // Create the close button
-        final UIButton closeButton = new UIButton(this, "Close");
-        closeButton.setSize(50, 16);
-        closeButton.setPosition(-5, -5, Anchor.RIGHT | Anchor.BOTTOM);
-        closeButton.setName("button.close");
-        closeButton.register(this);
+        // Create the back button
+        final UIButton backButton = new UIButton(this, "Back");
+        backButton.setSize(50, 16);
+        backButton.setPosition(-5, -5, Anchor.RIGHT | Anchor.BOTTOM);
+        backButton.setName("button.back");
+        backButton.register(this);
 
-        form.getContentContainer().add(aboutUsLabel, modsButton, closeButton);
+        form.getContentContainer().add(aboutUsLabel, modsButton, backButton);
 
         addToScreen(form);
     }
@@ -74,7 +74,7 @@ public class AlmuraAboutMenu extends AlmuraBackgroundGui {
             case "button.mods":
                 mc.displayGuiScreen(new GuiModList(this));
                 break;
-            case "button.close":
+            case "button.back":
                 close();
                 break;
         }
