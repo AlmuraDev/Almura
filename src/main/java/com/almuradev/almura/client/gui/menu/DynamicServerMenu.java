@@ -24,7 +24,7 @@ import net.minecraft.client.multiplayer.ServerData;
 public class DynamicServerMenu extends DynamicBackgroundGui {
 
     private static final ServerData DATA_LIVE_SERVER = new ServerData("Almura", "srv1.almuramc.com");
-    private static final ServerData DATA_DEV_SERVER = new ServerData("Almura (Dev)", "69.4.96.139");
+    private static final ServerData DATA_DEV_SERVER = new ServerData("Almura (Dev)", "dev.almuramc.com");
     private static final Query QUERY_LIVE_SERVER = new Query(DATA_LIVE_SERVER, 25565), QUERY_DEV_SERVER = new Query(DATA_DEV_SERVER, 25565);
 
     private final Thread QUERIER = new Thread(new Runnable() {
