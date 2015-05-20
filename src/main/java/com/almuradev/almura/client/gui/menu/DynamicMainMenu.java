@@ -59,7 +59,7 @@ public class DynamicMainMenu extends DynamicBackgroundGui {
         // Create the build label
         final UILabel buildLabel = new UILabel(this, Colors.GRAY + Almura.GUI_VERSION);
         buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
-        buildLabel.setFontScale(0.65f);
+        buildLabel.getFontRendererOptions().fontScale = 0.65f;
 
         // Create the singleplayer button
         final UIButton singleplayerButton = new UIButton(this, Colors.AQUA + "Singleplayer");
@@ -106,12 +106,12 @@ public class DynamicMainMenu extends DynamicBackgroundGui {
         // Create the copyright label
         final UILabel copyrightLabel = new UILabel(this, Colors.GRAY + "Copyright AlmuraDev 2012 - 2015 ");
         copyrightLabel.setPosition(0, -9, Anchor.CENTER | Anchor.BOTTOM);
-        copyrightLabel.setFontScale(0.7f);
+        copyrightLabel.getFontRendererOptions().fontScale = 0.7f;
 
         // Create the trademark label
         final UILabel trademarkLabel = new UILabel(this, Colors.GRAY + "Minecraft is a registered trademark of Mojang AB");
         trademarkLabel.setPosition(0, -1, Anchor.CENTER | Anchor.BOTTOM);
-        trademarkLabel.setFontScale(0.7f);
+        trademarkLabel.getFontRendererOptions().fontScale = 0.7f;
 
         form.getContentContainer().add(logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
                 aboutButton, quitButton, copyrightLabel, trademarkLabel);

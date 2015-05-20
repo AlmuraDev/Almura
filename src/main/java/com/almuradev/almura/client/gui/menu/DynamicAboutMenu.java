@@ -46,7 +46,7 @@ public class DynamicAboutMenu extends DynamicBackgroundGui {
         aboutUsLabel.setSize(290, form.getContentContainer().getHeight() - 30);
         aboutUsLabel.setPosition(0, 5, Anchor.CENTER);
         aboutUsLabel.setText(fieldText);
-        aboutUsLabel.setTextColor(Colors.WHITE.getGuiColorCode());
+        aboutUsLabel.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
         aboutUsLabel.setName("multiline_label.about_us");
 
         // Create the mods button

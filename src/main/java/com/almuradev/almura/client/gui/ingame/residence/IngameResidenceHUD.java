@@ -43,51 +43,51 @@ public class IngameResidenceHUD extends SimpleGui {
         // Player Display Name
         title = new UILabel(this, Colors.AQUA + "Residence Info");
         title.setPosition(0, 1, Anchor.CENTER | Anchor.TOP);
-        title.setColor(0xffffffff);
+        title.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
         title.setSize(7, 7);
-        title.setFontScale(0.8F);
+        title.getFontRendererOptions().fontScale = 0.8f;
 
         resName = new UILabel(this, Colors.WHITE + "Name: DocksArea");
         resName.setPosition(3, title.getY() + 8, Anchor.LEFT | Anchor.TOP);
-        resName.setColor(0xffffffff);
+        resName.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
         resName.setSize(7, 7);
-        resName.setFontScale(0.7F);
+        resName.getFontRendererOptions().fontScale = 0.7F;
 
         resOwner = new UILabel(this, Colors.WHITE + "Owner: ~Dockter");
         resOwner.setPosition(7, resName.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resOwner.setColor(0xffffffff);
+        resOwner.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
         resOwner.setSize(7, 7);
-        resOwner.setFontScale(0.7F);
+        resOwner.getFontRendererOptions().fontScale = 0.7F;
 
         resOwnerOnline = new UILabel(this, Colors.WHITE + "Owner Last Online: NOW");
         resOwnerOnline.setPosition(7, resOwner.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resOwnerOnline.setColor(0xffffffff);
+        resOwnerOnline.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
         resOwnerOnline.setSize(7, 7);
-        resOwnerOnline.setFontScale(0.7F);
+        resOwnerOnline.getFontRendererOptions().fontScale = 0.7F;
 
         resBank = new UILabel(this, Colors.WHITE + "Vault: $999,000.00");
         resBank.setPosition(3, resOwnerOnline.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resBank.setColor(0xffffffff);
+        resBank.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
         resBank.setSize(7, 7);
-        resBank.setFontScale(0.7F);
+        resBank.getFontRendererOptions().fontScale = 0.7F;
 
         resLeaseCost = new UILabel(this, Colors.WHITE + "Lease Cost: $999,000.00");
         resLeaseCost.setPosition(3, resBank.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resLeaseCost.setColor(0xffffffff);
+        resLeaseCost.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
         resLeaseCost.setSize(7, 7);
-        resLeaseCost.setFontScale(0.7F);
+        resLeaseCost.getFontRendererOptions().fontScale = 0.7F;
 
         resLeaseExpireTitle = new UILabel(this, Colors.WHITE + "Lease Expires:");
         resLeaseExpireTitle.setPosition(3, resLeaseCost.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resLeaseExpireTitle.setColor(0xffffffff);
+        resLeaseExpireTitle.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
         resLeaseExpireTitle.setSize(7, 7);
-        resLeaseExpireTitle.setFontScale(0.7F);
+        resLeaseExpireTitle.getFontRendererOptions().fontScale = 0.7F;
 
         resLeaseExpire = new UILabel(this, Colors.WHITE + "Never");
         resLeaseExpire.setPosition(8, resLeaseExpireTitle.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resLeaseExpire.setColor(0xffffffff);
+        resLeaseExpire.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
         resLeaseExpire.setSize(7, 7);
-        resLeaseExpire.setFontScale(0.7F);
+        resLeaseExpire.getFontRendererOptions().fontScale = 0.7F;
 
         resPane.add(title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire);
         addToScreen(resPane);

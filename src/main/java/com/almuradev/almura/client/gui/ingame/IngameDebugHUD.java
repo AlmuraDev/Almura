@@ -54,7 +54,7 @@ public class IngameDebugHUD extends SimpleGui {
         // Title
         UILabel debugTitle = new UILabel(this, Colors.AQUA + "Almura Debug");
         debugTitle.setPosition(0, 3, Anchor.CENTER | Anchor.TOP);
-        debugTitle.setFontScale(1.1F);
+        debugTitle.getFontRendererOptions().fontScale = 1.1f;
 
         // FPS
         UILabel fpsLabel = new UILabel(this, Colors.WHITE + "FPS: ");
@@ -102,7 +102,7 @@ public class IngameDebugHUD extends SimpleGui {
 
         UILabel version = new UILabel(this, Colors.GREEN + Almura.GUI_VERSION);
         version.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
-        version.setFontScale(0.7f);
+        version.getFontRendererOptions().fontScale = 0.7f;
 
         debugPanel.add(debugTitle, fpsLabel, fps, memoryLabel, memoryDebug, memoryAllocated, directionLabel, xLoc, yLoc, zLoc, facingLabel,
                 directionLoc,
