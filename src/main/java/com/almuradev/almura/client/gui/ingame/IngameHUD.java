@@ -73,19 +73,19 @@ public class IngameHUD extends SimpleGui {
         // Player Display Name
         playerTitle = new UILabel(this, "");
         playerTitle.setPosition(6, 2, Anchor.LEFT | Anchor.TOP);
-        playerTitle.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+        playerTitle.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
         playerTitle.setSize(7, 7);
 
         // Player Display Mode
         playerMode = new UILabel(this, "");
         playerMode.setPosition(playerTitle.getX() + playerTitle.getText().length() + 4, 2, Anchor.LEFT | Anchor.TOP);
-        playerMode.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+        playerMode.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
         playerMode.setSize(7, 7);
 
         // Player Display Name
         playerCurrency = new UILabel(this, " ");
         playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 4, 2, Anchor.LEFT | Anchor.TOP);
-        playerCurrency.getFontRendererOptions().color = ORANGE.getGuiColorCode();
+        playerCurrency.getFontRenderOptions().color = ORANGE.getGuiColorCode();
         playerCurrency.setSize(7, 7);
 
         // Health Property
@@ -102,9 +102,9 @@ public class IngameHUD extends SimpleGui {
 
         // Almura Title
         almuraTitle = new UILabel(this, "Almura");
-        almuraTitle.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+        almuraTitle.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
         almuraTitle.setSize(7, 7);
-        almuraTitle.getFontRendererOptions().fontScale = 1.0F;
+        almuraTitle.getFontRenderOptions().fontScale = 1.0F;
         almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
 
         // Hunger Property
@@ -127,9 +127,9 @@ public class IngameHUD extends SimpleGui {
         // Player Coordinates Label
         playerCoords = new UILabel(this, "x: 0 y: 0 z: 0");
         playerCoords.setPosition(-73, 5, Anchor.RIGHT | Anchor.TOP);
-        playerCoords.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+        playerCoords.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
         playerCoords.setSize(15, 7);
-        playerCoords.getFontRendererOptions().fontScale = 0.8F;
+        playerCoords.getFontRenderOptions().fontScale = 0.8F;
 
         // World Image
         worldImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_WORLD);
@@ -139,9 +139,9 @@ public class IngameHUD extends SimpleGui {
         // World Display Label
         worldDisplay = new UILabel(this, "World");
         worldDisplay.setPosition(-5, 5, Anchor.RIGHT | Anchor.TOP);
-        worldDisplay.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+        worldDisplay.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
         worldDisplay.setSize(15, 7);
-        worldDisplay.getFontRendererOptions().fontScale = 0.8F;
+        worldDisplay.getFontRenderOptions().fontScale = 0.8F;
 
         // Player Image
         playerImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_PLAYER);
@@ -151,8 +151,8 @@ public class IngameHUD extends SimpleGui {
         // Player Count Label
         serverCount = new UILabel(this, "--");
         serverCount.setPosition(-110, 14, Anchor.RIGHT | Anchor.TOP);
-        serverCount.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
-        serverCount.getFontRendererOptions().fontScale = 0.8F;
+        serverCount.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        serverCount.getFontRenderOptions().fontScale = 0.8F;
 
         // Compass Image
         final UIImage compassImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_COMPASS);
@@ -162,9 +162,9 @@ public class IngameHUD extends SimpleGui {
         // Player Compass Label
         playerCompass = new UILabel(this, "");
         playerCompass.setPosition(-51, 14, Anchor.RIGHT | Anchor.TOP);
-        playerCompass.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+        playerCompass.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
         playerCompass.setSize(35, 7);
-        playerCompass.getFontRendererOptions().fontScale = 0.8F;
+        playerCompass.getFontRenderOptions().fontScale = 0.8F;
 
         // Clock Image
         final UIImage clockImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_CLOCK);
@@ -174,9 +174,9 @@ public class IngameHUD extends SimpleGui {
         // World Time Label
         worldTime = new UILabel(this, "7pm");
         worldTime.setPosition(-5, 13, Anchor.RIGHT | Anchor.TOP);
-        worldTime.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+        worldTime.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
         worldTime.setSize(15, 7);
-        worldTime.getFontRendererOptions().fontScale = 0.8F;
+        worldTime.getFontRenderOptions().fontScale = 0.8F;
 
         // XP Property
         xpProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_XP, ICON_BAR);
@@ -187,9 +187,9 @@ public class IngameHUD extends SimpleGui {
         // XP Level Label
         xpLevel = new UILabel(this, "1");
         xpLevel.setPosition(-5, 23, Anchor.RIGHT | Anchor.TOP);
-        xpLevel.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+        xpLevel.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
         xpLevel.setSize(15, 7);
-        xpLevel.getFontRendererOptions().fontScale = 0.8F;
+        xpLevel.getFontRenderOptions().fontScale = 0.8F;
 
         gradientContainer
                 .add(playerTitle, playerMode, playerCurrency, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty,
@@ -231,9 +231,9 @@ public class IngameHUD extends SimpleGui {
 
     public void updateWidgets() {
         if (firstPass) {
-            almuraTitle.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+            almuraTitle.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
             almuraTitle.setSize(7, 7);
-            almuraTitle.getFontRendererOptions().fontScale = 1.0F;
+            almuraTitle.getFontRenderOptions().fontScale = 1.0F;
             almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
         }
 

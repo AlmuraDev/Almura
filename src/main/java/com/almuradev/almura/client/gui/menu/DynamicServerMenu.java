@@ -70,7 +70,7 @@ public class DynamicServerMenu extends DynamicBackgroundGui {
         // Create the build label
         final UILabel buildLabel = new UILabel(this, Colors.GRAY + Almura.GUI_VERSION);
         buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
-        buildLabel.getFontRendererOptions().fontScale = 0.65f;
+        buildLabel.getFontRenderOptions().fontScale = 0.65f;
 
         final int padding = 4;
 

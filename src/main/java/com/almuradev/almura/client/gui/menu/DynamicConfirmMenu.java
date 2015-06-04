@@ -36,13 +36,13 @@ public class DynamicConfirmMenu extends DynamicBackgroundGui {
 
         // Create the message label
         final UILabel messageLabel1 = new UILabel(this, Colors.AQUA + message1);
-        messageLabel1.getFontRendererOptions().fontScale = 1f;
-        messageLabel1.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+        messageLabel1.getFontRenderOptions().fontScale = 1f;
+        messageLabel1.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
         messageLabel1.setPosition(0, -5, Anchor.CENTER | Anchor.MIDDLE);
 
         final UILabel messageLabel2 = new UILabel(this, Colors.WHITE + message2);
-        messageLabel2.getFontRendererOptions().fontScale = 1f;
-        messageLabel2.getFontRendererOptions().color = Colors.WHITE.getGuiColorCode();
+        messageLabel2.getFontRenderOptions().fontScale = 1f;
+        messageLabel2.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
         messageLabel2.setPosition(0, +5, Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the close button
