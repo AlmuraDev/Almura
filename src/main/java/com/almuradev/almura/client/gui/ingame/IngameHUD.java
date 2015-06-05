@@ -15,7 +15,6 @@ import com.almuradev.almurasdk.util.FontRenderOptionsBuilder;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -52,9 +51,9 @@ public class IngameHUD extends SimpleGui {
     private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE;
 
     public IngameHUD() {
+        construct();
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
-        construct();
     }
 
     @Override
@@ -109,7 +108,7 @@ public class IngameHUD extends SimpleGui {
 
         // Hunger Property
         hungerProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_HUNGER, ICON_BAR);
-        hungerProperty.setPosition(0, 14, Anchor.CENTER | Anchor.TOP);
+        hungerProperty.setPosition(-2, 14, Anchor.CENTER | Anchor.TOP);
         hungerProperty.setSize(105, 7);
 
         // Stamina Property
@@ -197,18 +196,12 @@ public class IngameHUD extends SimpleGui {
                         worldTime, xpLevel);
 
         addToScreen(gradientContainer);
-    }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onClientTick(ClientTickEvent event) {
-        if (UPDATES_ENABLED && Configuration.DISPLAY_ENHANCED_GUI && mc.thePlayer != null) {
-            updateWidgets();
-        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
-        if (!Configuration.DISPLAY_ENHANCED_GUI || !UPDATES_ENABLED) {
+        if (!Configuration.DISPLAY_ENHANCED_GUI || !UPDATES_ENABLED || mc.thePlayer == null) {
             return;
         }
 
@@ -225,6 +218,7 @@ public class IngameHUD extends SimpleGui {
 
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             setWorldAndResolution(mc, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+            updateWidgets();
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }

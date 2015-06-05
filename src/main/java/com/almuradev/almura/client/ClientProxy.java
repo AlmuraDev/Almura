@@ -27,13 +27,13 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -58,6 +58,7 @@ public class ClientProxy extends CommonProxy {
     public static IngameDebugHUD HUD_DEBUG;
     public static IngameHUD HUD_INGAME;
     public static IngameResidenceHUD HUD_RESIDENCE;
+    private static boolean isInitialized = false;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -130,17 +131,12 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onClientWorldTick(TickEvent.RenderTickEvent event) {
-        if (event.side.isClient()) {
-            if (HUD_DEBUG == null) {
-                HUD_DEBUG = new IngameDebugHUD();
-            }
-            if (HUD_INGAME == null) {
-                HUD_INGAME = new IngameHUD();
-            }
-            if (HUD_RESIDENCE == null) {
-                HUD_RESIDENCE = new IngameResidenceHUD();
-            }
+    public void onClientWorldTick(RenderGameOverlayEvent.Post event) {
+        if (!isInitialized) {
+            HUD_DEBUG = new IngameDebugHUD();
+            HUD_INGAME = new IngameHUD();
+            HUD_RESIDENCE = new IngameResidenceHUD();
+            isInitialized = true;
         }
     }
 }
