@@ -153,8 +153,7 @@ public class IngameBlockInformation extends SimpleGui {
 
         form.getContentContainer()
                 .add(blockImage, localizedNameLabel, unlocalizedNameLabel, soundLabel, metadataLabel, lightOpacityLabel, lightValueLabel,
-                        hardnessLabel,
-                        blockBoundsLabel, closeButton);
+                        hardnessLabel, blockBoundsLabel, closeButton);
 
         addToScreen(form);
     }

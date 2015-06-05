@@ -82,7 +82,7 @@ public class B03ResidenceInformation implements IMessage, IMessageHandler<B03Res
     @Override
     public IMessage onMessage(B03ResidenceInformation message, MessageContext ctx) {
         if (ctx.side.isClient() && ResidenceData.WITHIN_RESIDENCE) {
-            ClientProxy.HUD_RESIDENCE.refreshFromData();
+            ClientProxy.HUD_RESIDENCE.updateWidgets();
         }
         return null;
     }

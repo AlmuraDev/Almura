@@ -16,6 +16,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -24,7 +25,6 @@ public class IngameResidenceHUD extends SimpleGui {
     public static final Minecraft MINECRAFT = Minecraft.getMinecraft();
     public UILabel title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire;
     public UIBackgroundContainer resPane;
-    private boolean firstDraw = true;
 
     public IngameResidenceHUD() {
         construct();
@@ -32,6 +32,9 @@ public class IngameResidenceHUD extends SimpleGui {
 
     @Override
     public void construct() {
+        final ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft(), Minecraft.getMinecraft().displayWidth, Minecraft
+                .getMinecraft().displayHeight);
+        setWorldAndResolution(mc, resolution.getScaledWidth(), resolution.getScaledHeight());
         guiscreenBackground = false;
 
         // Construct Hud with all elements
@@ -46,54 +49,39 @@ public class IngameResidenceHUD extends SimpleGui {
         title = new UILabel(this, Colors.AQUA + "Residence Info");
         title.setPosition(0, 1, Anchor.CENTER | Anchor.TOP);
         title.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.8f).build());
-        title.setSize(7, 7);
 
         resName = new UILabel(this, Colors.WHITE + "Name: DocksArea");
         resName.setPosition(3, title.getY() + 8, Anchor.LEFT | Anchor.TOP);
         resName.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
-        resName.setSize(7, 7);
 
         resOwner = new UILabel(this, Colors.WHITE + "Owner: ~Dockter");
         resOwner.setPosition(7, resName.getY() + 6, Anchor.LEFT | Anchor.TOP);
         resOwner.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
-        resOwner.setSize(7, 7);
 
         resOwnerOnline = new UILabel(this, Colors.WHITE + "Owner Last Online: NOW");
         resOwnerOnline.setPosition(7, resOwner.getY() + 6, Anchor.LEFT | Anchor.TOP);
         resOwnerOnline.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
-        resOwnerOnline.setSize(7, 7);
 
         resBank = new UILabel(this, Colors.WHITE + "Vault: $999,000.00");
         resBank.setPosition(3, resOwnerOnline.getY() + 6, Anchor.LEFT | Anchor.TOP);
         resBank.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
-        resBank.setSize(7, 7);
 
         resLeaseCost = new UILabel(this, Colors.WHITE + "Lease Cost: $999,000.00");
         resLeaseCost.setPosition(3, resBank.getY() + 6, Anchor.LEFT | Anchor.TOP);
         resLeaseCost.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
-        resLeaseCost.setSize(7, 7);
 
         resLeaseExpireTitle = new UILabel(this, Colors.WHITE + "Lease Expires:");
         resLeaseExpireTitle.setPosition(3, resLeaseCost.getY() + 6, Anchor.LEFT | Anchor.TOP);
         resLeaseExpireTitle.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
-        resLeaseExpireTitle.setSize(7, 7);
 
         resLeaseExpire = new UILabel(this, Colors.WHITE + "Never");
         resLeaseExpire.setPosition(8, resLeaseExpireTitle.getY() + 6, Anchor.LEFT | Anchor.TOP);
         resLeaseExpire.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
-        resLeaseExpire.setSize(7, 7);
 
         resPane.add(title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire);
         addToScreen(resPane);
 
         MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @Override
-    public void onClose() {
-        super.onClose();
-
-        MinecraftForge.EVENT_BUS.unregister(this);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -104,15 +92,12 @@ public class IngameResidenceHUD extends SimpleGui {
 
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             setWorldAndResolution(MINECRAFT, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-            if (firstDraw) { // This is used to fix alignment issues.
-                title.setText(Colors.AQUA + "Residence Info");
-                firstDraw = false;
-            }
+            updateWidgets();
             drawScreen(event.mouseX, event.mouseY, event.partialTicks);
         }
     }
 
-    public void refreshFromData() {
+    public void updateWidgets() {
         if (ResidenceData.OWNER_NAME.equalsIgnoreCase("mcsnetworks")) {
             resOwner.setText("Owner: " + Colors.RED + "~Dockter");
         } else {

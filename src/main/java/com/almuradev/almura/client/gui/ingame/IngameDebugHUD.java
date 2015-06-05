@@ -13,11 +13,11 @@ import com.almuradev.almurasdk.util.Colors;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
@@ -41,6 +41,9 @@ public class IngameDebugHUD extends SimpleGui {
 
     @Override
     public void construct() {
+        final ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft(), Minecraft.getMinecraft().displayWidth, Minecraft
+                .getMinecraft().displayHeight);
+        setWorldAndResolution(mc, resolution.getScaledWidth(), resolution.getScaledHeight());
         guiscreenBackground = false;
 
         // Construct Hud with all elements
@@ -113,13 +116,6 @@ public class IngameDebugHUD extends SimpleGui {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onClientTick(ClientTickEvent event) {
-        if (UPDATES_ENABLED && mc.thePlayer != null && mc.currentScreen == null && Configuration.DISPLAY_ENHANCED_DEBUG) {
-            updateWidgets();
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
         if (event.type == RenderGameOverlayEvent.ElementType.DEBUG && Configuration.DISPLAY_ENHANCED_DEBUG) {
             if (UPDATES_ENABLED && mc.thePlayer != null) {
@@ -127,6 +123,7 @@ public class IngameDebugHUD extends SimpleGui {
 
                 if (mc.currentScreen == null) {
                     setWorldAndResolution(mc, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+                    updateWidgets();
                     drawScreen(event.mouseX, event.mouseY, event.partialTicks);
                 }
             }

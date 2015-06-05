@@ -131,7 +131,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onClientWorldTick(RenderGameOverlayEvent.Post event) {
+    public void onRenderGameOverlayEventPost(RenderGameOverlayEvent.Post event) {
         if (!isInitialized) {
             HUD_DEBUG = new IngameDebugHUD();
             HUD_INGAME = new IngameHUD();
