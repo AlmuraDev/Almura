@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
+import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
@@ -46,7 +47,7 @@ public class DynamicAboutMenu extends DynamicBackgroundGui {
         aboutUsLabel.setSize(290, form.getContentContainer().getHeight() - 30);
         aboutUsLabel.setPosition(0, 5, Anchor.CENTER);
         aboutUsLabel.setText(fieldText);
-        aboutUsLabel.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        aboutUsLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
         aboutUsLabel.setName("multiline_label.about_us");
 
         // Create the mods button

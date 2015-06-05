@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
@@ -70,7 +71,7 @@ public class DynamicServerMenu extends DynamicBackgroundGui {
         // Create the build label
         final UILabel buildLabel = new UILabel(this, Colors.GRAY + Almura.GUI_VERSION);
         buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
-        buildLabel.getFontRenderOptions().fontScale = 0.65f;
+        buildLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
         final int padding = 4;
 

@@ -6,8 +6,10 @@
 package com.almuradev.almura.client.gui.ingame.residence;
 
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almurasdk.util.FontRenderOptionsBuilder;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.malisis.core.client.gui.Anchor;
@@ -43,51 +45,43 @@ public class IngameResidenceHUD extends SimpleGui {
         // Player Display Name
         title = new UILabel(this, Colors.AQUA + "Residence Info");
         title.setPosition(0, 1, Anchor.CENTER | Anchor.TOP);
-        title.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        title.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.8f).build());
         title.setSize(7, 7);
-        title.getFontRenderOptions().fontScale = 0.8f;
 
         resName = new UILabel(this, Colors.WHITE + "Name: DocksArea");
         resName.setPosition(3, title.getY() + 8, Anchor.LEFT | Anchor.TOP);
-        resName.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        resName.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
         resName.setSize(7, 7);
-        resName.getFontRenderOptions().fontScale = 0.7F;
 
         resOwner = new UILabel(this, Colors.WHITE + "Owner: ~Dockter");
         resOwner.setPosition(7, resName.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resOwner.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        resOwner.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
         resOwner.setSize(7, 7);
-        resOwner.getFontRenderOptions().fontScale = 0.7F;
 
         resOwnerOnline = new UILabel(this, Colors.WHITE + "Owner Last Online: NOW");
         resOwnerOnline.setPosition(7, resOwner.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resOwnerOnline.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        resOwnerOnline.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
         resOwnerOnline.setSize(7, 7);
-        resOwnerOnline.getFontRenderOptions().fontScale = 0.7F;
 
         resBank = new UILabel(this, Colors.WHITE + "Vault: $999,000.00");
         resBank.setPosition(3, resOwnerOnline.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resBank.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        resBank.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
         resBank.setSize(7, 7);
-        resBank.getFontRenderOptions().fontScale = 0.7F;
 
         resLeaseCost = new UILabel(this, Colors.WHITE + "Lease Cost: $999,000.00");
         resLeaseCost.setPosition(3, resBank.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resLeaseCost.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        resLeaseCost.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
         resLeaseCost.setSize(7, 7);
-        resLeaseCost.getFontRenderOptions().fontScale = 0.7F;
 
         resLeaseExpireTitle = new UILabel(this, Colors.WHITE + "Lease Expires:");
         resLeaseExpireTitle.setPosition(3, resLeaseCost.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resLeaseExpireTitle.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        resLeaseExpireTitle.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
         resLeaseExpireTitle.setSize(7, 7);
-        resLeaseExpireTitle.getFontRenderOptions().fontScale = 0.7F;
 
         resLeaseExpire = new UILabel(this, Colors.WHITE + "Never");
         resLeaseExpire.setPosition(8, resLeaseExpireTitle.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resLeaseExpire.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        resLeaseExpire.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
         resLeaseExpire.setSize(7, 7);
-        resLeaseExpire.getFontRenderOptions().fontScale = 0.7F;
 
         resPane.add(title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire);
         addToScreen(resPane);

@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
+import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
@@ -36,13 +37,11 @@ public class DynamicConfirmMenu extends DynamicBackgroundGui {
 
         // Create the message label
         final UILabel messageLabel1 = new UILabel(this, Colors.AQUA + message1);
-        messageLabel1.getFontRenderOptions().fontScale = 1f;
-        messageLabel1.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        messageLabel1.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
         messageLabel1.setPosition(0, -5, Anchor.CENTER | Anchor.MIDDLE);
 
         final UILabel messageLabel2 = new UILabel(this, Colors.WHITE + message2);
-        messageLabel2.getFontRenderOptions().fontScale = 1f;
-        messageLabel2.getFontRenderOptions().color = Colors.WHITE.getGuiColorCode();
+        messageLabel2.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
         messageLabel2.setPosition(0, +5, Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the close button

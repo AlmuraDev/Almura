@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.util.Colors;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -54,7 +55,7 @@ public class IngameDebugHUD extends SimpleGui {
         // Title
         UILabel debugTitle = new UILabel(this, Colors.AQUA + "Almura Debug");
         debugTitle.setPosition(0, 3, Anchor.CENTER | Anchor.TOP);
-        debugTitle.getFontRenderOptions().fontScale = 1.1f;
+        debugTitle.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_110);
 
         // FPS
         UILabel fpsLabel = new UILabel(this, Colors.WHITE + "FPS: ");
@@ -102,7 +103,7 @@ public class IngameDebugHUD extends SimpleGui {
 
         UILabel version = new UILabel(this, Colors.GREEN + Almura.GUI_VERSION);
         version.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
-        version.getFontRenderOptions().fontScale = 0.7f;
+        version.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
         debugPanel.add(debugTitle, fpsLabel, fps, memoryLabel, memoryDebug, memoryAllocated, directionLabel, xLoc, yLoc, zLoc, facingLabel,
                 directionLoc,

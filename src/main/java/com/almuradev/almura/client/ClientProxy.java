@@ -23,11 +23,11 @@ import com.almuradev.almurasdk.lang.LanguageRegistry;
 import com.almuradev.almurasdk.lang.Languages;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.settings.KeyBinding;
@@ -73,14 +73,6 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.registerKeyBinding(BINDING_OPEN_BACKPACK);
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @Override
-    public void onInitialization(FMLInitializationEvent event) {
-        super.onInitialization(event);
-        HUD_DEBUG = new IngameDebugHUD();
-        HUD_INGAME = new IngameHUD();
-        HUD_RESIDENCE = new IngameResidenceHUD();
     }
 
     @SubscribeEvent
@@ -135,6 +127,21 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onRenderPlayerSpecialPostEvent(RenderPlayerEvent.Specials.Post event) {
         AccessoryManager.onRenderPlayerSpecialEventPost(event);
+    }
+
+    @SubscribeEvent
+    public void onClientWorldTick(TickEvent.RenderTickEvent event) {
+        if (event.side.isClient()) {
+            if (HUD_DEBUG == null) {
+                HUD_DEBUG = new IngameDebugHUD();
+            }
+            if (HUD_INGAME == null) {
+                HUD_INGAME = new IngameHUD();
+            }
+            if (HUD_RESIDENCE == null) {
+                HUD_RESIDENCE = new IngameResidenceHUD();
+            }
+        }
     }
 }
 

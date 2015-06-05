@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.FileSystem;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
@@ -59,7 +60,7 @@ public class DynamicMainMenu extends DynamicBackgroundGui {
         // Create the build label
         final UILabel buildLabel = new UILabel(this, Colors.GRAY + Almura.GUI_VERSION);
         buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
-        buildLabel.getFontRenderOptions().fontScale = 0.65f;
+        buildLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_065);
 
         // Create the singleplayer button
         final UIButton singleplayerButton = new UIButton(this, Colors.AQUA + "Singleplayer");
@@ -106,12 +107,12 @@ public class DynamicMainMenu extends DynamicBackgroundGui {
         // Create the copyright label
         final UILabel copyrightLabel = new UILabel(this, Colors.GRAY + "Copyright AlmuraDev 2012 - 2015 ");
         copyrightLabel.setPosition(0, -9, Anchor.CENTER | Anchor.BOTTOM);
-        copyrightLabel.getFontRenderOptions().fontScale = 0.7f;
+        copyrightLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
         // Create the trademark label
         final UILabel trademarkLabel = new UILabel(this, Colors.GRAY + "Minecraft is a registered trademark of Mojang AB");
         trademarkLabel.setPosition(0, -1, Anchor.CENTER | Anchor.BOTTOM);
-        trademarkLabel.getFontRenderOptions().fontScale = 0.7f;
+        trademarkLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
         form.getContentContainer().add(logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
                 aboutButton, quitButton, copyrightLabel, trademarkLabel);

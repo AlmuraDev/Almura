@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.client.gui.ingame;
 
+import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.block.PackBlock;
@@ -68,7 +69,7 @@ public class IngameBlockInformation extends SimpleGui {
 
         final UILabel unlocalizedNameLabel = new UILabel(this, Colors.GRAY + getFormattedString(block.getUnlocalizedName(), 60, "..."));
         unlocalizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), getPaddedY(localizedNameLabel, 0), Anchor.LEFT | Anchor.TOP);
-        unlocalizedNameLabel.getFontRenderOptions().fontScale = 0.05f;
+        unlocalizedNameLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_005);
 
         final UILabel soundLabel = new UILabel(this, Colors.GRAY + "Step sound: " + Colors.BLUE + block.stepSound.soundName);
         soundLabel.setPosition(xPadding, getPaddedY(unlocalizedNameLabel, yPadding + 3), Anchor.LEFT | Anchor.TOP);
