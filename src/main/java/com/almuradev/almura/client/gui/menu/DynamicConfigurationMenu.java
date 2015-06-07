@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
@@ -22,7 +23,8 @@ import java.util.Arrays;
 
 public class DynamicConfigurationMenu extends DynamicBackgroundGui {
 
-    private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox,
+    private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
+            debugPacksCheckBox,
             debugMappingsCheckBox, debugRecipesCheckBox, chatNotificationCheckBox;
 
     public DynamicConfigurationMenu(SimpleGui parent) {
@@ -200,6 +202,8 @@ public class DynamicConfigurationMenu extends DynamicBackgroundGui {
                     Configuration.toggleDebugRecipesMode(debugRecipesCheckBox.isChecked());
                     Configuration.setChatNotifications(chatNotificationCheckBox.isChecked());
                     Configuration.save();
+
+                    ClientProxy.setIngameHUD();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -209,7 +213,7 @@ public class DynamicConfigurationMenu extends DynamicBackgroundGui {
 
     @Subscribe
     public void onSelection(UISelect.SelectEvent event) {
-        String type = event.getComponent().getName().toLowerCase();
+
         switch (event.getComponent().getName()) {
             case "select.chest":
                 Configuration.setChestRenderDistance((Integer) event.getNewValue());

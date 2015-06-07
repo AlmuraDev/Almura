@@ -34,6 +34,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -91,8 +92,15 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onKeyInputEvent(KeyInputEvent event) {
-        if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
-            IngameDebugHUD.UPDATES_ENABLED = !IngameDebugHUD.UPDATES_ENABLED;
+        if (Keyboard.isKeyDown(Keyboard.KEY_F3) && Configuration.DISPLAY_ENHANCED_DEBUG) {
+            if (HUD_DEBUG == null) {
+                HUD_DEBUG = new IngameDebugHUD();
+                HUD_DEBUG.displayOverlay();
+            }
+            else {
+                HUD_DEBUG.closeOverlay();
+                HUD_DEBUG = null;
+            }
         } else if (Keyboard.isKeyDown(BINDING_OPEN_BACKPACK.getKeyCode())) {
             Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C01PacketChatMessage("/backpack"));
         }
@@ -134,7 +142,7 @@ public class ClientProxy extends CommonProxy {
                 case ARMOR:
                 case FOOD:
                 case EXPERIENCE:
-                    // event.setCanceled(true);
+                    event.setCanceled(true);
                     break;
                 default:
             }
@@ -144,6 +152,9 @@ public class ClientProxy extends CommonProxy {
             }
         }
 
+        if (Configuration.DISPLAY_ENHANCED_DEBUG && event.type == ElementType.DEBUG)
+            event.setCanceled(true);
+
 //        if (!isInitialized) {
 //
 //            HUD_DEBUG = new IngameDebugHUD();
@@ -152,6 +163,17 @@ public class ClientProxy extends CommonProxy {
 //        }
 
         isInitialized = true;
+    }
+
+    public static void setIngameHUD() {
+        if (Configuration.DISPLAY_ENHANCED_GUI && HUD_INGAME == null) {
+            HUD_INGAME = new IngameHUD();
+            HUD_INGAME.displayOverlay();
+        }
+        else if (!Configuration.DISPLAY_ENHANCED_GUI && HUD_INGAME != null) {
+            HUD_INGAME.closeOverlay();
+            HUD_INGAME = null;
+        }
     }
 }
 
