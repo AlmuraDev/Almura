@@ -5,403 +5,223 @@
  */
 package com.almuradev.almura.client.gui.ingame;
 
-import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
-import com.almuradev.almura.client.gui.components.UIPropertyBar;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
-import com.almuradev.almurasdk.util.Color;
+import com.almuradev.almurasdk.client.gui.components.UIPropertyBar;
 import com.almuradev.almurasdk.util.Colors;
 import com.almuradev.almurasdk.util.FontRenderOptionsBuilder;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
-
-import java.util.Objects;
+import net.minecraftforge.common.ForgeHooks;
+import org.apache.commons.lang3.text.WordUtils;
 
 public class IngameHUD extends SimpleGui {
 
-    private static final Color LIGHT_GREEN = new Color("light_green", 65280);
-    private static final Color LIGHT_ORANGE = new Color("light_orange", 13413376);
-    private static final Color RED = new Color("red", 11474462);
     private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
-    public static boolean UPDATES_ENABLED = true;
-    public UILabel worldDisplay, playerTitle, playerMode, playerCurrency;
+    public UILabel worldDisplay, playerMode, playerCurrency;
     public UILabel serverCount, almuraTitle;
     private UIImage mapImage, worldImage, playerImage;
+    private UILabel playerTitle;
     private UILabel playerCoords;
     private UILabel playerCompass;
     private UILabel worldTime;
     private UILabel xpLevel;
     private UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
 
-    private float playerHealth, playerArmor, playerHunger, playerStamina, playerExperience, playerExperienceLevel = 0.0F;
-    private String serverTime, playerComp, rawWorldName = "";
-    private boolean firstPass = true, playerIsCreative = false;
-    private int x = Integer.MIN_VALUE, y = Integer.MIN_VALUE, z = Integer.MIN_VALUE;
-
     public IngameHUD() {
-        construct();
-        FMLCommonHandler.instance().bus().register(this);
-        MinecraftForge.EVENT_BUS.register(this);
+        renderer.setDefaultTexture(TEXTURE_SPRITESHEET);
+        guiscreenBackground = false;
     }
 
     @Override
     public void construct() {
-        final ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft(), Minecraft.getMinecraft().displayWidth, Minecraft
-                .getMinecraft().displayHeight);
-        setWorldAndResolution(mc, resolution.getScaledWidth(), resolution.getScaledHeight());
-        guiscreenBackground = false;
 
         // Construct Hud with all elements
         final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
         gradientContainer.setSize(UIComponent.INHERITED, 34);
-        gradientContainer.setColor(Integer.MIN_VALUE);
-        gradientContainer.setTopAlpha(180);
-        gradientContainer.setBottomAlpha(180);
+        gradientContainer.setColor(0);
+        gradientContainer.setBackgroundAlpha(180);
         gradientContainer.setClipContent(false);
 
-        //////////////////////////////// LEFT COLUMN //////////////////////////////////////
+        // ////////////////////////////// LEFT COLUMN
+        // //////////////////////////////////////
 
         // Player Display Name
-        playerTitle = new UILabel(this, "");
-        playerTitle.setPosition(6, 2, Anchor.LEFT | Anchor.TOP);
+        playerTitle = new UILabel(this, mc.thePlayer.getDisplayName());
+        playerTitle.setPosition(6, 2, Anchor.LEFT);
         playerTitle.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
 
         // Player Display Mode
         playerMode = new UILabel(this, "");
-        playerMode.setPosition(playerTitle.getX() + playerTitle.getText().length() + 4, 2, Anchor.LEFT | Anchor.TOP);
+        playerMode.setPosition(playerTitle.getX() + playerTitle.getText().length() + 4, 2, Anchor.LEFT);
         playerMode.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
 
         // Player Currency
         playerCurrency = new UILabel(this, " ");
-        playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 4, 2, Anchor.LEFT | Anchor.TOP);
+        playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 4, 2, Anchor.LEFT);
         playerCurrency.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_ORANGE);
 
         // Health Property
-        healthProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_HEART, ICON_BAR);
-        healthProperty.setPosition(5, 14, Anchor.LEFT | Anchor.TOP);
-        healthProperty.setSize(105, 7);
+        healthProperty = new UIPropertyBar(this, ICON_HEART).setPosition(5, 14);
 
         // Armor Property
-        armorProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_ARMOR, ICON_BAR);
-        armorProperty.setPosition(5, 24, Anchor.LEFT | Anchor.TOP);
-        armorProperty.setSize(105, 7);
+        armorProperty = new UIPropertyBar(this, ICON_ARMOR).setPosition(5, 24);
 
-        //////////////////////////////// CENTER COLUMN //////////////////////////////////////
+        // ////////////////////////////// CENTER COLUMN
+        // //////////////////////////////////////
 
         // Almura Title
         almuraTitle = new UILabel(this, "Almura");
-        almuraTitle.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
+        almuraTitle.setPosition(0, 2, Anchor.CENTER);
         almuraTitle.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
 
-
         // Hunger Property
-        hungerProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_HUNGER, ICON_BAR);
-        hungerProperty.setPosition(-2, 14, Anchor.CENTER | Anchor.TOP);
-        hungerProperty.setSize(105, 7);
+        hungerProperty = new UIPropertyBar(this, ICON_HUNGER).setPosition(-2, 14, Anchor.CENTER);
 
         // Stamina Property
-        staminaProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_STAMINA, ICON_BAR);
-        staminaProperty.setPosition(-2, 24, Anchor.CENTER | Anchor.TOP);
-        staminaProperty.setSize(105, 7);
+        staminaProperty = new UIPropertyBar(this, ICON_STAMINA).setPosition(-2, 24, Anchor.CENTER);
 
-        //////////////////////////////// RIGHT COLUMN //////////////////////////////////////
+        // ////////////////////////////// RIGHT COLUMN
+        // //////////////////////////////////////
 
         // Map Image
         mapImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_MAP);
-        mapImage.setPosition(-205, 4, Anchor.RIGHT | Anchor.TOP);
+        mapImage.setPosition(-205, 4, Anchor.RIGHT);
         mapImage.setSize(8, 8);
 
         // Player Coordinates Label
         playerCoords = new UILabel(this, "x: 0 y: 0 z: 0");
-        playerCoords.setPosition(-73, 5, Anchor.RIGHT | Anchor.TOP);
+        playerCoords.setPosition(-73, 5, Anchor.RIGHT);
         playerCoords.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.8F).build
                 ());
 
         // World Image
         worldImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_WORLD);
-        worldImage.setPosition(-45, 4, Anchor.RIGHT | Anchor.TOP);
+        worldImage.setPosition(-45, 4, Anchor.RIGHT);
         worldImage.setSize(8, 8);
 
         // World Display Label
-        worldDisplay = new UILabel(this, "World");
-        worldDisplay.setPosition(-5, 5, Anchor.RIGHT | Anchor.TOP);
+        String worldName = "World";
+        if (mc.isSingleplayer())
+            worldName = WordUtils.capitalize(MinecraftServer.getServer().getWorldName());
+
+        worldDisplay = new UILabel(this, worldName);
+        worldDisplay.setPosition(-5, 5, Anchor.RIGHT);
         worldDisplay.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.8F).build
                 ());
 
         // Player Image
         playerImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_PLAYER);
-        playerImage.setPosition(-125, 13, Anchor.RIGHT | Anchor.TOP);
+        playerImage.setPosition(-125, 13, Anchor.RIGHT);
         playerImage.setSize(8, 8);
 
         // Player Count Label
         serverCount = new UILabel(this, "--");
-        serverCount.setPosition(-110, 14, Anchor.RIGHT | Anchor.TOP);
+        serverCount.setPosition(-110, 14, Anchor.RIGHT);
         serverCount.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.8F).build
                 ());
 
         // Compass Image
         final UIImage compassImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_COMPASS);
-        compassImage.setPosition(-73, 13, Anchor.RIGHT | Anchor.TOP);
+        compassImage.setPosition(-73, 13, Anchor.RIGHT);
         compassImage.setSize(8, 8);
 
         // Player Compass Label
         playerCompass = new UILabel(this, "");
-        playerCompass.setPosition(-51, 14, Anchor.RIGHT | Anchor.TOP);
+        playerCompass.setPosition(-51, 14, Anchor.RIGHT);
         playerCompass.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.8F).build
                 ());
 
         // Clock Image
         final UIImage clockImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_CLOCK);
-        clockImage.setPosition(-25, 12, Anchor.RIGHT | Anchor.TOP);
+        clockImage.setPosition(-25, 12, Anchor.RIGHT);
         clockImage.setSize(7, 7);
 
         // World Time Label
         worldTime = new UILabel(this, "7pm");
-        worldTime.setPosition(-5, 13, Anchor.RIGHT | Anchor.TOP);
+        worldTime.setPosition(-5, 13, Anchor.RIGHT);
         worldTime.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.8F).build
                 ());
 
         // XP Property
-        xpProperty = new UIPropertyBar(this, TEXTURE_SPRITESHEET, ICON_XP, ICON_BAR);
-        xpProperty.setPosition(-27, 23, Anchor.RIGHT | Anchor.TOP);
-        xpProperty.setSize(105, 7);
-        xpProperty.setColor(LIGHT_GREEN.getGuiColorCode());
+        xpProperty = new UIPropertyBar(this, ICON_XP).setPosition(-27, 23, Anchor.RIGHT);
+        xpProperty.setColor(UIPropertyBar.LIGHT_GREEN).setRelativeColor(false);
 
         // XP Level Label
         xpLevel = new UILabel(this, "1");
-        xpLevel.setPosition(-5, 23, Anchor.RIGHT | Anchor.TOP);
+        xpLevel.setPosition(-5, 23, Anchor.RIGHT);
         xpLevel.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.8F).build
                 ());
 
         gradientContainer
-                .add(playerTitle, playerMode, playerCurrency, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty, xpProperty,
+                .add(playerTitle, playerMode, playerCurrency, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty,
+                        xpProperty,
                         mapImage, playerCoords, worldImage, worldDisplay, playerImage, serverCount, playerCompass, compassImage, clockImage,
                         worldTime, xpLevel);
 
         addToScreen(gradientContainer);
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
-        if (!Configuration.DISPLAY_ENHANCED_GUI || !UPDATES_ENABLED || mc.thePlayer == null) {
-            return;
-        }
-
-        if (!Configuration.DISPLAY_ENHANCED_DEBUG && Minecraft.getMinecraft().gameSettings.showDebugInfo) {
-            return;
-        }
-        switch (event.type) {
-            case HEALTH:
-            case ARMOR:
-            case FOOD:
-            case EXPERIENCE:
-                event.setCanceled(true);
-        }
-
-        if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
-            setWorldAndResolution(mc, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-            updateWidgets();
-            drawScreen(event.mouseX, event.mouseY, event.partialTicks);
-        }
-    }
-
-    public void updateWidgets() {
+    @Override
+    public void update(int mouseX, int mouseY, float partialTick) {
 
         // Player Health
-        if (playerHealth != mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth() || firstPass) {
-            playerHealth = mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth();
+        healthProperty.setAmount(mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth());
 
-            if (playerHealth > 0.6) {
-                healthProperty.setColor(LIGHT_GREEN.getGuiColorCode());
-            } else if (playerHealth >= 0.3) {
-                healthProperty.setColor(LIGHT_ORANGE.getGuiColorCode());
-            } else {
-                healthProperty.setColor(RED.getGuiColorCode());
-            }
-            healthProperty.setAmount(playerHealth);
-        }
         // Player Armor
-        if (playerArmor != getArmorLevel() || firstPass) {
-            playerArmor = getArmorLevel();
-
-            if (playerArmor > 0) {
-                armorProperty.setAmount(playerArmor);
-                armorProperty.setVisible(true);
-            } else {
-                armorProperty.setVisible(false);
-            }
-            if (playerArmor > 0.6) {
-                armorProperty.setColor(LIGHT_GREEN.getGuiColorCode());
-            } else if (playerArmor >= 0.3) {
-                armorProperty.setColor(LIGHT_ORANGE.getGuiColorCode());
-            } else {
-                armorProperty.setColor(RED.getGuiColorCode());
-            }
-            armorProperty.setAmount(playerArmor);
-        }
+        armorProperty.setAmount(ForgeHooks.getTotalArmorValue(mc.thePlayer) / 20F);
 
         // Player Hunger
-        if (playerHunger != mc.thePlayer.getFoodStats().getFoodLevel() / (float) 20 || firstPass) {
-            playerHunger = mc.thePlayer.getFoodStats().getFoodLevel() / (float) 20;
-            if (playerHunger > 0) {
-                hungerProperty.setAmount(playerHunger);
-                hungerProperty.setVisible(true);
-            } else {
-                hungerProperty.setVisible(false);
-            }
-            if (playerHunger >= 0.6) {
-                hungerProperty.setColor(LIGHT_GREEN.getGuiColorCode());
-            } else if (playerHunger >= 0.3) {
-                hungerProperty.setColor(LIGHT_ORANGE.getGuiColorCode());
-            } else {
-                hungerProperty.setColor(RED.getGuiColorCode());
-            }
-            hungerProperty.setAmount(playerHunger);
-        }
+        hungerProperty.setAmount(getFoodLevel());
 
         // Player Stamina
-        if (playerStamina != mc.thePlayer.getFoodStats().getSaturationLevel() / (float) 20 || firstPass) {
-            playerStamina = mc.thePlayer.getFoodStats().getSaturationLevel() / (float) 20;
-            if (playerStamina > 0) {
-                staminaProperty.setAmount(playerStamina);
-                staminaProperty.setVisible(true);
-            } else {
-                staminaProperty.setVisible(false);
-            }
-
-            if (playerStamina >= 0.6) {
-                staminaProperty.setColor(LIGHT_GREEN.getGuiColorCode());
-            } else if (playerStamina >= 0.3) {
-                staminaProperty.setColor(LIGHT_ORANGE.getGuiColorCode());
-            } else {
-                staminaProperty.setColor(RED.getGuiColorCode());
-            }
-            staminaProperty.setAmount(playerStamina);
-        }
+        staminaProperty.setAmount(getSaturation());
 
         // Player Experience
-        if (playerExperience != mc.thePlayer.experience || firstPass) {
-            playerExperience = mc.thePlayer.experience;
-            if (playerExperience > 0) {
-                xpProperty.setAmount(playerExperience);
-                xpProperty.setVisible(true);
-            } else {
-                xpProperty.setVisible(false);
-            }
-        }
-        // Player Experience level 
-        if (playerExperienceLevel != mc.thePlayer.experienceLevel || firstPass) {
-            playerExperienceLevel = mc.thePlayer.experienceLevel;
-            xpLevel.setText(Integer.toString(mc.thePlayer.experienceLevel));
-        }
+        xpProperty.setAmount(mc.thePlayer.experience);
+
+        // Player Experience level
+        xpLevel.setText(Integer.toString(mc.thePlayer.experienceLevel));
 
         // Player Mode
-        if (playerIsCreative != mc.thePlayer.capabilities.isCreativeMode || firstPass) {
-            playerIsCreative = mc.thePlayer.capabilities.isCreativeMode;
-            if (playerIsCreative) {
-                playerMode.setText("(C)");
-            } else {
-                playerMode.setText(" ");
-            }
-        }
+        playerMode.setText(mc.thePlayer.capabilities.isCreativeMode ? "(C)" : "");
 
         // Server Time
-        if (!Objects.equals(serverTime, getTime()) || firstPass) {
-            serverTime = getTime();
-            worldTime.setText(getTime());
-        }
-
-        boolean dirtyCoords = false;
-
-        if (x == Integer.MIN_VALUE || mc.thePlayer.posX != mc.thePlayer.prevPosX) {
-            x = MathHelper.floor_double(mc.thePlayer.posX);
-            dirtyCoords = true;
-        }
-
-        if (y == Integer.MIN_VALUE || mc.thePlayer.posY != mc.thePlayer.prevPosY) {
-            y = MathHelper.floor_double(mc.thePlayer.posY);
-            dirtyCoords = true;
-        }
-
-        if (z == Integer.MIN_VALUE || mc.thePlayer.posZ != mc.thePlayer.prevPosZ) {
-            z = MathHelper.floor_double(mc.thePlayer.posZ);
-            dirtyCoords = true;
-        }
+        worldTime.setText(getTime());
 
         // Player Coordinates
-        if (dirtyCoords) {
-            playerCoords.setText(String.format("x: %d y: %d z: %d", x, y, z));
-        }
+        playerCoords.setText(String.format("x: %d y: %d z: %d", (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ));
 
         // Player Compass
-        if (!Objects.equals(playerComp, getCompass()) || firstPass) {
-            playerComp = getCompass();
-            playerCompass.setText(getCompass());
-        }
+        playerCompass.setText(getCompass());
 
-        // Player Name
-        if (playerTitle.getText().isEmpty() && firstPass) {
-            playerTitle.setText(mc.thePlayer.getDisplayName());
-        }
-
-        //World Name (SinglePlayer)
-        if (mc.isSingleplayer()) {
-            if (!rawWorldName.equals(MinecraftServer.getServer().getWorldName())) {
-                rawWorldName = MinecraftServer.getServer().getWorldName();
-                worldDisplay.setText(
-                        Character.toUpperCase(rawWorldName.charAt(0)) + rawWorldName.substring(1));
-            }
-        }
+        // World Name (SinglePlayer)
 
         // Player Count
-        if (mc.isSingleplayer() && firstPass) {
+        if (mc.isSingleplayer())
             serverCount.setText("--");
-        }
 
         // Alignment
         playerMode.setPosition((playerTitle.getX() + playerTitle.getWidth() + 6), playerMode.getY(), playerMode.getAnchor());
         serverCount
                 .setPosition(playerImage.getX() + playerImage.getWidth() + serverCount.getWidth() - 2, serverCount.getY(), serverCount.getAnchor());
-        worldImage.setPosition(-(worldDisplay.getWidth() + 9), worldImage.getY(), Anchor.RIGHT | Anchor.TOP);
-        playerCoords.setPosition(-(-worldImage.getX() + worldImage.getWidth() + 12), playerCoords.getY(), Anchor.RIGHT | Anchor.TOP);
-        mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT | Anchor.TOP);
-        playerMode.setPosition(playerTitle.getX() + playerTitle.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);
-        playerCurrency.setPosition(playerMode.getX() + playerMode.getWidth() + 4, 2, Anchor.LEFT | Anchor.TOP);
-        firstPass = false;
+        worldImage.setPosition(-(worldDisplay.getWidth() + 9), worldImage.getY(), Anchor.RIGHT);
+        playerCoords.setPosition(-(-worldImage.getX() + worldImage.getWidth() + 12), playerCoords.getY(), Anchor.RIGHT);
+        mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT);
+        playerMode.setPosition(playerTitle.getX() + playerTitle.getWidth() + 4, 2, Anchor.LEFT);
+        playerCurrency.setPosition(playerMode.getX() + playerMode.getWidth() + 4, 2, Anchor.LEFT);
     }
 
-    public float getArmorLevel() {
-        int armorDamage = 0;
-        int armorTotal = 0;
-        final ItemStack[] inv = mc.thePlayer.inventory.armorInventory;
+    public float getFoodLevel() {
+        return mc.thePlayer.getFoodStats().getFoodLevel() / 20F;
+    }
 
-        if (inv != null) {
-            for (ItemStack armorItem : inv) {
-                if (armorItem != null) {
-                    armorTotal += armorItem.getMetadata();
-                    armorDamage += armorItem.getMetadata();
-                }
-            }
-        }
-
-        if (armorTotal == 0) {
-            return 0;
-        }
-
-        return (armorTotal - armorDamage) / (float) armorTotal;
+    public float getSaturation() {
+        return mc.thePlayer.getFoodStats().getSaturationLevel() / 20F;
     }
 
     public String getCompass() {
@@ -417,7 +237,7 @@ public class IngameHUD extends SimpleGui {
     }
 
     public String getTime() {
-        //Minecraft day is 23000 ticks, we use a 24hr scale, day starts at 6AM
+        // Minecraft day is 23000 ticks, we use a 24hr scale, day starts at 6AM
         int hours = (int) (mc.thePlayer.worldObj.getWorldInfo().getWorldTime() / 1000) % 24;
 
         if (hours >= 0 && hours <= 5) {

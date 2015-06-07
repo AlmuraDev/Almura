@@ -47,12 +47,10 @@ public class ClientProxy extends CommonProxy {
     public static final BlockRenderer PACK_BLOCK_RENDERER = new BlockRenderer();
     public static final ItemRenderer PACK_ITEM_RENDERER = new ItemRenderer();
 
-    public static final KeyBinding
-            BINDING_CONFIG_GUI =
+    public static final KeyBinding BINDING_CONFIG_GUI =
             new AlmuraBinding("key.almura.config", "Config", Keyboard.KEY_F4, "key.categories.almura", "Almura");
 
-    public static final KeyBinding
-            BINDING_OPEN_BACKPACK =
+    public static final KeyBinding BINDING_OPEN_BACKPACK =
             new AlmuraBinding("key.almura.backpack", "Backpack", Keyboard.KEY_B, "key.categories.almura", "Almura");
 
     public static IngameDebugHUD HUD_DEBUG;
@@ -109,7 +107,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onNameFormatEvent(net.minecraftforge.event.entity.player.PlayerEvent.NameFormat event) {
-        //Race condition check
+        // Race condition check
         if (Minecraft.getMinecraft().theWorld == null) {
             return;
         }
@@ -117,10 +115,6 @@ public class ClientProxy extends CommonProxy {
 
         if (((IExtendedEntityLivingBase) player).getServerName() != null && !((IExtendedEntityLivingBase) player).getServerName().isEmpty()) {
             event.displayname = ((IExtendedEntityLivingBase) player).getServerName();
-
-            if (event.entityPlayer == Minecraft.getMinecraft().thePlayer) {
-                HUD_INGAME.playerTitle.setText(event.displayname);
-            }
         }
     }
 
@@ -131,13 +125,33 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onRenderGameOverlayEventPost(RenderGameOverlayEvent.Post event) {
-        if (!isInitialized) {
-            HUD_DEBUG = new IngameDebugHUD();
-            HUD_INGAME = new IngameHUD();
-            HUD_RESIDENCE = new IngameResidenceHUD();
-            isInitialized = true;
+    public void onRenderGameOverlayEventPost(RenderGameOverlayEvent.Pre event) {
+
+        // In game HUD
+        if (Configuration.DISPLAY_ENHANCED_GUI) {
+            switch (event.type) {
+                case HEALTH:
+                case ARMOR:
+                case FOOD:
+                case EXPERIENCE:
+                    // event.setCanceled(true);
+                    break;
+                default:
+            }
+            if (!isInitialized) {
+                HUD_INGAME = new IngameHUD();
+                HUD_INGAME.displayOverlay();
+            }
         }
+
+//        if (!isInitialized) {
+//
+//            HUD_DEBUG = new IngameDebugHUD();
+//            HUD_RESIDENCE = new IngameResidenceHUD();
+//            isInitialized = true;
+//        }
+
+        isInitialized = true;
     }
 }
 
