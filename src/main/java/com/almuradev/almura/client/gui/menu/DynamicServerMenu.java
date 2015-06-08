@@ -7,7 +7,7 @@ package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
-import com.almuradev.almura.client.gui.DynamicBackgroundGui;
+import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
@@ -22,13 +22,14 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.multiplayer.ServerData;
 
-public class DynamicServerMenu extends DynamicBackgroundGui {
+public class DynamicServerMenu extends SimpleGui {
 
     private static final ServerData DATA_LIVE_SERVER = new ServerData("Almura", "srv1.almuramc.com");
     private static final ServerData DATA_DEV_SERVER = new ServerData("Almura (Dev)", "dev.almuramc.com");
     private static final Query QUERY_LIVE_SERVER = new Query(DATA_LIVE_SERVER, 25565), QUERY_DEV_SERVER = new Query(DATA_DEV_SERVER, 25565);
 
     private final Thread QUERIER = new Thread(new Runnable() {
+
         @Override
         public void run() {
             while (true) {
@@ -57,7 +58,6 @@ public class DynamicServerMenu extends DynamicBackgroundGui {
 
     @Override
     public void construct() {
-        super.construct();
 
         // Create the form
         final UIForm form = new UIForm(this, 200, 225, "Multiplayer");
@@ -120,6 +120,7 @@ public class DynamicServerMenu extends DynamicBackgroundGui {
         form.getContentContainer().add(logoImage, buildLabel, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle,
                 devServerOnline, almuraDevButton, anotherButton, backButton);
 
+        addToScreen(new UIAnimatedBackground(this));
         addToScreen(form);
 
         QUERIER.start();
@@ -188,4 +189,3 @@ public class DynamicServerMenu extends DynamicBackgroundGui {
         }
     }
 }
-

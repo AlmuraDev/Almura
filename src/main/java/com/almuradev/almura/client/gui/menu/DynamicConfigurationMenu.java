@@ -7,7 +7,7 @@ package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.client.gui.DynamicBackgroundGui;
+import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
@@ -21,7 +21,7 @@ import net.malisis.core.client.gui.component.interaction.UISelect;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class DynamicConfigurationMenu extends DynamicBackgroundGui {
+public class DynamicConfigurationMenu extends SimpleGui {
 
     private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
             debugPacksCheckBox,
@@ -29,12 +29,10 @@ public class DynamicConfigurationMenu extends DynamicBackgroundGui {
 
     public DynamicConfigurationMenu(SimpleGui parent) {
         super(parent);
-        construct();
     }
 
     @Override
     public void construct() {
-        super.construct();
 
         // Create the form
         final UIForm form = new UIForm(this, 300, 225, "Configuration");
@@ -176,6 +174,7 @@ public class DynamicConfigurationMenu extends DynamicBackgroundGui {
                 debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, backButton, saveButton,
                 chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu, chestDistanceDownMenu);
 
+        addToScreen(new UIAnimatedBackground(this));
         addToScreen(form);
     }
 

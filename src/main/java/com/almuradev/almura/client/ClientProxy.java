@@ -86,7 +86,9 @@ public class ClientProxy extends CommonProxy {
                     e.printStackTrace();
                 }
             }
-            event.gui = new DynamicMainMenu(null);
+            event.setCanceled(true);
+            new DynamicMainMenu(null).display();
+
         }
     }
 

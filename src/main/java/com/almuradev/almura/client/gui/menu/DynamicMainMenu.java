@@ -8,7 +8,7 @@ package com.almuradev.almura.client.gui.menu;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
-import com.almuradev.almura.client.gui.DynamicBackgroundGui;
+import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
 import com.almuradev.almurasdk.FileSystem;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
@@ -25,7 +25,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 
-public class DynamicMainMenu extends DynamicBackgroundGui {
+public class DynamicMainMenu extends SimpleGui {
 
     protected static final ResourceLocation ALMURA_LOGO_LOCATION;
 
@@ -39,12 +39,10 @@ public class DynamicMainMenu extends DynamicBackgroundGui {
 
     public DynamicMainMenu(SimpleGui parent) {
         super(parent);
-        construct();
     }
 
     @Override
     public void construct() {
-        super.construct();
 
         // Create the form
         final UIForm form = new UIForm(this, 200, 225, "Almura", false);
@@ -117,6 +115,7 @@ public class DynamicMainMenu extends DynamicBackgroundGui {
         form.getContentContainer().add(logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
                 aboutButton, quitButton, copyrightLabel, trademarkLabel);
 
+        addToScreen(new UIAnimatedBackground(this));
         addToScreen(form);
     }
 
@@ -133,16 +132,16 @@ public class DynamicMainMenu extends DynamicBackgroundGui {
                 mc.displayGuiScreen(new GuiSelectWorld(this));
                 break;
             case "button.multiplayer":
-                mc.displayGuiScreen(new DynamicServerMenu(this));
+                new DynamicServerMenu(this).display();
                 break;
             case "button.options":
                 mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
                 break;
             case "button.configuration":
-                mc.displayGuiScreen(new DynamicConfigurationMenu(this));
+                new DynamicConfigurationMenu(this).display();
                 break;
             case "button.about":
-                mc.displayGuiScreen(new DynamicAboutMenu(this));
+                new DynamicAboutMenu(this).display();
                 break;
             case "button.quit":
                 close();

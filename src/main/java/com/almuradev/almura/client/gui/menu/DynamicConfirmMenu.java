@@ -6,7 +6,6 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.client.FontRenderOptionsConstants;
-import com.almuradev.almura.client.gui.DynamicBackgroundGui;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
@@ -15,7 +14,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 
-public class DynamicConfirmMenu extends DynamicBackgroundGui {
+public class DynamicConfirmMenu extends SimpleGui {
 
     private String message1, message2, title;
 
@@ -24,12 +23,10 @@ public class DynamicConfirmMenu extends DynamicBackgroundGui {
         this.message1 = message1;
         this.message2 = message2;
         this.title = title;
-        construct();
     }
 
     @Override
     public void construct() {
-        super.construct();
 
         // Create the form
         final UIForm form = new UIForm(this, 200, 100, title);

@@ -6,7 +6,7 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.client.FontRenderOptionsConstants;
-import com.almuradev.almura.client.gui.DynamicBackgroundGui;
+import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
@@ -16,16 +16,14 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 
-public class DynamicAboutMenu extends DynamicBackgroundGui {
+public class DynamicAboutMenu extends SimpleGui {
 
     public DynamicAboutMenu(SimpleGui parent) {
         super(parent);
-        construct();
     }
 
     @Override
     public void construct() {
-        super.construct();
 
         // Create the form
         final UIForm form = new UIForm(this, 300, 225, "About");
@@ -34,8 +32,7 @@ public class DynamicAboutMenu extends DynamicBackgroundGui {
         // Create About us multi-line label
         final UITextField aboutUsLabel = new UITextField(this, "", true);
 
-        String
-                fieldText =
+        String fieldText =
                 "Almura 2.0 began June 1st, 2014.  Based on the idea that we could finally get away from the broken and abandoned Spoutcraft client"
                         + " a brilliant developer came to Almura and said, \"Why don't you get rid of that out of date client and move into the "
                         + "present?\" This brilliant developer's name is " + Colors.AQUA + "Zidane" + Colors.RESET + ". Along with him and another "
@@ -66,6 +63,7 @@ public class DynamicAboutMenu extends DynamicBackgroundGui {
 
         form.getContentContainer().add(aboutUsLabel, modsButton, backButton);
 
+        addToScreen(new UIAnimatedBackground(this));
         addToScreen(form);
     }
 
