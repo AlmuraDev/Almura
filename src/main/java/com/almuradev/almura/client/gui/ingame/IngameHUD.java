@@ -33,7 +33,6 @@ public class IngameHUD extends SimpleGui {
     private UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
 
     public IngameHUD() {
-        renderer.setDefaultTexture(TEXTURE_SPRITESHEET);
         guiscreenBackground = false;
     }
 

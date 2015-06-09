@@ -5,20 +5,14 @@
  */
 package com.almuradev.almura.client.gui.ingame.residence;
 
-import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.util.Colors;
 import com.almuradev.almurasdk.util.FontRenderOptionsBuilder;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
 
 public class IngameResidenceHUD extends SimpleGui {
 
@@ -27,15 +21,11 @@ public class IngameResidenceHUD extends SimpleGui {
     public UIBackgroundContainer resPane;
 
     public IngameResidenceHUD() {
-        construct();
+        guiscreenBackground = false;
     }
 
     @Override
     public void construct() {
-        final ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft(), Minecraft.getMinecraft().displayWidth, Minecraft
-                .getMinecraft().displayHeight);
-        setWorldAndResolution(mc, resolution.getScaledWidth(), resolution.getScaledHeight());
-        guiscreenBackground = false;
 
         // Construct Hud with all elements
         resPane = new UIBackgroundContainer(this, 90, 55);
@@ -80,21 +70,6 @@ public class IngameResidenceHUD extends SimpleGui {
 
         resPane.add(title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire);
         addToScreen(resPane);
-
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
-        if (!Configuration.DISPLAY_RESIDENCE_HUD || !ResidenceData.WITHIN_RESIDENCE || mc.isSingleplayer()) {
-            return;
-        }
-
-        if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
-            setWorldAndResolution(MINECRAFT, event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-            updateWidgets();
-            drawScreen(event.mouseX, event.mouseY, event.partialTicks);
-        }
     }
 
     public void updateWidgets() {
