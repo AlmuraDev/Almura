@@ -11,6 +11,7 @@ import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
+import com.almuradev.almura.client.gui.ingame.residence.ResidenceData;
 import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
 import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
 import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
@@ -57,7 +58,6 @@ public class ClientProxy extends CommonProxy {
     public static IngameDebugHUD HUD_DEBUG;
     public static IngameHUD HUD_INGAME;
     public static IngameResidenceHUD HUD_RESIDENCE;
-    private static boolean isInitialized = false;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -94,16 +94,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onKeyInputEvent(KeyInputEvent event) {
-        if (Keyboard.isKeyDown(Keyboard.KEY_F3) && Configuration.DISPLAY_ENHANCED_DEBUG) {
-            if (HUD_DEBUG == null) {
-                HUD_DEBUG = new IngameDebugHUD();
-                HUD_DEBUG.displayOverlay();
-            }
-            else {
-                HUD_DEBUG.closeOverlay();
-                HUD_DEBUG = null;
-            }
-        } else if (Keyboard.isKeyDown(BINDING_OPEN_BACKPACK.getKeyCode())) {
+        if (Keyboard.isKeyDown(BINDING_OPEN_BACKPACK.getKeyCode())) {
             Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C01PacketChatMessage("/backpack"));
         }
     }
@@ -137,7 +128,7 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onRenderGameOverlayEventPost(RenderGameOverlayEvent.Pre event) {
 
-        // In game HUD
+        // Toggle enhanced hud off/on.
         if (Configuration.DISPLAY_ENHANCED_GUI) {
             switch (event.type) {
                 case HEALTH:
@@ -148,23 +139,45 @@ public class ClientProxy extends CommonProxy {
                     break;
                 default:
             }
-            if (!isInitialized) {
+            if (HUD_INGAME == null) {
                 HUD_INGAME = new IngameHUD();
-                HUD_INGAME.displayOverlay();
+            }
+
+            HUD_INGAME.displayOverlay();
+        } else if (HUD_INGAME != null) {
+            HUD_INGAME.closeOverlay();
+            HUD_INGAME = null;
+        }
+
+        // Toggle residence off/on based on config. Creation of this HUD happens in the packet handler from Bukkit
+        if (HUD_RESIDENCE != null) {
+            if (Configuration.DISPLAY_RESIDENCE_HUD && ResidenceData.WITHIN_RESIDENCE) {
+                HUD_RESIDENCE.displayOverlay();
+            } else {
+                HUD_RESIDENCE.closeOverlay();
             }
         }
 
-        if (Configuration.DISPLAY_ENHANCED_DEBUG && event.type == ElementType.DEBUG)
-            event.setCanceled(true);
+        // Toggle enhanced debug off/on based on config.
+        if (event.type == ElementType.DEBUG) {
+            if (Configuration.DISPLAY_ENHANCED_DEBUG) {
+                event.setCanceled(true);
+                if (HUD_DEBUG == null) {
+                    HUD_DEBUG = new IngameDebugHUD();
+                }
 
-//        if (!isInitialized) {
-//
-//            HUD_DEBUG = new IngameDebugHUD();
-//            HUD_RESIDENCE = new IngameResidenceHUD();
-//            isInitialized = true;
-//        }
+                HUD_DEBUG.displayOverlay();
+            } else if (HUD_DEBUG != null) {
+                HUD_DEBUG.closeOverlay();
+                HUD_DEBUG = null;
+            }
+        }
 
-        isInitialized = true;
+        // User turned off debug mode, handle it.
+        if (!Minecraft.getMinecraft().gameSettings.showDebugInfo && HUD_DEBUG != null) {
+            HUD_DEBUG.closeOverlay();
+            HUD_DEBUG = null;
+        }
     }
 
     public static void setIngameHUD() {
