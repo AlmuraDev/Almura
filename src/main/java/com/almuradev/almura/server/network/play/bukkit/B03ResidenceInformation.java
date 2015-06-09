@@ -87,8 +87,8 @@ public class B03ResidenceInformation implements IMessage, IMessageHandler<B03Res
                 if (ClientProxy.HUD_RESIDENCE == null) {
                     ClientProxy.HUD_RESIDENCE = new IngameResidenceHUD();
                 }
-                ClientProxy.HUD_RESIDENCE.updateWidgets();
                 ClientProxy.HUD_RESIDENCE.displayOverlay();
+                ClientProxy.HUD_RESIDENCE.updateWidgets();
             } else {
                 if (ClientProxy.HUD_RESIDENCE != null) {
                     ClientProxy.HUD_RESIDENCE.closeOverlay();
