@@ -5,9 +5,7 @@
  */
 package com.almuradev.almura.server.network.play.bukkit;
 
-import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.ingame.HUDData;
-import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -82,20 +80,6 @@ public class B03ResidenceInformation implements IMessage, IMessageHandler<B03Res
     @SideOnly(Side.CLIENT)
     @Override
     public IMessage onMessage(B03ResidenceInformation message, MessageContext ctx) {
-        if (ctx.side.isClient()) {
-            if (HUDData.WITHIN_RESIDENCE) {
-                if (ClientProxy.HUD_RESIDENCE == null) {
-                    ClientProxy.HUD_RESIDENCE = new IngameResidenceHUD();
-                }
-                ClientProxy.HUD_RESIDENCE.displayOverlay();
-                ClientProxy.HUD_RESIDENCE.updateWidgets();
-            } else {
-                if (ClientProxy.HUD_RESIDENCE != null) {
-                    ClientProxy.HUD_RESIDENCE.closeOverlay();
-                    ClientProxy.HUD_RESIDENCE = null;
-                }
-            }
-        }
         return null;
     }
 }

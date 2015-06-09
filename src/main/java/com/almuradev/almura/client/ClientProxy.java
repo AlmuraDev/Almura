@@ -150,14 +150,18 @@ public class ClientProxy extends CommonProxy {
         }
 
         // Toggle residence off/on based on config. Creation of this HUD happens in the packet handler from Bukkit
-        if (HUD_RESIDENCE != null) {
-            if (Configuration.DISPLAY_RESIDENCE_HUD && HUDData.WITHIN_RESIDENCE) {
-                HUD_RESIDENCE.displayOverlay();
-            } else {
-                HUD_RESIDENCE.closeOverlay();
+        if (Configuration.DISPLAY_RESIDENCE_HUD && HUDData.WITHIN_RESIDENCE) {
+            if (HUD_RESIDENCE == null) {
+                HUD_RESIDENCE = new IngameResidenceHUD();
             }
-        }
 
+            HUD_RESIDENCE.displayOverlay();
+            HUD_RESIDENCE.updateWidgets();
+        } else if (HUD_RESIDENCE != null) {
+            HUD_RESIDENCE.closeOverlay();
+            HUD_RESIDENCE = null;
+        }
+        
         // Toggle enhanced debug off/on based on config.
         if (event.type == ElementType.DEBUG) {
             if (Configuration.DISPLAY_ENHANCED_DEBUG) {

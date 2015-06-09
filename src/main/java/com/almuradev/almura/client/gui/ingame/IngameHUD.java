@@ -36,7 +36,6 @@ public class IngameHUD extends SimpleGui {
 
     @Override
     public void construct() {
-
         // Construct Hud with all elements
         final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
         gradientContainer.setSize(UIComponent.INHERITED, 34);
