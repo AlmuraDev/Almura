@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S0BPacketAnimation;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -47,7 +48,9 @@ public class WireframeWand extends AlmuraItem {
             if (block != null) {
                 ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S0BPacketAnimation(player, 0));
                 player.swingItem();
-                Almura.NETWORK_FORGE.sendTo(new S02OpenBlockWireframeGui(stack, x, y, z, block.getSelectedBoundingBoxFromPool(world, x, y, z)),
+                Almura.NETWORK_FORGE.sendTo(new S02OpenBlockWireframeGui(stack, x, y, z, AxisAlignedBB
+                                .getBoundingBox((double) x + block.minX, (double) y + block.minY, (double) z + block.minZ, (double) x + block.maxX,
+                                        (double) y + block.maxY, (double) z + block.maxZ)),
                         (EntityPlayerMP) player);
             }
         }

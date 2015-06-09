@@ -161,7 +161,7 @@ public class ClientProxy extends CommonProxy {
             HUD_RESIDENCE.closeOverlay();
             HUD_RESIDENCE = null;
         }
-        
+
         // Toggle enhanced debug off/on based on config.
         if (event.type == ElementType.DEBUG) {
             if (Configuration.DISPLAY_ENHANCED_DEBUG) {
