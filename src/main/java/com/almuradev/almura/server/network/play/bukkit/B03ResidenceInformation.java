@@ -92,6 +92,7 @@ public class B03ResidenceInformation implements IMessage, IMessageHandler<B03Res
             } else {
                 if (ClientProxy.HUD_RESIDENCE != null) {
                     ClientProxy.HUD_RESIDENCE.closeOverlay();
+                    ClientProxy.HUD_RESIDENCE = null;
                 }
             }
         }
