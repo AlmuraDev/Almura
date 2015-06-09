@@ -18,7 +18,7 @@ public class IngameResidenceHUD extends SimpleGui {
 
     public UILabel title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire;
     public UIBackgroundContainer resPane;
-    
+
     @Override
     public void construct() {
 
@@ -68,21 +68,29 @@ public class IngameResidenceHUD extends SimpleGui {
     }
 
     public void updateWidgets() {
+
+        // I've tested this so unless you want to get a dev server up to test your changes please don't modify my width calculations...
+
         if (HUDData.OWNER_NAME.equalsIgnoreCase("mcsnetworks")) {
             resOwner.setText("Owner: " + Colors.RED + "~Dockter");
         } else {
             resOwner.setText("Owner: " + Colors.RED + HUDData.OWNER_NAME);
         }
+
         resOwnerOnline.setText("Last Seen: " + Colors.LIGHT_PURPLE + HUDData.LAST_ONLINE);
         resBank.setText("Vault: " + HUDData.VAULT);
         resLeaseCost.setText("Lease Cost: " + Colors.BLUE + HUDData.LEASE_COST);
         resLeaseExpire.setText(Colors.YELLOW + HUDData.LEASE_EXPIRATION);
-        int originalWidth = resPane.getWidth();
-        if (resOwnerOnline.getWidth() + 20 > originalWidth) {
+
+        if (resOwnerOnline.getWidth() + 20 > resPane.getWidth()) {
+            resPane.setSize(resOwnerOnline.getWidth() + 20, resPane.getHeight());
+        }
+
+        if (resOwnerOnline.getWidth() + 20 > resPane.getWidth()) {
             resPane.setSize(resOwnerOnline.getWidth() + 10, resPane.getHeight());
         }
 
-        if (resLeaseExpire.getWidth() + 20 > originalWidth) {
+        if (resLeaseExpire.getWidth() + 20 > resPane.getWidth()) {
             resPane.setSize(resLeaseExpire.getWidth() + 10, resPane.getHeight());
         }
 
@@ -95,7 +103,7 @@ public class IngameResidenceHUD extends SimpleGui {
             resBank.setVisible(false);
             resLeaseCost.setVisible(false);
             resLeaseExpire.setVisible(true);
-            resPane.setSize(90, 20);
+            resPane.setSize(title.getWidth()+10, 20);
         } else {
             title.setText("Residence Info");
             resName.setText("Name: " + Colors.GREEN + HUDData.NAME);
