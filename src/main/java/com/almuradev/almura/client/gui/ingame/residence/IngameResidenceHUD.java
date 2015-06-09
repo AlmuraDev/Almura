@@ -18,11 +18,7 @@ public class IngameResidenceHUD extends SimpleGui {
 
     public UILabel title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire;
     public UIBackgroundContainer resPane;
-
-    public IngameResidenceHUD() {
-        guiscreenBackground = false;
-    }
-
+    
     @Override
     public void construct() {
 

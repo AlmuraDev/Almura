@@ -29,10 +29,6 @@ public class IngameDebugHUD extends SimpleGui {
     private UILabel fps, memoryDebug, memoryAllocated, xLoc, yLoc, zLoc, directionLoc, biomeName, blockLight, skyLight, rawLight;
     private Chunk chunk;
 
-    public IngameDebugHUD() {
-        guiscreenBackground = false;
-    }
-
     @Override
     public void construct() {
         FontRenderOptions labelsFro = new FontRenderOptions();

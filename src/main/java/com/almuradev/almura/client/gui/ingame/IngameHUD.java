@@ -34,10 +34,6 @@ public class IngameHUD extends SimpleGui {
     private UILabel xpLevel;
     private UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
 
-    public IngameHUD() {
-        guiscreenBackground = false;
-    }
-
     @Override
     public void construct() {
 
