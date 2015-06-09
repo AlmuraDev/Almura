@@ -22,11 +22,13 @@ import org.apache.commons.lang3.text.WordUtils;
 public class IngameHUD extends SimpleGui {
 
     private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
-    public UILabel worldDisplay, playerMode, playerCurrency;
-    public UILabel serverCount, almuraTitle;
     private UIImage mapImage, worldImage, playerImage;
+    private UILabel worldDisplay;
+    private UILabel playerMode;
+    private UILabel playerCurrency;
     private UILabel playerTitle;
     private UILabel playerCoords;
+    private UILabel serverCount;
     private UILabel playerCompass;
     private UILabel worldTime;
     private UILabel xpLevel;
@@ -46,8 +48,7 @@ public class IngameHUD extends SimpleGui {
         gradientContainer.setBackgroundAlpha(180);
         gradientContainer.setClipContent(false);
 
-        // ////////////////////////////// LEFT COLUMN
-        // //////////////////////////////////////
+        // ////////////////////////////// LEFT COLUMN //////////////////////////////////////
 
         // Player Display Name
         playerTitle = new UILabel(this, mc.thePlayer.getDisplayName());
@@ -70,11 +71,10 @@ public class IngameHUD extends SimpleGui {
         // Armor Property
         armorProperty = new UIPropertyBar(this, ICON_ARMOR).setPosition(5, 24);
 
-        // ////////////////////////////// CENTER COLUMN
-        // //////////////////////////////////////
+        // ////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
         // Almura Title
-        almuraTitle = new UILabel(this, "Almura");
+        final UILabel almuraTitle = new UILabel(this, "Almura");
         almuraTitle.setPosition(0, 2, Anchor.CENTER);
         almuraTitle.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
 
@@ -84,8 +84,7 @@ public class IngameHUD extends SimpleGui {
         // Stamina Property
         staminaProperty = new UIPropertyBar(this, ICON_STAMINA).setPosition(-2, 24, Anchor.CENTER);
 
-        // ////////////////////////////// RIGHT COLUMN
-        // //////////////////////////////////////
+        // ////////////////////////////// RIGHT COLUMN //////////////////////////////////////
 
         // Map Image
         mapImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_MAP);
@@ -198,11 +197,19 @@ public class IngameHUD extends SimpleGui {
         // Player Compass
         playerCompass.setText(getCompass());
 
+        playerCurrency.setText(HUDData.PLAYER_CURRENCY);
+
         // World Name (SinglePlayer)
+        if (!mc.isSingleplayer()) {
+            worldDisplay.setText(HUDData.WORLD_DISPLAY);
+        }
 
         // Player Count
-        if (mc.isSingleplayer())
+        if (mc.isSingleplayer()) {
             serverCount.setText("--");
+        } else {
+            serverCount.setText(HUDData.SERVER_COUNT);
+        }
 
         // Alignment
         playerMode.setPosition((playerTitle.getX() + playerTitle.getWidth() + 6), playerMode.getY(), playerMode.getAnchor());

@@ -1,21 +1,19 @@
-/**
- * This file is part of Almura, All Rights Reserved.
- *
- * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
- */
-package com.almuradev.almura.client.gui.ingame.residence;
+package com.almuradev.almura.client.gui.ingame;
 
-public class ResidenceData {
+public class HUDData {
+    public static String PLAYER_CURRENCY = "";
+    public static String WORLD_DISPLAY = "";
+    public static String SERVER_COUNT;
 
     public static boolean WITHIN_RESIDENCE = false;
-    public static String NAME;
-    public static String OWNER_NAME;
-    public static String LAST_ONLINE;
-    public static String LEASE_COST;
-    public static String LEASE_EXPIRATION;
-    public static String BOUNDS;
-    public static String SIZE;
-    public static String VAULT;
+    public static String NAME = "";
+    public static String OWNER_NAME = "";
+    public static String LAST_ONLINE = "";
+    public static String LEASE_COST = "";
+    public static String LEASE_EXPIRATION = "";
+    public static String BOUNDS = "";
+    public static String SIZE = "";
+    public static String VAULT = "";
     public static boolean CAN_MOVE;
     public static boolean CAN_BUILD;
     public static boolean HAS_BANK;

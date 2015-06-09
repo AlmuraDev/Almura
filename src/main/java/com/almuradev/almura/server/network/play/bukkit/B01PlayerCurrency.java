@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.server.network.play.bukkit;
 
-import com.almuradev.almura.client.ClientProxy;
+import com.almuradev.almura.client.gui.ingame.HUDData;
 import com.almuradev.almurasdk.util.Colors;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -36,7 +36,7 @@ public class B01PlayerCurrency implements IMessage, IMessageHandler<B01PlayerCur
     @Override
     public IMessage onMessage(B01PlayerCurrency message, MessageContext ctx) {
         if (ctx.side == Side.CLIENT) {
-            ClientProxy.HUD_INGAME.playerCurrency.setText(String.format(Colors.WHITE + FORMAT_NUMBER_EN.format(message.amount)));
+            HUDData.PLAYER_CURRENCY = String.format(Colors.WHITE + FORMAT_NUMBER_EN.format(message.amount));
         }
         return null;
     }

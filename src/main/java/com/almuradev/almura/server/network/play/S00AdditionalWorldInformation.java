@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.server.network.play;
 
-import com.almuradev.almura.client.ClientProxy;
+import com.almuradev.almura.client.gui.ingame.HUDData;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -46,7 +46,7 @@ public class S00AdditionalWorldInformation implements IMessage, IMessageHandler<
     @Override
     public IMessage onMessage(S00AdditionalWorldInformation message, MessageContext ctx) {
         if (ctx.side == Side.CLIENT) {
-            ClientProxy.HUD_INGAME.serverCount.setText(message.currentPlayers + "/" + message.maxPlayers);
+            HUDData.SERVER_COUNT = message.currentPlayers + "/" + message.maxPlayers;
         }
         return null;
     }

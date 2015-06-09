@@ -6,17 +6,16 @@
 package com.almuradev.almura.client.gui.ingame.residence;
 
 import com.almuradev.almura.client.FontRenderOptionsConstants;
+import com.almuradev.almura.client.gui.ingame.HUDData;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.util.Colors;
 import com.almuradev.almurasdk.util.FontRenderOptionsBuilder;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.minecraft.client.Minecraft;
 
 public class IngameResidenceHUD extends SimpleGui {
 
-    public static final Minecraft MINECRAFT = Minecraft.getMinecraft();
     public UILabel title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire;
     public UIBackgroundContainer resPane;
 
@@ -73,15 +72,15 @@ public class IngameResidenceHUD extends SimpleGui {
     }
 
     public void updateWidgets() {
-        if (ResidenceData.OWNER_NAME.equalsIgnoreCase("mcsnetworks")) {
+        if (HUDData.OWNER_NAME.equalsIgnoreCase("mcsnetworks")) {
             resOwner.setText("Owner: " + Colors.RED + "~Dockter");
         } else {
-            resOwner.setText("Owner: " + Colors.RED + ResidenceData.OWNER_NAME);
+            resOwner.setText("Owner: " + Colors.RED + HUDData.OWNER_NAME);
         }
-        resOwnerOnline.setText("Last Seen: " + Colors.LIGHT_PURPLE + ResidenceData.LAST_ONLINE);
-        resBank.setText("Vault: " + ResidenceData.VAULT);
-        resLeaseCost.setText("Lease Cost: " + Colors.BLUE + ResidenceData.LEASE_COST);
-        resLeaseExpire.setText(Colors.YELLOW + ResidenceData.LEASE_EXPIRATION);
+        resOwnerOnline.setText("Last Seen: " + Colors.LIGHT_PURPLE + HUDData.LAST_ONLINE);
+        resBank.setText("Vault: " + HUDData.VAULT);
+        resLeaseCost.setText("Lease Cost: " + Colors.BLUE + HUDData.LEASE_COST);
+        resLeaseExpire.setText(Colors.YELLOW + HUDData.LEASE_EXPIRATION);
         int originalWidth = resPane.getWidth();
         if (resOwnerOnline.getWidth() + 20 > originalWidth) {
             resPane.setSize(resOwnerOnline.getWidth() + 10, resPane.getHeight());
@@ -92,9 +91,9 @@ public class IngameResidenceHUD extends SimpleGui {
         }
 
         // Window re-arrangement if server-owned.
-        if (ResidenceData.OWNER_NAME.equalsIgnoreCase("almura_admin")) {
+        if (HUDData.OWNER_NAME.equalsIgnoreCase("almura_admin")) {
             title.setText("Protected Server-Owned Area");
-            resName.setText("Area Name: " + Colors.GREEN + ResidenceData.NAME);
+            resName.setText("Area Name: " + Colors.GREEN + HUDData.NAME);
             resOwner.setVisible(false);
             resOwnerOnline.setVisible(false);
             resBank.setVisible(false);
@@ -103,7 +102,7 @@ public class IngameResidenceHUD extends SimpleGui {
             resPane.setSize(90, 20);
         } else {
             title.setText("Residence Info");
-            resName.setText("Name: " + Colors.GREEN + ResidenceData.NAME);
+            resName.setText("Name: " + Colors.GREEN + HUDData.NAME);
             resOwner.setVisible(true);
             resOwnerOnline.setVisible(true);
             resBank.setVisible(true);

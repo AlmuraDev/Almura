@@ -8,10 +8,10 @@ package com.almuradev.almura.client;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.client.gui.ingame.HUDData;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
-import com.almuradev.almura.client.gui.ingame.residence.ResidenceData;
 import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
 import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
 import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
@@ -151,7 +151,7 @@ public class ClientProxy extends CommonProxy {
 
         // Toggle residence off/on based on config. Creation of this HUD happens in the packet handler from Bukkit
         if (HUD_RESIDENCE != null) {
-            if (Configuration.DISPLAY_RESIDENCE_HUD && ResidenceData.WITHIN_RESIDENCE) {
+            if (Configuration.DISPLAY_RESIDENCE_HUD && HUDData.WITHIN_RESIDENCE) {
                 HUD_RESIDENCE.displayOverlay();
             } else {
                 HUD_RESIDENCE.closeOverlay();
