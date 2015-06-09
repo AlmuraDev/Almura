@@ -53,7 +53,6 @@ public class DynamicServerMenu extends SimpleGui {
 
     public DynamicServerMenu(SimpleGui parent) {
         super(parent);
-        construct();
     }
 
     @Override
@@ -134,6 +133,7 @@ public class DynamicServerMenu extends SimpleGui {
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
+        close();
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.server.almura.live":
                 FMLClientHandler.instance().setupServerList();
@@ -146,8 +146,6 @@ public class DynamicServerMenu extends SimpleGui {
             case "button.server.another":
                 mc.displayGuiScreen(new GuiMultiplayer(this));
                 break;
-            case "button.back":
-                close();
         }
     }
 
