@@ -80,11 +80,11 @@ public class DynamicConfigurationMenu extends SimpleGui {
         final UISelect<Integer> signDistanceDownMenu = new UISelect<>(this, 30, Arrays.asList(16, 32, 64));
         signDistanceDownMenu.setPosition(-15, chestDistanceDownMenu.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
         signDistanceDownMenu.setMaxExpandedWidth(30);
-        if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 16) {
+        if (Configuration.DISTANCE_RENDER_SIGN == 16) {
             signDistanceDownMenu.select(16);
-        } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 32) {
+        } else if (Configuration.DISTANCE_RENDER_SIGN == 32) {
             signDistanceDownMenu.select(32);
-        } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 64) {
+        } else if (Configuration.DISTANCE_RENDER_SIGN == 64) {
             signDistanceDownMenu.select(64);
         }
         signDistanceDownMenu.setName("select.sign");
@@ -94,7 +94,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
         final UISelect<Integer> itemFrameDistanceDownMenu = new UISelect<>(this, 30, Arrays.asList(16, 32, 64));
         itemFrameDistanceDownMenu.setPosition(-15, signDistanceDownMenu.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
         itemFrameDistanceDownMenu.setMaxExpandedWidth(30);
-        if (Configuration.DISTANCE_RENDER_SIGN == 16) {
+        if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 16) {
             itemFrameDistanceDownMenu.select(16);
         } else if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 32) {
             itemFrameDistanceDownMenu.select(32);
@@ -201,8 +201,6 @@ public class DynamicConfigurationMenu extends SimpleGui {
                     Configuration.toggleDebugRecipesMode(debugRecipesCheckBox.isChecked());
                     Configuration.setChatNotifications(chatNotificationCheckBox.isChecked());
                     Configuration.save();
-
-                    ClientProxy.setIngameHUD();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -217,7 +215,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
             case "select.chest":
                 Configuration.setChestRenderDistance((Integer) event.getNewValue());
                 break;
-            case "select.itemframe":
+            case "select.itemFrame":
                 Configuration.setItemFrameRenderDistance((Integer) event.getNewValue());
                 break;
             case "select.sign":
