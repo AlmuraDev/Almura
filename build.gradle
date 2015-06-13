@@ -35,7 +35,7 @@ ext.organization = 'AlmuraDev'
 ext.mixinSrg = new File(project.buildDir, "tmp/mixins/mixins.almura.srg")
 ext.mixinRefMap = new File(project.buildDir, "tmp/mixins/mixin.refmap.json")
 ext.minecraftVersion = '1.7.10'
-ext.forgeVersion = '10.13.3.1408'
+ext.forgeVersion = '10.13.4.1448'
 version = minecraftVersion + '-' + forgeVersion.substring(forgeVersion.size() - 4)
 
 reobf.addExtraSrgFile project.mixinSrg
@@ -63,7 +63,7 @@ minecraft {
 }
 
 dependencies {
-    compile ('com.almuradev:almurasdk:1.7.10-1408-1-SNAPSHOT:dev') {
+    compile ('com.almuradev:almurasdk:1.7.10-1448-1-SNAPSHOT:dev') {
         transitive = true
     }
 }
