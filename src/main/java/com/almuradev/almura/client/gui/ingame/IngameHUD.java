@@ -162,6 +162,9 @@ public class IngameHUD extends SimpleGui {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
 
+        // Player Name
+        playerTitle.setText(mc.thePlayer.getDisplayName());
+        
         // Player Health
         healthProperty.setAmount(mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth());
 
@@ -214,7 +217,7 @@ public class IngameHUD extends SimpleGui {
         playerCoords.setPosition(-(-worldImage.getX() + worldImage.getWidth() + 12), playerCoords.getY(), Anchor.RIGHT);
         mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT);
         playerMode.setPosition(playerTitle.getX() + playerTitle.getWidth() + 4, 2, Anchor.LEFT);
-        playerCurrency.setPosition(playerMode.getX() + playerMode.getWidth() + 4, 2, Anchor.LEFT);
+        playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 4, 2, Anchor.LEFT);
     }
 
     public float getFoodLevel() {
