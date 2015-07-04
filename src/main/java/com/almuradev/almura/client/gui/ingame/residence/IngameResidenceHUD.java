@@ -10,9 +10,13 @@ import com.almuradev.almura.client.gui.ingame.HUDData;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.util.Colors;
 import com.almuradev.almurasdk.util.FontRenderOptionsBuilder;
+
+import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
 
 public class IngameResidenceHUD extends SimpleGui {
 
@@ -21,7 +25,6 @@ public class IngameResidenceHUD extends SimpleGui {
 
     @Override
     public void construct() {
-
         // Construct Hud with all elements
         resPane = new UIBackgroundContainer(this, 90, 55);
         resPane.setAnchor(Anchor.RIGHT | Anchor.BOTTOM);
@@ -68,7 +71,6 @@ public class IngameResidenceHUD extends SimpleGui {
     }
 
     public void updateWidgets() {
-
         // I've tested this so unless you want to get a dev server up to test your changes please don't modify my width calculations...
 
         if (HUDData.OWNER_NAME.equalsIgnoreCase("mcsnetworks")) {
@@ -115,4 +117,18 @@ public class IngameResidenceHUD extends SimpleGui {
             resPane.setSize(resPane.getWidth(), 55);
         }
     }
+    
+    // This is to fix the GUI Lighting issue that exists between Almura and Optifine & ShadersMod. 
+    // Something about the change that Ordi made with the "disable backgroundGUI causes a conflict if our screens render here.    
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        if (FMLClientHandler.instance().hasOptifine()) {
+            if (Minecraft.getMinecraft().currentScreen != null) {
+                if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChat)) {
+                    return;
+                }
+            }
+        }
+        super.drawScreen(mouseX, mouseY, partialTicks);
+    } 
 }
