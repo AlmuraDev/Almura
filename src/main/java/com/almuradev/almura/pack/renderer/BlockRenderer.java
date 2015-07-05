@@ -75,7 +75,13 @@ public class BlockRenderer extends MalisisRenderer {
                 handleScaling((IModel) shape);
             }
         }
+        if (renderType == RenderType.ISBRH_INVENTORY) {
+            RenderHelper.enableStandardItemLighting();
+        }
         drawShape(shape, rp);
+        if (renderType == RenderType.ISBRH_INVENTORY) {
+            RenderHelper.disableStandardItemLighting();
+        }
     }
 
     @Override
