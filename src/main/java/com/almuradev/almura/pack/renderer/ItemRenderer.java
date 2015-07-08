@@ -53,14 +53,9 @@ public class ItemRenderer extends MalisisRenderer {
 
         if (renderType == RenderType.ITEM_INVENTORY) {
             shape.scale(1, 1, 1);
-            RenderHelper.enableStandardItemLighting();
         }
 
-        drawShape(shape, rp);
-
-        if (renderType == RenderType.ITEM_INVENTORY) {
-            RenderHelper.disableStandardItemLighting();
-        }
+        drawShape(shape, rp);        
     }
 
     @Override
