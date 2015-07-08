@@ -29,7 +29,9 @@ import net.malisis.core.renderer.element.Vertex;
 import net.malisis.core.renderer.element.shape.Cube;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 
@@ -41,7 +43,20 @@ public class BlockRenderer extends MalisisRenderer {
     protected void initialize() {
         cubeModel = new Cube();
     }
-
+    
+    // This is how you fix stuff.
+    @Override
+    public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer)
+    {
+        set(block, metadata);
+        RenderHelper.enableGUIStandardItemLighting();
+        renderBlocks = renderer;
+        prepare(RenderType.ISBRH_INVENTORY);
+        render();
+        clean();
+        RenderHelper.enableStandardItemLighting();
+    }
+          
     @Override
     public void render() {
         shape = cubeModel;
@@ -76,7 +91,7 @@ public class BlockRenderer extends MalisisRenderer {
             }
 
             if (renderType == RenderType.ISBRH_INVENTORY) {
-                handleScaling((IModel) shape);               
+                handleScaling((IModel) shape);
             }
         }
         drawShape(shape, rp);
