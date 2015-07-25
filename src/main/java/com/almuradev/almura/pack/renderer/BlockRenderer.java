@@ -5,8 +5,6 @@
  */
 package com.almuradev.almura.pack.renderer;
 
-import org.lwjgl.opengl.GL11;
-
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IBlockClipContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
@@ -31,7 +29,6 @@ import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 
@@ -42,19 +39,6 @@ public class BlockRenderer extends MalisisRenderer {
     @Override
     protected void initialize() {
         cubeModel = new Cube();
-    }
-    
-    // This is how you fix stuff.
-    @Override
-    public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer)
-    {
-        set(block, metadata);
-        RenderHelper.enableGUIStandardItemLighting();
-        renderBlocks = renderer;
-        prepare(RenderType.ISBRH_INVENTORY);
-        render();
-        clean();
-        RenderHelper.enableStandardItemLighting();
     }
           
     @Override
