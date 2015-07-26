@@ -21,6 +21,7 @@
         "client.gui.MixinGuiNewChat",
         "client.renderer.texture.MixinTextureMap",
         "client.renderer.entity.MixinRender",
+        "client.renderer.entity.MixinRenderPlayer",
         "client.renderer.tileentity.MixinRenderItemFrame",
         "client.renderer.tileentity.MixinTileEntityChestRenderer",
         "client.renderer.tileentity.MixinTileEntitySignRenderer",

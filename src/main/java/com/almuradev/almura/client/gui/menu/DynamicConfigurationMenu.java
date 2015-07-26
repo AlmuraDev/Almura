@@ -33,7 +33,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
     @Override
     public void construct() {
-
+        guiscreenBackground = false;
         // Create the form
         final UIForm form = new UIForm(this, 300, 225, "Configuration");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
@@ -174,7 +174,9 @@ public class DynamicConfigurationMenu extends SimpleGui {
                 debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, backButton, saveButton,
                 chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu, chestDistanceDownMenu);
 
-        addToScreen(new UIAnimatedBackground(this));
+        if (this.mc.thePlayer == null) { 
+            addToScreen(new UIAnimatedBackground(this));
+        }
         addToScreen(form);
     }
 
