@@ -33,7 +33,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
     @Override
     public void construct() {
-        guiscreenBackground = false;
+        guiscreenBackground = true;
         // Create the form
         final UIForm form = new UIForm(this, 300, 225, "Configuration");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);

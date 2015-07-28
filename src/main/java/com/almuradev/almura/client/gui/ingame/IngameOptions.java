@@ -50,8 +50,8 @@ public class IngameOptions extends SimpleGui {
     }
 
     @Override
-    public void construct() {        
-        guiscreenBackground = false;
+    public void construct() {
+        guiscreenBackground = true;
         // Create the form
         final UIForm form = new UIForm(this, 225, 225, "Almura", true);
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);

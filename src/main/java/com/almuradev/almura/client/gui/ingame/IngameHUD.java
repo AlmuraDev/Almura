@@ -64,7 +64,7 @@ public class IngameHUD extends SimpleGui {
 
         // Player Currency
         playerCurrency = new UILabel(this, " ");
-        playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 4, 2, Anchor.LEFT);
+        playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 10, 2, Anchor.LEFT);
         playerCurrency.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_ORANGE);
 
         // Health Property
@@ -138,12 +138,12 @@ public class IngameHUD extends SimpleGui {
 
         // Clock Image
         final UIImage clockImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_CLOCK);
-        clockImage.setPosition(-25, 12, Anchor.RIGHT);
+        clockImage.setPosition(-27, 13, Anchor.RIGHT);
         clockImage.setSize(7, 7);
 
         // World Time Label
         worldTime = new UILabel(this, "7pm");
-        worldTime.setPosition(-5, 13, Anchor.RIGHT);
+        worldTime.setPosition(-5, 14, Anchor.RIGHT);
         worldTime.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.8F).build
                 ());
 
@@ -224,7 +224,7 @@ public class IngameHUD extends SimpleGui {
         playerCoords.setPosition(-(-worldImage.getX() + worldImage.getWidth() + 12), playerCoords.getY(), Anchor.RIGHT);
         mapImage.setPosition(-(-playerCoords.getX() + playerCoords.getWidth() + 6), mapImage.getY(), Anchor.RIGHT);
         playerMode.setPosition(playerTitle.getX() + playerTitle.getWidth() + 4, 2, Anchor.LEFT);
-        playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 4, 2, Anchor.LEFT);
+        playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 10, 2, Anchor.LEFT);
     }
 
     public float getFoodLevel() {

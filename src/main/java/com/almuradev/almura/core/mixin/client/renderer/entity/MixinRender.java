@@ -6,14 +6,17 @@
 package com.almuradev.almura.core.mixin.client.renderer.entity;
 
 import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
+
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Render.class)
@@ -25,6 +28,7 @@ public abstract class MixinRender {
     @Shadow
     abstract FontRenderer getFontRendererFromRenderManager();
 
+    @Overwrite
     protected void renderLivingLabel(Entity p_147906_1_, String p_147906_2_, double p_147906_3_, double p_147906_5_, double p_147906_7_,
             int p_147906_9_) {
         double d3 = p_147906_1_.getDistanceSqToEntity(this.renderManager.livingPlayer);
