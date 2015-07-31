@@ -5,37 +5,17 @@
  */
 package com.almuradev.almura.core.mixin.client.renderer.entity;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import java.util.Random;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.MinecraftForge;
-
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(RendererLivingEntity.class)
@@ -47,10 +27,11 @@ public abstract class MixinRendererLivingEntity extends Render{
     @Shadow
     public static float NAME_TAG_RANGE_SNEAK ;
 
+    @Overwrite
     protected void passSpecialRender(EntityLivingBase p_77033_1_, double p_77033_2_, double p_77033_4_, double p_77033_6_)
     {        
         System.out.println("Hi Got here");
-        if (MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Specials.Pre(p_77033_1_, this, p_77033_2_, p_77033_4_, p_77033_6_))) return;
+        if (MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Specials.Pre(p_77033_1_, (RendererLivingEntity) (Object) this, p_77033_2_, p_77033_4_, p_77033_6_))) return;
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 
         if (this.func_110813_b(p_77033_1_))
@@ -62,7 +43,7 @@ public abstract class MixinRendererLivingEntity extends Render{
 
             if (d3 < (double)(f2 * f2))
             {
-                String s = p_77033_1_.func_145748_c_().getFormattedText();                
+                String s = p_77033_1_.getFormattedCommandSenderName().getFormattedText();
                 if (p_77033_1_.isSneaking())
                 {
                     FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
@@ -97,11 +78,11 @@ public abstract class MixinRendererLivingEntity extends Render{
                 }
                 else
                 {
-                    this.func_96449_a(p_77033_1_, p_77033_2_, p_77033_4_, p_77033_6_, s, f1, d3);
+                    ((RendererLivingEntity) (Object) this).renderOffsetLivingLabel(p_77033_1_, p_77033_2_, p_77033_4_, p_77033_6_, s, f1, d3);
                 }
             }
         }
-        MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Specials.Post(p_77033_1_, this, p_77033_2_, p_77033_4_, p_77033_6_));
+        MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Specials.Post(p_77033_1_, (RendererLivingEntity) (Object) this, p_77033_2_, p_77033_4_, p_77033_6_));
     }
 
     protected boolean func_110813_b(EntityLivingBase p_110813_1_)
