@@ -123,6 +123,16 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     }
 
     @Override
+    public void checkAndDropBlock(World world, int x, int y, int z)
+    {
+        if (!this.canBlockStay(world, x, y, z))
+        {
+            // Code for block breaking and dropping custom node goes here.
+            world.setBlock(x, y, z, getBlockById(0), 0, 2);
+        }
+    }
+
+    @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_,
             float p_149727_9_) {
         final int metadata = world.getBlockMetadata(x, y, z);
