@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 public class DynamicConfigurationMenu extends SimpleGui {
 
-    private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
+    private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, animalHeatCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
             debugPacksCheckBox,
             debugMappingsCheckBox, debugRecipesCheckBox, chatNotificationCheckBox;
 
@@ -52,6 +52,12 @@ public class DynamicConfigurationMenu extends SimpleGui {
         residenceHudCheckBox.setChecked(Configuration.DISPLAY_RESIDENCE_HUD);
         residenceHudCheckBox.setName("checkbox.residence_hud");
         residenceHudCheckBox.register(this);
+        
+        animalHeatCheckBox = new UICheckBox(this, Colors.WHITE + "Show Animal Names with Status");
+        animalHeatCheckBox.setPosition(padding, residenceHudCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
+        animalHeatCheckBox.setChecked(Configuration.DISPLAY_ANIMAL_HEAT);
+        animalHeatCheckBox.setName("checkbox.animalHeat");
+        animalHeatCheckBox.register(this);
 
         final UILabel chestRenderDistance = new UILabel(this, Colors.WHITE + "Chest Distance:");
         chestRenderDistance.setPosition(-55, padding * 2, Anchor.RIGHT | Anchor.TOP);
@@ -106,7 +112,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
         // Create the almura GUI checkbox
         almuraDebugGuiCheckBox = new UICheckBox(this, Colors.WHITE + "Enhanced F3 Debug Menu");
-        almuraDebugGuiCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4 + 15), Anchor.LEFT | Anchor.TOP);
+        almuraDebugGuiCheckBox.setPosition(padding, animalHeatCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         almuraDebugGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_DEBUG);
         almuraDebugGuiCheckBox.setName("checkbox.enhanced_debug");
         almuraDebugGuiCheckBox.register(this);
@@ -169,7 +175,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
         backButton.register(this);
 
         form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, almuraGuiCheckBox,
-                residenceHudCheckBox,
+                residenceHudCheckBox, animalHeatCheckBox,
                 almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
                 debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, backButton, saveButton,
                 chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu, chestDistanceDownMenu);
@@ -195,6 +201,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
                 try {
                     Configuration.toggleEnhancedGUI(almuraGuiCheckBox.isChecked());
                     Configuration.toggleResidenceHUD(residenceHudCheckBox.isChecked());
+                    Configuration.toggleAnimalHeat(animalHeatCheckBox.isChecked());
                     Configuration.toggleEnhancedDebug(almuraDebugGuiCheckBox.isChecked());
                     Configuration.toggleDebugMode(debugModeCheckBox.isChecked());
                     Configuration.toggleDebugLanguageMode(debugLanguagesCheckBox.isChecked());

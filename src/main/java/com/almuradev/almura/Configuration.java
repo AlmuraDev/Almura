@@ -24,6 +24,7 @@ public class Configuration {
     private static final Object[] PATH_CLIENT_ENHANCED_GUI = new String[]{"client", "enhanced-gui"};
     private static final Object[] PATH_CLIENT_ENHANCED_DEBUG = new String[]{"client", "enhanced-debug"};
     private static final Object[] PATH_CLIENT_RESIDENCE_HUD = new String[]{"client", "residence-hud"};
+    private static final Object[] PATH_CLIENT_ANIMAL_HEAT = new String[]{"client", "animal-heat"};
     private static final Object[] PATH_CLIENT_CHEST_RENDER_DISTANCE = new String[]{"client", "chest-render-distance"};
     private static final Object[] PATH_CLIENT_ITEM_FRAME_RENDER_DISTANCE = new String[]{"client", "item-frame-render-distance"};
     private static final Object[] PATH_CLIENT_SIGN_RENDER_DISTANCE = new String[]{"client", "sign-render-distance"};
@@ -42,6 +43,7 @@ public class Configuration {
     //GUI
     public static boolean DISPLAY_ENHANCED_GUI = true;
     public static boolean DISPLAY_RESIDENCE_HUD = true;
+    public static boolean DISPLAY_ANIMAL_HEAT = false;
     public static boolean DISPLAY_ENHANCED_DEBUG = true;
     public static boolean CHAT_NOTIFICATIONS = true;
     //RENDER DISTANCE WITHIN SIGNS AND CHEST MIXINS
@@ -66,6 +68,8 @@ public class Configuration {
         DISPLAY_ENHANCED_DEBUG = root.getNode(PATH_CLIENT_ENHANCED_DEBUG).getBoolean(true);
 
         DISPLAY_RESIDENCE_HUD = root.getNode(PATH_CLIENT_RESIDENCE_HUD).getBoolean(true);
+        
+        DISPLAY_ANIMAL_HEAT = root.getNode(PATH_CLIENT_ANIMAL_HEAT).getBoolean(false);
 
         DISTANCE_RENDER_CHEST = root.getNode(PATH_CLIENT_CHEST_RENDER_DISTANCE).getInt(32);
 
@@ -92,6 +96,8 @@ public class Configuration {
         root.getNode(PATH_CLIENT_ENHANCED_DEBUG).setValue(DISPLAY_ENHANCED_DEBUG);
 
         root.getNode(PATH_CLIENT_RESIDENCE_HUD).setValue(DISPLAY_RESIDENCE_HUD);
+        
+        root.getNode(PATH_CLIENT_ANIMAL_HEAT).setValue(DISPLAY_ANIMAL_HEAT);
 
         root.getNode(PATH_CLIENT_CHEST_RENDER_DISTANCE).setValue(DISTANCE_RENDER_CHEST);
 
@@ -149,6 +155,10 @@ public class Configuration {
 
     public static void toggleResidenceHUD(boolean value) {
         DISPLAY_RESIDENCE_HUD = value;
+    }
+    
+    public static void toggleAnimalHeat(boolean value) {
+        DISPLAY_ANIMAL_HEAT = value;
     }
 
     public static void toggleEnhancedDebug(boolean value) {
