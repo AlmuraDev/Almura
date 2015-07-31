@@ -46,7 +46,7 @@ public abstract class MixinRendererLivingEntity extends Render{
         if (MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Specials.Pre(entity, (RendererLivingEntity) (Object) this, p_77033_2_, p_77033_4_, p_77033_6_))) return;
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 
-        if (this.func_110813_b(entity)) {
+        if (Minecraft.isGuiEnabled() && !entity.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer) && entity.riddenByEntity == null) {        
             String entityName = entity.getFormattedCommandSenderName().getFormattedText();
             float f = 1.6F;            
             float f1 = 0.016666668F * f;
@@ -99,9 +99,5 @@ public abstract class MixinRendererLivingEntity extends Render{
             }
         }
         MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Specials.Post(entity, (RendererLivingEntity) (Object) this, p_77033_2_, p_77033_4_, p_77033_6_));
-    }
-
-    protected boolean func_110813_b(EntityLivingBase p_110813_1_) {
-        return Minecraft.isGuiEnabled() && !p_110813_1_.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer) && p_110813_1_.riddenByEntity == null;
     }
 }
