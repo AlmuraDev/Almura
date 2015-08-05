@@ -39,6 +39,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -117,18 +118,77 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
                 stage.onGrowth(world, x, y, z, random);
                 final Stage newStage = stages.get(metadata + 1);
                 newStage.onGrown(world, x, y, z, random);
-                world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
+                if (!world.isRemote) {
+                    world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
+                }
             }
         }
     }
 
     @Override
-    public void checkAndDropBlock(World world, int x, int y, int z)
-    {
-        if (!this.canBlockStay(world, x, y, z))
-        {
-            // Code for block breaking and dropping custom node goes here.
-            world.setBlock(x, y, z, getBlockById(0), 0, 2);
+    public void checkAndDropBlock(World world, int x, int y, int z) {
+        // Check if the block can stay and we are on the server
+        if (!this.canBlockStay(world, x, y, z) && !world.isRemote) {
+            final int metadata = world.getBlockMetadata(x, y, z);
+            final Stage stage = stages.get(metadata);
+            if (stage == null) {
+                // Bad crop somehow (bad stages...), break it anyhow
+                world.setBlock(x, y, z, Blocks.air, 0, 2);
+                return;
+            }
+
+            final BreakNode breakNode = stage.getNode(BreakNode.class);
+            if (breakNode == null) {
+                // If there is no break node then just let them be broken (no drops)
+                world.setBlock(x, y, z, Blocks.air, 0, 2);
+                return;
+            }
+
+            if (breakNode.isEnabled()) {
+                // Break has been disabled, disable the break
+                return;
+            }
+
+            final ToolsNode found = breakNode.getToolByIdentifier("", "none");
+            if (found == null) {
+                // If there is no drops we still want to break the crop
+                world.setBlock(x, y, z, Blocks.air, 0, 2);
+                return;
+            }
+
+            // At this point, we can remove the crop from the world
+            world.setBlock(x, y, z, Blocks.air, 0, 2);
+
+            // Only do drops if we aren't restoring snapshots and game rules allow tile drops; prevents dupes
+            if (!world.restoringBlockSnapshots && world.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
+                final ArrayList<ItemStack> drops = Lists.newArrayList();
+                for (DropProperty src : found.getValue().getValue()) {
+                    final GameObject source = src.getSource();
+                    final ItemStack toDrop;
+                    if (source.isBlock()) {
+                        toDrop = new ItemStack((Block) source.minecraftObject, src.getAmountProperty().getValueWithinRange(), src.getData());
+                    } else {
+                        toDrop = new ItemStack((Item) source.minecraftObject, src.getAmountProperty().getValueWithinRange(), src.getData());
+                    }
+                    if (src.getBonusProperty().getSource()) {
+                        final double chance = src.getBonusProperty().getValueWithinRange();
+                        if (RangeProperty.RANDOM.nextDouble() <= (chance / 100)) {
+                            toDrop.stackSize += src.getBonusProperty().getValueWithinRange();
+                        }
+                    }
+                    drops.add(toDrop);
+                }
+
+                for (ItemStack is : drops) {
+                    final float f = 0.7F;
+                    final double d0 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final double d1 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final double d2 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final EntityItem item = new EntityItem(world, (double) x + d0, (double) y + d1, (double) z + d2, is);
+                    item.delayBeforeCanPickup = 10;
+                    world.spawnEntityInWorld(item);
+                }
+            }
         }
     }
 
@@ -150,17 +210,20 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
                             final Object minecraftObject = heldItem instanceof ItemBlock ? ((ItemBlock) heldItem).blockInstance : heldItem;
 
                             if (minecraftObject == prop.getSource().minecraftObject && heldStack.getMetadata() == prop.getSource().data) {
+                                // TODO Is the bonemeal event meant to run on the client?
                                 final BonemealEvent event = new BonemealEvent(player, world, this, x, y, z);
 
                                 if (MinecraftForge.EVENT_BUS.post(event)) {
-                                    if (!player.capabilities.isCreativeMode) {
+                                    if (!world.isRemote && !player.capabilities.isCreativeMode) {
                                         --heldStack.stackSize;
                                     }
 
                                     stage.onGrown(world, x, y, z, RangeProperty.RANDOM);
                                     final Stage newStage = stages.get(metadata + 1);
                                     newStage.onGrown(world, x, y, z, RangeProperty.RANDOM);
-                                    world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
+                                    if (!world.isRemote) {
+                                        world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
+                                    }
                                     return true;
                                 }
                             }
