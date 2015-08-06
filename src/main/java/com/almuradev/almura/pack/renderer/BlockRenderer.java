@@ -23,6 +23,7 @@ import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.RenderType;
 import net.malisis.core.renderer.element.Face;
+import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.Vertex;
 import net.malisis.core.renderer.element.shape.Cube;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -203,6 +204,8 @@ public class BlockRenderer extends MalisisRenderer {
         } else {
             model.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
         }
+        ((Shape) model).applyMatrix();
+        ((Shape) model).deductParameters();
     }
 
     private void handleScaling(IModel model) {
