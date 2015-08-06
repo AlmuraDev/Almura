@@ -265,6 +265,73 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     }
 
     @Override
+    public void dropBlockAsItemWithChance(World world, int x, int y, int z, int meta, float chancef, int fortune) {
+        // Check if the block can stay and we are on the server
+        if (!world.isRemote) {
+            final int metadata = world.getBlockMetadata(x, y, z);
+            final Stage stage = stages.get(metadata);
+            if (stage == null) {
+                // Bad crop somehow (bad stages...), break it anyhow
+                world.setBlock(x, y, z, Blocks.air, 0, 2);
+                return;
+            }
+
+            final BreakNode breakNode = stage.getNode(BreakNode.class);
+            if (breakNode == null) {
+                // If there is no break node then just let them be broken (no drops)
+                world.setBlock(x, y, z, Blocks.air, 0, 2);
+                return;
+            }
+
+            if (!breakNode.isEnabled()) {
+                // Break has been disabled, disable the break
+                return;
+            }
+
+            final ToolsNode found = breakNode.getToolByIdentifier("", "none");
+            if (found == null) {
+                // If there is no drops we still want to break the crop
+                world.setBlock(x, y, z, Blocks.air, 0, 2);
+                return;
+            }
+
+            // At this point, we can remove the crop from the world
+            world.setBlock(x, y, z, Blocks.air, 0, 2);
+
+            // Only do drops if we aren't restoring snapshots and game rules allow tile drops; prevents dupes
+            if (!world.restoringBlockSnapshots && world.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
+                final ArrayList<ItemStack> drops = Lists.newArrayList();
+                for (DropProperty src : found.getValue().getValue()) {
+                    final GameObject source = src.getSource();
+                    final ItemStack toDrop;
+                    if (source.isBlock()) {
+                        toDrop = new ItemStack((Block) source.minecraftObject, src.getAmountProperty().getValueWithinRange(), src.getData());
+                    } else {
+                        toDrop = new ItemStack((Item) source.minecraftObject, src.getAmountProperty().getValueWithinRange(), src.getData());
+                    }
+                    if (src.getBonusProperty().getSource()) {
+                        final double chance = src.getBonusProperty().getValueWithinRange();
+                        if (RangeProperty.RANDOM.nextDouble() <= (chance / 100)) {
+                            toDrop.stackSize += src.getBonusProperty().getValueWithinRange();
+                        }
+                    }
+                    drops.add(toDrop);
+                }
+
+                for (ItemStack is : drops) {
+                    final float f = 0.7F;
+                    final double d0 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final double d1 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final double d2 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    final EntityItem item = new EntityItem(world, (double) x + d0, (double) y + d1, (double) z + d2, is);
+                    item.delayBeforeCanPickup = 10;
+                    world.spawnEntityInWorld(item);
+                }
+            }
+        }
+    }
+
+    @Override
     public int getLightOpacity(IBlockAccess world, int x, int y, int z) {
         final Stage stage = stages.get(world.getBlockMetadata(x, y, z));
         return stage != null ? stage.getLightOpacity(world, x, y, z) : super.getLightOpacity(world, x, y, z);
