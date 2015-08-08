@@ -175,11 +175,11 @@ public class PackCreator {
                 vertices.add(new Vertex(coordinates.get(0), coordinates.get(1), coordinates.get(2)));
             }
             final RenderParameters params = new RenderParameters();
+            params.textureSide.set(ForgeDirection.getOrientation(textureIndex));
             final PackFace face = new PackFace(textureIndex, vertices);
             face.setStandardUV();
             face.setParameters(params);
-            face.deductParameters();
-            params.textureSide.set(ForgeDirection.getOrientation(textureIndex));
+            //face.deductParameters();
             faces.add(face);
         }
 

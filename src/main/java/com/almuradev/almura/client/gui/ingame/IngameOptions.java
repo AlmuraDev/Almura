@@ -70,20 +70,27 @@ public class IngameOptions extends SimpleGui {
         backButton.setName("button.backbutton");
         backButton.register(this);
 
-        // Create the Open to Lan button
-        final UIButton lanButton = new UIButton(this, Colors.AQUA + "Open to Lan");
+        // Create the Open to Lan / Guide button
+        final UIButton lanButton = new UIButton(this, Colors.WHITE + "Open to Lan");
         if (this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic()) {
             lanButton.setText("Open to Lan");
-            lanButton.setSize(180, 16);
-            lanButton.setPosition(0, getPaddedY(backButton, padding), Anchor.CENTER | Anchor.TOP);
+            lanButton.setSize(80, 16);
+            lanButton.setPosition(30, getPaddedY(backButton, padding), Anchor.LEFT | Anchor.TOP);
             lanButton.setName("button.lan");
         } else {
-            lanButton.setText("Open Help Guide");
-            lanButton.setSize(180, 16);
-            lanButton.setPosition(0, getPaddedY(backButton, padding), Anchor.CENTER | Anchor.TOP);
+            lanButton.setText("Open Guide");
+            lanButton.setSize(80, 16);
+            lanButton.setPosition(30, getPaddedY(backButton, padding), Anchor.LEFT | Anchor.TOP);
             lanButton.setName("button.guide");
         }
         lanButton.register(this);
+        
+        // Create the Open to Mod Help Button
+        final UIButton helpButton = new UIButton(this, Colors.WHITE + "Open Mod Help");        
+        helpButton.setSize(80, 16);
+        helpButton.setPosition(-30, getPaddedY(backButton, padding), Anchor.RIGHT | Anchor.TOP);
+        helpButton.setName("button.help");
+        helpButton.register(this);
 
         // Create the options button
         final UIButton optionsButton = new UIButton(this, "Options");
@@ -134,7 +141,7 @@ public class IngameOptions extends SimpleGui {
         quitButton.setName("button.quit");
         quitButton.register(this);
       
-        form.getContentContainer().add(logoImage, backButton, lanButton, optionsButton, achievementsButton,
+        form.getContentContainer().add(logoImage, backButton, lanButton, helpButton, optionsButton, achievementsButton,
                 statisticsButton, configButton, webstatisticsButton, mapButton, quitButton);        
         addToScreen(form);
     }
@@ -176,7 +183,10 @@ public class IngameOptions extends SimpleGui {
                     close();                   
                     new ViewPagesGui().display();
                 }
-                break;                
+                break; 
+            case "button.help":
+                new IngameModHelp().display();
+                break;
             case "button.quit":
                 close();
                 this.mc.theWorld.sendQuittingDisconnectingPacket();
