@@ -69,7 +69,7 @@ public class IngameBlockInformation extends SimpleGui {
 
         final UILabel unlocalizedNameLabel = new UILabel(this, Colors.GRAY + getFormattedString(block.getUnlocalizedName(), 60, "..."));
         unlocalizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), getPaddedY(localizedNameLabel, 0), Anchor.LEFT | Anchor.TOP);
-        unlocalizedNameLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_005);
+        unlocalizedNameLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
         final UILabel soundLabel = new UILabel(this, Colors.GRAY + "Step sound: " + Colors.BLUE + block.stepSound.soundName);
         soundLabel.setPosition(xPadding, getPaddedY(unlocalizedNameLabel, yPadding + 3), Anchor.LEFT | Anchor.TOP);
