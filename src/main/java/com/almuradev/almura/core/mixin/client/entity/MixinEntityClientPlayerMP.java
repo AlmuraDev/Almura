@@ -21,8 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EntityClientPlayerMP.class)
 public abstract class MixinEntityClientPlayerMP extends EntityPlayerSP {
 
-    @Shadow
-    public NetHandlerPlayClient sendQueue;
+    @Shadow public NetHandlerPlayClient sendQueue;
 
     public MixinEntityClientPlayerMP(Minecraft p_i1238_1_, World p_i1238_2_, Session p_i1238_3_, int p_i1238_4_) {
         super(p_i1238_1_, p_i1238_2_, p_i1238_3_, p_i1238_4_);

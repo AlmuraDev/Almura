@@ -5,8 +5,9 @@
  */
 package com.almuradev.almura.core.mixin.client.renderer.entity;
 
-import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
+import com.almuradev.almura.client.DisplayNameManager;
 
+import com.google.common.base.Optional;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 
+import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -22,11 +24,8 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(Render.class)
 public abstract class MixinRender {
 
-    @Shadow
-    protected RenderManager renderManager;
-
-    @Shadow
-    abstract FontRenderer getFontRendererFromRenderManager();
+    @Shadow protected RenderManager renderManager;
+    @Shadow abstract FontRenderer getFontRendererFromRenderManager();
 
     @Overwrite
     protected void renderLivingLabel(Entity p_147906_1_, String p_147906_2_, double p_147906_3_, double p_147906_5_, double p_147906_7_,
@@ -34,10 +33,13 @@ public abstract class MixinRender {
         double d3 = p_147906_1_.getDistanceSqToEntity(this.renderManager.livingPlayer);
 
         if (d3 <= (double) (p_147906_9_ * p_147906_9_)) {
-            if (p_147906_1_ instanceof IExtendedEntityLivingBase) {
-                if (((IExtendedEntityLivingBase) p_147906_1_).getTitle() != null && !((IExtendedEntityLivingBase) p_147906_1_).getTitle().isEmpty()) {
-                    drawNameplate(p_147906_1_, ((IExtendedEntityLivingBase) p_147906_1_).getTitle(), p_147906_3_, p_147906_5_, p_147906_7_,
-                            p_147906_9_);
+            if (p_147906_1_ instanceof EntityPlayer) {
+                // Left: Display Name, Right: Title
+                final DisplayNameManager.Tuple<Optional<String>, Optional<String>> tuple = DisplayNameManager.getDisplayNameAndTitle(
+                        p_147906_1_.getCommandSenderName());
+
+                if (tuple.left.isPresent() && tuple.right.isPresent() && !tuple.right.get().isEmpty()) {
+                    drawNameplate(p_147906_1_, tuple.right.get(), p_147906_3_, p_147906_5_, p_147906_7_, p_147906_9_);
 
                     p_147906_5_ += ((float) this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * 0.025);
                 }

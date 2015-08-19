@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.server.network.play.bukkit;
 
-import com.almuradev.almura.extension.entity.IExtendedEntityLivingBase;
+import com.almuradev.almura.client.DisplayNameManager;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -40,9 +40,9 @@ public class B00PlayerDisplayName implements IMessage, IMessageHandler<B00Player
             final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(message.username);
             if (player != null) {
                 final String[] split = message.displayName.split("\\n");
-                ((IExtendedEntityLivingBase) player).setServerName(split[0]);
+                DisplayNameManager.putDisplayName(player.getCommandSenderName(), split[0]);
                 if (split.length > 1) {
-                    ((IExtendedEntityLivingBase) player).setTitle(split[1]);
+                    DisplayNameManager.putTitle(player.getCommandSenderName(), split[1]);
                 }
                 player.refreshDisplayName();
             }

@@ -4,7 +4,6 @@
     "mixins": [
         "block.MixinBlockTallGrass",
         "block.MixinBlockWall",
-        "entity.MixinEntityLivingBase",
         "inventory.MixinContainerWorkbench",
         "item.crafting.MixinShapedRecipes",
         "item.crafting.MixinShapelessRecipes",
