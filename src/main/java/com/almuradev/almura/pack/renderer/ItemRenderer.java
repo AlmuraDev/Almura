@@ -15,7 +15,6 @@ import com.google.common.base.Optional;
 import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderType;
 import net.malisis.core.renderer.element.shape.Cube;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 
 public class ItemRenderer extends MalisisRenderer {
@@ -55,7 +54,7 @@ public class ItemRenderer extends MalisisRenderer {
             shape.scale(1, 1, 1);
         }
 
-        drawShape(shape, rp);        
+        drawShape(shape, rp);
     }
 
     @Override

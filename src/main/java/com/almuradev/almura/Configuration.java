@@ -68,7 +68,7 @@ public class Configuration {
         DISPLAY_ENHANCED_DEBUG = root.getNode(PATH_CLIENT_ENHANCED_DEBUG).getBoolean(true);
 
         DISPLAY_RESIDENCE_HUD = root.getNode(PATH_CLIENT_RESIDENCE_HUD).getBoolean(true);
-        
+
         DISPLAY_ANIMAL_HEAT = root.getNode(PATH_CLIENT_ANIMAL_HEAT).getBoolean(false);
 
         DISTANCE_RENDER_CHEST = root.getNode(PATH_CLIENT_CHEST_RENDER_DISTANCE).getInt(32);
@@ -96,7 +96,7 @@ public class Configuration {
         root.getNode(PATH_CLIENT_ENHANCED_DEBUG).setValue(DISPLAY_ENHANCED_DEBUG);
 
         root.getNode(PATH_CLIENT_RESIDENCE_HUD).setValue(DISPLAY_RESIDENCE_HUD);
-        
+
         root.getNode(PATH_CLIENT_ANIMAL_HEAT).setValue(DISPLAY_ANIMAL_HEAT);
 
         root.getNode(PATH_CLIENT_CHEST_RENDER_DISTANCE).setValue(DISTANCE_RENDER_CHEST);
@@ -156,7 +156,7 @@ public class Configuration {
     public static void toggleResidenceHUD(boolean value) {
         DISPLAY_RESIDENCE_HUD = value;
     }
-    
+
     public static void toggleAnimalHeat(boolean value) {
         DISPLAY_ANIMAL_HEAT = value;
     }

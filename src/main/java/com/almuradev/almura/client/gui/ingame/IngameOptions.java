@@ -14,7 +14,6 @@ import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
 import com.almuradev.guide.client.gui.ViewPagesGui;
 import com.google.common.eventbus.Subscribe;
-
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -35,18 +34,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class IngameOptions extends SimpleGui {
-    
+
     protected static final ResourceLocation ALMURA_LOGO_LOCATION;
-    
-    public IngameOptions() {
-    }
-    
+
     static {
         try {
             ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/almura.png", Filesystem.CONFIG_GUI_LOGO_PATH);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load logo.", e);
         }
+    }
+
+    public IngameOptions() {
     }
 
     @Override
@@ -62,7 +61,7 @@ public class IngameOptions extends SimpleGui {
         logoImage.setSize(65, 95);
 
         final int padding = 4;
-        
+
         // Create the Back to Game button
         final UIButton backButton = new UIButton(this, Colors.AQUA + "Back to game");
         backButton.setSize(180, 16);
@@ -84,9 +83,9 @@ public class IngameOptions extends SimpleGui {
             lanButton.setName("button.guide");
         }
         lanButton.register(this);
-        
+
         // Create the Open to Mod Help Button
-        final UIButton helpButton = new UIButton(this, Colors.WHITE + "Open Mod Help");        
+        final UIButton helpButton = new UIButton(this, Colors.WHITE + "Open Mod Help");
         helpButton.setSize(80, 16);
         helpButton.setPosition(-30, getPaddedY(backButton, padding), Anchor.RIGHT | Anchor.TOP);
         helpButton.setName("button.help");
@@ -112,7 +111,7 @@ public class IngameOptions extends SimpleGui {
         statisticsButton.setPosition(-10, getPaddedY(lanButton, padding), Anchor.RIGHT | Anchor.TOP);
         statisticsButton.setName("button.stats");
         statisticsButton.register(this);
-        
+
         // Create the Configuration button
         final UIButton configButton = new UIButton(this, "Configuration");
         configButton.setSize(65, 16);
@@ -140,9 +139,9 @@ public class IngameOptions extends SimpleGui {
         quitButton.setPosition(0, getPaddedY(mapButton, padding), Anchor.CENTER | Anchor.TOP);
         quitButton.setName("button.quit");
         quitButton.register(this);
-      
+
         form.getContentContainer().add(logoImage, backButton, lanButton, helpButton, optionsButton, achievementsButton,
-                statisticsButton, configButton, webstatisticsButton, mapButton, quitButton);        
+                statisticsButton, configButton, webstatisticsButton, mapButton, quitButton);
         addToScreen(form);
     }
 
@@ -151,14 +150,15 @@ public class IngameOptions extends SimpleGui {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.backbutton":
                 close();
-                this.mc.displayGuiScreen((GuiScreen)null);
+                this.mc.displayGuiScreen((GuiScreen) null);
                 this.mc.setIngameFocus();
                 break;
             case "button.achievements":
                 close();
-                if (this.mc.thePlayer != null)
+                if (this.mc.thePlayer != null) {
                     this.mc.displayGuiScreen(new GuiAchievements(this, this.mc.thePlayer.getStatFileWriter()));
-                    break;
+                }
+                break;
             case "button.options":
                 this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
                 break;
@@ -172,25 +172,26 @@ public class IngameOptions extends SimpleGui {
                 Desktop.getDesktop().browse(new URI("http://www.almuramc.com"));
                 break;
             case "button.stats":
-                if (this.mc.thePlayer != null)
+                if (this.mc.thePlayer != null) {
                     this.mc.displayGuiScreen(new GuiStats(this, this.mc.thePlayer.getStatFileWriter()));
-                    break;
+                }
+                break;
             case "button.lan":
                 this.mc.displayGuiScreen(new GuiShareToLan(this));
                 break;
             case "button.guide":
                 if (this.mc.thePlayer != null) {
-                    close();                   
+                    close();
                     new ViewPagesGui().display();
                 }
-                break; 
+                break;
             case "button.help":
                 new IngameModHelp().display();
                 break;
             case "button.quit":
                 close();
                 this.mc.theWorld.sendQuittingDisconnectingPacket();
-                this.mc.loadWorld((WorldClient)null);
+                this.mc.loadWorld((WorldClient) null);
                 this.mc.displayGuiScreen(new GuiMainMenu());
                 break;
         }

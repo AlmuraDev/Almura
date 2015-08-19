@@ -10,7 +10,6 @@ import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIPropertyBar;
 import com.almuradev.almurasdk.util.Colors;
 import com.almuradev.almurasdk.util.FontRenderOptionsBuilder;
-
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -19,10 +18,8 @@ import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeHooks;
-
 import org.apache.commons.lang3.text.WordUtils;
 
 public class IngameHUD extends SimpleGui {
@@ -106,8 +103,9 @@ public class IngameHUD extends SimpleGui {
 
         // World Display Label
         String worldName = "World";
-        if (mc.isSingleplayer())
+        if (mc.isSingleplayer()) {
             worldName = WordUtils.capitalize(MinecraftServer.getServer().getWorldName());
+        }
 
         worldDisplay = new UILabel(this, worldName);
         worldDisplay.setPosition(-5, 5, Anchor.RIGHT);
@@ -171,7 +169,7 @@ public class IngameHUD extends SimpleGui {
 
         // Player Name
         playerTitle.setText(mc.thePlayer.getDisplayName());
-        
+
         // Player Health
         healthProperty.setAmount(mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth());
 
@@ -265,10 +263,10 @@ public class IngameHUD extends SimpleGui {
         }
         return (hours - 18) + "am";
     }
-    
+
     // This is to fix the GUI Lighting issue that exists between Almura and Optifine & ShadersMod. 
     // Something about the change that Ordi made with the "disable backgroundGUI causes a conflict if our screens render here.
-    
+
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (FMLClientHandler.instance().hasOptifine()) {
@@ -279,5 +277,5 @@ public class IngameHUD extends SimpleGui {
             }
         }
         super.drawScreen(mouseX, mouseY, partialTicks);
-    } 
+    }
 }

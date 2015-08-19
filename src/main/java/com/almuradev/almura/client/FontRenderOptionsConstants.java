@@ -10,6 +10,7 @@ import com.almuradev.almurasdk.util.Colors;
 import net.malisis.core.renderer.font.FontRenderOptions;
 
 public class FontRenderOptionsConstants {
+
     public static final FontRenderOptions FRO_COLOR_WHITE = new FontRenderOptions();
     public static final FontRenderOptions FRO_COLOR_ORANGE = new FontRenderOptions();
     public static final FontRenderOptions FRO_SCALE_050 = new FontRenderOptions();

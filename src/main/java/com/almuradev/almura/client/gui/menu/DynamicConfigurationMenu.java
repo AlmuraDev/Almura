@@ -6,7 +6,6 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
@@ -52,7 +51,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
         residenceHudCheckBox.setChecked(Configuration.DISPLAY_RESIDENCE_HUD);
         residenceHudCheckBox.setName("checkbox.residence_hud");
         residenceHudCheckBox.register(this);
-        
+
         animalHeatCheckBox = new UICheckBox(this, Colors.WHITE + "Show Animal Names with Status");
         animalHeatCheckBox.setPosition(padding, residenceHudCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         animalHeatCheckBox.setChecked(Configuration.DISPLAY_ANIMAL_HEAT);
@@ -180,7 +179,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
                 debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, backButton, saveButton,
                 chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu, chestDistanceDownMenu);
 
-        if (this.mc.thePlayer == null) { 
+        if (this.mc.thePlayer == null) {
             addToScreen(new UIAnimatedBackground(this));
         }
         addToScreen(form);

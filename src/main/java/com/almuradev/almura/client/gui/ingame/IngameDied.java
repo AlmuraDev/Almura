@@ -8,46 +8,37 @@ package com.almuradev.almura.client.gui.ingame;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
-import com.almuradev.almura.client.gui.menu.DynamicConfigurationMenu;
 import com.almuradev.almurasdk.FileSystem;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
-import com.almuradev.guide.client.gui.ViewPagesGui;
 import com.google.common.eventbus.Subscribe;
-
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiOptions;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiShareToLan;
-import net.minecraft.client.gui.achievement.GuiAchievements;
-import net.minecraft.client.gui.achievement.GuiStats;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.AWTException;
-import java.awt.Desktop;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 public class IngameDied extends SimpleGui {
-    
+
     protected static final ResourceLocation ALMURA_LOGO_LOCATION;
-    
-    public IngameDied() {}
-    
+
     static {
         try {
             ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/almura.png", Filesystem.CONFIG_GUI_LOGO_PATH);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load logo.", e);
         }
+    }
+
+    public IngameDied() {
     }
 
     @Override
@@ -63,15 +54,15 @@ public class IngameDied extends SimpleGui {
         logoImage.setSize(65, 95);
 
         final int padding = 4;
-        
+
         // Died message
         final UILabel deathMessage = new UILabel(this, Colors.WHITE + "You has died...");
         deathMessage.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_110);
         deathMessage.setPosition(0, getPaddedY(logoImage, 10), Anchor.CENTER | Anchor.TOP);
-        
-        final UILabel returnMessage = new UILabel(this, Colors.WHITE + "But death is only the beginning " + this.mc.thePlayer.getDisplayName() + ".");        
+
+        final UILabel returnMessage = new UILabel(this, Colors.WHITE + "But death is only the beginning " + this.mc.thePlayer.getDisplayName() + ".");
         returnMessage.setPosition(0, getPaddedY(logoImage, 25), Anchor.CENTER | Anchor.TOP);
-        
+
         // Create the Respawn button
         final UIButton respawnButton = new UIButton(this, Colors.AQUA + "Revive");
         respawnButton.setSize(100, 16);
@@ -85,8 +76,8 @@ public class IngameDied extends SimpleGui {
         quitButton.setPosition(0, getPaddedY(respawnButton, padding * 3), Anchor.CENTER | Anchor.TOP);
         quitButton.setName("button.quit");
         quitButton.register(this);
-      
-        form.getContentContainer().add(logoImage, deathMessage, returnMessage, respawnButton, quitButton);        
+
+        form.getContentContainer().add(logoImage, deathMessage, returnMessage, respawnButton, quitButton);
         addToScreen(form);
     }
 
@@ -95,13 +86,13 @@ public class IngameDied extends SimpleGui {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.respawn":
                 this.mc.thePlayer.setHealth(0.1F);
-                this.mc.thePlayer.respawnPlayer();                
+                this.mc.thePlayer.respawnPlayer();
                 close();
-                break;            
+                break;
             case "button.quit":
                 close();
                 this.mc.theWorld.sendQuittingDisconnectingPacket();
-                this.mc.loadWorld((WorldClient)null);
+                this.mc.loadWorld((WorldClient) null);
                 this.mc.displayGuiScreen(new GuiMainMenu());
                 break;
         }

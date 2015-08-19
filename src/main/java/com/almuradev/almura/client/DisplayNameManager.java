@@ -19,6 +19,7 @@ import java.util.Map;
  */
 @SideOnly(Side.CLIENT)
 public class DisplayNameManager {
+
     final static Map<String, String> DISPLAY_NAMES_BY_NAME = Maps.newHashMap();
     final static Map<String, String> TITLES_BY_NAME = Maps.newHashMap();
 
@@ -60,6 +61,7 @@ public class DisplayNameManager {
     }
 
     public static class Tuple<T, U> {
+
         public final T left;
         public final U right;
 

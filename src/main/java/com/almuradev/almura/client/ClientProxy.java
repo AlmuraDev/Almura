@@ -23,7 +23,6 @@ import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
 import com.almuradev.almurasdk.lang.LanguageRegistry;
 import com.almuradev.almurasdk.lang.Languages;
-
 import com.google.common.base.Optional;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -43,7 +42,6 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
-
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -63,6 +61,16 @@ public class ClientProxy extends CommonProxy {
     public static IngameDebugHUD HUD_DEBUG;
     public static IngameHUD HUD_INGAME;
     public static IngameResidenceHUD HUD_RESIDENCE;
+
+    public static void setIngameHUD() {
+        if (Configuration.DISPLAY_ENHANCED_GUI && HUD_INGAME == null) {
+            HUD_INGAME = new IngameHUD();
+            HUD_INGAME.displayOverlay();
+        } else if (!Configuration.DISPLAY_ENHANCED_GUI && HUD_INGAME != null) {
+            HUD_INGAME.closeOverlay();
+            HUD_INGAME = null;
+        }
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -95,12 +103,12 @@ public class ClientProxy extends CommonProxy {
             new DynamicMainMenu(null).display();
 
         }
-        
+
         if (event.gui instanceof GuiIngameMenu) {
             event.setCanceled(true);
             new IngameOptions().display();
         }
-        
+
         if (event.gui instanceof GuiGameOver) {
             event.setCanceled(true);
             new IngameDied().display();
@@ -191,17 +199,6 @@ public class ClientProxy extends CommonProxy {
         if (!Minecraft.getMinecraft().gameSettings.showDebugInfo && HUD_DEBUG != null) {
             HUD_DEBUG.closeOverlay();
             HUD_DEBUG = null;
-        }
-    }
-
-    public static void setIngameHUD() {
-        if (Configuration.DISPLAY_ENHANCED_GUI && HUD_INGAME == null) {
-            HUD_INGAME = new IngameHUD();
-            HUD_INGAME.displayOverlay();
-        }
-        else if (!Configuration.DISPLAY_ENHANCED_GUI && HUD_INGAME != null) {
-            HUD_INGAME.closeOverlay();
-            HUD_INGAME = null;
         }
     }
 }

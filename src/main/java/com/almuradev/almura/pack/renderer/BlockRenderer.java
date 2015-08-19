@@ -18,18 +18,14 @@ import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.google.common.base.Optional;
-
 import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.RenderType;
 import net.malisis.core.renderer.element.Face;
-import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.Vertex;
 import net.malisis.core.renderer.element.shape.Cube;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 
@@ -41,7 +37,7 @@ public class BlockRenderer extends MalisisRenderer {
     protected void initialize() {
         cubeModel = new Cube();
     }
-          
+
     @Override
     public void render() {
         shape = cubeModel;
@@ -54,11 +50,11 @@ public class BlockRenderer extends MalisisRenderer {
                 }
             }
         }
-        
+
         shape.resetState();
         enableBlending();
         rp.useBlockBounds.set(false);
-        
+
         if (shape instanceof IModel) {
             rp.renderAllFaces.set(true);
             rp.flipU.set(true);
@@ -204,8 +200,8 @@ public class BlockRenderer extends MalisisRenderer {
         } else {
             model.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
         }
-       // ((Shape) model).applyMatrix();
-       // ((Shape) model).deductParameters();
+        // ((Shape) model).applyMatrix();
+        // ((Shape) model).deductParameters();
     }
 
     private void handleScaling(IModel model) {

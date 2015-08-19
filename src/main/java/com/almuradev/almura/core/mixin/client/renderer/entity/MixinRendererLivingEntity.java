@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.core.mixin.client.renderer.entity;
 
+import com.almuradev.almura.Configuration;
+import com.almuradev.almurasdk.util.Colors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -16,39 +18,42 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.MinecraftForge;
-
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-import com.almuradev.almura.Configuration;
-import com.almuradev.almurasdk.util.Colors;
-
 @Mixin(RendererLivingEntity.class)
-public abstract class MixinRendererLivingEntity extends Render{
-    
+public abstract class MixinRendererLivingEntity extends Render {
+
     @Shadow
     private static float NAME_TAG_RANGE;
-    
+
     @Shadow
-    private static float NAME_TAG_RANGE_SNEAK ;
+    private static float NAME_TAG_RANGE_SNEAK;
 
     @Overwrite
-    protected void passSpecialRender(EntityLivingBase entity, double p_77033_2_, double p_77033_4_, double p_77033_6_) {        
-        
-        if (!(entity instanceof EntityPlayer || entity instanceof EntityAnimal)) return;        
-        
-        if (entity instanceof EntityAnimal) {
-            if (!Configuration.DISPLAY_ANIMAL_HEAT) return;
+    protected void passSpecialRender(EntityLivingBase entity, double p_77033_2_, double p_77033_4_, double p_77033_6_) {
+
+        if (!(entity instanceof EntityPlayer || entity instanceof EntityAnimal)) {
+            return;
         }
 
-        if (MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Specials.Pre(entity, (RendererLivingEntity) (Object) this, p_77033_2_, p_77033_4_, p_77033_6_))) return;
+        if (entity instanceof EntityAnimal) {
+            if (!Configuration.DISPLAY_ANIMAL_HEAT) {
+                return;
+            }
+        }
+
+        if (MinecraftForge.EVENT_BUS
+                .post(new RenderLivingEvent.Specials.Pre(entity, (RendererLivingEntity) (Object) this, p_77033_2_, p_77033_4_, p_77033_6_))) {
+            return;
+        }
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 
-        if (Minecraft.isGuiEnabled() && !entity.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer) && entity.riddenByEntity == null) {        
+        if (Minecraft.isGuiEnabled() && !entity.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer) && entity.riddenByEntity == null) {
             String entityName = entity.getFormattedCommandSenderName().getFormattedText();
-            float f = 1.6F;            
+            float f = 1.6F;
             float f1 = 0.016666668F * f;
             double d3 = entity.getDistanceSqToEntity(this.renderManager.livingPlayer);
             float f2 = entity.isSneaking() ? NAME_TAG_RANGE_SNEAK : NAME_TAG_RANGE;
@@ -61,12 +66,12 @@ public abstract class MixinRendererLivingEntity extends Render{
                     entityName = Colors.DARK_AQUA + entityName;
                 }
             }
-            
-            if (d3 < f6) {                
+
+            if (d3 < f6) {
                 if (entity.isSneaking()) {
                     FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
                     GL11.glPushMatrix();
-                    GL11.glTranslatef((float)p_77033_2_ + 0.0F, (float)p_77033_4_ + entity.height + 0.5F, (float)p_77033_6_);
+                    GL11.glTranslatef((float) p_77033_2_ + 0.0F, (float) p_77033_4_ + entity.height + 0.5F, (float) p_77033_6_);
                     GL11.glNormal3f(0.0F, 1.0F, 0.0F);
                     GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
                     GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
@@ -81,10 +86,10 @@ public abstract class MixinRendererLivingEntity extends Render{
                     tessellator.startDrawingQuads();
                     int i = fontrenderer.getStringWidth(entityName) / 2;
                     tessellator.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
-                    tessellator.addVertex((double)(-i - 1), -1.0D, 0.0D);
-                    tessellator.addVertex((double)(-i - 1), 8.0D, 0.0D);
-                    tessellator.addVertex((double)(i + 1), 8.0D, 0.0D);
-                    tessellator.addVertex((double)(i + 1), -1.0D, 0.0D);
+                    tessellator.addVertex((double) (-i - 1), -1.0D, 0.0D);
+                    tessellator.addVertex((double) (-i - 1), 8.0D, 0.0D);
+                    tessellator.addVertex((double) (i + 1), 8.0D, 0.0D);
+                    tessellator.addVertex((double) (i + 1), -1.0D, 0.0D);
                     tessellator.draw();
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
                     GL11.glDepthMask(true);
@@ -98,6 +103,7 @@ public abstract class MixinRendererLivingEntity extends Render{
                 }
             }
         }
-        MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Specials.Post(entity, (RendererLivingEntity) (Object) this, p_77033_2_, p_77033_4_, p_77033_6_));
+        MinecraftForge.EVENT_BUS
+                .post(new RenderLivingEvent.Specials.Post(entity, (RendererLivingEntity) (Object) this, p_77033_2_, p_77033_4_, p_77033_6_));
     }
 }

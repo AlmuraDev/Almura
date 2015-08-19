@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.gui.ingame;
 
 public class HUDData {
+
     public static String PLAYER_CURRENCY = "";
     public static String WORLD_DISPLAY = "";
     public static String SERVER_COUNT = "";

@@ -32,10 +32,9 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
     public static final int ANIMATION_SPEED = 160;
     private static final Multimap<TimeState, GuiTexture> STATE_TEXTURES = ArrayListMultimap.create();
     private static final Random RANDOM = new Random();
-
+    public Animation animation;
     private GuiTexture currentTexture;
     private int currentAnchor;
-    public Animation animation;
 
     public UIAnimatedBackground(MalisisGui gui) {
         super(gui);
@@ -45,10 +44,11 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
 
     @Override
     public void setParent(UIComponent parent) {
-        if (parent != null)
+        if (parent != null) {
             parent.register(this);
-        else
+        } else {
             getParent().unregister(this);
+        }
 
         super.setParent(parent);
     }
@@ -65,13 +65,14 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
         final File stateDir = new File(Filesystem.CONFIG_BACKGROUNDS_PATH.toString(), state.toString());
 
         for (File file : stateDir.listFiles()) {
-            if (file.getName().endsWith(".jpg") || file.getName().endsWith(".png"))
+            if (file.getName().endsWith(".jpg") || file.getName().endsWith(".png")) {
                 try {
                     STATE_TEXTURES.put(state, new GuiTexture(file));
                 } catch (IOException e) {
                     Almura.LOGGER.warn("Failed to load background image {} for TimeState [{}].", file.getName(), state, Configuration.DEBUG_ALL ? e
                             : null);
                 }
+            }
         }
     }
 
@@ -95,15 +96,18 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
      */
     private GuiTexture getRandomTexture() {
         GuiTexture[] backgrounds = listBackgrounds(TimeState.currentState());
-        if (backgrounds.length == 0)
+        if (backgrounds.length == 0) {
             return null;
+        }
 
-        if (backgrounds.length == 1)
+        if (backgrounds.length == 1) {
             return backgrounds[0];
+        }
 
         GuiTexture texture = currentTexture;
-        while (texture == currentTexture)
+        while (texture == currentTexture) {
             texture = backgrounds[RANDOM.nextInt(backgrounds.length)];
+        }
 
         return texture;
     }
@@ -144,8 +148,9 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
 
     @Subscribe
     public void onComponentSizeChange(SizeChangeEvent<UIComponent> event) {
-        if (event.getComponent() != this)
+        if (event.getComponent() != this) {
             resetAnimation();
+        }
     }
 
     private enum TimeState {
@@ -154,13 +159,7 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
         EVENING,
         NIGHT;
 
-        @Override
-        public String toString() {
-            return name().toLowerCase();
-        }
-
-        public static TimeState currentState()
-        {
+        public static TimeState currentState() {
             final int hours = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
             if (hours <= 8) {
@@ -172,6 +171,11 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
             } else {
                 return TimeState.NIGHT;
             }
+        }
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
         }
     }
 }

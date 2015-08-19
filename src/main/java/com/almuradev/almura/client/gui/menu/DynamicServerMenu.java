@@ -5,37 +5,36 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
 import com.almuradev.almurasdk.util.Colors;
 import com.almuradev.almurasdk.util.Query;
 import com.google.common.eventbus.Subscribe;
-
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.minecraft.client.gui.GuiConfirmOpenLink;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.multiplayer.ServerData;
+
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
 
     private static final ServerData DATA_LIVE_SERVER = new ServerData("Almura", "srv1.almuramc.com");
     private static final ServerData DATA_DEV_SERVER = new ServerData("Almura (Dev)", "dev.almuramc.com");
     private static final Query QUERY_LIVE_SERVER = new Query(DATA_LIVE_SERVER, 25565), QUERY_DEV_SERVER = new Query(DATA_DEV_SERVER, 25565);
-
+    private UIButton almuraLiveButton;
+    private UIButton almuraDevButton;
+    private UILabel liveServerOnline;
+    private UILabel devServerOnline;
     private final Thread QUERIER = new Thread(new Runnable() {
 
         @Override
@@ -53,11 +52,6 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
             }
         }
     });
-
-    private UIButton almuraLiveButton;
-    private UIButton almuraDevButton;
-    private UILabel liveServerOnline;
-    private UILabel devServerOnline;
 
     public DynamicServerMenu(SimpleGui parent) {
         super(parent);
@@ -111,14 +105,14 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
         anotherButton.setSize(60, 16);
         anotherButton.setName("button.server.another");
         anotherButton.register(this);
-        
+
         // Create the map button
         UIButton mapButton = new UIButton(this, "Live Map");
         mapButton.setPosition(30, getPaddedY(almuraDevButton, padding) + 3, Anchor.CENTER | Anchor.TOP);
         mapButton.setSize(50, 16);
         mapButton.setName("button.server.map");
         mapButton.register(this);
-        
+
         // Create the website button
         UIButton webButton = new UIButton(this, "Visit our Website for Updates");
         webButton.setPosition(0, getPaddedY(anotherButton, padding) + 4, Anchor.CENTER | Anchor.TOP);
@@ -150,7 +144,8 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) throws IOException, URISyntaxException {
-        if (event.getComponent().getName().toLowerCase() != "button.server.web" || event.getComponent().getName().toLowerCase() != "button.server.map") {
+        if (event.getComponent().getName().toLowerCase() != "button.server.web"
+                || event.getComponent().getName().toLowerCase() != "button.server.map") {
             close();
         }
         switch (event.getComponent().getName().toLowerCase()) {

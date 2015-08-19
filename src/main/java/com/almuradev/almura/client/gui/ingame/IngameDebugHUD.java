@@ -139,8 +139,7 @@ public class IngameDebugHUD extends SimpleGui {
         int yaw = MathHelper.floor_double(p.rotationYawHead * 4.0F / 360.0F + 0.5D) & 3;
         directionLoc.setText(WordUtils.capitalizeFully(Direction.directions[yaw]));
 
-        if (chunk == null || p.posX != p.prevPosX || p.posZ != p.prevPosZ)
-        {
+        if (chunk == null || p.posX != p.prevPosX || p.posZ != p.prevPosZ) {
             chunk = p.worldObj.getChunkFromChunkCoords(p.chunkCoordX, p.chunkCoordZ);
             int x = (int) p.posX & 15;
             int y = (int) p.posY;

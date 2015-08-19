@@ -10,7 +10,6 @@ import com.almuradev.almura.client.gui.ingame.HUDData;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.util.Colors;
 import com.almuradev.almurasdk.util.FontRenderOptionsBuilder;
-
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -48,7 +47,8 @@ public class IngameResidenceHUD extends SimpleGui {
 
         resOwnerOnline = new UILabel(this, Colors.WHITE + "Owner Last Online: NOW");
         resOwnerOnline.setPosition(7, resOwner.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resOwnerOnline.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
+        resOwnerOnline
+                .setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
 
         resBank = new UILabel(this, Colors.WHITE + "Vault: $999,000.00");
         resBank.setPosition(3, resOwnerOnline.getY() + 6, Anchor.LEFT | Anchor.TOP);
@@ -56,15 +56,18 @@ public class IngameResidenceHUD extends SimpleGui {
 
         resLeaseCost = new UILabel(this, Colors.WHITE + "Lease Cost: $999,000.00");
         resLeaseCost.setPosition(3, resBank.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resLeaseCost.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
+        resLeaseCost
+                .setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
 
         resLeaseExpireTitle = new UILabel(this, Colors.WHITE + "Lease Expires:");
         resLeaseExpireTitle.setPosition(3, resLeaseCost.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resLeaseExpireTitle.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
+        resLeaseExpireTitle
+                .setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
 
         resLeaseExpire = new UILabel(this, Colors.WHITE + "Never");
         resLeaseExpire.setPosition(8, resLeaseExpireTitle.getY() + 6, Anchor.LEFT | Anchor.TOP);
-        resLeaseExpire.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
+        resLeaseExpire
+                .setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_WHITE).fontScale(0.7f).build());
 
         resPane.add(title, resName, resOwner, resOwnerOnline, resBank, resLeaseCost, resLeaseExpireTitle, resLeaseExpire);
         addToScreen(resPane);
@@ -105,7 +108,7 @@ public class IngameResidenceHUD extends SimpleGui {
             resBank.setVisible(false);
             resLeaseCost.setVisible(false);
             resLeaseExpire.setVisible(true);
-            resPane.setSize(title.getWidth()+10, 20);
+            resPane.setSize(title.getWidth() + 10, 20);
         } else {
             title.setText("Residence Info");
             resName.setText("Name: " + Colors.GREEN + HUDData.NAME);
@@ -117,7 +120,7 @@ public class IngameResidenceHUD extends SimpleGui {
             resPane.setSize(resPane.getWidth(), 55);
         }
     }
-    
+
     // This is to fix the GUI Lighting issue that exists between Almura and Optifine & ShadersMod. 
     // Something about the change that Ordi made with the "disable backgroundGUI causes a conflict if our screens render here.    
     @Override
@@ -130,5 +133,5 @@ public class IngameResidenceHUD extends SimpleGui {
             }
         }
         super.drawScreen(mouseX, mouseY, partialTicks);
-    } 
+    }
 }

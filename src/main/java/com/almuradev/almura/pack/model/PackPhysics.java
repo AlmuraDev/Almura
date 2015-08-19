@@ -89,7 +89,7 @@ public final class PackPhysics {
         }
         return AxisAlignedBB.getBoundingBox(x + def.minX, y + def.minY, z + def.minZ, x + def.maxX, y + def.maxY, z + def.maxZ);
     }
-    
+
     @SideOnly(Side.CLIENT)
     public void findRayframe(AxisAlignedBB fallback, World world, int x, int y, int z) {
         if (useVanillaWireframe || wireframeBB == null) {
@@ -124,7 +124,7 @@ public final class PackPhysics {
                 def.offset(0.5, 0.5, 0.5);
             }
         }
-        
+
         this.aMinX = def.minX;
         this.aMaxX = def.maxX;
         this.aMinY = def.minY;
@@ -132,27 +132,27 @@ public final class PackPhysics {
         this.aMinZ = def.minZ;
         this.aMaxZ = def.maxZ;
     }
-    
+
     public double getRayMinX() {
         return aMinX;
     }
-    
+
     public double getRayMaxX() {
         return aMaxX;
     }
-    
+
     public double getRayMinY() {
         return aMinY;
     }
-    
+
     public double getRayMaxY() {
         return aMaxY;
     }
-    
+
     public double getRayMinZ() {
         return aMinZ;
     }
-    
+
     public double getRayMaxZ() {
         return aMaxZ;
     }
