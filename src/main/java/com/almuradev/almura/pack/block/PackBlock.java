@@ -32,6 +32,7 @@ import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.relauncher.Side;
@@ -51,6 +52,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -143,7 +146,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public boolean renderAsNormalBlock() {
         return modelContainer == null && renderNode.getValue();
     }
@@ -151,6 +153,11 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public boolean isOpaqueCube() {
         return fullBlock;
+    }
+    
+    @Override
+    public boolean isNormalCube() {
+       return this.blockMaterial.isOpaque() && this.renderAsNormalBlock() && !this.canProvidePower();
     }
 
     //TODO Check this come 1.8
@@ -251,7 +258,6 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         return modelContainer.get().getPhysics().getCollision(vanillaBB, world, x, y, z);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
         final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
@@ -359,4 +365,112 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     public List<String> getTooltip() {
         return tooltip;
     }
+
+    @Override
+    public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 startVec, Vec3 endVec) {
+        final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
+        modelContainer.get().getPhysics().findRayframe(vanillaBB, world, x, y, z);
+        startVec = startVec.addVector((double)(-x), (double)(-y), (double)(-z));
+        endVec = endVec.addVector((double)(-x), (double)(-y), (double)(-z));
+        Vec3 vec32 = startVec.getIntermediateWithXValue(endVec, modelContainer.get().getPhysics().getRayMinX());
+        Vec3 vec33 = startVec.getIntermediateWithXValue(endVec, modelContainer.get().getPhysics().getRayMaxX());
+        Vec3 vec34 = startVec.getIntermediateWithYValue(endVec, modelContainer.get().getPhysics().getRayMinY());
+        Vec3 vec35 = startVec.getIntermediateWithYValue(endVec, modelContainer.get().getPhysics().getRayMaxY());
+        Vec3 vec36 = startVec.getIntermediateWithZValue(endVec, modelContainer.get().getPhysics().getRayMinZ());
+        Vec3 vec37 = startVec.getIntermediateWithZValue(endVec, modelContainer.get().getPhysics().getRayMaxZ());
+
+        if (!this.isVecInsideYZBounds(vec32)) {
+            vec32 = null;
+        }
+
+        if (!this.isVecInsideYZBounds(vec33)) {
+            vec33 = null;
+        }
+
+        if (!this.isVecInsideXZBounds(vec34)) {
+            vec34 = null;
+        }
+
+        if (!this.isVecInsideXZBounds(vec35)) {
+            vec35 = null;
+        }
+
+        if (!this.isVecInsideXYBounds(vec36)) {
+            vec36 = null;
+        }
+
+        if (!this.isVecInsideXYBounds(vec37)) {
+            vec37 = null;
+        }
+
+        Vec3 vec38 = null;
+
+        if (vec32 != null && (vec38 == null || startVec.squareDistanceTo(vec32) < startVec.squareDistanceTo(vec38))) {
+            vec38 = vec32;
+        }
+
+        if (vec33 != null && (vec38 == null || startVec.squareDistanceTo(vec33) < startVec.squareDistanceTo(vec38))) {
+            vec38 = vec33;
+        }
+
+        if (vec34 != null && (vec38 == null || startVec.squareDistanceTo(vec34) < startVec.squareDistanceTo(vec38))) {
+            vec38 = vec34;
+        }
+
+        if (vec35 != null && (vec38 == null || startVec.squareDistanceTo(vec35) < startVec.squareDistanceTo(vec38))) {
+            vec38 = vec35;
+        }
+
+        if (vec36 != null && (vec38 == null || startVec.squareDistanceTo(vec36) < startVec.squareDistanceTo(vec38))) {
+            vec38 = vec36;
+        }
+
+        if (vec37 != null && (vec38 == null || startVec.squareDistanceTo(vec37) < startVec.squareDistanceTo(vec38))) {
+            vec38 = vec37;
+        }
+
+        if (vec38 == null) {
+            return null;
+        } else {
+            byte b0 = -1;
+
+            if (vec38 == vec32) {
+                b0 = 4;
+            }
+
+            if (vec38 == vec33) {
+                b0 = 5;
+            }
+
+            if (vec38 == vec34) {
+                b0 = 0;
+            }
+
+            if (vec38 == vec35) {
+                b0 = 1;
+            }
+
+            if (vec38 == vec36) {
+                b0 = 2;
+            }
+
+            if (vec38 == vec37) {
+                b0 = 3;
+            }
+            
+            return new MovingObjectPosition(x, y, z, b0, vec38.addVector((double)x, (double)y, (double)z));
+        }
+    }
+    
+    private boolean isVecInsideYZBounds(Vec3 point) {
+        return point == null ? false : point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get().getPhysics().getRayMaxY() && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer.get().getPhysics().getRayMaxZ();
+    }
+   
+    private boolean isVecInsideXZBounds(Vec3 point) {
+        return point == null ? false : point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get().getPhysics().getRayMaxX() && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer.get().getPhysics().getRayMaxZ();
+    }
+   
+    private boolean isVecInsideXYBounds(Vec3 point) {
+        return point == null ? false : point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get().getPhysics().getRayMaxX() && point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get().getPhysics().getRayMaxY();
+    } 
 }

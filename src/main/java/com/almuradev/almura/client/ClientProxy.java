@@ -10,6 +10,7 @@ import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.gui.ingame.HUDData;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
+import com.almuradev.almura.client.gui.ingame.IngameDied;
 import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.ingame.IngameOptions;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
@@ -31,6 +32,7 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
@@ -99,6 +101,11 @@ public class ClientProxy extends CommonProxy {
         if (event.gui instanceof GuiIngameMenu) {
             event.setCanceled(true);
             new IngameOptions().display();
+        }
+        
+        if (event.gui instanceof GuiGameOver) {
+            event.setCanceled(true);
+            new IngameDied().display();
 
         }
     }
