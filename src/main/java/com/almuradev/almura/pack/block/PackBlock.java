@@ -213,8 +213,8 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         if (!world.isRemote && !world.restoringBlockSnapshots) {
             final int fortune = EnchantmentHelper.getFortuneModifier(player);
             final float
-                    modchance =
-                    ForgeEventFactory.fireBlockHarvesting(drops, world, this, x, y, z, metadata, fortune, 1.0f, false, harvesters.get());
+            modchance =
+            ForgeEventFactory.fireBlockHarvesting(drops, world, this, x, y, z, metadata, fortune, 1.0f, false, harvesters.get());
             for (ItemStack is : drops) {
                 if (RangeProperty.RANDOM.nextFloat() <= modchance && world.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
                     if (captureDrops.get()) {
@@ -368,16 +368,26 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @SideOnly(Side.CLIENT)
     @Override
     public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 startVec, Vec3 endVec) {
-        final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
-        modelContainer.get().getPhysics().findRayframe(vanillaBB, world, x, y, z);
+        final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);        
         startVec = startVec.addVector((double) (-x), (double) (-y), (double) (-z));
         endVec = endVec.addVector((double) (-x), (double) (-y), (double) (-z));
-        Vec3 vec32 = startVec.getIntermediateWithXValue(endVec, modelContainer.get().getPhysics().getRayMinX());
-        Vec3 vec33 = startVec.getIntermediateWithXValue(endVec, modelContainer.get().getPhysics().getRayMaxX());
-        Vec3 vec34 = startVec.getIntermediateWithYValue(endVec, modelContainer.get().getPhysics().getRayMinY());
-        Vec3 vec35 = startVec.getIntermediateWithYValue(endVec, modelContainer.get().getPhysics().getRayMaxY());
-        Vec3 vec36 = startVec.getIntermediateWithZValue(endVec, modelContainer.get().getPhysics().getRayMinZ());
-        Vec3 vec37 = startVec.getIntermediateWithZValue(endVec, modelContainer.get().getPhysics().getRayMaxZ());
+        Vec3 vec32, vec33, vec34, vec35, vec36, vec37 = null;
+        if (modelContainer.isPresent()) {
+            modelContainer.get().getPhysics().findRayframe(vanillaBB, world, x, y, z);
+            vec32 = startVec.getIntermediateWithXValue(endVec, modelContainer.get().getPhysics().getRayMinX());
+            vec33 = startVec.getIntermediateWithXValue(endVec, modelContainer.get().getPhysics().getRayMaxX());
+            vec34 = startVec.getIntermediateWithYValue(endVec, modelContainer.get().getPhysics().getRayMinY());
+            vec35 = startVec.getIntermediateWithYValue(endVec, modelContainer.get().getPhysics().getRayMaxY());
+            vec36 = startVec.getIntermediateWithZValue(endVec, modelContainer.get().getPhysics().getRayMinZ());
+            vec37 = startVec.getIntermediateWithZValue(endVec, modelContainer.get().getPhysics().getRayMaxZ());
+        } else {
+            vec32 = startVec.getIntermediateWithXValue(endVec, minX);
+            vec33 = startVec.getIntermediateWithXValue(endVec, maxX);
+            vec34 = startVec.getIntermediateWithYValue(endVec, minY);
+            vec35 = startVec.getIntermediateWithYValue(endVec, maxY);
+            vec36 = startVec.getIntermediateWithZValue(endVec, minZ);
+            vec37 = startVec.getIntermediateWithZValue(endVec, maxZ);
+        }
 
         if (!this.isVecInsideYZBounds(vec32)) {
             vec32 = null;
@@ -463,23 +473,26 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     }
 
     private boolean isVecInsideYZBounds(Vec3 point) {
-        return point == null ? false :
-                point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get().getPhysics().getRayMaxY()
-                        && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer.get().getPhysics()
-                        .getRayMaxZ();
+        if (modelContainer.isPresent()) {
+            return point == null ? false : point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get().getPhysics().getRayMaxY() && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer.get().getPhysics().getRayMaxZ();
+        } else {
+            return point == null ? false : point.yCoord >= minY && point.yCoord <= maxY && point.zCoord >= minZ && point.zCoord <= maxZ;    
+        }
     }
 
     private boolean isVecInsideXZBounds(Vec3 point) {
-        return point == null ? false :
-                point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get().getPhysics().getRayMaxX()
-                        && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer.get().getPhysics()
-                        .getRayMaxZ();
+        if (modelContainer.isPresent()) {
+            return point == null ? false : point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get().getPhysics().getRayMaxX() && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer.get().getPhysics().getRayMaxZ();
+        } else {
+            return point == null ? false : point.xCoord >= minX && point.xCoord <= maxX && point.zCoord >= minZ && point.zCoord <= maxZ;    
+        }
     }
 
     private boolean isVecInsideXYBounds(Vec3 point) {
-        return point == null ? false :
-                point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get().getPhysics().getRayMaxX()
-                        && point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get().getPhysics()
-                        .getRayMaxY();
+        if (modelContainer.isPresent()) {
+            return point == null ? false : point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get().getPhysics().getRayMaxX() && point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get().getPhysics().getRayMaxY();
+        } else {
+            return point == null ? false : point.xCoord >= minX && point.xCoord <= maxX && point.yCoord >= minY && point.yCoord <= maxY;            
+        }
     }
 }
