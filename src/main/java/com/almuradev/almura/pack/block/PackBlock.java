@@ -365,6 +365,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         return tooltip;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 startVec, Vec3 endVec) {
         final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
