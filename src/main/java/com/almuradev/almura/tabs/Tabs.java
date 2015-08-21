@@ -31,6 +31,7 @@ public class Tabs {
     private static final Item ITEM_DRINKS = new AlmuraTabItem("drinks");
     private static final Item ITEM_INGREDIENTS = new AlmuraTabItem("ingredients");
     private static final Item ITEM_TOOL = new AlmuraTabItem("tool");
+    private static final Item ITEM_CURRENCY = new AlmuraTabItem("currency");
 
     public static CreativeTabs TAB_BUILDING = new AlmuraCreativeTabs("building", "Almura Building", ITEM_BUILDING);
     public static CreativeTabs TAB_ROOFING = new AlmuraCreativeTabs("roofing", "Almura Roofing", ITEM_ROOFING);
@@ -52,6 +53,7 @@ public class Tabs {
     public static CreativeTabs TAB_DRINK = new AlmuraCreativeTabs("drinks", "Almura Drinks", ITEM_DRINKS);
     public static CreativeTabs TAB_INGREDIENTS = new AlmuraCreativeTabs("ingredients", "Almura Ingredients", ITEM_INGREDIENTS);
     public static CreativeTabs TAB_TOOLS = new AlmuraCreativeTabs("tool", "Almura Tools", ITEM_TOOL);
+    public static CreativeTabs TAB_CURRENCY = new AlmuraCreativeTabs("currency", "Almura Currency", ITEM_CURRENCY);
     public static CreativeTabs TAB_OTHER = new AlmuraCreativeTabs("other", "Almura Other", null);
 
     public static void fakeStaticLoad() {

@@ -56,7 +56,7 @@ public class IngameDied extends SimpleGui {
         final int padding = 4;
 
         // Died message
-        final UILabel deathMessage = new UILabel(this, Colors.WHITE + "You has died...");
+        final UILabel deathMessage = new UILabel(this, Colors.WHITE + "You have died...");
         deathMessage.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_110);
         deathMessage.setPosition(0, getPaddedY(logoImage, 10), Anchor.CENTER | Anchor.TOP);
 
