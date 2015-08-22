@@ -18,16 +18,19 @@ import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.google.common.base.Optional;
+
 import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.RenderType;
 import net.malisis.core.renderer.element.Face;
+import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.Vertex;
 import net.malisis.core.renderer.element.shape.Cube;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockRenderer extends MalisisRenderer {
 
@@ -104,6 +107,33 @@ public class BlockRenderer extends MalisisRenderer {
             }
         }
         return super.getIcon(params);
+    }
+    
+    
+    @Override
+    public void applyTexture(Shape shape, RenderParameters parameters)
+    {
+        //shape.applyMatrix();
+        for (Face f : shape.getFaces())
+        {
+            face = f;
+            RenderParameters params = new RenderParameters();
+            params.merge(f.getParameters());
+            params.merge(parameters);
+
+            IIcon icon = getIcon(params);
+            if (icon != null)
+            {
+                boolean flipU = params.flipU.get();
+                boolean flipV = params.flipV.get();
+                if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST) {
+                    //flipU = !flipU;  // Don't flip on this direction, we already do it.
+                }
+
+                f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
+                
+            }
+        }
     }
 
     @Override
@@ -200,8 +230,8 @@ public class BlockRenderer extends MalisisRenderer {
         } else {
             model.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
         }
-        // ((Shape) model).applyMatrix();
-        // ((Shape) model).deductParameters();
+         ((Shape) model).applyMatrix();
+         ((Shape) model).deductParameters();
     }
 
     private void handleScaling(IModel model) {
