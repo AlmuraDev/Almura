@@ -172,9 +172,7 @@ public class IngameOptions extends SimpleGui {
                 Desktop.getDesktop().browse(new URI("http://www.almuramc.com"));
                 break;
             case "button.stats":
-                if (this.mc.thePlayer != null) {
-                    this.mc.displayGuiScreen(new GuiStats(this, this.mc.thePlayer.getStatFileWriter()));
-                }
+                Desktop.getDesktop().browse(new URI("http://srv1.almuramc.com:8080"));
                 break;
             case "button.lan":
                 this.mc.displayGuiScreen(new GuiShareToLan(this));
