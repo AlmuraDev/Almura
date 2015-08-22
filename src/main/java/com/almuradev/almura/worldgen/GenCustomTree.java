@@ -13,20 +13,22 @@ import net.minecraftforge.common.util.ForgeDirection;
 import java.util.Random;
 
 public class GenCustomTree extends WorldGenerator {
-    private final int minTreeHeight;
-    private final boolean vinesGrow;
+    private final int minTreeHeight;    
     private final Block woodType;
     private final Block leavesType;
+    private final Block fruitType;
+    private final Block rareFruitType;
     private final int metaWood;
     private final int metaLeaves;
 
-    public GenCustomTree(boolean p_i2028_1_, int minTreeHeight, int woodMeta, int leavesMeta, boolean vines, Block woodType, Block leavesType) {
+    public GenCustomTree(boolean p_i2028_1_, int minTreeHeight, int woodMeta, int leavesMeta, Block woodType, Block leavesType, Block fruitType, Block rareFruitType) {
         this.minTreeHeight = minTreeHeight;
         this.woodType = woodType;
         this.leavesType = leavesType;
         this.metaWood = woodMeta;
         this.metaLeaves = leavesMeta;
-        this.vinesGrow = vines;
+        this.fruitType = fruitType;
+        this.rareFruitType = rareFruitType;
     }
 
     public boolean generate(World world, Random random, int x, int y, int z) {
@@ -104,27 +106,27 @@ public class GenCustomTree extends WorldGenerator {
                         if (block.isAir(world, x, y + zz, z) || block.isLeaves(world, x, y + zz, z)) {
                             this.setBlockAndNotifyAdequately(world, x, y + zz, z, this.woodType, this.metaWood);
 
-                            if (this.vinesGrow && zz > 0) {
+                            if ((this.fruitType != null) && zz > 0) {
                                 if (random.nextInt(3) > 0 && world.isAirBlock(x - 1, y + zz, z)) {
-                                    this.setBlockAndNotifyAdequately(world, x - 1, y + zz, z, Blocks.vine, 8);
+                                    this.setBlockAndNotifyAdequately(world, x - 1, y + zz, z, this.fruitType, 8);
                                 }
 
                                 if (random.nextInt(3) > 0 && world.isAirBlock(x + 1, y + zz, z)) {
-                                    this.setBlockAndNotifyAdequately(world, x + 1, y + zz, z, Blocks.vine, 2);
+                                    this.setBlockAndNotifyAdequately(world, x + 1, y + zz, z, this.fruitType, 2);
                                 }
 
                                 if (random.nextInt(3) > 0 && world.isAirBlock(x, y + zz, z - 1)) {
-                                    this.setBlockAndNotifyAdequately(world, x, y + zz, z - 1, Blocks.vine, 1);
+                                    this.setBlockAndNotifyAdequately(world, x, y + zz, z - 1, this.fruitType, 1);
                                 }
 
                                 if (random.nextInt(3) > 0 && world.isAirBlock(x, y + zz, z + 1)) {
-                                    this.setBlockAndNotifyAdequately(world, x, y + zz, z + 1, Blocks.vine, 4);
+                                    this.setBlockAndNotifyAdequately(world, x, y + zz, z + 1, this.fruitType, 4);
                                 }
                             }
                         }
                     }
 
-                    if (this.vinesGrow) {
+                    if (this.fruitType != null) {
                         for (zz = y - 3 + l; zz <= y + l; ++zz) {
                             i3 = zz - (y + l);
                             l1 = 2 - i3 / 2;
@@ -133,31 +135,34 @@ public class GenCustomTree extends WorldGenerator {
                                 for (j2 = z - l1; j2 <= z + l1; ++j2) {
                                     if (world.getBlock(i2, zz, j2).isLeaves(world, i2, zz, j2)) {
                                         if (random.nextInt(4) == 0 && world.getBlock(i2 - 1, zz, j2).isAir(world, i2 - 1, zz, j2)) {
-                                            this.growVines(world, i2 - 1, zz, j2, 8);
+                                            this.placeFruit(world, i2 - 1, zz, j2, 8);
                                         }
 
                                         if (random.nextInt(4) == 0 && world.getBlock(i2 + 1, zz, j2).isAir(world, i2 + 1, zz, j2)) {
-                                            this.growVines(world, i2 + 1, zz, j2, 2);
+                                            this.placeFruit(world, i2 + 1, zz, j2, 2);
                                         }
 
                                         if (random.nextInt(4) == 0 && world.getBlock(i2, zz, j2 - 1).isAir(world, i2, zz, j2 - 1)) {
-                                            this.growVines(world, i2, zz, j2 - 1, 1);
+                                            this.placeFruit(world, i2, zz, j2 - 1, 1);
                                         }
 
                                         if (random.nextInt(4) == 0 && world.getBlock(i2, zz, j2 + 1).isAir(world, i2, zz, j2 + 1)) {
-                                            this.growVines(world, i2, zz, j2 + 1, 4);
+                                            this.placeFruit(world, i2, zz, j2 + 1, 4);
                                         }
                                     }
                                 }
                             }
                         }
 
-                        if (random.nextInt(5) == 0 && l > 5) {
-                            for (zz = 0; zz < 2; ++zz) {
-                                for (i3 = 0; i3 < 4; ++i3) {
-                                    if (random.nextInt(4 - zz) == 0) {
-                                        l1 = random.nextInt(3);
-                                        this.setBlockAndNotifyAdequately(world, x + Direction.offsetX[Direction.rotateOpposite[i3]], y + l - 5 + zz, z + Direction.offsetZ[Direction.rotateOpposite[i3]], Blocks.cocoa, l1 << 2 | i3);
+                        // Rare Fruit placement
+                        if (this.rareFruitType != null) {
+                            if (random.nextInt(5) == 0 && l > 5) {
+                                for (zz = 0; zz < 2; ++zz) {
+                                    for (i3 = 0; i3 < 4; ++i3) {
+                                        if (random.nextInt(4 - zz) == 0) {
+                                            l1 = random.nextInt(3);
+                                            this.setBlockAndNotifyAdequately(world, x + Direction.offsetX[Direction.rotateOpposite[i3]], y + l - 5 + zz, z + Direction.offsetZ[Direction.rotateOpposite[i3]], this.rareFruitType, l1 << 2 | i3);
+                                        }
                                     }
                                 }
                             }
@@ -174,8 +179,8 @@ public class GenCustomTree extends WorldGenerator {
         }
     }
 
-    private void growVines(World world, int x, int y, int z, int p_76529_5_) {
-        this.setBlockAndNotifyAdequately(world, x, y, z, Blocks.vine, p_76529_5_);
+    private void placeFruit(World world, int x, int y, int z, int p_76529_5_) {
+        this.setBlockAndNotifyAdequately(world, x, y, z, this.fruitType, p_76529_5_);
         int yy = 4;
 
         while (true) {
@@ -185,7 +190,7 @@ public class GenCustomTree extends WorldGenerator {
                 return;
             }
 
-            this.setBlockAndNotifyAdequately(world, x, y, z, Blocks.vine, p_76529_5_);
+            this.setBlockAndNotifyAdequately(world, x, y, z, this.fruitType, p_76529_5_);
             --yy;
         }
     }
