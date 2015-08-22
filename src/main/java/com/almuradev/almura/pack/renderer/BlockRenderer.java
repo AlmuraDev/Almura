@@ -234,66 +234,66 @@ public class BlockRenderer extends MalisisRenderer {
         final RotationProperty property = node.getRotationProperty(rotation);
         if (property == null) {
             switch (rotation) {
-            case NORTH:
-                if (node.isDefaultRotate()) {
-                    model.rotate(180f, 0, -1, 0);
-                }
-                break;
-            case SOUTH:
-                break;
-            case WEST:
-                if (node.isDefaultRotate()) {
-                    model.rotate(90f, 0, -1, 0);
-                }
-                break;
-            case EAST:
-                if (node.isDefaultRotate()) {
-                    model.rotate(90f, 0, 1, 0);
-                }
-                break;
-            case DOWN_NORTH:
-                if (node.isDefaultRotate()) {
-                    model.rotate(180f, 0, -1, 0);
-                }
-                if (node.isDefaultMirrorRotate()) {
-                    model.rotate(90f, -1, 0, 0);
-                }
-                break;
-            case DOWN_SOUTH:
-                break;
-            case DOWN_WEST:
-                if (node.isDefaultRotate()) {
-                    model.rotate(90f, 0, -1, 0);
-                }
-                if (node.isDefaultMirrorRotate()) {
-                    model.rotate(180f, -1, 0, 0);
-                }
-                break;
-            case DOWN_EAST:
-                if (node.isDefaultRotate()) {
-                    model.rotate(90f, 0, 1, 0);
-                }
-                if (node.isDefaultMirrorRotate()) {
-                    model.rotate(180f, -1, 0, 0);
-                }
-                break;
-            case UP_NORTH:
-                if (node.isDefaultRotate()) {
-                    model.rotate(180f, 0, -1, 0);
-                }
-                break;
-            case UP_SOUTH:
-                break;
-            case UP_WEST:
-                if (node.isDefaultRotate()) {
-                    model.rotate(90f, 0, -1, 0);
-                }
-                break;
-            case UP_EAST:
-                if (node.isDefaultRotate()) {
-                    model.rotate(90f, 0, 1, 0);
-                }
-                break;
+                case NORTH:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(180f, 0, -1, 0);
+                    }
+                    break;
+                case SOUTH:
+                    break;
+                case WEST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, -1, 0);
+                    }
+                    break;
+                case EAST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, 1, 0);
+                    }
+                    break;
+                case DOWN_NORTH:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(180f, 0, -1, 0);
+                    }
+                    if (node.isDefaultMirrorRotate()) {
+                        model.rotate(90f, -1, 0, 0);
+                    }
+                    break;
+                case DOWN_SOUTH:
+                    break;
+                case DOWN_WEST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, -1, 0);
+                    }
+                    if (node.isDefaultMirrorRotate()) {
+                        model.rotate(180f, -1, 0, 0);
+                    }
+                    break;
+                case DOWN_EAST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, 1, 0);
+                    }
+                    if (node.isDefaultMirrorRotate()) {
+                        model.rotate(180f, -1, 0, 0);
+                    }
+                    break;
+                case UP_NORTH:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(180f, 0, -1, 0);
+                    }
+                    break;
+                case UP_SOUTH:
+                    break;
+                case UP_WEST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, -1, 0);
+                    }
+                    break;
+                case UP_EAST:
+                    if (node.isDefaultRotate()) {
+                        model.rotate(90f, 0, 1, 0);
+                    }
+                    break;
             }
         } else {
             model.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
