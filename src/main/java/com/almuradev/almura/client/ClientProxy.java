@@ -88,11 +88,13 @@ public class ClientProxy extends CommonProxy {
         if (Configuration.FIRST_LAUNCH) {
             Configuration.setOptimizedConfig();
         }
+        // Register handlers for Bukkit packets
         NETWORK_BUKKIT.registerMessage(B00PlayerDisplayName.class, B00PlayerDisplayName.class, 0, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInformation.class, B02AdditionalWorldInformation.class, 2, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B03ResidenceInformation.class, B03ResidenceInformation.class, 3, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B04PlayerAccessories.class, B04PlayerAccessories.class, 4, Side.CLIENT);
+        // Register outgoing Bukkit packets. While this also registers a handler, we ignore this (FML requires a handler...)
         NETWORK_BUKKIT.registerMessage(B00PlayerDeathConfirmation.class, B00PlayerDeathConfirmation.class, 0, Side.SERVER);
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
         PACK_BLOCK_RENDERER.registerFor(PackCrops.class);

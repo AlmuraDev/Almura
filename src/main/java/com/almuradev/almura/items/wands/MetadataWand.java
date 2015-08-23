@@ -21,9 +21,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MetadataWand extends AlmuraItem {
 
     public MetadataWand(String unlocalizedName, String displayName, String textureName, CreativeTabs creativeTab) {
@@ -57,10 +54,14 @@ public class MetadataWand extends AlmuraItem {
             } else if (block instanceof BlockCrops || block instanceof BlockStem) {
                 maxMetadataValue = 7;
             } else {
+                // TODO Without going through each type of Block and incrementing the metadata value if another is present, this is
+                // TODO impossible to do on Minecraft 1.7.x as its not known to Block itself. This was fixed with BlockState in Minecraft
+                // TODO 1.8.x and we'll have to wait till then.
                 // Why Mojang?
-                final List list = new ArrayList();
-                world.getBlock(x, y, z).getSubBlocks(null, null, list);
-                maxMetadataValue = list.size() - 1;
+                // final List list = new ArrayList();
+                // world.getBlock(x, y, z).getSubBlocks(null, null, list);
+                // maxMetadataValue = list.size() - 1;
+                maxMetadataValue = 0;
             }
 
             // If the max data is 0 then we have no variants of this block
