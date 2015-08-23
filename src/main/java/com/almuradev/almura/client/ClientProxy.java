@@ -15,12 +15,18 @@ import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.ingame.IngameOptions;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
 import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
+import com.almuradev.almura.client.network.play.B00PlayerDeathConfirmation;
 import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
+import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
+import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
+import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInformation;
+import com.almuradev.almura.server.network.play.bukkit.B03ResidenceInformation;
+import com.almuradev.almura.server.network.play.bukkit.B04PlayerAccessories;
 import com.almuradev.almurasdk.lang.LanguageRegistry;
 import com.almuradev.almurasdk.lang.Languages;
 import com.google.common.base.Optional;
@@ -30,6 +36,8 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
@@ -61,6 +69,7 @@ public class ClientProxy extends CommonProxy {
     public static IngameDebugHUD HUD_DEBUG;
     public static IngameHUD HUD_INGAME;
     public static IngameResidenceHUD HUD_RESIDENCE;
+    public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
 
     public static void setIngameHUD() {
         if (Configuration.DISPLAY_ENHANCED_GUI && HUD_INGAME == null) {
@@ -79,6 +88,12 @@ public class ClientProxy extends CommonProxy {
         if (Configuration.FIRST_LAUNCH) {
             Configuration.setOptimizedConfig();
         }
+        NETWORK_BUKKIT.registerMessage(B00PlayerDisplayName.class, B00PlayerDisplayName.class, 0, Side.CLIENT);
+        NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
+        NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInformation.class, B02AdditionalWorldInformation.class, 2, Side.CLIENT);
+        NETWORK_BUKKIT.registerMessage(B03ResidenceInformation.class, B03ResidenceInformation.class, 3, Side.CLIENT);
+        NETWORK_BUKKIT.registerMessage(B04PlayerAccessories.class, B04PlayerAccessories.class, 4, Side.CLIENT);
+        NETWORK_BUKKIT.registerMessage(B00PlayerDeathConfirmation.class, B00PlayerDeathConfirmation.class, 0, Side.SERVER);
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
         PACK_BLOCK_RENDERER.registerFor(PackCrops.class);
         PACK_BLOCK_RENDERER.registerFor(PackContainerBlock.class);
