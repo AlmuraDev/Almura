@@ -66,7 +66,7 @@ dependencies {
     compile ('com.almuradev:almurasdk:1.7.10-1448-1-SNAPSHOT:dev') {
         transitive = true
     }
-    compile ('com.almuradev:guide:1.7.10-1448-1') {
+    compile ('com.almuradev:guide:1.7.10-1448-1-SNAPSHOT:dev') {
         transitive = true
     }
 }

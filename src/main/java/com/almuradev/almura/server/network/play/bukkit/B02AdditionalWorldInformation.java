@@ -34,7 +34,8 @@ public class B02AdditionalWorldInformation implements IMessage, IMessageHandler<
     @Override
     public IMessage onMessage(B02AdditionalWorldInformation message, MessageContext ctx) {
         if (ctx.side == Side.CLIENT) {
-            HUDData.WORLD_DISPLAY = Character.toUpperCase(message.worldName.charAt(0)) + message.worldName.substring(1);
+            //HUDData.WORLD_DISPLAY = Character.toUpperCase(message.worldName.charAt(0)) + message.worldName.substring(1);
+            HUDData.WORLD_DISPLAY = message.worldName;
             HUDData.SERVER_COUNT = message.currentPlayers + "/" + message.maxPlayers;
         }
         return null;
