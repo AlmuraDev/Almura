@@ -68,21 +68,28 @@ public class IngameDied extends SimpleGui {
         // Create the Respawn button
         final UIButton respawnButton = new UIButton(this, Colors.AQUA + "Respawn");
         respawnButton.setSize(100, 16);
-        respawnButton.setPosition(0, getPaddedY(logoImage, 50), Anchor.CENTER | Anchor.TOP);
+        respawnButton.setPosition(0, getPaddedY(logoImage, 40), Anchor.CENTER | Anchor.TOP);
         respawnButton.setName("button.respawn");
         respawnButton.register(this);
         
         // Create the Respawn button
         final UIButton reviveButton = new UIButton(this, Colors.AQUA + "Revive");
         reviveButton.setSize(100, 16);
-        reviveButton.setPosition(0, getPaddedY(logoImage, 70), Anchor.CENTER | Anchor.TOP);
+        reviveButton.setPosition(0, getPaddedY(logoImage, 60), Anchor.CENTER | Anchor.TOP);
         reviveButton.setName("button.revive");
         reviveButton.register(this);
+        if (HUDData.PERMISSION_LEVEL < 6) {
+            reviveButton.setDisabled(false);
+            reviveButton.setTooltip("Requires Contributor or higher permissions");
+        } else {
+            reviveButton.setDisabled(true);
+            reviveButton.setTooltip("Revive at your current location");
+        }
 
         // Create the quit button
         final UIButton quitButton = new UIButton(this, "Quit");
         quitButton.setSize(50, 16);
-        quitButton.setPosition(0, getPaddedY(respawnButton, padding * 3), Anchor.CENTER | Anchor.TOP);
+        quitButton.setPosition(0, getPaddedY(respawnButton, padding * 7), Anchor.CENTER | Anchor.TOP);
         quitButton.setName("button.quit");
         quitButton.register(this);
 

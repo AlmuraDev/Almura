@@ -17,7 +17,7 @@ import io.netty.buffer.ByteBuf;
 public class B02AdditionalWorldInformation implements IMessage, IMessageHandler<B02AdditionalWorldInformation, IMessage> {
 
     public String worldDisplayName, worldName;
-    public int currentPlayers, maxPlayers;
+    public int currentPlayers, maxPlayers, permissionLevel;
 
     @Override
     public void fromBytes(ByteBuf buf) {
@@ -25,6 +25,7 @@ public class B02AdditionalWorldInformation implements IMessage, IMessageHandler<
         worldName = ByteBufUtils.readUTF8String(buf);
         currentPlayers = buf.readInt();
         maxPlayers = buf.readInt();
+        permissionLevel = buf.readInt();
     }
 
     @Override
@@ -38,6 +39,7 @@ public class B02AdditionalWorldInformation implements IMessage, IMessageHandler<
             HUDData.WORLD_DISPLAY = message.worldDisplayName;
             HUDData.WORLD_NAME = message.worldName;
             HUDData.SERVER_COUNT = message.currentPlayers + "/" + message.maxPlayers;
+            HUDData.PERMISSION_LEVEL = message.permissionLevel;
         }
         return null;
     }

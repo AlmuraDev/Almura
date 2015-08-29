@@ -61,4 +61,6 @@ public class HUDData {
     public static boolean CAN_SPAWN_MOC_MONSTERS;
     public static boolean CAN_SPAWN_MOC_PASSIVE;
     public static boolean CAN_SPAWN_THC_MONSTERS;
+    
+    public static int PERMISSION_LEVEL;
 }
