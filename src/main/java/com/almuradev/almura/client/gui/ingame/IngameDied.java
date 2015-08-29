@@ -5,11 +5,11 @@
  */
 package com.almuradev.almura.client.gui.ingame;
 
-import io.netty.buffer.ByteBuf;
-import com.almuradev.almura.client.network.play.B00PlayerDeathConfirmation;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
+import com.almuradev.almura.client.network.play.B00PlayerDeathConfirmation;
 import com.almuradev.almurasdk.FileSystem;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
@@ -99,9 +99,9 @@ public class IngameDied extends SimpleGui {
                 close();
                 break;
             case "button.revive":                
-                B00PlayerDeathConfirmation task = new B00PlayerDeathConfirmation(true, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ, HUDData.WORLD_DISPLAY);                
-                Almura.NETWORK_BUKKIT.sendToServer(task);
-                System.out.println("Attempting to Send Packet");
+                B00PlayerDeathConfirmation message = new B00PlayerDeathConfirmation(true, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc
+                        .thePlayer.posZ, HUDData.WORLD_DISPLAY);
+                ClientProxy.NETWORK_BUKKIT.sendToServer(message);
                 this.mc.thePlayer.setHealth(0.1F);
                 this.mc.thePlayer.respawnPlayer();
                 close();
