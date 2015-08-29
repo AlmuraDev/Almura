@@ -9,8 +9,10 @@ public class HUDData {
 
     public static String PLAYER_CURRENCY = "";
     public static String WORLD_DISPLAY = "";
+    public static String WORLD_NAME = "";
     public static String SERVER_COUNT = "";
-
+    public static String HUD_MESSAGE = "";
+    
     public static boolean WITHIN_RESIDENCE = false;
     public static String NAME = "";
     public static String OWNER_NAME = "";

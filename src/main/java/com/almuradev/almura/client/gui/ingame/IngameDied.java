@@ -75,7 +75,7 @@ public class IngameDied extends SimpleGui {
         // Create the Respawn button
         final UIButton reviveButton = new UIButton(this, Colors.AQUA + "Revive");
         reviveButton.setSize(100, 16);
-        reviveButton.setPosition(0, getPaddedY(logoImage, 60), Anchor.CENTER | Anchor.TOP);
+        reviveButton.setPosition(0, getPaddedY(logoImage, 70), Anchor.CENTER | Anchor.TOP);
         reviveButton.setName("button.revive");
         reviveButton.register(this);
 
@@ -99,8 +99,7 @@ public class IngameDied extends SimpleGui {
                 close();
                 break;
             case "button.revive":                
-                B00PlayerDeathConfirmation message = new B00PlayerDeathConfirmation(true, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc
-                        .thePlayer.posZ, HUDData.WORLD_DISPLAY);
+                B00PlayerDeathConfirmation message = new B00PlayerDeathConfirmation(true, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ, HUDData.WORLD_DISPLAY);
                 ClientProxy.NETWORK_BUKKIT.sendToServer(message);
                 this.mc.thePlayer.setHealth(0.1F);
                 this.mc.thePlayer.respawnPlayer();
