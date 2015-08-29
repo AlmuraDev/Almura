@@ -21,6 +21,7 @@ public class B02AdditionalWorldInformation implements IMessage, IMessageHandler<
 
     @Override
     public void fromBytes(ByteBuf buf) {
+        worldDisplayName = ByteBufUtils.readUTF8String(buf);
         worldName = ByteBufUtils.readUTF8String(buf);
         currentPlayers = buf.readInt();
         maxPlayers = buf.readInt();
