@@ -5,13 +5,12 @@
  */
 package com.almuradev.almura.client.network.play;
 
-import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class B01ResTokenConfirmation implements IMessage, IMessageHandler<B01ResTokenConfirmation, B00PlayerDisplayName> {
+public class B01ResTokenConfirmation implements IMessage, IMessageHandler<B01ResTokenConfirmation, B01ResTokenConfirmation> {
     public boolean useToken = false;    
 
     public B01ResTokenConfirmation() {
@@ -33,7 +32,7 @@ public class B01ResTokenConfirmation implements IMessage, IMessageHandler<B01Res
     }
 
     @Override
-    public B00PlayerDisplayName onMessage(B01ResTokenConfirmation message, MessageContext ctx) {
+    public B01ResTokenConfirmation onMessage(B01ResTokenConfirmation message, MessageContext ctx) {
         return null;
     }
 }

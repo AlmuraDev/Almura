@@ -6,12 +6,9 @@
 package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.client.network.play.B01ResTokenConfirmation;
-
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.client.FontRenderOptionsConstants;
-import com.almuradev.almura.client.network.play.B00PlayerDeathConfirmation;
 import com.almuradev.almurasdk.FileSystem;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIForm;
@@ -31,7 +28,16 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class IngameResToken extends SimpleGui {
-
+    
+    protected static final ResourceLocation ICON_IMAGE_LOCATION;
+    
+    static {
+        try {
+            ICON_IMAGE_LOCATION = FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/almuracustom1_restoken.png", Filesystem.CONFIG_GUI_RESTOKENICON_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load logo.", e);
+        }
+    }
     public IngameResToken() {
     }
 
@@ -39,36 +45,37 @@ public class IngameResToken extends SimpleGui {
     public void construct() {
         guiscreenBackground = true;
         // Create the form
-        final UIForm form = new UIForm(this, 225, 225, "Almura", false);
+        final UIForm form = new UIForm(this, 225, 175, "Almura", false);
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         final int padding = 4;
-
+       
         // Res Token Text
         final UILabel line1 = new UILabel(this, Colors.WHITE + "Do you wish to use this");        
         line1.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel line2 = new UILabel(this, Colors.RED + "[ Res Token ]");
-        line2.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_110);
-        line2.setPosition(0, 15, Anchor.CENTER | Anchor.TOP);
+        // Create Icon
+        final UIImage iconImage = new UIImage(this, new GuiTexture(ICON_IMAGE_LOCATION), null);
+        iconImage.setPosition(0, 25, Anchor.CENTER | Anchor.TOP);
+        iconImage.setSize(32, 32);        
         
-        final UILabel line3 = new UILabel(this, Colors.WHITE + "to remove the lease on this residence?");
-        line3.setPosition(0, 15, Anchor.CENTER | Anchor.TOP);
+        final UILabel line2 = new UILabel(this, Colors.WHITE + "to remove the lease on this residence?");
+        line2.setPosition(0, 60, Anchor.CENTER | Anchor.TOP);
 
         // Yes Button
         final UIButton yesButton = new UIButton(this, Colors.AQUA + "Yes");
         yesButton.setSize(100, 10);
-        yesButton.setPosition(0, 30, Anchor.CENTER | Anchor.TOP);
+        yesButton.setPosition(0, 90, Anchor.CENTER | Anchor.TOP);
         yesButton.setName("button.yes");
         yesButton.register(this);
         
         // No Button
         final UIButton noButton = new UIButton(this, Colors.AQUA + "No");
         noButton.setSize(100, 10);
-        noButton.setPosition(0, 30, Anchor.CENTER | Anchor.TOP);
-        noButton.setName("button.revive");
+        noButton.setPosition(0, 110, Anchor.CENTER | Anchor.TOP);
+        noButton.setName("button.no");
         noButton.register(this);        
 
-        form.getContentContainer().add(line1, line2, line3, yesButton, noButton);
+        form.getContentContainer().add(iconImage, line1, line2, yesButton, noButton);
         addToScreen(form);
     }
 
@@ -77,6 +84,7 @@ public class IngameResToken extends SimpleGui {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.yes":
                 B01ResTokenConfirmation message = new B01ResTokenConfirmation(true);
+                ClientProxy.NETWORK_BUKKIT.sendToServer(message);
                 close();
                 break;
             case "button.no":

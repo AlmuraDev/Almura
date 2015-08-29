@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.server.network.play.bukkit;
 
+import com.almuradev.almura.client.gui.ingame.IngameResToken;
+
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -32,12 +34,13 @@ public class B05GuiController implements IMessage, IMessageHandler<B05GuiControl
 
     @Override
     public IMessage onMessage(B05GuiController message, MessageContext ctx) {
+        System.out.println("Received GUI Controller Packet");
         if (ctx.side.isClient()) {
             final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(message.username);
             if (player != null) {
                 // Residence Token Confirmation GUI
-                if (guiId == 1) {
-                    //new ResTokenConfirmation(null).display();  //Default button would be an extra method within the GUI's constructor.
+                if (message.guiId == 1) {
+                    new IngameResToken().display();  //Default button would be an extra method within the GUI's constructor.
                 }
             }
         }

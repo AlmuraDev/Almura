@@ -25,6 +25,7 @@ public class Filesystem {
     public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "images");
     public static final Path CONFIG_GUI_SPRITESHEET_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "gui.png");
     public static final Path CONFIG_GUI_LOGO_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "almura.png");
+    public static final Path CONFIG_GUI_RESTOKENICON_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "almuracustom1_restoken.png");
     public static final Path CONFIG_MODELS_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "models");
     public static final Path CONFIG_ACCESSORIES_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "accessories");
 
