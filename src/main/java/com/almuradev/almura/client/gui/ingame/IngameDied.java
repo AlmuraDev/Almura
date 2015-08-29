@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.client.gui.ingame;
 
+import io.netty.buffer.ByteBuf;
+import com.almuradev.almura.client.network.play.B00PlayerDeathConfirmation;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
@@ -64,11 +66,18 @@ public class IngameDied extends SimpleGui {
         returnMessage.setPosition(0, getPaddedY(logoImage, 25), Anchor.CENTER | Anchor.TOP);
 
         // Create the Respawn button
-        final UIButton respawnButton = new UIButton(this, Colors.AQUA + "Revive");
+        final UIButton respawnButton = new UIButton(this, Colors.AQUA + "Respawn");
         respawnButton.setSize(100, 16);
         respawnButton.setPosition(0, getPaddedY(logoImage, 50), Anchor.CENTER | Anchor.TOP);
         respawnButton.setName("button.respawn");
         respawnButton.register(this);
+        
+        // Create the Respawn button
+        final UIButton reviveButton = new UIButton(this, Colors.AQUA + "Revive");
+        reviveButton.setSize(100, 16);
+        reviveButton.setPosition(0, getPaddedY(logoImage, 60), Anchor.CENTER | Anchor.TOP);
+        reviveButton.setName("button.revive");
+        reviveButton.register(this);
 
         // Create the quit button
         final UIButton quitButton = new UIButton(this, "Quit");
@@ -77,7 +86,7 @@ public class IngameDied extends SimpleGui {
         quitButton.setName("button.quit");
         quitButton.register(this);
 
-        form.getContentContainer().add(logoImage, deathMessage, returnMessage, respawnButton, quitButton);
+        form.getContentContainer().add(logoImage, deathMessage, returnMessage, respawnButton, reviveButton, quitButton);
         addToScreen(form);
     }
 
@@ -85,6 +94,14 @@ public class IngameDied extends SimpleGui {
     public void onButtonClick(UIButton.ClickEvent event) throws IOException, URISyntaxException, AWTException {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.respawn":
+                this.mc.thePlayer.setHealth(0.1F);
+                this.mc.thePlayer.respawnPlayer();
+                close();
+                break;
+            case "button.revive":                
+                B00PlayerDeathConfirmation task = new B00PlayerDeathConfirmation(true, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ, HUDData.WORLD_DISPLAY);                
+                Almura.NETWORK_BUKKIT.sendToServer(task);
+                System.out.println("Attempting to Send Packet");
                 this.mc.thePlayer.setHealth(0.1F);
                 this.mc.thePlayer.respawnPlayer();
                 close();
