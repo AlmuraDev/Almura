@@ -30,6 +30,8 @@ import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
 import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInformation;
 import com.almuradev.almura.server.network.play.bukkit.B03ResidenceInformation;
 import com.almuradev.almura.server.network.play.bukkit.B04PlayerAccessories;
+import com.almuradev.almura.client.network.play.B02ClientDetailsResponse;
+import com.almuradev.almura.server.network.play.bukkit.B06ClientDetailsRequest;
 import com.almuradev.almurasdk.lang.LanguageRegistry;
 import com.almuradev.almurasdk.lang.Languages;
 import com.google.common.base.Optional;
@@ -98,9 +100,10 @@ public class ClientProxy extends CommonProxy {
         NETWORK_BUKKIT.registerMessage(B03ResidenceInformation.class, B03ResidenceInformation.class, 3, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B04PlayerAccessories.class, B04PlayerAccessories.class, 4, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B05GuiController.class, B05GuiController.class, 5, Side.CLIENT);
-        // Register outgoing Bukkit packets. While this also registers a handler, we ignore this (FML requires a handler...)
         NETWORK_BUKKIT.registerMessage(B00PlayerDeathConfirmation.class, B00PlayerDeathConfirmation.class, 6, Side.SERVER);
         NETWORK_BUKKIT.registerMessage(B01ResTokenConfirmation.class, B01ResTokenConfirmation.class, 7, Side.SERVER);
+        NETWORK_BUKKIT.registerMessage(B06ClientDetailsRequest.class, B06ClientDetailsRequest.class, 8, Side.CLIENT);
+        NETWORK_BUKKIT.registerMessage(B02ClientDetailsResponse.class, B02ClientDetailsResponse.class, 9, Side.SERVER);
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
         PACK_BLOCK_RENDERER.registerFor(PackCrops.class);
         PACK_BLOCK_RENDERER.registerFor(PackContainerBlock.class);
