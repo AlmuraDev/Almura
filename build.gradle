@@ -91,7 +91,7 @@ compileJava {
             '-Xlint:all',
             '-Xlint:-path',
             '-Xlint:-processing',
-			"-AoutSrgFile=${project.mixinSrg.getCanonicalPath()}", 
+            "-AoutSrgFile=${project.mixinSrg.getCanonicalPath()}",
             "-AoutRefMapFile=${project.mixinRefMap.getCanonicalPath()}" 
     ]
     options.deprecation = true

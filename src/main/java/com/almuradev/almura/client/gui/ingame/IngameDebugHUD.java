@@ -9,12 +9,13 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almurasdk.util.FileSizeUtil;
+import com.flowpowered.math.vector.Vector3i;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.renderer.font.FontRenderOptions;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.util.Direction;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
@@ -25,131 +26,137 @@ import org.apache.commons.lang3.text.WordUtils;
 public class IngameDebugHUD extends SimpleGui {
 
     public static final Runtime RUNTIME = Runtime.getRuntime();
+    private static final FontRenderOptions KEY_FRO = new FontRenderOptions();
+    private static final FontRenderOptions VALUE_FRO = new FontRenderOptions();
+    private static final String MEMORY_FORMAT = "Used: %s\n"
+            + "Free: %s\n"
+            + "Allocated: %s";
+    private static final String LOCATION_FORMAT = "X: %.3f // chunk: %d (%d)\n"
+            + "Y: %.3f\n"
+            + "Z: %.3f // chunk: %d (%d)";
+    private static final String LIGHTING_FORMAT = "Block: %d\n"
+            + "Sky: %d\n"
+            + "Raw: %d";
 
-    private UILabel fps, memoryDebug, memoryAllocated, xLoc, yLoc, zLoc, directionLoc, biomeName, blockLight, skyLight, rawLight;
+    private final UIBackgroundContainer container = new UIBackgroundContainer(this);
+    private UILabel titleLabel, fpsKeyLabel, fpsValueLabel, memoryKeyLabel, memoryValueLabel, locationKeyLabel, locationValueLabel, facingKeyLabel,
+            facingValueLabel, biomeKeyLabel, biomeValueLabel, lightingKeyLabel, lightingValueLabel;
     private Chunk chunk;
+    private final int padding = 5;
+    private final int innerXPadding = 3;
+    private final int innerYPadding = 2;
+
+    static {
+        KEY_FRO.apply(EnumChatFormatting.WHITE);
+        VALUE_FRO.apply(EnumChatFormatting.GRAY);
+    }
 
     @Override
     public void construct() {
-        FontRenderOptions labelsFro = new FontRenderOptions();
-        labelsFro.apply(EnumChatFormatting.WHITE);
-
-        FontRenderOptions valuesFro = new FontRenderOptions();
-        valuesFro.apply(EnumChatFormatting.GRAY);
-
-        int x = 60;
-
-        // Construct Hud with all elements
-        final UIBackgroundContainer debugPanel = new UIBackgroundContainer(this);
-        debugPanel.setSize(285, 175);
-        debugPanel.setPosition(5, 0, Anchor.MIDDLE);
-        debugPanel.setColor(0);
-        debugPanel.setBackgroundAlpha(180);
-        debugPanel.setClipContent(false);
+        // Container
+        container.setSize(180, 175);
+        container.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
+        container.setColor(0);
+        container.setBackgroundAlpha(180);
+        container.setClipContent(false);
 
         // Title
-        UILabel debugTitle = new UILabel(this, Colors.AQUA + "Almura Debug");
-        debugTitle.setPosition(0, 3, Anchor.CENTER);
-        debugTitle.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_110);
+        titleLabel = new UILabel(this, String.format(Colors.AQUA + "Debug (%s)", Colors.GREEN + Almura.GUI_VERSION + Colors.AQUA));
+        titleLabel.setPosition(0, 3, Anchor.TOP | Anchor.CENTER);
+        titleLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_110);
 
         // FPS
-        UILabel fpsLabel = new UILabel(this, "FPS :");
-        fpsLabel.setPosition(5, 20).setFontRenderOptions(labelsFro);
+        fpsKeyLabel = new UILabel(this, Colors.WHITE + "FPS:");
+        fpsKeyLabel.setPosition(padding, getPaddedY(titleLabel, innerYPadding));
+        fpsKeyLabel.setFontRenderOptions(KEY_FRO);
 
-        fps = new UILabel(this);
-        fps.setPosition(32, 20).setFontRenderOptions(valuesFro);
-        FontRenderOptions fro = new FontRenderOptions();
-        fro.apply(EnumChatFormatting.GOLD);
-        fps.setFontRenderOptions(fro);
+        fpsValueLabel = new UILabel(this);
+        fpsValueLabel.setPosition(getPaddedX(fpsKeyLabel, innerXPadding), fpsKeyLabel.getY());
+        fpsValueLabel.setFontRenderOptions(VALUE_FRO);
 
-        // MC Memory Usage
-        UILabel memoryLabel = new UILabel(this, "Memory :");
-        memoryLabel.setPosition(5, 30).setFontRenderOptions(labelsFro);
+        // Memory
+        memoryKeyLabel = new UILabel(this, Colors.WHITE + "Memory:");
+        memoryKeyLabel.setPosition(padding, getPaddedY(fpsValueLabel, innerYPadding));
+        memoryKeyLabel.setFontRenderOptions(KEY_FRO);
 
-        memoryDebug = new UILabel(this);
-        memoryDebug.setPosition(x, 30).setFontRenderOptions(valuesFro);
-        memoryAllocated = new UILabel(this);
-        memoryAllocated.setPosition(x, 40).setFontRenderOptions(valuesFro);
+        memoryValueLabel = new UILabel(this, true);
+        memoryValueLabel.setPosition(padding * 2, getPaddedY(memoryKeyLabel, innerYPadding));
+        memoryValueLabel.setFontRenderOptions(VALUE_FRO);
+        memoryValueLabel.setText(MEMORY_FORMAT);
+        memoryValueLabel.setSize(memoryValueLabel.getWidth(), 30);
 
-        // Location Stats
-        UILabel directionLabel = new UILabel(this, "Directions :");
-        directionLabel.setPosition(5, 50).setFontRenderOptions(labelsFro);
+        // Location
+        locationKeyLabel = new UILabel(this, Colors.WHITE + "Location:");
+        locationKeyLabel.setPosition(padding, getPaddedY(memoryValueLabel, innerYPadding));
+        locationKeyLabel.setFontRenderOptions(KEY_FRO);
 
-        xLoc = new UILabel(this);
-        xLoc.setPosition(x, 60).setFontRenderOptions(valuesFro);
-        yLoc = new UILabel(this);
-        yLoc.setPosition(x, 70).setFontRenderOptions(valuesFro);
-        zLoc = new UILabel(this);
-        zLoc.setPosition(x, 80).setFontRenderOptions(valuesFro);
+        locationValueLabel = new UILabel(this, true);
+        locationValueLabel.setPosition(padding * 2, getPaddedY(locationKeyLabel, innerYPadding));
+        locationValueLabel.setFontRenderOptions(VALUE_FRO);
+        locationValueLabel.setText(LOCATION_FORMAT);
+        locationValueLabel.setSize(locationValueLabel.getWidth(), 30);
 
-        UILabel facingLabel = new UILabel(this, "Facing :");
-        facingLabel.setPosition(5, 90).setFontRenderOptions(labelsFro);
+        // Facing
+        facingKeyLabel = new UILabel(this, Colors.WHITE + "Facing:");
+        facingKeyLabel.setPosition(padding, getPaddedY(locationValueLabel, innerYPadding));
+        facingKeyLabel.setFontRenderOptions(KEY_FRO);
 
-        directionLoc = new UILabel(this);
-        directionLoc.setPosition(x, 90).setFontRenderOptions(valuesFro);
+        facingValueLabel = new UILabel(this);
+        facingValueLabel.setPosition(getPaddedX(facingKeyLabel, innerXPadding), facingKeyLabel.getY());
+        facingValueLabel.setFontRenderOptions(VALUE_FRO);
 
-        UILabel biomeLabel = new UILabel(this, "Biome :");
-        biomeLabel.setPosition(5, 100).setFontRenderOptions(labelsFro);
+        // Biome
+        biomeKeyLabel = new UILabel(this, Colors.WHITE + "Biome:");
+        biomeKeyLabel.setPosition(padding, getPaddedY(facingValueLabel, innerYPadding));
+        biomeKeyLabel.setFontRenderOptions(KEY_FRO);
 
-        biomeName = new UILabel(this);
-        biomeName.setPosition(x, 100).setFontRenderOptions(valuesFro);
+        biomeValueLabel = new UILabel(this);
+        biomeValueLabel.setPosition(getPaddedX(biomeKeyLabel, innerXPadding), biomeKeyLabel.getY());
+        biomeValueLabel.setFontRenderOptions(VALUE_FRO);
 
-        UILabel lightLabel = new UILabel(this, "Lighting :");
-        lightLabel.setPosition(5, 110).setFontRenderOptions(labelsFro);
+        // Lighting
+        lightingKeyLabel = new UILabel(this, Colors.WHITE + "Lighting:");
+        lightingKeyLabel.setPosition(padding, getPaddedY(biomeValueLabel, innerYPadding));
+        lightingKeyLabel.setFontRenderOptions(KEY_FRO);
 
-        blockLight = new UILabel(this);
-        blockLight.setPosition(x, 120).setFontRenderOptions(valuesFro);
-        skyLight = new UILabel(this);
-        skyLight.setPosition(x, 130).setFontRenderOptions(valuesFro);
-        rawLight = new UILabel(this);
-        rawLight.setPosition(x, 140).setFontRenderOptions(valuesFro);
+        lightingValueLabel = new UILabel(this, true);
+        lightingValueLabel.setPosition(padding * 2, getPaddedY(lightingKeyLabel, innerYPadding));
+        lightingValueLabel.setFontRenderOptions(VALUE_FRO);
+        lightingValueLabel.setText(LIGHTING_FORMAT);
 
-        UILabel version = new UILabel(this, Colors.GREEN + Almura.GUI_VERSION);
-        version.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
-        version.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
+        container.add(titleLabel, fpsKeyLabel, fpsValueLabel, memoryKeyLabel, memoryValueLabel, locationKeyLabel, locationValueLabel,
+                facingKeyLabel, facingValueLabel, biomeKeyLabel, biomeValueLabel, lightingKeyLabel, lightingValueLabel);
 
-        debugPanel.add(debugTitle, fpsLabel, fps, memoryLabel, memoryDebug, memoryAllocated, directionLabel, xLoc, yLoc, zLoc, facingLabel,
-                directionLoc,
-                biomeLabel, biomeName, lightLabel, blockLight, skyLight, rawLight, version);
-
-        addToScreen(debugPanel);
+        addToScreen(container);
     }
 
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
 
-        float mb = 1F / 1024 / 1024;
-        int maxMemory = (int) (RUNTIME.maxMemory() * mb);
-        int totalMemory = (int) (RUNTIME.totalMemory() * mb);
-        int freeMemory = (int) (RUNTIME.freeMemory() * mb);
-        long usedMemory = totalMemory - freeMemory;
-        EntityClientPlayerMP p = mc.thePlayer;
+        fpsValueLabel.setText(Colors.GRAY + String.valueOf(Minecraft.debugFPS));
 
-        fps.setText("" + Minecraft.debugFPS);
+        memoryValueLabel.setText(Colors.GRAY + String.format(MEMORY_FORMAT,
+                FileSizeUtil.format(RUNTIME.totalMemory() - RUNTIME.freeMemory()),
+                FileSizeUtil.format(RUNTIME.freeMemory()),
+                RUNTIME.totalMemory() * 100L / RUNTIME.maxMemory() + "% (" + FileSizeUtil.format(RUNTIME.totalMemory()) + ")"));
 
-        memoryDebug.setText("Used : " + usedMemory * 100L / maxMemory + "% (" + usedMemory + "MB) of " + maxMemory + "MB");
-        memoryAllocated.setText(Colors.GRAY + "Allocated memory: " + totalMemory * 100L / maxMemory + "% (" + totalMemory + "MB)");
+        locationValueLabel.setText(Colors.GRAY + String.format(LOCATION_FORMAT,
+                mc.thePlayer.posX, mc.thePlayer.chunkCoordX, (int) mc.thePlayer.posX & 15,
+                mc.thePlayer.posY,
+                mc.thePlayer.posZ, mc.thePlayer.chunkCoordZ, (int) mc.thePlayer.posZ & 15));
 
-        xLoc.setText(String.format("- x : %.5f (%d) // chunk: %d (%d)", p.posX, (int) p.posX, p.chunkCoordX, (int) p.posX & 15));
+        final int yaw = MathHelper.floor_double(mc.thePlayer.rotationYawHead * 4F / 360F + 0.5D) & 3;
+        facingValueLabel.setText(Colors.GRAY + WordUtils.capitalizeFully(Direction.directions[yaw]));
 
-        yLoc.setText(String.format("- y : %.3f (%d) ", p.posY, (int) p.posY));
+        if (chunk == null || mc.thePlayer.posX != mc.thePlayer.prevPosX || mc.thePlayer.posZ != mc.thePlayer.prevPosZ) {
+            chunk = mc.thePlayer.worldObj.getChunkFromChunkCoords(mc.thePlayer.chunkCoordX, mc.thePlayer.chunkCoordZ);
 
-        zLoc.setText(String.format("- z : %.5f (%d) // chunk: %d (%d)", p.posZ, (int) p.posZ, p.chunkCoordZ, (int) p.posZ & 15));
-
-        int yaw = MathHelper.floor_double(p.rotationYawHead * 4.0F / 360.0F + 0.5D) & 3;
-        directionLoc.setText(WordUtils.capitalizeFully(Direction.directions[yaw]));
-
-        if (chunk == null || p.posX != p.prevPosX || p.posZ != p.prevPosZ) {
-            chunk = p.worldObj.getChunkFromChunkCoords(p.chunkCoordX, p.chunkCoordZ);
-            int x = (int) p.posX & 15;
-            int y = (int) p.posY;
-            int z = (int) p.posZ & 15;
-
-            biomeName.setText(chunk.getBiomeGenForWorldCoords(x, z, mc.theWorld.getWorldChunkManager()).biomeName);
-            blockLight.setText("- block : " + chunk.getSavedLightValue(EnumSkyBlock.Block, x, y, z));
-            skyLight.setText("- sky : " + chunk.getSavedLightValue(EnumSkyBlock.Sky, x, y, z));
-            rawLight.setText("- raw : " + chunk.getBlockLightValue(x, y, z, 0));
+            final Vector3i location = new Vector3i((int) mc.thePlayer.posX & 15, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ & 15);
+            biomeValueLabel.setText(Colors.GRAY + chunk.getBiomeGenForWorldCoords(location.getX(), location.getZ(), mc.theWorld.getWorldChunkManager()).biomeName);
+            lightingValueLabel.setText(Colors.GRAY + String.format(LIGHTING_FORMAT,
+                    chunk.getSavedLightValue(EnumSkyBlock.Block, location.getX(), location.getY(), location.getZ()),
+                    chunk.getSavedLightValue(EnumSkyBlock.Sky, location.getX(), location.getY(), location.getZ()),
+                    chunk.getBlockLightValue(location.getX(), location.getY(), location.getZ(), 0)));
         }
-
     }
 }

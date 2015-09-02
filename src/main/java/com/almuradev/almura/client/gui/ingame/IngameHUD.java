@@ -25,6 +25,7 @@ import org.apache.commons.lang3.text.WordUtils;
 public class IngameHUD extends SimpleGui {
 
     private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
+    private final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
     private UIImage mapImage, worldImage, playerImage;
     private UILabel worldDisplay;
     private UILabel playerMode;
@@ -41,7 +42,6 @@ public class IngameHUD extends SimpleGui {
     public void construct() {
         guiscreenBackground = false;
         // Construct Hud with all elements
-        final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
         gradientContainer.setSize(UIComponent.INHERITED, 34);
         gradientContainer.setColor(0);
         gradientContainer.setBackgroundAlpha(180);
@@ -262,6 +262,10 @@ public class IngameHUD extends SimpleGui {
             return ("12am");
         }
         return (hours - 18) + "am";
+    }
+
+    public UIBackgroundContainer getContainer() {
+        return gradientContainer;
     }
 
     // This is to fix the GUI Lighting issue that exists between Almura and Optifine & ShadersMod. 
