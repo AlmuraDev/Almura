@@ -53,6 +53,8 @@ public class IngameDebugHUD extends SimpleGui {
 
     @Override
     public void construct() {
+        guiscreenBackground = false;
+
         // Container
         container.setSize(180, 175);
         container.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
