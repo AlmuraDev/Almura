@@ -3,9 +3,10 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.ingame;
+package com.almuradev.almura.client.gui.ingame.hud;
 
 import com.almuradev.almura.client.FontRenderOptionsConstants;
+import com.almuradev.almura.client.gui.ingame.HUDData;
 import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.client.gui.components.UIPropertyBar;
 import com.almuradev.almurasdk.util.Colors;
@@ -22,7 +23,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeHooks;
 import org.apache.commons.lang3.text.WordUtils;
 
-public class IngameHUD extends SimpleGui {
+public class IngameAlmuraHUD extends SimpleGui {
 
     private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
     private final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
@@ -268,7 +269,7 @@ public class IngameHUD extends SimpleGui {
         return gradientContainer;
     }
 
-    // This is to fix the GUI Lighting issue that exists between Almura and Optifine & ShadersMod. 
+    // This is to fix the GUI Lighting issue that exists between Almura and Optifine & ShadersMod.
     // Something about the change that Ordi made with the "disable backgroundGUI causes a conflict if our screens render here.
 
     @Override

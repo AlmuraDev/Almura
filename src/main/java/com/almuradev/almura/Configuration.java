@@ -21,7 +21,7 @@ public class Configuration {
     public static final boolean IS_SERVER = FMLCommonHandler.instance().getEffectiveSide().isServer();
     public static final boolean IS_CLIENT = FMLCommonHandler.instance().getEffectiveSide().isClient();
     private static final Object[] PATH_CLIENT_FIRST_LAUNCH = new String[]{"client", "first-launch"};
-    private static final Object[] PATH_CLIENT_ENHANCED_GUI = new String[]{"client", "enhanced-gui"};
+    private static final Object[] PATH_CLIENT_HUD_TYPE = new String[]{"client", "hud-type"};
     private static final Object[] PATH_CLIENT_ENHANCED_DEBUG = new String[]{"client", "enhanced-debug"};
     private static final Object[] PATH_CLIENT_RESIDENCE_HUD = new String[]{"client", "residence-hud"};
     private static final Object[] PATH_CLIENT_ANIMAL_HEAT = new String[]{"client", "animal-heat"};
@@ -41,7 +41,7 @@ public class Configuration {
     public static boolean DEBUG_PACKS;
     public static boolean DEBUG_RECIPES;
     //GUI
-    public static boolean DISPLAY_ENHANCED_GUI = true;
+    public static String HUD_TYPE = "Almura";
     public static boolean DISPLAY_RESIDENCE_HUD = true;
     public static boolean DISPLAY_ANIMAL_HEAT = false;
     public static boolean DISPLAY_ENHANCED_DEBUG = true;
@@ -63,7 +63,7 @@ public class Configuration {
 
         FIRST_LAUNCH = root.getNode(PATH_CLIENT_FIRST_LAUNCH).getBoolean(true);
 
-        DISPLAY_ENHANCED_GUI = root.getNode(PATH_CLIENT_ENHANCED_GUI).getBoolean(true);
+        HUD_TYPE = root.getNode(PATH_CLIENT_HUD_TYPE).getString("Almura");
 
         DISPLAY_ENHANCED_DEBUG = root.getNode(PATH_CLIENT_ENHANCED_DEBUG).getBoolean(true);
 
@@ -91,7 +91,7 @@ public class Configuration {
     }
 
     public static void save() throws IOException {
-        root.getNode(PATH_CLIENT_ENHANCED_GUI).setValue(DISPLAY_ENHANCED_GUI);
+        root.getNode(PATH_CLIENT_HUD_TYPE).setValue(HUD_TYPE);
 
         root.getNode(PATH_CLIENT_ENHANCED_DEBUG).setValue(DISPLAY_ENHANCED_DEBUG);
 
@@ -149,8 +149,8 @@ public class Configuration {
         mc.gameSettings.saveOptions();
     }
 
-    public static void toggleEnhancedGUI(boolean value) {
-        DISPLAY_ENHANCED_GUI = value;
+    public static void setHUDType(String value) {
+        HUD_TYPE = value;
     }
 
     public static void toggleResidenceHUD(boolean value) {

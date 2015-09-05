@@ -5,20 +5,20 @@
  */
 package com.almuradev.almura.client;
 
-import com.almuradev.almura.client.network.play.B01ResTokenConfirmation;
-
-import com.almuradev.almura.server.network.play.bukkit.B05GuiController;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.gui.ingame.HUDData;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameDied;
-import com.almuradev.almura.client.gui.ingame.IngameHUD;
 import com.almuradev.almura.client.gui.ingame.IngameOptions;
+import com.almuradev.almura.client.gui.ingame.hud.IngameAlmuraHUD;
+import com.almuradev.almura.client.gui.ingame.hud.IngameLessHUD;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
 import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
 import com.almuradev.almura.client.network.play.B00PlayerDeathConfirmation;
+import com.almuradev.almura.client.network.play.B01ResTokenConfirmation;
+import com.almuradev.almura.client.network.play.B02ClientDetailsResponse;
 import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.container.PackContainerBlock;
@@ -30,8 +30,9 @@ import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
 import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInformation;
 import com.almuradev.almura.server.network.play.bukkit.B03ResidenceInformation;
 import com.almuradev.almura.server.network.play.bukkit.B04PlayerAccessories;
-import com.almuradev.almura.client.network.play.B02ClientDetailsResponse;
+import com.almuradev.almura.server.network.play.bukkit.B05GuiController;
 import com.almuradev.almura.server.network.play.bukkit.B06ClientDetailsRequest;
+import com.almuradev.almurasdk.client.gui.SimpleGui;
 import com.almuradev.almurasdk.lang.LanguageRegistry;
 import com.almuradev.almurasdk.lang.Languages;
 import com.google.common.base.Optional;
@@ -72,19 +73,9 @@ public class ClientProxy extends CommonProxy {
             new AlmuraBinding("key.almura.backpack", "Backpack", Keyboard.KEY_B, "key.categories.almura", "Almura");
 
     public static IngameDebugHUD HUD_DEBUG;
-    public static IngameHUD HUD_INGAME;
+    public static SimpleGui HUD_INGAME;
     public static IngameResidenceHUD HUD_RESIDENCE;
     public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
-
-    public static void setIngameHUD() {
-        if (Configuration.DISPLAY_ENHANCED_GUI && HUD_INGAME == null) {
-            HUD_INGAME = new IngameHUD();
-            HUD_INGAME.displayOverlay();
-        } else if (!Configuration.DISPLAY_ENHANCED_GUI && HUD_INGAME != null) {
-            HUD_INGAME.closeOverlay();
-            HUD_INGAME = null;
-        }
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -171,8 +162,15 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onRenderGameOverlayEventPost(RenderGameOverlayEvent.Pre event) {
-        // Toggle enhanced hud off/on.
-        if (Configuration.DISPLAY_ENHANCED_GUI) {
+        // Use proper HUD based on configuration
+        if (Configuration.HUD_TYPE.equalsIgnoreCase("almura")) {
+            if (!(HUD_INGAME instanceof IngameAlmuraHUD)) {
+                if (HUD_INGAME != null) {
+                    HUD_INGAME.closeOverlay();
+                }
+                HUD_INGAME = new IngameAlmuraHUD();
+                HUD_INGAME.displayOverlay();
+            }
             switch (event.type) {
                 case HEALTH:
                 case ARMOR:
@@ -182,12 +180,15 @@ public class ClientProxy extends CommonProxy {
                     break;
                 default:
             }
-            if (HUD_INGAME == null) {
-                HUD_INGAME = new IngameHUD();
+        } else if (Configuration.HUD_TYPE.equalsIgnoreCase("less")) {
+            if (!(HUD_INGAME instanceof IngameLessHUD)) {
+                if (HUD_INGAME != null) {
+                    HUD_INGAME.closeOverlay();
+                }
+                HUD_INGAME = new IngameLessHUD();
+                HUD_INGAME.displayOverlay();
             }
-
-            HUD_INGAME.displayOverlay();
-        } else if (HUD_INGAME != null) {
+        } else if (Configuration.HUD_TYPE.equalsIgnoreCase("vanilla") && HUD_INGAME != null) {
             HUD_INGAME.closeOverlay();
             HUD_INGAME = null;
         }
