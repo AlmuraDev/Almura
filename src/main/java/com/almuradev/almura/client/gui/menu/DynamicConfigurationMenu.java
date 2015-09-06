@@ -22,9 +22,8 @@ import java.util.Arrays;
 
 public class DynamicConfigurationMenu extends SimpleGui {
 
-    private UICheckBox almuraGuiCheckBox, residenceHudCheckBox, animalHeatCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
-            debugPacksCheckBox,
-            debugMappingsCheckBox, debugRecipesCheckBox, chatNotificationCheckBox;
+    private UICheckBox residenceHudCheckBox, animalHeatCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
+            debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, chatNotificationCheckBox;
 
     public DynamicConfigurationMenu(SimpleGui parent) {
         super(parent);
@@ -39,15 +38,27 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
         final int padding = 4;
 
-        // Create the almura GUI checkbox
-        almuraGuiCheckBox = new UICheckBox(this, Colors.WHITE + "Enhanced In-Game HUD");
-        almuraGuiCheckBox.setPosition(padding, padding * 2, Anchor.LEFT | Anchor.TOP);
-        almuraGuiCheckBox.setChecked(Configuration.DISPLAY_ENHANCED_GUI);
-        almuraGuiCheckBox.setName("checkbox.enhanced_gui");
-        almuraGuiCheckBox.register(this);
+        final UILabel hudTypeLabel = new UILabel(this, Colors.WHITE + "HUD:");
+        hudTypeLabel.setPosition(padding, padding * 2, Anchor.LEFT | Anchor.TOP);
+
+        final UISelect<String> hudTypeSelect = new UISelect<>(this, 50, Arrays.asList("Vanilla", "Almura", "LESS"));
+        hudTypeSelect.setPosition(getPaddedX(hudTypeLabel, padding), hudTypeLabel.getY(), Anchor.LEFT | Anchor.TOP);
+        switch (Configuration.HUD_TYPE.toLowerCase()) {
+            case "almura":
+                hudTypeSelect.select("Almura");
+                break;
+            case "less":
+                hudTypeSelect.select("LESS");
+                break;
+            default:
+                hudTypeSelect.select("Vanilla");
+                break;
+        }
+        hudTypeSelect.setName("select.hud");
+        hudTypeSelect.register(this);
 
         residenceHudCheckBox = new UICheckBox(this, Colors.WHITE + "Residence HUD");
-        residenceHudCheckBox.setPosition(padding, almuraGuiCheckBox.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
+        residenceHudCheckBox.setPosition(padding, hudTypeLabel.getY() + (padding * 4), Anchor.LEFT | Anchor.TOP);
         residenceHudCheckBox.setChecked(Configuration.DISPLAY_RESIDENCE_HUD);
         residenceHudCheckBox.setName("checkbox.residence_hud");
         residenceHudCheckBox.register(this);
@@ -62,7 +73,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
         chestRenderDistance.setPosition(-55, padding * 2, Anchor.RIGHT | Anchor.TOP);
 
         final UILabel signRenderDistance = new UILabel(this, Colors.WHITE + "Sign Distance:");
-        signRenderDistance.setPosition(-55, almuraGuiCheckBox.getY() + (padding * 4), Anchor.RIGHT | Anchor.TOP);
+        signRenderDistance.setPosition(-55, hudTypeLabel.getY() + (padding * 4), Anchor.RIGHT | Anchor.TOP);
 
         final UILabel itemFrameRenderDistance = new UILabel(this, Colors.WHITE + "Item Frame Distance:");
         itemFrameRenderDistance.setPosition(-55, signRenderDistance.getY() + (padding * 4), Anchor.RIGHT | Anchor.TOP);
@@ -173,11 +184,10 @@ public class DynamicConfigurationMenu extends SimpleGui {
         backButton.setName("button.back");
         backButton.register(this);
 
-        form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, almuraGuiCheckBox,
-                residenceHudCheckBox, animalHeatCheckBox,
-                almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
-                debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, graphicsButton, backButton, saveButton,
-                chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu, chestDistanceDownMenu);
+        form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, residenceHudCheckBox, animalHeatCheckBox,
+                almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox,
+                graphicsButton, backButton, saveButton, chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu,
+                chestDistanceDownMenu, hudTypeLabel, hudTypeSelect);
 
         if (this.mc.thePlayer == null) {
             addToScreen(new UIAnimatedBackground(this));
@@ -198,7 +208,6 @@ public class DynamicConfigurationMenu extends SimpleGui {
                 break;
             case "button.save":
                 try {
-                    Configuration.toggleEnhancedGUI(almuraGuiCheckBox.isChecked());
                     Configuration.toggleResidenceHUD(residenceHudCheckBox.isChecked());
                     Configuration.toggleAnimalHeat(animalHeatCheckBox.isChecked());
                     Configuration.toggleEnhancedDebug(almuraDebugGuiCheckBox.isChecked());
@@ -229,7 +238,8 @@ public class DynamicConfigurationMenu extends SimpleGui {
             case "select.sign":
                 Configuration.setSignRenderDistance((Integer) event.getNewValue());
                 break;
-
+            case "select.hud":
+                Configuration.setHUDType((String) event.getNewValue());
         }
     }
 }
