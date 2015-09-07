@@ -96,7 +96,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
                 columns++;
             }
 
-            int columnWidth = 400 / columns;
+            int columnWidth = 300 / columns;
 
             if (columnWidth > 150) {
                 columnWidth = 150;
