@@ -42,7 +42,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
         hudTypeLabel.setPosition(padding, padding * 2, Anchor.LEFT | Anchor.TOP);
 
         final UISelect<String> hudTypeSelect = new UISelect<>(this, 50, Arrays.asList("Vanilla", "Almura", "LESS"));
-        hudTypeSelect.setPosition(getPaddedX(hudTypeLabel, padding), hudTypeLabel.getY(), Anchor.LEFT | Anchor.TOP);
+        hudTypeSelect.setPosition(getPaddedX(hudTypeLabel, padding), hudTypeLabel.getY()-2, Anchor.LEFT | Anchor.TOP);
         switch (Configuration.HUD_TYPE.toLowerCase()) {
             case "almura":
                 hudTypeSelect.select("Almura");
@@ -80,7 +80,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
         // Chest Render Distance
         final UISelect<Integer> chestDistanceDownMenu = new UISelect<>(this, 30, Arrays.asList(16, 32, 64));
-        chestDistanceDownMenu.setPosition(-15, padding * 2, Anchor.TOP | Anchor.RIGHT);
+        chestDistanceDownMenu.setPosition(-15, padding * 2 - 2, Anchor.TOP | Anchor.RIGHT);
         chestDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.DISTANCE_RENDER_CHEST == 16) {
             chestDistanceDownMenu.select(16);
@@ -94,7 +94,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
         // Sign Render Distance
         final UISelect<Integer> signDistanceDownMenu = new UISelect<>(this, 30, Arrays.asList(16, 32, 64));
-        signDistanceDownMenu.setPosition(-15, chestDistanceDownMenu.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
+        signDistanceDownMenu.setPosition(-15, chestDistanceDownMenu.getY() + (padding * 4 - 2), Anchor.TOP | Anchor.RIGHT);
         signDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.DISTANCE_RENDER_SIGN == 16) {
             signDistanceDownMenu.select(16);
@@ -108,7 +108,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
         // Sign Render Distance
         final UISelect<Integer> itemFrameDistanceDownMenu = new UISelect<>(this, 30, Arrays.asList(16, 32, 64));
-        itemFrameDistanceDownMenu.setPosition(-15, signDistanceDownMenu.getY() + (padding * 4), Anchor.TOP | Anchor.RIGHT);
+        itemFrameDistanceDownMenu.setPosition(-15, signDistanceDownMenu.getY() + (padding * 4 - 2), Anchor.TOP | Anchor.RIGHT);
         itemFrameDistanceDownMenu.setMaxExpandedWidth(30);
         if (Configuration.DISTANCE_RENDER_ITEM_FRAME == 16) {
             itemFrameDistanceDownMenu.select(16);
