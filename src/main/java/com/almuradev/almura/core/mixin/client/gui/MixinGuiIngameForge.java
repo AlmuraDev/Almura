@@ -92,17 +92,21 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
             int rows = maxPlayers;
             int columns = 1;
 
-            for (columns = 1; rows > 20; rows = (maxPlayers + columns - 1) / columns)
-            {
+            for (columns = 1; rows > 20; rows = (maxPlayers + columns - 1) / columns) {
                 columns++;
             }
 
-            int columnWidth = 300 / columns;
+            int columnWidth = 400 / columns;
 
-            if (columnWidth > 150)
-            {
+            if (columnWidth > 150) {
                 columnWidth = 150;
             }
+            
+            // Experimental to be tested in-game with server full.
+            columns = 2;
+            rows = 25;
+            columnWidth = 200;
+            // End Experimental
 
             int left = (width - columns * columnWidth) / 2;
             byte border = 10;
@@ -130,7 +134,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
                     final DisplayNameManager.Tuple<Optional<String>, Optional<String>> tuple = DisplayNameManager.getDisplayNameAndTitle(player.name);
                     String displayName = "";
                     if (tuple.left.isPresent() && tuple.right.isPresent() && !tuple.right.get().isEmpty()) {
-                        displayName = ScorePlayerTeam.formatPlayerName(team, tuple.left.get());
+                        displayName = ScorePlayerTeam.formatPlayerName(team, tuple.left.get() + " | " + ScorePlayerTeam.formatPlayerName(team, player.name));
                     } else {
                         displayName = ScorePlayerTeam.formatPlayerName(team, player.name);
                     }
@@ -151,6 +155,8 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
 
                     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
+                    // This is totally worthless anyways because it isn't accurate.
+                    /*
                     mc.getTextureManager().bindTexture(Gui.icons);
                     int pingIndex = 4;
                     int ping = player.responseTime;
@@ -163,6 +169,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
                     zLevel += 100.0F;
                     drawTexturedModalRect(xPos + columnWidth - 12, yPos, 0, 176 + pingIndex * 8, 10, 8);
                     zLevel -= 100.0F;
+                    */
                 }
             }
             post(PLAYER_LIST);
