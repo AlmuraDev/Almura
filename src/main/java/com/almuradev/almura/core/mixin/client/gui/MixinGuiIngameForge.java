@@ -5,8 +5,10 @@
  */
 package com.almuradev.almura.core.mixin.client.gui;
 
-import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.PLAYER_LIST;
+import com.almuradev.almura.client.DisplayNameManager;
+import com.google.common.base.Optional;
 
+import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.PLAYER_LIST;
 import com.almuradev.almura.Configuration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -125,7 +127,13 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
                 {
                     GuiPlayerInfo player = (GuiPlayerInfo)players.get(i);
                     ScorePlayerTeam team = mc.theWorld.getScoreboard().getPlayersTeam(player.name);
-                    String displayName = ScorePlayerTeam.formatPlayerName(team, player.name);
+                    final DisplayNameManager.Tuple<Optional<String>, Optional<String>> tuple = DisplayNameManager.getDisplayNameAndTitle(player.name);
+                    String displayName = "";
+                    if (tuple.left.isPresent() && tuple.right.isPresent() && !tuple.right.get().isEmpty()) {
+                        displayName = ScorePlayerTeam.formatPlayerName(team, tuple.left.get());
+                    } else {
+                        displayName = ScorePlayerTeam.formatPlayerName(team, player.name);
+                    }
                     fontrenderer.drawStringWithShadow(displayName, xPos, yPos, 16777215);
 
                     if (scoreobjective != null)
