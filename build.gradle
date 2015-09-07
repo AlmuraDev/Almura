@@ -1,3 +1,5 @@
+
+
 buildscript {
     repositories {
         mavenCentral()
@@ -54,6 +56,10 @@ repositories {
         name = 'sponge-public'
         url = 'http://repo.spongepowered.org/maven/'
     }
+    maven {
+        name = 'industrialcraft-public'
+        url = 'http://maven.ic2.player.to'
+    }
 }
 
 minecraft {
@@ -69,6 +75,7 @@ dependencies {
     compile ('com.almuradev:guide:1.7.10-1448-1-SNAPSHOT:dev') {
         transitive = true
     }
+    compile 'net.industrial-craft:industrialcraft-2:2.2.770-experimental:dev'
 }
 
 processResources {
@@ -92,7 +99,7 @@ compileJava {
             '-Xlint:-path',
             '-Xlint:-processing',
             "-AoutSrgFile=${project.mixinSrg.getCanonicalPath()}",
-            "-AoutRefMapFile=${project.mixinRefMap.getCanonicalPath()}" 
+            "-AoutRefMapFile=${project.mixinRefMap.getCanonicalPath()}"
     ]
     options.deprecation = true
     options.encoding = 'utf8'
@@ -134,3 +141,4 @@ if (JavaVersion.current().isJava8Compatible()) {
         options.addStringOption('Xdoclint:none', '-quiet')
     }
 }
+
