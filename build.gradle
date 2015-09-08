@@ -45,6 +45,33 @@ reobf.addExtraSrgFile project.mixinSrg
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
+configurations {
+    provided
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+    test {
+        compileClasspath += configurations.provided
+        runtimeClasspath += configurations.provided
+    }
+}
+
+eclipse {
+    classpath {
+        plusConfigurations += [configurations.provided]
+        noExportConfigurations += [configurations.provided]
+    }
+}
+
+idea {
+    module {
+        scopes.PROVIDED.plus += [configurations.provided]
+    }
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -75,7 +102,7 @@ dependencies {
     compile ('com.almuradev:guide:1.7.10-1448-1-SNAPSHOT:dev') {
         transitive = true
     }
-    compile 'net.industrial-craft:industrialcraft-2:2.2.770-experimental:dev'
+    provided 'net.industrial-craft:industrialcraft-2:2.2.770-experimental:dev'
 }
 
 processResources {
