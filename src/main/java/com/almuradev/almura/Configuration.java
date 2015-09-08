@@ -41,7 +41,7 @@ public class Configuration {
     public static boolean DEBUG_PACKS;
     public static boolean DEBUG_RECIPES;
     //GUI
-    public static String HUD_TYPE = "Almura";
+    public static String HUD_TYPE = "almura";
     public static boolean DISPLAY_RESIDENCE_HUD = true;
     public static boolean DISPLAY_ANIMAL_HEAT = false;
     public static boolean DISPLAY_ENHANCED_DEBUG = true;
@@ -63,7 +63,7 @@ public class Configuration {
 
         FIRST_LAUNCH = root.getNode(PATH_CLIENT_FIRST_LAUNCH).getBoolean(true);
 
-        HUD_TYPE = root.getNode(PATH_CLIENT_HUD_TYPE).getString("Almura");
+        HUD_TYPE = root.getNode(PATH_CLIENT_HUD_TYPE).getString("almura");
 
         DISPLAY_ENHANCED_DEBUG = root.getNode(PATH_CLIENT_ENHANCED_DEBUG).getBoolean(true);
 
@@ -150,7 +150,7 @@ public class Configuration {
     }
 
     public static void setHUDType(String value) {
-        HUD_TYPE = value;
+        HUD_TYPE = value.toLowerCase();
     }
 
     public static void toggleResidenceHUD(boolean value) {
