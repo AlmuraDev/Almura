@@ -37,13 +37,14 @@ public class B00PlayerDisplayName implements IMessage, IMessageHandler<B00Player
     @Override
     public IMessage onMessage(B00PlayerDisplayName message, MessageContext ctx) {
         if (ctx.side == Side.CLIENT) {
+            final String[] split = message.displayName.split("\\n");
+            DisplayNameManager.putDisplayName(message.username, split[0]);
+            if (split.length > 1) {
+                DisplayNameManager.putTitle(message.username, split[1]);
+            }
+            // If this client already has a Player object for this username, tell Forge to refresh its displayname
             final EntityPlayer player = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(message.username);
             if (player != null) {
-                final String[] split = message.displayName.split("\\n");
-                DisplayNameManager.putDisplayName(player.getCommandSenderName(), split[0]);
-                if (split.length > 1) {
-                    DisplayNameManager.putTitle(player.getCommandSenderName(), split[1]);
-                }
                 player.refreshDisplayName();
             }
         }
