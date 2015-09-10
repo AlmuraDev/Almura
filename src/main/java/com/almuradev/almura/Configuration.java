@@ -29,6 +29,7 @@ public class Configuration {
     private static final Object[] PATH_CLIENT_ITEM_FRAME_RENDER_DISTANCE = new String[]{"client", "item-frame-render-distance"};
     private static final Object[] PATH_CLIENT_SIGN_RENDER_DISTANCE = new String[]{"client", "sign-render-distance"};
     private static final Object[] PATH_CLIENT_CHAT_NOTIFICATIONS = new String[]{"client", "chat-notifications"};
+    private static final Object[] PATH_CLIENT_USE_OPTIMIZED_LIGHTING = new String[]{"client", "use-optimized-lighting"};
     private static final Object[] PATH_DEBUG_ALL = new String[]{"debug", "all"};
     private static final Object[] PATH_DEBUG_LANGUAGE = new String[]{"debug", "language"};
     private static final Object[] PATH_DEBUG_MAPPINGS = new String[]{"debug", "mappings"};
@@ -50,6 +51,8 @@ public class Configuration {
     public static int DISTANCE_RENDER_CHEST;
     public static int DISTANCE_RENDER_ITEM_FRAME;
     public static int DISTANCE_RENDER_SIGN;
+    //PERFORMANCE
+    public static boolean USE_OPTIMIZED_LIGHTING = true;
     //FIRST LAUNCH
     public static boolean FIRST_LAUNCH = true;
 
@@ -79,6 +82,8 @@ public class Configuration {
 
         CHAT_NOTIFICATIONS = root.getNode(PATH_CLIENT_CHAT_NOTIFICATIONS).getBoolean(true);
 
+        USE_OPTIMIZED_LIGHTING = root.getNode(PATH_CLIENT_USE_OPTIMIZED_LIGHTING).getBoolean(true);
+
         DEBUG_ALL = root.getNode(PATH_DEBUG_ALL).getBoolean(false);
 
         DEBUG_LANGUAGES = root.getNode(PATH_DEBUG_LANGUAGE).getBoolean(false);
@@ -105,6 +110,8 @@ public class Configuration {
 
         root.getNode(PATH_CLIENT_SIGN_RENDER_DISTANCE).setValue(DISTANCE_RENDER_SIGN);
 
+        root.getNode(PATH_CLIENT_USE_OPTIMIZED_LIGHTING).setValue(USE_OPTIMIZED_LIGHTING);
+
         root.getNode(PATH_DEBUG_ALL).setValue(DEBUG_ALL);
 
         root.getNode(PATH_DEBUG_LANGUAGE).setValue(DEBUG_LANGUAGES);
@@ -120,8 +127,8 @@ public class Configuration {
 
     public static void setFirstLaunch(boolean value) throws IOException {
         if (root == null) {
-            loader = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_SETTINGS_PATH.toFile()).setFlowStyle
-                    (DumperOptions.FlowStyle.BLOCK).build();
+            loader = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_SETTINGS_PATH.toFile()).setFlowStyle(DumperOptions.FlowStyle
+                    .BLOCK).build();
             root = loader.load();
         }
         root.getNode(PATH_CLIENT_FIRST_LAUNCH).setValue(value);
@@ -183,6 +190,10 @@ public class Configuration {
 
     public static void toggleDebugRecipesMode(boolean value) {
         DEBUG_RECIPES = value;
+    }
+
+    public static void toggleOptimizedLighting(boolean value) {
+        USE_OPTIMIZED_LIGHTING = value;
     }
 
     public static void setChestRenderDistance(int value) {
