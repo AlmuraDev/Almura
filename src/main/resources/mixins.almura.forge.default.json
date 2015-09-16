@@ -1,4 +1,6 @@
 {
+    "required": true,
+    "minVersion": "0.3",
     "package": "com.almuradev.almura.core.mixin",
     "refmap": "mixin.refmap.json",
     "mixins": [

@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.bridge.IC2Bridge;
 import com.almuradev.almura.items.Items;
 import com.almuradev.almura.pack.IItemBlockInformation;
 import com.almuradev.almura.pack.INodeContainer;
@@ -31,7 +30,6 @@ import com.almuradev.almurasdk.lang.LanguageRegistry;
 import com.almuradev.almurasdk.lang.Languages;
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -79,10 +77,6 @@ public class CommonProxy {
         Items.fakeStaticLoad();
 
         Pack.loadAllContent();
-
-        if (Loader.isModLoaded("IC2")) {
-            IC2Bridge.init();
-        }
     }
 
     public void onInitialization(FMLInitializationEvent event) {
