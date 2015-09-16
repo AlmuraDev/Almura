@@ -26,13 +26,18 @@ apply plugin: "signing"
 group = 'com.almuradev'
 archivesBaseName = 'almura'
 
-ext.name = 'Almura'
-ext.inceptionYear = '2014'
-ext.packaging = 'jar'
-ext.url = 'http://github.com/AlmuraDev'
-ext.organization = 'AlmuraDev'
-ext.minecraftVersion = '1.7.10'
-ext.forgeVersion = '10.13.4.1448'
+ext {
+    name = 'Almura'
+    inceptionYear = '2014'
+    packaging = 'jar'
+    url = 'http://github.com/AlmuraDev'
+    organization = 'AlmuraDev'
+    minecraftVersion = '1.7.10'
+    forgeVersion = '10.13.4.1448'
+    mixinSrg = new File(project.buildDir, 'tmp/mixins/mixins.srg')
+    mixinRefMap = new File(project.buildDir, "tmp/mixins/mixins.almura.refmap.json")
+}
+
 version = minecraftVersion + '-' + forgeVersion.substring(forgeVersion.size() - 4)
 
 sourceCompatibility = '1.7'
@@ -81,11 +86,19 @@ license {
     includes(["**/*.java"])
 }
 
+// Configure reobfuscation for mixins
+reobf.doFirst {
+    if (project.mixinSrg.exists()) {
+        addExtraSrgFile project.mixinSrg
+    }
+}
+
 compileJava {
     options.compilerArgs += [
-            '-Xlint:all',
-            '-Xlint:-path',
-            '-Xlint:-processing'
+            '-Xlint:-processing',
+            "-AoutSrgFile=${project.mixinSrg.canonicalPath}",
+            "-AoutRefMapFile=${project.mixinRefMap.canonicalPath}",
+            "-AreobfSrgFile=${project.file('build/srgs/mcp-srg.srg').canonicalPath}"
     ]
     options.deprecation = true
     options.encoding = 'utf8'
@@ -105,6 +118,7 @@ def manifestEntries = [
 ]
 
 jar {
+    from project.mixinRefMap
     manifest.mainAttributes(manifestEntries)
 }
 
