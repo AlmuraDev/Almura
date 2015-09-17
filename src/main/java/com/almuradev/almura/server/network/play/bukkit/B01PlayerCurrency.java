@@ -6,7 +6,7 @@
 package com.almuradev.almura.server.network.play.bukkit;
 
 import com.almuradev.almura.client.gui.ingame.HUDData;
-import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almura.util.Colors;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

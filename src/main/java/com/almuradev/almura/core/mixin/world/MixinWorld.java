@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(World.class)
-public class MixinWorld {
+public abstract class MixinWorld {
 
     @Shadow private int[] lightUpdateBlockList;
 

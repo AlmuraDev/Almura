@@ -6,13 +6,12 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
+import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
-import com.almuradev.almurasdk.FileSystem;
-import com.almuradev.almurasdk.client.gui.SimpleGui;
-import com.almuradev.almurasdk.client.gui.components.UIForm;
-import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almura.client.gui.components.UIForm;
+import com.almuradev.almura.util.Colors;
+import com.almuradev.almura.util.FileSystem;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -31,7 +30,7 @@ public class DynamicMainMenu extends SimpleGui {
 
     static {
         try {
-            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/almura.png", Filesystem.CONFIG_GUI_LOGO_PATH);
+            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/almura.png", FileSystem.CONFIG_GUI_LOGO_PATH);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load logo.", e);
         }

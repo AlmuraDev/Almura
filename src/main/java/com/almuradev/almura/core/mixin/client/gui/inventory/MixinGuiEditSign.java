@@ -6,8 +6,8 @@
 package com.almuradev.almura.core.mixin.client.gui.inventory;
 
 import com.almuradev.almura.extension.sign.IExtendedTileEntitySign;
-import com.almuradev.almurasdk.util.Color;
-import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almura.util.Color;
+import com.almuradev.almura.util.Colors;
 import com.google.common.base.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;

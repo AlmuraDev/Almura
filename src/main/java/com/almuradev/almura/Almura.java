@@ -18,13 +18,12 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Almura.MOD_ID, name = "Almura", version = "1.7.10-1448", dependencies = "after:IC2@[2.2.770-experimental,)")
+@Mod(modid = Almura.MOD_ID, name = "Almura", version = "1.7.10-1448")
 public class Almura {
 
     public static final Pack INTERNAL_PACK = new Pack("internal");
     public static final String MOD_ID = "almura";
     public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID);
-    public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
     public static String GUI_VERSION = "Build 85";
     public static String PACK_VERSION = "1.4";
 

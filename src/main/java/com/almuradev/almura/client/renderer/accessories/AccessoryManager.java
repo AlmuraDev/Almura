@@ -6,7 +6,6 @@
 package com.almuradev.almura.client.renderer.accessories;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.renderer.accessories.type.Bracelet;
 import com.almuradev.almura.client.renderer.accessories.type.CatHat;
 import com.almuradev.almura.client.renderer.accessories.type.Cloak;
@@ -18,7 +17,7 @@ import com.almuradev.almura.client.renderer.accessories.type.Sunglasses;
 import com.almuradev.almura.client.renderer.accessories.type.Tail;
 import com.almuradev.almura.client.renderer.accessories.type.TopHat;
 import com.almuradev.almura.client.renderer.accessories.type.Wings;
-import com.almuradev.almurasdk.FileSystem;
+import com.almuradev.almura.util.FileSystem;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.minecraft.client.model.ModelBase;
@@ -56,7 +55,7 @@ public class AccessoryManager {
         register("halo", Halo.class);
 
         try {
-            for (Path path : Files.newDirectoryStream(Filesystem.CONFIG_ACCESSORIES_PATH, FileSystem.FILTER_IMAGE_FILES_ONLY)) {
+            for (Path path : Files.newDirectoryStream(FileSystem.CONFIG_ACCESSORIES_PATH, FileSystem.FILTER_IMAGE_FILES_ONLY)) {
                 FileSystem.registerTexture(Almura.MOD_ID, "accessory_" + path.getFileName().toString().split(".png")[0].split(".jpg")[0], path);
             }
         } catch (IOException e) {

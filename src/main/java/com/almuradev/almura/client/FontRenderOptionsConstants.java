@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.client;
 
-import com.almuradev.almurasdk.util.Color;
-import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almura.util.Color;
+import com.almuradev.almura.util.Colors;
 import net.malisis.core.renderer.font.FontRenderOptions;
 
 public class FontRenderOptionsConstants {

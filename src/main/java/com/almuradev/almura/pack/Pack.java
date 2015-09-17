@@ -7,9 +7,8 @@ package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.model.PackModelContainer;
-import com.almuradev.almurasdk.FileSystem;
+import com.almuradev.almura.util.FileSystem;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -47,7 +46,7 @@ public class Pack {
     }
 
     public static void loadAllContent() {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_MODELS_PATH, Filesystem.FILTER_MODEL_FILES_ONLY)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(FileSystem.CONFIG_MODELS_PATH, FileSystem.FILTER_MODEL_FILES_ONLY)) {
             for (Path path : stream) {
                 try {
                     String name = path.getFileName().toString();
@@ -57,20 +56,20 @@ public class Pack {
                     final PackModelContainer modelContainer = loadModelContainer(name, path, shape);
                     MODEL_CONTAINERS.add(modelContainer);
                 } catch (IOException e) {
-                    Almura.LOGGER.error("Failed to load model container [" + path + "] in [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
+                    Almura.LOGGER.error("Failed to load model container [" + path + "] in [" + FileSystem.CONFIG_MODELS_PATH + "].", e);
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed filtering model files from [" + Filesystem.CONFIG_MODELS_PATH + "].", e);
+            throw new RuntimeException("Failed filtering model files from [" + FileSystem.CONFIG_MODELS_PATH + "].", e);
         }
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Filesystem.CONFIG_YML_PATH, FileSystem.FILTER_DIRECTORIES_ONLY)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(FileSystem.CONFIG_YML_PATH, FileSystem.FILTER_DIRECTORIES_ONLY)) {
             for (Path path : stream) {
                 final Pack pack = loadPack(path);
                 PACKS.put(pack.getName(), pack);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed filtering folders from [" + Filesystem.CONFIG_YML_PATH + "].", e);
+            throw new RuntimeException("Failed filtering folders from [" + FileSystem.CONFIG_YML_PATH + "].", e);
         }
 
         for (Pack pack : PACKS.values()) {
@@ -99,7 +98,7 @@ public class Pack {
                 streamed.add(path);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed filtering files from [" + Filesystem.CONFIG_YML_PATH + "].", e);
+            throw new RuntimeException("Failed filtering files from [" + FileSystem.CONFIG_YML_PATH + "].", e);
         }
 
         for (Path path : streamed) {

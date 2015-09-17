@@ -5,14 +5,13 @@
  */
 package com.almuradev.almura.client.gui.ingame;
 
-import com.almuradev.almura.client.network.play.B01ResTokenConfirmation;
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almurasdk.FileSystem;
-import com.almuradev.almurasdk.client.gui.SimpleGui;
-import com.almuradev.almurasdk.client.gui.components.UIForm;
-import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almura.client.gui.SimpleGui;
+import com.almuradev.almura.client.gui.components.UIForm;
+import com.almuradev.almura.client.network.play.B01ResTokenConfirmation;
+import com.almuradev.almura.util.Colors;
+import com.almuradev.almura.util.FileSystem;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -33,7 +32,8 @@ public class IngameResToken extends SimpleGui {
     
     static {
         try {
-            ICON_IMAGE_LOCATION = FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/almuracustom1_restoken.png", Filesystem.CONFIG_GUI_RESTOKENICON_PATH);
+            ICON_IMAGE_LOCATION = FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/almuracustom1_restoken.png", FileSystem
+                    .CONFIG_GUI_RESTOKENICON_PATH);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load logo.", e);
         }

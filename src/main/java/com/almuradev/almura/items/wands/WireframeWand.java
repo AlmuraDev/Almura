@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.items.wands;
 
-import com.almuradev.almura.Almura;
+import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.items.AlmuraItem;
 import com.almuradev.almura.server.network.play.S02OpenBlockWireframeGui;
 import net.minecraft.block.Block;
@@ -48,7 +48,7 @@ public class WireframeWand extends AlmuraItem {
             if (block != null) {
                 ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S0BPacketAnimation(player, 0));
                 player.swingItem();
-                Almura.NETWORK_FORGE.sendTo(new S02OpenBlockWireframeGui(stack, x, y, z, AxisAlignedBB
+                CommonProxy.NETWORK_FORGE.sendTo(new S02OpenBlockWireframeGui(stack, x, y, z, AxisAlignedBB
                                 .getBoundingBox((double) x + block.minX, (double) y + block.minY, (double) z + block.minZ, (double) x + block.maxX,
                                         (double) y + block.maxY, (double) z + block.maxZ)),
                         (EntityPlayerMP) player);

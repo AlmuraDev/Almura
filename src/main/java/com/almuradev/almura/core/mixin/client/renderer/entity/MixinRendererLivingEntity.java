@@ -6,7 +6,7 @@
 package com.almuradev.almura.core.mixin.client.renderer.entity;
 
 import com.almuradev.almura.Configuration;
-import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almura.util.Colors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;

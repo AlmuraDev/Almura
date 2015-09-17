@@ -6,7 +6,7 @@
 package com.almuradev.almura.core.mixin.client.gui;
 
 import com.almuradev.almura.Configuration;
-import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almura.util.Colors;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;

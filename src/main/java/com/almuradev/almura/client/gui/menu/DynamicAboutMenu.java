@@ -6,10 +6,10 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.client.FontRenderOptionsConstants;
+import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
-import com.almuradev.almurasdk.client.gui.SimpleGui;
-import com.almuradev.almurasdk.client.gui.components.UIForm;
-import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almura.client.gui.components.UIForm;
+import com.almuradev.almura.util.Colors;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
