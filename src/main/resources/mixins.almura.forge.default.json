@@ -1,7 +1,7 @@
 {
     "required": true,
-    "minVersion": "0.3",
-    "package": "com.almuradev.almura.core.mixin",
+    "minVersion": "0.4",
+    "package": "com.almuradev.almura.mixin",
     "refmap": "mixins.almura.refmap.json",
     "mixins": [
         "block.MixinBlockTallGrass",
@@ -21,14 +21,12 @@
         "client.gui.MixinGuiChat",
         "client.gui.MixinGuiIngameForge",
         "client.gui.MixinGuiNewChat",
-        "client.renderer.texture.MixinTextureMap",
         "client.renderer.entity.MixinRender",
         "client.renderer.entity.MixinRenderPlayer",
         "client.renderer.entity.MixinRendererLivingEntity",
         "client.renderer.tileentity.MixinRenderItemFrame",
         "client.renderer.tileentity.MixinTileEntityChestRenderer",
         "client.renderer.tileentity.MixinTileEntitySignRenderer",
-        "client.resources.MixinSimpleReloadableResourceManager",
         "client.settings.MixinGameSettings",
         "world.MixinWorld"
     ]

@@ -14,11 +14,10 @@ import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Almura.MOD_ID, name = "Almura", version = "1.7.10-1448")
+@Mod(modid = Almura.MOD_ID, name = "Almura", version = "1.7.10-1492")
 public class Almura {
 
     public static final Pack INTERNAL_PACK = new Pack("internal");

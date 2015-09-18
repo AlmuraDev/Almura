@@ -44,7 +44,7 @@ public abstract class SimpleGui extends MalisisGui {
 
     static {
         try {
-            FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/gui.png", "/assets/" + Almura.MOD_ID + "/textures/gui/gui.png");
+            FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/gui.png", FileSystem.CONFIG_GUI_SPRITESHEET_PATH);
         } catch (IOException e) {
             e.printStackTrace();
         }

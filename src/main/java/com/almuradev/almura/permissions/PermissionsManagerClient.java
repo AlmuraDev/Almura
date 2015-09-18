@@ -5,8 +5,6 @@
  */
 package com.almuradev.almura.permissions;
 
-import com.almuradev.almura.CommonProxy;
-import com.almuradev.almura.server.network.play.S00PacketPermissions;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -231,7 +229,8 @@ public class PermissionsManagerClient implements PermissionsManager {
                 ReplicatedPermissionsContainer query = new ReplicatedPermissionsContainer(modName, modVersion, modPermissions);
 
                 if (!query.modName.equals("all") || query.permissions.size() > 0) {
-                    CommonProxy.NETWORK_FORGE.sendToServer(new S00PacketPermissions(query));
+                    // TODO Update Bridge
+                    //CommonProxy.NETWORK_FORGE.sendToServer(new S00PacketPermissions(query));
                 }
             }
         } else {
