@@ -26,7 +26,7 @@ import java.util.Date;
 
 public class PageUtil {
 
-    public static final Path PATH_CONFIG = Paths.get("config", Almura.MOD_ID);
+    public static final Path PATH_CONFIG = Paths.get("config", "guide");
     public static final Path PATH_PAGES = Paths.get(PATH_CONFIG.toString(), "pages");
     public static final DateFormat DATE_FORMATTER = new SimpleDateFormat("MM/dd/yyyy");
 
