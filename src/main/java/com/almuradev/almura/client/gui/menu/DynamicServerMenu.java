@@ -5,11 +5,11 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
+import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
-import com.almuradev.almurasdk.client.gui.SimpleGui;
-import com.almuradev.almurasdk.client.gui.components.UIForm;
-import com.almuradev.almurasdk.util.Colors;
-import com.almuradev.almurasdk.util.Query;
+import com.almuradev.almura.client.gui.components.UIForm;
+import com.almuradev.almura.util.Colors;
+import com.almuradev.almura.util.Query;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
@@ -144,8 +144,8 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) throws IOException, URISyntaxException {
-        if (event.getComponent().getName().toLowerCase() != "button.server.web"
-                || event.getComponent().getName().toLowerCase() != "button.server.map") {
+        if (!event.getComponent().getName().toLowerCase().equals("button.server.web")
+                || (!event.getComponent().getName().toLowerCase().equals("button.server.map"))) {
             close();
         }
         switch (event.getComponent().getName().toLowerCase()) {

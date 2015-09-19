@@ -6,12 +6,12 @@
 package com.almuradev.almura.items;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.client.gui.util.ExternalIcon;
+import com.almuradev.almura.lang.LanguageRegistry;
+import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
-import com.almuradev.almurasdk.client.util.ExternalIcon;
-import com.almuradev.almurasdk.lang.LanguageRegistry;
-import com.almuradev.almurasdk.lang.Languages;
+import com.almuradev.almura.util.FileSystem;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -55,7 +55,7 @@ public class AlmuraItem extends Item implements IPackObject {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister register) {
-        itemIcon = new ExternalIcon(getIconString(), Filesystem.CONFIG_IMAGES_PATH).register((TextureMap) register);
+        itemIcon = new ExternalIcon(getIconString(), FileSystem.CONFIG_IMAGES_PATH).register((TextureMap) register);
     }
 
     @Override

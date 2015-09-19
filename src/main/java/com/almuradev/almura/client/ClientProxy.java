@@ -8,6 +8,8 @@ package com.almuradev.almura.client;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.client.gui.SimpleGui;
+import com.almuradev.almura.client.gui.guide.ViewPagesGui;
 import com.almuradev.almura.client.gui.ingame.HUDData;
 import com.almuradev.almura.client.gui.ingame.IngameDebugHUD;
 import com.almuradev.almura.client.gui.ingame.IngameDied;
@@ -20,11 +22,18 @@ import com.almuradev.almura.client.network.play.B00PlayerDeathConfirmation;
 import com.almuradev.almura.client.network.play.B01ResTokenConfirmation;
 import com.almuradev.almura.client.network.play.B02ClientDetailsResponse;
 import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
+import com.almuradev.almura.content.Page;
+import com.almuradev.almura.content.PageRegistry;
+import com.almuradev.almura.event.PageDeleteEvent;
+import com.almuradev.almura.event.PageInformationEvent;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
+import com.almuradev.almura.server.network.play.S00PageInformation;
+import com.almuradev.almura.server.network.play.S01PageDelete;
+import com.almuradev.almura.server.network.play.S02PageOpen;
 import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
 import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInformation;
@@ -32,24 +41,22 @@ import com.almuradev.almura.server.network.play.bukkit.B03ResidenceInformation;
 import com.almuradev.almura.server.network.play.bukkit.B04PlayerAccessories;
 import com.almuradev.almura.server.network.play.bukkit.B05GuiController;
 import com.almuradev.almura.server.network.play.bukkit.B06ClientDetailsRequest;
-import com.almuradev.almurasdk.client.gui.SimpleGui;
-import com.almuradev.almurasdk.lang.LanguageRegistry;
-import com.almuradev.almurasdk.lang.Languages;
 import com.google.common.base.Optional;
-import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.network.play.client.C01PacketChatMessage;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -65,17 +72,11 @@ public class ClientProxy extends CommonProxy {
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
     public static final BlockRenderer PACK_BLOCK_RENDERER = new BlockRenderer();
     public static final ItemRenderer PACK_ITEM_RENDERER = new ItemRenderer();
-
-    public static final KeyBinding BINDING_CONFIG_GUI =
-            new AlmuraBinding("key.almura.config", "Config", Keyboard.KEY_F4, "key.categories.almura", "Almura");
-
-    public static final KeyBinding BINDING_OPEN_BACKPACK =
-            new AlmuraBinding("key.almura.backpack", "Backpack", Keyboard.KEY_B, "key.categories.almura", "Almura");
+    public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
 
     public static IngameDebugHUD HUD_DEBUG;
     public static SimpleGui HUD_INGAME;
     public static IngameResidenceHUD HUD_RESIDENCE;
-    public static final SimpleNetworkWrapper NETWORK_BUKKIT = new SimpleNetworkWrapper("AM|BUK");
 
     @Override
     @SuppressWarnings("unchecked")
@@ -95,11 +96,15 @@ public class ClientProxy extends CommonProxy {
         NETWORK_BUKKIT.registerMessage(B01ResTokenConfirmation.class, B01ResTokenConfirmation.class, 7, Side.SERVER);
         NETWORK_BUKKIT.registerMessage(B06ClientDetailsRequest.class, B06ClientDetailsRequest.class, 8, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B02ClientDetailsResponse.class, B02ClientDetailsResponse.class, 9, Side.SERVER);
+        // Register renderers
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
         PACK_BLOCK_RENDERER.registerFor(PackCrops.class);
         PACK_BLOCK_RENDERER.registerFor(PackContainerBlock.class);
-        ClientRegistry.registerKeyBinding(BINDING_CONFIG_GUI);
-        ClientRegistry.registerKeyBinding(BINDING_OPEN_BACKPACK);
+        // Setup bindings
+        Bindings.register();
+        // Setup client permissibles
+        PermissionsHelper.register();
+        // Hook into event bus
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -134,7 +139,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onKeyInputEvent(KeyInputEvent event) {
-        if (Keyboard.isKeyDown(BINDING_OPEN_BACKPACK.getKeyCode())) {
+        if (Keyboard.isKeyDown(Bindings.BINDING_OPEN_BACKPACK.getKeyCode())) {
             Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C01PacketChatMessage("/backpack"));
         }
     }
@@ -227,14 +232,63 @@ public class ClientProxy extends CommonProxy {
             HUD_DEBUG = null;
         }
     }
-}
 
-final class AlmuraBinding extends KeyBinding {
 
-    public AlmuraBinding(String unlocalizedIdentifier, String name, int keycode, String unlocalizedCategory, String category) {
-        super(unlocalizedIdentifier, keycode, unlocalizedCategory);
+    @Override
+    public void handlePageInformation(MessageContext ctx, S00PageInformation message) {
+        Page page = PageRegistry.getPage(message.identifier).orNull();
 
-        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, unlocalizedIdentifier, name);
-        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, unlocalizedCategory, category);
+        if (page == null) {
+            page = new Page(message.identifier, message.index, message.title, message.created, message.author,
+                    message.lastModified, message.lastContributor, message.contents);
+            PageRegistry.putPage(page);
+        } else {
+            page
+                    .setIndex(message.index)
+                    .setTitle(message.title)
+                    .setCreated(message.created)
+                    .setAuthor(message.author)
+                    .setLastModified(message.lastModified)
+                    .setLastContributor(message.lastContributor)
+                    .setContents(message.contents);
+        }
+        MinecraftForge.EVENT_BUS.post(new PageInformationEvent(page));
+    }
+
+    @Override
+    public void handlePageDelete(MessageContext ctx, S01PageDelete message) {
+        super.handlePageDelete(ctx, message);
+        if (ctx.side.isClient()) {
+            MinecraftForge.EVENT_BUS.post(new PageDeleteEvent(message.identifier));
+        } else if (!MinecraftServer.getServer().isDedicatedServer()) {
+            CommonProxy.NETWORK_FORGE.sendToAll(new S01PageDelete(message.identifier));
+        }
+    }
+
+    @Override
+    public void handlePageOpen(MessageContext ctx, S02PageOpen message) {
+        final Page page = PageRegistry.getPage(message.identifier).orNull();
+        if (page != null && PermissionsHelper.hasPermission(PermissionsHelper.PERMISSIBLE_GUIDE, "auto")) {
+            if (!(Minecraft.getMinecraft().currentScreen instanceof ViewPagesGui)) {
+                new ViewPagesGui().display();
+            }
+            ((ViewPagesGui) Minecraft.getMinecraft().currentScreen).selectPage(page);
+        }
+    }
+
+    @Override
+    public boolean canSavePages() {
+        return FMLCommonHandler.instance().getEffectiveSide().isServer() && !MinecraftServer.getServer().isDedicatedServer();
+    }
+
+    @SubscribeEvent
+    public void onKeyPress(InputEvent.KeyInputEvent event) {
+        if (Minecraft.getMinecraft().currentScreen == null) {
+            if (PermissionsHelper.hasPermission(PermissionsHelper.PERMISSIBLE_GUIDE, "open") && Keyboard.isKeyDown(
+                    Bindings.BINDING_OPEN_GUIDE.getKeyCode()
+            )) {
+                new ViewPagesGui().display();
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.util.FileSystem;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -60,7 +61,7 @@ public class Configuration {
     private static ConfigurationNode root;
 
     public static void load() throws IOException {
-        loader = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_SETTINGS_PATH.toFile()).setFlowStyle
+        loader = YAMLConfigurationLoader.builder().setFile(FileSystem.CONFIG_SETTINGS_PATH.toFile()).setFlowStyle
                 (DumperOptions.FlowStyle.BLOCK).build();
         root = loader.load();
 
@@ -127,7 +128,7 @@ public class Configuration {
 
     public static void setFirstLaunch(boolean value) throws IOException {
         if (root == null) {
-            loader = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_SETTINGS_PATH.toFile()).setFlowStyle(DumperOptions.FlowStyle
+            loader = YAMLConfigurationLoader.builder().setFile(FileSystem.CONFIG_SETTINGS_PATH.toFile()).setFlowStyle(DumperOptions.FlowStyle
                     .BLOCK).build();
             root = loader.load();
         }

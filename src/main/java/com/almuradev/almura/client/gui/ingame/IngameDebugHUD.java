@@ -7,9 +7,9 @@ package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
-import com.almuradev.almurasdk.client.gui.SimpleGui;
-import com.almuradev.almurasdk.util.Colors;
-import com.almuradev.almurasdk.util.FileSizeUtil;
+import com.almuradev.almura.client.gui.SimpleGui;
+import com.almuradev.almura.util.Colors;
+import com.almuradev.almura.util.FileSizeUtil;
 import com.flowpowered.math.vector.Vector3i;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;

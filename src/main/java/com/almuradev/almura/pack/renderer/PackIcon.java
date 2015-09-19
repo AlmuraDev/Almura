@@ -7,8 +7,8 @@ package com.almuradev.almura.pack.renderer;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.Filesystem;
 import com.almuradev.almura.pack.IPackObject;
+import com.almuradev.almura.util.FileSystem;
 import net.malisis.core.renderer.icon.MalisisIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourceManager;
@@ -41,7 +41,7 @@ public class PackIcon extends MalisisIcon {
     public boolean load(IResourceManager manager, ResourceLocation location) {
         String textureName = location.getResourcePath();
 
-        final Path texturePath = Paths.get(Filesystem.CONFIG_VERSION_PATH.toString(), "images" + File.separator + textureName + ".png");
+        final Path texturePath = Paths.get(FileSystem.CONFIG_VERSION_PATH.toString(), "images" + File.separator + textureName + ".png");
 
         final int mipmapLevels = Minecraft.getMinecraft().gameSettings.mipmapLevels;
         final boolean anisotropic = Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F;
@@ -55,14 +55,14 @@ public class PackIcon extends MalisisIcon {
             if (e.getMessage().equalsIgnoreCase("broken aspect ratio and not an animation")) {
                 if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                     Almura.LOGGER
-                            .error("Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "]  used by [" + object
+                            .error("Failed to load icon [" + textureName + ".png] in [" + FileSystem.CONFIG_IMAGES_PATH + "]  used by [" + object
                                             .getIdentifier() + "] requested by pack ["
                                             + object.getPack().getName()
                                             + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.",
                                     e);
                 } else {
                     Almura.LOGGER.warn(
-                            "Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "] used by [" + object
+                            "Failed to load icon [" + textureName + ".png] in [" + FileSystem.CONFIG_IMAGES_PATH + "] used by [" + object
                                     .getIdentifier() + "] requested by pack ["
                                     + object.getPack().getName()
                                     + "]. Aspect ratio is broken, make sure it is a power of 2 and has an equivalent width and height.");
@@ -70,24 +70,24 @@ public class PackIcon extends MalisisIcon {
             } else {
                 if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
                     Almura.LOGGER
-                            .error("Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "] used by [" + object
+                            .error("Failed to load icon [" + textureName + ".png] in [" + FileSystem.CONFIG_IMAGES_PATH + "] used by [" + object
                                     .getIdentifier() + "] requested by pack ["
                                     + object.getPack().getName() + "]", e);
                 } else {
                     Almura.LOGGER.warn(
-                            "Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "] used by [" + object
+                            "Failed to load icon [" + textureName + ".png] in [" + FileSystem.CONFIG_IMAGES_PATH + "] used by [" + object
                                     .getIdentifier() + "] requested by pack ["
                                     + object.getPack().getName() + "]");
                 }
             }
         } catch (IOException e1) {
             if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
-                Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "] used by [" + object
+                Almura.LOGGER.error("Failed to load icon [" + textureName + ".png] in [" + FileSystem.CONFIG_IMAGES_PATH + "] used by [" + object
                         .getIdentifier() + "] requested by pack ["
                         + object.getPack().getName() + "]", e1);
             } else {
                 Almura.LOGGER.warn(
-                        "Failed to load icon [" + textureName + ".png] in [" + Filesystem.CONFIG_IMAGES_PATH + "] used by [" + object
+                        "Failed to load icon [" + textureName + ".png] in [" + FileSystem.CONFIG_IMAGES_PATH + "] used by [" + object
                                 .getIdentifier() + "] requested by pack [" + object
                                 .getPack().getName()
                                 + "]");

@@ -6,9 +6,9 @@
 package com.almuradev.almura.client.gui.ingame.hud;
 
 import com.almuradev.almura.client.gui.ingame.HUDData;
-import com.almuradev.almurasdk.client.gui.SimpleGui;
-import com.almuradev.almurasdk.util.Colors;
-import com.almuradev.almurasdk.util.FontRenderOptionsBuilder;
+import com.almuradev.almura.client.gui.SimpleGui;
+import com.almuradev.almura.util.Colors;
+import com.almuradev.almura.util.FontRenderOptionsBuilder;
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;

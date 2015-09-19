@@ -6,14 +6,14 @@
 package com.almuradev.almura.client.gui.ingame;
 
 import com.almuradev.almura.client.FontRenderOptionsConstants;
+import com.almuradev.almura.client.gui.SimpleGui;
+import com.almuradev.almura.client.gui.components.UIForm;
 import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.Stage;
-import com.almuradev.almurasdk.client.gui.SimpleGui;
-import com.almuradev.almurasdk.client.gui.components.UIForm;
-import com.almuradev.almurasdk.util.Colors;
+import com.almuradev.almura.util.Colors;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;

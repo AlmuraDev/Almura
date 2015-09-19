@@ -7,7 +7,7 @@ package com.almuradev.almura.pack.mapper;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.util.FileSystem;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -62,7 +62,7 @@ public class GameObjectMapper {
     }
 
     public static void load() throws IOException {
-        final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_MAPPINGS_PATH.toFile()).setFlowStyle(
+        final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(FileSystem.CONFIG_MAPPINGS_PATH.toFile()).setFlowStyle(
                 DumperOptions.FlowStyle.BLOCK).build().load();
 
         for (Map.Entry<Object, ? extends ConfigurationNode> modidEntry : reader.getChildrenMap().entrySet()) {

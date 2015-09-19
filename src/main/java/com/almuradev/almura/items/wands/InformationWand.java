@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.items.wands;
 
-import com.almuradev.almura.Almura;
+import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.items.AlmuraItem;
 import com.almuradev.almura.server.network.play.S01OpenBlockInformationGui;
 import net.minecraft.block.Block;
@@ -46,7 +46,7 @@ public class InformationWand extends AlmuraItem {
             if (block != null) {
                 ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S0BPacketAnimation(player, 0));
                 player.swingItem();
-                Almura.NETWORK_FORGE
+                CommonProxy.NETWORK_FORGE
                         .sendTo(new S01OpenBlockInformationGui(block, metadata, block.getBlockHardness(world, x, y, z)), (EntityPlayerMP) player);
             }
         }

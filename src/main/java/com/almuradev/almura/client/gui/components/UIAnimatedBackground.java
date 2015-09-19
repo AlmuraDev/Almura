@@ -7,7 +7,7 @@ package com.almuradev.almura.client.gui.components;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.util.FileSystem;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
@@ -62,7 +62,7 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
     }
 
     private void readStateFiles(TimeState state) {
-        final File stateDir = new File(Filesystem.CONFIG_BACKGROUNDS_PATH.toString(), state.toString());
+        final File stateDir = new File(FileSystem.CONFIG_BACKGROUNDS_PATH.toString(), state.toString());
 
         for (File file : stateDir.listFiles()) {
             if (file.getName().endsWith(".jpg") || file.getName().endsWith(".png")) {

@@ -1,19 +1,18 @@
-
-
 buildscript {
     repositories {
         mavenCentral()
         maven {
-            name = 'sonatype-nexus-public'
+            name = 'oss-sonatype-public'
             url = 'https://oss.sonatype.org/content/repositories/public/'
         }
         maven {
-            name = 'forge-repo'
+            name = 'forge-public'
             url = 'http://files.minecraftforge.net/maven/'
         }
         jcenter()
     }
     dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
     }
@@ -21,27 +20,21 @@ buildscript {
 
 defaultTasks 'licenseFormat', 'build'
 
-apply plugin: "forge"
-apply plugin: "license"
-apply plugin: "maven"
-apply plugin: "signing"
+apply plugin: 'forge'
+apply plugin: 'license'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'com.github.johnrengelman.shadow'
 
-group = 'com.almuradev'
-archivesBaseName = 'almura'
-
-ext.name = 'Almura'
-ext.inceptionYear = '2014'
-ext.packaging = 'jar'
-ext.url = 'http://github.com/AlmuraDev'
-ext.organization = 'AlmuraDev'
-ext.mixinSrg = new File(project.buildDir, "tmp/mixins/mixins.almura.srg")
-ext.mixinRefMap = new File(project.buildDir, "tmp/mixins/mixin.refmap.json")
-ext.minecraftVersion = '1.7.10'
-ext.forgeVersion = '10.13.4.1448'
+group = project.group
+archivesBaseName = project.name
 version = minecraftVersion + '-' + forgeVersion.substring(forgeVersion.size() - 4)
 
-reobf.addExtraSrgFile project.mixinSrg
-
+ext {
+    packaging = 'jar'
+    mixinSrg = new File(tasks.reobf.temporaryDir.getCanonicalPath() + File.separator + "mixins.srg")
+    mixinRefMap = new File(project.buildDir, "tmp/mixins/mixins.almura.refmap.json")
+}
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
@@ -76,7 +69,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven {
-        name = 'sonatype-nexus-public'
+        name = 'oss-sonatype-public'
         url = 'https://oss.sonatype.org/content/repositories/public/'
     }
     maven {
@@ -96,76 +89,90 @@ minecraft {
 }
 
 dependencies {
-    compile ('com.almuradev:almurasdk:1.7.10-1448-1-SNAPSHOT:dev') {
+    compile 'com.flowpowered:flow-math:1.0.2-SNAPSHOT'
+    compile 'net.malisis:malisiscore:1.7.10-0.12.10-SNAPSHOT:dev'
+    compile 'ninja.leaping.configurate:configurate-yaml:1.2'
+    compile('org.inspirenxe:simplesave:1.3.0-SNAPSHOT') {
         transitive = true
     }
-    compile ('com.almuradev:guide:1.7.10-1448-1-SNAPSHOT:dev') {
-        transitive = true
-    }
+    compile 'org.spongepowered:mixin:0.4.6-SNAPSHOT'
+    compile 'org.yaml:snakeyaml:1.15'
     provided 'net.industrial-craft:industrialcraft-2:2.2.770-experimental:dev'
 }
 
-processResources {
-    from 'LICENSE.txt'
-}
-
 license {
-    ext.name = project.name
-    ext.organization = organization
-    ext.url = url
-    ext.year = inceptionYear
+    ext.name = project.licenseName
+    ext.organization = project.organization
+    ext.url = project.url
+    ext.year = project.inceptionYear
     header rootProject.file('HEADER.txt')
     ignoreFailures true
     strictCheck true
     includes(["**/*.java"])
 }
 
-compileJava {
-    options.compilerArgs += [
-            '-Xlint:all',
-            '-Xlint:-path',
-            '-Xlint:-processing',
-            "-AoutSrgFile=${project.mixinSrg.getCanonicalPath()}",
-            "-AoutRefMapFile=${project.mixinRefMap.getCanonicalPath()}"
-    ]
-    options.deprecation = true
-    options.encoding = 'utf8'
-}
-
-afterEvaluate {
-    tasks.compileJava.options.compilerArgs += "-AreobfSrgFile=${tasks.reobf.srg}"
-}
-
-task copySrgs(type: Copy, dependsOn: "genSrgs") {
-    from plugins.getPlugin("forge").delayedFile("{SRG_DIR}")
-
-    include '**/*.srg'
-    into 'build/srgs'
-}
-
-setupDecompWorkspace.dependsOn copySrgs
-setupDevWorkspace.dependsOn copySrgs
-
-def manifestEntries = [
-        "Built-By": System.properties['user.name'],
-        "Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
-        "Implementation-Title": name,
-        "Implementation-Version": version,
-        "Implementation-Vendor": url,
-        "FMLCorePluginContainsFMLMod": 'true',
-        "FMLCorePlugin": 'com.almuradev.almura.core.AlmuraCoreMod'
-]
-
-jar {
-    from project.mixinRefMap
-    manifest.mainAttributes(manifestEntries)
-}
-
-
-if (JavaVersion.current().isJava8Compatible()) {
+if (JavaVersion.current().isJava8Compatible() || JavaVersion.current().isJava9Compatible()) {
     tasks.withType(Javadoc) {
         // disable the crazy super-strict doclint tool in Java 8
         options.addStringOption('Xdoclint:none', '-quiet')
     }
 }
 
+compileJava {
+    options.compilerArgs += [
+            '-Xlint:-processing',
+            "-AoutSrgFile=${project.mixinSrg}",
+            "-AoutRefMapFile=${project.mixinRefMap}",
+            "-AreobfSrgFile=${tasks.reobf.srg}"
+    ]
+    options.deprecation = true
+    options.encoding = 'utf8'
+}
+
+reobf.dependsOn shadowJar
+
+// Configure reobfuscation for mixins
+reobf.doFirst {
+    if (project.ext.mixinSrg.exists()) {
+        addExtraSrgFile project.mixinSrg
+    }
+}
+
+shadowJar {
+    from project.mixinRefMap
+    from 'LICENSE.txt'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+    exclude '.cache'
+    exclude 'META-INF/maven/**'
+    exclude 'GradleStart**'
+    exclude 'net/minecraftforge/**'
+    dependencies {
+        include(dependency('com.alta189:simplesave:1.3.0-SNAPSHOT'))
+        include(dependency('com.flowpowered:flow-math'))
+        include(dependency('com.h2database:h2:1.4.188'))
+        include(dependency('mysql:mysql-connector-java:5.1.36'))
+        include(dependency('ninja.leaping.configurate:configurate-yaml'))
+        include(dependency('ninja.leaping.configurate:configurate-core'))
+        include(dependency('org.spongepowered:mixin:0.4.6-SNAPSHOT'))
+        include(dependency('org.xerial:sqlite-jdbc:3.8.11.1'))
+        include(dependency('org.yaml:snakeyaml'))
+    }
+
+    manifest {
+        attributes(
+                "Built-By": System.properties['user.name'],
+                "Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
+                "Implementation-Title": project.name,
+                "Implementation-Version": version,
+                "Implementation-Vendor": url,
+                "TweakClass": 'com.almuradev.almura.launch.AlmuraLaunchTweaker',
+                "TweakOrder": '0',
+                "MixinConfigs": 'mixins.almura.forge.default.json',
+                "ForceLoadAsMod": 'true',
+                "FMLCorePluginContainsFMLMod": 'true',
+                "FMLAT": 'almura_at.cfg'
+        )
+    }
+    classifier = ''
+}

@@ -3,7 +3,7 @@ Almura
 
 ## Prerequisites
 * [Java] 7
-* [Gradle] 2.1+
+* [Gradle] 2.6+
 
 ## Cloning
 If you are using Git, use this command to clone the project: `git clone git@github.com:AlmuraDev/Almura.git`
@@ -24,7 +24,8 @@ __For [IntelliJ]__
   3. Click File > Import Module and select the **build.gradle** file for Almura.
 
 ## Running
-__Note:__ The following is aimed to help you setup run configurations for Eclipse and IntelliJ, if you do not want to be able to run Almura directly from your IDE then you can skip this.
+__Note 1:__ The following is aimed to help you setup run configurations for Eclipse and IntelliJ, if you do not want to be able to run Almura directly from your IDE then you can skip this.  
+__Note 2:__ For more information regarding VM options or program arguments for Mixin, visit https://github.com/SpongePowered/Mixin/wiki/Mixin-Java-System-Properties
 
 __For [Eclipse]__  
   1. Go to **Run > Run Configurations**.  
@@ -44,21 +45,23 @@ __For [IntelliJ]__
 
 __Client__
 
-|     Property      | Value                                                      |
-|:-----------------:|:-----------------------------------------------------------|
-|    Main class     | GradleStart                                                |
-|    VM options     | -Xincgc -Xmx1024M -Xms1024M -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin,com.almuradev.almurasdk.core.AlmuraSDKCoreMod,com.almuradev.almura.core.AlmuraCoreMod |
-| Working directory | ./run (Included in project)                         |
-| Module classpath  | Almura (IntelliJ Only)                                     |
+|     Property      | Value                                                                                                              |
+|:-----------------:|:-------------------------------------------------------------------------------------------------------------------|
+|    Main class     | GradleStart                                                                                                        |
+|    VM options     | -Xincgc -Xmx2048M -Xms1024M -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin, -Dmixin.debug.verbose=true |
+| Program arguments | --tweakClass com.almuradev.almura.launch.AlmuraLaunchTweaker --mixin mixins.almura.forge.default.json              |
+| Working directory | ./run (Included in project)                                                                                        |
+| Module classpath  | Almura (IntelliJ Only)                                                                                             |
 
 __Server__
 
-|     Property      | Value                              |
-|:-----------------:|:-----------------------------------|
-|    Main class     | GradleStartServer                  |
-|    VM options     | -Xincgc -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin,com.almuradev.almurasdk.core.AlmuraSDKCoreMod,com.almuradev.almura.core.AlmuraCoreMod |
-| Working directory | ./run (Included in project) |
-| Module classpath  | Almura (IntelliJ Only)             |
+|     Property      | Value                                                                                                              |
+|:-----------------:|:-------------------------------------------------------------------------------------------------------------------|
+|    Main class     | GradleStartServer                                                                                                  |
+|    VM options     | -Xincgc -Xmx2048M -Xms1024M -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin, -Dmixin.debug.verbose=true |
+| Program arguments | --tweakClass com.almuradev.almura.launch.AlmuraLaunchTweaker --mixin mixins.almura.forge.default.json              |
+| Working directory | ./run (Included in project)                                                                                        |
+| Module classpath  | Almura (IntelliJ Only)                                                                                             |
 
 
 ## Building

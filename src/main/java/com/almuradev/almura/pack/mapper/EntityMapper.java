@@ -7,7 +7,7 @@ package com.almuradev.almura.pack.mapper;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.Filesystem;
+import com.almuradev.almura.util.FileSystem;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -113,7 +113,7 @@ public class EntityMapper {
     }
 
     public static void load() throws IOException {
-        final ConfigurationNode root = YAMLConfigurationLoader.builder().setFile(Filesystem.CONFIG_ENTITY_MAPPINGS_PATH.toFile()).build().load();
+        final ConfigurationNode root = YAMLConfigurationLoader.builder().setFile(FileSystem.CONFIG_ENTITY_MAPPINGS_PATH.toFile()).build().load();
 
         for (Map.Entry<Object, ? extends ConfigurationNode> modidEntry : root.getChildrenMap().entrySet()) {
             final String modid = (String) modidEntry.getKey();

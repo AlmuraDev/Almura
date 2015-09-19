@@ -6,7 +6,15 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.bridge.IC2Bridge;
+
+import cpw.mods.fml.common.Loader;
+import com.almuradev.almura.client.network.play.C00PageInformation;
+import com.almuradev.almura.content.Page;
+import com.almuradev.almura.content.PageRegistry;
+import com.almuradev.almura.content.PageUtil;
 import com.almuradev.almura.items.Items;
+import com.almuradev.almura.lang.LanguageRegistry;
+import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.IItemBlockInformation;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -24,19 +32,24 @@ import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.recipe.furnace.PackFuelHandler;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInformation;
+import com.almuradev.almura.server.network.play.S00PageInformation;
 import com.almuradev.almura.server.network.play.S01OpenBlockInformationGui;
+import com.almuradev.almura.server.network.play.S01PageDelete;
 import com.almuradev.almura.server.network.play.S02OpenBlockWireframeGui;
+import com.almuradev.almura.server.network.play.S02PageOpen;
 import com.almuradev.almura.tabs.Tabs;
-import com.almuradev.almurasdk.lang.LanguageRegistry;
-import com.almuradev.almurasdk.lang.Languages;
+import com.almuradev.almura.util.FileSystem;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
@@ -61,15 +74,22 @@ import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public class CommonProxy {
+    public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
-        Almura.NETWORK_FORGE.registerMessage(S00AdditionalWorldInformation.class, S00AdditionalWorldInformation.class, 0, Side.CLIENT);
-        Almura.NETWORK_FORGE.registerMessage(S01OpenBlockInformationGui.class, S01OpenBlockInformationGui.class, 1, Side.CLIENT);
-        Almura.NETWORK_FORGE.registerMessage(S02OpenBlockWireframeGui.class, S02OpenBlockWireframeGui.class, 2, Side.CLIENT);
+        CommonProxy.NETWORK_FORGE.registerMessage(S00AdditionalWorldInformation.class, S00AdditionalWorldInformation.class, 0, Side.CLIENT);
+        CommonProxy.NETWORK_FORGE.registerMessage(S01OpenBlockInformationGui.class, S01OpenBlockInformationGui.class, 1, Side.CLIENT);
+        CommonProxy.NETWORK_FORGE.registerMessage(S02OpenBlockWireframeGui.class, S02OpenBlockWireframeGui.class, 2, Side.CLIENT);
+        CommonProxy.NETWORK_FORGE.registerMessage(S00PageInformation.class, S00PageInformation.class, 3, Side.CLIENT);
+        CommonProxy.NETWORK_FORGE.registerMessage(C00PageInformation.class, C00PageInformation.class, 4, Side.SERVER);
+        CommonProxy.NETWORK_FORGE.registerMessage(S01PageDelete.class, S01PageDelete.class, 5, Side.CLIENT);
+        CommonProxy.NETWORK_FORGE.registerMessage(S01PageDelete.class, S01PageDelete.class, 6, Side.SERVER);
+        CommonProxy.NETWORK_FORGE.registerMessage(S02PageOpen.class, S02PageOpen.class, 7, Side.CLIENT);
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());
         GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");
         GameRegistry.registerFuelHandler(new PackFuelHandler());
@@ -79,7 +99,6 @@ public class CommonProxy {
         Items.fakeStaticLoad();
 
         Pack.loadAllContent();
-
         if (Loader.isModLoaded("IC2")) {
             IC2Bridge.init();
         }
@@ -124,6 +143,10 @@ public class CommonProxy {
         }
     }
 
+    public void onServerStarting(FMLServerStartingEvent event) {
+        PageUtil.loadAll();
+    }
+
     //Stage 1 loader
     public void onCreate(Pack pack) {
         //Stage 1a -> Register blocks
@@ -156,7 +179,7 @@ public class CommonProxy {
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
                 final ConfigurationNode reader = YAMLConfigurationLoader.builder()
-                        .setFile(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
+                        .setFile(Paths.get(FileSystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
                                 ((IPackObject) block).getIdentifier() + ".yml").toFile()).build().load();
 
                 if (block instanceof PackCrops) {
@@ -212,7 +235,7 @@ public class CommonProxy {
         for (Block block : pack.getBlocks()) {
             if (block instanceof IPackObject && block instanceof INodeContainer) {
                 final ConfigurationNode reader = YAMLConfigurationLoader.builder()
-                        .setFile(Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
+                        .setFile(Paths.get(FileSystem.CONFIG_YML_PATH.toString(), ((IPackObject) block).getPack().getName(),
                                 ((IPackObject) block).getIdentifier() + ".yml").toFile()).build().load();
 
                 if (block instanceof PackCrops) {
@@ -243,10 +266,10 @@ public class CommonProxy {
             if (item instanceof IPackObject && item instanceof INodeContainer) {
                 final Path path;
                 if (item instanceof PackSeeds) {
-                    path = Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
+                    path = Paths.get(FileSystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
                             ((PackCrops) ((ItemSeeds) item).field_150925_a).getIdentifier() + ".yml");
                 } else {
-                    path = Paths.get(Filesystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
+                    path = Paths.get(FileSystem.CONFIG_YML_PATH.toString(), ((IPackObject) item).getPack().getName(),
                             ((IPackObject) item).getIdentifier() + ".yml");
                 }
                 final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(path.toFile()).build().load();
@@ -338,6 +361,66 @@ public class CommonProxy {
                             .sendPacket(new S36PacketSignEditorOpen(te.xCoord, te.yCoord, te.zCoord));
                 }
             }
+        }
+    }
+
+    public void handlePageInformation(MessageContext ctx, S00PageInformation message) {
+    }
+
+    public void handlePageInformation(MessageContext ctx, C00PageInformation message) {
+        final Optional<Page> optPage = PageRegistry.getPage(message.identifier);
+        final Page page;
+
+        if (optPage.isPresent()) {
+            page = optPage.get();
+            page
+                    .setIndex(message.index)
+                    .setLastContributor(ctx.getServerHandler().playerEntity.getCommandSenderName())
+                    .setLastModified(new Date())
+                    .setTitle(message.title)
+                    .setContents(PageUtil.replaceColorCodes("&", message.contents, true));
+        } else {
+            // String identifier, int index, String name, Date created, String author, Date lastModified, String lastContributor, String contents
+            page = new Page(message.identifier, message.index, message.title, new Date(),
+                    ctx.getServerHandler().playerEntity.getCommandSenderName(), new Date(),
+                    ctx.getServerHandler().playerEntity.getCommandSenderName(), message.contents);
+            PageRegistry.putPage(page);
+        }
+
+        if (canSavePages()) {
+            savePage(message.identifier, page);
+        }
+
+        CommonProxy.NETWORK_FORGE.sendToAll(new S00PageInformation(page));
+    }
+
+    public void handlePageDelete(MessageContext ctx, S01PageDelete message) {
+        PageRegistry.removePage(message.identifier);
+        if (canSavePages()) {
+            deletePage(message.identifier);
+        }
+    }
+
+    public void handlePageOpen(MessageContext ctx, S02PageOpen message) {
+    }
+
+    public boolean canSavePages() {
+        return false;
+    }
+
+    private void savePage(String identifier, Page page) {
+        try {
+            PageUtil.savePage(identifier, page);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deletePage(String identifier) {
+        try {
+            PageUtil.deletePage(identifier);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

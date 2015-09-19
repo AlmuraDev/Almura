@@ -6,9 +6,9 @@
 package com.almuradev.almura.tabs;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.lang.LanguageRegistry;
+import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.IPackObject;
-import com.almuradev.almurasdk.lang.LanguageRegistry;
-import com.almuradev.almurasdk.lang.Languages;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.creativetab.CreativeTabs;

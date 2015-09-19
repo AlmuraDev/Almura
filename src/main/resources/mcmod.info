@@ -2,16 +2,13 @@
   "modid": "almura",
   "name": "Almura",
   "description": "The official mod of the Almura Client and Server.",
-  "version": "1.7.10-1395",
+  "version": "1.7.10-1492",
   "credits": "",
   "logoFile": "",
   "mcversion": "1.7.10",
-  "url": "http://beta.almuramc.com",
+  "url": "http://almuramc.com",
   "updateUrl": "",
   "authorList": [ "AlmuraDev" ],
   "parent": "",
-  "screenshots": [],
-  "requiredMods": [ "almurasdk" ],
-  "dependencies": [ "almurasdk" ],
-  "useDependencyInformation": "true"
+  "screenshots": []
 }]
