@@ -49,7 +49,7 @@ __Client__
 |:-----------------:|:-------------------------------------------------------------------------------------------------------------------|
 |    Main class     | GradleStart                                                                                                        |
 |    VM options     | -Xincgc -Xmx2048M -Xms1024M -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin, -Dmixin.debug.verbose=true |
-| Program arguments | --tweakClass org.spongepowered.asm.launch.MixinTweaker --mixin mixins.almura.forge.default.json                    |
+| Program arguments | --tweakClass com.almuradev.almura.launch.AlmuraLaunchTweaker --mixin mixins.almura.forge.default.json              |
 | Working directory | ./run (Included in project)                                                                                        |
 | Module classpath  | Almura (IntelliJ Only)                                                                                             |
 
@@ -59,7 +59,7 @@ __Server__
 |:-----------------:|:-------------------------------------------------------------------------------------------------------------------|
 |    Main class     | GradleStartServer                                                                                                  |
 |    VM options     | -Xincgc -Xmx2048M -Xms1024M -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin, -Dmixin.debug.verbose=true |
-| Program arguments | --tweakClass org.spongepowered.asm.launch.MixinTweaker --mixin mixins.almura.forge.default.json                    |
+| Program arguments | --tweakClass com.almuradev.almura.launch.AlmuraLaunchTweaker --mixin mixins.almura.forge.default.json              |
 | Working directory | ./run (Included in project)                                                                                        |
 | Module classpath  | Almura (IntelliJ Only)                                                                                             |
 

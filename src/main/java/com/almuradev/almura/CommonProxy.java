@@ -41,6 +41,7 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -134,6 +135,10 @@ public class CommonProxy {
                 Almura.LOGGER.info("Registered [" + value.size() + "] entries for language [" + entry.name() + "]");
             }
         }
+    }
+
+    public void onServerStarting(FMLServerStartingEvent event) {
+        PageUtil.loadAll();
     }
 
     //Stage 1 loader

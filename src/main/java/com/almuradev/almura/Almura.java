@@ -14,6 +14,7 @@ import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,5 +41,10 @@ public class Almura {
     @EventHandler
     public void onInitializationEvent(FMLInitializationEvent event) {
         PROXY.onInitialization(event);
+    }
+
+    @EventHandler
+    public void onServerStartingEvent(FMLServerStartingEvent event) {
+        PROXY.onServerStarting(event);
     }
 }
