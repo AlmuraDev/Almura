@@ -97,7 +97,7 @@ dependencies {
     }
     compile 'org.spongepowered:mixin:0.4.6-SNAPSHOT'
     compile 'org.yaml:snakeyaml:1.15'
-    provided 'net.industrial-craft:industrialcraft-2:2.2.770-experimental:dev'
+    compile 'net.industrial-craft:industrialcraft-2:2.2.770-experimental:api'
 }
 
 license {
