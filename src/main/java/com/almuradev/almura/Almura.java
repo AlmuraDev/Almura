@@ -24,7 +24,7 @@ public class Almura {
     public static final Pack INTERNAL_PACK = new Pack("internal");
     public static final String MOD_ID = "almura";
     public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID);
-    public static String GUI_VERSION = "Build 85";
+    public static String GUI_VERSION = "Build b100 beta";
     public static String PACK_VERSION = "1.4";
 
     @Instance
