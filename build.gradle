@@ -38,6 +38,33 @@ ext {
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
+configurations {
+    provided
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+    test {
+        compileClasspath += configurations.provided
+        runtimeClasspath += configurations.provided
+    }
+}
+
+eclipse {
+    classpath {
+        plusConfigurations += [configurations.provided]
+        noExportConfigurations += [configurations.provided]
+    }
+}
+
+idea {
+    module {
+        scopes.PROVIDED.plus += [configurations.provided]
+    }
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -48,6 +75,10 @@ repositories {
     maven {
         name = 'sponge-public'
         url = 'http://repo.spongepowered.org/maven/'
+    }
+    maven {
+        name = 'industrialcraft-public'
+        url = 'http://maven.ic2.player.to'
     }
 }
 
@@ -66,6 +97,7 @@ dependencies {
     }
     compile 'org.spongepowered:mixin:0.4.6-SNAPSHOT'
     compile 'org.yaml:snakeyaml:1.15'
+    provided 'net.industrial-craft:industrialcraft-2:2.2.770-experimental:dev'
 }
 
 license {

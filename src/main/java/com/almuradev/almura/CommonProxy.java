@@ -5,6 +5,9 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.bridge.IC2Bridge;
+
+import cpw.mods.fml.common.Loader;
 import com.almuradev.almura.client.network.play.C00PageInformation;
 import com.almuradev.almura.content.Page;
 import com.almuradev.almura.content.PageRegistry;
@@ -96,6 +99,9 @@ public class CommonProxy {
         Items.fakeStaticLoad();
 
         Pack.loadAllContent();
+        if (Loader.isModLoaded("IC2")) {
+            IC2Bridge.init();
+        }
     }
 
     public void onInitialization(FMLInitializationEvent event) {

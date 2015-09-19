@@ -18,7 +18,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Almura.MOD_ID, name = "Almura", version = "1.7.10-1492")
+@Mod(modid = Almura.MOD_ID, name = "Almura", version = "1.7.10-1492", dependencies = "after:IC2@[2.2.770-experimental,)")
 public class Almura {
 
     public static final Pack INTERNAL_PACK = new Pack("internal");
