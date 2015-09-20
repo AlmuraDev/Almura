@@ -32,6 +32,12 @@ public class PackKeys {
     public static final DefaultedKey<String> CHANCE = new DefaultedKey<>("chance", "");
     public static final DefaultedKey<String> SHAPES = new DefaultedKey<>("shapes", "");
     public static final DefaultedKey<String> RANGE_EXPERIENCE = new DefaultedKey<>("experience", "");
+    //TREE
+    public static final DefaultedKey<Integer> MIN_HEIGHT = new DefaultedKey<>("min-height", 5);
+    public static final DefaultedKey<String> WOOD = new DefaultedKey<>("wood", "");
+    public static final DefaultedKey<String> LEAVES = new DefaultedKey<>("leaves", "");
+    public static final DefaultedKey<String> FRUIT = new DefaultedKey<>("fruit", "");
+    public static final DefaultedKey<String> HANGING_FRUIT = new DefaultedKey<>("hanging-fruit", "");
     //BOUNDS NODE
     public static final DefaultedKey<String> NODE_BOUNDS = new DefaultedKey<>("bounds", "");
     public static final DefaultedKey<Boolean> USE_VANILLA_COLLISION = new DefaultedKey<>("use-vanilla-collision", true);
@@ -99,6 +105,8 @@ public class PackKeys {
     public static final DefaultedKey<Float> EXPERIENCE = new DefaultedKey<>("experience", 0f);
     //FERTILIZER NODE
     public static final DefaultedKey<String> NODE_FERTILIZER = new DefaultedKey<>("fertilizer", "");
+    // TREE NODE
+    public static final DefaultedKey<String> NODE_TREE = new DefaultedKey<>("tree", "");
 
     public static class DefaultedKey<T> {
 

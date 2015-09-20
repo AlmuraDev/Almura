@@ -28,7 +28,6 @@ public class GameObject {
     @Override
     public boolean equals(Object o) {
         return this == o || !(o == null || getClass() != o.getClass()) && remapped.equals(((GameObject) o).remapped);
-
     }
 
     @Override

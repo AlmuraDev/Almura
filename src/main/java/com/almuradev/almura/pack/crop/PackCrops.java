@@ -27,8 +27,6 @@ import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -98,18 +96,24 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
         }
 
         final LightNode lightNode = stage.getNode(LightNode.class);
-        final int minLightLevel = lightNode.getValue().getMin();
-        final int maxLightLevel = lightNode.getValue().getMax();
-        final int areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
-        final int worldLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
-        boolean enoughLight = false;
-        if (areaBlockLight >= minLightLevel && areaBlockLight <= maxLightLevel) {
-            enoughLight = true;
-        } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
-            enoughLight = true;
+        boolean checkLight = lightNode != null && lightNode.getValue().getSource();
+        boolean tick = false;
+
+        if (checkLight) {
+            final int minLightLevel = lightNode.getValue().getMin();
+            final int maxLightLevel = lightNode.getValue().getMax();
+            final int areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
+            final int worldLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
+            if (areaBlockLight >= minLightLevel && areaBlockLight <= maxLightLevel) {
+                tick = true;
+            } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
+                tick = true;
+            }
+        } else {
+            tick = true;
         }
 
-        if (enoughLight) {
+        if (tick) {
             stage.onTick(world, x, y, z, random);
             final double
                     chance =
@@ -346,10 +350,6 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister register) {
-        //Almura can run last
-        if (!Loader.instance().hasReachedState(LoaderState.AVAILABLE)) {
-            return;
-        }
         blockIcon = new PackIcon(this, textureName).register((TextureMap) register);
         for (Stage stage : stages.values()) {
             stage.registerBlockIcons(blockIcon, textureName, register);

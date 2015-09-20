@@ -6,8 +6,6 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.bridge.IC2Bridge;
-
-import cpw.mods.fml.common.Loader;
 import com.almuradev.almura.client.network.play.C00PageInformation;
 import com.almuradev.almura.content.Page;
 import com.almuradev.almura.content.PageRegistry;
@@ -30,6 +28,8 @@ import com.almuradev.almura.pack.item.PackItemBlock;
 import com.almuradev.almura.pack.mapper.EntityMapper;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.node.SoilNode;
+import com.almuradev.almura.pack.node.TreeNode;
+import com.almuradev.almura.pack.tree.PackSapling;
 import com.almuradev.almura.recipe.furnace.PackFuelHandler;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInformation;
 import com.almuradev.almura.server.network.play.S00PageInformation;
@@ -42,6 +42,7 @@ import com.almuradev.almura.util.FileSystem;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -197,9 +198,10 @@ public class CommonProxy {
                                                 textureName,
                                                 reader.getNode(PackKeys.NODE_SEED.getKey()));
                         if (GameRegistry.findItem(Almura.MOD_ID, seed.getPack().getName() + "\\" + seed.getIdentifier()) != null) {
-                            Almura.LOGGER.error("Crop [" + ((PackCrops) block).getIdentifier() + "] in [" + ((PackCrops) block).getPack().getName()
-                                    + "] is trying to add seed [" + seed.getIdentifier()
-                                    + "] but it already exists. You may only have one seed per crop.");
+                            Almura.LOGGER
+                                    .error("Crop [" + ((PackCrops) block).getIdentifier() + "] in [" + ((PackCrops) block).getPack().getName()
+                                            + "] is trying to add seed [" + seed.getIdentifier()
+                                            + "] but it already exists. You may only have one seed per crop.");
                         } else {
                             GameRegistry.registerItem(seed, seed.getPack().getName() + "\\" + seed.getIdentifier());
                             seedsToAdd.add(seed);
@@ -217,6 +219,14 @@ public class CommonProxy {
                             PackCreator.createCollisionNode(pack, ((IPackObject) block).getIdentifier(),
                                     reader.getNode(PackKeys.NODE_COLLISION.getKey())));
 
+                }
+
+                if (block instanceof PackSapling) {
+                    final TreeNode treeNode = PackCreator.createTreeNode(pack, ((IPackObject) block).getIdentifier(), reader.getNode(PackKeys
+                            .NODE_TREE.getKey()));
+                    if (treeNode != null) {
+                        ((INodeContainer) block).addNode(treeNode);
+                    }
                 }
             }
         }

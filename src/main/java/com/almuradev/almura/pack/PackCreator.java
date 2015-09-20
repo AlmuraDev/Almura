@@ -7,6 +7,8 @@ package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.lang.LanguageRegistry;
+import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
 import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
@@ -37,6 +39,7 @@ import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.ToolsNode;
+import com.almuradev.almura.pack.node.TreeNode;
 import com.almuradev.almura.pack.node.container.StateProperty;
 import com.almuradev.almura.pack.node.property.BiomeProperty;
 import com.almuradev.almura.pack.node.property.BonusProperty;
@@ -46,6 +49,8 @@ import com.almuradev.almura.pack.node.property.GameObjectProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
+import com.almuradev.almura.pack.tree.PackSapling;
+import com.almuradev.almura.pack.tree.Tree;
 import com.almuradev.almura.recipe.DuplicateRecipeException;
 import com.almuradev.almura.recipe.IRecipe;
 import com.almuradev.almura.recipe.IShapedRecipe;
@@ -56,8 +61,6 @@ import com.almuradev.almura.recipe.RecipeContainer;
 import com.almuradev.almura.recipe.RecipeManager;
 import com.almuradev.almura.recipe.UnknownRecipeTypeException;
 import com.almuradev.almura.util.Functions;
-import com.almuradev.almura.lang.LanguageRegistry;
-import com.almuradev.almura.lang.Languages;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -479,7 +482,7 @@ public class PackCreator {
         return new Stage(crop, id, textureCoordinates, modelName, modelContainer, growthNode, lightNode);
     }
 
-    public static PackContainerBlock createContainerBlock(Pack pack, String name, ConfigurationNode reader) {
+    public static PackContainerBlock createContainerBlockFromReader(Pack pack, String name, ConfigurationNode reader) {
         final List<String> description = PackUtil.parseNewlineStringIntoList(
                 reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
         final List<String> tooltip = Lists.newLinkedList();
@@ -601,6 +604,134 @@ public class PackCreator {
             }
         }
         return new ContainerNode(title, correctSize, maxStackSize, states);
+    }
+
+    public static PackSapling createSaplingFromReader(Pack pack, String name, ConfigurationNode reader) {
+        final List<String> description = PackUtil.parseNewlineStringIntoList(
+                reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
+        final List<String> tooltip = Lists.newLinkedList();
+        if (description.size() > 1) {
+            tooltip.addAll(description);
+            tooltip.remove(0);
+        }
+        final String textureName = reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+        final String modelName = reader.getNode(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        PackModelContainer modelContainer = null;
+        for (PackModelContainer mContainer : Pack.getModelContainers()) {
+            if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
+                modelContainer = mContainer;
+            }
+        }
+        if (modelContainer == null && (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS)) {
+            Almura.LOGGER
+                    .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube.");
+        }
+        Map<Integer, List<Integer>> textureCoordinates;
+        try {
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
+                    .FUNCTION_STRING_TRANSFORMER));
+        } catch (NumberFormatException nfe) {
+            if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
+                Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            }
+            textureCoordinates = Maps.newHashMap();
+        }
+        final boolean showInCreativeTab = reader.getNode(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
+                PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
+        final String creativeTabName = reader.getNode(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
+
+        final float hardness = reader.getNode(PackKeys.HARDNESS.getKey()).getFloat(PackKeys.HARDNESS.getDefaultValue());
+        final float resistance = reader.getNode(PackKeys.RESISTANCE.getKey()).getFloat(PackKeys.RESISTANCE.getDefaultValue());
+
+        final LightNode lightNode = createLightNode(pack, name, reader.getNode(PackKeys.NODE_LIGHT.getKey()));
+        final RenderNode renderNode = createRenderNode(pack, name, reader.getNode(PackKeys.NODE_RENDER.getKey()));
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", description.get(0));
+
+        final PackSapling sapling = new PackSapling(pack, name, tooltip, textureName, textureCoordinates, modelName, modelContainer, hardness,
+                resistance, showInCreativeTab, creativeTabName, lightNode, renderNode);
+
+        if (!reader.getNode(PackKeys.NODE_FUEL.getKey()).isVirtual()) {
+            sapling.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
+        }
+
+        return sapling;
+    }
+
+    public static TreeNode createTreeNode(Pack pack, String name, ConfigurationNode node) {
+        final int minTreeHeight = node.getNode(PackKeys.MIN_HEIGHT.getKey()).getInt(PackKeys.MIN_HEIGHT.getDefaultValue());
+        final Pair<String, String> pairWoodModidIdentifier = GameObjectMapper.parseModidIdentifierFrom(node.getNode(PackKeys.WOOD.getKey())
+                .getString(PackKeys.WOOD.getDefaultValue()));
+        final Optional<GameObject> optWood = GameObjectMapper.getGameObject(pairWoodModidIdentifier.getKey(), pairWoodModidIdentifier.getValue(),
+                false);
+        if (!optWood.isPresent()) {
+            Almura.LOGGER.warn("Wood source [" + pairWoodModidIdentifier.getValue() + "] in [" + name + "] for mod [" + pairWoodModidIdentifier
+                    .getKey() + "] in pack [" + pack.getName() + "] is not a registered block.");
+            return null;
+        }
+
+        if (!optWood.get().isBlock()) {
+            Almura.LOGGER.warn(
+                    "Wood source [" + pairWoodModidIdentifier.getValue() + "] in [" + name + "] for mod [" + pairWoodModidIdentifier.getKey()
+                            + "] in pack [" + pack.getName() + "] is not a block.");
+            return null;
+        }
+
+        final Pair<String, String> pairLeavesModidIdentifier = GameObjectMapper.parseModidIdentifierFrom(node.getNode(PackKeys.LEAVES.getKey())
+                .getString(PackKeys.LEAVES.getDefaultValue()));
+        final Optional<GameObject> optLeaves = GameObjectMapper.getGameObject(pairLeavesModidIdentifier.getKey(),
+                pairLeavesModidIdentifier.getValue(),
+                false);
+        if (!optLeaves.isPresent()) {
+            Almura.LOGGER.warn("Leaves source [" + pairLeavesModidIdentifier.getValue() + "] in [" + name + "] for mod [" + pairLeavesModidIdentifier
+                    .getKey() + "] in pack [" + pack.getName() + "] is not a registered block.");
+            return null;
+        }
+
+        if (!optLeaves.get().isBlock()) {
+            Almura.LOGGER.warn(
+                    "Leaves source [" + pairLeavesModidIdentifier.getValue() + "] in [" + name + "] for mod [" + pairLeavesModidIdentifier.getKey()
+                            + "] in pack [" + pack.getName() + "] is not a block.");
+            return null;
+        }
+
+        final Pair<String, String> pairFruitModidIdentifier = GameObjectMapper.parseModidIdentifierFrom(node.getNode(PackKeys.FRUIT.getKey())
+                .getString(PackKeys.FRUIT.getDefaultValue()));
+        Optional<GameObject> optFruit = GameObjectMapper.getGameObject(pairFruitModidIdentifier.getKey(), pairFruitModidIdentifier.getValue(),
+                false);
+        if ((!pairFruitModidIdentifier.getKey().isEmpty() || !pairFruitModidIdentifier.getValue().isEmpty())) {
+            if (!optFruit.isPresent()) {
+                Almura.LOGGER.warn("Fruit source [" + pairFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" + pairFruitModidIdentifier
+                        .getKey() + "] in pack [" + pack.getName() + "] is not a registered block.");
+            } else if (!optFruit.get().isBlock()) {
+                Almura.LOGGER.warn(
+                        "Fruit source [" + pairFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" + pairFruitModidIdentifier.getKey()
+                                + "] in pack [" + pack.getName() + "] is not a block.");
+                optFruit = Optional.absent();
+            }
+        }
+
+        final Pair<String, String> pairHangingFruitModidIdentifier = GameObjectMapper.parseModidIdentifierFrom(node.getNode(PackKeys.HANGING_FRUIT
+                .getKey())
+                .getString(PackKeys.HANGING_FRUIT.getDefaultValue()));
+        Optional<GameObject> optHangingFruit = GameObjectMapper.getGameObject(pairHangingFruitModidIdentifier.getKey(), pairHangingFruitModidIdentifier
+                .getValue(), false);
+        if ((!pairHangingFruitModidIdentifier.getKey().isEmpty() || !pairHangingFruitModidIdentifier.getValue().isEmpty())) {
+            if (!optHangingFruit.isPresent()) {
+                Almura.LOGGER.warn("Hanging Fruit source [" + pairHangingFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" +
+                        pairHangingFruitModidIdentifier.getKey() + "] in pack [" + pack.getName() + "] is not a registered block.");
+            } else if (!optHangingFruit.get().isBlock()) {
+                Almura.LOGGER.warn(
+                        "Hanging Fruit source [" + pairHangingFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" +
+                                pairHangingFruitModidIdentifier.getKey() + "] in pack [" + pack.getName() + "] is not a block.");
+                optHangingFruit = Optional.absent();
+            }
+        }
+
+        final Tree tree =  new Tree(pack, name, minTreeHeight, optWood.get(), optLeaves.get(), optFruit, optHangingFruit);
+        final RangeProperty<Double> chanceRange = new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class, node.getNode(PackKeys
+                .CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
+
+        return new TreeNode(tree, chanceRange);
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {

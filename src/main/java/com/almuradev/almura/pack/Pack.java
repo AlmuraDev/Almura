@@ -7,8 +7,11 @@ package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.LogHelper;
 import com.almuradev.almura.pack.model.PackModelContainer;
+import com.almuradev.almura.pack.tree.Tree;
 import com.almuradev.almura.util.FileSystem;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -31,6 +34,7 @@ public class Pack {
     private static final Map<String, Pack> PACKS = new HashMap<>();
     protected final List<Block> blocks = Lists.newArrayList();
     protected final List<Item> items = Lists.newArrayList();
+    protected final List<Tree> trees = Lists.newArrayList();
     private final String name;
 
     public Pack(String name) {
@@ -127,20 +131,20 @@ public class Pack {
                         pack.blocks.add(crop);
                         break;
                     case "CONTAINER":
-                        final Block container = PackCreator.createContainerBlock(pack, name, reader);
+                        final Block container = PackCreator.createContainerBlockFromReader(pack, name, reader);
                         pack.blocks.add(container);
+                        break;
+                    case "SAPLING":
+                        final Block sapling = PackCreator.createSaplingFromReader(pack, name, reader);
+                        pack.blocks.add(sapling);
                         break;
                     default:
                         Almura.LOGGER
                                 .warn("Unknown type [" + type + "] in file [" + path.getFileName()
-                                        + "]. Valid types are [ITEM, FOOD, BLOCK, CROP, CONTAINER].");
+                                        + "]. Valid types are [ITEM, FOOD, BLOCK, CROP, CONTAINER, SAPLING].");
                 }
             } catch (IOException e) {
-                if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
-                    Almura.LOGGER.error("Failed to load [" + path + "] for pack [" + pack.getName() + "].", e);
-                } else {
-                    Almura.LOGGER.error("Failed to load [" + path + "] for pack [" + pack.getName() + "].");
-                }
+                LogHelper.logPackWarnOrError("Failed to load [" + path + "] for pack [" + pack.getName() + "].", Optional.<Throwable>of(e));
             }
         }
         return pack;
@@ -154,6 +158,14 @@ public class Pack {
         return Collections.unmodifiableList(blocks);
     }
 
+    public List<Item> getItems() {
+        return Collections.unmodifiableList(items);
+    }
+
+    public List<Tree> getTrees() {
+        return Collections.unmodifiableList(trees);
+    }
+
     /**
      * INTERNAL USE ONLY
      */
@@ -161,13 +173,13 @@ public class Pack {
         items.add(item);
     }
 
-    public List<Item> getItems() {
-        return Collections.unmodifiableList(items);
+    public void addTree(Tree tree) {
+        trees.add(tree);
     }
 
     @Override
     public boolean equals(Object o) {
-        return this == o || !(o == null || getClass() != o.getClass()) && name.equals(((Pack) o).name);
+        return o instanceof Pack && name.equals(((Pack) o).getName());
     }
 
     @Override
@@ -175,8 +187,13 @@ public class Pack {
         return name.hashCode();
     }
 
-    @Override
-    public String toString() {
-        return "ContentPack {name= [" + name + "], blocks= " + blocks + ", items= " + items + "}";
-    }
+//    @Override
+//    public String toString() {
+//        return MoreObjects.toStringHelper(this)
+//                .add("name", name)
+//                .add("blocks", blocks)
+//                .add("items", items)
+//                .add("trees", trees)
+//                .toString();
+//    }
 }

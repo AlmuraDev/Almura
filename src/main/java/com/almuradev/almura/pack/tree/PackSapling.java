@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.pack.block;
+package com.almuradev.almura.pack.tree;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
@@ -14,7 +14,6 @@ import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackUtil;
-import com.almuradev.almura.pack.RotationMeta;
 import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.BreakNode;
@@ -22,8 +21,8 @@ import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RenderNode;
-import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.ToolsNode;
+import com.almuradev.almura.pack.node.TreeNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
@@ -35,15 +34,14 @@ import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
-import net.malisis.core.util.EntityUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.BlockSapling;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
@@ -51,6 +49,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -60,10 +59,11 @@ import net.minecraftforge.event.ForgeEventFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer, IItemBlockInformation {
-
+public class PackSapling extends BlockSapling implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer,
+        IItemBlockInformation {
     public static int renderId;
     private final Pack pack;
     private final String identifier;
@@ -75,27 +75,23 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     private ClippedIcon[] clippedIcons;
     private Optional<PackModelContainer> modelContainer;
     private RenderNode renderNode;
-    private RotationNode rotationNode;
     private BreakNode breakNode;
+    private LightNode lightNode;
+    private TreeNode treeNode;
     private CollisionNode collisionNode;
 
-    public PackBlock(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
-            String modelName,
-            PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
-            RotationNode rotationNode, LightNode lightNode, RenderNode renderNode) {
-        super(Material.ground);
+    public PackSapling(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
+            String modelName, PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
+            LightNode lightNode, RenderNode renderNode) {
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinates = textureCoordinates;
         this.textureName = textureName;
         this.modelName = modelName;
         this.renderNode = addNode(renderNode);
-        this.rotationNode = addNode(rotationNode);
+        this.lightNode = addNode(lightNode);
         this.tooltip = tooltip;
         setModelContainer(modelContainer);
-        addNode(rotationNode);
-        addNode(lightNode);
-        addNode(renderNode);
         setUnlocalizedName(pack.getName() + "\\" + identifier);
         setTextureName(Almura.MOD_ID + ":images/" + textureName);
         setHardness(hardness);
@@ -105,6 +101,117 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
+    }
+
+    @Override
+    public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
+        return clippedIcons;
+    }
+
+    @Override
+    public ClippedIcon[] getClipIcons() {
+        return clippedIcons;
+    }
+
+    @Override
+    public Optional<PackModelContainer> getModelContainer(IBlockAccess access, int x, int y, int z, int metadata) {
+        return modelContainer;
+    }
+
+    @Override
+    public List<String> getTooltip() {
+        return tooltip;
+    }
+
+    @Override
+    public Optional<PackModelContainer> getModelContainer() {
+        return modelContainer;
+    }
+
+    @Override
+    public void setModelContainer(PackModelContainer modelContainer) {
+        this.modelContainer = Optional.fromNullable(modelContainer);
+
+        if (Configuration.IS_CLIENT && this.modelContainer.isPresent()) {
+            if (this.modelContainer.get().getModel().isPresent()) {
+                fullBlock = false;
+            } else {
+                fullBlock = renderNode.isOpaque();
+            }
+        }
+    }
+
+    @Override
+    public String getModelName() {
+        return modelName;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends INode<?>> T addNode(T node) {
+        nodes.put((Class<? extends INode<?>>) node.getClass(), node);
+        if (node.getClass() == BreakNode.class) {
+            breakNode = (BreakNode) node;
+        } else if (node.getClass() == CollisionNode.class) {
+            collisionNode = (CollisionNode) node;
+        } else if (node.getClass() == TreeNode.class) {
+            treeNode = (TreeNode) node;
+        }
+        MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
+        return node;
+    }
+
+    @Override
+    public void addNodes(INode<?>... nodes) {
+        for (INode<?> node : nodes) {
+            addNode(node);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends INode<?>> T getNode(Class<T> clazz) {
+        return (T) nodes.get(clazz);
+    }
+
+    @Override
+    public <T extends INode<?>> boolean hasNode(Class<T> clazz) {
+        return getNode(clazz) != null;
+    }
+
+    @Override
+    public Pack getPack() {
+        return pack;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PackSapling)) {
+            return false;
+        }
+
+        final PackSapling other = (PackSapling) obj;
+        return pack.equals(other.pack) && identifier.equals(other.identifier);
+    }
+
+//    @Override
+//    public String toString() {
+//        return MoreObjects.toStringHelper(this)
+//                .add("packName", pack.getName())
+//                .add("identifier", identifier)
+//                .toString();
+//    }
+
+    // ---------------------------------------------- MINECRAFT OVERRIDES --------------------------------------------------------------
+
+    @Override
+    public String getTextureName() {
+        return textureName;
     }
 
     @Override
@@ -151,6 +258,29 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public boolean isNormalCube() {
         return this.blockMaterial.isOpaque() && this.renderAsNormalBlock() && !this.canProvidePower();
+    }
+
+    @Override
+    public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+        return true;
+    }
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+        final AxisAlignedBB vanillaBB = super.getCollisionBoundingBoxFromPool(world, x, y, z);
+        if (!modelContainer.isPresent()) {
+            return vanillaBB;
+        }
+        return modelContainer.get().getPhysics().getCollision(vanillaBB, world, x, y, z);
+    }
+
+    @Override
+    public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
+        final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
+        if (!modelContainer.isPresent()) {
+            return vanillaBB;
+        }
+        return modelContainer.get().getPhysics().getWireframe(vanillaBB, world, x, y, z);
     }
 
     //TODO Check this come 1.8
@@ -207,8 +337,8 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         if (!world.isRemote && !world.restoringBlockSnapshots) {
             final int fortune = EnchantmentHelper.getFortuneModifier(player);
             final float
-            modchance =
-            ForgeEventFactory.fireBlockHarvesting(drops, world, this, x, y, z, metadata, fortune, 1.0f, false, harvesters.get());
+                    modchance =
+                    ForgeEventFactory.fireBlockHarvesting(drops, world, this, x, y, z, metadata, fortune, 1.0f, false, harvesters.get());
             for (ItemStack is : drops) {
                 if (RangeProperty.RANDOM.nextFloat() <= modchance && world.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
                     if (captureDrops.get()) {
@@ -228,141 +358,10 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         harvesters.set(null);
     }
 
-    @Override
-    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack item) {
-        if (rotationNode.isEnabled() && (rotationNode.isDefaultRotate() || rotationNode.isDefaultMirrorRotate())) {
-            final ForgeDirection playerDir = EntityUtils.getEntityFacing(entity, false);
-
-            if (rotationNode.isDefaultMirrorRotate()) {
-                final ForgeDirection cameraDir = EntityUtils.getEntityFacing(entity, true);
-                world.setBlockMetadataWithNotify(x, y, z, RotationMeta.Rotation.getState(cameraDir, playerDir).getId(), 3);
-            } else {
-                world.setBlockMetadataWithNotify(x, y, z, RotationMeta.Rotation.getState(ForgeDirection.NORTH, playerDir).getId(), 3);
-            }
-        }
-    }
-
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-        final AxisAlignedBB vanillaBB = super.getCollisionBoundingBoxFromPool(world, x, y, z);
-        if (!modelContainer.isPresent()) {
-            return vanillaBB;
-        }
-        return modelContainer.get().getPhysics().getCollision(vanillaBB, world, x, y, z);
-    }
-
-    @Override
-    public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
-        final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
-        if (!modelContainer.isPresent()) {
-            return vanillaBB;
-        }
-        return modelContainer.get().getPhysics().getWireframe(vanillaBB, world, x, y, z);
-    }
-
-    @Override
-    public Pack getPack() {
-        return pack;
-    }
-
-    @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
-        return clippedIcons;
-    }
-
-    @Override
-    public ClippedIcon[] getClipIcons() {
-        return clippedIcons;
-    }
-
-    @Override
-    public Optional<PackModelContainer> getModelContainer(IBlockAccess access, int x, int y, int z, int metadata) {
-        return modelContainer;
-    }
-
-    @Override
-    public Optional<PackModelContainer> getModelContainer() {
-        return modelContainer;
-    }
-
-    @Override
-    public void setModelContainer(PackModelContainer modelContainer) {
-        this.modelContainer = Optional.fromNullable(modelContainer);
-
-        if (Configuration.IS_CLIENT && this.modelContainer.isPresent()) {
-            if (this.modelContainer.get().getModel().isPresent()) {
-                fullBlock = false;
-            } else {
-                fullBlock = renderNode.isOpaque();
-            }
-        }
-    }
-
-    @Override
-    public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
-        return true;
-    }
-
-    @Override
-    public String getModelName() {
-        return modelName;
-    }
-
-    @Override
-    public String getTextureName() {
-        return textureName;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends INode<?>> T addNode(T node) {
-        nodes.put((Class<? extends INode<?>>) node.getClass(), node);
-        if (node.getClass() == BreakNode.class) {
-            breakNode = (BreakNode) node;
-        } else if (node.getClass() == CollisionNode.class) {
-            collisionNode = (CollisionNode) node;
-        }
-        MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
-        return node;
-    }
-
-    @Override
-    public void addNodes(INode<?>... nodes) {
-        for (INode<?> node : nodes) {
-            addNode(node);
-        }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends INode<?>> T getNode(Class<T> clazz) {
-        return (T) nodes.get(clazz);
-    }
-
-    @Override
-    public <T extends INode<?>> boolean hasNode(Class<T> clazz) {
-        return getNode(clazz) != null;
-    }
-
-    @Override
-    public String toString() {
-        return "PackBlock {pack= " + pack.getName() + ", registry_name= " + pack.getName() + "\\" + identifier + "}";
-    }
-
-    @Override
-    public List<String> getTooltip() {
-        return tooltip;
-    }
-
     @SideOnly(Side.CLIENT)
     @Override
     public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 startVec, Vec3 endVec) {
-        final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);        
+        final AxisAlignedBB vanillaBB = super.getSelectedBoundingBoxFromPool(world, x, y, z);
         startVec = startVec.addVector((double) (-x), (double) (-y), (double) (-z));
         endVec = endVec.addVector((double) (-x), (double) (-y), (double) (-z));
         Vec3 vec32, vec33, vec34, vec35, vec36, vec37 = null;
@@ -466,11 +465,56 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         }
     }
 
+    @Override
+    public boolean canBlockStay(World worldIn, int x, int y, int z) {
+        boolean checkLight = lightNode != null && lightNode.getValue().getSource();
+        boolean stay = false;
+
+        if (checkLight) {
+            final int minLightLevel = lightNode.getValue().getMin();
+            final int maxLightLevel = lightNode.getValue().getMax();
+            final int areaBlockLight = worldIn.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
+            final int worldLight = worldIn.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - worldIn.skylightSubtracted;
+            if (areaBlockLight >= minLightLevel && areaBlockLight <= maxLightLevel) {
+                stay = true;
+            } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
+                stay = true;
+            }
+        } else {
+            stay = true;
+        }
+
+        return stay;
+    }
+
+    @Override
+    public void updateTick(World worldIn, int x, int y, int z, Random random) {
+        if (!worldIn.isRemote && treeNode != null) {
+
+            this.checkAndDropBlock(worldIn, x, y, z);
+
+            final double chance = treeNode.getValue().getValueWithinRange();
+            if (random.nextDouble() <= (chance / 100)) {
+                this.growTree(worldIn, x, y, z, random);
+            }
+        }
+    }
+
+    @Override
+    public void growTree(World p_149878_1_, int p_149878_2_, int p_149878_3_, int p_149878_4_, Random p_149878_5_) {
+        if (!net.minecraftforge.event.terraingen.TerrainGen.saplingGrowTree(p_149878_1_, p_149878_5_, p_149878_2_, p_149878_3_, p_149878_4_)) return;
+
+        p_149878_1_.setBlock(p_149878_2_, p_149878_3_, p_149878_4_, Blocks.air, 0, 4);
+        if (!treeNode.getTree().getGenerator().generate(p_149878_1_, p_149878_5_, p_149878_2_, p_149878_3_, p_149878_4_)) {
+            p_149878_1_.setBlock(p_149878_2_, p_149878_3_, p_149878_4_, this, 0, 4);
+        }
+    }
+
     private boolean isVecInsideYZBounds(Vec3 point) {
         if (modelContainer.isPresent()) {
             return point == null ? false : point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get().getPhysics().getRayMaxY() && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer.get().getPhysics().getRayMaxZ();
         } else {
-            return point == null ? false : point.yCoord >= minY && point.yCoord <= maxY && point.zCoord >= minZ && point.zCoord <= maxZ;    
+            return point == null ? false : point.yCoord >= minY && point.yCoord <= maxY && point.zCoord >= minZ && point.zCoord <= maxZ;
         }
     }
 
@@ -478,7 +522,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         if (modelContainer.isPresent()) {
             return point == null ? false : point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get().getPhysics().getRayMaxX() && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer.get().getPhysics().getRayMaxZ();
         } else {
-            return point == null ? false : point.xCoord >= minX && point.xCoord <= maxX && point.zCoord >= minZ && point.zCoord <= maxZ;    
+            return point == null ? false : point.xCoord >= minX && point.xCoord <= maxX && point.zCoord >= minZ && point.zCoord <= maxZ;
         }
     }
 
@@ -486,7 +530,7 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
         if (modelContainer.isPresent()) {
             return point == null ? false : point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get().getPhysics().getRayMaxX() && point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get().getPhysics().getRayMaxY();
         } else {
-            return point == null ? false : point.xCoord >= minX && point.xCoord <= maxX && point.yCoord >= minY && point.yCoord <= maxY;            
+            return point == null ? false : point.xCoord >= minX && point.xCoord <= maxX && point.yCoord >= minY && point.yCoord <= maxY;
         }
     }
 }
