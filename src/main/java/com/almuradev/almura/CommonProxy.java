@@ -167,8 +167,6 @@ public class CommonProxy {
                 GameRegistry.registerItem(item, ((IPackObject) item).getPack().getName() + "\\" + ((IPackObject) item).getIdentifier());
             }
         }
-
-        Almura.LOGGER.info("Loaded -> " + pack);
     }
 
     //Stage 2 loader
@@ -287,6 +285,8 @@ public class CommonProxy {
                 }
             }
         }
+        
+        Almura.LOGGER.info("Loaded -> " + pack);
     }
 
     @SubscribeEvent
