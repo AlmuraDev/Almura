@@ -170,7 +170,7 @@ public class CommonProxy {
     }
 
     //Stage 2 loader
-    private void onPostCreate(Pack pack) throws IOException, IOException {
+    private void onPostCreate(Pack pack) throws IOException {
         final List<Item> seedsToAdd = Lists.newArrayList();
 
         //Stage 2a -> Collision, Seeds, Stage (Collision)

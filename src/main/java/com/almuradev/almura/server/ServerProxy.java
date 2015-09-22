@@ -26,6 +26,8 @@ public class ServerProxy extends CommonProxy {
 
     @Override
     public void onInitialization(FMLInitializationEvent event) {
+        super.onInitialization(event);
+
         FMLCommonHandler.instance().bus().register(this);
     }
 
@@ -45,7 +47,6 @@ public class ServerProxy extends CommonProxy {
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         for (Map.Entry<String, Page> entry : PageRegistry.getAll().entrySet()) {
             CommonProxy.NETWORK_FORGE.sendTo(new S00PageInformation(entry.getValue()), (EntityPlayerMP) event.player);
-            // TODO This is how you open a gui on their client, replace "byes" with the page's identifier
             CommonProxy.NETWORK_FORGE.sendTo(new S02PageOpen("Welcome"), (EntityPlayerMP) event.player);
         }
     }
