@@ -139,6 +139,11 @@ minecraft:
         stone_polished_diorite: 4
         stone_andesite: 5
         stone_polished_andesite: 6
+    stonebrick:
+        stonebrick: 0
+        stonebrick_mossy: 1
+        stonebrick_cracked: 2
+        stonebrick_chiseled: 3
     dirt:
         dirt: 0
         dirt_course: 1
