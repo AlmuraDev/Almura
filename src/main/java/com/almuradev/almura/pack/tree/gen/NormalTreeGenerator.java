@@ -17,10 +17,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Random;
 
-public class TreeGenerator extends WorldGenerator {
+public class NormalTreeGenerator extends WorldGenerator {
     private final Tree tree;
 
-    public TreeGenerator(Tree tree) {
+    public NormalTreeGenerator(Tree tree) {
         this.tree = tree;
     }
 

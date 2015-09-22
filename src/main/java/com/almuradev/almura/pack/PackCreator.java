@@ -713,8 +713,9 @@ public class PackCreator {
         final Pair<String, String> pairHangingFruitModidIdentifier = GameObjectMapper.parseModidIdentifierFrom(node.getNode(PackKeys.HANGING_FRUIT
                 .getKey())
                 .getString(PackKeys.HANGING_FRUIT.getDefaultValue()));
-        Optional<GameObject> optHangingFruit = GameObjectMapper.getGameObject(pairHangingFruitModidIdentifier.getKey(), pairHangingFruitModidIdentifier
-                .getValue(), false);
+        Optional<GameObject> optHangingFruit = GameObjectMapper.getGameObject(pairHangingFruitModidIdentifier.getKey(),
+                pairHangingFruitModidIdentifier
+                        .getValue(), false);
         if ((!pairHangingFruitModidIdentifier.getKey().isEmpty() || !pairHangingFruitModidIdentifier.getValue().isEmpty())) {
             if (!optHangingFruit.isPresent()) {
                 Almura.LOGGER.warn("Hanging Fruit source [" + pairHangingFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" +
@@ -1069,7 +1070,7 @@ public class PackCreator {
         return new FuelNode(isEnabled, maxBurnTime);
     }
 
-    public static FertilizerNode createFertilizerNode(Pack pack, String name, int stageId, ConfigurationNode reader) {
+    public static FertilizerNode createStagedFertilizerNode(Pack pack, String name, int stageId, ConfigurationNode reader) {
         final boolean isEnabled = reader.getNode(PackKeys.ENABLED.getKey()).getBoolean(false);
         final Set<GameObjectProperty> value = Sets.newHashSet();
 
@@ -1080,6 +1081,33 @@ public class PackCreator {
             if (!gameObject.isPresent()) {
                 Almura.LOGGER
                         .warn("Fertilizer [" + rawFertilizerSource + "] in stage [" + stageId + "] in [" + name + "] in pack [" + pack.getName()
+                                + "] is not a registered block or item");
+                continue;
+            }
+
+            final RangeProperty<Integer>
+                    amountRange =
+                    new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
+                            fertilizerSourceNodes.getValue().getNode(PackKeys.AMOUNT
+                                    .getKey())
+                                    .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
+            value.add(new VariableGameObjectProperty(gameObject.get(), amountRange));
+        }
+
+        return new FertilizerNode(isEnabled, value);
+    }
+
+    public static FertilizerNode createFertilizerNode(Pack pack, String name, ConfigurationNode reader) {
+        final boolean isEnabled = reader.getNode(PackKeys.ENABLED.getKey()).getBoolean(false);
+        final Set<GameObjectProperty> value = Sets.newHashSet();
+
+        for (Map.Entry<Object, ? extends ConfigurationNode> fertilizerSourceNodes : reader.getNode(PackKeys.SOURCES.getKey()).getChildrenMap()
+                .entrySet()) {
+            final String rawFertilizerSource = (String) fertilizerSourceNodes.getKey();
+            final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(rawFertilizerSource, true);
+            if (!gameObject.isPresent()) {
+                Almura.LOGGER
+                        .warn("Fertilizer [" + rawFertilizerSource + "] in [" + name + "] in pack [" + pack.getName()
                                 + "] is not a registered block or item");
                 continue;
             }

@@ -14,14 +14,12 @@ import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.BreakNode;
-import com.almuradev.almura.pack.node.FertilizerNode;
 import com.almuradev.almura.pack.node.GrowthNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.ToolsNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
-import com.almuradev.almura.pack.node.property.GameObjectProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.google.common.base.Optional;
@@ -39,7 +37,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
@@ -49,7 +47,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.player.BonemealEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -199,45 +196,22 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_,
             float p_149727_9_) {
-        final int metadata = world.getBlockMetadata(x, y, z);
-        if (metadata < stages.size() - 1) {
-            final Stage stage = stages.get(world.getBlockMetadata(x, y, z));
-            if (stage != null) {
-                final FertilizerNode fertilizerNode = stage.getNode(FertilizerNode.class);
-                if (fertilizerNode != null) {
-                    for (GameObjectProperty prop : fertilizerNode.getValue()) {
-                        final ItemStack heldStack = player.getHeldItem();
+        if (!world.isRemote) {
+            final ItemStack stack = player.getCurrentEquippedItem();
+            if (stack != null) {
+                if (!(stack.getItem() instanceof ItemDye && stack.getMetadata() == 15) && ItemDye
+                        .applyBonemeal(stack, world, x, y, z, player)) {
+                    world.playAuxSFX(2005, x, y, z, 0);
 
-                        if (heldStack != null && heldStack.getItem() != null) {
-                            final Item heldItem = heldStack.getItem();
-
-                            final Object minecraftObject = heldItem instanceof ItemBlock ? ((ItemBlock) heldItem).blockInstance : heldItem;
-
-                            if (minecraftObject == prop.getSource().minecraftObject && heldStack.getMetadata() == prop.getSource().data) {
-                                // TODO Is the bonemeal event meant to run on the client?
-                                final BonemealEvent event = new BonemealEvent(player, world, this, x, y, z);
-
-                                if (MinecraftForge.EVENT_BUS.post(event)) {
-                                    if (!world.isRemote && !player.capabilities.isCreativeMode) {
-                                        --heldStack.stackSize;
-                                    }
-
-                                    stage.onGrown(world, x, y, z, RangeProperty.RANDOM);
-                                    final Stage newStage = stages.get(metadata + 1);
-                                    newStage.onGrown(world, x, y, z, RangeProperty.RANDOM);
-                                    if (!world.isRemote) {
-                                        world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
-                                    }
-                                    return true;
-                                }
-                            }
-                        }
+                    if (player.capabilities.isCreativeMode) {
+                        ++stack.stackSize;
                     }
+
+                    return true;
                 }
             }
         }
-        return super.onBlockActivated(world, x, y, z, player, p_149727_6_, p_149727_7_, p_149727_8_,
-                p_149727_9_);
+        return false;
     }
 
     private boolean isGrowthEven(World world, int x, int y, int z) { // Scans a 4 x 4 block radius

@@ -31,6 +31,7 @@ import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.renderer.BlockRenderer;
 import com.almuradev.almura.pack.renderer.ItemRenderer;
+import com.almuradev.almura.pack.tree.PackSapling;
 import com.almuradev.almura.server.network.play.S00PageInformation;
 import com.almuradev.almura.server.network.play.S01PageDelete;
 import com.almuradev.almura.server.network.play.S02PageOpen;
@@ -100,6 +101,7 @@ public class ClientProxy extends CommonProxy {
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
         PACK_BLOCK_RENDERER.registerFor(PackCrops.class);
         PACK_BLOCK_RENDERER.registerFor(PackContainerBlock.class);
+        PACK_BLOCK_RENDERER.registerFor(PackSapling.class);
         // Setup bindings
         Bindings.register();
         // Setup client permissibles

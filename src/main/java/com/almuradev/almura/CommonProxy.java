@@ -27,8 +27,10 @@ import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.item.PackItemBlock;
 import com.almuradev.almura.pack.mapper.EntityMapper;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
+import com.almuradev.almura.pack.node.FertilizerNode;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.TreeNode;
+import com.almuradev.almura.pack.node.property.GameObjectProperty;
 import com.almuradev.almura.pack.tree.PackSapling;
 import com.almuradev.almura.recipe.furnace.PackFuelHandler;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInformation;
@@ -46,6 +48,8 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.eventhandler.Event;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -57,6 +61,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -251,10 +256,14 @@ public class CommonProxy {
                         final ConfigurationNode stageNode = reader.getNode(PackKeys.NODE_STAGES.getKey(), stage.getId());
                         stage.addNode(PackCreator.createBreakNode(pack, stage.getIdentifier(), block, false, stageNode.getNode(PackKeys
                                 .NODE_BREAK.getKey())));
-                        stage.addNode(PackCreator.createFertilizerNode(pack, stage.getIdentifier(), stage.getId(), stageNode.getNode(PackKeys
+                        stage.addNode(PackCreator.createStagedFertilizerNode(pack, stage.getIdentifier(), stage.getId(), stageNode.getNode(PackKeys
                                 .NODE_FERTILIZER.getKey())));
                     }
                 } else {
+                    if (block instanceof PackSapling) {
+                        ((PackSapling) block).addNode(PackCreator.createFertilizerNode(pack, ((PackSapling) block).getIdentifier(), reader
+                                .getNode(PackKeys.NODE_FERTILIZER.getKey())));
+                    }
                     //Break
                     ((INodeContainer) block).addNode(
                             PackCreator.createBreakNode(pack, ((IPackObject) block).getIdentifier(), block, true,
@@ -353,11 +362,70 @@ public class CommonProxy {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onBonemealEvent(BonemealEvent event) {
-        if (event.block instanceof PackCrops) {
-            event.setCanceled(true);
+        if (event.world.isRemote) {
+            return;
         }
+        if (event.block instanceof INodeContainer) {
+            if (event.block instanceof PackCrops) {
+                final int blockMetadata = event.world.getBlockMetadata(event.x, event.y, event.z);
+                final Stage stage = ((PackCrops) event.block).getStages().get(blockMetadata);
+                if (!(stage != null && stage.hasNode(FertilizerNode.class))) {
+                    event.setCanceled(true);
+                } else {
+                    final FertilizerNode stageFertilizerNode = stage.getNode(FertilizerNode.class);
+                    boolean found = false;
+                    for (GameObjectProperty prop : stageFertilizerNode.getValue()) {
+                        final ItemStack heldStack = event.entityPlayer.getHeldItem();
+
+                        if (heldStack != null && heldStack.getItem() != null) {
+                            final Item heldItem = heldStack.getItem();
+
+                            final Object minecraftObject = heldItem instanceof ItemBlock ? ((ItemBlock) heldItem).blockInstance : heldItem;
+                            final Object propMinecraftObject = prop.getSource().minecraftObject instanceof ItemBlock ? ((ItemBlock) prop.getSource()
+                                    .minecraftObject).blockInstance : prop.getSource().minecraftObject;
+
+                            if (minecraftObject == propMinecraftObject && heldStack.getMetadata() == prop.getSource().data) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!found) {
+                        event.setCanceled(true);
+                    }
+                }
+            } else if (!((INodeContainer) event.block).hasNode(FertilizerNode.class)) {
+                event.setCanceled(true);
+            } else {
+                final FertilizerNode stageFertilizerNode = ((INodeContainer) event.block).getNode(FertilizerNode.class);
+                boolean found = false;
+
+                for (GameObjectProperty prop : stageFertilizerNode.getValue()) {
+                    final ItemStack heldStack = event.entityPlayer.getHeldItem();
+
+                    if (heldStack != null && heldStack.getItem() != null) {
+                        final Item heldItem = heldStack.getItem();
+
+                        final Object minecraftObject = heldItem instanceof ItemBlock ? ((ItemBlock) heldItem).blockInstance : heldItem;
+                        final Object propMinecraftObject = prop.getSource().minecraftObject instanceof ItemBlock ? ((ItemBlock) prop.getSource()
+                                .minecraftObject).blockInstance : prop.getSource().minecraftObject;
+
+                        if (minecraftObject == propMinecraftObject && heldStack.getMetadata() == prop.getSource().data) {
+                            found = true;
+                        }
+                    }
+                }
+
+                if (!found) {
+                    event.setCanceled(true);
+                }
+            }
+        }
+
+        event.setResult(Event.Result.DEFAULT);
     }
 
     @SubscribeEvent

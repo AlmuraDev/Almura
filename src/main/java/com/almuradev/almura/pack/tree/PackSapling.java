@@ -18,6 +18,7 @@ import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
+import com.almuradev.almura.pack.node.FertilizerNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RenderNode;
@@ -28,6 +29,7 @@ import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.almuradev.almura.tabs.Tabs;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -38,11 +40,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
@@ -53,7 +57,6 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
@@ -79,6 +82,7 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
     private LightNode lightNode;
     private TreeNode treeNode;
     private CollisionNode collisionNode;
+    private FertilizerNode fertilizerNode;
 
     public PackSapling(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
             String modelName, PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
@@ -156,6 +160,8 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
             collisionNode = (CollisionNode) node;
         } else if (node.getClass() == TreeNode.class) {
             treeNode = (TreeNode) node;
+        } else if (node.getClass() == FertilizerNode.class) {
+            fertilizerNode = (FertilizerNode) node;
         }
         MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
         return node;
@@ -199,13 +205,13 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
         return pack.equals(other.pack) && identifier.equals(other.identifier);
     }
 
-//    @Override
-//    public String toString() {
-//        return MoreObjects.toStringHelper(this)
-//                .add("packName", pack.getName())
-//                .add("identifier", identifier)
-//                .toString();
-//    }
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("packName", pack.getName())
+                .add("identifier", identifier)
+                .toString();
+    }
 
     // ---------------------------------------------- MINECRAFT OVERRIDES --------------------------------------------------------------
 
@@ -243,26 +249,6 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
             }
         }
         return sideIcon;
-    }
-
-    @Override
-    public boolean renderAsNormalBlock() {
-        return modelContainer == null && renderNode.getValue();
-    }
-
-    @Override
-    public boolean isOpaqueCube() {
-        return fullBlock;
-    }
-
-    @Override
-    public boolean isNormalCube() {
-        return this.blockMaterial.isOpaque() && this.renderAsNormalBlock() && !this.canProvidePower();
-    }
-
-    @Override
-    public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
-        return true;
     }
 
     @Override
@@ -510,27 +496,93 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
         }
     }
 
+    @Override
+    public int damageDropped(int meta) {
+        return meta;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, List list) {
+        list.add(new ItemStack(itemIn, 1, 0));
+    }
+
+    @Override
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_,
+            float p_149727_9_) {
+        if (!world.isRemote) {
+            final ItemStack stack = player.getCurrentEquippedItem();
+            if (stack != null) {
+                if (!(stack.getItem() instanceof ItemDye && stack.getMetadata() == 15) && ItemDye
+                        .applyBonemeal(stack, world, x, y, z, player)) {
+                    world.playAuxSFX(2005, x, y, z, 0);
+
+                    if (player.capabilities.isCreativeMode) {
+                        ++stack.stackSize;
+                    }
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void markOrGrowMarked(World p_149879_1_, int p_149879_2_, int p_149879_3_, int p_149879_4_, Random p_149879_5_) {
+        this.growTree(p_149879_1_, p_149879_2_, p_149879_3_, p_149879_4_, p_149879_5_);
+    }
+
+    @Override
+    public boolean canFertilize(World worldIn, int x, int y, int z, boolean isClient) {
+        if (fertilizerNode == null || isClient) {
+            return false;
+        }
+        // TODO This can do biome checks
+        return true;
+    }
+
+    @Override
+    public boolean shouldFertilize(World worldIn, Random random, int x, int y, int z) {
+        if (fertilizerNode == null) {
+            return false;
+        }
+        // TODO Chance calculations
+        return true;
+    }
+
+    @Override
+    public void fertilize(World worldIn, Random random, int x, int y, int z) {
+        // TODO Effect?
+        this.markOrGrowMarked(worldIn, x, y, z, random);
+    }
+
     private boolean isVecInsideYZBounds(Vec3 point) {
         if (modelContainer.isPresent()) {
-            return point == null ? false : point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get().getPhysics().getRayMaxY() && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer.get().getPhysics().getRayMaxZ();
+            return point != null && point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get()
+                    .getPhysics().getRayMaxY() && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer
+                    .get().getPhysics().getRayMaxZ();
         } else {
-            return point == null ? false : point.yCoord >= minY && point.yCoord <= maxY && point.zCoord >= minZ && point.zCoord <= maxZ;
+            return point != null && point.yCoord >= minY && point.yCoord <= maxY && point.zCoord >= minZ && point.zCoord <= maxZ;
         }
     }
 
     private boolean isVecInsideXZBounds(Vec3 point) {
         if (modelContainer.isPresent()) {
-            return point == null ? false : point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get().getPhysics().getRayMaxX() && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer.get().getPhysics().getRayMaxZ();
+            return point != null && point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get()
+                    .getPhysics().getRayMaxX() && point.zCoord >= modelContainer.get().getPhysics().getRayMinZ() && point.zCoord <= modelContainer
+                    .get().getPhysics().getRayMaxZ();
         } else {
-            return point == null ? false : point.xCoord >= minX && point.xCoord <= maxX && point.zCoord >= minZ && point.zCoord <= maxZ;
+            return point != null && point.xCoord >= minX && point.xCoord <= maxX && point.zCoord >= minZ && point.zCoord <= maxZ;
         }
     }
 
     private boolean isVecInsideXYBounds(Vec3 point) {
         if (modelContainer.isPresent()) {
-            return point == null ? false : point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get().getPhysics().getRayMaxX() && point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer.get().getPhysics().getRayMaxY();
+            return point != null && point.xCoord >= modelContainer.get().getPhysics().getRayMinX() && point.xCoord <= modelContainer.get()
+                    .getPhysics().getRayMaxX() && point.yCoord >= modelContainer.get().getPhysics().getRayMinY() && point.yCoord <= modelContainer
+                    .get().getPhysics().getRayMaxY();
         } else {
-            return point == null ? false : point.xCoord >= minX && point.xCoord <= maxX && point.yCoord >= minY && point.yCoord <= maxY;
+            return point != null && point.xCoord >= minX && point.xCoord <= maxX && point.yCoord >= minY && point.yCoord <= maxY;
         }
     }
 }

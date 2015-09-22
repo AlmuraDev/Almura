@@ -8,7 +8,8 @@ package com.almuradev.almura.pack.tree;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.mapper.GameObject;
-import com.almuradev.almura.pack.tree.gen.TreeGenerator;
+import com.almuradev.almura.pack.tree.gen.NormalTreeGenerator;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
 public class Tree implements IPackObject {
@@ -17,7 +18,7 @@ public class Tree implements IPackObject {
     private final int minTreeHeight;
     private final GameObject wood, leaves;
     private final Optional<GameObject> fruit, hangingFruit;
-    private final TreeGenerator generator;
+    private final NormalTreeGenerator generator;
 
     public Tree(Pack pack, String identifier, int minTreeHeight, GameObject wood, GameObject leaves, Optional<GameObject> fruit, Optional<GameObject>
             hangingFruit) {
@@ -28,7 +29,7 @@ public class Tree implements IPackObject {
         this.leaves = leaves;
         this.fruit = fruit;
         this.hangingFruit = hangingFruit;
-        this.generator = new TreeGenerator(this);
+        this.generator = new NormalTreeGenerator(this);
     }
 
     @Override
@@ -61,7 +62,7 @@ public class Tree implements IPackObject {
         return hangingFruit;
     }
 
-    public TreeGenerator getGenerator() {
+    public NormalTreeGenerator getGenerator() {
         return generator;
     }
 
@@ -75,16 +76,16 @@ public class Tree implements IPackObject {
         return pack.equals(other.pack) && identifier.equals(other.identifier);
     }
 
-//    @Override
-//    public String toString() {
-//        return MoreObjects.toStringHelper(this)
-//                .add("pack", pack)
-//                .add("identifier", identifier)
-//                .add("wood", wood)
-//                .add("leaves", leaves)
-//                .add("fruit", fruit)
-//                .add("hangingFruit", hangingFruit)
-//                .add("generator", generator)
-//                .toString();
-//    }
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("pack", pack)
+                .add("identifier", identifier)
+                .add("wood", wood)
+                .add("leaves", leaves)
+                .add("fruit", fruit)
+                .add("hangingFruit", hangingFruit)
+                .add("generator", generator)
+                .toString();
+    }
 }

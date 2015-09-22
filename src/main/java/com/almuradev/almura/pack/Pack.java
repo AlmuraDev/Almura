@@ -9,8 +9,8 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.LogHelper;
 import com.almuradev.almura.pack.model.PackModelContainer;
-import com.almuradev.almura.pack.tree.Tree;
 import com.almuradev.almura.util.FileSystem;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
@@ -34,7 +34,6 @@ public class Pack {
     private static final Map<String, Pack> PACKS = new HashMap<>();
     protected final List<Block> blocks = Lists.newArrayList();
     protected final List<Item> items = Lists.newArrayList();
-    protected final List<Tree> trees = Lists.newArrayList();
     private final String name;
 
     public Pack(String name) {
@@ -162,19 +161,11 @@ public class Pack {
         return Collections.unmodifiableList(items);
     }
 
-    public List<Tree> getTrees() {
-        return Collections.unmodifiableList(trees);
-    }
-
     /**
      * INTERNAL USE ONLY
      */
     public void addItem(Item item) {
         items.add(item);
-    }
-
-    public void addTree(Tree tree) {
-        trees.add(tree);
     }
 
     @Override
@@ -187,13 +178,12 @@ public class Pack {
         return name.hashCode();
     }
 
-//    @Override
-//    public String toString() {
-//        return MoreObjects.toStringHelper(this)
-//                .add("name", name)
-//                .add("blocks", blocks)
-//                .add("items", items)
-//                .add("trees", trees)
-//                .toString();
-//    }
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("name", name)
+                .add("blocks", blocks)
+                .add("items", items)
+                .toString();
+    }
 }
