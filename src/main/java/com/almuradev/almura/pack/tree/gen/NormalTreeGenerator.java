@@ -18,67 +18,54 @@ import net.minecraftforge.common.util.ForgeDirection;
 import java.util.Random;
 
 public class NormalTreeGenerator extends WorldGenerator {
+
     private final Tree tree;
 
     public NormalTreeGenerator(Tree tree) {
         this.tree = tree;
     }
 
-    public boolean generate(World world, Random random, int x, int y, int z)
-    {
+    public boolean generate(World world, Random random, int x, int y, int z) {
         int l = this.tree.getHeightVariance().getValueWithinRange() + this.tree.getMinTreeHeight();
         boolean flag = true;
 
-        if (y >= 1 && y + l + 1 <= 256)
-        {
+        if (y >= 1 && y + l + 1 <= 256) {
             byte b0;
             int k1;
             Block block;
 
-            for (int i1 = y; i1 <= y + 1 + l; ++i1)
-            {
+            for (int i1 = y; i1 <= y + 1 + l; ++i1) {
                 b0 = 1;
 
-                if (i1 == y)
-                {
+                if (i1 == y) {
                     b0 = 0;
                 }
 
-                if (i1 >= y + 1 + l - 2)
-                {
+                if (i1 >= y + 1 + l - 2) {
                     b0 = 2;
                 }
 
-                for (int j1 = x - b0; j1 <= x + b0 && flag; ++j1)
-                {
-                    for (k1 = z - b0; k1 <= z + b0 && flag; ++k1)
-                    {
-                        if (i1 >= 0 && i1 < 256)
-                        {
+                for (int j1 = x - b0; j1 <= x + b0 && flag; ++j1) {
+                    for (k1 = z - b0; k1 <= z + b0 && flag; ++k1) {
+                        if (i1 >= 0 && i1 < 256) {
                             block = world.getBlock(j1, i1, k1);
 
-                            if (!this.isReplaceable(world, block, j1, i1, k1))
-                            {
+                            if (!this.isReplaceable(world, block, j1, i1, k1)) {
                                 flag = false;
                             }
-                        }
-                        else
-                        {
+                        } else {
                             flag = false;
                         }
                     }
                 }
             }
 
-            if (!flag)
-            {
+            if (!flag) {
                 return false;
-            }
-            else
-            {
+            } else {
                 Block block2 = world.getBlock(x, y - 1, z);
 
-                boolean isSoil = block2.canSustainPlant(world, x, y - 1, z, ForgeDirection.UP, (BlockSapling)Blocks.sapling);
+                boolean isSoil = block2.canSustainPlant(world, x, y - 1, z, ForgeDirection.UP, (BlockSapling) Blocks.sapling);
                 if (isSoil && y < 256 - l - 1) {
                     block2.onPlantGrow(world, x, y - 1, z, x, y, z);
                     b0 = 3;
@@ -163,26 +150,18 @@ public class NormalTreeGenerator extends WorldGenerator {
                     }
 
                     return true;
-                }
-                else
-                {
+                } else {
                     return false;
                 }
             }
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
     protected boolean isReplaceable(World world, Block block, int x, int y, int z) {
-        return block.isAir(world, x, y, z) || block.isLeaves(world, x, y, z) || block.isWood(world, x, y, z) || func_150523_a(block);
-    }
-
-    protected boolean func_150523_a(Block p_150523_1_) {
-        return p_150523_1_.getMaterial() == Material.air || p_150523_1_.getMaterial() == Material.leaves || p_150523_1_ == Blocks.grass ||
-                p_150523_1_ == Blocks.dirt || p_150523_1_ == Blocks.log || p_150523_1_ == Blocks.log2 || p_150523_1_ instanceof BlockSapling ||
-                p_150523_1_ == Blocks.vine;
+        return block.isAir(world, x, y, z) || block.isLeaves(world, x, y, z) || block.isWood(world, x, y, z) || block.getMaterial() == Material.air
+                || block.getMaterial() == Material.leaves || block == Blocks.grass || block == Blocks.dirt || block == Blocks.log
+                || block == Blocks.log2 || block instanceof BlockSapling || block == Blocks.vine;
     }
 }
