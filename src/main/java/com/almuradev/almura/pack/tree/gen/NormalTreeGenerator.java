@@ -154,7 +154,7 @@ public class NormalTreeGenerator extends WorldGenerator {
                     for (k1 = 0; k1 < l; ++k1) {
                         block = world.getBlock(x, y + k1, z);
 
-                        if (block.isAir(world, x, y + k1, z) || block == this.tree.getLeaves().minecraftObject && ((this.tree.getFruit().isPresent()
+                        if (block.isAir(world, x, y + k1, z) || block == this.tree.getLeaves().minecraftObject || ((this.tree.getFruit().isPresent()
                                 && block == this.tree.getFruit().get().minecraftObject) || (this.tree.getHangingFruit().isPresent() &&
                                 block == this.tree.getHangingFruit().get().minecraftObject))) {
                             this.setBlockAndNotifyAdequately(world, x, y + k1, z, (Block) this.tree.getWood().minecraftObject, this.tree.getWood()
