@@ -34,10 +34,13 @@ public class PackKeys {
     public static final DefaultedKey<String> RANGE_EXPERIENCE = new DefaultedKey<>("experience", "");
     //TREE
     public static final DefaultedKey<Integer> MIN_HEIGHT = new DefaultedKey<>("min-height", 5);
+    public static final DefaultedKey<String> HEIGHT_VARIANCE = new DefaultedKey<>("height-variance", "0-3");
     public static final DefaultedKey<String> WOOD = new DefaultedKey<>("wood", "");
     public static final DefaultedKey<String> LEAVES = new DefaultedKey<>("leaves", "");
     public static final DefaultedKey<String> FRUIT = new DefaultedKey<>("fruit", "");
+    public static final DefaultedKey<String> FRUIT_CHANCE = new DefaultedKey<>("fruit-chance", "100");
     public static final DefaultedKey<String> HANGING_FRUIT = new DefaultedKey<>("hanging-fruit", "");
+    public static final DefaultedKey<String> HANGING_FRUIT_CHANCE = new DefaultedKey<>("hanging-fruit-chance", "100");
     //BOUNDS NODE
     public static final DefaultedKey<String> NODE_BOUNDS = new DefaultedKey<>("bounds", "");
     public static final DefaultedKey<Boolean> USE_VANILLA_COLLISION = new DefaultedKey<>("use-vanilla-collision", true);

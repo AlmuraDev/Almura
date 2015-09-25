@@ -659,6 +659,8 @@ public class PackCreator {
 
     public static TreeNode createTreeNode(Pack pack, String name, ConfigurationNode node) {
         final int minTreeHeight = node.getNode(PackKeys.MIN_HEIGHT.getKey()).getInt(PackKeys.MIN_HEIGHT.getDefaultValue());
+        final RangeProperty<Integer> heightVariance = new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class, node.getNode(PackKeys
+                .HEIGHT_VARIANCE.getKey()).getString(PackKeys.HEIGHT_VARIANCE.getDefaultValue()), 0));
         final Pair<String, String> pairWoodModidIdentifier = GameObjectMapper.parseModidIdentifierFrom(node.getNode(PackKeys.WOOD.getKey())
                 .getString(PackKeys.WOOD.getDefaultValue()));
         final Optional<GameObject> optWood = GameObjectMapper.getGameObject(pairWoodModidIdentifier.getKey(), pairWoodModidIdentifier.getValue(),
@@ -698,6 +700,7 @@ public class PackCreator {
                 .getString(PackKeys.FRUIT.getDefaultValue()));
         Optional<GameObject> optFruit = GameObjectMapper.getGameObject(pairFruitModidIdentifier.getKey(), pairFruitModidIdentifier.getValue(),
                 false);
+        Optional<RangeProperty<Double>> optFruitChanceRange = Optional.absent();
         if ((!pairFruitModidIdentifier.getKey().isEmpty() || !pairFruitModidIdentifier.getValue().isEmpty())) {
             if (!optFruit.isPresent()) {
                 Almura.LOGGER.warn("Fruit source [" + pairFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" + pairFruitModidIdentifier
@@ -707,6 +710,9 @@ public class PackCreator {
                         "Fruit source [" + pairFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" + pairFruitModidIdentifier.getKey()
                                 + "] in pack [" + pack.getName() + "] is not a block.");
                 optFruit = Optional.absent();
+            } else {
+                optFruitChanceRange = Optional.of(new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class, node.getNode(PackKeys
+                        .FRUIT_CHANCE.getKey()).getString(PackKeys.FRUIT_CHANCE.getDefaultValue()), 100.0)));
             }
         }
 
@@ -716,6 +722,7 @@ public class PackCreator {
         Optional<GameObject> optHangingFruit = GameObjectMapper.getGameObject(pairHangingFruitModidIdentifier.getKey(),
                 pairHangingFruitModidIdentifier
                         .getValue(), false);
+        Optional<RangeProperty<Double>> optHangingFruitChanceRange = Optional.absent();
         if ((!pairHangingFruitModidIdentifier.getKey().isEmpty() || !pairHangingFruitModidIdentifier.getValue().isEmpty())) {
             if (!optHangingFruit.isPresent()) {
                 Almura.LOGGER.warn("Hanging Fruit source [" + pairHangingFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" +
@@ -725,10 +732,15 @@ public class PackCreator {
                         "Hanging Fruit source [" + pairHangingFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" +
                                 pairHangingFruitModidIdentifier.getKey() + "] in pack [" + pack.getName() + "] is not a block.");
                 optHangingFruit = Optional.absent();
+            } else {
+                optHangingFruitChanceRange = Optional.of(new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class, node.getNode(PackKeys
+                        .HANGING_FRUIT_CHANCE.getKey()).getString(PackKeys.HANGING_FRUIT_CHANCE.getDefaultValue()), 100.0)));
             }
         }
 
-        final Tree tree =  new Tree(pack, name, minTreeHeight, optWood.get(), optLeaves.get(), optFruit, optHangingFruit);
+        final Tree tree =  new Tree(pack, name, minTreeHeight, heightVariance, optWood.get(), optLeaves.get(), optFruit, optFruitChanceRange,
+                optHangingFruit, optHangingFruitChanceRange);
+
         final RangeProperty<Double> chanceRange = new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class, node.getNode(PackKeys
                 .CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
 

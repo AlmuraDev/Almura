@@ -26,7 +26,7 @@ public class NormalTreeGenerator extends WorldGenerator {
 
     public boolean generate(World world, Random random, int x, int y, int z)
     {
-        int l = random.nextInt(3) + this.tree.getMinTreeHeight();
+        int l = this.tree.getHeightVariance().getValueWithinRange() + this.tree.getMinTreeHeight();
         boolean flag = true;
 
         if (y >= 1 && y + l + 1 <= 256)
@@ -101,20 +101,48 @@ public class NormalTreeGenerator extends WorldGenerator {
                                 if (Math.abs(j2) != l1 || Math.abs(l2) != l1 || random.nextInt(2) != 0 && i3 != 0) {
                                     Block block1 = world.getBlock(i2, k1, k2);
 
-                                    if (block1.isAir(world, i2, k1, k2) || block1 == this.tree.getLeaves().minecraftObject || (this.tree.getFruit()
+                                    if (block1.isAir(world, i2, k1, k2) || block1 == this.tree.getLeaves().minecraftObject && ((this.tree.getFruit()
                                             .isPresent() && block1 == this.tree.getFruit().get().minecraftObject) ||
-                                            (this.tree.getHangingFruit().isPresent() && block1 == this.tree.getHangingFruit().get().minecraftObject)) {
-                                        // TODO Tree node needs to have chances for fruit
-                                        final GameObject toPlace = random.nextBoolean() ? this.tree.getLeaves() : this.tree.getFruit().get();
+                                            (this.tree.getHangingFruit().isPresent() && block1 == this.tree.getHangingFruit().get()
+                                                    .minecraftObject))) {
+                                        final GameObject fruitGameObject;
 
-                                        this.setBlockAndNotifyAdequately(world, i2, k1, k2, (Block) toPlace.minecraftObject, toPlace.data);
+                                        if (this.tree.getFruit().isPresent()) {
+                                            if (this.tree.getFruitChance().isPresent()) {
+                                                final double chance = this.tree.getFruitChance().get().getValueWithinRange();
+                                                if (random.nextDouble() <= (chance / 100)) {
+                                                    fruitGameObject = this.tree.getFruit().get();
+                                                } else {
+                                                    fruitGameObject = this.tree.getLeaves();
+                                                }
+                                            } else {
+                                                fruitGameObject = this.tree.getFruit().get();
+                                            }
+                                        } else {
+                                            fruitGameObject = this.tree.getLeaves();
+                                        }
 
-                                        // TODO Tree node needs to have chances for hanging fruit
-                                        if (random.nextBoolean() && this.tree.getHangingFruit().isPresent()) {
-                                            final Block block3 = world.getBlock(i2, k1 - 1, k2);
-                                            if (block3 == Blocks.air) {
-                                                this.setBlockAndNotifyAdequately(world, i2, k1 - 1, k2, (Block) this.tree.getHangingFruit().get()
-                                                        .minecraftObject, this.tree.getHangingFruit().get().data);
+                                        this.setBlockAndNotifyAdequately(world, i2, k1, k2, (Block) fruitGameObject.minecraftObject,
+                                                fruitGameObject.data);
+
+                                        if (this.tree.getHangingFruit().isPresent()) {
+                                            GameObject hangingFruitGameObject = null;
+
+                                            if (this.tree.getHangingFruitChance().isPresent()) {
+                                                final double chance = this.tree.getHangingFruitChance().get().getValueWithinRange();
+                                                if (random.nextDouble() <= (chance / 100)) {
+                                                    hangingFruitGameObject = this.tree.getHangingFruit().get();
+                                                }
+                                            } else {
+                                                hangingFruitGameObject = this.tree.getHangingFruit().get();
+                                            }
+
+                                            if (hangingFruitGameObject != null) {
+                                                final Block block3 = world.getBlock(i2, k1 - 1, k2);
+                                                if (block3 == Blocks.air) {
+                                                    this.setBlockAndNotifyAdequately(world, i2, k1 - 1, k2, (Block) hangingFruitGameObject
+                                                            .minecraftObject, hangingFruitGameObject.data);
+                                                }
                                             }
                                         }
                                     }
@@ -126,9 +154,9 @@ public class NormalTreeGenerator extends WorldGenerator {
                     for (k1 = 0; k1 < l; ++k1) {
                         block = world.getBlock(x, y + k1, z);
 
-                        if (block.isAir(world, x, y + k1, z) || block == this.tree.getLeaves().minecraftObject || (this.tree.getFruit().isPresent()
+                        if (block.isAir(world, x, y + k1, z) || block == this.tree.getLeaves().minecraftObject && ((this.tree.getFruit().isPresent()
                                 && block == this.tree.getFruit().get().minecraftObject) || (this.tree.getHangingFruit().isPresent() &&
-                                block == this.tree.getHangingFruit().get().minecraftObject)) {
+                                block == this.tree.getHangingFruit().get().minecraftObject))) {
                             this.setBlockAndNotifyAdequately(world, x, y + k1, z, (Block) this.tree.getWood().minecraftObject, this.tree.getWood()
                                     .data);
                         }
