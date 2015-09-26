@@ -22,6 +22,7 @@ public class NormalTreeGenerator extends WorldGenerator {
     private final Tree tree;
 
     public NormalTreeGenerator(Tree tree) {
+        super(true);
         this.tree = tree;
     }
 
@@ -103,7 +104,7 @@ public class NormalTreeGenerator extends WorldGenerator {
                                                     fruitGameObject = this.tree.getLeaves();
                                                 }
                                             } else {
-                                                fruitGameObject = this.tree.getFruit().get();
+                                                fruitGameObject = this.tree.getLeaves();
                                             }
                                         } else {
                                             fruitGameObject = this.tree.getLeaves();
@@ -120,8 +121,6 @@ public class NormalTreeGenerator extends WorldGenerator {
                                                 if (random.nextDouble() <= (chance / 100)) {
                                                     hangingFruitGameObject = this.tree.getHangingFruit().get();
                                                 }
-                                            } else {
-                                                hangingFruitGameObject = this.tree.getHangingFruit().get();
                                             }
 
                                             if (hangingFruitGameObject != null) {

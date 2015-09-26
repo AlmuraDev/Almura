@@ -27,10 +27,12 @@ import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.item.PackItemBlock;
 import com.almuradev.almura.pack.mapper.EntityMapper;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
+import com.almuradev.almura.pack.node.DecayNode;
 import com.almuradev.almura.pack.node.FertilizerNode;
 import com.almuradev.almura.pack.node.SoilNode;
 import com.almuradev.almura.pack.node.TreeNode;
 import com.almuradev.almura.pack.node.property.GameObjectProperty;
+import com.almuradev.almura.pack.tree.PackLeaves;
 import com.almuradev.almura.pack.tree.PackSapling;
 import com.almuradev.almura.recipe.furnace.PackFuelHandler;
 import com.almuradev.almura.server.network.play.S00AdditionalWorldInformation;
@@ -263,6 +265,13 @@ public class CommonProxy {
                     if (block instanceof PackSapling) {
                         ((PackSapling) block).addNode(PackCreator.createFertilizerNode(pack, ((PackSapling) block).getIdentifier(), reader
                                 .getNode(PackKeys.NODE_FERTILIZER.getKey())));
+                    } else if (block instanceof PackLeaves) {
+                        final DecayNode decayNode = PackCreator.createDecayNode(pack, ((PackLeaves) block).getIdentifier(), reader.getNode(PackKeys
+                                .NODE_DECAY.getKey()));
+
+                        if (decayNode != null) {
+                            ((PackLeaves) block).addNode(decayNode);
+                        }
                     }
                     //Break
                     ((INodeContainer) block).addNode(

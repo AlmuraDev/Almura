@@ -1,8 +1,3 @@
-/**
- * This file is part of Almura, All Rights Reserved.
- *
- * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
- */
 package com.almuradev.almura.pack.tree;
 
 import com.almuradev.almura.Almura;
@@ -18,14 +13,14 @@ import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
-import com.almuradev.almura.pack.node.FertilizerNode;
+import com.almuradev.almura.pack.node.DecayNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.ToolsNode;
-import com.almuradev.almura.pack.node.TreeNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
+import com.almuradev.almura.pack.node.property.GameObjectProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.almuradev.almura.tabs.Tabs;
@@ -37,23 +32,21 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockSapling;
+import net.minecraft.block.BlockLeavesBase;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemDye;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -65,7 +58,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackSapling extends BlockSapling implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer,
+public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer,
         IItemBlockInformation {
 
     public static int renderId;
@@ -80,21 +73,21 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
     private Optional<PackModelContainer> modelContainer;
     private RenderNode renderNode;
     private BreakNode breakNode;
-    private LightNode lightNode;
-    private TreeNode treeNode;
+    private DecayNode decayNode;
     private CollisionNode collisionNode;
-    private FertilizerNode fertilizerNode;
+    int[] metaCache;
 
-    public PackSapling(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
+    public PackLeaves(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
             String modelName, PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
             LightNode lightNode, RenderNode renderNode) {
+        super(Material.leaves, true);
         this.pack = pack;
         this.identifier = identifier;
         this.textureCoordinates = textureCoordinates;
         this.textureName = textureName;
         this.modelName = modelName;
         this.renderNode = addNode(renderNode);
-        this.lightNode = addNode(lightNode);
+        addNode(lightNode);
         this.tooltip = tooltip;
         setModelContainer(modelContainer);
         setUnlocalizedName(pack.getName() + "\\" + identifier);
@@ -103,6 +96,7 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
         setResistance(resistance);
         setLightLevel(lightNode.getEmission());
         setLightOpacity(lightNode.getOpacity());
+        setTickRandomly(true);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }
@@ -159,10 +153,8 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
             breakNode = (BreakNode) node;
         } else if (node.getClass() == CollisionNode.class) {
             collisionNode = (CollisionNode) node;
-        } else if (node.getClass() == TreeNode.class) {
-            treeNode = (TreeNode) node;
-        } else if (node.getClass() == FertilizerNode.class) {
-            fertilizerNode = (FertilizerNode) node;
+        } else if (node.getClass() == DecayNode.class) {
+            decayNode = (DecayNode) node;
         }
         MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
         return node;
@@ -198,11 +190,11 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof PackSapling)) {
+        if (!(obj instanceof PackLeaves)) {
             return false;
         }
 
-        final PackSapling other = (PackSapling) obj;
+        final PackLeaves other = (PackLeaves) obj;
         return pack.equals(other.pack) && identifier.equals(other.identifier);
     }
 
@@ -270,7 +262,6 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
         return modelContainer.get().getPhysics().getWireframe(vanillaBB, world, x, y, z);
     }
 
-    //TODO Check this come 1.8
     @Override
     public void harvestBlock(World world, EntityPlayer player, int x, int y, int z, int metadata) {
         player.addStat(StatList.mineBlockStatArray[getIdFromBlock(this)], 1);
@@ -343,6 +334,116 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
             }
         }
         harvesters.set(null);
+    }
+
+    @Override
+    public void breakBlock(World worldIn, int x, int y, int z, Block blockBroken, int meta) {
+        byte b0 = 1;
+        int i1 = b0 + 1;
+
+        if (worldIn.checkChunksExist(x - i1, y - i1, z - i1, x + i1, y + i1, z + i1)) {
+            for (int j1 = -b0; j1 <= b0; ++j1) {
+                for (int k1 = -b0; k1 <= b0; ++k1) {
+                    for (int l1 = -b0; l1 <= b0; ++l1) {
+                        final Block block = worldIn.getBlock(x + j1, y + k1, z + l1);
+                        if (block == this) {
+                            block.beginLeavesDecay(worldIn, x + j1, y + k1, z + l1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void updateTick(World worldIn, int x, int y, int z, Random random) {
+        if (!worldIn.isRemote && decayNode != null && decayNode.isEnabled()) {
+            byte b0 = 4;
+            int i1 = b0 + 1;
+            byte b1 = 32;
+            int j1 = b1 * b1;
+            int k1 = b1 / 2;
+
+            if (this.metaCache == null) {
+                this.metaCache = new int[b1 * b1 * b1];
+            }
+
+            int l1;
+
+            if (worldIn.checkChunksExist(x - i1, y - i1, z - i1, x + i1, y + i1, z + i1)) {
+                int i2;
+                int j2;
+
+                for (l1 = -b0; l1 <= b0; ++l1) {
+                    for (i2 = -b0; i2 <= b0; ++i2) {
+                        for (j2 = -b0; j2 <= b0; ++j2) {
+                            Block block = worldIn.getBlock(x + l1, y + i2, z + j2);
+                            final int blockMetadata = worldIn.getBlockMetadata(x + l1, y + i2, z + j2);
+                            GameObject found = null;
+                            // Check if we have something that prevents decaying nearby
+                            for (GameObjectProperty prop : decayNode.getPreventDecayProperties()) {
+                                final Object minecraftObject = prop.getSource().minecraftObject instanceof ItemBlock ? ((ItemBlock) prop.getSource()
+                                        .minecraftObject).blockInstance : prop.getSource().minecraftObject;
+                                if (minecraftObject == block && prop.getSource().data == blockMetadata) {
+                                    found = prop.getSource();
+                                    break;
+                                }
+                            }
+
+                            if (found == null) {
+                                if (block == this) {
+                                    this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -2;
+                                } else {
+                                    this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -1;
+                                }
+                            } else {
+                                this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = 0;
+                            }
+                        }
+                    }
+                }
+
+                for (l1 = 1; l1 <= 4; ++l1) {
+                    for (i2 = -b0; i2 <= b0; ++i2) {
+                        for (j2 = -b0; j2 <= b0; ++j2) {
+                            for (int k2 = -b0; k2 <= b0; ++k2) {
+                                if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1] == l1 - 1) {
+                                    if (this.metaCache[(i2 + k1 - 1) * j1 + (j2 + k1) * b1 + k2 + k1] == -2) {
+                                        this.metaCache[(i2 + k1 - 1) * j1 + (j2 + k1) * b1 + k2 + k1] = l1;
+                                    }
+
+                                    if (this.metaCache[(i2 + k1 + 1) * j1 + (j2 + k1) * b1 + k2 + k1] == -2) {
+                                        this.metaCache[(i2 + k1 + 1) * j1 + (j2 + k1) * b1 + k2 + k1] = l1;
+                                    }
+
+                                    if (this.metaCache[(i2 + k1) * j1 + (j2 + k1 - 1) * b1 + k2 + k1] == -2) {
+                                        this.metaCache[(i2 + k1) * j1 + (j2 + k1 - 1) * b1 + k2 + k1] = l1;
+                                    }
+
+                                    if (this.metaCache[(i2 + k1) * j1 + (j2 + k1 + 1) * b1 + k2 + k1] == -2) {
+                                        this.metaCache[(i2 + k1) * j1 + (j2 + k1 + 1) * b1 + k2 + k1] = l1;
+                                    }
+
+                                    if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + (k2 + k1 - 1)] == -2) {
+                                        this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + (k2 + k1 - 1)] = l1;
+                                    }
+
+                                    if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 + 1] == -2) {
+                                        this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 + 1] = l1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            l1 = this.metaCache[k1 * j1 + k1 * b1 + k1];
+
+            if (l1 < 0) {
+                this.removeLeaves(worldIn, x, y, z);
+            }
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -453,110 +554,31 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
     }
 
     @Override
-    public boolean canBlockStay(World worldIn, int x, int y, int z) {
-        boolean checkLight = lightNode != null && lightNode.getValue().getSource();
-        boolean stay = false;
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
+        final ArrayList<ItemStack> drops = Lists.newArrayList();
 
-        if (checkLight) {
-            final int minLightLevel = lightNode.getValue().getMin();
-            final int maxLightLevel = lightNode.getValue().getMax();
-            final int areaBlockLight = worldIn.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
-            final int worldLight = worldIn.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - worldIn.skylightSubtracted;
-            if (areaBlockLight >= minLightLevel && areaBlockLight <= maxLightLevel) {
-                stay = true;
-            } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
-                stay = true;
-            }
-        } else {
-            stay = true;
-        }
+        if (decayNode != null && decayNode.isEnabled()) {
+            for (DropProperty prop : decayNode.getValue()) {
+                final GameObject object = prop.getSource();
+                final int meta = prop.getData();
 
-        return stay;
-    }
+                final ItemStack drop;
 
-    @Override
-    public void updateTick(World worldIn, int x, int y, int z, Random random) {
-        if (!worldIn.isRemote && treeNode != null) {
-
-            this.checkAndDropBlock(worldIn, x, y, z);
-
-            final double chance = treeNode.getValue().getValueWithinRange();
-            if (random.nextDouble() <= (chance / 100)) {
-                this.growTree(worldIn, x, y, z, random);
-            }
-        }
-    }
-
-    @Override
-    public void growTree(World p_149878_1_, int p_149878_2_, int p_149878_3_, int p_149878_4_, Random p_149878_5_) {
-        if (!net.minecraftforge.event.terraingen.TerrainGen.saplingGrowTree(p_149878_1_, p_149878_5_, p_149878_2_, p_149878_3_, p_149878_4_)) {
-            return;
-        }
-
-        p_149878_1_.setBlock(p_149878_2_, p_149878_3_, p_149878_4_, Blocks.air, 0, 4);
-        if (!treeNode.getTree().getGenerator().generate(p_149878_1_, p_149878_5_, p_149878_2_, p_149878_3_, p_149878_4_)) {
-            p_149878_1_.setBlock(p_149878_2_, p_149878_3_, p_149878_4_, this, 0, 4);
-        }
-    }
-
-    @Override
-    public int damageDropped(int meta) {
-        return meta;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List list) {
-        list.add(new ItemStack(itemIn, 1, 0));
-    }
-
-    @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_,
-            float p_149727_9_) {
-        if (!world.isRemote) {
-            final ItemStack stack = player.getCurrentEquippedItem();
-            if (stack != null) {
-                if (!(stack.getItem() instanceof ItemDye && stack.getMetadata() == 15) && ItemDye
-                        .applyBonemeal(stack, world, x, y, z, player)) {
-                    world.playAuxSFX(2005, x, y, z, 0);
-
-                    if (player.capabilities.isCreativeMode) {
-                        ++stack.stackSize;
-                    }
-
-                    return true;
+                if (object.minecraftObject instanceof Block) {
+                    drop = new ItemStack((Block) object.minecraftObject, prop.getAmountProperty().getValueWithinRange(), meta);
+                } else {
+                    drop = new ItemStack((Item) object.minecraftObject, prop.getAmountProperty().getValueWithinRange(), meta);
                 }
+
+                drops.add(drop);
             }
         }
-        return false;
+        return drops;
     }
 
-    @Override
-    public void markOrGrowMarked(World p_149879_1_, int p_149879_2_, int p_149879_3_, int p_149879_4_, Random p_149879_5_) {
-        this.growTree(p_149879_1_, p_149879_2_, p_149879_3_, p_149879_4_, p_149879_5_);
-    }
-
-    @Override
-    public boolean canFertilize(World worldIn, int x, int y, int z, boolean isClient) {
-        if (fertilizerNode == null || isClient) {
-            return false;
-        }
-        // TODO This can do biome checks
-        return true;
-    }
-
-    @Override
-    public boolean shouldFertilize(World worldIn, Random random, int x, int y, int z) {
-        if (fertilizerNode == null) {
-            return false;
-        }
-        // TODO Chance calculations
-        return true;
-    }
-
-    @Override
-    public void fertilize(World worldIn, Random random, int x, int y, int z) {
-        // TODO Effect?
-        this.markOrGrowMarked(worldIn, x, y, z, random);
+    private void removeLeaves(World world, int x, int y, int z) {
+        this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
+        world.setBlockToAir(x, y, z);
     }
 
     private boolean isVecInsideYZBounds(Vec3 point) {
@@ -586,6 +608,7 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
                     .get().getPhysics().getRayMaxY();
         } else {
             return point != null && point.xCoord >= minX && point.xCoord <= maxX && point.yCoord >= minY && point.yCoord <= maxY;
+
         }
     }
 }

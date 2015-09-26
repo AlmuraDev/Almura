@@ -7,6 +7,7 @@ package com.almuradev.almura.pack;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.LogHelper;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
@@ -28,6 +29,7 @@ import com.almuradev.almura.pack.node.BreakNode;
 import com.almuradev.almura.pack.node.CollisionNode;
 import com.almuradev.almura.pack.node.ConsumptionNode;
 import com.almuradev.almura.pack.node.ContainerNode;
+import com.almuradev.almura.pack.node.DecayNode;
 import com.almuradev.almura.pack.node.DropsNode;
 import com.almuradev.almura.pack.node.FertilizerNode;
 import com.almuradev.almura.pack.node.FuelNode;
@@ -49,6 +51,7 @@ import com.almuradev.almura.pack.node.property.GameObjectProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
+import com.almuradev.almura.pack.tree.PackLeaves;
 import com.almuradev.almura.pack.tree.PackSapling;
 import com.almuradev.almura.pack.tree.Tree;
 import com.almuradev.almura.recipe.DuplicateRecipeException;
@@ -73,6 +76,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -657,6 +661,57 @@ public class PackCreator {
         return sapling;
     }
 
+    public static PackLeaves createLeavesFromReader(Pack pack, String name, ConfigurationNode reader) {
+        final List<String> description = PackUtil.parseNewlineStringIntoList(
+                reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
+        final List<String> tooltip = Lists.newLinkedList();
+        if (description.size() > 1) {
+            tooltip.addAll(description);
+            tooltip.remove(0);
+        }
+        final String textureName = reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+        final String modelName = reader.getNode(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
+        PackModelContainer modelContainer = null;
+        for (PackModelContainer mContainer : Pack.getModelContainers()) {
+            if (mContainer.getIdentifier().equalsIgnoreCase(modelName)) {
+                modelContainer = mContainer;
+            }
+        }
+        if (modelContainer == null && (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS)) {
+            Almura.LOGGER
+                    .warn("Model [" + modelName + "] in [" + name + "] in pack [" + pack.getName() + "] was not found. Will render as a basic cube.");
+        }
+        Map<Integer, List<Integer>> textureCoordinates;
+        try {
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
+                    .FUNCTION_STRING_TRANSFORMER));
+        } catch (NumberFormatException nfe) {
+            if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
+                Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            }
+            textureCoordinates = Maps.newHashMap();
+        }
+        final boolean showInCreativeTab = reader.getNode(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
+                PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
+        final String creativeTabName = reader.getNode(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
+
+        final float hardness = reader.getNode(PackKeys.HARDNESS.getKey()).getFloat(PackKeys.HARDNESS.getDefaultValue());
+        final float resistance = reader.getNode(PackKeys.RESISTANCE.getKey()).getFloat(PackKeys.RESISTANCE.getDefaultValue());
+
+        final LightNode lightNode = createLightNode(pack, name, reader.getNode(PackKeys.NODE_LIGHT.getKey()));
+        final RenderNode renderNode = createRenderNode(pack, name, reader.getNode(PackKeys.NODE_RENDER.getKey()));
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", description.get(0));
+
+        final PackLeaves leaves = new PackLeaves(pack, name, tooltip, textureName, textureCoordinates, modelName, modelContainer, hardness,
+                resistance, showInCreativeTab, creativeTabName, lightNode, renderNode);
+
+        if (!reader.getNode(PackKeys.NODE_FUEL.getKey()).isVirtual()) {
+            leaves.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
+        }
+
+        return leaves;
+    }
+
     public static TreeNode createTreeNode(Pack pack, String name, ConfigurationNode node) {
         final int minTreeHeight = node.getNode(PackKeys.MIN_HEIGHT.getKey()).getInt(PackKeys.MIN_HEIGHT.getDefaultValue());
         final RangeProperty<Integer> heightVariance = new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class, node.getNode(PackKeys
@@ -745,6 +800,65 @@ public class PackCreator {
                 .CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
 
         return new TreeNode(tree, chanceRange);
+    }
+
+    public static DecayNode createDecayNode(Pack pack, String name, ConfigurationNode node) {
+        final boolean decayEnabled = node.getNode(PackKeys.ENABLED.getKey()).getBoolean(true);
+
+        final ConfigurationNode dropsConfigurationNode = node.getNode(PackKeys.DROPS.getKey());
+        final Set<DropProperty> drops = Sets.newHashSet();
+
+        for (Map.Entry<Object, ? extends ConfigurationNode> dropConfigurationNodes : dropsConfigurationNode.getChildrenMap().entrySet()) {
+            final String rawDropSource = (String) dropConfigurationNodes.getKey();
+            final Pair<String, String> dropSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawDropSource);
+            final Optional<GameObject> drop = GameObjectMapper.getGameObject(rawDropSource, true);
+            if (!drop.isPresent()) {
+                Almura.LOGGER
+                        .warn("Drop source [" + dropSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" + dropSourceModIdIdentifier
+                                .getKey()
+                                + "] in pack [" + pack.getName()
+                                + "] is not a registered block or item.");
+                continue;
+            }
+            final RangeProperty<Integer>
+                    amountRange =
+                    new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
+                            dropConfigurationNodes.getValue().getNode(PackKeys.AMOUNT.getKey())
+                                    .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
+            final int data = dropConfigurationNodes.getValue().getNode(PackKeys.DATA.getKey()).getInt(PackKeys.DATA.getDefaultValue());
+            final ConfigurationNode bonusConfigurationNode = dropConfigurationNodes.getValue().getNode(PackKeys.BONUS.getKey());
+            final boolean
+                    bonusEnabled =
+                    bonusConfigurationNode.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+            final RangeProperty<Integer>
+                    bonusAmountRange =
+                    new RangeProperty<>(Integer.class, true, PackUtil.getRange(Integer.class,
+                            bonusConfigurationNode.getNode(PackKeys.AMOUNT.getKey())
+                                    .getString(PackKeys.AMOUNT.getDefaultValue()), 1));
+            final RangeProperty<Double>
+                    bonusChanceRange =
+                    new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class,
+                            bonusConfigurationNode.getNode(PackKeys.CHANCE.getKey())
+                                    .getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
+            drops.add(new DropProperty(drop.get(), amountRange, data,
+                    new BonusProperty<>(Integer.class, bonusEnabled, bonusAmountRange, bonusChanceRange)));
+        }
+
+        final Set<GameObjectProperty> preventsDecayProperties = Sets.newHashSet();
+        for (String prevent : node.getNode(PackKeys.PREVENTS_DECAY.getKey()).getList(Functions.FUNCTION_STRING_TRANSFORMER)) {
+            final Optional<GameObject> gameObject = GameObjectMapper.getGameObject(prevent, true);
+            if (!gameObject.isPresent()) {
+                LogHelper.logPackWarnOrError("Decay preventer [" + prevent + "] in [" + name + " in pack [" + pack.getName() + "] is not a known "
+                        + "block!", Optional.<Throwable>absent());
+            } else if (!gameObject.get().isBlock() && !(gameObject.get().minecraftObject instanceof ItemBlock)) {
+                    LogHelper.logPackWarnOrError("Decay preventer [" + prevent + " in [" + name + " in pack [" + pack.getName() + "] is not a "
+                            + "block!", Optional.<Throwable>absent());
+            } else {
+                preventsDecayProperties.add(new GameObjectProperty(gameObject.get()));
+            }
+        }
+
+        return new DecayNode(decayEnabled, drops, preventsDecayProperties);
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {
