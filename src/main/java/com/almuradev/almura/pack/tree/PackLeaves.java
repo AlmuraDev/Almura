@@ -69,13 +69,13 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String textureName;
     private final List<String> tooltip;
+    int[] metaCache;
     private ClippedIcon[] clippedIcons;
     private Optional<PackModelContainer> modelContainer;
     private RenderNode renderNode;
     private BreakNode breakNode;
     private DecayNode decayNode;
     private CollisionNode collisionNode;
-    int[] metaCache;
 
     public PackLeaves(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
             String modelName, PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
@@ -356,6 +356,16 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
     }
 
     @Override
+    public void beginLeavesDecay(World world, int x, int y, int z) {
+        int i2 = world.getBlockMetadata(x, y, z);
+
+        if ((i2 & 8) == 0) {
+            world.setBlockMetadataWithNotify(x, y, z, i2 | 8, 4);
+        }
+        world.setBlockMetadataWithNotify(x, y, z, world.getBlockMetadata(x, y, z) | 8, 4);
+    }
+
+    @Override
     public void updateTick(World worldIn, int x, int y, int z, Random random) {
         if (!worldIn.isRemote && decayNode != null && decayNode.isEnabled()) {
             byte b0 = 4;
@@ -364,84 +374,93 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
             int j1 = b1 * b1;
             int k1 = b1 / 2;
 
-            if (this.metaCache == null) {
-                this.metaCache = new int[b1 * b1 * b1];
-            }
+            int l = worldIn.getBlockMetadata(x, y, z);
 
-            int l1;
+            if ((l & 8) != 0 && (l & 4) == 0) {
+                if (this.metaCache == null) {
+                    this.metaCache = new int[b1 * b1 * b1];
+                }
 
-            if (worldIn.checkChunksExist(x - i1, y - i1, z - i1, x + i1, y + i1, z + i1)) {
-                int i2;
-                int j2;
+                int l1;
 
-                for (l1 = -b0; l1 <= b0; ++l1) {
-                    for (i2 = -b0; i2 <= b0; ++i2) {
-                        for (j2 = -b0; j2 <= b0; ++j2) {
-                            Block block = worldIn.getBlock(x + l1, y + i2, z + j2);
-                            final int blockMetadata = worldIn.getBlockMetadata(x + l1, y + i2, z + j2);
-                            GameObject found = null;
-                            // Check if we have something that prevents decaying nearby
-                            for (GameObjectProperty prop : decayNode.getPreventDecayProperties()) {
-                                final Object minecraftObject = prop.getSource().minecraftObject instanceof ItemBlock ? ((ItemBlock) prop.getSource()
-                                        .minecraftObject).blockInstance : prop.getSource().minecraftObject;
-                                if (minecraftObject == block && prop.getSource().data == blockMetadata) {
-                                    found = prop.getSource();
-                                    break;
+                if (worldIn.checkChunksExist(x - i1, y - i1, z - i1, x + i1, y + i1, z + i1)) {
+                    int i2;
+                    int j2;
+
+                    for (l1 = -b0; l1 <= b0; ++l1) {
+                        for (i2 = -b0; i2 <= b0; ++i2) {
+                            for (j2 = -b0; j2 <= b0; ++j2) {
+                                Block block = worldIn.getBlock(x + l1, y + i2, z + j2);
+                                final int blockMetadata = worldIn.getBlockMetadata(x + l1, y + i2, z + j2);
+                                GameObject found = null;
+                                // Check if we have something that prevents decaying nearby
+                                for (GameObjectProperty prop : decayNode.getPreventDecayProperties()) {
+                                    final Object minecraftObject =
+                                            prop.getSource().minecraftObject instanceof ItemBlock ? ((ItemBlock) prop.getSource()
+                                                    .minecraftObject).blockInstance : prop.getSource().minecraftObject;
+                                    if (minecraftObject == block) {
+                                        if (prop.getSource().data == blockMetadata) {
+                                            found = prop.getSource();
+                                            break;
+                                        }
+                                    }
                                 }
-                            }
 
-                            if (found == null) {
-                                if (block == this) {
-                                    this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -2;
+                                if (found == null) {
+                                    if (block == this) {
+                                        this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -2;
+                                    } else {
+                                        this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -1;
+                                    }
                                 } else {
-                                    this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -1;
+                                    this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = 0;
                                 }
-                            } else {
-                                this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = 0;
                             }
                         }
                     }
-                }
 
-                for (l1 = 1; l1 <= 4; ++l1) {
-                    for (i2 = -b0; i2 <= b0; ++i2) {
-                        for (j2 = -b0; j2 <= b0; ++j2) {
-                            for (int k2 = -b0; k2 <= b0; ++k2) {
-                                if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1] == l1 - 1) {
-                                    if (this.metaCache[(i2 + k1 - 1) * j1 + (j2 + k1) * b1 + k2 + k1] == -2) {
-                                        this.metaCache[(i2 + k1 - 1) * j1 + (j2 + k1) * b1 + k2 + k1] = l1;
-                                    }
+                    for (l1 = 1; l1 <= 4; ++l1) {
+                        for (i2 = -b0; i2 <= b0; ++i2) {
+                            for (j2 = -b0; j2 <= b0; ++j2) {
+                                for (int k2 = -b0; k2 <= b0; ++k2) {
+                                    if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1] == l1 - 1) {
+                                        if (this.metaCache[(i2 + k1 - 1) * j1 + (j2 + k1) * b1 + k2 + k1] == -2) {
+                                            this.metaCache[(i2 + k1 - 1) * j1 + (j2 + k1) * b1 + k2 + k1] = l1;
+                                        }
 
-                                    if (this.metaCache[(i2 + k1 + 1) * j1 + (j2 + k1) * b1 + k2 + k1] == -2) {
-                                        this.metaCache[(i2 + k1 + 1) * j1 + (j2 + k1) * b1 + k2 + k1] = l1;
-                                    }
+                                        if (this.metaCache[(i2 + k1 + 1) * j1 + (j2 + k1) * b1 + k2 + k1] == -2) {
+                                            this.metaCache[(i2 + k1 + 1) * j1 + (j2 + k1) * b1 + k2 + k1] = l1;
+                                        }
 
-                                    if (this.metaCache[(i2 + k1) * j1 + (j2 + k1 - 1) * b1 + k2 + k1] == -2) {
-                                        this.metaCache[(i2 + k1) * j1 + (j2 + k1 - 1) * b1 + k2 + k1] = l1;
-                                    }
+                                        if (this.metaCache[(i2 + k1) * j1 + (j2 + k1 - 1) * b1 + k2 + k1] == -2) {
+                                            this.metaCache[(i2 + k1) * j1 + (j2 + k1 - 1) * b1 + k2 + k1] = l1;
+                                        }
 
-                                    if (this.metaCache[(i2 + k1) * j1 + (j2 + k1 + 1) * b1 + k2 + k1] == -2) {
-                                        this.metaCache[(i2 + k1) * j1 + (j2 + k1 + 1) * b1 + k2 + k1] = l1;
-                                    }
+                                        if (this.metaCache[(i2 + k1) * j1 + (j2 + k1 + 1) * b1 + k2 + k1] == -2) {
+                                            this.metaCache[(i2 + k1) * j1 + (j2 + k1 + 1) * b1 + k2 + k1] = l1;
+                                        }
 
-                                    if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + (k2 + k1 - 1)] == -2) {
-                                        this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + (k2 + k1 - 1)] = l1;
-                                    }
+                                        if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + (k2 + k1 - 1)] == -2) {
+                                            this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + (k2 + k1 - 1)] = l1;
+                                        }
 
-                                    if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 + 1] == -2) {
-                                        this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 + 1] = l1;
+                                        if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 + 1] == -2) {
+                                            this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 + 1] = l1;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            l1 = this.metaCache[k1 * j1 + k1 * b1 + k1];
+                l1 = this.metaCache[k1 * j1 + k1 * b1 + k1];
 
-            if (l1 < 0) {
-                this.removeLeaves(worldIn, x, y, z);
+                if (l1 >= 0) {
+                    worldIn.setBlockMetadataWithNotify(x, y, z, l & -9, 4);
+                } else {
+                    this.removeLeaves(worldIn, x, y, z);
+                }
             }
         }
     }
