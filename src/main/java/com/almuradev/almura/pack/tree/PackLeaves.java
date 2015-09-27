@@ -558,19 +558,21 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
         final ArrayList<ItemStack> drops = Lists.newArrayList();
 
         if (decayNode != null && decayNode.isEnabled()) {
-            for (DropProperty prop : decayNode.getValue()) {
-                final GameObject object = prop.getSource();
-                final int meta = prop.getData();
+            if (world.rand.nextInt(20) == 0) {
+                for (DropProperty prop : decayNode.getValue()) {
+                    final GameObject object = prop.getSource();
+                    final int meta = prop.getData();
 
-                final ItemStack drop;
+                    final ItemStack drop;
 
-                if (object.minecraftObject instanceof Block) {
-                    drop = new ItemStack((Block) object.minecraftObject, prop.getAmountProperty().getValueWithinRange(), meta);
-                } else {
-                    drop = new ItemStack((Item) object.minecraftObject, prop.getAmountProperty().getValueWithinRange(), meta);
+                    if (object.minecraftObject instanceof Block) {
+                        drop = new ItemStack((Block) object.minecraftObject, prop.getAmountProperty().getValueWithinRange(), meta);
+                    } else {
+                        drop = new ItemStack((Item) object.minecraftObject, prop.getAmountProperty().getValueWithinRange(), meta);
+                    }
+
+                    drops.add(drop);
                 }
-
-                drops.add(drop);
             }
         }
         return drops;
