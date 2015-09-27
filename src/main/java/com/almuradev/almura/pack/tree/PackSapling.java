@@ -476,7 +476,7 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
 
     @Override
     public void updateTick(World worldIn, int x, int y, int z, Random random) {
-        if (!worldIn.isRemote && treeNode != null) {
+        if (!worldIn.isRemote && treeNode != null && treeNode.getTree() != null) {
 
             this.checkAndDropBlock(worldIn, x, y, z);
 
@@ -537,7 +537,7 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
 
     @Override
     public boolean canFertilize(World worldIn, int x, int y, int z, boolean isClient) {
-        if (fertilizerNode == null || isClient) {
+        if (fertilizerNode == null || isClient || treeNode == null || treeNode.getTree() == null) {
             return false;
         }
         // TODO This can do biome checks
