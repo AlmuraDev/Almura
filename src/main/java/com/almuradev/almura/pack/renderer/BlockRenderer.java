@@ -82,6 +82,7 @@ public class BlockRenderer extends MalisisRenderer {
                 handleScaling((IModel) shape);
             }
         }
+        shape.deductParameters();
         drawShape(shape, rp);
     }
 
@@ -299,7 +300,6 @@ public class BlockRenderer extends MalisisRenderer {
             model.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
         }
         ((Shape) model).applyMatrix();
-        ((Shape) model).deductParameters();
     }
 
     private void handleScaling(IModel model) {
