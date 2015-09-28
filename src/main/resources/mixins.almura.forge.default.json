@@ -18,6 +18,7 @@
     "client": [
         "client.entity.MixinEntityClientPlayerMP",
         "client.gui.inventory.MixinGuiEditSign",
+        "client.gui.inventory.MixinGuiContainer",
         "client.gui.MixinGuiChat",
         "client.gui.MixinGuiIngameForge",
         "client.gui.MixinGuiNewChat",
