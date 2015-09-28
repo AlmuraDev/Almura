@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGuiContainer extends GuiScreen { 
 
     @Inject(method = "keyTyped", at = @At("HEAD"))
-    public void keyTyped(char p_73869_1_, int p_73869_2_, CallbackInfo ci) {
+    public void keyTyped(char p_73869_1_, int p_73869_2_) {
         if (p_73869_2_ == 1 || p_73869_2_ == Bindings.BINDING_OPEN_BACKPACK.getKeyCode())
         {
             this.mc.thePlayer.closeScreen();
