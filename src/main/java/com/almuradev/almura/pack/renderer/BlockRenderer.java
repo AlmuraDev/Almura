@@ -174,6 +174,7 @@ public class BlockRenderer extends MalisisRenderer {
         return color;
     }
 
+    @Override
     public void applyTexture(Shape shape, RenderParameters parameters) {
         //shape.applyMatrix();
         for (Face f : shape.getFaces()) {
