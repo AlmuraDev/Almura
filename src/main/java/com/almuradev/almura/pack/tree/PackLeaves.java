@@ -366,6 +366,11 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
     }
 
     @Override
+    public boolean isLeaves(IBlockAccess world, int x, int y, int z) {
+        return true;
+    }
+
+    @Override
     public void updateTick(World worldIn, int x, int y, int z, Random random) {
         if (!worldIn.isRemote && decayNode != null && decayNode.isEnabled()) {
             byte b0 = 4;
@@ -407,7 +412,7 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
                                 }
 
                                 if (found == null) {
-                                    if (block == this) {
+                                    if (block.isLeaves(worldIn, x + l1, y + i2, z + j2)) {
                                         this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -2;
                                     } else {
                                         this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -1;
