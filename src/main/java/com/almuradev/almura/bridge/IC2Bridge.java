@@ -5,6 +5,12 @@
  */
 package com.almuradev.almura.bridge;
 
+import net.minecraft.world.WorldServer;
+
+import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+import ic2.api.event.ExplosionEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import ic2.api.event.LaserEvent;
 import net.minecraft.block.Block;
@@ -53,10 +59,27 @@ public class IC2Bridge {
         if (event.owner instanceof EntityPlayerMP && !event.world.isRemote) {
             final Block hit = event.world.getBlock(event.x, event.y, event.z);
             final int blockMetadata = event.world.getBlockMetadata(event.x, event.y, event.z);
-            final BlockEvent.BreakEvent event1 = new BlockEvent.BreakEvent(event.x, event.y, event.z, event.world, hit, blockMetadata,
-                    (EntityPlayer) event.owner);
+            final BlockEvent.BreakEvent event1 = new BlockEvent.BreakEvent(event.x, event.y, event.z, event.world, hit, blockMetadata, (EntityPlayer) event.owner);
             MinecraftForge.EVENT_BUS.post(event1);
             event.setCanceled(event1.isCanceled());
+        }
+    }
+    
+    @SubscribeEvent
+    public void onTNTExplode(ExplosionEvent event) { //Thrown only once...
+        if (!event.world.isRemote) {
+            final Block hit = event.world.getBlock((int)event.x, (int)event.y, (int)event.z);
+            final int blockMetadata = event.world.getBlockMetadata((int)event.x, (int)event.y, (int)event.z);
+            if (event.igniter instanceof EntityPlayer) {
+                final BlockEvent.BreakEvent event1 = new BlockEvent.BreakEvent((int)event.x, (int)event.y, (int)event.z, event.world, hit, blockMetadata, (EntityPlayer)event.igniter);
+                MinecraftForge.EVENT_BUS.post(event1);
+                event.setCanceled(event1.isCanceled());
+            } else {
+                GameProfile ic2FakePlayer = new GameProfile(UUID.fromString("41C82C87-7AfB-4024-BA57-13D2C99CAE79"), "[IC2]");
+                final BlockEvent.BreakEvent event1 = new BlockEvent.BreakEvent((int)event.x, (int)event.y, (int)event.z, event.world, hit, blockMetadata, net.minecraftforge.common.util.FakePlayerFactory.get((WorldServer)event.world, ic2FakePlayer));
+                MinecraftForge.EVENT_BUS.post(event1);
+                event.setCanceled(event1.isCanceled());
+            }            
         }
     }
 }
