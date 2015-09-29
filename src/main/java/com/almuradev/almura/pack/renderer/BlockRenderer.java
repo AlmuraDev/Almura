@@ -6,7 +6,6 @@
 package com.almuradev.almura.pack.renderer;
 
 import com.almuradev.almura.pack.node.RenderNode;
-import net.minecraft.client.renderer.entity.Render;
 import org.lwjgl.opengl.GL11;
 
 import com.almuradev.almura.Almura;
@@ -66,14 +65,6 @@ public class BlockRenderer extends MalisisRenderer {
             rp.useBlockBounds.set(false);
             rp.renderAllFaces.set(true);
             rp.interpolateUV.set(false);
-
-            if (block instanceof INodeContainer) {
-                final RenderNode renderNode = ((INodeContainer) block).getNode(RenderNode.class);
-                if (renderNode != null) {
-                    rp.flipU.set(renderNode.isFlipU());
-                    rp.flipV.set(renderNode.isFlipV());
-                }
-            }
         }
 
         if (shape instanceof IModel) {
