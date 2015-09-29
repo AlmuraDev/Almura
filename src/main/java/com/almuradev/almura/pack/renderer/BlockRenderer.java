@@ -82,8 +82,18 @@ public class BlockRenderer extends MalisisRenderer {
                 handleScaling((IModel) shape);
             }
         }
+        
+        if (renderType == RenderType.ISBRH_INVENTORY) { //needed to fix custom block lighting
+        	net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
+        }
+        
         shape.deductParameters();
         drawShape(shape, rp);
+        
+        if (renderType == RenderType.ISBRH_INVENTORY) {
+        	next(); // force draw
+        	net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting(); //re-enable block lighting
+        }
     }
 
     @Override
@@ -168,7 +178,7 @@ public class BlockRenderer extends MalisisRenderer {
 
             return color;
     }
-
+    
     // The following method override is neede because Almura's original shape format was flawed. 
     @Override
     public void applyTexture(Shape shape, RenderParameters parameters)
@@ -203,7 +213,7 @@ public class BlockRenderer extends MalisisRenderer {
                 }
             }
         }
-    }
+    } 
 
     @Override
     @SuppressWarnings("unchecked")
