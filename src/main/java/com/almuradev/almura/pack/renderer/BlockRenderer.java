@@ -6,6 +6,7 @@
 package com.almuradev.almura.pack.renderer;
 
 import com.almuradev.almura.pack.node.RenderNode;
+import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import com.almuradev.almura.Almura;
@@ -171,6 +172,27 @@ public class BlockRenderer extends MalisisRenderer {
         color = r << 16 | g << 8 | b;
 
         return color;
+    }
+
+    public void applyTexture(Shape shape, RenderParameters parameters) {
+        //shape.applyMatrix();
+        for (Face f : shape.getFaces()) {
+            face = f;
+            RenderParameters params = new RenderParameters();
+            params.merge(f.getParameters());
+            params.merge(parameters);
+
+            IIcon icon = getIcon(params);
+            if (icon != null) {
+                boolean flipU = params.flipU.get();
+                // Only do this if Cube...since the .shape format is the stupidest fucking format to ever exist.
+                if (shape instanceof Cube) {
+                    if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST)
+                        flipU = !flipU;
+                }
+                f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
+            }
+        }
     }
 
     @Override
