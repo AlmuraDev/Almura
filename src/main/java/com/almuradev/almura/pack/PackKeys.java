@@ -60,6 +60,8 @@ public class PackKeys {
     public static final DefaultedKey<String> NODE_RENDER = new DefaultedKey<>("render", "");
     public static final DefaultedKey<Boolean> NORMAL_CUBE = new DefaultedKey<>("normal-cube", Boolean.TRUE);
     public static final DefaultedKey<Boolean> OPAQUE = new DefaultedKey<>("opaque", Boolean.FALSE);
+    public static final DefaultedKey<Boolean> FLIP_U = new DefaultedKey<>("flip-u", Boolean.TRUE);
+    public static final DefaultedKey<Boolean> FLIP_V = new DefaultedKey<>("flip-v", Boolean.TRUE);
     //RECIPES NODE
     public static final DefaultedKey<String> NODE_RECIPES = new DefaultedKey<>("recipes", "");
     public static final DefaultedKey<? extends List<String>> INGREDIENTS = new DefaultedKey<>("ingredients", Lists.<String>newArrayList());

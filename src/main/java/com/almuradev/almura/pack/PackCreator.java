@@ -163,7 +163,8 @@ public class PackCreator {
         for (ConfigurationNode node : modelConfigurationNode.getChildrenList()) {
             final String rawCoordinateString = node.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getString("");
             final int textureIndex = node.getNode(PackKeys.TEXTURE.getKey()).getInt(0);
-
+            final boolean flipU = node.getNode(PackKeys.FLIP_U.getKey()).getBoolean(PackKeys.FLIP_U.getDefaultValue());
+            final boolean flipV = node.getNode(PackKeys.FLIP_V.getKey()).getBoolean(PackKeys.FLIP_V.getDefaultValue());
             final List<Vertex> vertices = Lists.newLinkedList();
             for (String rawCoordinate : rawCoordinateString.substring(0, rawCoordinateString.length()).split("\n")) {
                 final List<Double> coordinates = Lists.newArrayList();
@@ -182,7 +183,8 @@ public class PackCreator {
                 vertices.add(new Vertex(coordinates.get(0), coordinates.get(1), coordinates.get(2)));
             }
             final RenderParameters params = new RenderParameters();
-            
+            params.flipU.set(flipU);
+            params.flipV.set(flipV);
             final PackFace face = new PackFace(textureIndex, vertices);
             face.setStandardUV();
             face.setParameters(params);
@@ -208,8 +210,10 @@ public class PackCreator {
 
             int length = shape.getFaces().length;
             for (int i = 0; i < 4 - length; i++) {
-                shape.addFaces(new PackMirrorFace[]{
-                        new PackMirrorFace((PackFace) copy.getFaces()[i >= copy.getFaces().length ? copy.getFaces().length - 1 : i])});
+                final PackMirrorFace mirrorFace = new PackMirrorFace((PackFace) copy.getFaces()[i >= copy.getFaces().length ? copy.getFaces()
+                        .length - 1 : i]);
+                mirrorFace.deductParameters();
+                shape.addFaces(new PackMirrorFace[]{mirrorFace});
             }
 
             shape.applyMatrix();
@@ -996,7 +1000,10 @@ public class PackCreator {
     public static RenderNode createRenderNode(Pack pack, String name, ConfigurationNode root) {
         final boolean renderAsNormalBlock = root.getNode(PackKeys.NORMAL_CUBE.getKey()).getBoolean(PackKeys.NORMAL_CUBE.getDefaultValue());
         final boolean renderAsOpaque = root.getNode(PackKeys.OPAQUE.getKey()).getBoolean(PackKeys.OPAQUE.getDefaultValue());
-        return new RenderNode(renderAsNormalBlock, renderAsOpaque);
+        final boolean renderFlippedU = root.getNode(PackKeys.FLIP_U.getKey()).getBoolean(PackKeys.FLIP_U.getDefaultValue());
+        final boolean renderFlippedV = root.getNode(PackKeys.FLIP_V.getKey()).getBoolean(PackKeys.FLIP_V.getDefaultValue());
+        return new RenderNode(renderAsNormalBlock, renderAsOpaque, renderFlippedU, renderFlippedV);
+
     }
 
     public static BreakNode createBreakNode(Pack pack, String name, Block block, boolean addDefault, ConfigurationNode root) {

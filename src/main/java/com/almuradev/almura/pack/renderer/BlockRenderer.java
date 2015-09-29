@@ -34,7 +34,6 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockRenderer extends MalisisRenderer {
 
@@ -60,17 +59,11 @@ public class BlockRenderer extends MalisisRenderer {
 
         shape.resetState();
         enableBlending();
-        rp.useBlockBounds.set(false);
 
         if (shape instanceof IModel) {
+            rp.useBlockBounds.set(false);
             rp.renderAllFaces.set(true);
-            rp.flipU.set(true);
-            rp.flipV.set(true);
             rp.interpolateUV.set(false);
-        } else {
-            rp.flipU.set(false);
-            rp.flipV.set(false);
-            rp.interpolateUV.set(true);
         }
 
         if (shape instanceof IModel) {
@@ -82,17 +75,17 @@ public class BlockRenderer extends MalisisRenderer {
                 handleScaling((IModel) shape);
             }
         }
-        
+
         if (renderType == RenderType.ISBRH_INVENTORY) { //needed to fix custom block lighting
-        	net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
+            net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
         }
-        
+
         shape.deductParameters();
         drawShape(shape, rp);
-        
+
         if (renderType == RenderType.ISBRH_INVENTORY) {
-        	next(); // force draw
-        	net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting(); //re-enable block lighting
+            next(); // force draw
+            net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting(); //re-enable block lighting
         }
     }
 
@@ -137,83 +130,47 @@ public class BlockRenderer extends MalisisRenderer {
         else if (block != null) //use block color mulitplier
             color = world != null ? block.colorMultiplier(world, x, y, z) : block.getRenderColor(blockMetadata);
 
-            if (drawMode == GL11.GL_LINE) //no AO for lines
-                return color;
-            if (renderType != RenderType.ISBRH_WORLD && renderType != RenderType.TESR_WORLD) //no AO for item/inventories
-                return color;
-
-            float factor = 1;
-
-            //calculate AO
-            if (params.calculateAOColor.get() && aoMatrix != null && Minecraft.isAmbientOcclusionEnabled()
-                    && block.getLightValue(world, x, y, z) == 0)
-            {
-                factor = getBlockAmbientOcclusion(world, x + params.direction.get().offsetX, y + params.direction.get().offsetY, z
-                        + params.direction.get().offsetZ);
-
-                for (int i = 0; i < aoMatrix.length; i++)
-                    factor += getBlockAmbientOcclusion(world, x + aoMatrix[i][0], y + aoMatrix[i][1], z + aoMatrix[i][2]);
-
-                factor /= (aoMatrix.length + 1);
-            }
-
-            //apply face dependent shading
-            factor *= params.colorFactor.get();
-
-            // Following additional check is to see if the block being rendered should respect Ambient Occlusions light factor or skip it.
-            // AlmuraMod's light type block have always appeared in bright white.
-            // Start AlmuraMod
-            if (block instanceof INodeContainer) {
-                LightNode node = ((INodeContainer) block).getNode(LightNode.class);
-                if (node != null && node.getEmission() > 0) {
-                    factor = 1;
-                }
-            }
-            // End AlmuraMod
-            int r = (int) ((color >> 16 & 255) * factor);
-            int g = (int) ((color >> 8 & 255) * factor);
-            int b = (int) ((color & 255) * factor);
-
-            color = r << 16 | g << 8 | b;
-
+        if (drawMode == GL11.GL_LINE) //no AO for lines
             return color;
-    }
-    
-    // The following method override is neede because Almura's original shape format was flawed. 
-    @Override
-    public void applyTexture(Shape shape, RenderParameters parameters)
-    {
-        //shape.applyMatrix();
-        for (Face f : shape.getFaces())
+        if (renderType != RenderType.ISBRH_WORLD && renderType != RenderType.TESR_WORLD) //no AO for item/inventories
+            return color;
+
+        float factor = 1;
+
+        //calculate AO
+        if (params.calculateAOColor.get() && aoMatrix != null && Minecraft.isAmbientOcclusionEnabled()
+                && block.getLightValue(world, x, y, z) == 0)
         {
-            face = f;
-            RenderParameters params = new RenderParameters();
-            params.merge(f.getParameters());
-            params.merge(parameters);
+            factor = getBlockAmbientOcclusion(world, x + params.direction.get().offsetX, y + params.direction.get().offsetY, z
+                    + params.direction.get().offsetZ);
 
-            IIcon icon = getIcon(params);
-            if (icon != null)
-            {
-                boolean flipU = params.flipU.get();
-                boolean flipV = params.flipV.get();
-                if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST) {
-                    // Start AlmuraMod
-                    if (shape instanceof Cube) {  // Generic Shapes don't invert the NORTH / EAST face.
-                        flipU = !flipU;  // This method is skipped for shapes we've provided due to a flaw in how shapes were originally created for Spoutcraft.
-                    }
-                    // End AlmuraMod
-                }
+            for (int i = 0; i < aoMatrix.length; i++)
+                factor += getBlockAmbientOcclusion(world, x + aoMatrix[i][0], y + aoMatrix[i][1], z + aoMatrix[i][2]);
 
-                f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
-                if (block instanceof INodeContainer) {
-                    LightNode node = ((INodeContainer) block).getNode(LightNode.class);
-                    if (node != null && node.getEmission() > 0) {
-                        parameters.colorFactor.set(1f);
-                    }
-                }
+            factor /= (aoMatrix.length + 1);
+        }
+
+        //apply face dependent shading
+        factor *= params.colorFactor.get();
+
+        // Following additional check is to see if the block being rendered should respect Ambient Occlusions light factor or skip it.
+        // AlmuraMod's light type block have always appeared in bright white.
+        // Start AlmuraMod
+        if (block instanceof INodeContainer) {
+            LightNode node = ((INodeContainer) block).getNode(LightNode.class);
+            if (node != null && node.getEmission() > 0) {
+                factor = 1;
             }
         }
-    } 
+        // End AlmuraMod
+        int r = (int) ((color >> 16 & 255) * factor);
+        int g = (int) ((color >> 8 & 255) * factor);
+        int b = (int) ((color & 255) * factor);
+
+        color = r << 16 | g << 8 | b;
+
+        return color;
+    }
 
     @Override
     @SuppressWarnings("unchecked")

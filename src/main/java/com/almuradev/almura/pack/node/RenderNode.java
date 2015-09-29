@@ -7,11 +7,16 @@ package com.almuradev.almura.pack.node;
 
 public class RenderNode implements INode<Boolean> {
 
-    private final boolean normalCube, opaque;
+    private final boolean normalCube;
+    private final boolean opaque;
+    private final boolean flipU;
+    private final boolean flipV;
 
-    public RenderNode(boolean normalCube, boolean opaque) {
+    public RenderNode(boolean normalCube, boolean opaque, boolean flipU, boolean flipV) {
         this.normalCube = normalCube;
         this.opaque = opaque;
+        this.flipU = flipU;
+        this.flipV = flipV;
     }
 
     @Override
@@ -21,5 +26,13 @@ public class RenderNode implements INode<Boolean> {
 
     public Boolean isOpaque() {
         return opaque;
+    }
+
+    public boolean isFlipU() {
+        return flipU;
+    }
+
+    public boolean isFlipV() {
+        return flipV;
     }
 }
