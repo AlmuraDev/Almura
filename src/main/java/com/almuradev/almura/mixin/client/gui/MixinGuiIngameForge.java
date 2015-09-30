@@ -134,7 +134,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
                     final DisplayNameManager.Tuple<Optional<String>, Optional<String>> tuple = DisplayNameManager.getDisplayNameAndTitle(player.name);
                     String displayName = "";
                     if (tuple.left.isPresent() && tuple.right.isPresent() && !tuple.right.get().isEmpty() && !tuple.left.get().equalsIgnoreCase(player.name)) {
-                        displayName = ScorePlayerTeam.formatPlayerName(team, tuple.left.get() + " | " + ScorePlayerTeam.formatPlayerName(team, player.name));
+                        displayName = ScorePlayerTeam.formatPlayerName(team, tuple.left.get() + " | " + ScorePlayerTeam.formatPlayerName(team, player.name) + " | " + tuple.right.get());
                     } else {
                         displayName = ScorePlayerTeam.formatPlayerName(team, player.name);
                     }
