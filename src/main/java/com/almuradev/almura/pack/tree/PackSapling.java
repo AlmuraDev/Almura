@@ -476,7 +476,7 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
 
     @Override
     public void updateTick(World worldIn, int x, int y, int z, Random random) {
-        if (!worldIn.isRemote && treeNode != null && treeNode.getTree() != null) {
+        if (!worldIn.isRemote && treeNode != null && treeNode.getTreePrefab() != null) {
 
             this.checkAndDropBlock(worldIn, x, y, z);
 
@@ -494,7 +494,7 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
         }
 
         p_149878_1_.setBlock(p_149878_2_, p_149878_3_, p_149878_4_, Blocks.air, 0, 4);
-        if (!treeNode.getTree().getGenerator().generate(p_149878_1_, p_149878_5_, p_149878_2_, p_149878_3_, p_149878_4_)) {
+        if (!treeNode.getTreePrefab().getGenerator().generate(p_149878_1_, p_149878_5_, p_149878_2_, p_149878_3_, p_149878_4_)) {
             p_149878_1_.setBlock(p_149878_2_, p_149878_3_, p_149878_4_, this, 0, 4);
         }
     }
@@ -537,7 +537,7 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
 
     @Override
     public boolean canFertilize(World worldIn, int x, int y, int z, boolean isClient) {
-        if (fertilizerNode == null || isClient || treeNode == null || treeNode.getTree() == null) {
+        if (fertilizerNode == null || isClient || treeNode == null || treeNode.getTreePrefab() == null) {
             return false;
         }
         // TODO This can do biome checks

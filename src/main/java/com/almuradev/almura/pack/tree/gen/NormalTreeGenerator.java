@@ -6,11 +6,14 @@
 package com.almuradev.almura.pack.tree.gen;
 
 import com.almuradev.almura.pack.mapper.GameObject;
-import com.almuradev.almura.pack.tree.Tree;
+import com.almuradev.almura.pack.tree.FruitPrefab;
+import com.almuradev.almura.pack.tree.TreePrefab;
+import com.google.common.base.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -19,15 +22,15 @@ import java.util.Random;
 
 public class NormalTreeGenerator extends WorldGenerator {
 
-    private final Tree tree;
+    private final TreePrefab treePrefab;
 
-    public NormalTreeGenerator(Tree tree) {
+    public NormalTreeGenerator(TreePrefab treePrefab) {
         super(true);
-        this.tree = tree;
+        this.treePrefab = treePrefab;
     }
 
     public boolean generate(World world, Random random, int x, int y, int z) {
-        int l = this.tree.getHeightVariance().getValueWithinRange() + this.tree.getMinTreeHeight();
+        int l = this.treePrefab.getHeightVariance().getValueWithinRange() + this.treePrefab.getMinTreeHeight();
         boolean flag = true;
 
         if (y >= 1 && y + l + 1 <= 256) {
@@ -89,46 +92,38 @@ public class NormalTreeGenerator extends WorldGenerator {
                                 if (Math.abs(j2) != l1 || Math.abs(l2) != l1 || random.nextInt(2) != 0 && i3 != 0) {
                                     Block block1 = world.getBlock(i2, k1, k2);
 
-                                    if (block1.isAir(world, i2, k1, k2) || block1 == this.tree.getLeaves().minecraftObject && ((this.tree.getFruit()
-                                            .isPresent() && block1 == this.tree.getFruit().get().minecraftObject) ||
-                                            (this.tree.getHangingFruit().isPresent() && block1 == this.tree.getHangingFruit().get()
-                                                    .minecraftObject))) {
-                                        final GameObject fruitGameObject;
+                                    if (block1.isAir(world, i2, k1, k2) || block1 == this.treePrefab.getLeaves().minecraftObject) {
+                                        GameObject toPlaceObject = this.treePrefab.getLeaves();
 
-                                        if (this.tree.getFruit().isPresent()) {
-                                            if (this.tree.getFruitChance().isPresent()) {
-                                                final double chance = this.tree.getFruitChance().get().getValueWithinRange();
-                                                if (random.nextDouble() <= (chance / 100)) {
-                                                    fruitGameObject = this.tree.getFruit().get();
-                                                } else {
-                                                    fruitGameObject = this.tree.getLeaves();
-                                                }
-                                            } else {
-                                                fruitGameObject = this.tree.getLeaves();
+                                        if (this.treePrefab.isGenerationEnabled() && !this.treePrefab.getFruitPrefabs().isEmpty()) {
+                                            final FruitPrefab prefab = this.treePrefab.getFruitPrefabs().iterator().next();
+                                            final double chance = prefab.getFruitChance().getValueWithinRange();
+                                            if (random.nextDouble() <= (chance / 100)) {
+                                                toPlaceObject = prefab.getFruit();
                                             }
-                                        } else {
-                                            fruitGameObject = this.tree.getLeaves();
                                         }
 
-                                        this.setBlockAndNotifyAdequately(world, i2, k1, k2, (Block) fruitGameObject.minecraftObject,
-                                                fruitGameObject.data);
+                                        this.setBlockAndNotifyAdequately(world, i2, k1, k2, toPlaceObject.minecraftObject instanceof ItemBlock ?
+                                                ((ItemBlock) toPlaceObject.minecraftObject).blockInstance : (Block) toPlaceObject.minecraftObject, toPlaceObject
+                                                .data);
 
-                                        if (this.tree.getHangingFruit().isPresent()) {
-                                            GameObject hangingFruitGameObject = null;
+                                        Optional<GameObject> optToPlaceHangingObj = Optional.absent();
 
-                                            if (this.tree.getHangingFruitChance().isPresent()) {
-                                                final double chance = this.tree.getHangingFruitChance().get().getValueWithinRange();
-                                                if (random.nextDouble() <= (chance / 100)) {
-                                                    hangingFruitGameObject = this.tree.getHangingFruit().get();
-                                                }
+                                        if (this.treePrefab.isGenerationEnabled() && !this.treePrefab.getHangingFruitPrefabs().isEmpty()) {
+                                            final FruitPrefab prefab = this.treePrefab.getHangingFruitPrefabs().iterator().next();
+                                            final double chance = prefab.getFruitChance().getValueWithinRange();
+                                            if (random.nextDouble() <= (chance / 100)) {
+                                                optToPlaceHangingObj = Optional.of(prefab.getFruit());
                                             }
+                                        }
 
-                                            if (hangingFruitGameObject != null) {
-                                                final Block block3 = world.getBlock(i2, k1 - 1, k2);
-                                                if (block3 == Blocks.air) {
-                                                    this.setBlockAndNotifyAdequately(world, i2, k1 - 1, k2, (Block) hangingFruitGameObject
-                                                            .minecraftObject, hangingFruitGameObject.data);
-                                                }
+                                        if (optToPlaceHangingObj.isPresent()) {
+                                            final Block block3 = world.getBlock(i2, k1 - 1, k2);
+                                            if (block3 == Blocks.air) {
+                                                this.setBlockAndNotifyAdequately(world, i2, k1 - 1, k2, optToPlaceHangingObj.get().minecraftObject
+                                                        instanceof ItemBlock ?
+                                                        ((ItemBlock) optToPlaceHangingObj.get().minecraftObject).blockInstance : (Block)
+                                                        optToPlaceHangingObj.get().minecraftObject, optToPlaceHangingObj.get().data);
                                             }
                                         }
                                     }
@@ -139,11 +134,11 @@ public class NormalTreeGenerator extends WorldGenerator {
 
                     for (k1 = 0; k1 < l; ++k1) {
                         block = world.getBlock(x, y + k1, z);
+                        final int blockMetadata = world.getBlockMetadata(x, y + k1, z);
 
-                        if (block.isAir(world, x, y + k1, z) || block == this.tree.getLeaves().minecraftObject || (this.tree.getFruit().isPresent()
-                                && block == this.tree.getFruit().get().minecraftObject) || (this.tree.getHangingFruit().isPresent() &&
-                                block == this.tree.getHangingFruit().get().minecraftObject)) {
-                            this.setBlockAndNotifyAdequately(world, x, y + k1, z, (Block) this.tree.getWood().minecraftObject, this.tree.getWood()
+                        if (block.isAir(world, x, y + k1, z) || block == this.treePrefab.getLeaves().minecraftObject || isFruitOrHangingFruit
+                                (block, blockMetadata)) {
+                            this.setBlockAndNotifyAdequately(world, x, y + k1, z, (Block) this.treePrefab.getWood().minecraftObject, this.treePrefab.getWood()
                                     .data);
                         }
                     }
@@ -158,9 +153,40 @@ public class NormalTreeGenerator extends WorldGenerator {
         }
     }
 
-    protected boolean isReplaceable(World world, Block block, int x, int y, int z) {
+    private boolean isReplaceable(World world, Block block, int x, int y, int z) {
         return block.isAir(world, x, y, z) || block.isLeaves(world, x, y, z) || block.isWood(world, x, y, z) || block.getMaterial() == Material.air
                 || block.getMaterial() == Material.leaves || block == Blocks.grass || block == Blocks.dirt || block == Blocks.log
                 || block == Blocks.log2 || block instanceof BlockSapling || block == Blocks.vine;
+    }
+
+    private boolean isFruitOrHangingFruit(Block block, int blockMetadata) {
+        for (FruitPrefab fruitPrefab : this.treePrefab.getFruitPrefabs()) {
+            Block toCheck;
+
+            if (fruitPrefab.getFruit().minecraftObject instanceof ItemBlock) {
+                toCheck = ((ItemBlock) fruitPrefab.getFruit().minecraftObject).blockInstance;
+            } else {
+                toCheck = (Block) fruitPrefab.getFruit().minecraftObject;
+            }
+            if (block == toCheck && blockMetadata == fruitPrefab.getFruit().data) {
+                return true;
+            }
+        }
+
+        for (FruitPrefab fruitPrefab : this.treePrefab.getHangingFruitPrefabs()) {
+            Block toCheck;
+
+            if (fruitPrefab.getFruit().minecraftObject instanceof ItemBlock) {
+                toCheck = ((ItemBlock) fruitPrefab.getFruit().minecraftObject).blockInstance;
+            } else {
+                toCheck = (Block) fruitPrefab.getFruit().minecraftObject;
+            }
+            
+            if (block == toCheck && blockMetadata == fruitPrefab.getFruit().data) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

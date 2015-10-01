@@ -30,6 +30,7 @@ import com.almuradev.almura.pack.mapper.GameObjectMapper;
 import com.almuradev.almura.pack.node.DecayNode;
 import com.almuradev.almura.pack.node.FertilizerNode;
 import com.almuradev.almura.pack.node.SoilNode;
+import com.almuradev.almura.pack.node.SpreadNode;
 import com.almuradev.almura.pack.node.TreeNode;
 import com.almuradev.almura.pack.node.property.GameObjectProperty;
 import com.almuradev.almura.pack.tree.PackLeaves;
@@ -273,6 +274,13 @@ public class CommonProxy {
 
                         if (decayNode != null) {
                             ((PackLeaves) block).addNode(decayNode);
+                        }
+
+                        final SpreadNode spreadNode = PackCreator.createSpreadNode(pack, ((PackLeaves) block).getIdentifier(), reader.getNode
+                                (PackKeys.NODE_SPREAD.getKey()));
+
+                        if (spreadNode != null) {
+                            ((PackLeaves) block).addNode(spreadNode);
                         }
                     }
                     //Break

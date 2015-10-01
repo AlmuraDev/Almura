@@ -40,6 +40,7 @@ import com.almuradev.almura.pack.node.RecipeNode;
 import com.almuradev.almura.pack.node.RenderNode;
 import com.almuradev.almura.pack.node.RotationNode;
 import com.almuradev.almura.pack.node.SoilNode;
+import com.almuradev.almura.pack.node.SpreadNode;
 import com.almuradev.almura.pack.node.ToolsNode;
 import com.almuradev.almura.pack.node.TreeNode;
 import com.almuradev.almura.pack.node.container.StateProperty;
@@ -49,11 +50,13 @@ import com.almuradev.almura.pack.node.property.CollisionProperty;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.GameObjectProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
+import com.almuradev.almura.pack.node.property.ReplacementProperty;
 import com.almuradev.almura.pack.node.property.RotationProperty;
 import com.almuradev.almura.pack.node.property.VariableGameObjectProperty;
+import com.almuradev.almura.pack.tree.FruitPrefab;
 import com.almuradev.almura.pack.tree.PackLeaves;
 import com.almuradev.almura.pack.tree.PackSapling;
-import com.almuradev.almura.pack.tree.Tree;
+import com.almuradev.almura.pack.tree.TreePrefab;
 import com.almuradev.almura.recipe.DuplicateRecipeException;
 import com.almuradev.almura.recipe.IRecipe;
 import com.almuradev.almura.recipe.IShapedRecipe;
@@ -755,55 +758,70 @@ public class PackCreator {
             return null;
         }
 
-        final Pair<String, String> pairFruitModidIdentifier = GameObjectMapper.parseModidIdentifierFrom(node.getNode(PackKeys.FRUIT.getKey())
-                .getString(PackKeys.FRUIT.getDefaultValue()));
-        Optional<GameObject> optFruit = GameObjectMapper.getGameObject(pairFruitModidIdentifier.getKey(), pairFruitModidIdentifier.getValue(),
-                false);
-        Optional<RangeProperty<Double>> optFruitChanceRange = Optional.absent();
-        if ((!pairFruitModidIdentifier.getKey().isEmpty() || !pairFruitModidIdentifier.getValue().isEmpty())) {
-            if (!optFruit.isPresent()) {
-                Almura.LOGGER.warn("Fruit source [" + pairFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" + pairFruitModidIdentifier
-                        .getKey() + "] in pack [" + pack.getName() + "] is not a registered block.");
-            } else if (!optFruit.get().isBlock()) {
-                Almura.LOGGER.warn(
-                        "Fruit source [" + pairFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" + pairFruitModidIdentifier.getKey()
-                                + "] in pack [" + pack.getName() + "] is not a block.");
-                optFruit = Optional.absent();
+        // Generation
+
+        final ConfigurationNode generationNode = node.getNode(PackKeys.GENERATION.getKey());
+        final boolean isGenerationEnabled = generationNode.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
+        final ConfigurationNode fruitConfigurationNode = generationNode.getNode(PackKeys.FRUIT.getKey());
+        final Set<FruitPrefab> fruitPrefabs = Sets.newHashSet();
+        for (Map.Entry<Object, ? extends ConfigurationNode> fruitConfigurationNodes : fruitConfigurationNode.getChildrenMap().entrySet()) {
+            final String rawFruitSource = (String) fruitConfigurationNodes.getKey();
+            final Pair<String, String> fruitSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawFruitSource);
+            final Optional<GameObject>
+                    fruitObj =
+                    GameObjectMapper.getGameObject(fruitSourceModIdIdentifier.getKey(), fruitSourceModIdIdentifier.getValue(), true);
+            if (!fruitObj.isPresent()) {
+                Almura.LOGGER
+                        .warn("Fruit source [" + fruitSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" + fruitSourceModIdIdentifier
+                                .getKey() + "] in pack [" + pack.getName() + "] is not a registered block or item.");
+            } else if (!fruitObj.get().isBlock() && !(fruitObj.get().minecraftObject instanceof ItemBlock)) {
+                Almura.LOGGER
+                        .warn("Fruit source [" + fruitSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" + fruitSourceModIdIdentifier
+                                .getKey() + "] in pack [" + pack.getName() + "] is not a block.");
             } else {
-                optFruitChanceRange = Optional.of(new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class, node.getNode(PackKeys
-                        .FRUIT_CHANCE.getKey()).getString(PackKeys.FRUIT_CHANCE.getDefaultValue()), 100.0)));
+
+                final RangeProperty<Double> fruitChanceRange = new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class,
+                        fruitConfigurationNodes.getValue().getNode(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
+
+                fruitPrefabs.add(new FruitPrefab(pack, name, fruitObj.get(), fruitChanceRange));
             }
         }
 
-        final Pair<String, String> pairHangingFruitModidIdentifier = GameObjectMapper.parseModidIdentifierFrom(node.getNode(PackKeys.HANGING_FRUIT
-                .getKey())
-                .getString(PackKeys.HANGING_FRUIT.getDefaultValue()));
-        Optional<GameObject> optHangingFruit = GameObjectMapper.getGameObject(pairHangingFruitModidIdentifier.getKey(),
-                pairHangingFruitModidIdentifier
-                        .getValue(), false);
-        Optional<RangeProperty<Double>> optHangingFruitChanceRange = Optional.absent();
-        if ((!pairHangingFruitModidIdentifier.getKey().isEmpty() || !pairHangingFruitModidIdentifier.getValue().isEmpty())) {
-            if (!optHangingFruit.isPresent()) {
-                Almura.LOGGER.warn("Hanging Fruit source [" + pairHangingFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" +
-                        pairHangingFruitModidIdentifier.getKey() + "] in pack [" + pack.getName() + "] is not a registered block.");
-            } else if (!optHangingFruit.get().isBlock()) {
-                Almura.LOGGER.warn(
-                        "Hanging Fruit source [" + pairHangingFruitModidIdentifier.getValue() + "] in [" + name + "] for mod [" +
-                                pairHangingFruitModidIdentifier.getKey() + "] in pack [" + pack.getName() + "] is not a block.");
-                optHangingFruit = Optional.absent();
+        final ConfigurationNode hangingFruitConfigurationNode = generationNode.getNode(PackKeys.HANGING_FRUIT.getKey());
+        final Set<FruitPrefab> hangingFruitPrefabs = Sets.newHashSet();
+        for (Map.Entry<Object, ? extends ConfigurationNode> hangingFruitConfigurationNodes : hangingFruitConfigurationNode.getChildrenMap().entrySet()) {
+            final String rawHangingFruitSource = (String) hangingFruitConfigurationNodes.getKey();
+            final Pair<String, String> hangingFruitSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawHangingFruitSource);
+            final Optional<GameObject>
+                    hangingFruitObj =
+                    GameObjectMapper.getGameObject(hangingFruitSourceModIdIdentifier.getKey(), hangingFruitSourceModIdIdentifier.getValue(), true);
+            if (!hangingFruitObj.isPresent()) {
+                Almura.LOGGER
+                        .warn("Hanging Fruit source [" + hangingFruitSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" +
+                                hangingFruitSourceModIdIdentifier
+                                .getKey() + "] in pack [" + pack.getName() + "] is not a registered block or item.");
+            } else if (!hangingFruitObj.get().isBlock() && !(hangingFruitObj.get().minecraftObject instanceof ItemBlock)) {
+                Almura.LOGGER
+                        .warn("Hanging Fruit source [" + hangingFruitSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" +
+                                hangingFruitSourceModIdIdentifier
+                                .getKey() + "] in pack [" + pack.getName() + "] is not a block.");
             } else {
-                optHangingFruitChanceRange = Optional.of(new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class, node.getNode(PackKeys
-                        .HANGING_FRUIT_CHANCE.getKey()).getString(PackKeys.HANGING_FRUIT_CHANCE.getDefaultValue()), 100.0)));
+
+                final RangeProperty<Double> hangingFruitChanceRange = new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class,
+                        hangingFruitConfigurationNodes.getValue().getNode(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
+
+                hangingFruitPrefabs.add(new FruitPrefab(pack, name, hangingFruitObj.get(), hangingFruitChanceRange));
             }
         }
 
-        final Tree tree =  new Tree(pack, name, minTreeHeight, heightVariance, optWood.get(), optLeaves.get(), optFruit, optFruitChanceRange,
-                optHangingFruit, optHangingFruitChanceRange);
+        final TreePrefab
+                treePrefab =  new TreePrefab(pack, name, minTreeHeight, heightVariance, optWood.get(), optLeaves.get(), isGenerationEnabled,
+                fruitPrefabs, hangingFruitPrefabs);
 
         final RangeProperty<Double> chanceRange = new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class, node.getNode(PackKeys
                 .CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()), 100.0));
 
-        return new TreeNode(tree, chanceRange);
+        return new TreeNode(treePrefab, chanceRange);
     }
 
     public static DecayNode createDecayNode(Pack pack, String name, ConfigurationNode node) {
@@ -863,6 +881,60 @@ public class PackCreator {
         }
 
         return new DecayNode(decayEnabled, drops, preventsDecayProperties);
+    }
+
+    public static SpreadNode createSpreadNode(Pack pack, String name, ConfigurationNode node) {
+        final boolean spreadEnabled = node.getNode(PackKeys.ENABLED.getKey()).getBoolean(false);
+        final ConfigurationNode replacementsConfigurationNode = node.getNode(PackKeys.REPLACEMENTS.getKey());
+        final Set<ReplacementProperty> replacements = Sets.newHashSet();
+        for (Map.Entry<Object, ? extends ConfigurationNode> replacementsConfigurationNodes : replacementsConfigurationNode.getChildrenMap().entrySet
+                ()) {
+            final String rawReplacementSource = (String) replacementsConfigurationNodes.getKey();
+            final Pair<String, String> replacementSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawReplacementSource);
+            final Optional<GameObject>
+                    replacementObj =
+                    GameObjectMapper.getGameObject(replacementSourceModIdIdentifier.getKey(), replacementSourceModIdIdentifier.getValue(), true);
+            if (!replacementObj.isPresent()) {
+                Almura.LOGGER
+                        .warn("Replacement source [" + replacementSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" +
+                                replacementSourceModIdIdentifier
+                                        .getKey() + "] in pack [" + pack.getName() + "] is not a registered block.");
+            } else if (!replacementObj.get().isBlock() && !(replacementObj.get().minecraftObject instanceof ItemBlock)) {
+                Almura.LOGGER
+                        .warn("Replacement source [" + replacementSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" +
+                                replacementSourceModIdIdentifier
+                                        .getKey() + "] in pack [" + pack.getName() + "] is not a block.");
+            } else {
+
+                final ConfigurationNode withConfigurationNode = replacementsConfigurationNodes.getValue().getNode(PackKeys.WITH.getKey());
+                final String rawWithSource = withConfigurationNode.getString(PackKeys.WITH
+                        .getDefaultValue());
+                final Pair<String, String> withSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawWithSource);
+                final Optional<GameObject>
+                        withtObj =
+                        GameObjectMapper.getGameObject(withSourceModIdIdentifier.getKey(), withSourceModIdIdentifier.getValue(), true);
+                if (!withtObj.isPresent()) {
+                    Almura.LOGGER
+                            .warn("With source [" + withSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" +
+                                    withSourceModIdIdentifier
+                                            .getKey() + "] in pack [" + pack.getName() + "] is not a registered block.");
+                } else if (!withtObj.get().isBlock() && !(withtObj.get().minecraftObject instanceof ItemBlock)) {
+                    Almura.LOGGER
+                            .warn("With source [" + withSourceModIdIdentifier.getValue() + "] in [" + name + "] for mod [" +
+                                    withSourceModIdIdentifier
+                                            .getKey() + "] in pack [" + pack.getName() + "] is not a block.");
+                } else {
+
+                    final RangeProperty<Double> withChanceRange = new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class,
+                            withConfigurationNode.getNode(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()),
+                            100.0));
+
+                    replacements.add(new ReplacementProperty(replacementObj.get(), withtObj.get(), withChanceRange));
+                }
+            }
+        }
+
+        return new SpreadNode(spreadEnabled, replacements);
     }
 
     public static RecipeNode createRecipeNode(Pack pack, String name, Object result, ConfigurationNode node) {

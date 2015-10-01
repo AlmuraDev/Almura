@@ -13,29 +13,29 @@ import com.almuradev.almura.pack.tree.gen.NormalTreeGenerator;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
-public class Tree implements IPackObject {
+import java.util.Set;
+
+public class TreePrefab implements IPackObject {
     private final Pack pack;
     private final String identifier;
     private final int minTreeHeight;
     private final RangeProperty<Integer> heightVariance;
     private final GameObject wood, leaves;
-    private final Optional<GameObject> fruit, hangingFruit;
-    private final Optional<RangeProperty<Double>> fruitChance, hangingFruitChance;
+    private final boolean generationEnabled;
+    private final Set<FruitPrefab> fruitPrefabs, hangingFruitPrefabs;
     private final NormalTreeGenerator generator;
 
-    public Tree(Pack pack, String identifier, int minTreeHeight, RangeProperty<Integer> heightVariance, GameObject wood, GameObject leaves,
-            Optional<GameObject> fruit, Optional<RangeProperty<Double>> fruitChance, Optional<GameObject> hangingFruit,
-            Optional<RangeProperty<Double>> hangingFruitChance) {
+    public TreePrefab(Pack pack, String identifier, int minTreeHeight, RangeProperty<Integer> heightVariance, GameObject wood, GameObject leaves,
+            boolean generationEnabled, Set<FruitPrefab> fruitPrefabs, Set<FruitPrefab> hangingFruitPrefabs) {
         this.pack = pack;
         this.identifier = identifier;
         this.minTreeHeight = minTreeHeight;
         this.heightVariance = heightVariance;
         this.wood = wood;
         this.leaves = leaves;
-        this.fruit = fruit;
-        this.fruitChance = fruitChance;
-        this.hangingFruit = hangingFruit;
-        this.hangingFruitChance = hangingFruitChance;
+        this.generationEnabled = generationEnabled;
+        this.fruitPrefabs = fruitPrefabs;
+        this.hangingFruitPrefabs = hangingFruitPrefabs;
         this.generator = new NormalTreeGenerator(this);
     }
 
@@ -65,20 +65,16 @@ public class Tree implements IPackObject {
         return leaves;
     }
 
-    public Optional<GameObject> getFruit() {
-        return fruit;
+    public boolean isGenerationEnabled() {
+        return generationEnabled;
     }
 
-    public Optional<RangeProperty<Double>> getFruitChance() {
-        return fruitChance;
+    public Set<FruitPrefab> getFruitPrefabs() {
+        return fruitPrefabs;
     }
 
-    public Optional<GameObject> getHangingFruit() {
-        return hangingFruit;
-    }
-
-    public Optional<RangeProperty<Double>> getHangingFruitChance() {
-        return hangingFruitChance;
+    public Set<FruitPrefab> getHangingFruitPrefabs() {
+        return hangingFruitPrefabs;
     }
 
     public NormalTreeGenerator getGenerator() {
@@ -87,11 +83,11 @@ public class Tree implements IPackObject {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Tree)) {
+        if (!(obj instanceof TreePrefab)) {
             return false;
         }
 
-        final Tree other = (Tree) obj;
+        final TreePrefab other = (TreePrefab) obj;
         return pack.equals(other.pack) && identifier.equals(other.identifier);
     }
 
@@ -104,10 +100,9 @@ public class Tree implements IPackObject {
                 .add("heightVariance", heightVariance)
                 .add("wood", wood)
                 .add("leaves", leaves)
-                .add("fruit", fruit)
-                .add("fruitChance", fruitChance)
-                .add("hangingFruit", hangingFruit)
-                .add("hangingFruitChance", hangingFruitChance)
+                .add("generationEnabled", generationEnabled)
+                .add("fruitPrefabs", fruitPrefabs)
+                .add("hangingFruitPrefabs", hangingFruitPrefabs)
                 .add("generator", generator)
                 .toString();
     }

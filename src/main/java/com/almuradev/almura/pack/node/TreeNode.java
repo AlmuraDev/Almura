@@ -6,14 +6,14 @@
 package com.almuradev.almura.pack.node;
 
 import com.almuradev.almura.pack.node.property.RangeProperty;
-import com.almuradev.almura.pack.tree.Tree;
+import com.almuradev.almura.pack.tree.TreePrefab;
 
 public class TreeNode implements INode<RangeProperty<Double>> {
-    private final Tree tree;
+    private final TreePrefab treePrefab;
     private final RangeProperty<Double> rangeProperty;
 
-    public TreeNode(Tree tree, RangeProperty<Double> rangeProperty) {
-        this.tree = tree;
+    public TreeNode(TreePrefab treePrefab, RangeProperty<Double> rangeProperty) {
+        this.treePrefab = treePrefab;
         this.rangeProperty = rangeProperty;
     }
 
@@ -22,7 +22,7 @@ public class TreeNode implements INode<RangeProperty<Double>> {
         return rangeProperty;
     }
 
-    public Tree getTree() {
-        return tree;
+    public TreePrefab getTreePrefab() {
+        return treePrefab;
     }
 }

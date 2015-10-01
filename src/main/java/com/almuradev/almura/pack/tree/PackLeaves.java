@@ -1,3 +1,8 @@
+/**
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) 2014 AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.pack.tree;
 
 import com.almuradev.almura.Almura;
@@ -17,11 +22,13 @@ import com.almuradev.almura.pack.node.DecayNode;
 import com.almuradev.almura.pack.node.INode;
 import com.almuradev.almura.pack.node.LightNode;
 import com.almuradev.almura.pack.node.RenderNode;
+import com.almuradev.almura.pack.node.SpreadNode;
 import com.almuradev.almura.pack.node.ToolsNode;
 import com.almuradev.almura.pack.node.event.AddNodeEvent;
 import com.almuradev.almura.pack.node.property.DropProperty;
 import com.almuradev.almura.pack.node.property.GameObjectProperty;
 import com.almuradev.almura.pack.node.property.RangeProperty;
+import com.almuradev.almura.pack.node.property.ReplacementProperty;
 import com.almuradev.almura.pack.renderer.PackIcon;
 import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Objects;
@@ -31,6 +38,7 @@ import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
+import net.malisis.core.util.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.material.Material;
@@ -44,12 +52,14 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
@@ -75,6 +85,7 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
     private RenderNode renderNode;
     private BreakNode breakNode;
     private DecayNode decayNode;
+    private SpreadNode spreadNode;
     private CollisionNode collisionNode;
 
     public PackLeaves(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
@@ -155,6 +166,8 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
             collisionNode = (CollisionNode) node;
         } else if (node.getClass() == DecayNode.class) {
             decayNode = (DecayNode) node;
+        } else if (node.getClass() == SpreadNode.class) {
+            spreadNode = (SpreadNode) node;
         }
         MinecraftForge.EVENT_BUS.post(new AddNodeEvent(this, node));
         return node;
@@ -396,7 +409,6 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
                         for (i2 = -b0; i2 <= b0; ++i2) {
                             for (j2 = -b0; j2 <= b0; ++j2) {
                                 Block block = worldIn.getBlock(x + l1, y + i2, z + j2);
-                                final int blockMetadata = worldIn.getBlockMetadata(x + l1, y + i2, z + j2);
                                 GameObject found = null;
                                 // Check if we have something that prevents decaying nearby
                                 for (GameObjectProperty prop : decayNode.getPreventDecayProperties()) {
@@ -404,10 +416,8 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
                                             prop.getSource().minecraftObject instanceof ItemBlock ? ((ItemBlock) prop.getSource()
                                                     .minecraftObject).blockInstance : prop.getSource().minecraftObject;
                                     if (minecraftObject == block) {
-                                        if (prop.getSource().data == blockMetadata) {
-                                            found = prop.getSource();
-                                            break;
-                                        }
+                                        found = prop.getSource();
+                                        break;
                                     }
                                 }
 
@@ -465,6 +475,50 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
                     worldIn.setBlockMetadataWithNotify(x, y, z, l & -9, 4);
                 } else {
                     this.removeLeaves(worldIn, x, y, z);
+                }
+            }
+        }
+
+        if (spreadNode.isEnabled() && !spreadNode.getValue().isEmpty()) {
+            final Block currentBlock = worldIn.getBlock(x, y, z);
+            if (currentBlock == this) {
+                for (ForgeDirection dir : ForgeDirection.values()) {
+                    final BlockPos pos = new BlockPos(x, y, z);
+                    final BlockPos toPos = pos.offset(dir);
+                    final Block dirBlock = toPos.getBlock(worldIn);
+                    final int blockMetadata = pos.getMetadata(worldIn);
+
+                    ReplacementProperty matched = null;
+
+                    for (ReplacementProperty property : spreadNode.getValue()) {
+                        Block toCheck;
+
+                        if (property.getReplacementObj().minecraftObject instanceof ItemBlock) {
+                            toCheck = ((ItemBlock) property.getReplacementObj().minecraftObject).blockInstance;
+                        } else {
+                            toCheck = (Block) property.getReplacementObj().minecraftObject;
+                        }
+
+                        if (toCheck == dirBlock && property.getReplacementObj().data == blockMetadata) {
+                            matched = property;
+                            break;
+                        }
+                    }
+
+                    if (matched != null) {
+                        final double chance = matched.getSource().getValueWithinRange();
+                        if (random.nextDouble() <= (100 / chance)) {
+                            Block toReplace;
+
+                            if (matched.getWithObj().minecraftObject instanceof ItemBlock) {
+                                toReplace = ((ItemBlock) matched.getWithObj().minecraftObject).blockInstance;
+                            } else {
+                                toReplace = (Block) matched.getWithObj().minecraftObject;
+                            }
+                            worldIn.setBlock(toPos.getX(), toPos.getY(), toPos.getZ(), toReplace, matched
+                                            .getWithObj().data, 3);
+                        }
+                    }
                 }
             }
         }
