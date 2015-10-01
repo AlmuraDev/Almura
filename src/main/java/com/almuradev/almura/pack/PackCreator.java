@@ -906,8 +906,7 @@ public class PackCreator {
                                         .getKey() + "] in pack [" + pack.getName() + "] is not a block.");
             } else {
 
-                final ConfigurationNode withConfigurationNode = replacementsConfigurationNodes.getValue().getNode(PackKeys.WITH.getKey());
-                final String rawWithSource = withConfigurationNode.getString(PackKeys.WITH
+                final String rawWithSource = replacementsConfigurationNodes.getValue().getNode(PackKeys.WITH.getKey()).getString(PackKeys.WITH
                         .getDefaultValue());
                 final Pair<String, String> withSourceModIdIdentifier = GameObjectMapper.parseModidIdentifierFrom(rawWithSource);
                 final Optional<GameObject>
@@ -926,7 +925,7 @@ public class PackCreator {
                 } else {
 
                     final RangeProperty<Double> withChanceRange = new RangeProperty<>(Double.class, true, PackUtil.getRange(Double.class,
-                            withConfigurationNode.getNode(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()),
+                            replacementsConfigurationNodes.getValue().getNode(PackKeys.CHANCE.getKey()).getString(PackKeys.CHANCE.getDefaultValue()),
                             100.0));
 
                     replacements.add(new ReplacementProperty(replacementObj.get(), withtObj.get(), withChanceRange));
