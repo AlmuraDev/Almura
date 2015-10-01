@@ -53,12 +53,7 @@ public class DynamicMainMenu extends SimpleGui {
         logoImage.setSize(65, 95);
 
         final int padding = 4;
-
-        // Create the build label
-        final UILabel buildLabel = new UILabel(this, Colors.GRAY + Almura.GUI_VERSION);
-        buildLabel.setPosition(0, getPaddedY(logoImage, 0), Anchor.CENTER | Anchor.TOP);
-        buildLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_065);
-
+       
         // Create the singleplayer button
         final UIButton singleplayerButton = new UIButton(this, Colors.AQUA + "Singleplayer");
         singleplayerButton.setSize(180, 16);
@@ -102,7 +97,7 @@ public class DynamicMainMenu extends SimpleGui {
         quitButton.register(this);
 
         // Create the copyright label
-        final UILabel copyrightLabel = new UILabel(this, Colors.GRAY + "Copyright AlmuraDev 2012 - 2015 ");
+        final UILabel copyrightLabel = new UILabel(this, Colors.GRAY + "Copyright AlmuraDev 2012 - 2016 ");
         copyrightLabel.setPosition(0, -9, Anchor.CENTER | Anchor.BOTTOM);
         copyrightLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
@@ -111,7 +106,7 @@ public class DynamicMainMenu extends SimpleGui {
         trademarkLabel.setPosition(0, -1, Anchor.CENTER | Anchor.BOTTOM);
         trademarkLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
-        form.getContentContainer().add(logoImage, buildLabel, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
+        form.getContentContainer().add(logoImage, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
                 aboutButton, quitButton, copyrightLabel, trademarkLabel);
 
         addToScreen(new UIAnimatedBackground(this));

@@ -5,14 +5,17 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
 import com.almuradev.almura.client.gui.components.UIForm;
 import com.almuradev.almura.util.Colors;
 import com.google.common.eventbus.Subscribe;
+
 import cpw.mods.fml.client.GuiModList;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 
@@ -29,6 +32,11 @@ public class DynamicAboutMenu extends SimpleGui {
         final UIForm form = new UIForm(this, 300, 225, "About");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
+        // Create the build label
+        final UILabel buildLabel = new UILabel(this);
+        buildLabel.setText(Colors.GRAY + "Almura: " + Almura.GUI_VERSION + " Forge: " + Almura.FORGE_VERSION);
+        buildLabel.setPosition(0, 3, Anchor.CENTER | Anchor.TOP);
+        
         // Create About us multi-line label
         final UITextField aboutUsLabel = new UITextField(this, "", true);
 
@@ -76,8 +84,8 @@ public class DynamicAboutMenu extends SimpleGui {
                 + "\n\n"
                 + "As we enter our 5th year in operation soon we hope that all of our users have a positive experience with Almura.";
 
-        aboutUsLabel.setSize(290, form.getContentContainer().getHeight() - 30);
-        aboutUsLabel.setPosition(0, 5, Anchor.CENTER);
+        aboutUsLabel.setSize(290, form.getContentContainer().getHeight() - 40);
+        aboutUsLabel.setPosition(0, 15, Anchor.CENTER);
         aboutUsLabel.setText(fieldText);
         aboutUsLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
         aboutUsLabel.setName("multiline_label.about_us");
@@ -96,7 +104,7 @@ public class DynamicAboutMenu extends SimpleGui {
         backButton.setName("button.back");
         backButton.register(this);
 
-        form.getContentContainer().add(aboutUsLabel, modsButton, backButton);
+        form.getContentContainer().add(buildLabel, aboutUsLabel, modsButton, backButton);
 
         addToScreen(new UIAnimatedBackground(this));
         addToScreen(form);
