@@ -11,6 +11,7 @@ import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
 import com.almuradev.almura.client.gui.components.UIForm;
 import com.almuradev.almura.util.Colors;
 import com.google.common.eventbus.Subscribe;
+
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -233,7 +234,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
     }
 
     @Subscribe
-    public void onSelection(UISelect.SelectEvent event) {
+    public void onSelection(@SuppressWarnings("rawtypes") UISelect.SelectEvent event) {
 
         switch (event.getComponent().getName()) {
             case "select.chest":

@@ -6,6 +6,7 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.util.FileSystem;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -13,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
+
 import org.yaml.snakeyaml.DumperOptions;
 
 import java.io.IOException;
@@ -57,7 +59,8 @@ public class Configuration {
     //FIRST LAUNCH
     public static boolean FIRST_LAUNCH = true;
 
-    private static ConfigurationLoader loader;
+    @SuppressWarnings("rawtypes")
+	private static ConfigurationLoader loader;
     private static ConfigurationNode root;
 
     public static void load() throws IOException {
