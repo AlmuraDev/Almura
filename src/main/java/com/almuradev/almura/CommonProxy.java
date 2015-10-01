@@ -60,6 +60,7 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
@@ -76,6 +77,7 @@ import net.minecraft.tileentity.TileEntitySign;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
@@ -446,6 +448,18 @@ public class CommonProxy {
                 if (event.entityPlayer instanceof EntityPlayerMP) {
                     ((EntityPlayerMP) event.entityPlayer).playerNetServerHandler
                             .sendPacket(new S36PacketSignEditorOpen(te.xCoord, te.yCoord, te.zCoord));
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onHarvestBlock(BlockEvent.HarvestDropsEvent event) {
+        if (event.block instanceof BlockDoublePlant) {
+            if (event.blockMetadata == 0) {
+                final Item itemSunflowerSeed = GameRegistry.findItem(Almura.MOD_ID, "Food\\sunflowerseed");
+                if (itemSunflowerSeed != null) {
+                    event.drops.add(new ItemStack(itemSunflowerSeed, 3));
                 }
             }
         }
