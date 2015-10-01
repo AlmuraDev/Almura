@@ -57,7 +57,7 @@ public class DynamicMainMenu extends SimpleGui {
         // Create the singleplayer button
         final UIButton singleplayerButton = new UIButton(this, Colors.AQUA + "Singleplayer");
         singleplayerButton.setSize(180, 16);
-        singleplayerButton.setPosition(0, getPaddedY(logoImage, padding * 3), Anchor.CENTER | Anchor.TOP);
+        singleplayerButton.setPosition(0, getPaddedY(logoImage, padding * 2), Anchor.CENTER | Anchor.TOP);
         singleplayerButton.setName("button.singleplayer");
         singleplayerButton.register(this);
 
@@ -97,7 +97,7 @@ public class DynamicMainMenu extends SimpleGui {
         quitButton.register(this);
 
         // Create the copyright label
-        final UILabel copyrightLabel = new UILabel(this, Colors.GRAY + "Copyright AlmuraDev 2012 - 2016 ");
+        final UILabel copyrightLabel = new UILabel(this, Colors.GRAY + "Copyright AlmuraDev 2012 - 201 ");
         copyrightLabel.setPosition(0, -9, Anchor.CENTER | Anchor.BOTTOM);
         copyrightLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
