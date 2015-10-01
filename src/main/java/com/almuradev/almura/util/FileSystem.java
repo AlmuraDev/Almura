@@ -39,14 +39,14 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 public final class FileSystem {
-    public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID);
-    public static final Path CONFIG_BACKGROUNDS_PATH = Paths.get(CONFIG_PATH.toString(), "backgrounds");
+    public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID);    
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
     public static final Path CONFIG_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "mappings.yml");
     public static final Path CONFIG_ENTITY_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "entity_mappings.yml");
     public static final Path CONFIG_VERSION_PATH = Paths.get(CONFIG_PATH.toString(), Almura.PACK_VERSION);
     public static final Path CONFIG_YML_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "packs");
     public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "images");
+    public static final Path CONFIG_BACKGROUNDS_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "backgrounds");
     public static final Path CONFIG_GUI_SPRITESHEET_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "gui.png");
     public static final Path CONFIG_GUI_LOGO_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "almura.png");
     public static final Path CONFIG_GUI_RESTOKENICON_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "almuracustom1_restoken.png");
