@@ -52,7 +52,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -507,7 +506,7 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
 
                     if (matched != null) {
                         final double chance = matched.getSource().getValueWithinRange();
-                        if (random.nextDouble() <= (100 / chance)) {
+                        if (random.nextDouble() <= (chance / 100)) {
                             Block toReplace;
 
                             if (matched.getWithObj().minecraftObject instanceof ItemBlock) {
