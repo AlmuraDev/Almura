@@ -454,6 +454,9 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
 
     @Override
     public boolean canBlockStay(World worldIn, int x, int y, int z) {
+        if (!super.canBlockStay(worldIn, x, y, z)) {
+            return false;
+        }
         boolean checkLight = lightNode != null && lightNode.getValue().getSource();
         boolean stay = false;
 
@@ -527,7 +530,7 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
                 }
             }
         }
-        return false;
+        return super.onBlockActivated(world, x, y, z, player, p_149727_6_, p_149727_7_, p_149727_8_, p_149727_9_);
     }
 
     @Override
