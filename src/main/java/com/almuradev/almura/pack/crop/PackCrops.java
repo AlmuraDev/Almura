@@ -75,8 +75,25 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
     @Override
     public void updateTick(World world, int x, int y, int z, Random random) {
-        final int metadata = world.getBlockMetadata(x, y, z);
+        attemptToAdvanceStage(world, random, x, y, z, world.getBlockMetadata(x, y, z), false);
+    }
 
+    @Override
+    public boolean canFertilize(World worldIn, int x, int y, int z, boolean isClient) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldFertilize(World worldIn, Random random, int x, int y, int z) {
+        return true;
+    }
+
+    @Override
+    public void fertilize(World world, int x, int y, int z) {
+        attemptToAdvanceStage(world, world.rand, x, y, z, world.getBlockMetadata(x, y, z), true);
+    }
+
+    private void attemptToAdvanceStage(World world, Random random, int x, int y, int z, int metadata, boolean isBonemeal) {
         if (metadata >= stages.size() - 1) {
             return;
         }
@@ -94,7 +111,7 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
 
         final LightNode lightNode = stage.getNode(LightNode.class);
         boolean checkLight = lightNode != null && lightNode.getValue().getSource();
-        boolean tick = false;
+        boolean canAdvance = false;
 
         if (checkLight) {
             final int minLightLevel = lightNode.getValue().getMin();
@@ -102,20 +119,29 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
             final int areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
             final int worldLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
             if (areaBlockLight >= minLightLevel && areaBlockLight <= maxLightLevel) {
-                tick = true;
+                canAdvance = true;
             } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
-                tick = true;
+                canAdvance = true;
             }
         } else {
-            tick = true;
+            canAdvance = true;
         }
 
-        if (tick) {
-            stage.onTick(world, x, y, z, random);
-            final double
-                    chance =
-                    stage.getNode(GrowthNode.class).getValue().getValueWithinRange();
-            if (random.nextDouble() <= (chance / 100)) {
+        if (canAdvance) {
+            if (!isBonemeal) {
+                stage.onTick(world, x, y, z, random);
+                final double
+                        chance =
+                        stage.getNode(GrowthNode.class).getValue().getValueWithinRange();
+                if (random.nextDouble() <= (chance / 100)) {
+                    stage.onGrowth(world, x, y, z, random);
+                    final Stage newStage = stages.get(metadata + 1);
+                    newStage.onGrown(world, x, y, z, random);
+                    if (!world.isRemote) {
+                        world.setBlockMetadataWithNotify(x, y, z, metadata + 1, 3);
+                    }
+                }
+            } else {
                 stage.onGrowth(world, x, y, z, random);
                 final Stage newStage = stages.get(metadata + 1);
                 newStage.onGrown(world, x, y, z, random);

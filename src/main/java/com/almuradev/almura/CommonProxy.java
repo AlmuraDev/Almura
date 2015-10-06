@@ -395,23 +395,25 @@ public class CommonProxy {
                 } else {
                     final FertilizerNode stageFertilizerNode = stage.getNode(FertilizerNode.class);
                     boolean found = false;
-                    for (GameObjectProperty prop : stageFertilizerNode.getValue()) {
-                        final ItemStack heldStack = event.entityPlayer.getHeldItem();
+                    if (event.world.getBlockMetadata(event.x, event.y, event.z) < ((PackCrops) event.block).getStages().size() - 1) {
+                        for (GameObjectProperty prop : stageFertilizerNode.getValue()) {
+                            final ItemStack heldStack = event.entityPlayer.getHeldItem();
 
-                        if (heldStack != null && heldStack.getItem() != null) {
-                            final Item heldItem = heldStack.getItem();
+                            if (heldStack != null && heldStack.getItem() != null) {
+                                final Item heldItem = heldStack.getItem();
 
-                            final Object minecraftObject = heldItem instanceof ItemBlock ? ((ItemBlock) heldItem).blockInstance : heldItem;
-                            final Object propMinecraftObject = prop.getSource().minecraftObject instanceof ItemBlock ? ((ItemBlock) prop.getSource()
-                                    .minecraftObject).blockInstance : prop.getSource().minecraftObject;
+                                final Object minecraftObject = heldItem instanceof ItemBlock ? ((ItemBlock) heldItem).blockInstance : heldItem;
+                                final Object propMinecraftObject =
+                                        prop.getSource().minecraftObject instanceof ItemBlock ? ((ItemBlock) prop.getSource()
+                                                .minecraftObject).blockInstance : prop.getSource().minecraftObject;
 
-                            if (minecraftObject == propMinecraftObject && heldStack.getMetadata() == prop.getSource().data) {
-                                found = true;
-                                break;
+                                if (minecraftObject == propMinecraftObject && heldStack.getMetadata() == prop.getSource().data) {
+                                    found = true;
+                                    break;
+                                }
                             }
                         }
                     }
-
                     if (!found) {
                         event.setCanceled(true);
                     }
