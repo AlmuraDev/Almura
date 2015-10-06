@@ -188,10 +188,18 @@ public class Pack {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("name", name)
-                .add("blocks", blocks)
-                .add("items", items)
-                .toString();
+        if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
+            return Objects.toStringHelper(this)
+                    .add("name", name)
+                    .add("blocks", blocks)
+                    .add("items", items)
+                    .toString();
+        } else {
+            return Objects.toStringHelper(this)
+                    .add("name", name)
+                    .add("blocks", blocks.size())
+                    .add("items", items.size())
+                    .toString();
+        }
     }
 }
