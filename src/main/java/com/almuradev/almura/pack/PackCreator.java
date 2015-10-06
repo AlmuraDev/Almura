@@ -1013,6 +1013,9 @@ public class PackCreator {
                 }
             }
         }
+        if (recipes.isEmpty()) {
+            Almura.LOGGER.warn("No recipes specified in [" + name + "] in pack [" + pack.getName() + "]. Is this intentional?");
+        }
         return new RecipeNode(recipes);
     }
 
