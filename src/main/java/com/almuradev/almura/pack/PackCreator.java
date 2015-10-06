@@ -11,6 +11,7 @@ import com.almuradev.almura.LogHelper;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.block.PackBlock;
+import com.almuradev.almura.pack.block.PackStairs;
 import com.almuradev.almura.pack.container.PackContainerBlock;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
@@ -717,6 +718,45 @@ public class PackCreator {
         }
 
         return leaves;
+    }
+
+    public static PackStairs createStairsFromReader(Pack pack, String name, ConfigurationNode reader) {
+        final List<String> description = PackUtil.parseNewlineStringIntoList(
+                reader.getNode(PackKeys.TITLE.getKey()).getString(PackKeys.TITLE.getDefaultValue()));
+        final List<String> tooltip = Lists.newLinkedList();
+        if (description.size() > 1) {
+            tooltip.addAll(description);
+            tooltip.remove(0);
+        }
+        final String textureName = reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+        Map<Integer, List<Integer>> textureCoordinates;
+        try {
+            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
+                    .FUNCTION_STRING_TRANSFORMER));
+        } catch (NumberFormatException nfe) {
+            if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
+                Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+            }
+            textureCoordinates = Maps.newHashMap();
+        }
+        final boolean showInCreativeTab = reader.getNode(PackKeys.SHOW_IN_CREATIVE_TAB.getKey()).getBoolean(
+                PackKeys.SHOW_IN_CREATIVE_TAB.getDefaultValue());
+        final String creativeTabName = reader.getNode(PackKeys.CREATIVE_TAB.getKey()).getString(PackKeys.CREATIVE_TAB.getDefaultValue());
+
+        final float hardness = reader.getNode(PackKeys.HARDNESS.getKey()).getFloat(PackKeys.HARDNESS.getDefaultValue());
+        final float resistance = reader.getNode(PackKeys.RESISTANCE.getKey()).getFloat(PackKeys.RESISTANCE.getDefaultValue());
+
+        final LightNode lightNode = createLightNode(pack, name, reader.getNode(PackKeys.NODE_LIGHT.getKey()));
+        LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "tile." + pack.getName() + "\\" + name + ".name", description.get(0));
+
+        final PackStairs stairs = new PackStairs(pack, name, tooltip, textureName, textureCoordinates, hardness,
+                resistance, showInCreativeTab, creativeTabName, lightNode);
+
+        if (!reader.getNode(PackKeys.NODE_FUEL.getKey()).isVirtual()) {
+            stairs.addNode(createFuelNode(pack, name, reader.getNode(PackKeys.NODE_FUEL.getKey())));
+        }
+
+        return stairs;
     }
 
     public static TreeNode createTreeNode(Pack pack, String name, ConfigurationNode node) {

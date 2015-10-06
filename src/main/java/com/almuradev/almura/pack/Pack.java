@@ -141,10 +141,14 @@ public class Pack {
                         final Block leaves = PackCreator.createLeavesFromReader(pack, name, reader);
                         pack.blocks.add(leaves);
                         break;
+                    case "STAIRS":
+                        final Block stairs = PackCreator.createStairsFromReader(pack, name, reader);
+                        pack.blocks.add(stairs);
+                        break;
                     default:
                         Almura.LOGGER
                                 .warn("Unknown type [" + type + "] in file [" + path.getFileName()
-                                        + "]. Valid types are [ITEM, FOOD, BLOCK, CROP, CONTAINER, SAPLING, LEAVES].");
+                                        + "]. Valid types are [ITEM, FOOD, BLOCK, CROP, CONTAINER, SAPLING, LEAVES, STAIRS].");
                 }
             } catch (IOException e) {
                 LogHelper.logPackWarnOrError("Failed to load [" + path + "] for pack [" + pack.getName() + "].", Optional.<Throwable>of(e));
