@@ -33,6 +33,7 @@ ext {
     packaging = 'jar'
     mixinSrg = new File(tasks.reobf.temporaryDir.getCanonicalPath() + File.separator + 'mixins.srg')
     mixinRefMap = new File(project.buildDir, 'tmp/mixins/mixins.almura.refmap.json')
+    currentYear = new Date().format("yyyy")
 }
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
@@ -76,7 +77,7 @@ license {
     ext.name = project.name
     ext.organization = project.organization
     ext.url = project.url
-    ext.year = project.inceptionYear
+    ext.year = "${project.inceptionYear} - ${project.currentYear}"
     header rootProject.file('HEADER.txt')
     ignoreFailures true
     strictCheck true
