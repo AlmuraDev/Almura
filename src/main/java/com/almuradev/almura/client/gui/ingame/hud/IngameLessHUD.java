@@ -25,9 +25,9 @@ public class IngameLessHUD extends SimpleGui {
     private static final int PADDING = 1;
     private static final String COMPASS_CHARACTERS = "S.......W.......N.......E.......";
     private static final String TIME_FORMAT = "%2d:%02d%s";
-    private UIBackgroundContainer clockContainer, compassContainer, coordinatesContainer, overlayContainer;
+    private UIBackgroundContainer compassContainer, overlayContainer;
     private UILabel clockLabel, economyLabel, compassLabel, coordinatesXLabel, coordinatesYLabel, coordinatesZLabel, nameLabel, worldLabel;
-    private UIImage armorImage, clockImage, experienceImage, healthImage, staminaImage;
+    private UIImage clockImage;
 
     static {
         FRO_HUD = new FontRenderOptions();

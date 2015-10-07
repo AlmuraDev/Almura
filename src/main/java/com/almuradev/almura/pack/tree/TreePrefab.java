@@ -11,8 +11,6 @@ import com.almuradev.almura.pack.mapper.GameObject;
 import com.almuradev.almura.pack.node.property.RangeProperty;
 import com.almuradev.almura.pack.tree.gen.NormalTreeGenerator;
 import com.google.common.base.Objects;
-import com.google.common.base.Optional;
-
 import java.util.Set;
 
 public class TreePrefab implements IPackObject {
@@ -91,7 +89,8 @@ public class TreePrefab implements IPackObject {
         return pack.equals(other.pack) && identifier.equals(other.identifier);
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("pack", pack)

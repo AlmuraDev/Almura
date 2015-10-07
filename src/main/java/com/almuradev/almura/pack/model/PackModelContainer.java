@@ -18,7 +18,6 @@ public class PackModelContainer {
     private final PackPhysics physics;
     private Optional<IModel> model;
 
-    @SuppressWarnings("unchecked")
     public PackModelContainer(String identifier, PackPhysics physics) {
         this.identifier = identifier;
         this.physics = physics;

@@ -21,19 +21,10 @@ import java.text.DecimalFormat;
 
 public class IngameBlockWireframe extends SimpleGui {
 
-    private final World world;
     private final Block block;
-    private final int x, y, z;
     private UITextField minXTextField, minYTextField, minZTextField, maxXTextField, maxYTextField, maxZTextField;
-    private AxisAlignedBB wireframe;
-
     public IngameBlockWireframe(World world, Block block, int x, int y, int z, AxisAlignedBB wireframe) {
-        this.world = world;
         this.block = block;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.wireframe = wireframe;
         construct();
     }
 

@@ -47,8 +47,6 @@ public class IngameResToken extends SimpleGui {
         // Create the form
         final UIForm form = new UIForm(this, 225, 175, "Almura", false);
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        final int padding = 4;
-       
         // Res Token Text
         final UILabel line1 = new UILabel(this, Colors.WHITE + "Do you wish to use this");        
         line1.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);

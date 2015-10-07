@@ -81,7 +81,6 @@ public class ClientProxy extends CommonProxy {
     public static IngameResidenceHUD HUD_RESIDENCE;
 
     @Override
-    @SuppressWarnings("unchecked")
     public void onPreInitialization(FMLPreInitializationEvent event) {
         super.onPreInitialization(event);
         if (Configuration.FIRST_LAUNCH) {
@@ -163,7 +162,6 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @SubscribeEvent
     public void onRenderPlayerSpecialPostEvent(RenderPlayerEvent.Specials.Post event) {
         AccessoryManager.onRenderPlayerSpecialEventPost(event);

@@ -6,10 +6,12 @@
 package com.almuradev.almura.mixin.item.crafting;
 
 import com.almuradev.almura.recipe.IShapelessRecipe;
+
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.world.World;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,13 +23,14 @@ import java.util.List;
 @Mixin(ShapelessRecipes.class)
 public abstract class MixinShapelessRecipes implements IShapelessRecipe {
 
-    @Shadow
+    @SuppressWarnings("rawtypes")
+	@Shadow
     private List recipeItems;
 
     private boolean checkMultiQuantity = false;
 
     @Overwrite
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean matches(InventoryCrafting craftingInventory, World world) {
         final ArrayList buffer = new ArrayList(recipeItems);
 

@@ -13,7 +13,6 @@ import com.almuradev.almura.util.Colors;
 import com.almuradev.almura.util.FontRenderOptionsBuilder;
 import cpw.mods.fml.client.FMLClientHandler;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -46,7 +45,7 @@ public class IngameAlmuraHUD extends SimpleGui {
         gradientContainer.setSize(375, 34);
         gradientContainer.setPosition(0,0, Anchor.CENTER);
         gradientContainer.setColor(0);
-        gradientContainer.setBackgroundAlpha(120);
+        gradientContainer.setBackgroundAlpha(180);
         gradientContainer.setClipContent(false);
 
         // ////////////////////////////// LEFT COLUMN //////////////////////////////////////

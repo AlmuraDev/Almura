@@ -26,6 +26,7 @@ import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -67,7 +68,8 @@ public class PackStairs extends BlockStairs implements IPackObject, IBlockClipCo
     private final List<String> tooltip;
     private ClippedIcon[] clippedIcons;
     private BreakNode breakNode;
-    private CollisionNode collisionNode;
+    @SuppressWarnings("unused")
+	private CollisionNode collisionNode;
 
     public PackStairs(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
             float hardness, float resistance, boolean showInCreativeTab, String creativeTabName, LightNode lightNode) {

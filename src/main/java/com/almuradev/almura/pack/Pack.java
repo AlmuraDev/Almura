@@ -13,6 +13,7 @@ import com.almuradev.almura.util.FileSystem;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
@@ -186,7 +187,8 @@ public class Pack {
         return name.hashCode();
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public String toString() {
         if (Configuration.DEBUG_ALL || Configuration.DEBUG_PACKS) {
             return Objects.toStringHelper(this)

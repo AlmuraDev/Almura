@@ -52,7 +52,8 @@ public class FruitPrefab implements IPackObject {
         return pack.equals(other.pack) && identifier.equals(other.identifier);
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("pack", pack)

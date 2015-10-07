@@ -70,7 +70,7 @@ public class PackSeeds extends ItemSeeds implements IPackObject, IClipContainer,
 
     @Override
     @SideOnly(Side.CLIENT)
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
         for (String str : tooltip) {
             list.add(str);

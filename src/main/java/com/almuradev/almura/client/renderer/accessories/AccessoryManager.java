@@ -20,6 +20,7 @@ import com.almuradev.almura.client.renderer.accessories.type.Wings;
 import com.almuradev.almura.util.FileSystem;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
@@ -73,7 +74,8 @@ public class AccessoryManager {
     @SuppressWarnings("unchecked")
     public static void addAccessory(EntityLivingBase base, ResourceLocation textureLocation, String accessoryIdentifier) {
         final Class<? extends IAccessory<? extends ModelBase>> accessoryClazz = ACCESSORY_TYPES_BY_NAME.get(accessoryIdentifier);
-        final IAccessory accessory;
+        @SuppressWarnings("rawtypes")
+		final IAccessory accessory;
 
         if (accessoryClazz != null) {
             try {
@@ -122,9 +124,10 @@ public class AccessoryManager {
     public static final class TexturedAccessory {
 
         public final ResourceLocation textureLocation;
-        public final IAccessory accessoryType;
+        @SuppressWarnings("rawtypes")
+		public final IAccessory accessoryType;
 
-        public TexturedAccessory(ResourceLocation textureLocation, IAccessory accessoryType) {
+        public TexturedAccessory(ResourceLocation textureLocation, @SuppressWarnings("rawtypes") IAccessory accessoryType) {
             this.textureLocation = textureLocation;
             this.accessoryType = accessoryType;
         }

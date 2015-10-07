@@ -35,6 +35,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -85,7 +86,8 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
     private BreakNode breakNode;
     private DecayNode decayNode;
     private SpreadNode spreadNode;
-    private CollisionNode collisionNode;
+    @SuppressWarnings("unused")
+	private CollisionNode collisionNode;
 
     public PackLeaves(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
             String modelName, PackModelContainer modelContainer, float hardness, float resistance, boolean showInCreativeTab, String creativeTabName,
@@ -210,7 +212,8 @@ public class PackLeaves extends BlockLeavesBase implements IPackObject, IBlockCl
         return pack.equals(other.pack) && identifier.equals(other.identifier);
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("packName", pack.getName())

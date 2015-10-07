@@ -19,6 +19,7 @@ import com.almuradev.almura.pack.renderer.PackIcon;
 import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -74,7 +75,7 @@ public class PackFood extends ItemFood implements IPackObject, IClipContainer, I
     @Override
     @SideOnly(Side.CLIENT)
     @SuppressWarnings("unchecked")
-    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
+    public void addInformation(ItemStack stack, EntityPlayer player, @SuppressWarnings("rawtypes") List list, boolean p_77624_4_) {
         for (String str : tooltip) {
             list.add(str);
         }

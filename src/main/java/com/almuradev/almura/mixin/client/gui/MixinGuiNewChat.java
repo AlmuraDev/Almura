@@ -8,6 +8,7 @@ package com.almuradev.almura.mixin.client.gui;
 import com.almuradev.almura.Configuration;
 import com.almuradev.almura.util.Colors;
 import com.google.common.collect.Lists;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.ChatLine;
@@ -18,6 +19,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,13 +34,15 @@ public abstract class MixinGuiNewChat extends Gui {
 
     @Shadow
     public Minecraft mc;
-    @Shadow
+    @SuppressWarnings("rawtypes")
+	@Shadow
     public List field_146253_i;
     @Shadow
     public int scrollPos;
     @Shadow
     public boolean isScrolled;
-    @Shadow
+    @SuppressWarnings("rawtypes")
+	@Shadow
     public List chatLines;
 
     @Shadow
@@ -190,7 +194,8 @@ public abstract class MixinGuiNewChat extends Gui {
         }
     }
 
-    private void setChatLine(IChatComponent p_146237_1_, int p_146237_2_, int p_146237_3_, boolean p_146237_4_) {
+    @SuppressWarnings({ "unused", "rawtypes", "unchecked" })
+	private void setChatLine(IChatComponent p_146237_1_, int p_146237_2_, int p_146237_3_, boolean p_146237_4_) {
         if (p_146237_2_ != 0) {
             this.deleteChatLine(p_146237_2_);
         }

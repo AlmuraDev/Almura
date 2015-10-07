@@ -12,6 +12,7 @@ import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.model.IModel;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.google.common.base.Optional;
+
 import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderType;
 import net.malisis.core.renderer.element.shape.Cube;
@@ -57,8 +58,8 @@ public class ItemRenderer extends MalisisRenderer {
         drawShape(shape, rp);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
+	@Override
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
             if (Item.class.isAssignableFrom(clazz) && IClipContainer.class.isAssignableFrom(clazz) && IModelContainer.class

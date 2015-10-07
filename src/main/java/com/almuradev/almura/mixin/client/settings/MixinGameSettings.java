@@ -6,7 +6,9 @@
 package com.almuradev.almura.mixin.client.settings;
 
 import com.almuradev.almura.Configuration;
+
 import net.minecraft.client.settings.GameSettings;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,10 +21,12 @@ import java.util.List;
 @Mixin(GameSettings.class)
 public abstract class MixinGameSettings {
 
-    @Shadow
+    @SuppressWarnings("rawtypes")
+	@Shadow
     public List resourcePacks;
 
-    @Inject(method = "loadOptions", at = @At(value = "RETURN"))
+    @SuppressWarnings("unchecked")
+	@Inject(method = "loadOptions", at = @At(value = "RETURN"))
     public void onLoadOptions(CallbackInfo ci) {
         try {
             Configuration.load();

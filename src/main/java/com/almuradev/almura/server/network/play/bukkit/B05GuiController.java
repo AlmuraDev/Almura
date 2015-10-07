@@ -5,9 +5,6 @@
  */
 package com.almuradev.almura.server.network.play.bukkit;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import com.almuradev.almura.client.gui.ingame.IngameResToken;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;

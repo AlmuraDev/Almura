@@ -33,6 +33,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -82,7 +83,8 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
     private BreakNode breakNode;
     private LightNode lightNode;
     private TreeNode treeNode;
-    private CollisionNode collisionNode;
+    @SuppressWarnings("unused")
+	private CollisionNode collisionNode;
     private FertilizerNode fertilizerNode;
 
     public PackSapling(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
@@ -206,7 +208,8 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
         return pack.equals(other.pack) && identifier.equals(other.identifier);
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("packName", pack.getName())
@@ -507,7 +510,8 @@ public class PackSapling extends BlockSapling implements IPackObject, IBlockClip
         return meta;
     }
 
-    @SideOnly(Side.CLIENT)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@SideOnly(Side.CLIENT)
     public void getSubBlocks(Item itemIn, CreativeTabs tab, List list) {
         list.add(new ItemStack(itemIn, 1, 0));
     }

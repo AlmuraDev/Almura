@@ -26,7 +26,7 @@ public class RecipeManager {
 
     private static final List<ISmeltRecipe> SMELT_RECIPES = Lists.newArrayList();
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <R extends IRecipe> R registerRecipe(Pack pack, String owner, int id, Class<? extends R> clazz, ItemStack result, List params)
             throws UnknownRecipeTypeException, InvalidRecipeException, DuplicateRecipeException {
         R recipe = null;
@@ -76,7 +76,7 @@ public class RecipeManager {
         return Optional.absent();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static ShapedRecipes createShapedRecipe(ItemStack result, Object... params) {
         String s = "";
         int i = 0;
@@ -165,7 +165,7 @@ public class RecipeManager {
         return new SmeltRecipes(input, result, experience);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static Optional<? extends IRecipe> findMatching(ShapelessRecipes recipe) {
         for (Object registered : CraftingManager.getInstance().getRecipeList()) {
             final net.minecraft.item.crafting.IRecipe registeredRecipe = (net.minecraft.item.crafting.IRecipe) registered;

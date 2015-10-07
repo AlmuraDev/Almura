@@ -9,6 +9,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.IPackObject;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.creativetab.CreativeTabs;
@@ -37,7 +38,8 @@ public class AlmuraCreativeTabs extends CreativeTabs {
         return displayItem == null ? Items.feather : displayItem;
     }
 
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public void displayAllReleventItems(List list) {
         super.displayAllReleventItems(list);
         Collections.sort(list, new Comparator<ItemStack>() {

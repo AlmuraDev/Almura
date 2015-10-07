@@ -11,6 +11,7 @@ import com.almuradev.almura.util.FileSystem;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
+
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
@@ -42,7 +43,8 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
         shape = new SimpleGuiShape();
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public void setParent(UIComponent parent) {
         if (parent != null) {
             parent.register(this);
@@ -146,7 +148,8 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
         renderer.drawShape(shape, rp);
     }
 
-    @Subscribe
+    @SuppressWarnings("rawtypes")
+	@Subscribe
     public void onComponentSizeChange(SizeChangeEvent<UIComponent> event) {
         if (event.getComponent() != this) {
             resetAnimation();

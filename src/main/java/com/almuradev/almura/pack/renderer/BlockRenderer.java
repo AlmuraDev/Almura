@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.pack.renderer;
 
-import com.almuradev.almura.pack.node.RenderNode;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import org.lwjgl.opengl.GL11;
 
 import com.almuradev.almura.Almura;
@@ -196,8 +196,8 @@ public class BlockRenderer extends MalisisRenderer {
         }
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
+	@Override
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
             if (Block.class.isAssignableFrom(clazz) && IBlockClipContainer.class.isAssignableFrom(clazz) && IBlockModelContainer.class

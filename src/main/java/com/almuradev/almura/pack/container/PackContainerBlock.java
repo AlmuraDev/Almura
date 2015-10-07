@@ -34,6 +34,7 @@ import com.almuradev.almura.tabs.Tabs;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.malisis.core.renderer.icon.ClippedIcon;
@@ -84,7 +85,8 @@ public class PackContainerBlock extends BlockContainer implements IPackObject, I
     private ClippedIcon[] clippedIcons;
     private Optional<PackModelContainer> modelContainer;
     private BreakNode breakNode;
-    private CollisionNode collisionNode;
+    @SuppressWarnings("unused")
+	private CollisionNode collisionNode;
 
     public PackContainerBlock(Pack pack, String identifier, List<String> tooltip, String textureName, Map<Integer, List<Integer>> textureCoordinates,
             String modelName,

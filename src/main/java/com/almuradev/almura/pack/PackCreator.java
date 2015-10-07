@@ -462,7 +462,6 @@ public class PackCreator {
         return seed;
     }
 
-    @SuppressWarnings("unchecked")
     public static Stage createCropStage(Pack pack, String name, PackCrops crop, int id, ConfigurationNode reader) {
         final String modelName = reader.getNode(PackKeys.SHAPE.getKey()).getString(PackKeys.SHAPE.getDefaultValue()).split(".shape")[0];
         PackModelContainer modelContainer = null;
@@ -1081,7 +1080,6 @@ public class PackCreator {
         return new LightNode(emission, opacity, new RangeProperty<>(Integer.class, enabled, min, max));
     }
 
-    @SuppressWarnings("unchecked")
     public static CollisionNode createCollisionNode(Pack pack, String name, ConfigurationNode root) {
         final boolean collisionEnabled = root.getNode(PackKeys.ENABLED.getKey()).getBoolean(PackKeys.ENABLED.getDefaultValue());
         final ConfigurationNode collisionSourcesConfigurationNode = root.getNode(PackKeys.SOURCES.getKey());
