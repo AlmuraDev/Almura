@@ -49,6 +49,7 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.Event;
@@ -109,13 +110,6 @@ public class CommonProxy {
         Tabs.fakeStaticLoad();
         Items.fakeStaticLoad();
 
-        Pack.loadAllContent();
-        if (Loader.isModLoaded("IC2")) {
-            IC2Bridge.init();
-        }
-    }
-
-    public void onInitialization(FMLInitializationEvent event) {
         try {
             GameObjectMapper.load();
         } catch (IOException e) {
@@ -127,18 +121,17 @@ public class CommonProxy {
         } catch (IOException e) {
             Almura.LOGGER.error("Failed to load entity_mappings file in the config folder.", e);
         }
+        
+        Pack.loadAllContent();
+        if (Loader.isModLoaded("IC2")) {
+            IC2Bridge.init();
+        }
+    }
 
+    public void onInitialization(FMLInitializationEvent event) {
         for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
             try {
                 onPostCreate(entry.getValue());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
-            try {
-                onLoadFinished(entry.getValue());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -150,6 +143,16 @@ public class CommonProxy {
             final Map<String, String> value = LanguageRegistry.get(entry);
             if (!value.isEmpty()) {
                 Almura.LOGGER.info("Registered [" + value.size() + "] entries for language [" + entry.name() + "]");
+            }
+        }
+    }
+
+    public void onPostInitialization(FMLPostInitializationEvent event) {
+        for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
+            try {
+                onLoadFinished(entry.getValue());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
