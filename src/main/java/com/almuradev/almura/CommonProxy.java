@@ -49,7 +49,7 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.Event;
@@ -121,7 +121,7 @@ public class CommonProxy {
         } catch (IOException e) {
             Almura.LOGGER.error("Failed to load entity_mappings file in the config folder.", e);
         }
-        
+
         Pack.loadAllContent();
         if (Loader.isModLoaded("IC2")) {
             IC2Bridge.init();
@@ -147,7 +147,7 @@ public class CommonProxy {
         }
     }
 
-    public void onPostInitialization(FMLPostInitializationEvent event) {
+    public void onLoadComplete(FMLLoadCompleteEvent event) {
         for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
             try {
                 onLoadFinished(entry.getValue());
