@@ -66,12 +66,17 @@ public final class Colors {
     }
 
     public static Optional<Color> getByCode(char code) {
-        return getByCode(code);
-    }
+        for (Color c : COLORS) {
+            if (c.getChatCode() == code) {
+                return Optional.of(c);
+            }
+        }
+
+        return Optional.absent();    }
 
     public static Optional<Color> getByCode(int code) {
         for (Color c : COLORS) {
-            if (c.getChatCode() == code) {
+            if (c.getChatIntCode() == code) {
                 return Optional.of(c);
             }
         }
