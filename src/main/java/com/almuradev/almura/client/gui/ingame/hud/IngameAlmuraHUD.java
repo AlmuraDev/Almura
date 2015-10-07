@@ -43,9 +43,10 @@ public class IngameAlmuraHUD extends SimpleGui {
     public void construct() {
         guiscreenBackground = false;
         // Construct Hud with all elements
-        gradientContainer.setSize(UIComponent.INHERITED, 34);
+        gradientContainer.setSize(375, 34);
+        gradientContainer.setPosition(0,0, Anchor.CENTER);
         gradientContainer.setColor(0);
-        gradientContainer.setBackgroundAlpha(180);
+        gradientContainer.setBackgroundAlpha(120);
         gradientContainer.setClipContent(false);
 
         // ////////////////////////////// LEFT COLUMN //////////////////////////////////////
