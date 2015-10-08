@@ -24,6 +24,7 @@ import com.almuradev.almura.pack.container.PackContainerTileEntity;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
+import com.almuradev.almura.pack.generator.PackGenerator;
 import com.almuradev.almura.pack.item.PackItemBlock;
 import com.almuradev.almura.pack.mapper.EntityMapper;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
@@ -328,6 +329,9 @@ public class CommonProxy {
         }
         
         Almura.LOGGER.info("Loaded -> " + pack);
+
+        // Generator | Weight (Heavy values run later)
+        GameRegistry.registerWorldGenerator(new PackGenerator(), 10);
     }
 
     @SubscribeEvent
