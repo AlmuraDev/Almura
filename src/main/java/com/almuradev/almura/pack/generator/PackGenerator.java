@@ -34,7 +34,7 @@ public class PackGenerator implements IWorldGenerator {
                 final int blockY = random.nextInt(64);
                 final int blockZ = (chunkZ * 16) + random.nextInt(16);
 
-                System.out.println("Calling Generate of Marble Ore. X [" + blockX + "], Y [" + blockY + "], Z [" + blockZ + "].");
+                //System.out.println("Calling Generate of Marble Ore. X [" + blockX + "], Y [" + blockY + "], Z [" + blockZ + "].");
                 genMinable.generate(world, random, blockX, blockY, blockZ);
             }
         }
