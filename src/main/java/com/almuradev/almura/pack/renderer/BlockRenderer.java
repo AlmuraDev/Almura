@@ -222,8 +222,6 @@ public class BlockRenderer extends MalisisRenderer {
             return;
         }
 
-        shape.deductParameters(); //Re-calculate lighting on blocks that can rotate.
-
         final RotationMeta.Rotation rotation = RotationMeta.Rotation.getState(blockMetadata);
         final RotationProperty property = node.getRotationProperty(rotation);
         if (property == null) {
@@ -293,6 +291,7 @@ public class BlockRenderer extends MalisisRenderer {
             model.rotate(property.getAngle(), property.getX().getId(), property.getY().getId(), property.getZ().getId());
         }
         ((Shape) model).applyMatrix();
+        shape.deductParameters(); //Re-calculate lighting on blocks that can rotate.
     }
 
     private void handleScaling(IModel model) {
