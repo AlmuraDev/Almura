@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,12 +38,21 @@ public class ExternalIcon extends MalisisIcon {
     public boolean load(IResourceManager manager, ResourceLocation location) {
         final Path texturePath = Paths.get(root.toString(), location.getResourcePath() + ".png");
 
+        InputStream stream = null;
         try {
             BufferedImage[] textures = new BufferedImage[1 + Minecraft.getMinecraft().gameSettings.mipmapLevels];
-            textures[0] = ImageIO.read(Files.newInputStream(texturePath));
+            stream = Files.newInputStream(texturePath);
+            textures[0] = ImageIO.read(stream);
             loadSprite(textures, null, Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
             return false;
         } catch (RuntimeException | IOException ignored) {
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException ignored) {
+                }
+            }
         }
 
         return true;

@@ -17,6 +17,7 @@ import net.minecraft.util.ResourceLocation;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,9 +47,11 @@ public class PackIcon extends MalisisIcon {
         final int mipmapLevels = Minecraft.getMinecraft().gameSettings.mipmapLevels;
         final boolean anisotropic = Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F;
 
+        InputStream stream = null;
         try {
             BufferedImage[] textures = new BufferedImage[1 + mipmapLevels];
-            textures[0] = ImageIO.read(Files.newInputStream(texturePath));
+            stream = Files.newInputStream(texturePath);
+            textures[0] = ImageIO.read(stream);
             loadSprite(textures, null, anisotropic);
             return false;
         } catch (RuntimeException e) {
@@ -93,6 +96,13 @@ public class PackIcon extends MalisisIcon {
                                 + "]");
             }
 
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException ignore) {
+                }
+            }
         }
         return true;
     }
