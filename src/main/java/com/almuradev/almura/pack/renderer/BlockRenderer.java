@@ -81,8 +81,7 @@ public class BlockRenderer extends MalisisRenderer {
         if (renderType == RenderType.ISBRH_INVENTORY) { //needed to fix custom block lighting
             net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
         }
-
-        shape.deductParameters();
+        
         drawShape(shape, rp);
 
         if (renderType == RenderType.ISBRH_INVENTORY) {
@@ -222,6 +221,9 @@ public class BlockRenderer extends MalisisRenderer {
         if (!node.isEnabled()) {
             return;
         }
+
+        shape.deductParameters(); //Re-calculate lighting on blocks that can rotate.
+
         final RotationMeta.Rotation rotation = RotationMeta.Rotation.getState(blockMetadata);
         final RotationProperty property = node.getRotationProperty(rotation);
         if (property == null) {
