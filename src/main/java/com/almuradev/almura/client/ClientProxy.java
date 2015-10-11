@@ -8,6 +8,7 @@ package com.almuradev.almura.client;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Configuration;
+import com.almuradev.almura.client.command.ClientCommand;
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.guide.ViewPagesGui;
 import com.almuradev.almura.client.gui.ingame.HUDData;
@@ -59,6 +60,7 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -107,6 +109,7 @@ public class ClientProxy extends CommonProxy {
         Bindings.register();
         // Setup client permissibles
         PermissionsHelper.register();
+        ClientCommandHandler.instance.registerCommand(new ClientCommand());
         // Hook into event bus
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
