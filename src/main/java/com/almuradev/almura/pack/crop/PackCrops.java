@@ -6,7 +6,7 @@
 package com.almuradev.almura.pack.crop;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockTextureContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -50,11 +50,12 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackCrops extends BlockCrops implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer {
+public class PackCrops extends BlockCrops implements IPackObject, IBlockTextureContainer, IBlockModelContainer, INodeContainer {
 
     public static int renderId;
     private final Pack pack;
@@ -494,6 +495,17 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockClipCont
     @Override
     public String getIdentifier() {
         return identifier;
+    }
+
+    @Override
+    public Map<Integer, List<Integer>> getTextureCoordinates() {
+        final Stage stage = stages.get(0);
+        return stage == null ? null : stage.getTextureCoordinates();
+    }
+
+    @Override
+    public void setTextureCoordinates(Map<Integer, List<Integer>> coordinates) {
+
     }
 
     @Override

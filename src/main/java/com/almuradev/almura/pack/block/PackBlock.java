@@ -7,7 +7,7 @@ package com.almuradev.almura.pack.block;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Configuration;
-import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockTextureContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.IItemBlockInformation;
 import com.almuradev.almura.pack.INodeContainer;
@@ -63,12 +63,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-public class PackBlock extends Block implements IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer, IItemBlockInformation {
+public class PackBlock extends Block implements IPackObject, IBlockTextureContainer, IBlockModelContainer, INodeContainer, IItemBlockInformation {
 
     public static int renderId;
     private final Pack pack;
     private final String identifier;
-    private final Map<Integer, List<Integer>> textureCoordinates;
+    private Map<Integer, List<Integer>> textureCoordinates;
     private final String modelName;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String textureName;
@@ -275,6 +275,16 @@ public class PackBlock extends Block implements IPackObject, IBlockClipContainer
     @Override
     public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
         return clippedIcons;
+    }
+
+    @Override
+    public Map<Integer, List<Integer>> getTextureCoordinates() {
+        return textureCoordinates;
+    }
+
+    @Override
+    public void setTextureCoordinates(Map<Integer, List<Integer>> coordinates) {
+        this.textureCoordinates = coordinates;
     }
 
     @Override

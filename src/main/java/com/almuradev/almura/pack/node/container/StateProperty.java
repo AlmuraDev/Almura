@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.pack.node.container;
 
-import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockTextureContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
@@ -25,13 +25,13 @@ import net.minecraft.world.IBlockAccess;
 import java.util.List;
 import java.util.Map;
 
-public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockClipContainer, IBlockModelContainer {
+public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockTextureContainer, IBlockModelContainer {
 
     private final Pack pack;
     private final boolean enabled;
     private final String identifier;
     private final String textureName;
-    private final Map<Integer, List<Integer>> textureCoordinates;
+    private Map<Integer, List<Integer>> textureCoordinates;
     private final String modelName;
     private Optional<PackModelContainer> modelContainer;
     private ClippedIcon[] clippedIcons;
@@ -66,8 +66,14 @@ public class StateProperty implements IProperty<Boolean>, IPackObject, IBlockCli
         return textureName;
     }
 
+    @Override
     public Map<Integer, List<Integer>> getTextureCoordinates() {
         return textureCoordinates;
+    }
+
+    @Override
+    public void setTextureCoordinates(Map<Integer, List<Integer>> coordinates) {
+         this.textureCoordinates = coordinates;
     }
 
     @Override

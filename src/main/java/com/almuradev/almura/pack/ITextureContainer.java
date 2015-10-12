@@ -7,7 +7,11 @@ package com.almuradev.almura.pack;
 
 import net.malisis.core.renderer.icon.ClippedIcon;
 
-public interface IClipContainer {
+import java.util.List;
+import java.util.Map;
 
+public interface ITextureContainer {
+    Map<Integer, List<Integer>> getTextureCoordinates();
+    void setTextureCoordinates(Map<Integer, List<Integer>> coordinates);
     ClippedIcon[] getClipIcons();
 }

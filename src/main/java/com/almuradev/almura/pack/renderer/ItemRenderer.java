@@ -7,7 +7,7 @@ package com.almuradev.almura.pack.renderer;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.pack.IBlockModelContainer;
-import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.ITextureContainer;
 import com.almuradev.almura.pack.IModelContainer;
 import com.almuradev.almura.pack.model.IModel;
 import com.almuradev.almura.pack.model.PackModelContainer;
@@ -62,7 +62,7 @@ public class ItemRenderer extends MalisisRenderer {
 	@Override
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
-            if (Item.class.isAssignableFrom(clazz) && IClipContainer.class.isAssignableFrom(clazz) && IModelContainer.class
+            if (Item.class.isAssignableFrom(clazz) && ITextureContainer.class.isAssignableFrom(clazz) && IModelContainer.class
                     .isAssignableFrom(clazz)) {
                 super.registerFor(clazz);
             } else {

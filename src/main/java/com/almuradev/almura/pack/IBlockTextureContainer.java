@@ -8,7 +8,7 @@ package com.almuradev.almura.pack;
 import net.malisis.core.renderer.icon.ClippedIcon;
 import net.minecraft.world.IBlockAccess;
 
-public interface IBlockClipContainer extends IClipContainer {
+public interface IBlockTextureContainer extends ITextureContainer {
 
     ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata);
 }

@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.pack.crop;
 
-import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockTextureContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.IPackObject;
@@ -35,11 +35,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentMap;
 
-public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockModelContainer, INodeContainer {
+public class Stage implements IState, IPackObject, IBlockTextureContainer, IBlockModelContainer, INodeContainer {
 
     private final PackCrops block;
     private final int id;
-    private final Map<Integer, List<Integer>> textureCoordinatesByFace;
+    private Map<Integer, List<Integer>> textureCoordinatesByFace;
     private final ConcurrentMap<Class<? extends INode<?>>, INode<?>> nodes = Maps.newConcurrentMap();
     private final String modelName;
     private Optional<PackModelContainer> modelContainer;
@@ -75,6 +75,15 @@ public class Stage implements IState, IPackObject, IBlockClipContainer, IBlockMo
     @Override
     public ClippedIcon[] getClipIcons(IBlockAccess access, int x, int y, int z, int metadata) {
         return clippedIcons;
+    }
+
+    @Override
+    public Map<Integer, List<Integer>> getTextureCoordinates() {
+        return textureCoordinatesByFace;
+    }
+
+    @Override public void setTextureCoordinates(Map<Integer, List<Integer>> coordinates) {
+        this.textureCoordinatesByFace = coordinates;
     }
 
     @Override

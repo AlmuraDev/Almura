@@ -1,9 +1,17 @@
 package com.almuradev.almura.client.command;
 
+import com.almuradev.almura.Almura;
+import com.almuradev.almura.pack.IPackObject;
+import com.almuradev.almura.pack.ITextureContainer;
 import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackCreator;
+import com.almuradev.almura.pack.PackKeys;
+import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.model.PackModelContainer;
 import com.almuradev.almura.util.FileSystem;
+import com.almuradev.almura.util.Functions;
+import com.google.common.collect.Maps;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -15,6 +23,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class ClientCommand extends CommandBase {
 
@@ -68,6 +78,34 @@ public class ClientCommand extends CommandBase {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        for (Map.Entry<String, Pack> entry : Pack.getPacks().entrySet()) {
+            for (Block block : entry.getValue().getBlocks()) {
+                if (block instanceof IPackObject && block instanceof ITextureContainer) {
+                    final Pack pack = entry.getValue();
+                    final String name = ((IPackObject) block).getIdentifier();
+                    final Path root = FileSystem.CONFIG_YML_PATH.resolve(entry.getKey()).resolve(name + ".yml");
+                    try {
+                        final ConfigurationNode reader = YAMLConfigurationLoader.builder().setFile(root.toFile()).build().load();
+
+                        Map<Integer, List<Integer>> textureCoordinates;
+                        try {
+                            textureCoordinates = PackUtil.parseCoordinatesFrom(reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).getList(Functions
+                                    .FUNCTION_STRING_TRANSFORMER));
+                        } catch (NumberFormatException nfe) {
+                            if (!reader.getNode(PackKeys.TEXTURE_COORDINATES.getKey()).isVirtual()) {
+                                Almura.LOGGER.warn("Failed parsing texture coordinates in [" + name + "] in pack [" + pack.getName() + "]. " + nfe.getMessage());
+                            }
+                            textureCoordinates = Maps.newHashMap();
+                        }
+                        
+                        ((ITextureContainer) block).setTextureCoordinates(textureCoordinates);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
         // Handle textures
         Minecraft.getMinecraft().refreshResources();

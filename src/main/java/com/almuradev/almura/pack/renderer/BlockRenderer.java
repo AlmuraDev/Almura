@@ -10,9 +10,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.pack.IBlockClipContainer;
+import com.almuradev.almura.pack.IBlockTextureContainer;
 import com.almuradev.almura.pack.IBlockModelContainer;
-import com.almuradev.almura.pack.IClipContainer;
+import com.almuradev.almura.pack.ITextureContainer;
 import com.almuradev.almura.pack.INodeContainer;
 import com.almuradev.almura.pack.PackUtil;
 import com.almuradev.almura.pack.RotationMeta;
@@ -97,9 +97,9 @@ public class BlockRenderer extends MalisisRenderer {
             final ClippedIcon[] clippedIcons;
 
             if (world != null) {
-                clippedIcons = ((IBlockClipContainer) block).getClipIcons(world, x, y, z, blockMetadata);
+                clippedIcons = ((IBlockTextureContainer) block).getClipIcons(world, x, y, z, blockMetadata);
             } else {
-                clippedIcons = ((IClipContainer) block).getClipIcons();
+                clippedIcons = ((ITextureContainer) block).getClipIcons();
             }
 
             if (!PackUtil.isEmptyClip(clippedIcons)) {
@@ -199,7 +199,7 @@ public class BlockRenderer extends MalisisRenderer {
 	@Override
     public void registerFor(Class... listClass) {
         for (Class clazz : listClass) {
-            if (Block.class.isAssignableFrom(clazz) && IBlockClipContainer.class.isAssignableFrom(clazz) && IBlockModelContainer.class
+            if (Block.class.isAssignableFrom(clazz) && IBlockTextureContainer.class.isAssignableFrom(clazz) && IBlockModelContainer.class
                     .isAssignableFrom(clazz) && INodeContainer.class.isAssignableFrom(clazz)) {
                 super.registerFor(clazz);
             } else {
