@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.launch;
 
+import org.spongepowered.asm.mixin.MixinEnvironment;
+
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.spongepowered.asm.launch.MixinTweaker;
@@ -23,6 +25,7 @@ public class AlmuraLaunchTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader launchClassLoader) {
+        MixinEnvironment.getDefaultEnvironment().addTransformerExclusion("cofh.asm.CoFHAccessTransformer");
         mixinTweaker.injectIntoClassLoader(launchClassLoader);
     }
 
