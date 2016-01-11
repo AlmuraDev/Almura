@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.client;
 
+import com.almuradev.almura.client.network.play.B03ChunkRegenWand;
+
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Configuration;
@@ -99,6 +101,8 @@ public class ClientProxy extends CommonProxy {
         NETWORK_BUKKIT.registerMessage(B01ResTokenConfirmation.class, B01ResTokenConfirmation.class, 7, Side.SERVER);
         NETWORK_BUKKIT.registerMessage(B06ClientDetailsRequest.class, B06ClientDetailsRequest.class, 8, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B02ClientDetailsResponse.class, B02ClientDetailsResponse.class, 9, Side.SERVER);
+        NETWORK_BUKKIT.registerMessage(B03ChunkRegenWand.class, B03ChunkRegenWand.class, 10, Side.SERVER);
+
         // Register renderers
         PACK_BLOCK_RENDERER.registerFor(PackBlock.class);
         PACK_BLOCK_RENDERER.registerFor(PackCrops.class);
