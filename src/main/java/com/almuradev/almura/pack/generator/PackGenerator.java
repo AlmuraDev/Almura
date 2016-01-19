@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.pack.generator;
 
@@ -21,7 +21,7 @@ public class PackGenerator implements IWorldGenerator {
     private final Block replacement;
 
     public PackGenerator() {
-        this.replacement = GameRegistry.findBlock(Almura.MOD_ID, "Ores\\marbleOre");
+        this.replacement = GameRegistry.findBlock(Almura.PLUGIN_ID, "Ores\\marbleOre");
     }
 
     @Override

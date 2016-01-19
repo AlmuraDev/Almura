@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.pack.renderer;
 
@@ -29,7 +29,7 @@ public class PackIcon extends MalisisIcon {
     private final IPackObject object;
 
     public PackIcon(IPackObject object, String textureName) {
-        super(Almura.MOD_ID.toLowerCase() + ":" + textureName);
+        super(Almura.PLUGIN_ID.toLowerCase() + ":" + textureName);
         this.object = object;
     }
 

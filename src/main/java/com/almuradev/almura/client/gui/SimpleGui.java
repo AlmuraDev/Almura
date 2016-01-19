@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.client.gui;
 
@@ -44,12 +44,12 @@ public abstract class SimpleGui extends MalisisGui {
 
     static {
         try {
-            FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/gui.png", FileSystem.CONFIG_GUI_SPRITESHEET_PATH);
+            FileSystem.registerTexture(Almura.PLUGIN_ID, "textures/gui/gui.png", FileSystem.CONFIG_GUI_SPRITESHEET_PATH);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        LOCATION_GUI_SPRITE_SHEET = new ResourceLocation(Almura.MOD_ID, "textures/gui/gui.png");
+        LOCATION_GUI_SPRITE_SHEET = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/gui.png");
         TEXTURE_SPRITESHEET = new GuiTexture(LOCATION_GUI_SPRITE_SHEET, 284, 142);
 
         ICON_EMPTY = TEXTURE_SPRITESHEET.getIcon(283, 141, 1, 1);

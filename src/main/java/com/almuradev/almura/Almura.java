@@ -1,57 +1,46 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.pack.Pack;
-import com.almuradev.almura.server.ServerProxy;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-@Mod(modid = Almura.MOD_ID, name = "Almura", version = "1.7.10-1492", dependencies = "after:IC2@[2.2.770-experimental,)")
+import com.almuradev.almura.pack.Pack;
+import org.slf4j.Logger;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.network.ChannelBinding;
+import org.spongepowered.api.network.ChannelRegistrationException;
+import org.spongepowered.api.plugin.Plugin;
+
+import javax.inject.Inject;
+
+@Plugin(id = Almura.PLUGIN_ID, name = Almura.PLUGIN_NAME, version = Almura.PLUGIN_VERSION)
 public class Almura {
 
+    public static final String PLUGIN_ID = "almura", PLUGIN_NAME = "Almura", PLUGIN_VERSION = "1.7.10-1694",
+        GUI_VERSION = "b200", PACK_VERSION = "1.4";
     public static final Pack INTERNAL_PACK = new Pack("internal");
-    public static final String MOD_ID = "almura";
-    public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID);
-    public static String GUI_VERSION = "b108";
-    public static String PACK_VERSION = "1.4";
-    public static String FORGE_VERSION = "1.7.10-1614";
 
-    @Instance
-    public static Almura INSTANCE;
+    private static Almura instance;
 
-    @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
-    public static CommonProxy PROXY;
-
-    @EventHandler
-    public void onPreInitialization(FMLPreInitializationEvent event) {
-        PROXY.onPreInitialization(event);
+    public static Almura getInstance() {
+        checkNotNull(instance, "Almura has not been loaded yet!");
+        return instance;
     }
 
-    @EventHandler
-    public void onInitialization(FMLInitializationEvent event) {
-        PROXY.onInitialization(event);
-    }
+    @Inject public Logger logger;
+    public ChannelBinding.IndexedMessageChannel network;
 
-    @EventHandler
-    public void onLoadComplete(FMLLoadCompleteEvent event) {
-        PROXY.onLoadComplete(event);
-    }
-
-    @EventHandler
-    public void onServerStarting(FMLServerStartingEvent event) {
-        PROXY.onServerStarting(event);
+    @Listener
+    public void onGamePreInitialization(GamePreInitializationEvent event) {
+        instance = this;
+        if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM")) {
+            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel 'AM'");
+        }
+        network = Sponge.getGame().getChannelRegistrar().createChannel(this, "AM");
     }
 }

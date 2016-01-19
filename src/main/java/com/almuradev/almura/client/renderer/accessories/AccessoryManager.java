@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.client.renderer.accessories;
 
@@ -57,7 +57,7 @@ public class AccessoryManager {
 
         try {
             for (Path path : Files.newDirectoryStream(FileSystem.CONFIG_ACCESSORIES_PATH, FileSystem.FILTER_IMAGE_FILES_ONLY)) {
-                FileSystem.registerTexture(Almura.MOD_ID, "accessory_" + path.getFileName().toString().split(".png")[0].split(".jpg")[0], path);
+                FileSystem.registerTexture(Almura.PLUGIN_ID, "accessory_" + path.getFileName().toString().split(".png")[0].split(".jpg")[0], path);
             }
         } catch (IOException e) {
             e.printStackTrace();

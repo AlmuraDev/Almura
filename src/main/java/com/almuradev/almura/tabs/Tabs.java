@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.tabs;
 
@@ -62,7 +62,7 @@ public class Tabs {
     public static CreativeTabs getTabByName(String name) {
         for (CreativeTabs tab : CreativeTabs.creativeTabArray) {
             if (tab instanceof AlmuraCreativeTabs) {
-                if (tab.tabLabel.equals(Almura.MOD_ID + "_" + name)) {
+                if (tab.tabLabel.equals(Almura.PLUGIN_ID + "_" + name)) {
                     return tab;
                 }
             } else {

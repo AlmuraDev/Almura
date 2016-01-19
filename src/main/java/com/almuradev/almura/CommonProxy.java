@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura;
 
@@ -104,7 +104,7 @@ public class CommonProxy {
         CommonProxy.NETWORK_FORGE.registerMessage(S01PageDelete.class, S01PageDelete.class, 6, Side.SERVER);
         CommonProxy.NETWORK_FORGE.registerMessage(S02PageOpen.class, S02PageOpen.class, 7, Side.CLIENT);
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());
-        GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");
+        GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.PLUGIN_ID + ":pack_container");
         GameRegistry.registerFuelHandler(new PackFuelHandler());
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
@@ -211,7 +211,7 @@ public class CommonProxy {
                                                 (Block) soilNode.getSoil().minecraftObject, (PackCrops) block,
                                                 textureName,
                                                 reader.getNode(PackKeys.NODE_SEED.getKey()));
-                        if (GameRegistry.findItem(Almura.MOD_ID, seed.getPack().getName() + "\\" + seed.getIdentifier()) != null) {
+                        if (GameRegistry.findItem(Almura.PLUGIN_ID, seed.getPack().getName() + "\\" + seed.getIdentifier()) != null) {
                             Almura.LOGGER
                                     .error("Crop [" + ((PackCrops) block).getIdentifier() + "] in [" + ((PackCrops) block).getPack().getName()
                                             + "] is trying to add seed [" + seed.getIdentifier()
@@ -474,7 +474,7 @@ public class CommonProxy {
     public void onHarvestBlock(BlockEvent.HarvestDropsEvent event) {
         if (event.block instanceof BlockDoublePlant) {
             if (event.blockMetadata == 0) {
-                final Item itemSunflowerSeed = GameRegistry.findItem(Almura.MOD_ID, "Food\\sunflowerseed");
+                final Item itemSunflowerSeed = GameRegistry.findItem(Almura.PLUGIN_ID, "Food\\sunflowerseed");
                 if (itemSunflowerSeed != null) {
                     event.drops.add(new ItemStack(itemSunflowerSeed, 3));
                 }

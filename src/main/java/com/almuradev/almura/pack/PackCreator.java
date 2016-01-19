@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.pack;
 
@@ -1192,7 +1192,7 @@ public class PackCreator {
 
         if (tools.isEmpty() && addDefault) {
             Set<DropProperty> temp = Sets.newConcurrentHashSet();
-            temp.add(new DropProperty(GameObjectMapper.getGameObject(Almura.MOD_ID,
+            temp.add(new DropProperty(GameObjectMapper.getGameObject(Almura.PLUGIN_ID,
                     ((IPackObject) block).getPack().getName() + "\\" + ((IPackObject) block)
                             .getIdentifier(), false).get(),
                     new RangeProperty<>(Integer.class, true, new ImmutablePair<>(1, 1)), 0,
@@ -1249,7 +1249,7 @@ public class PackCreator {
             chancePair = new ImmutablePair<>(100.0, 100.0);
         }
 
-        return new GrassNode(enabled, new VariableGameObjectProperty(new GameObject(Almura.MOD_ID, seed, "", 0),
+        return new GrassNode(enabled, new VariableGameObjectProperty(new GameObject(Almura.PLUGIN_ID, seed, "", 0),
                 new RangeProperty<>(Integer.class, true, amountPair)),
                 new RangeProperty<>(Double.class, true, chancePair));
     }

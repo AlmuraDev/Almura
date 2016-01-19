@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.items;
 
@@ -44,7 +44,7 @@ public class AlmuraItem extends Item implements IPackObject {
      */
     public AlmuraItem(String unlocalizedName, String displayName, String textureName, CreativeTabs creativeTab) {
         setUnlocalizedName(unlocalizedName);
-        setTextureName(Almura.MOD_ID + ":internal/items/" + textureName);
+        setTextureName(Almura.PLUGIN_ID + ":internal/items/" + textureName);
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, getUnlocalizedName() + ".name", displayName);
         if (creativeTab != null) {
             setCreativeTab(creativeTab);

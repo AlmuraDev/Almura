@@ -1,20 +1,18 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura;
 
 import com.almuradev.almura.util.FileSystem;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
-
 import org.yaml.snakeyaml.DumperOptions;
 
 import java.io.IOException;
@@ -146,11 +144,9 @@ public class Configuration {
         mc.gameSettings.ambientOcclusion = 0;
         mc.gameSettings.mipmapLevels = 0;
         mc.gameSettings.guiScale = 3;
-        mc.gameSettings.advancedOpengl = true;
-        mc.gameSettings.anisotropicFiltering = 0;
         mc.gameSettings.limitFramerate = 120;
         mc.gameSettings.enableVsync = false;
-        mc.gameSettings.clouds = false;
+        mc.gameSettings.clouds = 1; // Render Fast
         mc.gameSettings.snooperEnabled = false;
         mc.gameSettings.renderDistanceChunks = 12;
         mc.gameSettings.viewBobbing = false;

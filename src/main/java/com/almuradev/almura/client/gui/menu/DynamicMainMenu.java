@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.client.gui.menu;
 
@@ -30,7 +30,7 @@ public class DynamicMainMenu extends SimpleGui {
 
     static {
         try {
-            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/almura.png", FileSystem.CONFIG_GUI_LOGO_PATH);
+            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "textures/gui/almura.png", FileSystem.CONFIG_GUI_LOGO_PATH);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load logo.", e);
         }

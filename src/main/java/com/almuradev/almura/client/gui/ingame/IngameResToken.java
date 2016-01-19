@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.client.gui.ingame;
 
@@ -32,7 +32,7 @@ public class IngameResToken extends SimpleGui {
     
     static {
         try {
-            ICON_IMAGE_LOCATION = FileSystem.registerTexture(Almura.MOD_ID, "textures/gui/almuracustom1_restoken.png", FileSystem
+            ICON_IMAGE_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "textures/gui/almuracustom1_restoken.png", FileSystem
                     .CONFIG_GUI_RESTOKENICON_PATH);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load logo.", e);

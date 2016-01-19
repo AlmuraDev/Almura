@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.util;
 
@@ -31,7 +31,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 public final class FileSystem {
-    public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.MOD_ID);    
+    public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.PLUGIN_ID);
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
     public static final Path CONFIG_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "mappings.yml");
     public static final Path CONFIG_ENTITY_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "entity_mappings.yml");

@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.pack.crop;
 
@@ -62,7 +62,7 @@ public class PackSeeds extends ItemSeeds implements IPackObject, ITextureContain
         this.tooltip = tooltip;
         setModelContainer(modelContainer);
         setUnlocalizedName(pack.getName() + "\\" + identifier);
-        setTextureName(Almura.MOD_ID + ":images/" + textureName);
+        setTextureName(Almura.PLUGIN_ID + ":images/" + textureName);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
         }

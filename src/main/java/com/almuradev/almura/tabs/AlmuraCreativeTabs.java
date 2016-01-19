@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.tabs;
 
@@ -27,7 +27,7 @@ public class AlmuraCreativeTabs extends CreativeTabs {
     private final Item displayItem;
 
     public AlmuraCreativeTabs(String unlocalizedName, String displayName, Item displayItem) {
-        super(Almura.MOD_ID + "_" + unlocalizedName);
+        super(Almura.PLUGIN_ID + "_" + unlocalizedName);
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, "itemGroup." + tabLabel, displayName);
         this.displayItem = displayItem;
     }
