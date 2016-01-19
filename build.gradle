@@ -22,20 +22,22 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
         classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.12.0'
         classpath 'org.spongepowered:mixingradle:0.2-SNAPSHOT'
+        classpath 'org.spongepowered:spongegradle:0.3-SNAPSHOT'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.hierynomus.license'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'org.spongepowered.gradle'
 
-defaultTasks 'clean', 'licenseFormat', 'build'
+defaultTasks 'clean', 'licenseFormat', 'sortAccessTransformers', 'build'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 archivesBaseName = project.name.toLowerCase()
-version = "${project.version}-${project.forgeVersion}-r${project.apiVersion.split("-")[0]}"
+version = "${project.minecraftVersion}-${project.forgeVersion}-r${project.apiVersion.split("-")[0]}"
 
 sourceSets {
     main {
