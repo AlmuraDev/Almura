@@ -27,6 +27,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.hierynomus.license'
+apply plugin: 'org.spongepowered.mixin'
 
 defaultTasks 'clean', 'licenseFormat', 'build'
 
@@ -35,6 +36,12 @@ targetCompatibility = '1.8'
 
 archivesBaseName = project.name.toLowerCase()
 version = "${project.version}-${project.forgeVersion}-r${project.apiVersion.split("-")[0]}"
+
+sourceSets {
+    main {
+        refMap = "mixins.${project.name.toLowerCase()}.refmap.json"
+    }
+}
 
 minecraft {
     forgeVersion = project.forgeVersion
@@ -57,7 +64,7 @@ repositories {
 
 dependencies {
     compile 'net.malisis:malisiscore:1.7.10-0.12.10-SNAPSHOT:dev'
-    compile('org.spongepowered:mixin:0.4.11-SNAPSHOT') {
+    compile('org.spongepowered:mixin:0.4.12-SNAPSHOT') {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
     }
@@ -97,9 +104,7 @@ jar {
                 'Implementation-Title': project.name,
                 'Implementation-Version': version,
                 'Implementation-Vendor': url,
-                'MixinConfigs': 'mixins.almura.forge.default.json',
-                'ForceLoadAsMod': 'true',
-                'FMLCorePluginContainsFMLMod': 'true',
+                'MixinConfigs': 'mixins.almura.core.default.json',
                 'FMLAT': 'almura_at.cfg'
         )
     }
