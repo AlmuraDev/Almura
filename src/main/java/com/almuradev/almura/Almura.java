@@ -7,7 +7,6 @@ package com.almuradev.almura;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.pack.Pack;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
@@ -21,9 +20,8 @@ import javax.inject.Inject;
 @Plugin(id = Almura.PLUGIN_ID, name = Almura.PLUGIN_NAME, version = Almura.PLUGIN_VERSION)
 public class Almura {
 
-    public static final String PLUGIN_ID = "almura", PLUGIN_NAME = "Almura", PLUGIN_VERSION = "1.7.10-1694",
-        GUI_VERSION = "b200", PACK_VERSION = "1.4";
-    public static final Pack INTERNAL_PACK = new Pack("internal");
+    public static final String PLUGIN_ID = "almura", PLUGIN_NAME = "Almura", PLUGIN_VERSION = "1.8.9-1694-r3.1",
+        GUI_VERSION = "b200", PACK_VERSION = "1.5";
 
     private static Almura instance;
 
@@ -38,9 +36,9 @@ public class Almura {
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
         instance = this;
-        if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM")) {
-            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel 'AM'");
+        if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM|FOR")) {
+            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel 'AM|FOR'");
         }
-        network = Sponge.getGame().getChannelRegistrar().createChannel(this, "AM");
+        network = Sponge.getGame().getChannelRegistrar().createChannel(this, "AM|FOR");
     }
 }

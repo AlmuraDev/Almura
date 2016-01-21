@@ -3,17 +3,16 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.util;
+package com.almuradev.almura;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.Configuration;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.Sponge;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -45,40 +44,17 @@ public final class FileSystem {
     public static final Path CONFIG_MODELS_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "models");
     public static final Path CONFIG_ACCESSORIES_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "accessories");
 
-    public static final DirectoryStream.Filter<Path> FILTER_DIRECTORIES_ONLY = new DirectoryStream.Filter<Path>() {
-        @Override
-        public boolean accept(Path entry) throws IOException {
-            return Files.isDirectory(entry);
-        }
-    };
+    public static final DirectoryStream.Filter<Path> FILTER_DIRECTORIES_ONLY = entry -> Files.isDirectory(entry);
 
-    public static final DirectoryStream.Filter<Path> FILTER_FILES_ONLY = new DirectoryStream.Filter<Path>() {
-        @Override
-        public boolean accept(Path entry) throws IOException {
-            return !Files.isDirectory(entry);
-        }
-    };
+    public static final DirectoryStream.Filter<Path> FILTER_FILES_ONLY = entry -> !Files.isDirectory(entry);
 
-    public static final DirectoryStream.Filter<Path> FILTER_IMAGE_FILES_ONLY = new DirectoryStream.Filter<Path>() {
-        @Override
-        public boolean accept(Path entry) throws IOException {
-            return entry.getFileName().toString().endsWith(".png") || entry.getFileName().toString().endsWith(".jpg");
-        }
-    };
+    public static final DirectoryStream.Filter<Path> FILTER_IMAGE_FILES_ONLY =
+            entry -> entry.getFileName().toString().endsWith(".png") || entry.getFileName().toString().endsWith(".jpg");
 
-    public static final DirectoryStream.Filter<Path> FILTER_YAML_FILES_ONLY = new DirectoryStream.Filter<Path>() {
-        @Override
-        public boolean accept(Path entry) throws IOException {
-            return entry.getFileName().toString().endsWith(".yml");
-        }
-    };
+    public static final DirectoryStream.Filter<Path> FILTER_YAML_FILES_ONLY = entry -> entry.getFileName().toString().endsWith(".yml");
 
-    public static DirectoryStream.Filter<Path> FILTER_MODEL_FILES_ONLY = new DirectoryStream.Filter<Path>() {
-        @Override
-        public boolean accept(Path entry) throws IOException {
-            return !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".shape"));
-        }
-    };
+    public static DirectoryStream.Filter<Path> FILTER_MODEL_FILES_ONLY =
+            entry -> !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".shape"));
 
     static {
         if (Files.notExists(CONFIG_SETTINGS_PATH)) {
@@ -126,7 +102,7 @@ public final class FileSystem {
             throw new RuntimeException("Failed to create directory [" + CONFIG_MODELS_PATH + "].", e);
         }
 
-        if (Configuration.IS_CLIENT) {
+        if (Sponge.getGame().getPlatform().getType().isClient()) {
             try {
                 Files.createDirectories(CONFIG_IMAGES_PATH);
             } catch (IOException e) {

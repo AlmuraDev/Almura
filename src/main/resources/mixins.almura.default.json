@@ -1,8 +1,7 @@
 {
-    "required": true,
-    "minVersion": "0.4",
     "package": "com.almuradev.almura.mixin",
     "refmap": "mixins.almura.refmap.json",
+    "plugin": "com.almuradev.almura.mixin.AlmuraCoreMixinPlugin",
     "mixins": [
         "block.MixinBlockTallGrass",
         "block.MixinBlockWall",

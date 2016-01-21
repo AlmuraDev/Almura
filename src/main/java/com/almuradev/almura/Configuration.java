@@ -5,9 +5,7 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.util.FileSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -19,8 +17,6 @@ import java.io.IOException;
 
 public class Configuration {
 
-    public static final boolean IS_SERVER = FMLCommonHandler.instance().getEffectiveSide().isServer();
-    public static final boolean IS_CLIENT = FMLCommonHandler.instance().getEffectiveSide().isClient();
     private static final Object[] PATH_CLIENT_FIRST_LAUNCH = new String[]{"client", "first-launch"};
     private static final Object[] PATH_CLIENT_HUD_TYPE = new String[]{"client", "hud-type"};
     private static final Object[] PATH_CLIENT_ENHANCED_DEBUG = new String[]{"client", "enhanced-debug"};
