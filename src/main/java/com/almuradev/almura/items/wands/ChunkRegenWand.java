@@ -5,8 +5,9 @@
  */
 package com.almuradev.almura.items.wands;
 
-import cpw.mods.fml.common.ObfuscationReflectionHelper;
+import net.minecraft.util.ChatComponentText;
 
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -31,9 +32,6 @@ public class ChunkRegenWand extends AlmuraItem {
             Chunk oldChunk = world.getChunkFromBlockCoords((int)player.posX, (int)player.posZ);
             if (world instanceof WorldServer) {
                 WorldServer worldServer = (WorldServer) world;
-                
-                //final IChunkProvider chunkProvider = ((ChunkProviderServer) worldServer.getChunkProvider()).serverChunkGenerator;
-                //final IChunkProvider myProvider = worldServer.getChunkProvider().currentChunkProvider;
                 ChunkProviderServer chunkProviderServer = worldServer.theChunkProviderServer;
                 IChunkProvider chunkProviderGenerate = ((IChunkProvider) ObfuscationReflectionHelper.getPrivateValue(ChunkProviderServer.class, chunkProviderServer, "currentChunkProvider", "e", "field_73246_d"));
                 
@@ -53,41 +51,9 @@ public class ChunkRegenWand extends AlmuraItem {
                         }
                     }
                 }
-                
-                
-                oldChunk.isTerrainPopulated = false;                
-                System.out.println("X: " + oldChunk.xPosition + " Z: " + oldChunk.zPosition);
-                chunkProviderServer.populate(chunkProviderServer, oldChunk.xPosition, oldChunk.zPosition);
-                
-                Chunk chunk2 = world.getChunkFromChunkCoords(oldChunk.xPosition+1, oldChunk.zPosition);
-                chunk2.isTerrainPopulated = false;
-                chunkProviderServer.populate(chunkProviderServer, chunk2.xPosition, chunk2.zPosition);
-                
-                Chunk chunk3 = world.getChunkFromChunkCoords(oldChunk.xPosition, oldChunk.zPosition+1);
-                chunk3.isTerrainPopulated = false;
-                chunkProviderServer.populate(chunkProviderServer, chunk3.xPosition, chunk3.zPosition);
-                
-                Chunk chunk4 = world.getChunkFromChunkCoords(oldChunk.xPosition+1, oldChunk.zPosition+1);
-                chunk4.isTerrainPopulated = false;
-                chunkProviderServer.populate(chunkProviderServer, chunk4.xPosition, chunk4.zPosition);
-            }                        
+            }
+            player.addChatComponentMessage(new ChatComponentText("[Chunk Regen Wand] - Regen Complete."));
         }
-        //if (world.isRemote) {
-        // Fire PlayerInteractEvent
-        //  final PlayerInteractEvent event = new PlayerInteractEvent(player, PlayerInteractEvent.Action.RIGHT_CLICK_AIR, (int) player.posX, (int) player.posY, (int) player.posZ, -1, world);
-        //  MinecraftForge.EVENT_BUS.post(event);
-
-        // Return if the event was cancelled
-        // if (event.isCanceled()) {
-        //    return itemStack;
-        // }
-
-        // player.swingItem();
-
-        // B03ChunkRegenWand message = new B03ChunkRegenWand();
-        // ClientProxy.NETWORK_BUKKIT.sendToServer(message);
-        // }
-
         return itemStack;
     }
 }

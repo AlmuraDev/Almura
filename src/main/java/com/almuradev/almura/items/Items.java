@@ -5,8 +5,9 @@
  */
 package com.almuradev.almura.items;
 
-import com.almuradev.almura.items.wands.ChunkRegenWand;
+import com.almuradev.almura.items.wands.ChunkPopulateWand;
 
+import com.almuradev.almura.items.wands.ChunkRegenWand;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.items.wands.ExplosionWand;
 import com.almuradev.almura.items.wands.FireballWand;
@@ -26,6 +27,7 @@ public class Items {
     public static final ExplosionWand WAND_NUCLEAR = new ExplosionWand("wand.nuclear", "Nuclear Wand", "nuclear_wand", Tabs.TAB_TOOLS, 60);
     public static final WireframeWand WAND_WIREFRAME = new WireframeWand("wand.wireframe", "Wireframe Wand", "wireframe_wand", Tabs.TAB_TOOLS);
     public static final ChunkRegenWand WAND_CHUNKREGEN = new ChunkRegenWand("wand.chunkregen", "ChunkRegen Wand", "chunkregen_wand", Tabs.TAB_TOOLS);
+    public static final ChunkPopulateWand WAND_CHUNKPOPULATE = new ChunkPopulateWand("wand.chunkpopulate", "Chunk Populate Wand", "explosion_wand", Tabs.TAB_TOOLS);
 
     public static void fakeStaticLoad() {
         Almura.INTERNAL_PACK.addItem(WAND_EXPLOSION);
@@ -36,5 +38,6 @@ public class Items {
         Almura.INTERNAL_PACK.addItem(WAND_NUCLEAR);
         Almura.INTERNAL_PACK.addItem(WAND_WIREFRAME);
         Almura.INTERNAL_PACK.addItem(WAND_CHUNKREGEN);
+        Almura.INTERNAL_PACK.addItem(WAND_CHUNKPOPULATE);
     }
 }
