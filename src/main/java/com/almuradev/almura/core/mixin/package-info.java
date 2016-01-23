@@ -3,4 +3,4 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-@org.spongepowered.api.util.annotation.NonnullByDefault package com.almuradev.almura.network.play;
+@org.spongepowered.api.util.annotation.NonnullByDefault package com.almuradev.almura.core.mixin;

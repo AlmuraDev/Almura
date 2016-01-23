@@ -112,9 +112,6 @@ jar {
                 'Implementation-Title': project.name,
                 'Implementation-Version': version,
                 'Implementation-Vendor': url,
-                'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-                'TweakOrder': '0',
-                'MixinConfigs': 'mixins.almura.default.json',
                 'FMLAT': 'almura_at.cfg'
         )
     }

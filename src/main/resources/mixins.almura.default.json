@@ -1,5 +1,5 @@
 {
-    "package": "com.almuradev.almura.mixin",
+    "package": "com.almuradev.almura.core.mixin",
     "refmap": "mixins.almura.refmap.json",
     "mixins": []
 }
