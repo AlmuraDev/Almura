@@ -7,13 +7,14 @@ package com.almuradev.almura;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.almuradev.almura.client.ClientProxy;
+import com.almuradev.almura.server.ServerProxy;
+import net.minecraftforge.fml.common.SidedProxy;
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.network.ChannelBinding;
-import org.spongepowered.api.network.ChannelRegistrationException;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
 
 import javax.inject.Inject;
 
@@ -30,15 +31,15 @@ public class Almura {
         return instance;
     }
 
+    @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
+    public static CommonProxy proxy;
+
     @Inject public Logger logger;
-    public ChannelBinding.IndexedMessageChannel network;
+    @Inject public PluginContainer container;
 
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
         instance = this;
-        if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM|FOR")) {
-            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel 'AM|FOR'");
-        }
-        network = Sponge.getGame().getChannelRegistrar().createChannel(this, "AM|FOR");
+        proxy.onGamePreInitialization(event);
     }
 }
