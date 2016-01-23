@@ -8,11 +8,11 @@ package com.almuradev.almura.server;
 import com.almuradev.almura.CommonProxy;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
-public class ServerProxy extends CommonProxy {
+public final class ServerProxy extends CommonProxy {
     public static final String CLASSPATH = "com.almuradev.almura.server.ServerProxy";
 
     @Override
-    public void onGamePreInitialization(GamePreInitializationEvent event) {
+    protected void onGamePreInitialization(GamePreInitializationEvent event) {
         super.onGamePreInitialization(event);
     }
 }
