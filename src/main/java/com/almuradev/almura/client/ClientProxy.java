@@ -9,15 +9,12 @@ import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.network.NetworkHandlers;
 import com.almuradev.almura.network.play.S00WorldInformation;
 import org.spongepowered.api.Platform;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
+/**
+ * The client platform of Almura. All code not meant to run on a dedicated server should go here.
+ */
 public final class ClientProxy extends CommonProxy {
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
-
-    @Override
-    protected void onGamePreInitialization(GamePreInitializationEvent event) {
-        super.onGamePreInitialization(event);
-    }
 
     @Override
     protected void registerMessages() {

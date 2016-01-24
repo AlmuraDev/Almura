@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion("1.8.9")
-public class AlmuraCorePlugin implements IFMLLoadingPlugin {
+public final class AlmuraCorePlugin implements IFMLLoadingPlugin {
 
     public AlmuraCorePlugin() {
         MixinBootstrap.init();
