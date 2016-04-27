@@ -3,12 +3,12 @@ buildscript {
         jcenter()
         mavenCentral()
         maven {
-            name = 'oss-sonatype-public'
-            url = 'https://oss.sonatype.org/content/repositories/public/'
-        }
-        maven {
             name = 'forge'
             url = 'http://files.minecraftforge.net/maven/'
+        }
+        maven {
+            name = 'oss-sonatype-public'
+            url = 'https://oss.sonatype.org/content/repositories/public/'
         }
         maven {
             name = 'sponge'
@@ -52,26 +52,28 @@ minecraft {
     useDepAts = true
 }
 
+deobfMcMCP { failOnAtError = false }
+deobfMcSRG { failOnAtError = false }
+
 repositories {
-    mavenLocal()
     mavenCentral()
+    maven {
+        name = 'forge'
+        url = 'http://files.minecraftforge.net/maven/'
+    }
     maven {
         name = 'oss-sonatype-public'
         url = 'https://oss.sonatype.org/content/repositories/public/'
     }
     maven {
-        name = 'sponge-public'
-        url = 'http://repo.spongepowered.org/maven/'
+        name = 'sponge'
+        url = 'http://repo.spongepowered.org/maven'
     }
 }
 
 dependencies {
-    compile('org.spongepowered:mixin:0.5.3-SNAPSHOT') {
-        exclude module: 'launchwrapper'
-        exclude module: 'guava'
-    }
-    compile 'org.spongepowered:spongeapi:4.1.0-SNAPSHOT'
-    compile 'net.malisis:malisiscore:1.8.9-2.1.6-SNAPSHOT'
+    deobfCompile 'org.spongepowered:spongeforge:1.8.9-1808-4.1.0-BETA-1295'
+    deobfCompile 'net.malisis:malisiscore:1.8.9-2.1.6-SNAPSHOT'
 }
 
 idea {
