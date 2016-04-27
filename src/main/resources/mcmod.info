@@ -1,14 +1,16 @@
-[{
-  "modid": "almura",
-  "name": "Almura",
-  "description": "The official mod/plugin of the Almura Client and Server.",
-  "version": "1.8.9-1694",
-  "credits": "",
-  "logoFile": "",
-  "mcversion": "1.8.9",
-  "url": "http://almuramc.com",
-  "updateUrl": "",
-  "authorList": [ "AlmuraDev" ],
-  "parent": "",
-  "screenshots": []
-}]
+[
+    {
+        "modid": "almura",
+        "name": "Almura",
+        "description": "The official plugin of the Almura Client and Server.",
+        "version": "1.8.9-1805",
+        "credits": "Copyright (C) AlmuraDev and contributors",
+        "logoFile": "/assets/logo.png",
+        "mcversion": "1.8.9",
+        "url": "http://almuramc.com",
+        "updateUrl": "",
+        "authorList": [ "AlmuraDev" ],
+        "parent": "",
+        "screenshots": []
+    }
+]

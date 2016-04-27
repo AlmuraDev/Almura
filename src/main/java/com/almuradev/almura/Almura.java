@@ -18,11 +18,10 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import javax.inject.Inject;
 
-@Plugin(id = Almura.PLUGIN_ID, name = Almura.PLUGIN_NAME, version = Almura.PLUGIN_VERSION)
+@Plugin(id = Almura.PLUGIN_ID)
 public class Almura {
 
-    public static final String PLUGIN_ID = "almura", PLUGIN_NAME = "Almura", PLUGIN_VERSION = "1.8.9-1694-r3.1",
-        GUI_VERSION = "b200", PACK_VERSION = "1.5";
+    public static final String PLUGIN_ID = "almura", PACK_VERSION = "1.5";
 
     private static Almura instance;
 
