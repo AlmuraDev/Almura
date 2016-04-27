@@ -21,15 +21,13 @@ import org.spongepowered.api.network.RemoteConnection;
  */
 public final class NetworkHandlers {
 
-    private NetworkHandlers() {}
-
     @SideOnly(Side.CLIENT)
     public static final class S00WorldInformationHandler implements MessageHandler<S00WorldInformation> {
         @Override
         public void handleMessage(S00WorldInformation message, RemoteConnection connection, Platform.Type side) {
-            if (side.isClient()) {
-                ThreadUtil.executeOnClientThread(() -> Almura.getInstance().logger.error(message.worldName));
-            }
+            ThreadUtil.executeOnClientThread(() -> Almura.getInstance().logger.error(message.worldName));
         }
     }
+
+    private NetworkHandlers() {}
 }

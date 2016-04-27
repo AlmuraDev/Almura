@@ -71,6 +71,7 @@ dependencies {
         exclude module: 'guava'
     }
     compile 'org.spongepowered:spongeapi:4.1.0-SNAPSHOT'
+    compile 'net.malisis:malisiscore:1.8.9-2.1.6-SNAPSHOT'
 }
 
 idea {
