@@ -16,13 +16,18 @@ import org.spongepowered.api.world.World;
  *
  * Sent from the Server -> Client when a {@link Player} joins the server or changes world.
  */
-public class S00WorldInformation implements Message {
-    public String worldName;
+public final class SWorldInformationMessage implements Message {
 
-    public S00WorldInformation() {}
+    private String worldName;
 
-    public S00WorldInformation(String worldName) {
+    public SWorldInformationMessage() {}
+
+    public SWorldInformationMessage(String worldName) {
         this.worldName = worldName;
+    }
+
+    public String getWorldName() {
+        return worldName;
     }
 
     @Override

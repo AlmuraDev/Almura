@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.network.play.S00WorldInformation;
+import com.almuradev.almura.network.play.SWorldInformationMessage;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -32,16 +32,16 @@ public class CommonProxy {
     }
 
     protected void registerMessages() {
-        this.network.registerMessage(S00WorldInformation.class, 0);
+        this.network.registerMessage(SWorldInformationMessage.class, 0);
     }
 
     @Listener(order = Order.LAST)
     public void onClientConnectionJoin(ClientConnectionEvent.Join event) {
-        this.network.sendTo(event.getTargetEntity(), new S00WorldInformation(event.getTargetEntity().getWorld().getName()));
+        this.network.sendTo(event.getTargetEntity(), new SWorldInformationMessage(event.getTargetEntity().getWorld().getName()));
     }
 
     @Listener(order = Order.LAST)
     public void onDisplaceTeleportPlayer(DisplaceEntityEvent.Teleport.TargetPlayer event) {
-        this.network.sendTo(event.getTargetEntity(), new S00WorldInformation(event.getToTransform().getExtent().getName()));
+        this.network.sendTo(event.getTargetEntity(), new SWorldInformationMessage(event.getToTransform().getExtent().getName()));
     }
 }

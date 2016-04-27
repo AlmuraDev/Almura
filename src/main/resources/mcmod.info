@@ -5,7 +5,7 @@
         "description": "The official plugin of the Almura Client and Server.",
         "version": "1.8.9-1805",
         "credits": "Copyright (C) AlmuraDev and contributors",
-        "logoFile": "/assets/logo.png",
+        "logoFile": "/assets/almura/logo.png",
         "mcversion": "1.8.9",
         "url": "http://almuramc.com",
         "updateUrl": "",

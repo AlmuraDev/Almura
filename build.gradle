@@ -49,7 +49,7 @@ minecraft {
     forgeVersion = project.forgeVersion
     runDir = 'run'
     mappings = project.mcpMappings
-    makeObfSourceJar = false
+    useDepAts = true
 }
 
 repositories {

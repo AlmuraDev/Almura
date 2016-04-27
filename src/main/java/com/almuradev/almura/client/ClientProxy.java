@@ -7,7 +7,7 @@ package com.almuradev.almura.client;
 
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.network.NetworkHandlers;
-import com.almuradev.almura.network.play.S00WorldInformation;
+import com.almuradev.almura.network.play.SWorldInformationMessage;
 import org.spongepowered.api.Platform;
 
 /**
@@ -19,6 +19,6 @@ public final class ClientProxy extends CommonProxy {
     @Override
     protected void registerMessages() {
         super.registerMessages();
-        this.network.addHandler(S00WorldInformation.class, Platform.Type.CLIENT, new NetworkHandlers.S00WorldInformationHandler());
+        this.network.addHandler(SWorldInformationMessage.class, Platform.Type.CLIENT, new NetworkHandlers.S00WorldInformationHandler());
     }
 }
