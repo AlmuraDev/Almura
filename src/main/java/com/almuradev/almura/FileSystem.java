@@ -31,6 +31,10 @@ import javax.imageio.stream.ImageInputStream;
 
 public final class FileSystem {
 
+    public static final Path ASSETS_PATH = Paths.get("assets", Almura.PLUGIN_ID);
+    public static final Path ASSETS_TEXTURES_PATH = Paths.get(ASSETS_PATH.toString(), "textures");
+    public static final Path ASSETS_TEXTURES_GUI_PATH = Paths.get(ASSETS_TEXTURES_PATH.toString(), "gui");
+    public static final Path ASSETS_TEXTURES_GUI_BACKGROUNDS_PATH = Paths.get(ASSETS_TEXTURES_GUI_PATH.toString(), "backgrounds");
     public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.PLUGIN_ID);
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
     public static final Path CONFIG_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "mappings.yml");
