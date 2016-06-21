@@ -5,10 +5,9 @@
  */
 package com.almuradev.almura;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.server.ServerProxy;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import org.slf4j.Logger;
 import org.spongepowered.api.event.Listener;
@@ -21,14 +20,10 @@ import javax.inject.Inject;
 @Plugin(id = Almura.PLUGIN_ID)
 public class Almura {
 
-    public static final String PLUGIN_ID = "almura", PACK_VERSION = "1.5";
+    public static final String PLUGIN_ID = "almura", VERSION = "3.0", PACK_VERSION = "1.5";
 
-    private static Almura instance;
-
-    public static Almura getInstance() {
-        checkNotNull(instance, "Almura has not been loaded yet!");
-        return instance;
-    }
+    @Mod.Instance
+    public static Almura instance;
 
     @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
     public static CommonProxy proxy;

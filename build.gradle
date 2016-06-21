@@ -19,10 +19,10 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.+'
         classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.12.1'
-        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
-        classpath 'org.spongepowered:spongegradle:0.5.2-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.4+'
+        classpath 'org.spongepowered:spongegradle:0.5.+'
     }
 }
 
@@ -72,8 +72,8 @@ repositories {
 }
 
 dependencies {
-    deobfCompile 'org.spongepowered:spongeforge:1.8.9-1808-4.1.0-BETA-1295'
-    deobfCompile 'net.malisis:malisiscore:1.8.9-2.1.6-SNAPSHOT'
+    deobfCompile 'org.spongepowered:spongeforge:1.8.9-+'
+    deobfCompile 'net.malisis:malisiscore:1.8.9-2.1.7-SNAPSHOT'
 }
 
 idea {

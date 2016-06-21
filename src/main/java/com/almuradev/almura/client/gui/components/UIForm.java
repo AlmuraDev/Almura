@@ -11,9 +11,12 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.client.gui.element.XYResizableGuiShape;
+import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.renderer.icon.provider.GuiIconProvider;
 import net.malisis.core.util.MouseButton;
+import net.minecraft.util.EnumChatFormatting;
+
+import java.util.Locale;
 
 public class UIForm extends UIBackgroundContainer {
 
@@ -64,7 +67,7 @@ public class UIForm extends UIBackgroundContainer {
 
         // Setup title
         setTitle(title);
-        titleLabel.getFontRenderOptions().color = org.spongepowered.api.util.Color.BLACK.getRgb();
+        titleLabel.getFontRenderOptions().color = EnumChatFormatting.BLACK.getColorIndex();
         titleLabel.setPosition(4, 1, Anchor.LEFT | Anchor.MIDDLE);
 
         setSize(width, height);
@@ -148,7 +151,6 @@ public class UIForm extends UIBackgroundContainer {
         }
 
         @Override
-        //TODO Grinch, this now has snapshot/live values and may need to be re-done
         public boolean onDrag(int lastX, int lastY, int x, int y, MouseButton button) {
             if (button != MouseButton.LEFT || (titleCloseButton != null && titleCloseButton.isInsideBounds(x, y))) {
                 return false;
@@ -168,7 +170,7 @@ public class UIForm extends UIBackgroundContainer {
 
         @Subscribe
         public void onClick(UIButton.ClickEvent event) {
-            switch (event.getComponent().getName().toLowerCase()) {
+            switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
                 case "form.title.close":
                     getParent().getGui().close();
             }
@@ -181,7 +183,7 @@ public class UIForm extends UIBackgroundContainer {
             super(gui, "");
             width = 23;
             height = 10;
-            shape = new XYResizableGuiShape();
+            shape = new SimpleGuiShape();
             iconProvider = CLOSE_ICON_PROVIDER;
             iconPressedProvider = CLOSE_PRESS_ICON_PROVIDER;
         }

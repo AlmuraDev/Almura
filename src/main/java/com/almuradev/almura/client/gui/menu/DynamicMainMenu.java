@@ -25,15 +25,14 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.io.IOException;
+import java.util.Locale;
 
 public class DynamicMainMenu extends SimpleGui {
 
     protected static final ResourceLocation ALMURA_LOGO_LOCATION;
-    protected static final ResourceLocation SPONGEPOWERED_MASCOT_LOCATION;
     static {
         try {
             ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "logo.png", "/assets/almura/logo.png");
-            SPONGEPOWERED_MASCOT_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongie_mascot.png", "/assets/almura/spongie_mascot.png");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -51,9 +50,9 @@ public class DynamicMainMenu extends SimpleGui {
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the logo
-        final UIImage logoImage = new UIImage(this, new GuiTexture(SPONGEPOWERED_MASCOT_LOCATION), null);
+        final UIImage logoImage = new UIImage(this, new GuiTexture(ALMURA_LOGO_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
-        logoImage.setSize(140, 95);
+        logoImage.setSize(55, 85);
 
         final int padding = 4;
 
@@ -126,21 +125,21 @@ public class DynamicMainMenu extends SimpleGui {
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
-        switch (event.getComponent().getName()) {
+        switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
             case "button.singleplayer":
                 mc.displayGuiScreen(new GuiSelectWorld(this));
                 break;
             case "button.multiplayer":
-                //new DynamicServerMenu(this).display();
+                new DynamicServerMenu(this).display();
                 break;
             case "button.options":
                 mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
                 break;
             case "button.configuration":
-                //new DynamicConfigurationMenu(this).display();
+                new DynamicConfigurationMenu(this).display();
                 break;
             case "button.about":
-                //new DynamicAboutMenu(this).display();
+                new DynamicAboutMenu(this).display();
                 break;
             case "button.quit":
                 close();

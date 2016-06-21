@@ -23,7 +23,7 @@ public final class ThreadUtil {
      * @param runnable The runnable to invoke
      */
     public static void executeOnServerThread(String taskName, Runnable runnable) {
-        Task.builder().name(taskName).execute(runnable).submit(Almura.getInstance().container);
+        Task.builder().name(taskName).execute(runnable).submit(Almura.instance.container);
     }
 
     /**

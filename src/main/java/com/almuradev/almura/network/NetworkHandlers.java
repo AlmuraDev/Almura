@@ -25,7 +25,7 @@ public final class NetworkHandlers {
     public static final class S00WorldInformationHandler implements MessageHandler<SWorldInformationMessage> {
         @Override
         public void handleMessage(SWorldInformationMessage message, RemoteConnection connection, Platform.Type side) {
-            ThreadUtil.executeOnClientThread(() -> Almura.getInstance().logger.error(message.getWorldName()));
+            ThreadUtil.executeOnClientThread(() -> Almura.instance.logger.error(message.getWorldName()));
         }
     }
 

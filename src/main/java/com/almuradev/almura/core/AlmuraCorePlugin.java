@@ -7,7 +7,7 @@ package com.almuradev.almura.core;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public final class AlmuraCorePlugin implements IFMLLoadingPlugin {
 
     public AlmuraCorePlugin() {
         MixinBootstrap.init();
-        MixinEnvironment.getDefaultEnvironment().addConfiguration("mixins.almura.default.json");
+        Mixins.addConfiguration("mixins.almura.default.json");
     }
 
     @Override

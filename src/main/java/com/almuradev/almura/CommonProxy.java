@@ -26,9 +26,9 @@ public class CommonProxy {
             throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel 'AM|FOR'");
         }
 
-        network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.getInstance().container, "AM|FOR");
+        network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
         registerMessages();
-        Sponge.getGame().getEventManager().registerListeners(Almura.getInstance().container, this);
+        Sponge.getGame().getEventManager().registerListeners(Almura.instance.container, this);
     }
 
     protected void registerMessages() {
