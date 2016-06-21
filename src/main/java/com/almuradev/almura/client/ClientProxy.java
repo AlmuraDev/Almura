@@ -20,6 +20,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
+import java.io.IOException;
+
 /**
  * The client platform of Almura. All code not meant to run on a dedicated server should go here.
  */
@@ -34,6 +36,12 @@ public final class ClientProxy extends CommonProxy {
 
         if (Configuration.FIRST_LAUNCH) {
             Configuration.setOptimizedConfig();
+
+            try {
+                Configuration.setFirstLaunch(false);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         MinecraftForge.EVENT_BUS.register(this);

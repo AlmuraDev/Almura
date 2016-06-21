@@ -201,8 +201,8 @@ public class DynamicConfigurationMenu extends SimpleGui {
         switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
             case "button.graphics":
                 Configuration.setOptimizedConfig();
-                mc.displayGuiScreen(new DynamicConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to"
-                        + " apply settings.", "Almura"));
+                new DynamicConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to"
+                        + " apply settings.", "Almura").display();
                 break;
             case "button.back":
                 close();

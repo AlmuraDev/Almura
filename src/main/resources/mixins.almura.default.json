@@ -6,6 +6,6 @@
     "mixins": [
     ],
     "client": [
-        "client.MixinMinecraft"
+        "client.settings.MixinGameSettings"
     ]
 }

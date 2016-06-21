@@ -12,7 +12,6 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.Sponge;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -31,10 +30,6 @@ import javax.imageio.stream.ImageInputStream;
 
 public final class FileSystem {
 
-    public static final Path ASSETS_PATH = Paths.get("assets", Almura.PLUGIN_ID);
-    public static final Path ASSETS_TEXTURES_PATH = Paths.get(ASSETS_PATH.toString(), "textures");
-    public static final Path ASSETS_TEXTURES_GUI_PATH = Paths.get(ASSETS_TEXTURES_PATH.toString(), "gui");
-    public static final Path ASSETS_TEXTURES_GUI_BACKGROUNDS_PATH = Paths.get(ASSETS_TEXTURES_GUI_PATH.toString(), "backgrounds");
     public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.PLUGIN_ID);
     public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
     public static final Path CONFIG_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "mappings.yml");
@@ -104,24 +99,23 @@ public final class FileSystem {
             throw new RuntimeException("Failed to create directory [" + CONFIG_MODELS_PATH + "].", e);
         }
 
-        if (Sponge.getGame().getPlatform().getType().isClient()) {
-            try {
-                Files.createDirectories(CONFIG_IMAGES_PATH);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to create directory [" + CONFIG_IMAGES_PATH + "].", e);
-            }
+        // TODO Look into creating these folders only on client
+        try {
+            Files.createDirectories(CONFIG_IMAGES_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create directory [" + CONFIG_IMAGES_PATH + "].", e);
+        }
 
-            try {
-                Files.createDirectories(CONFIG_BACKGROUNDS_PATH);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to create directory [" + CONFIG_BACKGROUNDS_PATH + "].", e);
-            }
+        try {
+            Files.createDirectories(CONFIG_BACKGROUNDS_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create directory [" + CONFIG_BACKGROUNDS_PATH + "].", e);
+        }
 
-            try {
-                Files.createDirectories(CONFIG_ACCESSORIES_PATH);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to create directory [" + CONFIG_ACCESSORIES_PATH + "].", e);
-            }
+        try {
+            Files.createDirectories(CONFIG_ACCESSORIES_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create directory [" + CONFIG_ACCESSORIES_PATH + "].", e);
         }
     }
 
