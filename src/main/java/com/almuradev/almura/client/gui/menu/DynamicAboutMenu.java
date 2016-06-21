@@ -21,7 +21,7 @@ import net.minecraftforge.fml.client.GuiModList;
 public class DynamicAboutMenu extends SimpleGui {
 
     private final static String fieldText =
-            "Almura was created and is maintained by the AlmuraDev Team. Http://www.github.com/AlmuraDev/"
+            "Almura is created and maintained by the AlmuraDev Team. http://www.github.com/AlmuraDev/"
                     + "\n\n"
                     + "The Beginning:"
                     + "\n\n"
@@ -56,13 +56,14 @@ public class DynamicAboutMenu extends SimpleGui {
                     + "\n\n"
                     + EnumChatFormatting.GOLD + "Dockter" + EnumChatFormatting.RESET + " - Developer, Lead Tester and Server Owner for Almura Public servers, CFO Sponge Foundation and former Developer for Spoutcraft."
                     + "\n\n"
-                    + EnumChatFormatting.GOLD + "Blood_" + EnumChatFormatting.RESET + " - Developer and Co-Founder of Sponge, former Developer for Cauldron."
+                    + EnumChatFormatting.GOLD + "blood_" + EnumChatFormatting.RESET + " - Developer and Co-Founder of Sponge, former Developer for "
+                    + "Cauldron."
                     + "\n\n"
                     + EnumChatFormatting.GOLD + "Mumfrey" + EnumChatFormatting.RESET + " - Developer for Sponge, Inventor of Mixin ASM Technology for Java."
                     + "\n\n"
                     + EnumChatFormatting.GOLD + "Wifee" + EnumChatFormatting.RESET + " - Lead Model and Graphic Artist for Almura's Custom Content."
                     + "\n\n"
-                    + "Special Thanks to Zidane for all his time and patiences over the years.  Without this individual Almura and AlmuraDev would simply not exist."
+                    + "Special Thanks to Zidane for all his time and patience over the years. Without this individual Almura and AlmuraDev would simply not exist."
                     + "\n\n"
                     + "As we enter our 6th year in operation soon we hope that all of our users have a positive experience with Almura.";
 

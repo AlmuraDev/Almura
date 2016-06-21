@@ -5,9 +5,9 @@
  */
 package com.almuradev.almura.network;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.util.ThreadUtil;
+import com.almuradev.almura.client.gui.ingame.hud.HUDData;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
+import com.almuradev.almura.util.ThreadUtil;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -25,7 +25,9 @@ public final class NetworkHandlers {
     public static final class S00WorldInformationHandler implements MessageHandler<SWorldInformationMessage> {
         @Override
         public void handleMessage(SWorldInformationMessage message, RemoteConnection connection, Platform.Type side) {
-            ThreadUtil.executeOnClientThread(() -> Almura.instance.logger.error(message.getWorldName()));
+            if (side.isClient()) {
+                HUDData.WORLD_NAME = message.getWorldName();
+            }
         }
     }
 
