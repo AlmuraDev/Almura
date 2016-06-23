@@ -7,7 +7,6 @@ package com.almuradev.almura.network;
 
 import com.almuradev.almura.client.gui.ingame.hud.HUDData;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
-import com.almuradev.almura.util.ThreadUtil;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;

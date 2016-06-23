@@ -18,7 +18,7 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 import java.awt.Desktop;
@@ -76,16 +76,16 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
         almuraLiveButton.setDisabled(true);
         almuraLiveButton.register(this);
 
-        UILabel liveServerTitle = new UILabel(this, EnumChatFormatting.WHITE + "Public Server : ");
+        UILabel liveServerTitle = new UILabel(this, TextFormatting.WHITE + "Public Server : ");
         liveServerTitle.setPosition(20, getPaddedY(logoImage, padding) + 7, Anchor.LEFT | Anchor.TOP);
 
-        liveServerOnline = new UILabel(this, EnumChatFormatting.YELLOW + "Updating...");
+        liveServerOnline = new UILabel(this, TextFormatting.YELLOW + "Updating...");
         liveServerOnline.setPosition(85, liveServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
 
-        UILabel devServerTitle = new UILabel(this, EnumChatFormatting.WHITE + "Dev Server : ");
+        UILabel devServerTitle = new UILabel(this, TextFormatting.WHITE + "Dev Server : ");
         devServerTitle.setPosition(26, getPaddedY(almuraLiveButton, padding) + 4, Anchor.LEFT | Anchor.TOP);
 
-        devServerOnline = new UILabel(this, EnumChatFormatting.YELLOW + "Updating...");
+        devServerOnline = new UILabel(this, TextFormatting.YELLOW + "Updating...");
         devServerOnline.setPosition(85, devServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
 
         // Create the beta Almura button
@@ -172,15 +172,15 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
             if (QUERY_LIVE_SERVER.pingServer()) {
                 QUERY_LIVE_SERVER.sendQuery();
                 if (QUERY_LIVE_SERVER.getPlayers() == null || QUERY_LIVE_SERVER.getMaxPlayers() == null) {
-                    liveServerOnline.setText(EnumChatFormatting.YELLOW + "Restarting...");
+                    liveServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
                 } else {
                     liveServerOnline
-                            .setText(EnumChatFormatting.GREEN + "Online " + EnumChatFormatting.BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER
+                            .setText(TextFormatting.GREEN + "Online " + TextFormatting.BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER
                                     .getMaxPlayers() + ")");
                 }
                 almuraLiveButton.setDisabled(false);
             } else {
-                liveServerOnline.setText(EnumChatFormatting.RED + "Offline");
+                liveServerOnline.setText(TextFormatting.RED + "Offline");
                 almuraLiveButton.setDisabled(true);
             }
 
@@ -188,15 +188,15 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
             if (QUERY_DEV_SERVER.pingServer()) {
                 QUERY_DEV_SERVER.sendQuery();
                 if (QUERY_DEV_SERVER.getPlayers() == null || QUERY_DEV_SERVER.getMaxPlayers() == null) {
-                    devServerOnline.setText(EnumChatFormatting.YELLOW + "Restarting...");
+                    devServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
                 } else {
                     devServerOnline
-                            .setText(EnumChatFormatting.GREEN + "Online " + EnumChatFormatting.BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER
+                            .setText(TextFormatting.GREEN + "Online " + TextFormatting.BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER
                                     .getMaxPlayers() + ")");
                 }
                 almuraDevButton.setDisabled(false);
             } else {
-                devServerOnline.setText(EnumChatFormatting.RED + "Offline");
+                devServerOnline.setText(TextFormatting.RED + "Offline");
                 almuraDevButton.setDisabled(true);
             }
 

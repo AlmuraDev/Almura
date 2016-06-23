@@ -14,7 +14,7 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.renderer.icon.provider.GuiIconProvider;
 import net.malisis.core.util.MouseButton;
-import net.minecraft.util.EnumChatFormatting;
+import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Locale;
 
@@ -67,7 +67,7 @@ public class UIForm extends UIBackgroundContainer {
 
         // Setup title
         setTitle(title);
-        titleLabel.getFontRenderOptions().color = EnumChatFormatting.BLACK.getColorIndex();
+        titleLabel.getFontRenderOptions().color = TextColors.BLACK.getColor().getRgb();
         titleLabel.setPosition(4, 1, Anchor.LEFT | Anchor.MIDDLE);
 
         setSize(width, height);

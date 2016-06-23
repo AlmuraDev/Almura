@@ -18,7 +18,7 @@ import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiOptions;
-import net.minecraft.client.gui.GuiSelectWorld;
+import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -127,7 +127,7 @@ public class DynamicMainMenu extends SimpleGui {
     public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
             case "button.singleplayer":
-                mc.displayGuiScreen(new GuiSelectWorld(this));
+                mc.displayGuiScreen(new GuiWorldSelection(this));
                 break;
             case "button.multiplayer":
                 new DynamicServerMenu(this).display();

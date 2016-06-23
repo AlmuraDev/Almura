@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.core;
+package com.almuradev.almura.mixin;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
@@ -11,12 +11,12 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.Map;
 
-@IFMLLoadingPlugin.MCVersion("1.8.9")
+@IFMLLoadingPlugin.MCVersion("1.9.4")
 public final class AlmuraCorePlugin implements IFMLLoadingPlugin {
 
     public AlmuraCorePlugin() {
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.almura.default.json");
+        Mixins.addConfiguration("mixins.almura.core.json");
     }
 
     @Override

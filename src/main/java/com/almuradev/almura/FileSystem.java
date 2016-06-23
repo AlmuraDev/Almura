@@ -31,9 +31,10 @@ import javax.imageio.stream.ImageInputStream;
 public final class FileSystem {
 
     public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.PLUGIN_ID);
-    public static final Path CONFIG_SETTINGS_PATH = Paths.get(CONFIG_PATH.toString(), "settings.yml");
-    public static final Path CONFIG_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "mappings.yml");
-    public static final Path CONFIG_ENTITY_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "entity_mappings.yml");
+    public static final Path CONFIG_CLIENT_PATH = Paths.get(CONFIG_PATH.toString(), "client.conf");
+    public static final Path CONFIG_SERVER_PATH = Paths.get(CONFIG_PATH.toString(), "server.conf");
+    public static final Path CONFIG_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "mappings.conf");
+    public static final Path CONFIG_ENTITY_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "entity_mappings.conf");
     public static final Path CONFIG_VERSION_PATH = Paths.get(CONFIG_PATH.toString(), Almura.PACK_VERSION);
     public static final Path CONFIG_YML_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "packs");
     public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "images");
@@ -54,38 +55,6 @@ public final class FileSystem {
             entry -> !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".shape"));
 
     static {
-        if (Files.notExists(CONFIG_SETTINGS_PATH)) {
-            try {
-                Files.createDirectories(CONFIG_PATH);
-
-                InputStream stream = FileSystem.class.getResourceAsStream("/config/settings.yml");
-                Files.copy(stream, FileSystem.CONFIG_SETTINGS_PATH);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to copy over settings file.", e);
-            }
-        }
-
-        if (Files.notExists(CONFIG_MAPPINGS_PATH)) {
-            try {
-                Files.createDirectories(CONFIG_PATH);
-
-                InputStream stream = FileSystem.class.getResourceAsStream("/config/mappings.yml");
-                Files.copy(stream, FileSystem.CONFIG_MAPPINGS_PATH);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to copy over mappings file.", e);
-            }
-        }
-
-        if (Files.notExists(CONFIG_ENTITY_MAPPINGS_PATH)) {
-            try {
-                Files.createDirectories(CONFIG_PATH);
-
-                InputStream stream = FileSystem.class.getResourceAsStream("/config/entity_mappings.yml");
-                Files.copy(stream, FileSystem.CONFIG_ENTITY_MAPPINGS_PATH);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to copy over entity_mappings file.", e);
-            }
-        }
 
         try {
             Files.createDirectories(CONFIG_YML_PATH);

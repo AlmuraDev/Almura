@@ -1,11 +1,10 @@
 {
     "required": true,
     "minVersion": "0.5.1",
-    "package": "com.almuradev.almura.core.mixin",
+    "package": "com.almuradev.almura.mixin.core",
     "refmap": "mixins.almura.refmap.json",
     "mixins": [
     ],
     "client": [
-        "client.settings.MixinGameSettings"
     ]
 }

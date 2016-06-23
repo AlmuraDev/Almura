@@ -6,10 +6,14 @@
 package com.almuradev.almura.client;
 
 import com.almuradev.almura.CommonProxy;
-import com.almuradev.almura.Configuration;
+import com.almuradev.almura.FileSystem;
 import com.almuradev.almura.client.gui.SimpleGui;
-import com.almuradev.almura.client.gui.ingame.hud.IngameAlmuraHUD;
+import com.almuradev.almura.client.gui.ingame.hud.AlmuraHUD;
+import com.almuradev.almura.client.gui.ingame.hud.MinimalHUD;
 import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
+import com.almuradev.almura.configuration.ConfigurationAdapter;
+import com.almuradev.almura.configuration.category.ClientCategory;
+import com.almuradev.almura.configuration.type.ClientConfiguration;
 import com.almuradev.almura.network.NetworkHandlers;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -17,10 +21,15 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
 import java.io.IOException;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 /**
  * The client platform of Almura. All code not meant to run on a dedicated server should go here.
@@ -28,19 +37,36 @@ import java.io.IOException;
 public final class ClientProxy extends CommonProxy {
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
 
-    public static SimpleGui HUD_INGAME;
+    private static final String HEADER = "1.0\nAlmura client configuration\n\nFor further assistance, join #almura on EsperNet.";
+    @Nullable
+    private ConfigurationAdapter<ClientConfiguration> configAdapter;
+    @Nullable
+    private SimpleGui customIngameHud;
 
     @Override
     protected void onGamePreInitialization(GamePreInitializationEvent event) {
         super.onGamePreInitialization(event);
 
-        if (Configuration.FIRST_LAUNCH) {
-            Configuration.setOptimizedConfig();
+        this.configAdapter = new ConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults().setHeader(HEADER), FileSystem
+                .CONFIG_CLIENT_PATH);
+        try {
+            this.configAdapter.load();
+        } catch (IOException | ObjectMappingException e) {
+            throw new RuntimeException("Failed to load config for class [" + this.configAdapter.getConfigClass() + "] from [" + this.configAdapter
+                    .getConfigPath() + "]!", e);
+        }
+
+        final ClientCategory clientCategory = this.configAdapter.getConfig().client;
+        if (clientCategory.firstLaunch) {
+            clientCategory.optimizeGame();
+
+            clientCategory.firstLaunch = false;
 
             try {
-                Configuration.setFirstLaunch(false);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                this.configAdapter.save();
+            } catch (IOException | ObjectMappingException e) {
+                throw new RuntimeException("Failed to save config for class [" + this.configAdapter.getConfigClass() + "] in [" + this.configAdapter
+                        .getConfigPath() + "]!", e);
             }
         }
 
@@ -49,7 +75,7 @@ public final class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onGuiScreen(GuiOpenEvent event) {
-        if (event.gui != null && event.gui.getClass().equals(GuiMainMenu.class)) {
+        if (event.getGui() != null && event.getGui().getClass().equals(GuiMainMenu.class)) {
             event.setCanceled(true);
             new DynamicMainMenu(null).display();
         }
@@ -61,18 +87,26 @@ public final class ClientProxy extends CommonProxy {
         this.network.addHandler(SWorldInformationMessage.class, Platform.Type.CLIENT, new NetworkHandlers.S00WorldInformationHandler());
     }
 
+    @Override
+    public ConfigurationAdapter<ClientConfiguration> getConfigAdapter() {
+        return this.configAdapter;
+    }
+
+
     @SubscribeEvent
-    public void onRenderGameOverlayEventPost(RenderGameOverlayEvent.Pre event) {
+    public void onRenderGameOverlayEventPre(RenderGameOverlayEvent.Pre event) {
+        final ClientCategory clientCategory = this.configAdapter.getConfig().client;
+
         // Use proper HUD based on configuration
-        if (Configuration.HUD_TYPE.equalsIgnoreCase("almura")) {
-            if (!(HUD_INGAME instanceof IngameAlmuraHUD)) {
-                if (HUD_INGAME != null) {
-                    HUD_INGAME.closeOverlay();
+        if (clientCategory.hud.equalsIgnoreCase("almura")) {
+            if (!(this.customIngameHud instanceof AlmuraHUD)) {
+                if (this.customIngameHud != null) {
+                    this.customIngameHud.closeOverlay();
                 }
-                HUD_INGAME = new IngameAlmuraHUD();
-                HUD_INGAME.displayOverlay();
+                this.customIngameHud = new AlmuraHUD();
+                this.customIngameHud.displayOverlay();
             }
-            switch (event.type) {
+            switch (event.getType()) {
                 case HEALTH:
                 case ARMOR:
                 case FOOD:
@@ -81,52 +115,21 @@ public final class ClientProxy extends CommonProxy {
                     break;
                 default:
             }
+        } else if (clientCategory.hud.equalsIgnoreCase("minimal")) {
+            if (!(this.customIngameHud instanceof MinimalHUD)) {
+                if (this.customIngameHud != null) {
+                    this.customIngameHud.closeOverlay();
+                }
+                this.customIngameHud = new MinimalHUD();
+                this.customIngameHud.displayOverlay();
+            }
+        } else if (this.customIngameHud != null) {
+            this.customIngameHud.closeOverlay();
+            this.customIngameHud = null;
         }
-//        } else if (Configuration.HUD_TYPE.equalsIgnoreCase("less")) {
-//            if (!(HUD_INGAME instanceof IngameLessHUD)) {
-//                if (HUD_INGAME != null) {
-//                    HUD_INGAME.closeOverlay();
-//                }
-//                HUD_INGAME = new IngameLessHUD();
-//                HUD_INGAME.displayOverlay();
-//            }
-//        } else if (Configuration.HUD_TYPE.equalsIgnoreCase("vanilla") && HUD_INGAME != null) {
-//            HUD_INGAME.closeOverlay();
-//            HUD_INGAME = null;
-//        }
-//
-//        // Toggle residence off/on based on config. Creation of this HUD happens in the packet handler from Bukkit
-//        if (Configuration.DISPLAY_RESIDENCE_HUD && HUDData.WITHIN_RESIDENCE) {
-//            if (HUD_RESIDENCE == null) {
-//                HUD_RESIDENCE = new IngameResidenceHUD();
-//            }
-//
-//            HUD_RESIDENCE.displayOverlay();
-//            HUD_RESIDENCE.updateWidgets();
-//        } else if (HUD_RESIDENCE != null) {
-//            HUD_RESIDENCE.closeOverlay();
-//            HUD_RESIDENCE = null;
-//        }
-//
-//        // Toggle enhanced debug off/on based on config.
-//        if (event.type == ElementType.DEBUG) {
-//            if (Configuration.DISPLAY_ENHANCED_DEBUG) {
-//                event.setCanceled(true);
-//                if (HUD_DEBUG == null) {
-//                    HUD_DEBUG = new IngameDebugHUD();
-//                }
-//
-//                HUD_DEBUG.displayOverlay();
-//            } else if (HUD_DEBUG != null) {
-//                HUD_DEBUG.closeOverlay();
-//                HUD_DEBUG = null;
-//            }
-//        }
-//
-//        // User turned off debug mode, handle it.
-//        if (!Minecraft.getMinecraft().gameSettings.showDebugInfo && HUD_DEBUG != null) {
-//            HUD_DEBUG.closeOverlay();
-//            HUD_DEBUG = null;
-//        }
+    }
+
+    public Optional<SimpleGui> getCustomIngameHud() {
+        return Optional.ofNullable(this.customIngameHud);
     }
 }

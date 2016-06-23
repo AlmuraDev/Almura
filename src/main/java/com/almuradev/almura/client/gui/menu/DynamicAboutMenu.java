@@ -15,8 +15,10 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiModList;
+
+import java.util.Locale;
 
 public class DynamicAboutMenu extends SimpleGui {
 
@@ -48,20 +50,20 @@ public class DynamicAboutMenu extends SimpleGui {
                     + "\n\n"
                     + "Thank you to the following people:"
                     + "\n\n"
-                    + EnumChatFormatting.GOLD + "Zidane" + EnumChatFormatting.RESET + " - Lead Developer and Co-Founder of Sponge, Lead Developer of "
+                    + TextFormatting.GOLD + "Zidane" + TextFormatting.RESET + " - Lead Developer and Co-Founder of Sponge, Lead Developer of "
                     + "AlmuraDev, Former Developer for Spout."
                     + "\n\n"
-                    + EnumChatFormatting.GOLD + "Grinch" + EnumChatFormatting.RESET + " - Moderator and Developer for Sponge, Developer "
+                    + TextFormatting.GOLD + "Grinch" + TextFormatting.RESET + " - Moderator and Developer for Sponge, Developer "
                     + "and Solder Server Administrator for AlmuraDev and former Developer for Spout."
                     + "\n\n"
-                    + EnumChatFormatting.GOLD + "Dockter" + EnumChatFormatting.RESET + " - Developer, Lead Tester and Server Owner for Almura Public servers, CFO Sponge Foundation and former Developer for Spoutcraft."
+                    + TextFormatting.GOLD + "Dockter" + TextFormatting.RESET + " - Developer, Lead Tester and Server Owner for Almura Public servers, CFO Sponge Foundation and former Developer for Spoutcraft."
                     + "\n\n"
-                    + EnumChatFormatting.GOLD + "blood_" + EnumChatFormatting.RESET + " - Developer and Co-Founder of Sponge, former Developer for "
+                    + TextFormatting.GOLD + "blood_" + TextFormatting.RESET + " - Developer and Co-Founder of Sponge, former Developer for "
                     + "Cauldron."
                     + "\n\n"
-                    + EnumChatFormatting.GOLD + "Mumfrey" + EnumChatFormatting.RESET + " - Developer for Sponge, Inventor of Mixin ASM Technology for Java."
+                    + TextFormatting.GOLD + "Mumfrey" + TextFormatting.RESET + " - Developer for Sponge, Inventor of Mixin ASM Technology for Java."
                     + "\n\n"
-                    + EnumChatFormatting.GOLD + "Wifee" + EnumChatFormatting.RESET + " - Lead Model and Graphic Artist for Almura's Custom Content."
+                    + TextFormatting.GOLD + "Wifee" + TextFormatting.RESET + " - Lead Model and Graphic Artist for Almura's Custom Content."
                     + "\n\n"
                     + "Special Thanks to Zidane for all his time and patience over the years. Without this individual Almura and AlmuraDev would simply not exist."
                     + "\n\n"
@@ -80,7 +82,7 @@ public class DynamicAboutMenu extends SimpleGui {
 
         // Create the build label
         final UILabel buildLabel = new UILabel(this);
-        buildLabel.setText(EnumChatFormatting.GRAY + "Almura: " + Almura.VERSION + " Forge: " + Almura.instance.container.getVersion().get());
+        buildLabel.setText(TextFormatting.GRAY + "Almura: " + Almura.VERSION + " Forge: " + Almura.instance.container.getVersion().get());
         buildLabel.setPosition(0, 3, Anchor.CENTER | Anchor.TOP);
         
         // Create About us multi-line label
@@ -114,7 +116,7 @@ public class DynamicAboutMenu extends SimpleGui {
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
-        switch (event.getComponent().getName().toLowerCase()) {
+        switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
             case "button.mods":
                 mc.displayGuiScreen(new GuiModList(this));
                 break;

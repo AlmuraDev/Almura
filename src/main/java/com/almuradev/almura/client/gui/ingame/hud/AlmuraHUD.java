@@ -13,15 +13,10 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import org.apache.commons.lang3.text.WordUtils;
 
-public class IngameAlmuraHUD extends SimpleGui {
+public class AlmuraHUD extends SimpleGui {
 
     private static final String COMPASS_CHARACTERS = "S|.|W|.|N|.|E|.|";
     private final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
@@ -102,10 +97,7 @@ public class IngameAlmuraHUD extends SimpleGui {
         worldImage.setSize(8, 8);
 
         // World Display Label
-        String worldName = "World";
-        if (mc.isSingleplayer()) {
-            worldName = WordUtils.capitalize(MinecraftServer.getServer().getWorldName());
-        }
+        String worldName = HUDData.WORLD_NAME;
 
         worldDisplay = new UILabel(this, worldName);
         worldDisplay.setPosition(-5, 5, Anchor.RIGHT);
@@ -233,13 +225,13 @@ public class IngameAlmuraHUD extends SimpleGui {
     public String getCompass() {
         int position = (int) ((((mc.thePlayer.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 16);
 
-        return "" + EnumChatFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
-                + EnumChatFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
-                + EnumChatFormatting.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
-                + EnumChatFormatting.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
-                + EnumChatFormatting.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
-                + EnumChatFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
-                + EnumChatFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
+        return "" + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 15)
+                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 15)
+                + TextFormatting.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 15)
+                + TextFormatting.WHITE + COMPASS_CHARACTERS.charAt((position) & 15)
+                + TextFormatting.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 15)
+                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 15)
+                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 15);
     }
 
     public String getTime() {
@@ -263,20 +255,5 @@ public class IngameAlmuraHUD extends SimpleGui {
 
     public UIBackgroundContainer getContainer() {
         return gradientContainer;
-    }
-
-    // This is to fix the GUI Lighting issue that exists between Almura and Optifine & ShadersMod.
-    // Something about the change that Ordi made with the "disable backgroundGUI causes a conflict if our screens render here.
-
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (FMLClientHandler.instance().hasOptifine()) {
-            if (Minecraft.getMinecraft().currentScreen != null) {
-                if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChat)) {
-                    return;
-                }
-            }
-        }
-        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 }

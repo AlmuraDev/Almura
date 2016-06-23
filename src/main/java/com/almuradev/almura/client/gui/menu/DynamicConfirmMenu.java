@@ -12,7 +12,7 @@ import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.Locale;
 
@@ -35,11 +35,11 @@ public class DynamicConfirmMenu extends SimpleGui {
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the message label
-        final UILabel messageLabel1 = new UILabel(this, EnumChatFormatting.AQUA + message1);
+        final UILabel messageLabel1 = new UILabel(this, TextFormatting.AQUA + message1);
         messageLabel1.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
         messageLabel1.setPosition(0, -5, Anchor.CENTER | Anchor.MIDDLE);
 
-        final UILabel messageLabel2 = new UILabel(this, EnumChatFormatting.WHITE + message2);
+        final UILabel messageLabel2 = new UILabel(this, TextFormatting.WHITE + message2);
         messageLabel2.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
         messageLabel2.setPosition(0, +5, Anchor.CENTER | Anchor.MIDDLE);
 
