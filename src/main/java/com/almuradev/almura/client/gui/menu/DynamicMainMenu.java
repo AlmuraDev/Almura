@@ -29,15 +29,6 @@ import java.util.Locale;
 
 public class DynamicMainMenu extends SimpleGui {
 
-    protected static final ResourceLocation ALMURA_LOGO_LOCATION;
-    static {
-        try {
-            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "logo.png", "/assets/almura/logo.png");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public DynamicMainMenu(SimpleGui parent) {
         super(parent);
     }

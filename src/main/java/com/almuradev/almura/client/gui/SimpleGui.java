@@ -22,7 +22,7 @@ import java.io.IOException;
 public abstract class SimpleGui extends MalisisGui {
 
     public static final ResourceLocation LOCATION_GUI_SPRITE_SHEET;
-
+    public static final ResourceLocation ALMURA_LOGO_LOCATION;
     public static final GuiTexture TEXTURE_SPRITESHEET;
 
     public static final GuiIcon ICON_EMPTY;
@@ -65,6 +65,12 @@ public abstract class SimpleGui extends MalisisGui {
         ICON_CLOSE_NORMAL = TEXTURE_SPRITESHEET.getIcon(239, 69, 45, 19);
         ICON_CLOSE_HOVER = TEXTURE_SPRITESHEET.getIcon(239, 88, 45, 19);
         ICON_CLOSE_PRESSED = TEXTURE_SPRITESHEET.getIcon(239, 107, 45, 19);
+
+        try {
+            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "logo.png", "/assets/almura/logo.png");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

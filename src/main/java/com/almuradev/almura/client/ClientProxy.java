@@ -8,6 +8,7 @@ package com.almuradev.almura.client;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.FileSystem;
 import com.almuradev.almura.client.gui.SimpleGui;
+import com.almuradev.almura.client.gui.ingame.IngameOptionsMenu;
 import com.almuradev.almura.client.gui.ingame.hud.AlmuraHUD;
 import com.almuradev.almura.client.gui.ingame.hud.MinimalHUD;
 import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
@@ -16,6 +17,7 @@ import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
 import com.almuradev.almura.network.NetworkHandlers;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
+import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -75,9 +77,14 @@ public final class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onGuiScreen(GuiOpenEvent event) {
-        if (event.getGui() != null && event.getGui().getClass().equals(GuiMainMenu.class)) {
-            event.setCanceled(true);
-            new DynamicMainMenu(null).display();
+        if (event.getGui() != null) {
+            if (event.getGui().getClass().equals(GuiMainMenu.class)) {
+                event.setCanceled(true);
+                new DynamicMainMenu(null).display();
+            } else if (event.getGui().getClass().equals(GuiIngameMenu.class)) {
+                event.setCanceled(true);
+                new IngameOptionsMenu().display();
+            }
         }
     }
 
