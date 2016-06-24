@@ -15,10 +15,8 @@ import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiShareToLan;
 import net.minecraft.client.gui.achievement.GuiAchievements;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.text.TextFormatting;
 
 import java.awt.AWTException;
@@ -126,8 +124,6 @@ public final class IngameOptionsMenu extends SimpleGui {
         switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
             case "button.backbutton":
                 close();
-                this.mc.displayGuiScreen((GuiScreen) null);
-                this.mc.setIngameFocus();
                 break;
             case "button.achievements":
                 close();
@@ -163,7 +159,7 @@ public final class IngameOptionsMenu extends SimpleGui {
             case "button.quit":
                 close();
                 this.mc.theWorld.sendQuittingDisconnectingPacket();
-                this.mc.loadWorld((WorldClient) null);
+                this.mc.loadWorld(null);
                 this.mc.displayGuiScreen(new GuiMainMenu());
                 break;
         }

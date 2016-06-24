@@ -144,7 +144,7 @@ public abstract class SimpleGui extends MalisisGui {
         }
     }
 
-    public void onClose() {
+    protected void onClose() {
 
     }
 }
