@@ -85,7 +85,7 @@ public class DynamicAboutMenu extends SimpleGui {
         buildLabel.setText(TextFormatting.GRAY + "Almura: " + Almura.VERSION + " Forge: " + Almura.instance.container.getVersion().get());
         buildLabel.setPosition(0, 3, Anchor.CENTER | Anchor.TOP);
         
-        // Create About us multi-line label
+        // Create About us multi-line text field
         final UITextField aboutUsLabel = new UITextField(this, "", true);
 
         aboutUsLabel.setSize(290, form.getContentContainer().getHeight() - 40);

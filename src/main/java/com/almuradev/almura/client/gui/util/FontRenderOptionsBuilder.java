@@ -9,7 +9,7 @@ import net.malisis.core.renderer.font.FontRenderOptions;
 
 public class FontRenderOptionsBuilder {
 
-    private float fontScale;
+    private float fontScale = 1f;
     private int color;
     private boolean shadow, bold, italic, strikethrough;
 

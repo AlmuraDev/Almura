@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.Mixins;
 import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion("1.9.4")
-public final class AlmuraCorePlugin implements IFMLLoadingPlugin {
+public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
 
-    public AlmuraCorePlugin() {
+    public AlmuraLoadingPlugin() {
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.almura.core.json");
     }

@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.client.gui.ingame.hud;
 
@@ -13,15 +13,12 @@ import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.renderer.font.FontRenderOptions;
-import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.api.text.format.TextColors;
 
 public class MinimalHUD extends SimpleGui {
 
     private static final FontRenderOptions FRO_HUD;
     private static final int PADDING = 1;
-    private static final String COMPASS_CHARACTERS = "S.......W.......N.......E.......";
-    private static final String TIME_FORMAT = "%2d:%02d%s";
     private UILabel clockLabel;
     private UILabel economyLabel;
     private UILabel compassLabel;
@@ -102,10 +99,10 @@ public class MinimalHUD extends SimpleGui {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         // Clock
-        clockLabel.setText(getTime());
+        clockLabel.setText(HUDData.getTime());
 
         // Compass
-        compassLabel.setText(getCompass());
+        compassLabel.setText(HUDData.getCompass());
 
         // World
         worldLabel.setText(HUDData.WORLD_NAME);
@@ -117,42 +114,5 @@ public class MinimalHUD extends SimpleGui {
         coordinatesXLabel.setText((int) mc.thePlayer.posX + " X");
         coordinatesYLabel.setText((int) mc.thePlayer.posY + " Y");
         coordinatesZLabel.setText((int) mc.thePlayer.posZ + " Z");
-    }
-
-    private String getCompass() {
-        final int position = (int) ((((mc.thePlayer.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 32);
-
-        return "" + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 8) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 7) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 6) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 5) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 4) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 3) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position - 2) & 31)
-                + TextFormatting.GRAY + COMPASS_CHARACTERS.charAt((position - 1) & 31)
-                + TextFormatting.WHITE + COMPASS_CHARACTERS.charAt((position) & 31)
-                + TextFormatting.GRAY + COMPASS_CHARACTERS.charAt((position + 1) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 2) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 3) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 4) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 5) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 6) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 7) & 31)
-                + TextFormatting.DARK_GRAY + COMPASS_CHARACTERS.charAt((position + 8) & 31);
-    }
-
-    private String getTime() {
-        final int minute = (int) Math.floor((mc.thePlayer.worldObj.getWorldTime() % 1000) / 1000.0 * 60);
-        final int hour = (int) ((Math.floor(mc.thePlayer.worldObj.getWorldTime() / 1000.0) + 6) % 24);
-
-        if (hour == 0) {
-            return String.format(TIME_FORMAT, hour + 12, minute, "AM");
-        } else if (hour == 12) {
-            return String.format(TIME_FORMAT, hour, minute, "PM");
-        } else if (hour > 12) {
-            return String.format(TIME_FORMAT, hour - 12, minute, "PM");
-        } else {
-            return String.format(TIME_FORMAT, hour, minute, "AM");
-        }
     }
 }
