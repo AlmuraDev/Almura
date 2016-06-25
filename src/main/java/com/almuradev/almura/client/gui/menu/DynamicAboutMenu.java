@@ -85,7 +85,7 @@ public class DynamicAboutMenu extends SimpleGui {
 
         // Create the build label
         final UILabel buildLabel = new UILabel(this);
-        buildLabel.setText(TextFormatting.GRAY + "Almura: " + Almura.VERSION + " Forge: " + Almura.instance.container.getVersion().get());
+        buildLabel.setText(TextFormatting.GRAY + "Almura: " + Almura.GUI_VERSION + " Forge: " + Almura.instance.container.getVersion().get());
         buildLabel.setPosition(0, 3, Anchor.CENTER | Anchor.TOP);
         
         // Create About us multi-line text field

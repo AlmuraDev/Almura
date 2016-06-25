@@ -49,7 +49,7 @@ public final class ClientProxy extends CommonProxy {
     private SimpleGui customIngameHud;
 
     @Override
-    protected void onGamePreInitialization(GamePreInitializationEvent event) {
+    public void onGamePreInitialization(GamePreInitializationEvent event) {
         super.onGamePreInitialization(event);
 
         this.configAdapter = new ConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults().setHeader(HEADER), FileSystem

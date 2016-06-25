@@ -31,19 +31,14 @@ public abstract class CommonProxy {
 
     protected void onGamePreInitialization(GamePreInitializationEvent event) {
         if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM|FOR")) {
-            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel 'AM|FOR'");
+            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel [AM|FOR]");
         }
 
         network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
         registerMessages();
-        Sponge.getGame().getEventManager().registerListeners(Almura.instance.container, this);
-    }
 
-    protected void registerMessages() {
-        this.network.registerMessage(SWorldInformationMessage.class, 0);
+        Sponge.getEventManager().registerListeners(Almura.instance.container, this);
     }
-
-    public abstract ConfigurationAdapter<? extends AbstractConfiguration> getConfigAdapter();
 
     @Listener(order = Order.LAST)
     public void onClientConnectionJoin(ClientConnectionEvent.Join event) {
@@ -63,6 +58,12 @@ public abstract class CommonProxy {
             sendWorldHUDData(event.getTargetEntity(), event.getToTransform());
         }
     }
+
+    protected void registerMessages() {
+        this.network.registerMessage(SWorldInformationMessage.class, 0);
+    }
+
+    public abstract ConfigurationAdapter<? extends AbstractConfiguration> getConfigAdapter();
 
     private void sendWorldHUDData(Player player, Transform<World> toTransform) {
         String clientWorldName = toTransform.getExtent().getName();
