@@ -15,8 +15,7 @@ import org.spongepowered.api.network.RemoteConnection;
 
 /**
  * A unified location of all handlers for Almura's network messages. If you are adding a handler to this class,
- * keep in mind that no handler is thread-safe by default. If you are to modify any Minecraft game object, use
- * {@link ThreadUtil#executeOnClientThread(Runnable)} or {@link ThreadUtil#executeOnServerThread(String, Runnable)}.
+ * keep in mind that no handler is thread-safe by default and you *will* need to schedule it on either Server or Client thread
  */
 public final class NetworkHandlers {
 

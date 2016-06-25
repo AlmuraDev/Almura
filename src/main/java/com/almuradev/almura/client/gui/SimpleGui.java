@@ -15,10 +15,13 @@ import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.renderer.icon.GuiIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 
+@SideOnly(Side.CLIENT)
 public abstract class SimpleGui extends MalisisGui {
 
     public static final ResourceLocation LOCATION_GUI_SPRITE_SHEET;

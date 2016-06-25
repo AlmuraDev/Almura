@@ -18,6 +18,8 @@ import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiShareToLan;
 import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.awt.AWTException;
 import java.awt.Desktop;
@@ -26,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
+@SideOnly(Side.CLIENT)
 public final class IngameOptionsMenu extends SimpleGui {
 
     @Override

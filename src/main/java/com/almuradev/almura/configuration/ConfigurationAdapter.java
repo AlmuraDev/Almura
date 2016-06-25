@@ -13,6 +13,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public final class ConfigurationAdapter<T extends AbstractConfiguration> {
@@ -35,10 +36,12 @@ public final class ConfigurationAdapter<T extends AbstractConfiguration> {
             throw new RuntimeException("Failed to construct mapper for config class [" + configClass + "]!");
         }
         this.root = SimpleCommentedConfigurationNode.root(options);
-        try {
-            this.save();
-        } catch (IOException | ObjectMappingException e) {
-            throw new RuntimeException("Failed to save config for class [" + configClass + "] from [" + configPath + "]!", e);
+        if (Files.notExists(configPath)) {
+            try {
+                this.save();
+            } catch (IOException | ObjectMappingException e) {
+                throw new RuntimeException("Failed to save config for class [" + configClass + "] from [" + configPath + "]!", e);
+            }
         }
     }
 

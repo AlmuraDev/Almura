@@ -1,8 +1,0 @@
-client:
-    enhanced-gui: true
-debug:
-    all: false
-    language: false
-    pack: false
-    mappings: false
-    recipes: false

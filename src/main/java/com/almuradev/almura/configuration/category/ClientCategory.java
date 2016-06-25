@@ -46,7 +46,7 @@ public final class ClientCategory {
     public boolean optimizedLighting = true;
 
     /**
-     * Called on first launch to optimize the client's GUI settings. Addresses many user's lack of knowledge of
+     * Called on first launch to optimize the client's GUI settings. Addresses many users lack of knowledge of
      * the various settings that can lead to better FPS. Improves overall experience with Almura.
      */
     public void optimizeGame() {

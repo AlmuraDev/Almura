@@ -13,9 +13,12 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Locale;
 
+@SideOnly(Side.CLIENT)
 public class DynamicConfirmMenu extends SimpleGui {
 
     private String message1, message2, title;

@@ -6,8 +6,11 @@
 package com.almuradev.almura.client.gui.util;
 
 import net.malisis.core.renderer.font.FontRenderOptions;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class FontRenderOptionsBuilder {
+@SideOnly(Side.CLIENT)
+public final class FontRenderOptionsBuilder {
 
     private float fontScale = 1f;
     private int color;

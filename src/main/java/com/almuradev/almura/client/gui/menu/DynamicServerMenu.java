@@ -20,6 +20,8 @@ import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -27,6 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
+@SideOnly(Side.CLIENT)
 public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
 
     private static final ServerData DATA_LIVE_SERVER = new ServerData("Almura", "srv1.almuramc.com", false);

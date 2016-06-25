@@ -17,9 +17,12 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiModList;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Locale;
 
+@SideOnly(Side.CLIENT)
 public class DynamicAboutMenu extends SimpleGui {
 
     private final static String fieldText =

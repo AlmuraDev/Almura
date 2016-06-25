@@ -19,8 +19,6 @@ public class UIPropertyBar extends UIComponent<UIPropertyBar> {
     public static final org.spongepowered.api.util.Color LIGHT_ORANGE = org.spongepowered.api.util.Color.ofRgb(204, 172, 0);
     public static final org.spongepowered.api.util.Color DARK_RED = org.spongepowered.api.util.Color.ofRgb(175, 22, 30);
 
-    public static final int RED = 0xAF161E;
-
     private GuiTexture texture = SimpleGui.TEXTURE_SPRITESHEET;
 
     private final GuiShape iconShape;
@@ -51,10 +49,6 @@ public class UIPropertyBar extends UIComponent<UIPropertyBar> {
         barShape.setSize(width - iconSize - iconGap, 7);
         barShape.translate(iconSize + iconGap, 0, 1);
         barShape.storeState();
-    }
-
-    public boolean isRelativeColor() {
-        return relativeColor;
     }
 
     public UIPropertyBar setRelativeColor(boolean relativeColor) {

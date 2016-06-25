@@ -13,8 +13,11 @@ import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.renderer.font.FontRenderOptions;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.format.TextColors;
 
+@SideOnly(Side.CLIENT)
 public class MinimalHUD extends SimpleGui {
 
     private static final FontRenderOptions FRO_HUD;

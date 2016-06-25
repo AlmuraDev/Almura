@@ -7,7 +7,10 @@ package com.almuradev.almura.client.gui.ingame.hud;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public final class HUDData {
 
     public static final String COMPASS_CHARACTERS = "S.......W.......N.......E.......";

@@ -23,6 +23,8 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Platform;
@@ -36,6 +38,7 @@ import javax.annotation.Nullable;
 /**
  * The client platform of Almura. All code not meant to run on a dedicated server should go here.
  */
+@SideOnly(Side.CLIENT)
 public final class ClientProxy extends CommonProxy {
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
 

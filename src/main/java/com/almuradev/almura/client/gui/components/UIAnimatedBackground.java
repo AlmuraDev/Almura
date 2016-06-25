@@ -20,6 +20,8 @@ import net.malisis.core.client.gui.event.component.SpaceChangeEvent.SizeChangeEv
 import net.malisis.core.renderer.animation.Animation;
 import net.malisis.core.renderer.animation.transformation.SizeTransform;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.net.URL;
 import java.nio.file.DirectoryStream;
@@ -29,6 +31,7 @@ import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Random;
 
+@SideOnly(Side.CLIENT)
 public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
 
     public static final float ZOOM_LEVEL = 1.5f;

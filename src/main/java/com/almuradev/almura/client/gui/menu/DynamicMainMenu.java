@@ -5,8 +5,6 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.FileSystem;
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
 import com.almuradev.almura.client.gui.components.UIForm;
@@ -19,14 +17,15 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import java.io.IOException;
 import java.util.Locale;
 
+@SideOnly(Side.CLIENT)
 public class DynamicMainMenu extends SimpleGui {
 
     public DynamicMainMenu(SimpleGui parent) {

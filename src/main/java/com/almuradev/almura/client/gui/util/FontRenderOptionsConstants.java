@@ -6,8 +6,11 @@
 package com.almuradev.almura.client.gui.util;
 
 import net.malisis.core.renderer.font.FontRenderOptions;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.util.Color;
 
+@SideOnly(Side.CLIENT)
 public final class FontRenderOptionsConstants {
 
     public static final FontRenderOptions FRO_COLOR_WHITE = FontRenderOptionsBuilder.builder().color(Color.WHITE.getRgb()).build();

@@ -21,6 +21,8 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
+@SideOnly(Side.CLIENT)
 public class DynamicConfigurationMenu extends SimpleGui {
 
     private UICheckBox animalHeatCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
