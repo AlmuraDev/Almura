@@ -75,7 +75,7 @@ repositories {
 dependencies {
     compile 'org.spongepowered:mixin:0.5.+'
     deobfCompile 'org.spongepowered:spongeforge:1.10-+'
-    deobfCompile 'net.malisis:malisiscore:1.10-+'
+    deobfCompile 'net.malisis:malisiscore:1.9.4-+'
 }
 
 idea {

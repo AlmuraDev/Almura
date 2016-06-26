@@ -34,7 +34,7 @@ public class Almura {
     public void onGameConstruction(GameConstructionEvent event) {
         instance = this;
     }
-    
+
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
         proxy.onGamePreInitialization(event);
