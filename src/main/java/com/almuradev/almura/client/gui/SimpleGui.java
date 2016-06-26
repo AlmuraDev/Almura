@@ -26,6 +26,8 @@ public abstract class SimpleGui extends MalisisGui {
 
     public static final ResourceLocation LOCATION_GUI_SPRITE_SHEET;
     public static final ResourceLocation ALMURA_LOGO_LOCATION;
+    public static final ResourceLocation SPONGIE_LOCATION;
+    public static final ResourceLocation SPONGEPOWERED_LOGO_LOCATION;
     public static final GuiTexture TEXTURE_SPRITESHEET;
 
     public static final GuiIcon ICON_EMPTY;
@@ -43,6 +45,8 @@ public abstract class SimpleGui extends MalisisGui {
     public static final GuiIcon ICON_CLOSE_NORMAL;
     public static final GuiIcon ICON_CLOSE_HOVER;
     public static final GuiIcon ICON_CLOSE_PRESSED;
+    public static final GuiIcon ICON_FORUM;
+    public static final GuiIcon ICON_GITHUB;
     protected final Optional<SimpleGui> parent;
 
     static {
@@ -51,9 +55,9 @@ public abstract class SimpleGui extends MalisisGui {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        TEXTURE_SPRITESHEET = new GuiTexture(LOCATION_GUI_SPRITE_SHEET, 284, 142);
+        TEXTURE_SPRITESHEET = new GuiTexture(LOCATION_GUI_SPRITE_SHEET, 300, 142);
 
-        ICON_EMPTY = TEXTURE_SPRITESHEET.getIcon(283, 141, 1, 1);
+        ICON_EMPTY = TEXTURE_SPRITESHEET.getIcon(299, 141, 1, 1);
         ICON_BAR = TEXTURE_SPRITESHEET.getIcon(0, 126, 256, 14);
         ICON_HEART = TEXTURE_SPRITESHEET.getIcon(149, 62, 26, 26);
         ICON_ARMOR = TEXTURE_SPRITESHEET.getIcon(64, 63, 20, 27);
@@ -68,10 +72,13 @@ public abstract class SimpleGui extends MalisisGui {
         ICON_CLOSE_NORMAL = TEXTURE_SPRITESHEET.getIcon(239, 69, 45, 19);
         ICON_CLOSE_HOVER = TEXTURE_SPRITESHEET.getIcon(239, 88, 45, 19);
         ICON_CLOSE_PRESSED = TEXTURE_SPRITESHEET.getIcon(239, 107, 45, 19);
-
+        ICON_FORUM = TEXTURE_SPRITESHEET.getIcon(284, 0, 16, 16);
+        ICON_GITHUB = TEXTURE_SPRITESHEET.getIcon(284, 17, 16, 16);
         try {
-            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "logo.png", "/assets/almura/logo.png");
-        } catch (IOException e) {
+            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "almura_logo.png", "/assets/almura/almura_logo.png");
+            SPONGIE_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongie.png", "/assets/almura/spongie.png");
+            SPONGEPOWERED_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongepowered_logo.png", "/assets/almura/spongepowered_logo"
+                    + ".png");        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -111,10 +118,7 @@ public abstract class SimpleGui extends MalisisGui {
     }
 
     public static int getPaddedY(UIComponent<?> component, int padding) {
-        if (component == null) {
-            return 0;
-        }
-        return component.getY() + component.getHeight() + padding;
+        return getPaddedY(component, padding, Anchor.TOP);
     }
 
     public static int getPaddedY(UIComponent<?> component, int padding, int anchor) {
@@ -148,7 +152,6 @@ public abstract class SimpleGui extends MalisisGui {
     }
 
     protected void onClose() {
-
     }
 }
 

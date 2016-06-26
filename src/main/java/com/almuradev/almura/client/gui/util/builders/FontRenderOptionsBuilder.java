@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.util;
+package com.almuradev.almura.client.gui.util.builders;
 
 import net.malisis.core.renderer.font.FontRenderOptions;
 import net.minecraftforge.fml.relauncher.Side;

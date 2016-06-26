@@ -138,7 +138,6 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
 
     @Override
     public void onClose() {
-        super.onClose();
         QUERIER.interrupt();
     }
 

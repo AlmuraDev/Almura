@@ -1,120 +1,156 @@
-/**
- * This file is part of Almura, All Rights Reserved.
- *
- * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
- */
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
-import com.almuradev.almura.client.gui.components.UIForm;
 import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
+import com.almuradev.almura.client.gui.util.builders.FontRenderOptionsBuilder;
+import com.almuradev.almura.client.gui.util.builders.UIButtonBuilder;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializers;
+import org.lwjgl.input.Keyboard;
+import org.spongepowered.api.util.Color;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Locale;
 
 @SideOnly(Side.CLIENT)
 public class DynamicMainMenu extends SimpleGui {
 
-    public DynamicMainMenu(SimpleGui parent) {
+    public DynamicMainMenu(SimpleGui parent){
         super(parent);
     }
 
     @Override
     public void construct() {
+        final UIBackgroundContainer container = new UIBackgroundContainer(this);
+        container.setBackgroundAlpha(0);
 
-        // Create the form
-        final UIForm form = new UIForm(this, 200, 225, "Almura", false);
-        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        final int longButtonWidth = 200;
+        final int shortButtonWidth = 98;
+        final int buttonHeight = 20;
+        final int buttonPadding = 4;
 
-        // Create the logo
-        final UIImage logoImage = new UIImage(this, new GuiTexture(ALMURA_LOGO_LOCATION), null);
-        logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
-        logoImage.setSize(55, 85);
+        // Almura Image
+        final UIImage almuraImage = new UIImage(this, new GuiTexture(ALMURA_LOGO_LOCATION), null);
+        almuraImage.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
+        almuraImage.setSize(228, 70);
 
-        final int padding = 4;
+        final UIButton singleplayerButton = new UIButtonBuilder(this)
+                .text("Singleplayer")
+                .name("button.singleplayer")
+                .size(longButtonWidth, buttonHeight)
+                .position(0, SimpleGui.getPaddedY(almuraImage, 10))
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .listener(this)
+                .build();
 
-        // Create the singleplayer button
-        final UIButton singleplayerButton = new UIButton(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.BLUE, "Singleplayer")));
-        singleplayerButton.setSize(180, 16);
-        singleplayerButton.setPosition(0, getPaddedY(logoImage, padding * 2), Anchor.CENTER | Anchor.TOP);
-        singleplayerButton.setName("button.singleplayer");
-        singleplayerButton.register(this);
+        final UIButton multiplayerButton = new UIButtonBuilder(this)
+                .text("Multiplayer")
+                .name("button.multiplayer")
+                .size(longButtonWidth, buttonHeight)
+                .position(0, SimpleGui.getPaddedY(singleplayerButton, buttonPadding))
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .listener(this)
+                .build();
 
-        // Create the multiplayer button
-        final UIButton multiplayerButton = new UIButton(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.AQUA, "Multiplayer")));
-        multiplayerButton.setSize(180, 16);
-        multiplayerButton.setPosition(0, getPaddedY(singleplayerButton, padding), Anchor.CENTER | Anchor.TOP);
-        multiplayerButton.setName("button.multiplayer");
-        multiplayerButton.register(this);
 
-        // Create the options button
-        final UIButton optionsButton = new UIButton(this, "Options");
-        optionsButton.setSize(50, 16);
-        optionsButton.setPosition(10, getPaddedY(multiplayerButton, padding), Anchor.LEFT | Anchor.TOP);
-        optionsButton.setName("button.options");
-        optionsButton.register(this);
+        final UIButton optionsButton = new UIButtonBuilder(this)
+                .text("Options")
+                .name("button.options")
+                .size(shortButtonWidth, buttonHeight)
+                .position(-((shortButtonWidth / 2) + (buttonPadding / 2)), SimpleGui.getPaddedY(multiplayerButton, buttonPadding))
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .listener(this)
+                .build();
 
-        // Create the Configuration button
-        final UIButton configurationButton = new UIButton(this, "Configuration");
-        configurationButton.setSize(76, 16);
-        configurationButton.setPosition(0, getPaddedY(multiplayerButton, padding), Anchor.CENTER | Anchor.TOP);
-        configurationButton.setName("button.configuration");
-        configurationButton.register(this);
 
-        // Create the Mods button
-        final UIButton aboutButton = new UIButton(this, "About");
-        aboutButton.setSize(50, 16);
-        aboutButton.setPosition(-10, getPaddedY(multiplayerButton, padding), Anchor.RIGHT | Anchor.TOP);
-        aboutButton.setName("button.about");
-        aboutButton.register(this);
+        final UIButton aboutButton = new UIButtonBuilder(this)
+                .text("About")
+                .name("button.about")
+                .size(shortButtonWidth, buttonHeight)
+                .position(SimpleGui.getPaddedX(optionsButton, buttonPadding), SimpleGui.getPaddedY(multiplayerButton, buttonPadding))
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .listener(this)
+                .build();
 
-        // Create the quit button
-        final UIButton quitButton = new UIButton(this, "Quit");
-        quitButton.setSize(50, 16);
-        quitButton.setPosition(0, getPaddedY(configurationButton, padding + 10), Anchor.CENTER | Anchor.TOP);
-        quitButton.setName("button.quit");
-        quitButton.register(this);
+        final UIButton quitButton = new UIButtonBuilder(this)
+                .text("Quit")
+                .name("button.quit")
+                .fro(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_RED).shadow(true).build())
+                .hoverFro(FontRenderOptionsBuilder.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
+                .size(longButtonWidth, buttonHeight)
+                .position(singleplayerButton.getX(), SimpleGui.getPaddedY(optionsButton, buttonPadding))
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .listener(this)
+                .build();
 
-        // Create the copyright label
-        final UILabel copyrightLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.GRAY, "Copyright AlmuraDev "
-                + "2012 - 2016")));
-        copyrightLabel.setPosition(0, -9, Anchor.CENTER | Anchor.BOTTOM);
-        copyrightLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
+        final UIButton forumButton = new UIButtonBuilder(this)
+                .name("button.forums")
+                .image(SimpleGui.ICON_FORUM)
+                .size(24, 24)
+                .position(-4, -4)
+                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+                .listener(this)
+                .tooltip(new UITooltip(this, "Forums", 15))
+                .build();
 
-        // Create the trademark label
-        final UILabel trademarkLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.GRAY, "Minecraft is a "
-                + "registered trademark of Mojang AB")));
-        trademarkLabel.setPosition(0, -1, Anchor.CENTER | Anchor.BOTTOM);
-        trademarkLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
+        final UIButton issuesButton = new UIButtonBuilder(this)
+                .name("button.issues")
+                .image(SimpleGui.ICON_GITHUB)
+                .size(24, 24)
+                .position(SimpleGui.getPaddedX(forumButton, 4, Anchor.RIGHT), forumButton.getY())
+                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+                .listener(this)
+                .tooltip(new UITooltip(this, "Issues", 15))
+                .build();
 
-        form.getContentContainer().add(logoImage, singleplayerButton, multiplayerButton, optionsButton, configurationButton,
-                aboutButton, quitButton, copyrightLabel, trademarkLabel);
+        // Trademark
+        final UILabel trademarkLabel = new UILabel(this, TextFormatting.YELLOW + "Minecraft is a registered trademark of Mojang AB");
+        trademarkLabel.setPosition(4, -4, Anchor.BOTTOM | Anchor.LEFT);
 
+        // Copyright
+        final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + "Copyright AlmuraDev 2012 - 2016");
+        copyrightLabel.setPosition(trademarkLabel.getX(), SimpleGui.getPaddedY(trademarkLabel, 4, Anchor.BOTTOM), trademarkLabel.getAnchor());
+
+        // Add content to panel strip
+        container.add(almuraImage, singleplayerButton, multiplayerButton, optionsButton, aboutButton, quitButton, trademarkLabel, copyrightLabel,
+                forumButton, issuesButton);
+
+        // Disable escape keypress
+        registerKeyListener((keyChar, keyCode) -> {
+            if (keyCode == Keyboard.KEY_ESCAPE) {
+                new DynamicMainMenu(null).display();
+                return true;
+            }
+            return false;
+        });
+
+        // Add content to screen
         addToScreen(new UIAnimatedBackground(this));
-        addToScreen(form);
+        addToScreen(container);
     }
 
     @Override
     public void onClose() {
-        super.onClose();
         mc.shutdown();
     }
 
     @Subscribe
-    public void onButtonClick(UIButton.ClickEvent event) {
+    public void onButtonClick(UIButton.ClickEvent event) throws URISyntaxException, IOException {
         switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
             case "button.singleplayer":
                 mc.displayGuiScreen(new GuiWorldSelection(this));
@@ -125,14 +161,18 @@ public class DynamicMainMenu extends SimpleGui {
             case "button.options":
                 mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
                 break;
-            case "button.configuration":
-                new DynamicConfigurationMenu(this).display();
-                break;
             case "button.about":
                 new DynamicAboutMenu(this).display();
                 break;
             case "button.quit":
                 close();
+                break;
+            case "button.forums":
+                Desktop.getDesktop().browse(new URI("http://almuramc.com"));
+                break;
+            case "button.issues":
+                Desktop.getDesktop().browse(new URI("https://github.com/AlmuraDev/Almura/issues"));
+                break;
         }
     }
 }

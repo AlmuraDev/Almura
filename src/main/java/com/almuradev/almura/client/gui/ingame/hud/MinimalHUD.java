@@ -6,7 +6,7 @@
 package com.almuradev.almura.client.gui.ingame.hud;
 
 import com.almuradev.almura.client.gui.SimpleGui;
-import com.almuradev.almura.client.gui.util.FontRenderOptionsBuilder;
+import com.almuradev.almura.client.gui.util.builders.FontRenderOptionsBuilder;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;

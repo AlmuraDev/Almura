@@ -19,6 +19,7 @@ import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.client.gui.event.component.SpaceChangeEvent.SizeChangeEvent;
 import net.malisis.core.renderer.animation.Animation;
 import net.malisis.core.renderer.animation.transformation.SizeTransform;
+import net.malisis.core.renderer.animation.transformation.Transformation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -34,8 +35,8 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
 
-    public static final float ZOOM_LEVEL = 1.5f;
-    public static final int ANIMATION_SPEED = 160;
+    public static final float ZOOM_LEVEL = 1.4f;
+    public static final int ANIMATION_SPEED = 100;
     private static final Multimap<TimeState, GuiTexture> STATE_TEXTURES = ArrayListMultimap.create();
     private static final Random RANDOM = new Random();
     public Animation<?> animation;
@@ -62,7 +63,7 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
 
     private GuiTexture[] listBackgrounds(TimeState state) {
         if (!STATE_TEXTURES.containsKey(state)) {
-            readStateFiles(state);
+            this.readStateFiles(state);
         }
 
         return STATE_TEXTURES.get(state).toArray(new GuiTexture[1]);
@@ -106,7 +107,7 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
      * @return a random background.
      */
     private GuiTexture getRandomTexture() {
-        final GuiTexture[] backgrounds = listBackgrounds(TimeState.currentState());
+        final GuiTexture[] backgrounds = this.listBackgrounds(TimeState.currentState());
 
         if (backgrounds.length == 0) {
             return null;
@@ -125,21 +126,22 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
     }
 
     private Animation getAnimation() {
-        final int w = getParent().getWidth();
-        final int h = getParent().getHeight();
+        final int width = getParent().getWidth();
+        final int height = getParent().getHeight();
 
-        final SizeTransform<UIAnimatedBackground> size = new SizeTransform<>(w, h, (int) (w * ZOOM_LEVEL), (int) (h * ZOOM_LEVEL));
+        final SizeTransform<UIAnimatedBackground> size = new SizeTransform<>(width, height, (int) (width * ZOOM_LEVEL), (int) (height * ZOOM_LEVEL));
         size.forTicks(ANIMATION_SPEED);
+        size.movement(Transformation.SINUSOIDAL);
 
-        animation = new Animation<>(this, size);
-        return animation;
+        this.animation = new Animation<>(this, size);
+        return this.animation;
     }
 
     private void resetAnimation() {
-        currentTexture = getRandomTexture();
-        currentAnchor = getRandomAnchor();
-        setPosition(0, 0, currentAnchor);
-        getGui().animate(getAnimation());
+        this.currentTexture = this.getRandomTexture();
+        this.currentAnchor = this.getRandomAnchor();
+        setPosition(0, 0, this.currentAnchor);
+        getGui().animate(this.getAnimation());
     }
 
     @Override
@@ -149,8 +151,8 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         // Check if the animation is finished
-        if (animation == null || animation.isFinished()) {
-            resetAnimation();
+        if (this.animation == null || this.animation.isFinished()) {
+            this.resetAnimation();
         }
 
         rp.icon.set(currentTexture.getIcon(0, 0, currentTexture.getWidth(), currentTexture.getHeight()));
@@ -162,7 +164,7 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
 	@Subscribe
     public void onComponentSizeChange(SizeChangeEvent<? extends UIComponent<?>> event) {
         if (event.getComponent() != this) {
-            resetAnimation();
+            this.resetAnimation();
         }
     }
 
