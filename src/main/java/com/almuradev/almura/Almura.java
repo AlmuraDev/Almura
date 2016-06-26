@@ -6,11 +6,19 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.client.ClientProxy;
+import com.almuradev.almura.pack.block.BlockBuilder;
+import com.almuradev.almura.pack.block.PackBlockObject;
 import com.almuradev.almura.server.ServerProxy;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.Material;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.SidedProxy;
 import org.slf4j.Logger;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -38,5 +46,20 @@ public class Almura {
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
         proxy.onGamePreInitialization(event);
+
+        Sponge.getRegistry().registerBuilderSupplier(PackBlockObject.Builder.class, BlockBuilder::new);
+
+        // TEST CODE
+        PackBlockObject.builder()
+                .creativeTab(CreativeTabs.FOOD)
+                .material(Material.ANVIL)
+                .mapColor(MapColor.ADOBE)
+                .build("test", "test");
+    }
+
+    @Listener
+    public void onGameLoadComplete(GameLoadCompleteEvent event) {
+        // TEST CODE
+        Sponge.getRegistry().getType(BlockType.class, "almura:test").ifPresent(System.err::println);
     }
 }
