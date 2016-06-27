@@ -5,28 +5,29 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.gui.SimpleGui;
-import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
-import com.almuradev.almura.client.gui.components.UIForm;
 import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
+import net.malisis.core.client.gui.component.control.UIScrollBar;
+import net.malisis.core.client.gui.component.control.UISlimScrollbar;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.renderer.icon.GuiIcon;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.MinecraftVersion;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.Color;
 
 @SideOnly(Side.CLIENT)
 public class DynamicAboutMenu extends SimpleGui {
@@ -77,6 +78,9 @@ public class DynamicAboutMenu extends SimpleGui {
             "years. Without this individual.. Almura and AlmuraDev simply would not exist."
     );
 
+    private UIBackgroundContainer contentContainer;
+    private UIBackgroundContainer bottomBorderContainer;
+
     public DynamicAboutMenu(SimpleGui parent) {
         super(parent);
     }
@@ -85,73 +89,128 @@ public class DynamicAboutMenu extends SimpleGui {
     @Override
     public void construct() {
         // Create the form
-        final UIForm form = new UIForm(this, 300, 225, "About");
-        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        final UIBackgroundContainer container = new UIBackgroundContainer(this);
+        container.setBackgroundAlpha(0);
 
-        // Create the logo
-        final UIImage almuraLogoImage = new UIImage(this, new GuiTexture(DynamicMainMenu.ALMURA_LOGO_LOCATION), null);
-        almuraLogoImage.setPosition(0, 4, Anchor.TOP | Anchor.CENTER);
-        almuraLogoImage.setSize(131, 25);
+        final UILabel titleLabel = new UILabel(this, "About");
+        titleLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
+        titleLabel.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
 
-        final UIImage spongepoweredLogoImage = new UIImage(this, new GuiTexture(DynamicMainMenu.SPONGEPOWERED_LOGO_LOCATION), null);
-        spongepoweredLogoImage.setPosition(0, SimpleGui.getPaddedY(almuraLogoImage, 4), Anchor.TOP | Anchor.CENTER);
-        spongepoweredLogoImage.setSize(123, 36);
+        final UIBackgroundContainer topBorderContainer = new UIBackgroundContainer(this, UIComponent.INHERITED, 4);
+        topBorderContainer.setPosition(0, SimpleGui.getPaddedY(titleLabel, 3));
+        topBorderContainer.setColor(Color.ofRgb(0, 0, 0).getRgb());
+        topBorderContainer.setTopAlpha(255);
+        topBorderContainer.setBottomAlpha(120);
 
-        // Almura Version
-        final UILabel almuraVersion = new UILabel(this, true);
-        almuraVersion.setPosition(4, 4, Anchor.RIGHT);
-        almuraVersion.setText(TextFormatting.GRAY + "Almura: " + Almura.GUI_VERSION);
+        contentContainer = new UIBackgroundContainer(this, UIComponent.INHERITED, container.getHeight() - 104);
+        contentContainer.setPosition(0, SimpleGui.getPaddedY(topBorderContainer, 0));
+        contentContainer.setColor(Color.ofRgb(0, 0, 0).getRgb());
+        contentContainer.setBackgroundAlpha(120);
+        contentContainer.setPadding(4, 10);
+        contentContainer.setClipContent(true);
 
-        // Minecraft Version
-        final UILabel minecraftVersion = new UILabel(this);
-        minecraftVersion.setText(TextFormatting.GRAY + "Minecraft: " + ((MinecraftVersion) (Sponge.getPlatform().asMap().get("MinecraftVersion")))
-                .getName());
-        minecraftVersion.setPosition(almuraVersion.getX(), SimpleGui.getPaddedY(almuraVersion, 3), almuraVersion.getAnchor());
+        bottomBorderContainer = new UIBackgroundContainer(this, UIComponent.INHERITED, 4);
+        bottomBorderContainer.setPosition(0, container.getHeight() - 86);
+        bottomBorderContainer.setColor(Color.ofRgb(0, 0, 0).getRgb());
+        bottomBorderContainer.setTopAlpha(120);
+        bottomBorderContainer.setBottomAlpha(255);
 
-        // Forge Version
-        final UILabel forgeVersion = new UILabel(this);
-        forgeVersion.setText(TextFormatting.GRAY + "Forge: " + Sponge.getPlatform().asMap().get("ForgeVersion"));
-        forgeVersion.setPosition(minecraftVersion.getX(), SimpleGui.getPaddedY(minecraftVersion, 3), minecraftVersion.getAnchor());
+        final AboutList list = new AboutList(this, 100, container.getHeight());
+        final AboutListElement element = new AboutListElement(this, new GuiTexture(SimpleGui.ZIDANE_HEAD_LOCATION),
+                new UILabel(this, TextFormatting.WHITE + "Zidane"), 100, 0);
 
-        // Create the mods button
-        final UIButton modsButton = new UIButton(this, "Mods");
-        modsButton.setSize(50, 16);
-        modsButton.setPosition(5, -5, Anchor.BOTTOM | Anchor.LEFT);
-        modsButton.setName("button.mods");
-        modsButton.register(this);
+        list.add(new UISlimScrollbar(this, list, UISlimScrollbar.Type.VERTICAL).setAutoHide(true).setSize(list.getHeight(), 2));
+        list.add(element);
+        contentContainer.add(list);
+        container.add(titleLabel, topBorderContainer, contentContainer, bottomBorderContainer);
 
-        // Create the back button
-        final UIButton backButton = new UIButton(this, "Back");
-        backButton.setSize(50, 16);
-        backButton.setPosition(-5, -5, Anchor.BOTTOM | Anchor.RIGHT);
-        backButton.setName("button.back");
-        backButton.register(this);
+        addToScreen(container);
+    }
 
-        // Create About us multi-line label
-        final UITextField aboutUsTextField = new UITextField(this, "", true);
-        aboutUsTextField.setSize(290, 115);
-        aboutUsTextField.setPosition(0, getPaddedY(modsButton, 5, Anchor.BOTTOM), Anchor.BOTTOM | Anchor.CENTER);
-        aboutUsTextField.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(aboutText));
-        aboutUsTextField.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
-        aboutUsTextField.setName("textfield.about_us");
-        aboutUsTextField.setEditable(false);
-
-        form.getContentContainer().add(almuraLogoImage, spongepoweredLogoImage, almuraVersion, minecraftVersion, forgeVersion, aboutUsTextField,
-                modsButton, backButton);
-
-        addToScreen(new UIAnimatedBackground(this));
-        addToScreen(form);
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        if (this.contentContainer != null && this.bottomBorderContainer != null) {
+            bottomBorderContainer.setPosition(0, SimpleGui.getPaddedY(this.contentContainer, 0));
+        }
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
-        switch (event.getComponent().getName().toLowerCase()) {
-            case "button.mods":
-                mc.displayGuiScreen(new GuiModList(this));
-                break;
-            case "button.back":
-                close();
-                break;
+    }
+
+    protected static final class AboutList extends UIBackgroundContainer {
+
+        public AboutList(MalisisGui gui) {
+            super(gui);
+        }
+
+        public AboutList(MalisisGui gui, String title) {
+            super(gui, title);
+            this.construct();
+        }
+
+        public AboutList(MalisisGui gui, int width, int height) {
+            super(gui, width, height);
+            this.construct();
+        }
+
+        public AboutList(MalisisGui gui, String title, int width, int height) {
+            super(gui, title, width, height);
+            this.construct();
+        }
+
+        private void construct() {
+            this.setColor(org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb());
+            this.setBackgroundAlpha(155);
+        }
+    }
+
+    protected static final class AboutListElement extends UIBackgroundContainer {
+        private final UIImage image;
+        private final UILabel label;
+        private final int padding = 4;
+
+        protected AboutListElement(MalisisGui gui, GuiIcon icon, UILabel label, int width, int height) {
+            this(gui, null, icon, label, width, height);
+        }
+
+        protected AboutListElement(MalisisGui gui, GuiTexture texture, UILabel label, int width, int height) {
+            this(gui, texture, null, label, width, height);
+        }
+
+        private AboutListElement(MalisisGui gui, GuiTexture texture, GuiIcon icon, UILabel label, int width, int height) {
+            super(gui, width, height);
+
+            this.setColor(org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb());
+
+            this.image = new UIImage(gui, texture, icon);
+            this.label = label;
+
+            final int labelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(label.getText());
+            if (width <= this.image.getWidth() + labelWidth + (padding * 3)) {
+                this.setSize(this.image.getWidth() + labelWidth + (padding * 3), this.getHeight());
+            }
+            if (height <= this.image.getHeight() + (padding * 2)) {
+                this.setSize(this.getWidth(), this.image.getHeight() + (padding * 2));
+            }
+
+            this.image.setPosition(padding, (this.getHeight() / 2) - (image.getHeight() / 2));
+            this.label.setPosition(SimpleGui.getPaddedX(this.image, padding), this.image.getY());
+
+            this.add(image, label);
+        }
+
+        @Override
+        public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+            if (this.isHovered()) {
+                this.setBackgroundAlpha(125);
+            } else {
+                this.setBackgroundAlpha(0);
+            }
+            this.components.stream().filter(UIComponent::isHovered).forEach(component -> this.setBackgroundAlpha(125));
+
+            super.draw(renderer, mouseX, mouseY, partialTick);
         }
     }
 }

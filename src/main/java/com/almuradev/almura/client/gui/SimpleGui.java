@@ -28,6 +28,7 @@ public abstract class SimpleGui extends MalisisGui {
     public static final ResourceLocation ALMURA_LOGO_LOCATION;
     public static final ResourceLocation SPONGIE_LOCATION;
     public static final ResourceLocation SPONGEPOWERED_LOGO_LOCATION;
+    public static final ResourceLocation ZIDANE_HEAD_LOCATION;
     public static final GuiTexture TEXTURE_SPRITESHEET;
 
     public static final GuiIcon ICON_EMPTY;
@@ -52,6 +53,11 @@ public abstract class SimpleGui extends MalisisGui {
     static {
         try {
             LOCATION_GUI_SPRITE_SHEET = FileSystem.registerTexture(Almura.PLUGIN_ID, "textures/gui/gui.png", "/assets/almura/textures/gui/gui.png");
+            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "almura_logo.png", "/assets/almura/almura_logo.png");
+            SPONGIE_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongie.png", "/assets/almura/spongie.png");
+            SPONGEPOWERED_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongepowered_logo.png", "/assets/almura/spongepowered_logo"
+                    + ".png");
+            ZIDANE_HEAD_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "zidane_head.png", "/assets/almura/zidane_head.png");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -74,13 +80,6 @@ public abstract class SimpleGui extends MalisisGui {
         ICON_CLOSE_PRESSED = TEXTURE_SPRITESHEET.getIcon(239, 107, 45, 19);
         ICON_FORUM = TEXTURE_SPRITESHEET.getIcon(284, 0, 16, 16);
         ICON_GITHUB = TEXTURE_SPRITESHEET.getIcon(284, 17, 16, 16);
-        try {
-            ALMURA_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "almura_logo.png", "/assets/almura/almura_logo.png");
-            SPONGIE_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongie.png", "/assets/almura/spongie.png");
-            SPONGEPOWERED_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongepowered_logo.png", "/assets/almura/spongepowered_logo"
-                    + ".png");        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
