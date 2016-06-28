@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.builder.block;
+package com.almuradev.almura.block.builder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

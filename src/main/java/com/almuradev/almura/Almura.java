@@ -6,7 +6,7 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.api.block.BuildableBlockType;
-import com.almuradev.almura.builder.block.GenericBlockTypeBuilder;
+import com.almuradev.almura.block.builder.GenericBlockTypeBuilder;
 import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.server.ServerProxy;
 import net.minecraft.block.material.MapColor;
