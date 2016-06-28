@@ -6,7 +6,7 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.api.block.BuildableBlockType;
-import com.almuradev.almura.block.builder.GenericBlockTypeBuilder;
+import com.almuradev.almura.block.builder.BlockTypeBuilder;
 import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.server.ServerProxy;
 import net.minecraft.block.material.MapColor;
@@ -47,14 +47,14 @@ public class Almura {
     public void onGamePreInitialization(GamePreInitializationEvent event) {
         proxy.onGamePreInitialization(event);
 
-        Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, GenericBlockTypeBuilder::new);
+        Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, BlockTypeBuilder::new);
 
         // TEST CODE
         BuildableBlockType.builder()
                 .creativeTab(CreativeTabs.FOOD)
                 .material(Material.ANVIL)
                 .mapColor(MapColor.ADOBE)
-                .build("test", "test");
+                .build("test");
     }
 
     @Listener

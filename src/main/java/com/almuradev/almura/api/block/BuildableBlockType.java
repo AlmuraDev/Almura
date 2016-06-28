@@ -28,6 +28,10 @@ public interface BuildableBlockType extends BuildableCatalogType, BlockType {
         Builder<BLOCK, BUILDER> creativeTab(CreativeTabs tab);
 
         @Override
-        BLOCK build(String id, String name);
+        default BLOCK build(String id, String name) {
+            return build(id);
+        }
+
+        BLOCK build(String id);
     }
 }

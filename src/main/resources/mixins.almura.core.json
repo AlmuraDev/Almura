@@ -5,6 +5,7 @@
     "refmap": "mixins.almura.refmap.json",
     "mixins": [
         "block.MixinBlock",
-        "block.MixinBlockCrops"
+        "block.MixinBlockCrops",
+        "block.MixinRotableBlockType"
     ]
 }

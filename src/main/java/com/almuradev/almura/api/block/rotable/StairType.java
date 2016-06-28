@@ -3,8 +3,8 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.api.block;
+package com.almuradev.almura.api.block.rotable;
 
-public interface StairType extends BuildableBlockType {
+public interface StairType extends RotableBlockType {
 
 }
