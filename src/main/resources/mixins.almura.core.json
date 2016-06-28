@@ -1,9 +1,10 @@
 {
     "required": true,
-    "minVersion": "0.5.1",
+    "minVersion": "0.5.11",
     "package": "com.almuradev.almura.mixin.core",
     "refmap": "mixins.almura.refmap.json",
     "mixins": [
-        "block.MixinBlock"
+        "block.MixinBlock",
+        "block.MixinBlockCrops"
     ]
 }

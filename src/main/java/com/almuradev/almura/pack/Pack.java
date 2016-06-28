@@ -8,10 +8,9 @@ package com.almuradev.almura.pack;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.pack.block.PackBlockObject;
-import com.almuradev.almura.pack.item.PackItemObject;
 import org.spongepowered.api.CatalogType;
-import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.util.ResettableBuilder;
 
 import java.util.LinkedHashMap;
@@ -26,9 +25,9 @@ public final class Pack implements CatalogType {
     }
 
     private final String id, name;
-    private final Map<String, PackObject> objectsById;
+    private final Map<String, CatalogType> objectsById;
 
-    protected Pack(String id, String name, Map<String, PackObject> objectsById) {
+    protected Pack(String id, String name, Map<String, CatalogType> objectsById) {
         this.id = id;
         this.name = name;
         this.objectsById = objectsById;
@@ -44,30 +43,26 @@ public final class Pack implements CatalogType {
         return this.name;
     }
 
-    public Set<PackBlockObject> getBlocks() {
-        return this.objectsById.values().stream().filter(en -> en instanceof PackBlockObject).map(en -> (PackBlockObject) en).collect(Collectors
+    public Set<BlockType> getBlocks() {
+        return this.objectsById.values().stream().filter(en -> en instanceof BlockType).map(en -> (BlockType) en).collect(Collectors
                 .toSet());
     }
 
-    public Set<PackItemObject> getItems() {
-        return this.objectsById.values().stream().filter(en -> en instanceof PackItemObject).map(en -> (PackItemObject) en).collect(Collectors
+    public Set<ItemType> getItems() {
+        return this.objectsById.values().stream().filter(en -> en instanceof ItemType).map(en -> (ItemType) en).collect(Collectors
                 .toSet());
     }
 
-    public Set<PackObject> getObjects() {
+    public Set<CatalogType> getObjects() {
         return this.objectsById.values().stream().collect(Collectors.toSet());
     }
 
     public static final class Builder implements ResettableBuilder<Pack, Builder> {
-        private final Map<String, PackObject> objectsById = new LinkedHashMap<>();
+        private final Map<String, CatalogType> objectsById = new LinkedHashMap<>();
 
-        public Builder object(PackObject object) {
+        public Builder object(CatalogType object) {
             checkNotNull(object);
-            checkArgument(!this.objectsById.containsValue(object), "Attempt to double add pack object to builder!");
-            Sponge.getRegistry().getType(object.getClass(), object.getId()).ifPresent(obj -> {
-                throw new IllegalArgumentException("Attempt to add [" + obj + "], an already registered object, to a Pack builder! When building a "
-                        + "Pack, the object should not be registered yet!");
-            });
+            checkArgument(!this.objectsById.containsValue(object), "Attempt to double add catalog type to builder!");
             this.objectsById.put(object.getId(), object);
             return this;
         }
