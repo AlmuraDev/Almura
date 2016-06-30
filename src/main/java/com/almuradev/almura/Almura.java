@@ -54,12 +54,12 @@ public class Almura {
                 .creativeTab(CreativeTabs.FOOD)
                 .material(Material.ANVIL)
                 .mapColor(MapColor.ADOBE)
-                .build("test");
+                .build("white_0");
     }
 
     @Listener
     public void onGameLoadComplete(GameLoadCompleteEvent event) {
         // TEST CODE
-        Sponge.getRegistry().getType(BlockType.class, "almura:test").ifPresent(System.err::println);
+        Sponge.getRegistry().getType(BlockType.class, "almura:white_0").ifPresent(System.err::println);
     }
 }
