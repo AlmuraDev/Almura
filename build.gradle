@@ -30,6 +30,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.hierynomus.license'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.spongepowered.gradle'
+apply plugin: 'org.spongepowered.plugin'
 
 defaultTasks 'clean', 'licenseFormat', 'sortAccessTransformers', 'build'
 
@@ -74,7 +75,7 @@ repositories {
 
 dependencies {
     compile 'org.spongepowered:mixin:0.5.+'
-    deobfCompile 'org.spongepowered:spongeforge:1.10-+'
+    deobfCompile 'org.spongepowered:spongeforge:1.10.2-+'
     deobfCompile 'net.malisis:malisiscore:1.9.4-+'
 }
 
