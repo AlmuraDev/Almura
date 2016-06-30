@@ -3,6 +3,8 @@
     "minVersion": "0.5.11",
     "package": "com.almuradev.almura.mixin.core",
     "refmap": "mixins.almura.refmap.json",
+    "target": "@env(DEFAULT)",
+    "compatibilityLevel": "JAVA_8",
     "mixins": [
         "block.MixinBlock",
         "block.MixinBlockCrops",
