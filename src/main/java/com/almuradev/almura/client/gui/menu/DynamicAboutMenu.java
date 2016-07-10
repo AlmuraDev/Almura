@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -14,19 +15,18 @@ import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.control.UIScrollBar;
-import net.malisis.core.client.gui.component.control.UISlimScrollbar;
-import net.malisis.core.client.gui.component.decoration.UIImage;
+import net.malisis.core.client.gui.component.container.UIListContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.renderer.icon.GuiIcon;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TextFormatting;
+import net.malisis.core.client.gui.element.GuiShape;
+import net.malisis.core.client.gui.element.SimpleGuiShape;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Color;
 
 @SideOnly(Side.CLIENT)
@@ -116,11 +116,13 @@ public class DynamicAboutMenu extends SimpleGui {
         bottomBorderContainer.setBottomAlpha(255);
 
         final AboutList list = new AboutList(this, 100, container.getHeight());
-        final AboutListElement element = new AboutListElement(this, new GuiTexture(SimpleGui.ZIDANE_HEAD_LOCATION),
-                new UILabel(this, TextFormatting.WHITE + "Zidane"), 100, 0);
+        final AboutListElement element = new AboutListElement(SimpleGui.ZIDANE_HEAD_LOCATION, Text.of(TextColors.LIGHT_PURPLE, "Zidane"));
+        list.setElementSpacing(4);
+        list.addElement(element);
+        list.addElement(element);
+        list.addElement(element);
+        list.addElement(element);
 
-        list.add(new UISlimScrollbar(this, list, UISlimScrollbar.Type.VERTICAL).setAutoHide(true).setSize(list.getHeight(), 2));
-        list.add(element);
         contentContainer.add(list);
         container.add(titleLabel, topBorderContainer, contentContainer, bottomBorderContainer);
 
@@ -139,78 +141,55 @@ public class DynamicAboutMenu extends SimpleGui {
     public void onButtonClick(UIButton.ClickEvent event) {
     }
 
-    protected static final class AboutList extends UIBackgroundContainer {
-
-        public AboutList(MalisisGui gui) {
-            super(gui);
-        }
-
-        public AboutList(MalisisGui gui, String title) {
-            super(gui, title);
-            this.construct();
-        }
-
+    protected static final class AboutList extends UIListContainer<AboutList, AboutListElement> {
         public AboutList(MalisisGui gui, int width, int height) {
             super(gui, width, height);
-            this.construct();
+
+            shape = new SimpleGuiShape();
+            shape.setSize(48, 48);
+            shape.setPosition(4, 4);
+            shape.storeState();
         }
 
-        public AboutList(MalisisGui gui, String title, int width, int height) {
-            super(gui, title, width, height);
-            this.construct();
-        }
-
-        private void construct() {
-            this.setColor(org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb());
-            this.setBackgroundAlpha(155);
-        }
-    }
-
-    protected static final class AboutListElement extends UIBackgroundContainer {
-        private final UIImage image;
-        private final UILabel label;
-        private final int padding = 4;
-
-        protected AboutListElement(MalisisGui gui, GuiIcon icon, UILabel label, int width, int height) {
-            this(gui, null, icon, label, width, height);
-        }
-
-        protected AboutListElement(MalisisGui gui, GuiTexture texture, UILabel label, int width, int height) {
-            this(gui, texture, null, label, width, height);
-        }
-
-        private AboutListElement(MalisisGui gui, GuiTexture texture, GuiIcon icon, UILabel label, int width, int height) {
-            super(gui, width, height);
-
-            this.setColor(org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb());
-
-            this.image = new UIImage(gui, texture, icon);
-            this.label = label;
-
-            final int labelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(label.getText());
-            if (width <= this.image.getWidth() + labelWidth + (padding * 3)) {
-                this.setSize(this.image.getWidth() + labelWidth + (padding * 3), this.getHeight());
+        public void addElement(AboutListElement element) {
+            if (elements == null) {
+                elements = Lists.newArrayList();
             }
-            if (height <= this.image.getHeight() + (padding * 2)) {
-                this.setSize(this.getWidth(), this.image.getHeight() + (padding * 2));
-            }
-
-            this.image.setPosition(padding, (this.getHeight() / 2) - (image.getHeight() / 2));
-            this.label.setPosition(SimpleGui.getPaddedX(this.image, padding), this.image.getY());
-
-            this.add(image, label);
+            this.elements.add(element);
         }
 
         @Override
-        public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            if (this.isHovered()) {
-                this.setBackgroundAlpha(125);
-            } else {
-                this.setBackgroundAlpha(0);
-            }
-            this.components.stream().filter(UIComponent::isHovered).forEach(component -> this.setBackgroundAlpha(125));
+        public int getElementHeight(AboutListElement element) {
+            return element.texture.getHeight();
+        }
 
-            super.draw(renderer, mouseX, mouseY, partialTick);
+        @Override
+        public void drawElementBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick, AboutListElement element,
+                boolean isHovered) {
+        }
+
+        @Override
+        public void drawElementForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick, AboutListElement element,
+                boolean isHovered) {
+            renderer.bindTexture(element.texture);
+            this.shape.resetState();
+            renderer.drawShape(this.shape);
+            renderer.drawText(element.text + " X: " + this.x + " Y: " + this.y);
+        }
+    }
+
+    protected static final class AboutListElement {
+        public final GuiTexture texture;
+        public final String text;
+
+        private AboutListElement(ResourceLocation location, Text text) {
+            this(new GuiTexture(location, 48, 48), text);
+        }
+
+        @SuppressWarnings("deprecation")
+        private AboutListElement(GuiTexture texture, Text text) {
+            this.texture = texture;
+            this.text = TextSerializers.LEGACY_FORMATTING_CODE.serialize(text);
         }
     }
 }

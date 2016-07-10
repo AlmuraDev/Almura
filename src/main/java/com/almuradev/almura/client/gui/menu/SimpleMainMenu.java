@@ -33,9 +33,16 @@ import java.net.URISyntaxException;
 import java.util.Locale;
 
 @SideOnly(Side.CLIENT)
-public class DynamicMainMenu extends SimpleGui {
+public class SimpleMainMenu extends SimpleGui {
 
-    public DynamicMainMenu(SimpleGui parent){
+    public static final int BUTTON_WIDTH_LONG = 200;
+    public static final int BUTTON_WIDTH_SHORT = 98;
+    public static final int BUTTON_HEIGHT = 20;
+    public static final int BUTTON_PADDING = 4;
+
+    private UIBackgroundContainer buttonContainer;
+
+    public SimpleMainMenu(SimpleGui parent){
         super(parent);
     }
 
@@ -44,21 +51,25 @@ public class DynamicMainMenu extends SimpleGui {
         final UIBackgroundContainer container = new UIBackgroundContainer(this);
         container.setBackgroundAlpha(0);
 
-        final int longButtonWidth = 200;
-        final int shortButtonWidth = 98;
-        final int buttonHeight = 20;
-        final int buttonPadding = 4;
+        // Almura Header
+        final UIImage almuraHeader = new UIImage(this, new GuiTexture(ALMURA_HEADER_LOCATION), null);
+        almuraHeader.setSize(175, 64);
+        almuraHeader.setPosition(0, 15, Anchor.TOP | Anchor.CENTER);
 
-        // Almura Image
-        final UIImage almuraImage = new UIImage(this, new GuiTexture(ALMURA_LOGO_LOCATION), null);
-        almuraImage.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
-        almuraImage.setSize(228, 70);
+        // Almura Man
+        final UIImage almuraMan = new UIImage(this, new GuiTexture(ALMURA_MAN_LOCATION), null);
+        almuraMan.setSize(75, 104);
+        almuraMan.setPosition(almuraHeader.getX() - (almuraHeader.getWidth() / 2) - (almuraMan.getWidth() / 2), 11, Anchor.TOP | Anchor.CENTER);
+
+        buttonContainer = new UIBackgroundContainer(this, BUTTON_WIDTH_LONG, (BUTTON_HEIGHT * 4) + (BUTTON_PADDING * 3));
+        buttonContainer.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
+        buttonContainer.setBackgroundAlpha(0);
 
         final UIButton singleplayerButton = new UIButtonBuilder(this)
                 .text("Singleplayer")
                 .name("button.singleplayer")
-                .size(longButtonWidth, buttonHeight)
-                .position(0, SimpleGui.getPaddedY(almuraImage, 10))
+                .size(BUTTON_WIDTH_LONG, BUTTON_HEIGHT)
+                .position(0, 0)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build();
@@ -66,8 +77,8 @@ public class DynamicMainMenu extends SimpleGui {
         final UIButton multiplayerButton = new UIButtonBuilder(this)
                 .text("Multiplayer")
                 .name("button.multiplayer")
-                .size(longButtonWidth, buttonHeight)
-                .position(0, SimpleGui.getPaddedY(singleplayerButton, buttonPadding))
+                .size(BUTTON_WIDTH_LONG, BUTTON_HEIGHT)
+                .position(0, SimpleGui.getPaddedY(singleplayerButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build();
@@ -76,8 +87,8 @@ public class DynamicMainMenu extends SimpleGui {
         final UIButton optionsButton = new UIButtonBuilder(this)
                 .text("Options")
                 .name("button.options")
-                .size(shortButtonWidth, buttonHeight)
-                .position(-((shortButtonWidth / 2) + (buttonPadding / 2)), SimpleGui.getPaddedY(multiplayerButton, buttonPadding))
+                .size(BUTTON_WIDTH_SHORT, BUTTON_HEIGHT)
+                .position(-((BUTTON_WIDTH_SHORT / 2) + (BUTTON_PADDING / 2)), SimpleGui.getPaddedY(multiplayerButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build();
@@ -86,8 +97,8 @@ public class DynamicMainMenu extends SimpleGui {
         final UIButton aboutButton = new UIButtonBuilder(this)
                 .text("About")
                 .name("button.about")
-                .size(shortButtonWidth, buttonHeight)
-                .position(SimpleGui.getPaddedX(optionsButton, buttonPadding), SimpleGui.getPaddedY(multiplayerButton, buttonPadding))
+                .size(BUTTON_WIDTH_SHORT, BUTTON_HEIGHT)
+                .position(SimpleGui.getPaddedX(optionsButton, BUTTON_PADDING), SimpleGui.getPaddedY(multiplayerButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build();
@@ -97,8 +108,8 @@ public class DynamicMainMenu extends SimpleGui {
                 .name("button.quit")
                 .fro(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_RED).shadow(true).build())
                 .hoverFro(FontRenderOptionsBuilder.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
-                .size(longButtonWidth, buttonHeight)
-                .position(singleplayerButton.getX(), SimpleGui.getPaddedY(optionsButton, buttonPadding))
+                .size(BUTTON_WIDTH_LONG, BUTTON_HEIGHT)
+                .position(singleplayerButton.getX(), SimpleGui.getPaddedY(optionsButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build();
@@ -131,14 +142,13 @@ public class DynamicMainMenu extends SimpleGui {
         final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + "Copyright AlmuraDev 2012 - 2016");
         copyrightLabel.setPosition(trademarkLabel.getX(), SimpleGui.getPaddedY(trademarkLabel, 4, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
-        // Add content to panel strip
-        container.add(almuraImage, singleplayerButton, multiplayerButton, optionsButton, aboutButton, quitButton, trademarkLabel, copyrightLabel,
-                forumButton, issuesButton);
+        buttonContainer.add(singleplayerButton, multiplayerButton, optionsButton, aboutButton, quitButton);
+        container.add(almuraHeader, almuraMan, buttonContainer, trademarkLabel, copyrightLabel, forumButton, issuesButton);
 
         // Disable escape keypress
         registerKeyListener((keyChar, keyCode) -> {
             if (keyCode == Keyboard.KEY_ESCAPE) {
-                new DynamicMainMenu(null).display();
+                new SimpleMainMenu(null).display();
                 return true;
             }
             return false;

@@ -40,9 +40,9 @@ public final class IngameOptionsMenu extends SimpleGui {
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the logo
-        final UIImage logoImage = new UIImage(this, new GuiTexture(ALMURA_LOGO_LOCATION), null);
+        final UIImage logoImage = new UIImage(this, new GuiTexture(ALMURA_HEADER_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
-        logoImage.setSize(65, 95);
+        logoImage.setSize(127, 82);
 
         final int padding = 4;
 
