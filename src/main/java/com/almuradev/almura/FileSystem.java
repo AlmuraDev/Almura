@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -51,7 +52,7 @@ public final class FileSystem {
 
     public static final DirectoryStream.Filter<Path> FILTER_YAML_FILES_ONLY = entry -> entry.getFileName().toString().endsWith(".yml");
 
-    public static DirectoryStream.Filter<Path> FILTER_MODEL_FILES_ONLY =
+    public static DirectoryStream.Filter<Path> FILTER_SHAPE_FILES_ONLY =
             entry -> !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".shape"));
 
     static {
@@ -88,6 +89,7 @@ public final class FileSystem {
         }
     }
 
+    @Nullable
     public static Dimension getImageDimension(InputStream stream) throws IOException {
         Dimension dim = null;
 
@@ -113,6 +115,7 @@ public final class FileSystem {
         return dim;
     }
 
+    @Nullable
     public static Dimension getImageDimension(Path path) throws IOException {
         return getImageDimension(Files.newInputStream(path));
     }

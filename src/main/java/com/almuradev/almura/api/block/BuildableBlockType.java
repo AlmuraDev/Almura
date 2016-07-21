@@ -6,9 +6,9 @@
 package com.almuradev.almura.api.block;
 
 import com.almuradev.almura.BuildableCatalogType;
+import com.almuradev.almura.api.CreativeTab;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 
@@ -21,11 +21,13 @@ public interface BuildableBlockType extends BuildableCatalogType, BlockType {
 
     interface Builder<BLOCK extends BuildableBlockType, BUILDER extends Builder<BLOCK, BUILDER>> extends BuildableCatalogType.Builder<BLOCK, BUILDER> {
 
+        Builder<BLOCK, BUILDER> unlocalizedName(String dictName);
+
         Builder<BLOCK, BUILDER> material(Material material);
 
         Builder<BLOCK, BUILDER> mapColor(MapColor mapColor);
 
-        Builder<BLOCK, BUILDER> creativeTab(CreativeTabs tab);
+        Builder<BLOCK, BUILDER> creativeTab(CreativeTab tab);
 
         @Override
         default BLOCK build(String id, String name) {

@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.mixin;
+package com.almuradev.almura.loader;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
@@ -41,6 +41,6 @@ public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
 
     @Override
     public String getAccessTransformerClass() {
-        return null;
+        return "com.almuradev.almura.loader.transformer.AlmuraAccessTransformer";
     }
 }

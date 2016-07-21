@@ -5,19 +5,22 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.api.CreativeTab;
+import com.almuradev.almura.api.CreativeTabs;
 import com.almuradev.almura.api.block.BuildableBlockType;
-import com.almuradev.almura.block.builder.BlockTypeBuilder;
+import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.client.ClientProxy;
+import com.almuradev.almura.registry.CreativeTabRegistryModule;
 import com.almuradev.almura.server.ServerProxy;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.SidedProxy;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -47,11 +50,17 @@ public class Almura {
     public void onGamePreInitialization(GamePreInitializationEvent event) {
         proxy.onGamePreInitialization(event);
 
-        Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, BlockTypeBuilder::new);
+        Sponge.getRegistry().registerModule(CreativeTab.class, CreativeTabRegistryModule.getInstance());
+        Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
+    }
+
+    @Listener
+    public void onGameInitialization(GameInitializationEvent event) {
 
         // TEST CODE
         BuildableBlockType.builder()
-                .creativeTab(CreativeTabs.FOOD)
+                .unlocalizedName("white_0")
+                .creativeTab(CreativeTabs.MISC)
                 .material(Material.ANVIL)
                 .mapColor(MapColor.ADOBE)
                 .build("white_0");
