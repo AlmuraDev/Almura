@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal": { "model": "almura:white_0" }
+        "normal": { "model": "almura:block.shape" }
     }
 }
