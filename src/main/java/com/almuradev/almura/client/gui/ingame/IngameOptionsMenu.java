@@ -42,7 +42,7 @@ public final class IngameOptionsMenu extends SimpleGui {
         // Create the logo
         final UIImage logoImage = new UIImage(this, new GuiTexture(ALMURA_HEADER_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
-        logoImage.setSize(127, 82);
+        logoImage.setSize(280, 82);
 
         final int padding = 4;
 

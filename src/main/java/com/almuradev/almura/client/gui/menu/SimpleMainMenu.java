@@ -53,7 +53,7 @@ public class SimpleMainMenu extends SimpleGui {
 
         // Almura Header
         final UIImage almuraHeader = new UIImage(this, new GuiTexture(ALMURA_HEADER_LOCATION), null);
-        almuraHeader.setSize(175, 64);
+        almuraHeader.setSize(280, 82);
         almuraHeader.setPosition(0, 15, Anchor.TOP | Anchor.CENTER);
 
         // Almura Man
@@ -177,7 +177,7 @@ public class SimpleMainMenu extends SimpleGui {
                 mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
                 break;
             case "button.about":
-                new DynamicAboutMenu(this).display();
+                new SimpleAboutMenu(this).display();
                 break;
             case "button.quit":
                 close();
