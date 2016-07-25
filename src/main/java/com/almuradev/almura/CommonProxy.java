@@ -5,9 +5,13 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.api.CreativeTab;
+import com.almuradev.almura.api.block.BuildableBlockType;
+import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.ConfigurationAdapter;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
+import com.almuradev.almura.registry.CreativeTabRegistryModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
@@ -36,6 +40,9 @@ public abstract class CommonProxy {
 
         network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
         registerMessages();
+
+        Sponge.getRegistry().registerModule(CreativeTab.class, CreativeTabRegistryModule.getInstance());
+        Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
 
         Sponge.getEventManager().registerListeners(Almura.instance.container, this);
     }

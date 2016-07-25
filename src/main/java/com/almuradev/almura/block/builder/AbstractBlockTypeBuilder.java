@@ -14,7 +14,9 @@ import com.almuradev.almura.block.GenericBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.ItemBlock;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @SuppressWarnings("unchecked")
@@ -83,6 +85,8 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
 
             final ItemBlock itemBlock = new ItemBlock(block);
             itemBlock.setRegistryName(Almura.PLUGIN_ID, id);
+
+            ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation("almura:USA", "normal"));
 
             // TODO Make this configurable and make Almura GenericItemBlock
             GameRegistry.register(itemBlock);

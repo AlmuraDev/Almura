@@ -55,7 +55,7 @@ public abstract class SimpleGui extends MalisisGui {
     static {
         try {
             LOCATION_GUI_SPRITE_SHEET = FileSystem.registerTexture(Almura.PLUGIN_ID, "textures/gui/gui.png", "/assets/almura/textures/gui/gui.png");
-            ALMURA_HEADER_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "almura_header.png", "/assets/almura/almura_header.png");
+            ALMURA_HEADER_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "almura_header.png", "/assets/almura/almura_logo.png");
             ALMURA_MAN_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "almura_man.png", "/assets/almura/almura_man.png");
             SPONGIE_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongie.png", "/assets/almura/spongie.png");
             SPONGEPOWERED_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongepowered_logo.png", "/assets/almura/spongepowered_logo"

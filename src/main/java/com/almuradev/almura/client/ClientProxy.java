@@ -7,7 +7,7 @@ package com.almuradev.almura.client;
 
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.FileSystem;
-import com.almuradev.almura.api.client.model.shape.ShapeLoader;
+import com.almuradev.almura.client.shape.ShapeLoader;
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.ingame.IngameOptionsMenu;
 import com.almuradev.almura.client.gui.ingame.hud.AlmuraHUD;

@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.api.client.model.shape;
+package com.almuradev.almura.client.shape;
 
 import com.almuradev.almura.Almura;
 import net.minecraft.client.resources.IResource;

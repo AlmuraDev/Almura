@@ -9,7 +9,9 @@ import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.mixin.interfaces.IMixinBuildableBlockType;
 import com.google.common.base.Objects;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.util.BlockRenderLayer;
 import org.spongepowered.api.CatalogType;
 
 public final class GenericBlock extends Block {
@@ -19,6 +21,23 @@ public final class GenericBlock extends Block {
         this.setRegistryName(modid, id);
         this.setUnlocalizedName(builder.dictName);
         this.setCreativeTab((CreativeTabs) builder.tab);
+    }
+
+    // Move to GenericShapeBlock
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     @Override
