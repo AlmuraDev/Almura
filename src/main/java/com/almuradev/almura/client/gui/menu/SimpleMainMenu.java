@@ -53,16 +53,11 @@ public class SimpleMainMenu extends SimpleGui {
 
         // Almura Header
         final UIImage almuraHeader = new UIImage(this, new GuiTexture(ALMURA_HEADER_LOCATION), null);
-        almuraHeader.setSize(190, 53);
-        almuraHeader.setPosition(0, 15, Anchor.TOP | Anchor.CENTER);
-
-        // Almura Man
-        final UIImage almuraMan = new UIImage(this, new GuiTexture(ALMURA_MAN_LOCATION), null);
-        almuraMan.setSize(75, 104);
-        almuraMan.setPosition(almuraHeader.getX() - (almuraHeader.getWidth() / 2) - (almuraMan.getWidth() / 2), 11, Anchor.TOP | Anchor.CENTER);
+        almuraHeader.setSize(60, 99);
+        almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         buttonContainer = new UIBackgroundContainer(this, BUTTON_WIDTH_LONG, (BUTTON_HEIGHT * 4) + (BUTTON_PADDING * 3));
-        buttonContainer.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
+        buttonContainer.setPosition(0, SimpleGui.getPaddedY(almuraHeader, 4), Anchor.TOP | Anchor.CENTER);
         buttonContainer.setBackgroundAlpha(0);
 
         final UIButton singleplayerButton = new UIButtonBuilder(this)
@@ -143,7 +138,7 @@ public class SimpleMainMenu extends SimpleGui {
         copyrightLabel.setPosition(trademarkLabel.getX(), SimpleGui.getPaddedY(trademarkLabel, 4, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
         buttonContainer.add(singleplayerButton, multiplayerButton, optionsButton, aboutButton, quitButton);
-        container.add(almuraHeader, almuraMan, buttonContainer, trademarkLabel, copyrightLabel, forumButton, issuesButton);
+        container.add(almuraHeader, buttonContainer, trademarkLabel, copyrightLabel, forumButton, issuesButton);
 
         // Disable escape keypress
         registerKeyListener((keyChar, keyCode) -> {
