@@ -67,7 +67,7 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
         // Create the logo
         final UIImage logoImage = new UIImage(this, new GuiTexture(ALMURA_HEADER_LOCATION), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
-        logoImage.setSize(280, 82);
+        logoImage.setSize(190, 53);
 
         final int padding = 4;
 

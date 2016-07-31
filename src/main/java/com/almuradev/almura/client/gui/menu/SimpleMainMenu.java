@@ -53,7 +53,7 @@ public class SimpleMainMenu extends SimpleGui {
 
         // Almura Header
         final UIImage almuraHeader = new UIImage(this, new GuiTexture(ALMURA_HEADER_LOCATION), null);
-        almuraHeader.setSize(280, 82);
+        almuraHeader.setSize(190, 53);
         almuraHeader.setPosition(0, 15, Anchor.TOP | Anchor.CENTER);
 
         // Almura Man
