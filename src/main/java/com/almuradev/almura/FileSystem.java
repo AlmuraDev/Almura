@@ -13,117 +13,21 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
 
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 public final class FileSystem {
 
-    public static final Path CONFIG_PATH = Paths.get("config" + File.separator + Almura.PLUGIN_ID);
-    public static final Path CONFIG_CLIENT_PATH = Paths.get(CONFIG_PATH.toString(), "client.conf");
-    public static final Path CONFIG_SERVER_PATH = Paths.get(CONFIG_PATH.toString(), "server.conf");
-    public static final Path CONFIG_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "mappings.conf");
-    public static final Path CONFIG_ENTITY_MAPPINGS_PATH = Paths.get(CONFIG_PATH.toString(), "entity_mappings.conf");
-    public static final Path CONFIG_VERSION_PATH = Paths.get(CONFIG_PATH.toString(), Almura.PACK_VERSION);
-    public static final Path CONFIG_YML_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "packs");
-    public static final Path CONFIG_IMAGES_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "images");
-    public static final Path CONFIG_BACKGROUNDS_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "backgrounds");
-    public static final Path CONFIG_MODELS_PATH = Paths.get(CONFIG_VERSION_PATH.toString(), "models");
-    public static final Path CONFIG_ACCESSORIES_PATH = Paths.get(CONFIG_IMAGES_PATH.toString(), "accessories");
+    private static final Path PATH_CONFIG = Paths.get("config" + File.separator + Almura.PLUGIN_ID);
+    public static final Path PATH_CONFIG_CLIENT = PATH_CONFIG.resolve("client.conf");
 
-    public static final DirectoryStream.Filter<Path> FILTER_DIRECTORIES_ONLY = entry -> Files.isDirectory(entry);
-
-    public static final DirectoryStream.Filter<Path> FILTER_FILES_ONLY = entry -> !Files.isDirectory(entry);
-
-    public static final DirectoryStream.Filter<Path> FILTER_IMAGE_FILES_ONLY =
-            entry -> entry.getFileName().toString().endsWith(".png") || entry.getFileName().toString().endsWith(".jpg");
-
-    public static final DirectoryStream.Filter<Path> FILTER_YAML_FILES_ONLY = entry -> entry.getFileName().toString().endsWith(".yml");
-
-    public static DirectoryStream.Filter<Path> FILTER_SHAPE_FILES_ONLY =
-            entry -> !Files.isDirectory(entry) && (entry.getFileName().toString().endsWith(".shape"));
-
-    static {
-
-        try {
-            Files.createDirectories(CONFIG_YML_PATH);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to create directory [" + CONFIG_YML_PATH + "].", e);
-        }
-
-        try {
-            Files.createDirectories(CONFIG_MODELS_PATH);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to create directory [" + CONFIG_MODELS_PATH + "].", e);
-        }
-
-        // TODO Look into creating these folders only on client
-        try {
-            Files.createDirectories(CONFIG_IMAGES_PATH);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to create directory [" + CONFIG_IMAGES_PATH + "].", e);
-        }
-
-        try {
-            Files.createDirectories(CONFIG_BACKGROUNDS_PATH);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to create directory [" + CONFIG_BACKGROUNDS_PATH + "].", e);
-        }
-
-        try {
-            Files.createDirectories(CONFIG_ACCESSORIES_PATH);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to create directory [" + CONFIG_ACCESSORIES_PATH + "].", e);
-        }
-    }
-
-    @Nullable
-    public static Dimension getImageDimension(InputStream stream) throws IOException {
-        Dimension dim = null;
-
-        ImageInputStream img = ImageIO.createImageInputStream(stream);
-        try {
-            final Iterator<ImageReader> readers = ImageIO.getImageReaders(img);
-            if (readers.hasNext()) {
-                ImageReader reader = readers.next();
-                try {
-                    reader.setInput(img);
-                    dim = new Dimension(reader.getWidth(0), reader.getHeight(0));
-                } finally {
-                    reader.dispose();
-                }
-            }
-        } finally {
-            if (img != null) {
-                img.close();
-                stream.close();
-            }
-        }
-
-        return dim;
-    }
-
-    @Nullable
-    public static Dimension getImageDimension(Path path) throws IOException {
-        return getImageDimension(Files.newInputStream(path));
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static ResourceLocation registerTexture(String modid, String key, Path path) throws IOException {
-        return registerTexture(modid, key, Files.newInputStream(path));
-    }
+    // Gui Utilities
 
     @SideOnly(Side.CLIENT)
     public static ResourceLocation registerTexture(String modid, String key, String path) throws IOException {
@@ -131,7 +35,7 @@ public final class FileSystem {
     }
 
     @SideOnly(Side.CLIENT)
-    public static ResourceLocation registerTexture(String modid, String key, InputStream stream) throws IOException {
+    private static ResourceLocation registerTexture(String modid, String key, InputStream stream) throws IOException {
         final BufferedImage image = ImageIO.read(stream);
         stream.close();
         final ResourceLocation location = new ResourceLocation(modid, key);
@@ -144,7 +48,7 @@ public final class FileSystem {
 
         private final BufferedImage image;
 
-        public BufferedTexture(ResourceLocation key, BufferedImage image) {
+        BufferedTexture(ResourceLocation key, BufferedImage image) {
             super(key);
             this.image = image;
         }

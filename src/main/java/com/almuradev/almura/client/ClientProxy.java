@@ -56,7 +56,7 @@ public final class ClientProxy extends CommonProxy {
         super.onGamePreInitialization(event);
 
         this.configAdapter = new ConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults().setHeader(HEADER), FileSystem
-                .CONFIG_CLIENT_PATH);
+                .PATH_CONFIG_CLIENT);
         try {
             this.configAdapter.load();
         } catch (IOException | ObjectMappingException e) {
