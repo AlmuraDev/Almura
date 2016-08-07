@@ -86,7 +86,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
             final ItemBlock itemBlock = new ItemBlock(block);
             itemBlock.setRegistryName(Almura.PLUGIN_ID, id);
 
-            ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation("almura:USA", "normal"));
+            ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation(Almura.PLUGIN_ID + ":" + id, "normal"));
 
             // TODO Make this configurable and make Almura GenericItemBlock
             GameRegistry.register(itemBlock);

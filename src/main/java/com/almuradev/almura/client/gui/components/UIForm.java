@@ -30,7 +30,7 @@ public class UIForm extends UIBackgroundContainer {
      * Creates a form with no title that has a close button
      *
      * @param parent The parent {@link SimpleGui}
-     * @param width  The width of the form
+     * @param width  The height of the form
      * @param height The height of the form
      */
     public UIForm(SimpleGui parent, int width, int height) {
@@ -41,7 +41,7 @@ public class UIForm extends UIBackgroundContainer {
      * Creates a form with a title that has a close buton
      *
      * @param parent The parent {@link SimpleGui}
-     * @param width  The width of the form
+     * @param width  The height of the form
      * @param height The height of the form
      * @param title  The title of the form
      */
@@ -53,7 +53,7 @@ public class UIForm extends UIBackgroundContainer {
      * Creates a form with a title that may or may not show a close button
      *
      * @param parent          The parent {@link SimpleGui}
-     * @param width           The width of the form
+     * @param width           The height of the form
      * @param height          The height of the form
      * @param title           The title of the form
      * @param showCloseButton Specifies if this form has a close button
@@ -98,9 +98,9 @@ public class UIForm extends UIBackgroundContainer {
     }
 
     /**
-     * Sets the width of the form
+     * Sets the height of the form
      *
-     * @param width The width to set the form to
+     * @param width The height to set the form to
      */
     public final void setWidth(int width) {
         this.setSize(width, height);

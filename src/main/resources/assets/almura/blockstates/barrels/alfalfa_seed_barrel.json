@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "normal": [
+      {
+        "model": "almura:shape/child/alfalfa_seed_barrel.shape"
+      }
+    ]
+  }
+}

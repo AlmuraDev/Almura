@@ -85,7 +85,7 @@ public class UIVanillaContainer extends UIBackgroundContainer {
         shape.getVertexes("TopRight").get(0).setColor(0).setAlpha(255);
         shape.getVertexes("BottomLeft").get(0).setColor(0).setAlpha(120);
         shape.getVertexes("BottomRight").get(0).setColor(0).setAlpha(120);
-//        renderer.drawRectangle(0, SimpleGui.getPaddedY(this.topBorderContainer, 0), 0, this.gui.width, this.gui.height - 104,
+//        renderer.drawRectangle(0, SimpleGui.getPaddedY(this.topBorderContainer, 0), 0, this.gui.height, this.gui.height - 104,
 //                org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb(), 120);
     }
 

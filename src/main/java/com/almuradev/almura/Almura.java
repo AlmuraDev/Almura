@@ -46,10 +46,10 @@ public class Almura {
 
         // TEST CODE
         BuildableBlockType.builder()
-                .unlocalizedName("USA")
+                .unlocalizedName("alfalfa_seed_barrel")
                 .creativeTab((CreativeTab) net.minecraft.creativetab.CreativeTabs.FOOD)
                 .material(Material.ANVIL)
                 .mapColor(MapColor.ADOBE)
-                .build("USA");
+                .build("barrels/alfalfa_seed_barrel");
     }
 }
