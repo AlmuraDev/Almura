@@ -177,7 +177,8 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
                     liveServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
                 } else {
                     liveServerOnline
-                            .setText(TextFormatting.GREEN + "Online " + TextFormatting.BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER
+                            .setText(TextFormatting.GREEN + "Online " + TextFormatting.BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/"
+                                    + QUERY_LIVE_SERVER
                                     .getMaxPlayers() + ")");
                 }
                 almuraLiveButton.setDisabled(false);
@@ -193,7 +194,8 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
                     devServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
                 } else {
                     devServerOnline
-                            .setText(TextFormatting.GREEN + "Online " + TextFormatting.BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER
+                            .setText(TextFormatting.GREEN + "Online " + TextFormatting.BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/"
+                                    + QUERY_DEV_SERVER
                                     .getMaxPlayers() + ")");
                 }
                 almuraDevButton.setDisabled(false);

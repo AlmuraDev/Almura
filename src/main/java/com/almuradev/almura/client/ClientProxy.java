@@ -7,12 +7,12 @@ package com.almuradev.almura.client;
 
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.FileSystem;
-import com.almuradev.almura.client.shape.ShapeLoader;
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.ingame.IngameOptionsMenu;
 import com.almuradev.almura.client.gui.ingame.hud.AlmuraHUD;
 import com.almuradev.almura.client.gui.ingame.hud.MinimalHUD;
 import com.almuradev.almura.client.gui.menu.SimpleMainMenu;
+import com.almuradev.almura.client.shape.ShapeLoader;
 import com.almuradev.almura.configuration.ConfigurationAdapter;
 import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
  */
 @SideOnly(Side.CLIENT)
 public final class ClientProxy extends CommonProxy {
+
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
 
     private static final String HEADER = "1.0\nAlmura client configuration\n\nFor further assistance, join #almura on EsperNet.";

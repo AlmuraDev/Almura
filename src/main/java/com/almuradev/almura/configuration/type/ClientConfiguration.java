@@ -13,6 +13,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public class ClientConfiguration extends AbstractConfiguration {
+
     @Setting public final ClientCategory client = new ClientCategory();
     @Setting public final DebugCategory debug = new DebugCategory();
 }

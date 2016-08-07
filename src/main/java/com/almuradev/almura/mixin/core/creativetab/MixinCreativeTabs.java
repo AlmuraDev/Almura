@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(CreativeTabs.class)
 public abstract class MixinCreativeTabs implements CreativeTab {
+
     @Shadow @Final private String tabLabel;
 
     @Override

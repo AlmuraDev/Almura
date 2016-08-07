@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 @SuppressWarnings("unchecked")
 public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType, BUILDER extends AbstractBlockTypeBuilder<BLOCK, BUILDER>> implements
         BuildableBlockType.Builder<BLOCK, BUILDER> {
+
     public String dictName;
     public CreativeTab tab;
     public Material material;

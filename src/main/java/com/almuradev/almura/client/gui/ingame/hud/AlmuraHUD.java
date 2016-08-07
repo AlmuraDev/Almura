@@ -39,7 +39,7 @@ public class AlmuraHUD extends SimpleGui {
 
         // Construct Hud with all elements
         gradientContainer.setSize(375, 34);
-        gradientContainer.setPosition(0,0, Anchor.CENTER);
+        gradientContainer.setPosition(0, 0, Anchor.CENTER);
         gradientContainer.setColor(0);
         gradientContainer.setBackgroundAlpha(180);
         gradientContainer.setClipContent(false);

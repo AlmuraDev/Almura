@@ -19,7 +19,8 @@ public interface BuildableBlockType extends BuildableCatalogType, BlockType {
         return Sponge.getRegistry().createBuilder(Builder.class);
     }
 
-    interface Builder<BLOCK extends BuildableBlockType, BUILDER extends Builder<BLOCK, BUILDER>> extends BuildableCatalogType.Builder<BLOCK, BUILDER> {
+    interface Builder<BLOCK extends BuildableBlockType, BUILDER extends Builder<BLOCK, BUILDER>>
+            extends BuildableCatalogType.Builder<BLOCK, BUILDER> {
 
         Builder<BLOCK, BUILDER> unlocalizedName(String dictName);
 

@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura.client.gui.components;
 
-import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -17,6 +16,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class UIVanillaContainer extends UIBackgroundContainer {
+
     private final MalisisGui gui;
     private final Text title;
     private UIBackgroundContainer bottomBorderContainer, middleContentContainer, topBorderContainer, wrappingContainer;
@@ -41,36 +41,37 @@ public class UIVanillaContainer extends UIBackgroundContainer {
         this.topBorderContainer.setColor(org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb());
         this.topBorderContainer.setTopAlpha(255);
         this.topBorderContainer.setBottomAlpha(120);
-//
-//        this.middleContentContainer = new UIBackgroundContainer(this.gui, UIComponent.INHERITED, this.gui.height - 104);
-//        this.middleContentContainer.setPosition(0, SimpleGui.getPaddedY(topBorderContainer, 0));
-//        this.middleContentContainer.setColor(org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb());
-//        this.middleContentContainer.setBackgroundAlpha(120);
-//        this.middleContentContainer.setPadding(4, 10);
-//
-//        this.bottomBorderContainer = new UIBackgroundContainer(this.gui, UIComponent.INHERITED, 4);
-//        this.bottomBorderContainer.setPosition(0, this.gui.height - 86);
-//        this.bottomBorderContainer.setColor(org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb());
-//        this.bottomBorderContainer.setTopAlpha(120);
-//        this.bottomBorderContainer.setBottomAlpha(255);
-//
-//        this.wrappingContainer = new UIBackgroundContainer(this.gui, UIComponent.INHERITED, topBorderContainer.getHeight() + middleContentContainer
-//                .getHeight() + bottomBorderContainer.getHeight());
-//        this.wrappingContainer.setBackgroundAlpha(152);
-//        this.wrappingContainer.setClipContent(true);
+        //
+        //        this.middleContentContainer = new UIBackgroundContainer(this.gui, UIComponent.INHERITED, this.gui.height - 104);
+        //        this.middleContentContainer.setPosition(0, SimpleGui.getPaddedY(topBorderContainer, 0));
+        //        this.middleContentContainer.setColor(org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb());
+        //        this.middleContentContainer.setBackgroundAlpha(120);
+        //        this.middleContentContainer.setPadding(4, 10);
+        //
+        //        this.bottomBorderContainer = new UIBackgroundContainer(this.gui, UIComponent.INHERITED, 4);
+        //        this.bottomBorderContainer.setPosition(0, this.gui.height - 86);
+        //        this.bottomBorderContainer.setColor(org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb());
+        //        this.bottomBorderContainer.setTopAlpha(120);
+        //        this.bottomBorderContainer.setBottomAlpha(255);
+        //
+        //        this.wrappingContainer = new UIBackgroundContainer(this.gui, UIComponent.INHERITED, topBorderContainer.getHeight() +
+        // middleContentContainer
+        //                .getHeight() + bottomBorderContainer.getHeight());
+        //        this.wrappingContainer.setBackgroundAlpha(152);
+        //        this.wrappingContainer.setClipContent(true);
 
-//        this.wrappingContainer.add(topBorderContainer, middleContentContainer, bottomBorderContainer);
+        //        this.wrappingContainer.add(topBorderContainer, middleContentContainer, bottomBorderContainer);
 
         if (title != Text.EMPTY) {
             final UILabel titleLabel = new UILabel(this.gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(title));
             titleLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
             titleLabel.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
 
-//            this.wrappingContainer.setPosition(0, SimpleGui.getPaddedY(titleLabel, 3));
+            //            this.wrappingContainer.setPosition(0, SimpleGui.getPaddedY(titleLabel, 3));
             this.add(titleLabel);
         }
 
-//        this.add(wrappingContainer);
+        //        this.add(wrappingContainer);
     }
 
     public UIBackgroundContainer getContentContainer() {
@@ -85,8 +86,8 @@ public class UIVanillaContainer extends UIBackgroundContainer {
         shape.getVertexes("TopRight").get(0).setColor(0).setAlpha(255);
         shape.getVertexes("BottomLeft").get(0).setColor(0).setAlpha(120);
         shape.getVertexes("BottomRight").get(0).setColor(0).setAlpha(120);
-//        renderer.drawRectangle(0, SimpleGui.getPaddedY(this.topBorderContainer, 0), 0, this.gui.height, this.gui.height - 104,
-//                org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb(), 120);
+        //        renderer.drawRectangle(0, SimpleGui.getPaddedY(this.topBorderContainer, 0), 0, this.gui.height, this.gui.height - 104,
+        //                org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb(), 120);
     }
 
     @Override

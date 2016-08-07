@@ -29,6 +29,7 @@ import java.util.Collection;
 import javax.vecmath.Matrix4f;
 
 abstract class AbstractShapeModel<S extends AbstractShapeModel, B extends AbstractShapeModel.Baked<S>> implements IModel {
+
     private final Collection<ResourceLocation> dependencies, textures;
     private final IModelState defaultModelState;
 
@@ -57,11 +58,14 @@ abstract class AbstractShapeModel<S extends AbstractShapeModel, B extends Abstra
     }
 
     abstract static class Parser<S extends AbstractShapeModel<S, ? extends Baked<S>>> {
+
         static final ResourceLocation LOCATION_MISSING_TEXTURE = ModelLoader.White.LOCATION;
+
         abstract S parse(IResource resource) throws IOException;
     }
 
     public abstract static class Baked<S extends AbstractShapeModel> implements IPerspectiveAwareModel {
+
         static final TextureAtlasSprite SPRITE_MISSING = ModelLoader.White.INSTANCE;
         final S cookableModel;
         private final Pair<Baked, Matrix4f> defaultPerspective;
@@ -174,9 +178,9 @@ abstract class AbstractShapeModel<S extends AbstractShapeModel, B extends Abstra
 
         static class Texture {
 
-            final ResourceLocation location;
             protected final int x;
             protected final int y;
+            final ResourceLocation location;
             final int width;
             final int height;
 
@@ -201,6 +205,7 @@ abstract class AbstractShapeModel<S extends AbstractShapeModel, B extends Abstra
         }
 
         static final class PlaceholderTexture extends Texture {
+
             final int textureId;
 
             PlaceholderTexture(int textureId) {

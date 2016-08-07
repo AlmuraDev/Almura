@@ -24,12 +24,15 @@ import java.util.Optional;
 // TODO Special registration for buildingBlocks to map to Building_Blocks.
 public final class CreativeTabRegistryModule implements AdditionalCatalogRegistryModule<CreativeTab> {
 
+    @RegisterCatalog(CreativeTabs.class)
+    private final Map<String, CreativeTab> creativeTabMappings = Maps.newHashMap();
+
+    private CreativeTabRegistryModule() {
+    }
+
     public static CreativeTabRegistryModule getInstance() {
         return Holder.INSTANCE;
     }
-
-    @RegisterCatalog(CreativeTabs.class)
-    private final Map<String, CreativeTab> creativeTabMappings = Maps.newHashMap();
 
     @Override
     public void registerAdditionalCatalog(CreativeTab extraCatalog) {
@@ -61,10 +64,9 @@ public final class CreativeTabRegistryModule implements AdditionalCatalogRegistr
         return minecraftTab.equals(net.minecraft.creativetab.CreativeTabs.INVENTORY) ||
                 minecraftTab.equals(net.minecraft.creativetab.CreativeTabs.SEARCH);
     }
-    private CreativeTabRegistryModule() {
-    }
 
     private static final class Holder {
+
         static final CreativeTabRegistryModule INSTANCE = new CreativeTabRegistryModule();
     }
 }

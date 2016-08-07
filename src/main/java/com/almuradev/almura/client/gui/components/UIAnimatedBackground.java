@@ -50,7 +50,7 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
     }
 
     @SuppressWarnings("rawtypes")
-	@Override
+    @Override
     public void setParent(UIComponent parent) {
         if (parent != null) {
             parent.register(this);
@@ -161,7 +161,7 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
     }
 
     @SuppressWarnings("rawtypes")
-	@Subscribe
+    @Subscribe
     public void onComponentSizeChange(SizeChangeEvent<? extends UIComponent<?>> event) {
         if (event.getComponent() != this) {
             this.resetAnimation();

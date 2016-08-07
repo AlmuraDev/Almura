@@ -11,6 +11,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public final class DebugCategory extends AbstractConfigurationCategory {
+
     @Setting public boolean all = false;
     @Setting public boolean languages = false;
     @Setting public boolean packs = false;

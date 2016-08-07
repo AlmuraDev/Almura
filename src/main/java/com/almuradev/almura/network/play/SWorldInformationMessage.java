@@ -20,7 +20,8 @@ public final class SWorldInformationMessage implements Message {
 
     private String worldName;
 
-    public SWorldInformationMessage() {}
+    public SWorldInformationMessage() {
+    }
 
     public SWorldInformationMessage(String worldName) {
         this.worldName = worldName;

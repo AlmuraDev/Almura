@@ -21,6 +21,9 @@ public final class HUDData {
     public static String SERVER_COUNT = "";
 
 
+    private HUDData() {
+    }
+
     public static String getCompass() {
         final int position = (int) ((((Minecraft.getMinecraft().thePlayer.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 32);
 
@@ -56,8 +59,5 @@ public final class HUDData {
         } else {
             return String.format(HUDData.TIME_FORMAT, hour, minute, "AM");
         }
-    }
-
-    private HUDData() {
     }
 }

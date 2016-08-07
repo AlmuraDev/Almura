@@ -19,8 +19,12 @@ import org.spongepowered.api.network.RemoteConnection;
  */
 public final class NetworkHandlers {
 
+    private NetworkHandlers() {
+    }
+
     @SideOnly(Side.CLIENT)
     public static final class S00WorldInformationHandler implements MessageHandler<SWorldInformationMessage> {
+
         @Override
         public void handleMessage(SWorldInformationMessage message, RemoteConnection connection, Platform.Type side) {
             if (side.isClient()) {
@@ -28,6 +32,4 @@ public final class NetworkHandlers {
             }
         }
     }
-
-    private NetworkHandlers() {}
 }

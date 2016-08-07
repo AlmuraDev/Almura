@@ -22,6 +22,13 @@ public class MinimalHUD extends SimpleGui {
 
     private static final FontRenderOptions FRO_HUD;
     private static final int PADDING = 1;
+
+    static {
+        FRO_HUD = new FontRenderOptions();
+        FRO_HUD.color = TextColors.WHITE.getColor().getRgb();
+        FRO_HUD.shadow = true;
+    }
+
     private UILabel clockLabel;
     private UILabel economyLabel;
     private UILabel compassLabel;
@@ -29,12 +36,6 @@ public class MinimalHUD extends SimpleGui {
     private UILabel coordinatesYLabel;
     private UILabel coordinatesZLabel;
     private UILabel worldLabel;
-
-    static {
-        FRO_HUD = new FontRenderOptions();
-        FRO_HUD.color = TextColors.WHITE.getColor().getRgb();
-        FRO_HUD.shadow = true;
-    }
 
     @Override
     public void construct() {

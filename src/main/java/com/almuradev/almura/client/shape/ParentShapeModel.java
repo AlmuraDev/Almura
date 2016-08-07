@@ -31,6 +31,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, ParentShapeModel.Baked> {
+
     private final List<Face> faces;
 
     private ParentShapeModel(List<Face> faces) {
@@ -49,6 +50,7 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
     }
 
     static final class Parser extends AbstractShapeModel.Parser<ParentShapeModel> {
+
         static final String SECTION_FACES = "faces";
         static final String SECTION_VERTICES = "vertices";
         static final String KEY_TEXTURE = "texture";

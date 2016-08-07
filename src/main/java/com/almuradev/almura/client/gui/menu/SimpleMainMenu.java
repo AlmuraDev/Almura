@@ -42,7 +42,7 @@ public class SimpleMainMenu extends SimpleGui {
 
     private UIBackgroundContainer buttonContainer;
 
-    public SimpleMainMenu(SimpleGui parent){
+    public SimpleMainMenu(SimpleGui parent) {
         super(parent);
     }
 

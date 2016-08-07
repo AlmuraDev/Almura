@@ -20,17 +20,16 @@ import java.util.stream.Collectors;
 
 public final class Pack implements CatalogType {
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     private final String id, name;
     private final Map<String, CatalogType> objectsById;
-
     protected Pack(String id, String name, Map<String, CatalogType> objectsById) {
         this.id = id;
         this.name = name;
         this.objectsById = objectsById;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Override
@@ -58,6 +57,7 @@ public final class Pack implements CatalogType {
     }
 
     public static final class Builder implements ResettableBuilder<Pack, Builder> {
+
         private final Map<String, CatalogType> objectsById = new LinkedHashMap<>();
 
         public Builder object(CatalogType object) {

@@ -7,17 +7,13 @@ package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIVanillaContainer;
-import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.container.UIListContainer;
-import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.renderer.RenderParameters;
@@ -114,6 +110,7 @@ public class SimpleAboutMenu extends SimpleGui {
     }
 
     protected static final class AboutList extends UIListContainer<AboutList, AboutListElement> {
+
         private static final int padding = 4;
         private static final int textureHeight = 32;
         private static final int textureWidth = 32;
@@ -157,6 +154,7 @@ public class SimpleAboutMenu extends SimpleGui {
     }
 
     protected static final class AboutListElement {
+
         public final GuiTexture texture;
         public final String text;
 

@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractRotableTypeBuilder<ROTABLE extends RotableBlockType, BUILDER extends AbstractRotableTypeBuilder<ROTABLE, BUILDER>>
-        extends AbstractBlockTypeBuilder<ROTABLE, BUILDER> implements RotableBlockType.Builder<ROTABLE, BUILDER>  {
+        extends AbstractBlockTypeBuilder<ROTABLE, BUILDER> implements RotableBlockType.Builder<ROTABLE, BUILDER> {
 
     public static final class BuilderImpl extends AbstractRotableTypeBuilder<RotableBlockType, BuilderImpl> {
 

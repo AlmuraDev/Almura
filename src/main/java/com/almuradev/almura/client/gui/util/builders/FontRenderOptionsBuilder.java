@@ -16,6 +16,10 @@ public final class FontRenderOptionsBuilder {
     private int color;
     private boolean shadow, bold, italic, strikethrough;
 
+    public static FontRenderOptionsBuilder builder() {
+        return new FontRenderOptionsBuilder();
+    }
+
     public FontRenderOptionsBuilder fontScale(float fontScale) {
         this.fontScale = fontScale;
         return this;
@@ -65,9 +69,5 @@ public final class FontRenderOptionsBuilder {
         options.italic = italic;
         options.strikethrough = strikethrough;
         return options;
-    }
-
-    public static FontRenderOptionsBuilder builder() {
-        return new FontRenderOptionsBuilder();
     }
 }

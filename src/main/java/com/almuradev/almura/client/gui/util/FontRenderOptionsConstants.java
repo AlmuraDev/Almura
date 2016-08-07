@@ -34,5 +34,6 @@ public final class FontRenderOptionsConstants {
     public static final FontRenderOptions FRO_SCALE_110 = FontRenderOptionsBuilder.builder().fontScale(1.10f).build();
     public static final FontRenderOptions FRO_SCALE_150 = FontRenderOptionsBuilder.builder().fontScale(1.50f).build();
 
-    private FontRenderOptionsConstants() {}
+    private FontRenderOptionsConstants() {
+    }
 }

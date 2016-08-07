@@ -20,10 +20,10 @@ import java.util.Locale;
 
 public class UIForm extends UIBackgroundContainer {
 
+    private static final int TITLE_BAR_HEIGHT = 13;
     public static org.spongepowered.api.util.Color ALMURA_BLUE = org.spongepowered.api.util.Color.ofRgb(141, 167, 204);
     private static GuiIconProvider CLOSE_ICON_PROVIDER = new GuiIconProvider(SimpleGui.ICON_CLOSE_NORMAL, SimpleGui.ICON_CLOSE_HOVER, null);
     private static GuiIconProvider CLOSE_PRESS_ICON_PROVIDER = new GuiIconProvider(SimpleGui.ICON_CLOSE_PRESSED, SimpleGui.ICON_CLOSE_HOVER, null);
-    private static final int TITLE_BAR_HEIGHT = 13;
     private final UIBackgroundContainer contentContainer, titleContainer;
 
     /**

@@ -57,7 +57,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
         hudTypeLabel.setPosition(padding, padding * 2, Anchor.LEFT | Anchor.TOP);
 
         final UISelect<String> hudTypeSelect = new UISelect<>(this, 53, Arrays.asList("Default", "Almura", "Minimal"));
-        hudTypeSelect.setPosition(getPaddedX(hudTypeLabel, padding), hudTypeLabel.getY()-2, Anchor.LEFT | Anchor.TOP);
+        hudTypeSelect.setPosition(getPaddedX(hudTypeLabel, padding), hudTypeLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         hudTypeSelect.select(WordUtils.capitalize(clientCategory.hud));
         hudTypeSelect.setName("select.hud");
         hudTypeSelect.register(this);

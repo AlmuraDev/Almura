@@ -50,7 +50,6 @@ public abstract class SimpleGui extends MalisisGui {
     public static final GuiIcon ICON_FORUM;
     public static final GuiIcon ICON_GITHUB;
     public static final GuiIcon ICON_HEAD_ZIDANE;
-    protected final Optional<SimpleGui> parent;
 
     static {
         try {
@@ -86,6 +85,8 @@ public abstract class SimpleGui extends MalisisGui {
         ICON_HEAD_ZIDANE = new GuiTexture(ZIDANE_HEAD_LOCATION).getIcon(0, 0, 64, 64);
 
     }
+
+    protected final Optional<SimpleGui> parent;
 
     /**
      * Creates a gui with an absent parent

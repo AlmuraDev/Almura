@@ -11,6 +11,7 @@ import org.spongepowered.api.util.ResettableBuilder;
 public interface BuildableCatalogType extends CatalogType {
 
     interface Builder<CATALOG extends CatalogType, BUILDER extends Builder<CATALOG, BUILDER>> extends ResettableBuilder<CATALOG, BUILDER> {
+
         CATALOG build(String id, String name);
     }
 }

@@ -132,7 +132,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                     Face.Texture texture = this.cookableModel.textures.get(textureId);
                     if (texture == null) {
                         Almura.instance.logger.warn("When baking face [{}] for model [{}], the entry for texture id [{}] was not "
-                                + "found! You have a mismatch of textures from your parent [{}]. Using fallback texture instead...", face,
+                                        + "found! You have a mismatch of textures from your parent [{}]. Using fallback texture instead...", face,
                                 this.cookableModel, textureId, parentModel);
                         texture = face.texture;
                     }
@@ -141,7 +141,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                     // Safety fallback in-case texture isn't found
                     if (sprite == null) {
                         Almura.instance.logger.warn("When baking face [{}] for model [{}], the texture for id [{}] with entry [{}] was not found! "
-                                        + "Using fallback texture instead...", face, this.cookableModel, textureId, texture);
+                                + "Using fallback texture instead...", face, this.cookableModel, textureId, texture);
                         sprite = ModelLoader.White.INSTANCE;
                     }
 

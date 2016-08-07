@@ -18,8 +18,8 @@ import java.util.Map;
 
 public final class ShapeLoader implements ICustomModelLoader {
 
-    private IResourceManager manager;
     private final Map<ResourceLocation, AbstractShapeModel> models = new HashMap<>();
+    private IResourceManager manager;
 
     @Override
     public boolean accepts(ResourceLocation modelLocation) {
