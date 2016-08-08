@@ -2,7 +2,7 @@
 
 {
   "parent": "almura:block/shape/parent/seedbarrels.shape",
-  "textures": [
+  "faces": [
     {
       "location": "almura:block/seedbarrels",
       "x": 0,
@@ -45,5 +45,12 @@
       "width": 128,
       "height": 128
     }
-  ]
+  ],
+  "particle": {
+    "location": "almura:block/seedbarrels",
+    "x": 0,
+    "y": 0,
+    "width": 128,
+    "height": 128
+  }
 }

@@ -11,6 +11,7 @@ import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.ConfigurationAdapter;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
+import com.almuradev.almura.pack.PackManager;
 import com.almuradev.almura.registry.CreativeTabRegistryModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
@@ -31,7 +32,7 @@ import org.spongepowered.api.world.World;
  */
 public abstract class CommonProxy {
 
-    public ChannelBinding.IndexedMessageChannel network;
+    protected ChannelBinding.IndexedMessageChannel network;
 
     protected void onGamePreInitialization(GamePreInitializationEvent event) {
         if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM|FOR")) {
@@ -45,6 +46,11 @@ public abstract class CommonProxy {
         Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
 
         Sponge.getEventManager().registerListeners(Almura.instance.container, this);
+
+        FileSystem.init();
+
+        // TODO Fix CreativeTabs registering too late
+        PackManager.loadPacks(FileSystem.PATH_CONFIG_PACKS);
     }
 
     @Listener(order = Order.LAST)

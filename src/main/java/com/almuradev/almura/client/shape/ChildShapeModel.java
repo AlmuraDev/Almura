@@ -47,11 +47,14 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
 
     private final ResourceLocation parentModelLocation;
     private final List<Face.Texture> textures;
+    private final Face.Texture particleTexture;
 
-    private ChildShapeModel(ResourceLocation parentModelLocation, Collection<ResourceLocation> textureLocations, List<Face.Texture> textures) {
+    private ChildShapeModel(ResourceLocation parentModelLocation, Collection<ResourceLocation> textureLocations, List<Face.Texture> textures, Face
+            .Texture particleTexture) {
         super(Lists.newArrayList(parentModelLocation), textureLocations, null);
         this.parentModelLocation = parentModelLocation;
         this.textures = textures;
+        this.particleTexture = particleTexture;
     }
 
     @Override
@@ -61,7 +64,8 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
 
     static final class Parser extends AbstractShapeModel.Parser<ChildShapeModel> {
 
-        static final String SECTION_TEXTURES = "textures";
+        static final String SECTION_FACES = "faces";
+        static final String SECTION_PARTICLE = "particle";
         static final String KEY_PARENT = "parent";
         static final String KEY_LOCATION = "location";
         static final String KEY_X = "x";
@@ -79,10 +83,10 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
 
             final ConfigurationNode rootNode = loader.load();
             final ResourceLocation parentModelLocation = new ResourceLocation(rootNode.getNode(KEY_PARENT).getString(""));
-            final ConfigurationNode texturesNode = rootNode.getNode(SECTION_TEXTURES);
+            final ConfigurationNode facesNode = rootNode.getNode(SECTION_FACES);
             final Set<ResourceLocation> textureLocations = new HashSet<>();
             final List<Face.Texture> textures = new LinkedList<>();
-            for (ConfigurationNode textureNode : texturesNode.getChildrenList()) {
+            for (ConfigurationNode textureNode : facesNode.getChildrenList()) {
                 final ResourceLocation location = new ResourceLocation(textureNode.getNode(KEY_LOCATION).getString(""));
                 textureLocations.add(location);
                 final int x = textureNode.getNode(KEY_X).getInt(0);
@@ -93,7 +97,15 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                 textures.add(new Face.Texture(location, x, y, width, height));
             }
 
-            return new ChildShapeModel(parentModelLocation, textureLocations, textures);
+            final ConfigurationNode particleNode = rootNode.getNode(SECTION_PARTICLE);
+            final ResourceLocation location = new ResourceLocation(particleNode.getNode(KEY_LOCATION).getString(""));
+            textureLocations.add(location);
+            final int x = particleNode.getNode(KEY_X).getInt(0);
+            final int y = particleNode.getNode(KEY_Y).getInt(0);
+            final int width = particleNode.getNode(KEY_WIDTH).getInt(0);
+            final int height = particleNode.getNode(KEY_HEIGHT).getInt(0);
+
+            return new ChildShapeModel(parentModelLocation, textureLocations, textures, new Face.Texture(location, x, y, width, height));
         }
     }
 
@@ -114,19 +126,30 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
         @Override
         public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
 
-            if (parentModel == null) {
+            if (this.parentModel == null) {
                 try {
-                    parentModel = (ParentShapeModel) ModelLoaderRegistry.getModel(this.cookableModel.parentModelLocation);
+                    this.parentModel = (ParentShapeModel) ModelLoaderRegistry.getModel(this.cookableModel.parentModelLocation);
 
                 } catch (Exception e) {
                     throw new RuntimeException("Shape [" + this.cookableModel + "] is being baked with no parent specified!");
                 }
             }
 
+            if (this.particleSprite == null) {
+                final Face.Texture particleTexture = this.cookableModel.particleTexture;
+                final TextureAtlasSprite particleSheetSprite = this.textureGetter.apply(particleTexture.location);
+                if (particleSheetSprite != null) {
+                    final Icon malisisIcon = new Icon(particleSheetSprite);
+                    this.particleSprite = malisisIcon.clip(particleTexture.x, particleTexture.y, particleTexture.width, particleTexture.height);
+                } else {
+                    this.particleSprite = ModelLoader.White.INSTANCE;
+                }
+            }
+
             if (this.quads == null) {
                 final List<BakedQuad> baked = new ArrayList<>();
 
-                for (Face face : parentModel.getFaces()) {
+                for (Face face : this.parentModel.getFaces()) {
                     final int textureId = ((Face.PlaceholderTexture) face.texture).textureId;
 
                     Face.Texture texture = this.cookableModel.textures.get(textureId);
@@ -143,11 +166,6 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                         Almura.instance.logger.warn("When baking face [{}] for model [{}], the texture for id [{}] with entry [{}] was not found! "
                                 + "Using fallback texture instead...", face, this.cookableModel, textureId, texture);
                         sprite = ModelLoader.White.INSTANCE;
-                    }
-
-                    if (particleSprite == null) {
-                        final Icon malisisIcon = new Icon(sprite);
-                        particleSprite = malisisIcon.clip(texture.x, texture.y, texture.width, texture.height);
                     }
 
                     final UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(this.format);

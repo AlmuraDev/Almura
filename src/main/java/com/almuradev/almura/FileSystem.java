@@ -14,9 +14,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -24,9 +24,19 @@ import javax.imageio.ImageIO;
 
 public final class FileSystem {
 
-    private static final Path PATH_CONFIG = Paths.get("config" + File.separator + Almura.PLUGIN_ID);
+    public static final Path PATH_CONFIG = Paths.get(".").resolve("config").resolve(Almura.PLUGIN_ID);
     public static final Path PATH_CONFIG_CLIENT = PATH_CONFIG.resolve("client.conf");
+    public static final Path PATH_CONFIG_PACKS = PATH_CONFIG.resolve("packs");
 
+    public static void init() {
+        if (Files.notExists(PATH_CONFIG_PACKS)) {
+            try {
+                Files.createDirectories(PATH_CONFIG_PACKS);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to create [" + PATH_CONFIG_PACKS + "]!", e);
+            }
+        }
+    }
     // Gui Utilities
 
     @SideOnly(Side.CLIENT)
