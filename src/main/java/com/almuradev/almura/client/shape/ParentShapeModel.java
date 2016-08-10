@@ -6,8 +6,10 @@
 package com.almuradev.almura.client.shape;
 
 import com.flowpowered.math.vector.Vector2f;
+import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
+import com.google.common.reflect.TypeToken;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -20,6 +22,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,12 +35,12 @@ import javax.annotation.Nullable;
 
 public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, ParentShapeModel.Baked> {
 
-    private final List<Face> faces;
+    private final List<Quad> quads;
 
-    private ParentShapeModel(List<Face> faces) {
+    private ParentShapeModel(List<Quad> quads) {
         // Parent shapes have no dependencies and know no texture
         super(Collections.emptyList(), Collections.emptyList(), null);
-        this.faces = faces;
+        this.quads = quads;
     }
 
     @Override
@@ -45,15 +48,16 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
         return new Baked();
     }
 
-    List<Face> getFaces() {
-        return this.faces;
+    List<Quad> getQuads() {
+        return this.quads;
     }
 
     static final class Parser extends AbstractShapeModel.Parser<ParentShapeModel> {
 
-        static final String SECTION_FACES = "faces";
+        static final String SECTION_QUADS = "quads";
         static final String SECTION_VERTICES = "vertices";
         static final String KEY_TEXTURE = "texture";
+        static final String KEY_NORMALS = "normals";
 
         private static final Vector2f[] uvCoordinates = new Vector2f[4];
 
@@ -63,7 +67,7 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
                 know the vertex order and with that knowledge, the baking step can interpolate
                 the uv for the vertex. The order is as follows in the diagram below:
 
-                Face (Quad)
+                Quad (Quad)
 
                 (0, 0)                (1, 0)
                 ____________________________
@@ -91,12 +95,12 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
                     .build();
 
             final ConfigurationNode rootNode = loader.load();
-            final List<Face> faces = new ArrayList<>();
-            for (ConfigurationNode faceNode : rootNode.getNode(SECTION_FACES).getChildrenList()) {
-                final int textureId = faceNode.getNode(KEY_TEXTURE).getInt(0);
+            final List<Quad> quads = new ArrayList<>();
+            for (ConfigurationNode quadNode : rootNode.getNode(SECTION_QUADS).getChildrenList()) {
+                final int textureId = quadNode.getNode(KEY_TEXTURE).getInt(0);
 
-                final ConfigurationNode verticesNode = faceNode.getNode(SECTION_VERTICES);
-                final Face.Vertex[] vertices = new Face.Vertex[4];
+                final ConfigurationNode verticesNode = quadNode.getNode(SECTION_VERTICES);
+                final Quad.Vertex[] vertices = new Quad.Vertex[4];
                 for (int i = 0; i < vertices.length; i++) {
                     final ConfigurationNode vertexNode = verticesNode.getChildrenList().get(i);
 
@@ -106,13 +110,23 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
                     }
 
                     final Vector2f uvCoordinate = uvCoordinates[i];
-                    vertices[i] = new Face.Vertex(coordinates[0], coordinates[1], coordinates[2], uvCoordinate.getX(), uvCoordinate.getY());
+                    vertices[i] = new Quad.Vertex(coordinates[0], coordinates[1], coordinates[2], uvCoordinate.getX(), uvCoordinate.getY());
                 }
 
-                faces.add(new Face(vertices, new Face.PlaceholderTexture(textureId)));
+                final ConfigurationNode normalsNode = quadNode.getNode(KEY_NORMALS);
+                Vector3f normal;
+
+                try {
+                    final List<Float> normals = normalsNode.getList(TypeToken.of(Float.class));
+                    normal = new Vector3f(normals.get(0), normals.get(1), normals.get(2));
+                } catch (ObjectMappingException e) {
+                    throw new IOException(e);
+                }
+
+                quads.add(new Quad(vertices, normal, new Quad.PlaceholderTexture(textureId)));
             }
 
-            return new ParentShapeModel(faces);
+            return new ParentShapeModel(quads);
         }
     }
 

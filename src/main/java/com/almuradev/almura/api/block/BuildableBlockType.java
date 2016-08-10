@@ -28,6 +28,10 @@ public interface BuildableBlockType extends BuildableCatalogType, BlockType {
 
         Builder<BLOCK, BUILDER> mapColor(MapColor mapColor);
 
+        Builder<BLOCK, BUILDER> hardness(float hardness);
+
+        Builder<BLOCK, BUILDER> resistance(float resistance);
+
         Builder<BLOCK, BUILDER> creativeTab(CreativeTab tab);
 
         @Override

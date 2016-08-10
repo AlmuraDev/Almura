@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.client;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.FileSystem;
 import com.almuradev.almura.client.gui.SimpleGui;
@@ -23,6 +24,7 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -78,6 +80,7 @@ public final class ClientProxy extends CommonProxy {
             }
         }
 
+        OBJLoader.INSTANCE.addDomain(Almura.PLUGIN_ID);
         ModelLoaderRegistry.registerLoader(new ShapeLoader());
         MinecraftForge.EVENT_BUS.register(this);
     }

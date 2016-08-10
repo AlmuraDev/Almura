@@ -15,5 +15,5 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class CreativeTabCategory extends AbstractConfigurationCategory {
 
     @Setting public boolean enabled = false;
-    @Setting(value = "tab") public CreativeTab tab = CreativeTabs.FOOD;
+    @Setting public CreativeTab tab = CreativeTabs.FOOD;
 }

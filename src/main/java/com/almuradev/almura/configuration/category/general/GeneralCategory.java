@@ -18,7 +18,7 @@ public class GeneralCategory extends AbstractConfigurationCategory {
     @Setting public String title = "";
     @Setting public List<String> tooltip = new LinkedList<>();
     @Setting public float hardness = 1f;
-    @Setting public int resistance = 1;
+    @Setting public float resistance = 1;
 
     @Setting(value = "creative-tab") public final CreativeTabCategory creativeTab = new CreativeTabCategory();
 

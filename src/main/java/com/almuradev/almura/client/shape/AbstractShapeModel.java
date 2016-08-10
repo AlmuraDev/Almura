@@ -138,18 +138,20 @@ abstract class AbstractShapeModel<S extends AbstractShapeModel, B extends Abstra
      * Utility classes
      */
 
-    static final class Face {
+    static final class Quad {
 
         final Vertex[] vertices;
+        final Vector3f normal;
         protected Texture texture;
 
-        Face(Vertex[] vertices) {
+        Quad(Vertex[] vertices, Vector3f normal) {
             checkNotNull(vertices);
             this.vertices = vertices;
+            this.normal = normal;
         }
 
-        Face(Vertex[] vertices, Texture texture) {
-            this(vertices);
+        Quad(Vertex[] vertices, Vector3f normal, Texture texture) {
+            this(vertices, normal);
             this.texture = texture;
         }
 
@@ -157,6 +159,8 @@ abstract class AbstractShapeModel<S extends AbstractShapeModel, B extends Abstra
         public String toString() {
             return Objects.toStringHelper(this)
                     .add("vertices", this.vertices)
+                    .add("texture", this.texture)
+                    .add("normal", this.normal)
                     .toString();
         }
 
@@ -173,6 +177,17 @@ abstract class AbstractShapeModel<S extends AbstractShapeModel, B extends Abstra
                 this.v = v;
 
                 this.vector = new Vector3f(x, y, z);
+            }
+
+            @Override
+            public String toString() {
+                return Objects.toStringHelper(this)
+                        .add("x", this.x)
+                        .add("y", this.y)
+                        .add("z", this.z)
+                        .add("u", this.u)
+                        .add("v", this.v)
+                        .toString();
             }
         }
 

@@ -2,7 +2,7 @@
 
 {
   "parent": "almura:block/shape/parent/seedbarrels.shape",
-  "faces": [
+  "quads": [
     {
       "location": "almura:block/seedbarrels",
       "x": 0,

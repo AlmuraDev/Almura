@@ -21,6 +21,8 @@ public final class GenericBlock extends Block {
         this.setRegistryName(modid, id);
         this.setUnlocalizedName(builder.dictName);
         this.setCreativeTab((CreativeTabs) builder.tab);
+        this.setHardness(builder.hardness);
+        this.setResistance(builder.resistance);
     }
 
     // Move to GenericShapeBlock

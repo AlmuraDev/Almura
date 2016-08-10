@@ -27,6 +27,8 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     public CreativeTab tab;
     public Material material;
     public MapColor mapColor;
+    public float hardness;
+    public float resistance;
 
     public AbstractBlockTypeBuilder() {
         this.reset();
@@ -54,6 +56,18 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     }
 
     @Override
+    public BUILDER hardness(float hardness) {
+        this.hardness = hardness;
+        return (BUILDER) this;
+    }
+
+    @Override
+    public BUILDER resistance(float resistance) {
+        this.resistance = resistance;
+        return (BUILDER) this;
+    }
+
+    @Override
     public BUILDER creativeTab(CreativeTab tab) {
         this.tab = tab;
         return (BUILDER) this;
@@ -63,8 +77,10 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     public BUILDER from(BuildableBlockType value) {
         checkNotNull(value);
         final Block block = (Block) value;
-        material(block.getMaterial(block.getDefaultState()));
-        mapColor(block.getMapColor(block.getDefaultState()));
+        this.material(block.getMaterial(block.getDefaultState()));
+        this.mapColor(block.getMapColor(block.getDefaultState()));
+        this.hardness(block.getBlockHardness(block.getDefaultState(), null, null));
+        this.resistance(block.blockResistance);
         return (BUILDER) this;
     }
 
@@ -73,6 +89,8 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         this.tab = null;
         this.material = Material.GROUND;
         this.mapColor = MapColor.DIRT;
+        this.hardness = -1f;
+        this.resistance = 6000000.0F;
         return (BUILDER) this;
     }
 

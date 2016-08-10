@@ -74,7 +74,9 @@ public final class PackManager {
 
         final BlockConfiguration configuration = adapter.getConfig();
         final BuildableBlockType.Builder builder = BuildableBlockType.builder()
-                .unlocalizedName(parentName + "." + fileName);
+                .unlocalizedName(parentName + "." + fileName)
+                .hardness(configuration.general.hardness)
+                .resistance(configuration.general.resistance);
         if (configuration.general.creativeTab.enabled) {
             builder.creativeTab(configuration.general.creativeTab.tab);
         }
@@ -87,7 +89,7 @@ public final class PackManager {
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
             if (!dir.equals(FileSystem.PATH_CONFIG_PACKS)) {
-                Almura.instance.logger.info("Reading pack [{}] for catalog type candidates.", dir.getFileName().toString());
+                Almura.instance.logger.info("Reading pack [{}] for catalog type candidates...", dir.getFileName().toString());
             }
             return FileVisitResult.CONTINUE;
         }
@@ -108,7 +110,7 @@ public final class PackManager {
 
         @Override
         public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-            Almura.instance.logger.error("An error occurred reading lcatalog type candidate [{}].", file.getFileName().toString(), exc);
+            Almura.instance.logger.error("An error occurred reading catalog type candidate [{}]!", file.getFileName().toString(), exc);
             return FileVisitResult.CONTINUE;
         }
 

@@ -9,6 +9,7 @@ import com.almuradev.almura.Almura;
 import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import net.malisis.core.renderer.icon.Icon;
 import net.minecraft.block.state.IBlockState;
@@ -46,10 +47,10 @@ import javax.vecmath.Matrix4f;
 final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildShapeModel.Baked> {
 
     private final ResourceLocation parentModelLocation;
-    private final List<Face.Texture> textures;
-    private final Face.Texture particleTexture;
+    private final List<Quad.Texture> textures;
+    private final Quad.Texture particleTexture;
 
-    private ChildShapeModel(ResourceLocation parentModelLocation, Collection<ResourceLocation> textureLocations, List<Face.Texture> textures, Face
+    private ChildShapeModel(ResourceLocation parentModelLocation, Collection<ResourceLocation> textureLocations, List<Quad.Texture> textures, Quad
             .Texture particleTexture) {
         super(Lists.newArrayList(parentModelLocation), textureLocations, null);
         this.parentModelLocation = parentModelLocation;
@@ -62,9 +63,18 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
         return new Baked(this, format, bakedTextureGetter);
     }
 
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("location", this.parentModelLocation)
+                .add("textures", this.textures)
+                .add("particleTexture", this.particleTexture)
+                .toString();
+    }
+
     static final class Parser extends AbstractShapeModel.Parser<ChildShapeModel> {
 
-        static final String SECTION_FACES = "faces";
+        static final String SECTION_QUADS = "quads";
         static final String SECTION_PARTICLE = "particle";
         static final String KEY_PARENT = "parent";
         static final String KEY_LOCATION = "location";
@@ -83,10 +93,10 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
 
             final ConfigurationNode rootNode = loader.load();
             final ResourceLocation parentModelLocation = new ResourceLocation(rootNode.getNode(KEY_PARENT).getString(""));
-            final ConfigurationNode facesNode = rootNode.getNode(SECTION_FACES);
+            final ConfigurationNode quadsNode = rootNode.getNode(SECTION_QUADS);
             final Set<ResourceLocation> textureLocations = new HashSet<>();
-            final List<Face.Texture> textures = new LinkedList<>();
-            for (ConfigurationNode textureNode : facesNode.getChildrenList()) {
+            final List<Quad.Texture> textures = new LinkedList<>();
+            for (ConfigurationNode textureNode : quadsNode.getChildrenList()) {
                 final ResourceLocation location = new ResourceLocation(textureNode.getNode(KEY_LOCATION).getString(""));
                 textureLocations.add(location);
                 final int x = textureNode.getNode(KEY_X).getInt(0);
@@ -94,7 +104,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                 final int width = textureNode.getNode(KEY_WIDTH).getInt(0);
                 final int height = textureNode.getNode(KEY_HEIGHT).getInt(0);
 
-                textures.add(new Face.Texture(location, x, y, width, height));
+                textures.add(new Quad.Texture(location, x, y, width, height));
             }
 
             final ConfigurationNode particleNode = rootNode.getNode(SECTION_PARTICLE);
@@ -105,7 +115,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
             final int width = particleNode.getNode(KEY_WIDTH).getInt(0);
             final int height = particleNode.getNode(KEY_HEIGHT).getInt(0);
 
-            return new ChildShapeModel(parentModelLocation, textureLocations, textures, new Face.Texture(location, x, y, width, height));
+            return new ChildShapeModel(parentModelLocation, textureLocations, textures, new Quad.Texture(location, x, y, width, height));
         }
     }
 
@@ -131,12 +141,12 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                     this.parentModel = (ParentShapeModel) ModelLoaderRegistry.getModel(this.cookableModel.parentModelLocation);
 
                 } catch (Exception e) {
-                    throw new RuntimeException("Shape [" + this.cookableModel + "] is being baked with no parent specified!");
+                    throw new RuntimeException("Shape [" + this.cookableModel + "] is being baked with no parent specified!", e);
                 }
             }
 
             if (this.particleSprite == null) {
-                final Face.Texture particleTexture = this.cookableModel.particleTexture;
+                final Quad.Texture particleTexture = this.cookableModel.particleTexture;
                 final TextureAtlasSprite particleSheetSprite = this.textureGetter.apply(particleTexture.location);
                 if (particleSheetSprite != null) {
                     final Icon malisisIcon = new Icon(particleSheetSprite);
@@ -149,22 +159,27 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
             if (this.quads == null) {
                 final List<BakedQuad> baked = new ArrayList<>();
 
-                for (Face face : this.parentModel.getFaces()) {
-                    final int textureId = ((Face.PlaceholderTexture) face.texture).textureId;
+                for (Quad quad : this.parentModel.getQuads()) {
+                    final int textureId = ((Quad.PlaceholderTexture) quad.texture).textureId;
 
-                    Face.Texture texture = this.cookableModel.textures.get(textureId);
-                    if (texture == null) {
-                        Almura.instance.logger.warn("When baking face [{}] for model [{}], the entry for texture id [{}] was not "
-                                        + "found! You have a mismatch of textures from your parent [{}]. Using fallback texture instead...", face,
-                                this.cookableModel, textureId, parentModel);
-                        texture = face.texture;
+                    Quad.Texture texture;
+                    if (textureId >= this.cookableModel.textures.size()) {
+                        texture = quad.texture;
+                    } else {
+                        texture = this.cookableModel.textures.get(textureId);
+                        if (texture == null) {
+                            Almura.instance.logger.warn("When baking quad [{}] for model [{}], the entry for texture id [{}] was not "
+                                            + "found! You have a mismatch of textures from your parent [{}]. Using fallback texture instead...", quad,
+                                    this.cookableModel, textureId, parentModel);
+                            texture = quad.texture;
+                        }
                     }
 
                     TextureAtlasSprite sprite = this.textureGetter.apply(texture.location);
                     // Safety fallback in-case texture isn't found
                     if (sprite == null) {
-                        Almura.instance.logger.warn("When baking face [{}] for model [{}], the texture for id [{}] with entry [{}] was not found! "
-                                + "Using fallback texture instead...", face, this.cookableModel, textureId, texture);
+                        Almura.instance.logger.warn("When baking quad [{}] for model [{}], the texture for id [{}] with entry [{}] was not found! "
+                                + "Using fallback texture instead...", quad, this.cookableModel, textureId, texture);
                         sprite = ModelLoader.White.INSTANCE;
                     }
 
@@ -172,17 +187,9 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                     builder.setTexture(sprite);
                     builder.setQuadOrientation(EnumFacing.WEST);
 
-                    // Calculate normals.
-                    // TODO These are planar normals, for barrels or other spherical things I should use interpolated normals. Not a priority at this
-                    // TODO moment
-                    final Vector3f a = face.vertices[0].vector;
-                    final Vector3f b = face.vertices[1].vector;
-                    final Vector3f c = face.vertices[2].vector;
-                    final Vector3f ac = a.sub(c);
-                    final Vector3f bc = b.sub(c);
-                    final Vector3f normal = ac.cross(bc).normalize();
+                    final Vector3f normal = quad.normal;
 
-                    for (Face.Vertex vertex : face.vertices) {
+                    for (Quad.Vertex vertex : quad.vertices) {
                         for (int e = 0; e < this.format.getElementCount(); e++) {
                             switch (this.format.getElement(e).getUsage()) {
                                 case POSITION:
