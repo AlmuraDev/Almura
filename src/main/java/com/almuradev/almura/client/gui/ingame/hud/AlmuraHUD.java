@@ -38,7 +38,7 @@ public class AlmuraHUD extends SimpleGui {
         guiscreenBackground = false;
 
         // Construct Hud with all elements
-        gradientContainer.setSize(375, 34);
+        gradientContainer.setSize(380, 34);
         gradientContainer.setPosition(0, 0, Anchor.CENTER);
         gradientContainer.setColor(0);
         gradientContainer.setBackgroundAlpha(180);
@@ -71,14 +71,14 @@ public class AlmuraHUD extends SimpleGui {
 
         // Almura Title
         final UILabel almuraTitle = new UILabel(this, "Almura");
-        almuraTitle.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
+        almuraTitle.setPosition(-10, 2, Anchor.TOP | Anchor.CENTER);
         almuraTitle.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
 
         // Hunger Property
-        hungerProperty = new UIPropertyBar(this, ICON_HUNGER).setPosition(-1, 14, Anchor.CENTER);
+        hungerProperty = new UIPropertyBar(this, ICON_HUNGER).setPosition(-11, 14, Anchor.CENTER);
 
         // Stamina Property
-        staminaProperty = new UIPropertyBar(this, ICON_STAMINA).setPosition(-1, 24, Anchor.CENTER);
+        staminaProperty = new UIPropertyBar(this, ICON_STAMINA).setPosition(-11, 24, Anchor.CENTER);
 
         // ////////////////////////////// RIGHT COLUMN //////////////////////////////////////
 

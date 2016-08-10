@@ -8,6 +8,9 @@ package com.almuradev.almura.client.gui.ingame;
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIForm;
 import com.almuradev.almura.client.gui.menu.DynamicConfigurationMenu;
+import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
+import com.almuradev.almura.client.gui.util.builders.FontRenderOptionsBuilder;
+import com.almuradev.almura.client.gui.util.builders.UIButtonBuilder;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -20,6 +23,7 @@ import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.util.Color;
 
 import java.awt.AWTException;
 import java.awt.Desktop;
@@ -36,7 +40,7 @@ public final class IngameOptionsMenu extends SimpleGui {
         guiscreenBackground = true;
 
         // Create the form
-        final UIForm form = new UIForm(this, 225, 225, "Almura", true);
+        final UIForm form = new UIForm(this, 270, 235, "Almura", true);
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the logo
@@ -47,7 +51,7 @@ public final class IngameOptionsMenu extends SimpleGui {
         final int padding = 4;
 
         // Create the Back to Game button
-        final UIButton backButton = new UIButton(this, TextFormatting.AQUA + "Back to game");
+        final UIButton backButton = new UIButton(this, TextFormatting.AQUA + "Back to Game");
         backButton.setSize(180, 16);
         backButton.setPosition(0, getPaddedY(logoImage, padding * 3), Anchor.CENTER | Anchor.TOP);
         backButton.setName("button.backbutton");
@@ -56,66 +60,69 @@ public final class IngameOptionsMenu extends SimpleGui {
         // Create the Open to Lan / Guide button
         final UIButton lanButton = new UIButton(this, TextFormatting.WHITE + "Open to Lan");
         if (this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic()) {
-            lanButton.setText("Open to Lan");
-            lanButton.setSize(80, 16);
-            lanButton.setPosition(30, getPaddedY(backButton, padding), Anchor.LEFT | Anchor.TOP);
+            lanButton.setText("Open to LAN");
             lanButton.setName("button.lan");
         } else {
             lanButton.setText("Open Guide");
-            lanButton.setSize(80, 16);
-            lanButton.setPosition(30, getPaddedY(backButton, padding), Anchor.LEFT | Anchor.TOP);
             lanButton.setName("button.guide");
         }
+        lanButton.setSize(80, 16);
+        lanButton.setPosition(0, getPaddedY(backButton, padding * 2), Anchor.CENTER | Anchor.TOP);
         lanButton.register(this);
 
         // Create the options button
         final UIButton optionsButton = new UIButton(this, "Options");
-        optionsButton.setSize(65, 16);
+        optionsButton.setSize(80, 16);
         optionsButton.setPosition(10, getPaddedY(lanButton, padding), Anchor.LEFT | Anchor.TOP);
         optionsButton.setName("button.options");
         optionsButton.register(this);
 
         // Create the Achievements button
         final UIButton achievementsButton = new UIButton(this, "Achievements");
-        achievementsButton.setSize(65, 16);
+        achievementsButton.setSize(80, 16);
         achievementsButton.setPosition(0, getPaddedY(lanButton, padding), Anchor.CENTER | Anchor.TOP);
         achievementsButton.setName("button.achievements");
         achievementsButton.register(this);
 
         // Create the Statistics button
         final UIButton statisticsButton = new UIButton(this, "Statistics");
-        statisticsButton.setSize(65, 16);
+        statisticsButton.setSize(80, 16);
         statisticsButton.setPosition(-10, getPaddedY(lanButton, padding), Anchor.RIGHT | Anchor.TOP);
         statisticsButton.setName("button.stats");
         statisticsButton.register(this);
 
         // Create the Configuration button
         final UIButton configButton = new UIButton(this, "Configuration");
-        configButton.setSize(65, 16);
+        configButton.setSize(80, 16);
         configButton.setPosition(10, getPaddedY(optionsButton, padding), Anchor.LEFT | Anchor.TOP);
         configButton.setName("button.config");
         configButton.register(this);
 
         // Create the Live Map button
         final UIButton mapButton = new UIButton(this, "Live Map");
-        mapButton.setSize(65, 16);
+        mapButton.setSize(80, 16);
         mapButton.setPosition(0, getPaddedY(optionsButton, padding), Anchor.CENTER | Anchor.TOP);
         mapButton.setName("button.map");
         mapButton.register(this);
 
         // Create the Visit Website button
         final UIButton webstatisticsButton = new UIButton(this, "Visit Website");
-        webstatisticsButton.setSize(65, 16);
+        webstatisticsButton.setSize(80, 16);
         webstatisticsButton.setPosition(-10, getPaddedY(optionsButton, padding), Anchor.RIGHT | Anchor.TOP);
         webstatisticsButton.setName("button.website");
         webstatisticsButton.register(this);
 
-        // Create the quit button
-        final UIButton quitButton = new UIButton(this, "Quit");
-        quitButton.setSize(50, 16);
-        quitButton.setPosition(0, getPaddedY(mapButton, padding), Anchor.CENTER | Anchor.TOP);
-        quitButton.setName("button.quit");
-        quitButton.register(this);
+
+        final UIButton quitButton = new UIButtonBuilder(this)
+                .text("Quit")
+                .name("button.quit")
+                .fro(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_RED).shadow(true).build())
+                .hoverFro(FontRenderOptionsBuilder.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
+                .size(80, 16)
+                .position(0, -4)
+                .anchor(Anchor.BOTTOM | Anchor.CENTER)
+                .listener(this)
+                .build();
 
         form.getContentContainer().add(logoImage, backButton, lanButton, optionsButton, achievementsButton, statisticsButton, configButton,
                 webstatisticsButton, mapButton, quitButton);

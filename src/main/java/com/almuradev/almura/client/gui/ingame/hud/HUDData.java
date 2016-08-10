@@ -14,7 +14,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public final class HUDData {
 
     public static final String COMPASS_CHARACTERS = "S.......W.......N.......E.......";
-    public static final String TIME_FORMAT = "%2d:%02d%s";
+    public static final String TIME_FORMAT = "%2d%s";
 
     public static String PLAYER_CURRENCY = "";
     public static String WORLD_NAME = "";
@@ -47,17 +47,16 @@ public final class HUDData {
     }
 
     public static String getTime() {
-        final int minute = (int) Math.floor((Minecraft.getMinecraft().thePlayer.worldObj.getWorldTime() % 1000) / 1000.0 * 60);
         final int hour = (int) ((Math.floor(Minecraft.getMinecraft().thePlayer.worldObj.getWorldTime() / 1000.0) + 6) % 24);
 
         if (hour == 0) {
-            return String.format(HUDData.TIME_FORMAT, hour + 12, minute, "AM");
+            return String.format(HUDData.TIME_FORMAT, hour + 12, "AM");
         } else if (hour == 12) {
-            return String.format(HUDData.TIME_FORMAT, hour, minute, "PM");
+            return String.format(HUDData.TIME_FORMAT, hour, "PM");
         } else if (hour > 12) {
-            return String.format(HUDData.TIME_FORMAT, hour - 12, minute, "PM");
+            return String.format(HUDData.TIME_FORMAT, hour - 12, "PM");
         } else {
-            return String.format(HUDData.TIME_FORMAT, hour, minute, "AM");
+            return String.format(HUDData.TIME_FORMAT, hour, "AM");
         }
     }
 }
