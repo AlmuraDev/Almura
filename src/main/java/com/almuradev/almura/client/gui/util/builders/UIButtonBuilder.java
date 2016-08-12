@@ -26,6 +26,7 @@ public final class UIButtonBuilder {
     private String name, text;
     private UIImage image;
     private UITooltip tooltip;
+    private boolean enabled = true;
 
     public UIButtonBuilder(MalisisGui gui) {
         this.gui = gui;
@@ -91,6 +92,11 @@ public final class UIButtonBuilder {
 
     public UIButtonBuilder font(MalisisFont font) {
         this.font = font;
+        return this;
+    }
+
+    public UIButtonBuilder enabled(boolean enabled) {
+        this.enabled = enabled;
         return this;
     }
 
@@ -168,6 +174,8 @@ public final class UIButtonBuilder {
         if (font != null) {
             button.setFont(font);
         }
+
+        button.setDisabled(!enabled);
 
         return button;
     }

@@ -48,7 +48,14 @@ public abstract class SimpleGui extends MalisisGui {
     public static final GuiIcon ICON_CLOSE_HOVER;
     public static final GuiIcon ICON_CLOSE_PRESSED;
     public static final GuiIcon ICON_FORUM;
-    public static final GuiIcon ICON_GITHUB;
+    public static final GuiIcon ICON_FA_GITHUB;
+    public static final GuiIcon ICON_FA_COG;
+    public static final GuiIcon ICON_FA_SITEMAP;
+    public static final GuiIcon ICON_FA_MAP;
+    public static final GuiIcon ICON_FA_PIE_CHART;
+    public static final GuiIcon ICON_FA_TROPHY;
+    public static final GuiIcon ICON_FA_BOOK;
+    public static final GuiIcon ICON_FA_SHOPPING_BAG;
     public static final GuiIcon ICON_HEAD_ZIDANE;
 
     static {
@@ -63,7 +70,7 @@ public abstract class SimpleGui extends MalisisGui {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        TEXTURE_SPRITESHEET = new GuiTexture(LOCATION_GUI_SPRITE_SHEET, 300, 142);
+        TEXTURE_SPRITESHEET = new GuiTexture(LOCATION_GUI_SPRITE_SHEET, 300, 144);
 
         ICON_EMPTY = TEXTURE_SPRITESHEET.getIcon(299, 141, 1, 1);
         ICON_BAR = TEXTURE_SPRITESHEET.getIcon(0, 126, 256, 14);
@@ -81,7 +88,14 @@ public abstract class SimpleGui extends MalisisGui {
         ICON_CLOSE_HOVER = TEXTURE_SPRITESHEET.getIcon(239, 88, 45, 19);
         ICON_CLOSE_PRESSED = TEXTURE_SPRITESHEET.getIcon(239, 107, 45, 19);
         ICON_FORUM = TEXTURE_SPRITESHEET.getIcon(284, 0, 16, 16);
-        ICON_GITHUB = TEXTURE_SPRITESHEET.getIcon(284, 17, 16, 16);
+        ICON_FA_GITHUB = TEXTURE_SPRITESHEET.getIcon(284, 16, 16, 16);
+        ICON_FA_COG = TEXTURE_SPRITESHEET.getIcon(284, 32, 16, 16);
+        ICON_FA_SITEMAP = TEXTURE_SPRITESHEET.getIcon(284, 48, 16, 16);
+        ICON_FA_MAP = TEXTURE_SPRITESHEET.getIcon(284, 64, 16, 16);
+        ICON_FA_PIE_CHART = TEXTURE_SPRITESHEET.getIcon(284, 80, 16, 16);
+        ICON_FA_TROPHY = TEXTURE_SPRITESHEET.getIcon(284, 96, 16, 16);
+        ICON_FA_BOOK = TEXTURE_SPRITESHEET.getIcon(284, 112, 16, 16);
+        ICON_FA_SHOPPING_BAG = TEXTURE_SPRITESHEET.getIcon(284, 128, 16, 16);
         ICON_HEAD_ZIDANE = new GuiTexture(ZIDANE_HEAD_LOCATION).getIcon(0, 0, 64, 64);
 
     }

@@ -9,7 +9,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.FileSystem;
 import com.almuradev.almura.client.gui.SimpleGui;
-import com.almuradev.almura.client.gui.ingame.IngameOptionsMenu;
+import com.almuradev.almura.client.gui.ingame.SimpleIngameMenu;
 import com.almuradev.almura.client.gui.ingame.hud.AlmuraHUD;
 import com.almuradev.almura.client.gui.ingame.hud.MinimalHUD;
 import com.almuradev.almura.client.gui.menu.SimpleMainMenu;
@@ -93,7 +93,7 @@ public final class ClientProxy extends CommonProxy {
                 new SimpleMainMenu(null).display();
             } else if (event.getGui().getClass().equals(GuiIngameMenu.class)) {
                 event.setCanceled(true);
-                new IngameOptionsMenu().display();
+                new SimpleIngameMenu().display();
             }
         }
     }

@@ -18,6 +18,7 @@ import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.util.text.TextFormatting;
@@ -40,6 +41,10 @@ public class SimpleMainMenu extends SimpleGui {
     public static final int BUTTON_HEIGHT = 20;
     public static final int BUTTON_PADDING = 4;
 
+    private static final String SHOP_URL = "";
+    private static final String FORUMS_URL = "http://almuramc.com";
+    private static final String ISSUES_URL = "https://github.com/AlmuraDev/Almura/issues";
+
     private UIBackgroundContainer buttonContainer;
 
     public SimpleMainMenu(SimpleGui parent) {
@@ -50,6 +55,8 @@ public class SimpleMainMenu extends SimpleGui {
     public void construct() {
         final UIBackgroundContainer container = new UIBackgroundContainer(this);
         container.setBackgroundAlpha(0);
+        container.setPosition(0, -10, Anchor.MIDDLE | Anchor.CENTER);
+        container.setSize(BUTTON_WIDTH_LONG, 205);
 
         // Almura Header
         final UIImage almuraHeader = new UIImage(this, new GuiTexture(ALMURA_HEADER_LOCATION), null);
@@ -57,7 +64,7 @@ public class SimpleMainMenu extends SimpleGui {
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         buttonContainer = new UIBackgroundContainer(this, BUTTON_WIDTH_LONG, (BUTTON_HEIGHT * 4) + (BUTTON_PADDING * 3));
-        buttonContainer.setPosition(0, SimpleGui.getPaddedY(almuraHeader, 4), Anchor.TOP | Anchor.CENTER);
+        buttonContainer.setPosition(0, SimpleGui.getPaddedY(almuraHeader, 10), Anchor.TOP | Anchor.CENTER);
         buttonContainer.setBackgroundAlpha(0);
 
         final UIButton singleplayerButton = new UIButtonBuilder(this)
@@ -109,7 +116,7 @@ public class SimpleMainMenu extends SimpleGui {
                 .listener(this)
                 .build();
 
-        final UIButton forumButton = new UIButtonBuilder(this)
+        final UIButton forumsButton = new UIButtonBuilder(this)
                 .name("button.forums")
                 .image(SimpleGui.ICON_FORUM)
                 .size(24, 24)
@@ -121,12 +128,22 @@ public class SimpleMainMenu extends SimpleGui {
 
         final UIButton issuesButton = new UIButtonBuilder(this)
                 .name("button.issues")
-                .image(SimpleGui.ICON_GITHUB)
+                .image(SimpleGui.ICON_FA_GITHUB)
                 .size(24, 24)
-                .position(SimpleGui.getPaddedX(forumButton, 4, Anchor.RIGHT), forumButton.getY())
+                .position(SimpleGui.getPaddedX(forumsButton, 4, Anchor.RIGHT), forumsButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
                 .tooltip(new UITooltip(this, "Issues", 15))
+                .build();
+
+        final UIButton shopButton = new UIButtonBuilder(this)
+                .name("button.shop")
+                .image(SimpleGui.ICON_FA_SHOPPING_BAG)
+                .size(24, 24)
+                .position(SimpleGui.getPaddedX(issuesButton, 4, Anchor.RIGHT), issuesButton.getY())
+                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+                .listener(this)
+                .tooltip(new UITooltip(this, "Shop", 15))
                 .build();
 
         // Trademark
@@ -138,7 +155,7 @@ public class SimpleMainMenu extends SimpleGui {
         copyrightLabel.setPosition(trademarkLabel.getX(), SimpleGui.getPaddedY(trademarkLabel, 4, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
         buttonContainer.add(singleplayerButton, multiplayerButton, optionsButton, aboutButton, quitButton);
-        container.add(almuraHeader, buttonContainer, trademarkLabel, copyrightLabel, forumButton, issuesButton);
+        container.add(almuraHeader, buttonContainer);
 
         // Disable escape keypress
         registerKeyListener((keyChar, keyCode) -> {
@@ -152,6 +169,11 @@ public class SimpleMainMenu extends SimpleGui {
         // Add content to screen
         addToScreen(new UIAnimatedBackground(this));
         addToScreen(container);
+        addToScreen(trademarkLabel);
+        addToScreen(copyrightLabel);
+        addToScreen(shopButton);
+        addToScreen(forumsButton);
+        addToScreen(issuesButton);
     }
 
     @Override
@@ -166,7 +188,7 @@ public class SimpleMainMenu extends SimpleGui {
                 mc.displayGuiScreen(new GuiWorldSelection(this));
                 break;
             case "button.multiplayer":
-                new DynamicServerMenu(this).display();
+                mc.displayGuiScreen(new GuiMultiplayer(this));
                 break;
             case "button.options":
                 mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
@@ -177,11 +199,15 @@ public class SimpleMainMenu extends SimpleGui {
             case "button.quit":
                 close();
                 break;
+            case "button.shop":
+                // TODO: Shopping URL
+                //Desktop.getDesktop().browse(new URI(SHOP_URL));
+                break;
             case "button.forums":
-                Desktop.getDesktop().browse(new URI("http://almuramc.com"));
+                Desktop.getDesktop().browse(new URI(FORUMS_URL));
                 break;
             case "button.issues":
-                Desktop.getDesktop().browse(new URI("https://github.com/AlmuraDev/Almura/issues"));
+                Desktop.getDesktop().browse(new URI(ISSUES_URL));
                 break;
         }
     }

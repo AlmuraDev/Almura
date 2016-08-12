@@ -9,6 +9,7 @@
         "block.MixinBlock",
         "block.MixinBlockCrops",
         "block.MixinRotableBlockType",
+        "client.gui.MixinGuiMultiplayer",
         "creativetab.MixinCreativeTabs"
     ]
 }
