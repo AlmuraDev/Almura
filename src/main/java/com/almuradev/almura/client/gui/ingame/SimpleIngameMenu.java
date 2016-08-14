@@ -24,6 +24,7 @@ import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Color;
 
 import java.awt.AWTException;
@@ -57,13 +58,13 @@ public final class SimpleIngameMenu extends SimpleGui {
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         final UIButton backButton = new UIButtonBuilder(this)
-                .name("button.back")
                 .text("Back to game")
                 .size(220, 20)
                 .position(0, SimpleGui.getPaddedY(almuraHeader, 10))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
-                .build();
+                .container(contentContainer)
+                .build("button.back");
 
         final UIBackgroundContainer shortcutContainer = new UIBackgroundContainer(this);
         shortcutContainer.setBackgroundAlpha(0);
@@ -76,99 +77,98 @@ public final class SimpleIngameMenu extends SimpleGui {
         final boolean guideAvailable = Sponge.getPluginManager().getPlugin("guide").isPresent();
 
         final UIButton shopButton = new UIButtonBuilder(this)
-                .name("button.shop")
-                .image(SimpleGui.ICON_FA_SHOPPING_BAG)
+                .container(shortcutContainer)
+                .icon(SimpleGui.ICON_FA_SHOPPING_BAG)
                 .size(24, 24)
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Shop", 15))
-                .build();
+                .tooltip(Text.of("Shop"))
+                .build("button.shop");
 
         final UIButton guideButton = new UIButtonBuilder(this)
-                .name("button.guide")
-                .image(SimpleGui.ICON_FA_BOOK)
+                .container(shortcutContainer)
+                .icon(SimpleGui.ICON_FA_BOOK)
                 .size(24, 24)
                 .position(SimpleGui.getPaddedX(shopButton, padding), shopButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Guide", 15))
+                .tooltip(Text.of("Guide"))
                 .enabled(guideAvailable)
-                .build();
+                .build("button.guide");
 
         final UIButton mapButton = new UIButtonBuilder(this)
-                .name("button.map")
-                .image(SimpleGui.ICON_FA_MAP)
+                .container(shortcutContainer)
+                .icon(SimpleGui.ICON_FA_MAP)
                 .size(24, 24)
                 .position(SimpleGui.getPaddedX(guideButton, padding), guideButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Map", 15))
-                .build();
+                .tooltip(Text.of("Map"))
+                .build("button.map");
 
         final UIButton statisticsButton = new UIButtonBuilder(this)
-                .name("button.statistics")
-                .image(SimpleGui.ICON_FA_PIE_CHART)
+                .container(shortcutContainer)
+                .icon(SimpleGui.ICON_FA_PIE_CHART)
                 .size(24, 24)
                 .position(SimpleGui.getPaddedX(mapButton, padding), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Statistics", 15))
-                .build();
+                .tooltip(Text.of("Statistics"))
+                .build("button.statistics");
 
         final UIButton achievementsButton = new UIButtonBuilder(this)
-                .name("button.achievements")
-                .image(SimpleGui.ICON_FA_TROPHY)
+                .container(shortcutContainer)
+                .icon(SimpleGui.ICON_FA_TROPHY)
                 .size(24, 24)
                 .position(SimpleGui.getPaddedX(statisticsButton, padding), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Achievements", 15))
-                .build();
+                .tooltip(Text.of("Achievements"))
+                .build("button.achievements");
 
         final UIButton forumsButton = new UIButtonBuilder(this)
-                .name("button.forums")
-                .image(SimpleGui.ICON_FORUM)
+                .container(shortcutContainer)
+                .icon(SimpleGui.ICON_FORUM)
                 .size(24, 24)
                 .position(SimpleGui.getPaddedX(achievementsButton, padding), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Forums", 15))
-                .build();
+                .tooltip(Text.of("Forums"))
+                .build("button.forums");
 
         final UIButton lanButton = new UIButtonBuilder(this)
-                .name("button.lan")
-                .image(SimpleGui.ICON_FA_SITEMAP)
+                .container(shortcutContainer)
+                .icon(SimpleGui.ICON_FA_SITEMAP)
                 .size(24, 24)
                 .position(SimpleGui.getPaddedX(forumsButton, padding), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Open to LAN", 15))
+                .tooltip(Text.of("Open to LAN"))
                 .enabled(lanAvaiable)
-                .build();
+                .build("button.lan");
 
         final UIButton optionsButton = new UIButtonBuilder(this)
-                .name("button.options")
-                .image(SimpleGui.ICON_FA_COG)
+                .container(shortcutContainer)
+                .icon(SimpleGui.ICON_FA_COG)
                 .size(24, 24)
                 .position(SimpleGui.getPaddedX(lanButton, padding), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Options", 15))
-                .build();
+                .tooltip(Text.of("Options"))
+                .build("button.options");
 
         final UIButton quitButton = new UIButtonBuilder(this)
-                .name("button.quit")
-                .text("Quit")
+                .container(contentContainer)
+                .text(Text.of("Quit"))
                 .fro(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_RED).shadow(true).build())
                 .hoverFro(FontRenderOptionsBuilder.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(98, 20)
                 .position(0, SimpleGui.getPaddedY(shortcutContainer, 25))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
-                .build();
+                .build("button.quit");
 
-        shortcutContainer.add(shopButton, guideButton, mapButton, statisticsButton, achievementsButton, forumsButton, lanButton, optionsButton);
-        contentContainer.add(almuraHeader, backButton, shortcutContainer, quitButton);
+        contentContainer.add(almuraHeader, shortcutContainer);
 
         this.addToScreen(contentContainer);
     }

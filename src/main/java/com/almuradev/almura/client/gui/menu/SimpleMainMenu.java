@@ -26,6 +26,7 @@ import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Color;
 
 import java.awt.Desktop;
@@ -69,91 +70,90 @@ public class SimpleMainMenu extends SimpleGui {
         buttonContainer.setBackgroundAlpha(0);
 
         final UIButton singleplayerButton = new UIButtonBuilder(this)
-                .text("Singleplayer")
-                .name("button.singleplayer")
+                .container(buttonContainer)
+                .text(Text.of("Singleplayer"))
                 .size(BUTTON_WIDTH_LONG, BUTTON_HEIGHT)
                 .position(0, 0)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
-                .build();
+                .build("button.singleplayer");
 
         final UIButton multiplayerButton = new UIButtonBuilder(this)
-                .text("Multiplayer")
-                .name("button.multiplayer")
+                .container(buttonContainer)
+                .text(Text.of("Multiplayer"))
                 .size(BUTTON_WIDTH_LONG, BUTTON_HEIGHT)
                 .position(0, SimpleGui.getPaddedY(singleplayerButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
-                .build();
-
+                .build("button.multiplayer");
 
         final UIButton optionsButton = new UIButtonBuilder(this)
-                .text("Options")
-                .name("button.options")
+                .container(buttonContainer)
+                .text(Text.of("Options"))
                 .size(64, BUTTON_HEIGHT)
                 .position(-68, SimpleGui.getPaddedY(multiplayerButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
-                .build();
+                .build("button.options");
 
         final UIButton modsButton = new UIButtonBuilder(this)
-                .text("Mods")
-                .name("button.mods")
+                .container(buttonContainer)
+                .text(Text.of("Mods"))
                 .size(64, BUTTON_HEIGHT)
                 .position(SimpleGui.getPaddedX(optionsButton, BUTTON_PADDING), SimpleGui.getPaddedY(multiplayerButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
-                .build();
+                .build("button.mods");
 
         final UIButton aboutButton = new UIButtonBuilder(this)
-                .text("About")
-                .name("button.about")
+                .container(buttonContainer)
+                .text(Text.of("About"))
                 .size(64, BUTTON_HEIGHT)
                 .position(SimpleGui.getPaddedX(modsButton, BUTTON_PADDING), SimpleGui.getPaddedY(multiplayerButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
-                .build();
+                .build("button.about");
 
         final UIButton quitButton = new UIButtonBuilder(this)
-                .text("Quit")
-                .name("button.quit")
+                .container(buttonContainer)
+                .text(Text.of("Quit"))
                 .fro(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_RED).shadow(true).build())
                 .hoverFro(FontRenderOptionsBuilder.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(BUTTON_WIDTH_LONG, BUTTON_HEIGHT)
                 .position(singleplayerButton.getX(), SimpleGui.getPaddedY(optionsButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
-                .build();
+                .build("button.quit");
 
         final UIButton forumsButton = new UIButtonBuilder(this)
-                .name("button.forums")
-                .image(SimpleGui.ICON_FORUM)
+                .container(buttonContainer)
+                .icon(SimpleGui.ICON_FORUM)
                 .size(24, 24)
                 .position(-4, -4)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Forums", 15))
-                .build();
+                .tooltip(Text.of("Forums"))
+                .build("button.forums");
 
         final UIButton issuesButton = new UIButtonBuilder(this)
-                .name("button.issues")
-                .image(SimpleGui.ICON_FA_GITHUB)
+                .container(buttonContainer)
+                .icon(SimpleGui.ICON_FA_GITHUB)
                 .size(24, 24)
                 .position(SimpleGui.getPaddedX(forumsButton, 4, Anchor.RIGHT), forumsButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Issues", 15))
-                .build();
+                .tooltip(Text.of("Issues"))
+                .build("button.issues");
 
         final UIButton shopButton = new UIButtonBuilder(this)
-                .name("button.shop")
-                .image(SimpleGui.ICON_FA_SHOPPING_BAG)
+                .container(buttonContainer)
+                .icon(SimpleGui.ICON_FA_SHOPPING_BAG)
                 .size(24, 24)
                 .position(SimpleGui.getPaddedX(issuesButton, 4, Anchor.RIGHT), issuesButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(new UITooltip(this, "Shop", 15))
-                .build();
+                .tooltip(Text.of("Shop"))
+                .build("button.shop");
 
         // Trademark
         final UILabel trademarkLabel = new UILabel(this, TextFormatting.YELLOW + "Minecraft is a registered trademark of Mojang AB");
@@ -163,7 +163,6 @@ public class SimpleMainMenu extends SimpleGui {
         final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + "Copyright AlmuraDev 2012 - 2016");
         copyrightLabel.setPosition(trademarkLabel.getX(), SimpleGui.getPaddedY(trademarkLabel, 4, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
-        buttonContainer.add(singleplayerButton, multiplayerButton, optionsButton, modsButton, aboutButton, quitButton);
         container.add(almuraHeader, buttonContainer);
 
         // Disable escape keypress

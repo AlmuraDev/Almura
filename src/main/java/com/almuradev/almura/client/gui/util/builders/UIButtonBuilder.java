@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.util.builders;
 
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -19,11 +20,12 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 public final class UIButtonBuilder {
 
     private final MalisisGui gui;
+    private UIContainer container;
     private FontRenderOptions fro, hoverFro;
     private int width, height, x, y, anchor;
     private MalisisFont font;
     private Object object;
-    private String name, text;
+    private Text text;
     private UIImage image;
     private UITooltip tooltip;
     private boolean enabled = true;
@@ -33,12 +35,17 @@ public final class UIButtonBuilder {
     }
 
     public UIButtonBuilder text(String text) {
+        return this.text(Text.of(text));
+    }
+
+    public UIButtonBuilder text(Text text) {
         this.text = text;
         return this;
     }
 
-    public UIButtonBuilder tooltip(String tooltip) {
-        return this.tooltip(new UITooltip(gui, tooltip, 0));
+    @SuppressWarnings("deprecation")
+    public UIButtonBuilder tooltip(Text text) {
+        return this.tooltip(new UITooltip(this.gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), 15));
     }
 
     public UIButtonBuilder tooltip(UITooltip tooltip) {
@@ -51,17 +58,12 @@ public final class UIButtonBuilder {
         return this;
     }
 
-    public UIButtonBuilder image(GuiIcon icon) {
+    public UIButtonBuilder icon(GuiIcon icon) {
         return this.image(new UIImage(gui, null, icon));
     }
 
-    public UIButtonBuilder image(GuiTexture texture) {
+    public UIButtonBuilder texture(GuiTexture texture) {
         return this.image(new UIImage(gui, texture, null));
-    }
-
-    public UIButtonBuilder name(String name) {
-        this.name = name;
-        return this;
     }
 
     public UIButtonBuilder size(int width, int height) {
@@ -100,11 +102,6 @@ public final class UIButtonBuilder {
         return this;
     }
 
-    @SuppressWarnings("deprecation")
-    public UIButtonBuilder text(Text text) {
-        return this.text(TextSerializers.LEGACY_FORMATTING_CODE.serialize(text));
-    }
-
     public UIButtonBuilder position(int x, int y) {
         this.x(x);
         this.y(y);
@@ -138,44 +135,52 @@ public final class UIButtonBuilder {
         return this;
     }
 
-    public UIButton build() {
-        final UIButton button = new UIButton(gui);
-        button.setPosition(x, y);
-        if (name != null) {
-            button.setName(name);
-        }
-        if (text != null) {
-            button.setText(text);
-        }
-        if (image != null) {
-            button.setImage(image);
-        }
-        if (tooltip != null) {
-            button.setTooltip(tooltip);
-        }
-        if (width != 0) {
-            button.setSize(width, button.getHeight());
-        }
-        if (height != 0) {
-            button.setSize(button.getWidth(), height);
-        }
-        if (anchor != 0) {
-            button.setAnchor(anchor);
-        }
-        if (object != null) {
-            button.register(object);
-        }
-        if (fro != null) {
-            button.setFontRenderOptions(fro);
-        }
-        if (hoverFro != null) {
-            button.setHoveredFontRendererOptions(hoverFro);
-        }
-        if (font != null) {
-            button.setFont(font);
-        }
+    public UIButtonBuilder container(UIContainer container) {
+        this.container = container;
+        return this;
+    }
 
-        button.setDisabled(!enabled);
+    @SuppressWarnings("unchecked")
+    public UIButton build(String id) {
+        final UIButton button = new UIButton(this.gui);
+        button.setPosition(x, y);
+        if (id != null) {
+            button.setName(id);
+        }
+        if (this.text != null) {
+            button.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.text));
+        }
+        if (this.image != null) {
+            button.setImage(this.image);
+        }
+        if (this.tooltip != null) {
+            button.setTooltip(this.tooltip);
+        }
+        if (this.width != 0) {
+            button.setSize(this.width, button.getHeight());
+        }
+        if (this.height != 0) {
+            button.setSize(button.getWidth(), this.height);
+        }
+        if (this.anchor != 0) {
+            button.setAnchor(this.anchor);
+        }
+        if (this.object != null) {
+            button.register(this.object);
+        }
+        if (this.fro != null) {
+            button.setFontRenderOptions(this.fro);
+        }
+        if (this.hoverFro != null) {
+            button.setHoveredFontRendererOptions(this.hoverFro);
+        }
+        if (this.font != null) {
+            button.setFont(this.font);
+        }
+        if (this.container != null) {
+            this.container.add(button);
+        }
+        button.setDisabled(!this.enabled);
 
         return button;
     }
