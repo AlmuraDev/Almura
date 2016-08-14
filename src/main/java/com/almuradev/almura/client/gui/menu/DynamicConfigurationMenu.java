@@ -43,7 +43,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
     @Override
     public void construct() {
         guiscreenBackground = true;
-        final ClientConfiguration configuration = ((ClientProxy) Almura.proxy).getConfigAdapter().getConfig();
+        final ClientConfiguration configuration = ((ClientProxy) Almura.proxy).getPlatformConfigAdapter().getConfig();
         final ClientCategory clientCategory = configuration.client;
         final DebugCategory debugCategory = configuration.debug;
 
@@ -184,12 +184,12 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
-        final ConfigurationAdapter<ClientConfiguration> configAdapter = ((ClientProxy) Almura.proxy).getConfigAdapter();
+        final ConfigurationAdapter<ClientConfiguration> configAdapter = ((ClientProxy) Almura.proxy).getPlatformConfigAdapter();
         final ClientConfiguration configuration = configAdapter.getConfig();
         switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
             case "button.graphics":
                 configuration.client.optimizeGame();
-                new DynamicConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to"
+                new SimpleConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to"
                         + " apply settings.", "Almura").display();
                 break;
             case "button.back":
@@ -209,7 +209,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
                     debugCategory.packs = debugPacksCheckBox.isChecked();
                     debugCategory.mappings = debugMappingsCheckBox.isChecked();
                     debugCategory.recipes = debugRecipesCheckBox.isChecked();
-                    Almura.proxy.getConfigAdapter().save();
+                    Almura.proxy.getPlatformConfigAdapter().save();
                 } catch (IOException | ObjectMappingException e) {
                     throw new RuntimeException("Failed to save config for class [" + configAdapter.getConfigClass() + "] from [" + configAdapter.
                             getConfigPath() + "]!", e);
@@ -220,7 +220,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
     @Subscribe
     public void onSelection(@SuppressWarnings("rawtypes") UISelect.SelectEvent event) {
-        final ClientCategory clientCategory = ((ClientProxy) Almura.proxy).getConfigAdapter().getConfig().client;
+        final ClientCategory clientCategory = ((ClientProxy) Almura.proxy).getPlatformConfigAdapter().getConfig().client;
         final Object newValue = event.getNewValue();
 
         switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {

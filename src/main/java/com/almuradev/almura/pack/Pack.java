@@ -22,6 +22,7 @@ public final class Pack implements CatalogType {
 
     private final String id, name;
     private final Map<String, CatalogType> objectsById;
+
     protected Pack(String id, String name, Map<String, CatalogType> objectsById) {
         this.id = id;
         this.name = name;

@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.api.block;
 
-import com.almuradev.almura.BuildableCatalogType;
-import com.almuradev.almura.api.CreativeTab;
+import com.almuradev.almura.api.BuildableCatalogType;
+import com.almuradev.almura.api.creativetab.CreativeTab;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import org.spongepowered.api.Sponge;

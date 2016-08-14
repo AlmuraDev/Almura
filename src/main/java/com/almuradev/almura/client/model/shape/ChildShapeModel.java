@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.shape;
+package com.almuradev.almura.client.model.shape;
 
 import com.almuradev.almura.Almura;
 import com.flowpowered.math.vector.Vector3f;

@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.shape;
+package com.almuradev.almura.client.model.shape;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

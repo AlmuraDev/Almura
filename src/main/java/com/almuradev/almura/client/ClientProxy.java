@@ -12,8 +12,8 @@ import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.ingame.SimpleIngameMenu;
 import com.almuradev.almura.client.gui.ingame.hud.AlmuraHUD;
 import com.almuradev.almura.client.gui.ingame.hud.MinimalHUD;
-import com.almuradev.almura.client.gui.menu.SimpleMainMenu;
-import com.almuradev.almura.client.shape.ShapeLoader;
+import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
+import com.almuradev.almura.client.model.shape.ShapeLoader;
 import com.almuradev.almura.configuration.ConfigurationAdapter;
 import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
@@ -90,7 +90,7 @@ public final class ClientProxy extends CommonProxy {
         if (event.getGui() != null) {
             if (event.getGui().getClass().equals(GuiMainMenu.class)) {
                 event.setCanceled(true);
-                new SimpleMainMenu(null).display();
+                new DynamicMainMenu(null).display();
             } else if (event.getGui().getClass().equals(GuiIngameMenu.class)) {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();
@@ -105,7 +105,7 @@ public final class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public ConfigurationAdapter<ClientConfiguration> getConfigAdapter() {
+    public ConfigurationAdapter<ClientConfiguration> getPlatformConfigAdapter() {
         return this.configAdapter;
     }
 

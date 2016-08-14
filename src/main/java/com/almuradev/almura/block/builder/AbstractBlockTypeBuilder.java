@@ -8,8 +8,8 @@ package com.almuradev.almura.block.builder;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.api.CreativeTab;
 import com.almuradev.almura.api.block.BuildableBlockType;
+import com.almuradev.almura.api.creativetab.CreativeTab;
 import com.almuradev.almura.block.GenericBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;

@@ -16,7 +16,6 @@ import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiOptions;
@@ -36,7 +35,7 @@ import java.net.URISyntaxException;
 import java.util.Locale;
 
 @SideOnly(Side.CLIENT)
-public class SimpleMainMenu extends SimpleGui {
+public class DynamicMainMenu extends SimpleGui {
 
     public static final int BUTTON_WIDTH_LONG = 200;
     public static final int BUTTON_WIDTH_SHORT = 98;
@@ -49,7 +48,7 @@ public class SimpleMainMenu extends SimpleGui {
 
     private UIBackgroundContainer buttonContainer;
 
-    public SimpleMainMenu(SimpleGui parent) {
+    public DynamicMainMenu(SimpleGui parent) {
         super(parent);
     }
 
@@ -168,7 +167,7 @@ public class SimpleMainMenu extends SimpleGui {
         // Disable escape keypress
         registerKeyListener((keyChar, keyCode) -> {
             if (keyCode == Keyboard.KEY_ESCAPE) {
-                new SimpleMainMenu(null).display();
+                new DynamicMainMenu(null).display();
                 return true;
             }
             return false;

@@ -9,8 +9,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.FileSystem;
-import com.almuradev.almura.api.CreativeTab;
 import com.almuradev.almura.api.block.BuildableBlockType;
+import com.almuradev.almura.api.creativetab.CreativeTab;
 import com.almuradev.almura.configuration.ConfigurationAdapter;
 import com.almuradev.almura.configuration.serializer.CreativeTabSerializer;
 import com.almuradev.almura.configuration.type.BlockConfiguration;
@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class PackManager {
+
     static final Map<String, Pack> packsById = new HashMap<>();
 
     public static void loadPacks(Path rootDirectory) {
@@ -83,7 +84,13 @@ public final class PackManager {
         return builder.build(parentName + "/" + fileName, configuration.general.title);
     }
 
+    private static boolean isValidLogicCandidateType(Path file) {
+        final String extension = file.getFileName().toString().split("\\.")[1];
+        return "block".equalsIgnoreCase(extension);
+    }
+
     private static final class CatalogTypeFileVisitor implements FileVisitor<Path> {
+
         final Map<String, List<Path>> candidatesByPack = new HashMap<>();
 
         @Override
@@ -126,10 +133,5 @@ public final class PackManager {
         Map<String, List<Path>> getCandidates() {
             return this.candidatesByPack;
         }
-    }
-
-    private static boolean isValidLogicCandidateType(Path file) {
-        final String extension = file.getFileName().toString().split("\\.")[1];
-        return "block".equalsIgnoreCase(extension);
     }
 }

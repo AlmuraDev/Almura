@@ -29,7 +29,9 @@ public final class ConfigurationAdapter<T extends AbstractConfiguration> {
     public ConfigurationAdapter(Class<T> configClass, ConfigurationOptions options, Path configPath) {
         this.configClass = configClass;
         this.configPath = configPath;
-        this.loader = HoconConfigurationLoader.builder().setDefaultOptions(options).setPath(configPath).build();
+        this.loader = HoconConfigurationLoader.builder()
+                .setDefaultOptions(options)
+                .setPath(configPath).build();
         try {
             this.mapper = ObjectMapper.forClass(configClass).bindToNew();
         } catch (ObjectMappingException e) {

@@ -6,7 +6,6 @@
 package com.almuradev.almura.client.gui;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.FileSystem;
 import com.google.common.base.Optional;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -18,8 +17,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
-
-import java.io.IOException;
 
 @SideOnly(Side.CLIENT)
 public abstract class SimpleGui extends MalisisGui {
@@ -59,17 +56,13 @@ public abstract class SimpleGui extends MalisisGui {
     public static final GuiIcon ICON_HEAD_ZIDANE;
 
     static {
-        try {
-            LOCATION_GUI_SPRITE_SHEET = FileSystem.registerTexture(Almura.PLUGIN_ID, "textures/gui/gui.png", "/assets/almura/textures/gui/gui.png");
-            ALMURA_HEADER_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "almura_header.png", "/assets/almura/almura_logo.png");
-            ALMURA_MAN_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "almura_man.png", "/assets/almura/almura_man.png");
-            SPONGIE_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongie.png", "/assets/almura/spongie.png");
-            SPONGEPOWERED_LOGO_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "spongepowered_logo.png", "/assets/almura/spongepowered_logo"
-                    + ".png");
-            ZIDANE_HEAD_LOCATION = FileSystem.registerTexture(Almura.PLUGIN_ID, "zidane_head.png", "/assets/almura/zidane_head.png");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        LOCATION_GUI_SPRITE_SHEET = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/gui.png");
+        ALMURA_HEADER_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/almura_logo.png");
+        ALMURA_MAN_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/almura_man.png");
+        SPONGIE_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "texture/gui/spongie.png");
+        SPONGEPOWERED_LOGO_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/spongepowered_logo.png");
+        ZIDANE_HEAD_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/zidane_head.png");
+
         TEXTURE_SPRITESHEET = new GuiTexture(LOCATION_GUI_SPRITE_SHEET, 300, 144);
 
         ICON_EMPTY = TEXTURE_SPRITESHEET.getIcon(299, 141, 1, 1);
@@ -97,7 +90,6 @@ public abstract class SimpleGui extends MalisisGui {
         ICON_FA_BOOK = TEXTURE_SPRITESHEET.getIcon(284, 112, 16, 16);
         ICON_FA_SHOPPING_BAG = TEXTURE_SPRITESHEET.getIcon(284, 128, 16, 16);
         ICON_HEAD_ZIDANE = new GuiTexture(ZIDANE_HEAD_LOCATION).getIcon(0, 0, 64, 64);
-
     }
 
     protected final Optional<SimpleGui> parent;

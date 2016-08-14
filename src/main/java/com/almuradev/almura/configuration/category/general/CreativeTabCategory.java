@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.configuration.category.general;
 
-import com.almuradev.almura.api.CreativeTab;
-import com.almuradev.almura.api.CreativeTabs;
+import com.almuradev.almura.api.creativetab.CreativeTab;
+import com.almuradev.almura.api.creativetab.CreativeTabs;
 import com.almuradev.almura.configuration.AbstractConfigurationCategory;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;

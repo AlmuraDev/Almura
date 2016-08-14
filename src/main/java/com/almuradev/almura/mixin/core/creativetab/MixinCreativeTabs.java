@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.mixin.core.creativetab;
 
-import com.almuradev.almura.api.CreativeTab;
+import com.almuradev.almura.api.creativetab.CreativeTab;
 import com.google.common.base.Objects;
 import net.minecraft.creativetab.CreativeTabs;
 import org.spongepowered.asm.mixin.Final;

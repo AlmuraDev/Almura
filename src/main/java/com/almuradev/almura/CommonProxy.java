@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.api.CreativeTab;
 import com.almuradev.almura.api.block.BuildableBlockType;
+import com.almuradev.almura.api.creativetab.CreativeTab;
 import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.ConfigurationAdapter;
@@ -76,7 +76,7 @@ public abstract class CommonProxy {
         this.network.registerMessage(SWorldInformationMessage.class, 0);
     }
 
-    public abstract ConfigurationAdapter<? extends AbstractConfiguration> getConfigAdapter();
+    public abstract ConfigurationAdapter<? extends AbstractConfiguration> getPlatformConfigAdapter();
 
     private void sendWorldHUDData(Player player, Transform<World> toTransform) {
         String clientWorldName = toTransform.getExtent().getName();

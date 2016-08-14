@@ -7,8 +7,8 @@ package com.almuradev.almura.registry;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.api.CreativeTab;
-import com.almuradev.almura.api.CreativeTabs;
+import com.almuradev.almura.api.creativetab.CreativeTab;
+import com.almuradev.almura.api.creativetab.CreativeTabs;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 import org.spongepowered.api.registry.RegistrationPhase;

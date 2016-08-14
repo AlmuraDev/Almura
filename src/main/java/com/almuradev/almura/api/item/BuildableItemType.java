@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.api.item;
 
-import com.almuradev.almura.BuildableCatalogType;
-import com.almuradev.almura.api.CreativeTab;
+import com.almuradev.almura.api.BuildableCatalogType;
+import com.almuradev.almura.api.creativetab.CreativeTab;
 import org.spongepowered.api.item.ItemType;
 
 public interface BuildableItemType extends BuildableCatalogType, ItemType {

@@ -15,11 +15,10 @@ import java.util.List;
 @ConfigSerializable
 public class GeneralCategory extends AbstractConfigurationCategory {
 
+    @Setting(value = "creative-tab") public final CreativeTabCategory creativeTab = new CreativeTabCategory();
     @Setting public String title = "";
     @Setting public List<String> tooltip = new LinkedList<>();
     @Setting public float hardness = 1f;
     @Setting public float resistance = 1;
-
-    @Setting(value = "creative-tab") public final CreativeTabCategory creativeTab = new CreativeTabCategory();
 
 }

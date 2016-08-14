@@ -4,4 +4,4 @@
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 @org.spongepowered.api.util.annotation.NonnullByDefault
-package com.almuradev.almura.util;
+package com.almuradev.almura.configuration.category.general;

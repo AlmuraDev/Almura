@@ -19,11 +19,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.Locale;
 
 @SideOnly(Side.CLIENT)
-public class DynamicConfirmMenu extends SimpleGui {
+public class SimpleConfirmMenu extends SimpleGui {
 
     private String message1, message2, title;
 
-    public DynamicConfirmMenu(SimpleGui parent, String message1, String message2, String title) {
+    public SimpleConfirmMenu(SimpleGui parent, String message1, String message2, String title) {
         super(parent);
         this.message1 = message1;
         this.message2 = message2;
