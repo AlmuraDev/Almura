@@ -22,6 +22,7 @@ import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
@@ -89,18 +90,26 @@ public class SimpleMainMenu extends SimpleGui {
         final UIButton optionsButton = new UIButtonBuilder(this)
                 .text("Options")
                 .name("button.options")
-                .size(BUTTON_WIDTH_SHORT, BUTTON_HEIGHT)
-                .position(-((BUTTON_WIDTH_SHORT / 2) + (BUTTON_PADDING / 2)), SimpleGui.getPaddedY(multiplayerButton, BUTTON_PADDING))
+                .size(64, BUTTON_HEIGHT)
+                .position(-68, SimpleGui.getPaddedY(multiplayerButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build();
 
+        final UIButton modsButton = new UIButtonBuilder(this)
+                .text("Mods")
+                .name("button.mods")
+                .size(64, BUTTON_HEIGHT)
+                .position(SimpleGui.getPaddedX(optionsButton, BUTTON_PADDING), SimpleGui.getPaddedY(multiplayerButton, BUTTON_PADDING))
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .listener(this)
+                .build();
 
         final UIButton aboutButton = new UIButtonBuilder(this)
                 .text("About")
                 .name("button.about")
-                .size(BUTTON_WIDTH_SHORT, BUTTON_HEIGHT)
-                .position(SimpleGui.getPaddedX(optionsButton, BUTTON_PADDING), SimpleGui.getPaddedY(multiplayerButton, BUTTON_PADDING))
+                .size(64, BUTTON_HEIGHT)
+                .position(SimpleGui.getPaddedX(modsButton, BUTTON_PADDING), SimpleGui.getPaddedY(multiplayerButton, BUTTON_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build();
@@ -154,7 +163,7 @@ public class SimpleMainMenu extends SimpleGui {
         final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + "Copyright AlmuraDev 2012 - 2016");
         copyrightLabel.setPosition(trademarkLabel.getX(), SimpleGui.getPaddedY(trademarkLabel, 4, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
-        buttonContainer.add(singleplayerButton, multiplayerButton, optionsButton, aboutButton, quitButton);
+        buttonContainer.add(singleplayerButton, multiplayerButton, optionsButton, modsButton, aboutButton, quitButton);
         container.add(almuraHeader, buttonContainer);
 
         // Disable escape keypress
@@ -192,6 +201,9 @@ public class SimpleMainMenu extends SimpleGui {
                 break;
             case "button.options":
                 mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
+                break;
+            case "button.mods":
+                mc.displayGuiScreen(new GuiModList(this));
                 break;
             case "button.about":
                 new SimpleAboutMenu(this).display();
