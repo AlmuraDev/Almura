@@ -11,7 +11,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.FileSystem;
 import com.almuradev.almura.api.block.BuildableBlockType;
 import com.almuradev.almura.api.creativetab.CreativeTab;
-import com.almuradev.almura.configuration.ConfigurationAdapter;
+import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.serializer.CreativeTabSerializer;
 import com.almuradev.almura.configuration.type.BlockConfiguration;
 import com.google.common.reflect.TypeToken;
@@ -67,7 +67,7 @@ public final class PackManager {
     private static BuildableBlockType createBlockType(Path file) throws IOException, ObjectMappingException {
         final ConfigurationOptions options = ConfigurationOptions.defaults().setSerializers(TypeSerializers.getDefaultSerializers().newChild()
                 .registerType(TypeToken.of(CreativeTab.class), new CreativeTabSerializer()));
-        final ConfigurationAdapter<BlockConfiguration> adapter = new ConfigurationAdapter<>(BlockConfiguration.class, options, file);
+        final MappedConfigurationAdapter<BlockConfiguration> adapter = new MappedConfigurationAdapter<>(BlockConfiguration.class, options, file);
         adapter.load();
 
         final String parentName = file.getParent().getFileName().toString();

@@ -10,7 +10,7 @@ import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
 import com.almuradev.almura.client.gui.components.UIForm;
-import com.almuradev.almura.configuration.ConfigurationAdapter;
+import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.category.DebugCategory;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
@@ -184,7 +184,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
-        final ConfigurationAdapter<ClientConfiguration> configAdapter = ((ClientProxy) Almura.proxy).getPlatformConfigAdapter();
+        final MappedConfigurationAdapter<ClientConfiguration> configAdapter = ((ClientProxy) Almura.proxy).getPlatformConfigAdapter();
         final ClientConfiguration configuration = configAdapter.getConfig();
         switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
             case "button.graphics":

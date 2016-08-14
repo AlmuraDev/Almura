@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.configuration;
 
+import com.typesafe.config.ConfigRenderOptions;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public final class ConfigurationAdapter<T extends AbstractConfiguration> {
+public final class MappedConfigurationAdapter<T extends AbstractConfiguration> {
 
     private final Class<T> configClass;
     private final Path configPath;
@@ -26,10 +27,11 @@ public final class ConfigurationAdapter<T extends AbstractConfiguration> {
     private ConfigurationNode root;
     private T config;
 
-    public ConfigurationAdapter(Class<T> configClass, ConfigurationOptions options, Path configPath) {
+    public MappedConfigurationAdapter(Class<T> configClass, ConfigurationOptions options, Path configPath) {
         this.configClass = configClass;
         this.configPath = configPath;
         this.loader = HoconConfigurationLoader.builder()
+                .setRenderOptions(ConfigRenderOptions.defaults().setFormatted(true).setComments(true).setOriginComments(false))
                 .setDefaultOptions(options)
                 .setPath(configPath).build();
         try {

@@ -14,7 +14,7 @@ import com.almuradev.almura.client.gui.ingame.hud.AlmuraHUD;
 import com.almuradev.almura.client.gui.ingame.hud.MinimalHUD;
 import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
 import com.almuradev.almura.client.model.shape.ShapeLoader;
-import com.almuradev.almura.configuration.ConfigurationAdapter;
+import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
 import com.almuradev.almura.network.NetworkHandlers;
@@ -47,9 +47,10 @@ public final class ClientProxy extends CommonProxy {
 
     public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
 
-    private static final String HEADER = "1.0\nAlmura client configuration\n\nFor further assistance, join #almura on EsperNet.";
+    private static final String HEADER = "2.0\nAlmura client configuration\n\nFor further assistance, join #almura on EsperNet.";
+
     @Nullable
-    private ConfigurationAdapter<ClientConfiguration> configAdapter;
+    private MappedConfigurationAdapter<ClientConfiguration> configAdapter;
     @Nullable
     private SimpleGui customIngameHud;
 
@@ -57,7 +58,7 @@ public final class ClientProxy extends CommonProxy {
     public void onGamePreInitialization(GamePreInitializationEvent event) {
         super.onGamePreInitialization(event);
 
-        this.configAdapter = new ConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults().setHeader(HEADER), FileSystem
+        this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults().setHeader(HEADER), FileSystem
                 .PATH_CONFIG_CLIENT);
         try {
             this.configAdapter.load();
@@ -105,7 +106,7 @@ public final class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public ConfigurationAdapter<ClientConfiguration> getPlatformConfigAdapter() {
+    public MappedConfigurationAdapter<ClientConfiguration> getPlatformConfigAdapter() {
         return this.configAdapter;
     }
 
