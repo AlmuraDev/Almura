@@ -22,10 +22,15 @@ import org.lwjgl.input.Keyboard;
 public abstract class SimpleGui extends MalisisGui {
 
     public static final ResourceLocation LOCATION_GUI_SPRITE_SHEET;
-    public static final ResourceLocation ALMURA_HEADER_LOCATION;
+    public static final ResourceLocation ALMURA_LOGO_LOCATION;
     public static final ResourceLocation ALMURA_MAN_LOCATION;
     public static final ResourceLocation SPONGIE_LOCATION;
     public static final ResourceLocation SPONGEPOWERED_LOGO_LOCATION;
+    public static final ResourceLocation BLOOD_HEAD_LOCATION;
+    public static final ResourceLocation DOCKTER_HEAD_LOCATION;
+    public static final ResourceLocation GRINCH_HEAD_LOCATION;
+    public static final ResourceLocation MUMFREY_HEAD_LOCATION;
+    public static final ResourceLocation WIFEE_HEAD_LOCATION;
     public static final ResourceLocation ZIDANE_HEAD_LOCATION;
     public static final GuiTexture TEXTURE_SPRITESHEET;
 
@@ -57,11 +62,16 @@ public abstract class SimpleGui extends MalisisGui {
 
     static {
         LOCATION_GUI_SPRITE_SHEET = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/gui.png");
-        ALMURA_HEADER_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/almura_logo.png");
+        ALMURA_LOGO_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/almura_logo.png");
         ALMURA_MAN_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/almura_man.png");
-        SPONGIE_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "texture/gui/spongie.png");
+        SPONGIE_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/spongie.png");
         SPONGEPOWERED_LOGO_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/spongepowered_logo.png");
-        ZIDANE_HEAD_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/zidane_head.png");
+        BLOOD_HEAD_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/about/blood_head.png");
+        DOCKTER_HEAD_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/about/dockter_head.png");
+        GRINCH_HEAD_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/about/grinch_head.png");
+        MUMFREY_HEAD_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/about/mumfrey_head.png");
+        WIFEE_HEAD_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/about/wifee_head.png");
+        ZIDANE_HEAD_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/about/zidane_head.png");
 
         TEXTURE_SPRITESHEET = new GuiTexture(LOCATION_GUI_SPRITE_SHEET, 300, 144);
 

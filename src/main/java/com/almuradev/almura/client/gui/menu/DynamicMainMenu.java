@@ -60,7 +60,7 @@ public class DynamicMainMenu extends SimpleGui {
         container.setSize(BUTTON_WIDTH_LONG, 205);
 
         // Almura Header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(ALMURA_HEADER_LOCATION), null);
+        final UIImage almuraHeader = new UIImage(this, new GuiTexture(ALMURA_LOGO_LOCATION), null);
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 

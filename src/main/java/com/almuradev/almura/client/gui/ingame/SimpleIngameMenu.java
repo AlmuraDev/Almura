@@ -52,7 +52,7 @@ public final class SimpleIngameMenu extends SimpleGui {
         contentContainer.setAnchor(Anchor.MIDDLE | Anchor.CENTER);
 
         // Almura Header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(ALMURA_HEADER_LOCATION), null);
+        final UIImage almuraHeader = new UIImage(this, new GuiTexture(ALMURA_LOGO_LOCATION), null);
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
