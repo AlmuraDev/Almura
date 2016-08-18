@@ -188,11 +188,12 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                         sprite = ModelLoader.White.INSTANCE;
                     }
 
-                    final UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(this.format);
-                    builder.setTexture(sprite);
-                    builder.setQuadOrientation(EnumFacing.SOUTH);
-
                     final Vector3f normal = quad.normal;
+
+                    final UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(this.format);
+                    builder.setContractUVs(true);
+                    builder.setTexture(sprite);
+                    builder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
 
                     for (Quad.Vertex vertex : quad.vertices) {
                         for (int e = 0; e < this.format.getElementCount(); e++) {
@@ -328,11 +329,11 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
             if (rotation != null) {
                 final Matrix4f opMatrix = new Matrix4f();
                 // TODO Check gl book to see why I need to have an op matrix here...
-                opMatrix.rotX(rotation.getX());
+                opMatrix.rotX((float) Math.toRadians(rotation.getX()));
                 adjustment.mul(opMatrix);
-                opMatrix.rotY(rotation.getY());
+                opMatrix.rotY((float) Math.toRadians(rotation.getY()));
                 adjustment.mul(opMatrix);
-                opMatrix.rotZ(rotation.getZ());
+                opMatrix.rotZ((float) Math.toRadians(rotation.getZ()));
                 adjustment.mul(opMatrix);
             }
 
