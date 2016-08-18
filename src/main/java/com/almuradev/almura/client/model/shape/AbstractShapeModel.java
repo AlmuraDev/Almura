@@ -21,6 +21,7 @@ import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.model.IModelState;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
@@ -61,10 +62,10 @@ abstract class AbstractShapeModel<S extends AbstractShapeModel, B extends Abstra
 
         static final ResourceLocation LOCATION_MISSING_TEXTURE = ModelLoader.White.LOCATION;
 
-        abstract S parse(IResource resource) throws IOException;
+        abstract S parse(ResourceLocation source, IResource resource) throws IOException, ObjectMappingException;
     }
 
-    public abstract static class Baked<S extends AbstractShapeModel> implements IPerspectiveAwareModel {
+    abstract static class Baked<S extends AbstractShapeModel> implements IPerspectiveAwareModel {
 
         static final TextureAtlasSprite SPRITE_MISSING = ModelLoader.White.INSTANCE;
         final S cookableModel;

@@ -23,8 +23,6 @@ public final class ShapeLoader implements ICustomModelLoader {
 
     @Override
     public boolean accepts(ResourceLocation modelLocation) {
-
-        // Only Almura would ever load shapes. No one else is fucking retarded enough to use this format...
         return modelLocation.getResourceDomain().equals(Almura.PLUGIN_ID) && modelLocation.getResourcePath().endsWith(".shape");
     }
 
@@ -51,7 +49,7 @@ public final class ShapeLoader implements ICustomModelLoader {
                     parser = new ChildShapeModel.Parser();
                 }
                 try {
-                    model = parser.parse(resource);
+                    model = parser.parse(modelLocation, resource);
                     models.put(modelLocation, model);
                 } catch (Exception ex) {
                     Almura.instance.logger.error("An error occurred loading shape [{}]!", modelLocation, ex);

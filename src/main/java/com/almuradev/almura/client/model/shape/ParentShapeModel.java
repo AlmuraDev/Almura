@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.client.model.shape;
 
+import com.almuradev.almura.client.model.TransformPart;
 import com.flowpowered.math.vector.Vector2f;
 import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.Charsets;
@@ -12,6 +13,7 @@ import com.google.common.base.Function;
 import com.google.common.reflect.TypeToken;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResource;
@@ -29,17 +31,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
 public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, ParentShapeModel.Baked> {
 
+    private final Map<ItemCameraTransforms.TransformType, Map<TransformPart, Vector3f>> perspectives;
     private final List<Quad> quads;
 
-    private ParentShapeModel(List<Quad> quads) {
+    private ParentShapeModel(Map<ItemCameraTransforms.TransformType, Map<TransformPart, Vector3f>> perspectives, List<Quad> quads) {
         // Parent shapes have no dependencies and know no texture
         super(Collections.emptyList(), Collections.emptyList(), null);
+        this.perspectives = perspectives;
         this.quads = quads;
     }
 
@@ -52,8 +59,13 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
         return this.quads;
     }
 
+    Map<ItemCameraTransforms.TransformType, Map<TransformPart, Vector3f>> getPerspectives() {
+        return this.perspectives;
+    }
+
     static final class Parser extends AbstractShapeModel.Parser<ParentShapeModel> {
 
+        static final String SECTION_PERSPECTIVE = "perspective";
         static final String SECTION_QUADS = "quads";
         static final String SECTION_VERTICES = "vertices";
         static final String KEY_TEXTURE = "texture";
@@ -76,7 +88,6 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
                 |                          |
                 |                          |
                 |                          |
-                |                          |
                 | Fourth            First  |
                 |__________________________|
                 (0, 1)                (1, 1)
@@ -88,13 +99,50 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
         }
 
         @Override
-        ParentShapeModel parse(IResource resource) throws IOException {
+        ParentShapeModel parse(ResourceLocation source, IResource resource) throws IOException, ObjectMappingException {
             final ConfigurationLoader<ConfigurationNode> loader = GsonConfigurationLoader.builder()
                     .setDefaultOptions(ConfigurationOptions.defaults())
                     .setSource(() -> new BufferedReader(new InputStreamReader(resource.getInputStream(), Charsets.UTF_8)))
                     .build();
 
             final ConfigurationNode rootNode = loader.load();
+
+            final Map<ItemCameraTransforms.TransformType, Map<TransformPart, Vector3f>> perspective = new HashMap<>();
+
+            final ConfigurationNode perspectiveNode = rootNode.getNode(SECTION_PERSPECTIVE);
+            for (ItemCameraTransforms.TransformType type : ItemCameraTransforms.TransformType.values()) {
+                // TODO Maybe expose HEAD transform type?
+                if (type == ItemCameraTransforms.TransformType.NONE || type == ItemCameraTransforms.TransformType.HEAD) {
+                    continue;
+                }
+                final String typeKey = type.name().toLowerCase(Locale.ENGLISH);
+
+                final ConfigurationNode typeNode = perspectiveNode.getNode(typeKey);
+                final Map<TransformPart, Vector3f> adjustmentsByPart = new HashMap<>();
+
+                for (TransformPart part : TransformPart.values()) {
+                    final String partKey = part.name().toLowerCase(Locale.ENGLISH);
+
+                    final ConfigurationNode partNode = typeNode.getNode(partKey);
+
+                    final List<Float> coordinate = partNode.getList(TypeToken.of(Float.class));
+                    if (coordinate.size() != 3) {
+                        throw new IOException("Attempt to parse parent shape [" + source.getResourcePath() + "] failed because transform part [" +
+                                partKey + "] under transform type [" + typeKey + "] does not have three points (x, y, z).");
+                    }
+
+                    float x = coordinate.get(0);
+                    float y = coordinate.get(1);
+                    float z = coordinate.get(2);
+
+                    if (x != 0 || y != 0 || z != 0) {
+                        adjustmentsByPart.put(part, new Vector3f(x, y, z));
+                    }
+                }
+
+                perspective.put(type, adjustmentsByPart);
+            }
+
             final List<Quad> quads = new ArrayList<>();
             for (ConfigurationNode quadNode : rootNode.getNode(SECTION_QUADS).getChildrenList()) {
                 final int textureId = quadNode.getNode(KEY_TEXTURE).getInt(0);
@@ -126,11 +174,11 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
                 quads.add(new Quad(vertices, normal, new Quad.PlaceholderTexture(textureId)));
             }
 
-            return new ParentShapeModel(quads);
+            return new ParentShapeModel(perspective, quads);
         }
     }
 
-    public static final class Baked extends AbstractShapeModel.Baked<ParentShapeModel> {
+    static final class Baked extends AbstractShapeModel.Baked<ParentShapeModel> {
 
         Baked() {
             super(null);
