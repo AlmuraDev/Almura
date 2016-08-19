@@ -10,6 +10,7 @@
         "block.MixinBlockCrops",
         "block.MixinRotableBlockType",
         "client.gui.MixinGuiMultiplayer",
+        "client.renderer.block.model.MixinBakedQuadRetextured",
         "creativetab.MixinCreativeTabs"
     ]
 }

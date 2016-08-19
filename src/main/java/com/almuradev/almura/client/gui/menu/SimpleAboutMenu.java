@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIVanillaContainer;
 import com.almuradev.almura.client.gui.util.builders.UIButtonBuilder;
@@ -260,9 +259,9 @@ public class SimpleAboutMenu extends SimpleGui {
 
     protected static final class AboutListElement extends UIBackgroundContainer {
 
+        public final Text contentText;
         private final UIImage image;
         private final UILabel label;
-        public final Text contentText;
 
         private AboutListElement(MalisisGui gui, ResourceLocation location, Text text) {
             this(gui, location, text, Text.EMPTY);
