@@ -8,6 +8,7 @@ package com.almuradev.almura.client.model.shape;
 import com.almuradev.almura.client.model.TransformPart;
 import com.flowpowered.math.vector.Vector2f;
 import com.flowpowered.math.vector.Vector3f;
+import com.flowpowered.math.vector.Vector4f;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.reflect.TypeToken;
@@ -70,6 +71,7 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
         static final String SECTION_VERTICES = "vertices";
         static final String KEY_TEXTURE = "texture";
         static final String KEY_NORMALS = "normals";
+        static final String KEY_COLOR = "color";
 
         private static final Vector2f[] uvCoordinates = new Vector2f[4];
 
@@ -171,7 +173,15 @@ public class ParentShapeModel extends AbstractShapeModel<ParentShapeModel, Paren
                     throw new IOException(e);
                 }
 
-                quads.add(new Quad(vertices, normal, new Quad.PlaceholderTexture(textureId)));
+                final ConfigurationNode colorNode = quadNode.getNode(KEY_COLOR);
+                Vector4f color;
+                try {
+                    final List<Float> colors = colorNode.getList(TypeToken.of(Float.class));
+                    color = new Vector4f(colors.get(0), colors.get(1), colors.get(2), colors.get(3));
+                } catch (ObjectMappingException e) {
+                    throw new IOException(e);
+                }
+                quads.add(new Quad(vertices, normal, color, new Quad.PlaceholderTexture(textureId)));
             }
 
             return new ParentShapeModel(perspective, quads);

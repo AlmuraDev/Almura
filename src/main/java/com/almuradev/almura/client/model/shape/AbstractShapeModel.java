@@ -8,6 +8,7 @@ package com.almuradev.almura.client.model.shape;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.flowpowered.math.vector.Vector3f;
+import com.flowpowered.math.vector.Vector4f;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -143,25 +144,28 @@ abstract class AbstractShapeModel<S extends AbstractShapeModel, B extends Abstra
 
         final Vertex[] vertices;
         final Vector3f normal;
+        final Vector4f color;
         protected Texture texture;
 
-        Quad(Vertex[] vertices, Vector3f normal) {
+        Quad(Vertex[] vertices, Vector3f normal, Vector4f color) {
             checkNotNull(vertices);
             this.vertices = vertices;
             this.normal = normal;
+            this.color = color;
         }
 
-        Quad(Vertex[] vertices, Vector3f normal, Texture texture) {
-            this(vertices, normal);
+        Quad(Vertex[] vertices, Vector3f normal, Vector4f color, Texture texture) {
+            this(vertices, normal, color);
             this.texture = texture;
         }
 
         @Override
         public String toString() {
             return Objects.toStringHelper(this)
-                    .add("vertices", this.vertices)
                     .add("texture", this.texture)
+                    .add("vertices", this.vertices)
                     .add("normal", this.normal)
+                    .add("color", this.color)
                     .toString();
         }
 

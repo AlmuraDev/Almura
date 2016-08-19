@@ -8,6 +8,7 @@ package com.almuradev.almura.client.model.shape;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.model.TransformPart;
 import com.flowpowered.math.vector.Vector3f;
+import com.flowpowered.math.vector.Vector4f;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
@@ -214,10 +215,12 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                                     builder.put(e, normal.getX(), normal.getY(), normal.getZ(), 1f);
                                     break;
                                 case COLOR:
-                                    // TODO Per-Vertex coloring
-                                    builder.put(e, 1f, 1f, 1f, 1f);
+                                    final Vector4f color = quad.color;
+                                    // R G B A
+                                    builder.put(e, color.getX(), color.getY(), color.getZ(), color.getW());
                                     break;
                                 case PADDING:
+                                    // This is used internally by the client to inject lightmap data for block models
                                     builder.put(e, 0f, 0f, 0f, 0f);
                                     break;
                             }
