@@ -192,11 +192,13 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                         sprite = ModelLoader.White.INSTANCE;
                     }
 
+                    final TextureAtlasSprite icon = new Icon(sprite).clip(texture.x, texture.y, texture.width, texture.height);
+
                     final Vector3f normal = quad.normal;
 
                     final UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(this.format);
                     builder.setContractUVs(true);
-                    builder.setTexture(sprite);
+                    builder.setTexture(icon);
                     builder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
 
                     for (Quad.Vertex vertex : quad.vertices) {
@@ -206,10 +208,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                                     builder.put(e, vertex.x, vertex.y, vertex.z, 1f);
                                     break;
                                 case UV:
-                                    // The multiply of 16 is because client divides by 16
-                                    float textureU = ((texture.x + (vertex.u * texture.width)) / (float) sprite.getIconWidth()) * 16;
-                                    float textureV = ((texture.y + (vertex.v * texture.height)) / (float) sprite.getIconHeight()) * 16;
-                                    builder.put(e, sprite.getInterpolatedU(textureU), sprite.getInterpolatedV(textureV), 0f, 1f);
+                                    builder.put(e, icon.getInterpolatedU(vertex.u * 16f), icon.getInterpolatedV(vertex.v * 16f), 0f, 1f);
                                     break;
                                 case NORMAL:
                                     builder.put(e, normal.getX(), normal.getY(), normal.getZ(), 1f);
