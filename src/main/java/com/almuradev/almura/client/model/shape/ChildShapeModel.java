@@ -146,7 +146,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                     this.parentModel = (ParentShapeModel) ModelLoaderRegistry.getModel(this.cookableModel.parentModelLocation);
 
                 } catch (Exception e) {
-                    throw new RuntimeException("Shape [" + this.cookableModel + "] is being baked with no parent specified!", e);
+                    throw new RuntimeException("An error occurred in fetching parent model for [" + this.cookableModel + "]!", e);
                 }
             }
 
@@ -157,6 +157,8 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                     final Icon malisisIcon = new Icon(particleSheetSprite);
                     this.particleSprite = malisisIcon.clip(particleTexture.x, particleTexture.y, particleTexture.width, particleTexture.height);
                 } else {
+                    Almura.instance.logger.warn("Particle texture for model [{}] using texture entry [{}] was not found! Using fallback texture "
+                            + "instead...", this.cookableModel, this.cookableModel.particleTexture);
                     this.particleSprite = ModelLoader.White.INSTANCE;
                 }
             }
@@ -174,17 +176,18 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                         texture = this.cookableModel.textures.get(textureId);
                         if (texture == null) {
                             Almura.instance.logger.warn("When baking quad [{}] for model [{}], the entry for texture id [{}] was not "
-                                            + "found! You have a mismatch of textures from your parent [{}]. Using fallback texture instead...", quad,
+                                            + "found! Your parent [{}] wants you to construct additional textures. Using fallback texture "
+                                            + "instead...", quad,
                                     this.cookableModel, textureId, parentModel);
                             texture = quad.texture;
                         }
                     }
 
                     TextureAtlasSprite sprite = this.textureGetter.apply(texture.location);
-                    // Safety fallback in-case texture isn't found
+                    // Safety fallback in case texture isn't found
                     if (sprite == null) {
-                        Almura.instance.logger.warn("When baking quad [{}] for model [{}], the texture for id [{}] with entry [{}] was not found! "
-                                + "Using fallback texture instead...", quad, this.cookableModel, textureId, texture);
+                        Almura.instance.logger.warn("When baking quad [{}] for model [{}], the texture for entry [{}] was not found! "
+                                + "Using fallback texture instead...", quad, this.cookableModel, texture);
                         sprite = ModelLoader.White.INSTANCE;
                     }
 
@@ -205,14 +208,18 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                                     // The multiply of 16 is because client divides by 16
                                     float textureU = ((texture.x + (vertex.u * texture.width)) / (float) sprite.getIconWidth()) * 16;
                                     float textureV = ((texture.y + (vertex.v * texture.height)) / (float) sprite.getIconHeight()) * 16;
-                                    builder.put(e, sprite.getInterpolatedU(textureU), sprite.getInterpolatedV(textureV), 0, 1);
+                                    builder.put(e, sprite.getInterpolatedU(textureU), sprite.getInterpolatedV(textureV), 0f, 1f);
                                     break;
                                 case NORMAL:
-                                    builder.put(e, normal.getX(), normal.getY(), normal.getZ(), 1);
+                                    builder.put(e, normal.getX(), normal.getY(), normal.getZ(), 1f);
                                     break;
-                                default:
-                                    // Shapes don't define per-vertex coloring so we do black
-                                    builder.put(e, 1, 1, 1, 1);
+                                case COLOR:
+                                    // TODO Per-Vertex coloring
+                                    builder.put(e, 1f, 1f, 1f, 1f);
+                                    break;
+                                case PADDING:
+                                    builder.put(e, 0f, 0f, 0f, 0f);
+                                    break;
                             }
                         }
                     }
