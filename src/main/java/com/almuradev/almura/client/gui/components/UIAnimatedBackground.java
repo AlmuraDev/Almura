@@ -45,7 +45,7 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
     public UIAnimatedBackground(MalisisGui gui) {
         super(gui);
 
-        shape = new SimpleGuiShape();
+        this.shape = new SimpleGuiShape();
     }
 
     @SuppressWarnings("rawtypes")

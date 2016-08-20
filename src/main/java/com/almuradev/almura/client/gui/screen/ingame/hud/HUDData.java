@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.ingame.hud;
+package com.almuradev.almura.client.gui.screen.ingame.hud;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;

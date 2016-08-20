@@ -3,9 +3,10 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.ingame.hud;
+package com.almuradev.almura.client.gui.screen.ingame.hud;
 
-import com.almuradev.almura.client.gui.SimpleGui;
+import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.util.builders.FontRenderOptionsBuilder;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -18,7 +19,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.format.TextColors;
 
 @SideOnly(Side.CLIENT)
-public class MinimalHUD extends SimpleGui {
+public class MinimalHUD extends AbstractHUD {
 
     private static final FontRenderOptions FRO_HUD;
     private static final int PADDING = 1;
@@ -52,16 +53,16 @@ public class MinimalHUD extends SimpleGui {
 
         // Economy
         economyLabel = new UILabel(this, "$0.00");
-        economyLabel.setPosition(PADDING, getPaddedY(nameLabel, PADDING), Anchor.TOP | Anchor.LEFT);
+        economyLabel.setPosition(PADDING, SimpleScreen.getPaddedY(nameLabel, PADDING), Anchor.TOP | Anchor.LEFT);
         economyLabel.setFontRenderOptions(FRO_HUD);
 
         // Clock
-        final UIImage clockImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_CLOCK);
-        clockImage.setPosition(PADDING, getPaddedY(economyLabel, PADDING), Anchor.TOP | Anchor.LEFT);
+        final UIImage clockImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_CLOCK);
+        clockImage.setPosition(PADDING, SimpleScreen.getPaddedY(economyLabel, PADDING), Anchor.TOP | Anchor.LEFT);
         clockImage.setSize(7, 7);
 
         clockLabel = new UILabel(this, "12:00AM");
-        clockLabel.setPosition(getPaddedX(clockImage, PADDING), getPaddedY(economyLabel, PADDING), clockImage.getAnchor());
+        clockLabel.setPosition(SimpleScreen.getPaddedX(clockImage, PADDING), SimpleScreen.getPaddedY(economyLabel, PADDING), clockImage.getAnchor());
         clockLabel.setFontRenderOptions(FRO_HUD);
 
         // Compass
@@ -78,7 +79,7 @@ public class MinimalHUD extends SimpleGui {
 
         // World
         worldLabel = new UILabel(this, "World");
-        worldLabel.setPosition(0, getPaddedY(compassContainer, PADDING), Anchor.TOP | Anchor.CENTER);
+        worldLabel.setPosition(0, SimpleScreen.getPaddedY(compassContainer, PADDING), Anchor.TOP | Anchor.CENTER);
         worldLabel.setFontRenderOptions(FRO_HUD);
 
         // Coordinates
@@ -87,11 +88,11 @@ public class MinimalHUD extends SimpleGui {
         coordinatesXLabel.setFontRenderOptions(FRO_HUD);
 
         coordinatesYLabel = new UILabel(this, (int) mc.thePlayer.posY + " Y");
-        coordinatesYLabel.setPosition(-PADDING, getPaddedY(coordinatesXLabel, PADDING), Anchor.TOP | Anchor.RIGHT);
+        coordinatesYLabel.setPosition(-PADDING, SimpleScreen.getPaddedY(coordinatesXLabel, PADDING), Anchor.TOP | Anchor.RIGHT);
         coordinatesYLabel.setFontRenderOptions(FRO_HUD);
 
         coordinatesZLabel = new UILabel(this, (int) mc.thePlayer.posZ + " Z");
-        coordinatesZLabel.setPosition(-PADDING, getPaddedY(coordinatesYLabel, PADDING), Anchor.TOP | Anchor.RIGHT);
+        coordinatesZLabel.setPosition(-PADDING, SimpleScreen.getPaddedY(coordinatesYLabel, PADDING), Anchor.TOP | Anchor.RIGHT);
         coordinatesZLabel.setFontRenderOptions(FRO_HUD);
 
         overlayContainer.add(nameLabel, economyLabel, clockImage, clockLabel, compassContainer, worldLabel, coordinatesXLabel, coordinatesYLabel,
@@ -118,5 +119,15 @@ public class MinimalHUD extends SimpleGui {
         coordinatesXLabel.setText((int) mc.thePlayer.posX + " X");
         coordinatesYLabel.setText((int) mc.thePlayer.posY + " Y");
         coordinatesZLabel.setText((int) mc.thePlayer.posZ + " Z");
+    }
+
+    @Override
+    public int getOriginBossBarOffsetY() {
+        return 25;
+    }
+
+    @Override
+    public int getTabMenuOffsetY() {
+        return 0;
     }
 }

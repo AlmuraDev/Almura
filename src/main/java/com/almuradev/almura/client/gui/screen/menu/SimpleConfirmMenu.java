@@ -5,8 +5,7 @@
  */
 package com.almuradev.almura.client.gui.menu;
 
-import com.almuradev.almura.client.gui.SimpleGui;
-import com.almuradev.almura.client.gui.components.UIForm;
+import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
@@ -18,12 +17,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 @SideOnly(Side.CLIENT)
-public class SimpleConfirmMenu extends SimpleGui {
+public class SimpleConfirmMenu extends SimpleScreen {
 
     private String message1, message2, title;
 
-    public SimpleConfirmMenu(SimpleGui parent, String message1, String message2, String title) {
+    public SimpleConfirmMenu(@Nullable SimpleScreen parent, String message1, String message2, String title) {
         super(parent);
         this.message1 = message1;
         this.message2 = message2;
@@ -34,8 +35,8 @@ public class SimpleConfirmMenu extends SimpleGui {
     public void construct() {
 
         // Create the form
-        final UIForm form = new UIForm(this, 200, 100, title);
-        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        //final UIForm form = new UIForm(this, 200, 100, title);
+        //form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the message label
         final UILabel messageLabel1 = new UILabel(this, TextFormatting.AQUA + message1);
@@ -53,9 +54,9 @@ public class SimpleConfirmMenu extends SimpleGui {
         closeButton.setName("button.close");
         closeButton.register(this);
 
-        form.getContentContainer().add(messageLabel1, messageLabel2, closeButton);
+        //form.getContentContainer().add(messageLabel1, messageLabel2, closeButton);
 
-        addToScreen(form);
+        //addToScreen(form);
     }
 
     @Subscribe

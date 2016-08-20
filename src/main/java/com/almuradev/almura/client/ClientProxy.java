@@ -8,11 +8,11 @@ package com.almuradev.almura.client;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.FileSystem;
-import com.almuradev.almura.client.gui.SimpleGui;
-import com.almuradev.almura.client.gui.ingame.SimpleIngameMenu;
-import com.almuradev.almura.client.gui.ingame.hud.AlmuraHUD;
-import com.almuradev.almura.client.gui.ingame.hud.MinimalHUD;
-import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
+import com.almuradev.almura.client.gui.screen.ingame.SimpleIngameMenu;
+import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
+import com.almuradev.almura.client.gui.screen.ingame.hud.LegacyHUD;
+import com.almuradev.almura.client.gui.screen.ingame.hud.MinimalHUD;
+import com.almuradev.almura.client.gui.screen.menu.AnimatedMainMenu;
 import com.almuradev.almura.client.model.shape.ShapeLoader;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.category.ClientCategory;
@@ -52,14 +52,14 @@ public final class ClientProxy extends CommonProxy {
     @Nullable
     private MappedConfigurationAdapter<ClientConfiguration> configAdapter;
     @Nullable
-    private SimpleGui customIngameHud;
+    private AbstractHUD customIngameHud;
 
     @Override
     public void onGamePreInitialization(GamePreInitializationEvent event) {
         super.onGamePreInitialization(event);
 
-        this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults().setHeader(HEADER), FileSystem
-                .PATH_CONFIG_CLIENT);
+        this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults().setHeader(HEADER),
+                FileSystem.PATH_CONFIG_CLIENT);
         try {
             this.configAdapter.load();
         } catch (IOException | ObjectMappingException e) {
@@ -91,7 +91,7 @@ public final class ClientProxy extends CommonProxy {
         if (event.getGui() != null) {
             if (event.getGui().getClass().equals(GuiMainMenu.class)) {
                 event.setCanceled(true);
-                new DynamicMainMenu(null).display();
+                new AnimatedMainMenu(null).display();
             } else if (event.getGui().getClass().equals(GuiIngameMenu.class)) {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();
@@ -115,39 +115,44 @@ public final class ClientProxy extends CommonProxy {
     public void onRenderGameOverlayEventPre(RenderGameOverlayEvent.Pre event) {
         final ClientCategory clientCategory = this.configAdapter.getConfig().client;
 
-        // Use proper HUD based on configuration
-        if (clientCategory.hud.equalsIgnoreCase("almura")) {
-            if (!(this.customIngameHud instanceof AlmuraHUD)) {
+        switch (clientCategory.hud.toLowerCase()) {
+            case "almura":
+                if (!(this.customIngameHud instanceof LegacyHUD)) {
+                    if (this.customIngameHud != null) {
+                        this.customIngameHud.closeOverlay();
+                    }
+                    this.customIngameHud = new LegacyHUD();
+                    this.customIngameHud.displayOverlay();
+                }
+                switch (event.getType()) {
+                    case HEALTH:
+                    case ARMOR:
+                    case FOOD:
+                    case EXPERIENCE:
+                        event.setCanceled(true);
+                        break;
+                    default:
+                }
+                break;
+            case "minimal":
+                if (!(this.customIngameHud instanceof MinimalHUD)) {
+                    if (this.customIngameHud != null) {
+                        this.customIngameHud.closeOverlay();
+                    }
+                    this.customIngameHud = new MinimalHUD();
+                    this.customIngameHud.displayOverlay();
+                }
+                break;
+            default:
                 if (this.customIngameHud != null) {
                     this.customIngameHud.closeOverlay();
+                    this.customIngameHud = null;
                 }
-                this.customIngameHud = new AlmuraHUD();
-                this.customIngameHud.displayOverlay();
-            }
-            switch (event.getType()) {
-                case HEALTH:
-                case ARMOR:
-                case FOOD:
-                case EXPERIENCE:
-                    event.setCanceled(true);
-                    break;
-                default:
-            }
-        } else if (clientCategory.hud.equalsIgnoreCase("minimal")) {
-            if (!(this.customIngameHud instanceof MinimalHUD)) {
-                if (this.customIngameHud != null) {
-                    this.customIngameHud.closeOverlay();
-                }
-                this.customIngameHud = new MinimalHUD();
-                this.customIngameHud.displayOverlay();
-            }
-        } else if (this.customIngameHud != null) {
-            this.customIngameHud.closeOverlay();
-            this.customIngameHud = null;
+                break;
         }
     }
 
-    public Optional<SimpleGui> getCustomIngameHud() {
+    public Optional<AbstractHUD> getCustomIngameHud() {
         return Optional.ofNullable(this.customIngameHud);
     }
 }

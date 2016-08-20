@@ -27,6 +27,8 @@ public final class FontRenderOptionsConstants {
     public static final FontRenderOptions FRO_COLOR_WHITE = FontRenderOptionsBuilder.builder().color(Color.WHITE.getRgb()).build();
     public static final FontRenderOptions FRO_COLOR_WHITE_SCALE_080 = FontRenderOptionsBuilder.builder().from(FRO_COLOR_WHITE)
             .fontScale(0.8F).build();
+    public static final FontRenderOptions FRO_COLOR_WHITE_SCALE_050 = FontRenderOptionsBuilder.builder().from(FRO_COLOR_WHITE)
+            .fontScale(0.5f).build();
     public static final FontRenderOptions FRO_SCALE_050 = FontRenderOptionsBuilder.builder().fontScale(0.50f).build();
     public static final FontRenderOptions FRO_SCALE_065 = FontRenderOptionsBuilder.builder().fontScale(0.65f).build();
     public static final FontRenderOptions FRO_SCALE_070 = FontRenderOptionsBuilder.builder().fontScale(0.70f).build();

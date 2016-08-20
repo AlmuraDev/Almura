@@ -3,9 +3,9 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.ingame.hud;
+package com.almuradev.almura.client.gui.screen.ingame.hud;
 
-import com.almuradev.almura.client.gui.SimpleGui;
+import com.almuradev.almura.client.gui.GuiConstants;
 import com.almuradev.almura.client.gui.components.UIPropertyBar;
 import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
 import net.malisis.core.client.gui.Anchor;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class AlmuraHUD extends SimpleGui {
+public class LegacyHUD extends AbstractHUD {
 
     private final UIBackgroundContainer gradientContainer = new UIBackgroundContainer(this);
     private UIImage mapImage, worldImage, playerImage;
@@ -62,10 +62,10 @@ public class AlmuraHUD extends SimpleGui {
         playerCurrency.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
 
         // Health Property
-        healthProperty = new UIPropertyBar(this, ICON_HEART).setPosition(4, 14);
+        healthProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_HEART).setPosition(4, 14);
 
         // Armor Property
-        armorProperty = new UIPropertyBar(this, ICON_ARMOR).setPosition(4, 24);
+        armorProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_ARMOR).setPosition(4, 24);
 
         // ////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
@@ -75,15 +75,15 @@ public class AlmuraHUD extends SimpleGui {
         almuraTitle.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
 
         // Hunger Property
-        hungerProperty = new UIPropertyBar(this, ICON_HUNGER).setPosition(-11, 14, Anchor.CENTER);
+        hungerProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_HUNGER).setPosition(-11, 14, Anchor.CENTER);
 
         // Stamina Property
-        staminaProperty = new UIPropertyBar(this, ICON_STAMINA).setPosition(-11, 24, Anchor.CENTER);
+        staminaProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_STAMINA).setPosition(-11, 24, Anchor.CENTER);
 
         // ////////////////////////////// RIGHT COLUMN //////////////////////////////////////
 
         // Map Image
-        mapImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_MAP);
+        mapImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_MAP);
         mapImage.setSize(8, 8);
 
         // Player Coordinates Label
@@ -92,7 +92,7 @@ public class AlmuraHUD extends SimpleGui {
         playerCoords.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // World Image
-        worldImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_WORLD);
+        worldImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_WORLD);
         worldImage.setSize(8, 8);
 
         worldDisplay = new UILabel(this, HUDData.WORLD_NAME);
@@ -100,7 +100,7 @@ public class AlmuraHUD extends SimpleGui {
         worldDisplay.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // Player Image
-        playerImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_PLAYER);
+        playerImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_PLAYER);
         playerImage.setPosition(-125, 14, Anchor.RIGHT);
         playerImage.setSize(8, 8);
 
@@ -115,12 +115,12 @@ public class AlmuraHUD extends SimpleGui {
         playerCompass.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // Compass Image
-        compassImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_COMPASS);
+        compassImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_COMPASS);
         compassImage.setPosition(-89, playerCompass.getY() - 1, Anchor.RIGHT);
         compassImage.setSize(8, 8);
 
         // Clock Image
-        clockImage = new UIImage(this, TEXTURE_SPRITESHEET, ICON_CLOCK);
+        clockImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_CLOCK);
         clockImage.setSize(8, 8);
 
         // World Time Label
@@ -129,7 +129,7 @@ public class AlmuraHUD extends SimpleGui {
         worldTime.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // XP Property
-        xpProperty = new UIPropertyBar(this, ICON_XP).setPosition(-27, 24, Anchor.RIGHT);
+        xpProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_XP).setPosition(-27, 24, Anchor.RIGHT);
         xpProperty.setColor(UIPropertyBar.LIGHT_GREEN.getRgb()).setRelativeColor(false);
 
         // XP Level Label
@@ -201,5 +201,15 @@ public class AlmuraHUD extends SimpleGui {
         clockImage.setPosition(-(-worldTime.getX() + worldTime.getWidth() + 2), worldTime.getY() - 1, Anchor.RIGHT);
         playerMode.setPosition(playerTitle.getX() + playerTitle.getWidth() + 4, 2, Anchor.LEFT);
         playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 4, 2, Anchor.LEFT);
+    }
+
+    @Override
+    public int getOriginBossBarOffsetY() {
+        return 45;
+    }
+
+    @Override
+    public int getTabMenuOffsetY() {
+        return 0;
     }
 }

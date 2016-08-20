@@ -7,9 +7,8 @@ package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.client.gui.SimpleGui;
+import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
-import com.almuradev.almura.client.gui.components.UIForm;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.category.DebugCategory;
@@ -30,13 +29,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 @SideOnly(Side.CLIENT)
-public class DynamicConfigurationMenu extends SimpleGui {
+public class DynamicConfigurationMenu extends SimpleScreen {
 
     private UICheckBox animalHeatCheckBox, almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox,
             debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox, chatNotificationCheckBox, optimizedLightingCheckbox;
 
-    public DynamicConfigurationMenu(SimpleGui parent) {
+    public DynamicConfigurationMenu(@Nullable SimpleScreen parent) {
         super(parent);
     }
 
@@ -48,8 +49,8 @@ public class DynamicConfigurationMenu extends SimpleGui {
         final DebugCategory debugCategory = configuration.debug;
 
         // Create the form
-        final UIForm form = new UIForm(this, 300, 225, "Configuration");
-        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        //final UIForm form = new UIForm(this, 300, 225, "Configuration");
+        //form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         final int padding = 4;
 
@@ -57,13 +58,13 @@ public class DynamicConfigurationMenu extends SimpleGui {
         hudTypeLabel.setPosition(padding, padding * 2, Anchor.LEFT | Anchor.TOP);
 
         final UISelect<String> hudTypeSelect = new UISelect<>(this, 53, Arrays.asList("Default", "Almura", "Minimal"));
-        hudTypeSelect.setPosition(getPaddedX(hudTypeLabel, padding), hudTypeLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
+        hudTypeSelect.setPosition(SimpleScreen.getPaddedX(hudTypeLabel, padding), hudTypeLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         hudTypeSelect.select(WordUtils.capitalize(clientCategory.hud));
         hudTypeSelect.setName("select.hud");
         hudTypeSelect.register(this);
 
         animalHeatCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Show Animal Names with Status");
-        animalHeatCheckBox.setPosition(padding, getPaddedY(hudTypeLabel, padding), Anchor.LEFT | Anchor.TOP);
+        animalHeatCheckBox.setPosition(padding, SimpleScreen.getPaddedY(hudTypeLabel, padding), Anchor.LEFT | Anchor.TOP);
         animalHeatCheckBox.setChecked(clientCategory.displayAnimalHeatStatus);
         animalHeatCheckBox.setName("checkbox.animalHeat");
         animalHeatCheckBox.register(this);
@@ -103,50 +104,50 @@ public class DynamicConfigurationMenu extends SimpleGui {
 
         // Create the almura GUI checkbox
         almuraDebugGuiCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Enhanced F3 Debug Menu");
-        almuraDebugGuiCheckBox.setPosition(padding, getPaddedY(animalHeatCheckBox, padding), Anchor.LEFT | Anchor.TOP);
+        almuraDebugGuiCheckBox.setPosition(padding, SimpleScreen.getPaddedY(animalHeatCheckBox, padding), Anchor.LEFT | Anchor.TOP);
         almuraDebugGuiCheckBox.setChecked(clientCategory.enhancedDebug);
         almuraDebugGuiCheckBox.setName("checkbox.enhanced_debug");
         almuraDebugGuiCheckBox.register(this);
 
         // Chat Notifications Checkbox
         chatNotificationCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Chat Notifications");
-        chatNotificationCheckBox.setPosition(padding, getPaddedY(almuraDebugGuiCheckBox, padding), Anchor.LEFT | Anchor.TOP);
+        chatNotificationCheckBox.setPosition(padding, SimpleScreen.getPaddedY(almuraDebugGuiCheckBox, padding), Anchor.LEFT | Anchor.TOP);
         chatNotificationCheckBox.setChecked(clientCategory.chatNotifications);
         chatNotificationCheckBox.setName("checkbox.chat_notification");
 
         // Optimized Lighting Checkbox
         optimizedLightingCheckbox = new UICheckBox(this, TextFormatting.WHITE + "Optimized Lighting");
-        optimizedLightingCheckbox.setPosition(padding, getPaddedY(chatNotificationCheckBox, padding), Anchor.LEFT | Anchor.TOP);
+        optimizedLightingCheckbox.setPosition(padding, SimpleScreen.getPaddedY(chatNotificationCheckBox, padding), Anchor.LEFT | Anchor.TOP);
         optimizedLightingCheckbox.setChecked(clientCategory.optimizedLighting);
         optimizedLightingCheckbox.setName("checkbox.optimized_lighting");
 
         // Create the debug mode checkbox
         debugModeCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Debug Mode (All)");
-        debugModeCheckBox.setPosition(padding, getPaddedY(chatNotificationCheckBox, padding + 40), Anchor.LEFT | Anchor.TOP);
+        debugModeCheckBox.setPosition(padding, SimpleScreen.getPaddedY(chatNotificationCheckBox, padding + 40), Anchor.LEFT | Anchor.TOP);
         debugModeCheckBox.setChecked(debugCategory.all);
         debugModeCheckBox.setName("checkbox.debug_mode");
 
         // Create the debug languages checkbox
         debugLanguagesCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Debug Languages");
-        debugLanguagesCheckBox.setPosition(padding, getPaddedY(debugModeCheckBox, padding), Anchor.LEFT | Anchor.TOP);
+        debugLanguagesCheckBox.setPosition(padding, SimpleScreen.getPaddedY(debugModeCheckBox, padding), Anchor.LEFT | Anchor.TOP);
         debugLanguagesCheckBox.setChecked(debugCategory.languages);
         debugLanguagesCheckBox.setName("checkbox.debug_languages");
 
         // Create the debug packs checkbox
         debugPacksCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Debug Content Loading");
-        debugPacksCheckBox.setPosition(padding, getPaddedY(debugLanguagesCheckBox, padding), Anchor.LEFT | Anchor.TOP);
+        debugPacksCheckBox.setPosition(padding, SimpleScreen.getPaddedY(debugLanguagesCheckBox, padding), Anchor.LEFT | Anchor.TOP);
         debugPacksCheckBox.setChecked(debugCategory.packs);
         debugPacksCheckBox.setName("checkbox.debug_packs");
 
         // Create the debug mappings checkbox
         debugMappingsCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Debug Entity / Item Mappings");
-        debugMappingsCheckBox.setPosition(padding, getPaddedY(debugPacksCheckBox, padding), Anchor.LEFT | Anchor.TOP);
+        debugMappingsCheckBox.setPosition(padding, SimpleScreen.getPaddedY(debugPacksCheckBox, padding), Anchor.LEFT | Anchor.TOP);
         debugMappingsCheckBox.setChecked(debugCategory.mappings);
         debugMappingsCheckBox.setName("checkbox.debug_mappings");
 
         // Create the debug recipes checkbox
         debugRecipesCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Debug Recipe Loading");
-        debugRecipesCheckBox.setPosition(padding, getPaddedY(debugMappingsCheckBox, padding), Anchor.LEFT | Anchor.TOP);
+        debugRecipesCheckBox.setPosition(padding, SimpleScreen.getPaddedY(debugMappingsCheckBox, padding), Anchor.LEFT | Anchor.TOP);
         debugRecipesCheckBox.setChecked(debugCategory.recipes);
         debugRecipesCheckBox.setName("checkbox.debug_recipes");
 
@@ -171,15 +172,15 @@ public class DynamicConfigurationMenu extends SimpleGui {
         backButton.setName("button.back");
         backButton.register(this);
 
-        form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, animalHeatCheckBox,
-                almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox,
-                graphicsButton, backButton, saveButton, chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu,
-                chestDistanceDownMenu, hudTypeLabel, hudTypeSelect, optimizedLightingCheckbox);
+//        form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, animalHeatCheckBox,
+//                almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox,
+//                graphicsButton, backButton, saveButton, chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu,
+//                chestDistanceDownMenu, hudTypeLabel, hudTypeSelect, optimizedLightingCheckbox);
 
         if (this.mc.thePlayer == null) {
             addToScreen(new UIAnimatedBackground(this));
         }
-        addToScreen(form);
+        //addToScreen(form);
     }
 
     @Subscribe
