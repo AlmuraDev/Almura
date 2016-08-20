@@ -18,6 +18,7 @@ public class GuiConstants {
     public static final String ISSUES_URL = "https://github.com/AlmuraDev/Almura/issues";
     public static final String MAP_URL = "http://srv1.almuramc.com:8123";
     public static final String SHOP_URL = ""; // TODO: Proper URL
+    public static final String SKIN_URL_BASE = "https://mc-heads.net/avatar/%s/%d.png";
     public static final String STATISTICS_URL = "http://srv1.almuramc.com:8080";
     public static final String TRADEMARK = "Minecraft is a registered trademark of Mojang AB";
     public static final String COPYRIGHT = "Copyright AlmuraDev 2012 - 2016";

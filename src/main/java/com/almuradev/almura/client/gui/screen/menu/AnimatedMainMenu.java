@@ -6,9 +6,8 @@
 package com.almuradev.almura.client.gui.screen.menu;
 
 import com.almuradev.almura.client.gui.GuiConstants;
-import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
-import com.almuradev.almura.client.gui.screen.menu.SimpleAboutMenu;
+import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
 import com.almuradev.almura.client.gui.util.builders.FontRenderOptionsBuilder;
 import com.almuradev.almura.client.gui.util.builders.UIButtonBuilder;
@@ -22,11 +21,13 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GLContext;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Color;
 
@@ -42,7 +43,7 @@ import javax.annotation.Nullable;
 public class AnimatedMainMenu extends SimpleScreen {
 
     private static final int PADDING = 4;
-    
+
     private UIBackgroundContainer buttonContainer;
 
     public AnimatedMainMenu(@Nullable SimpleScreen parent) {
@@ -155,18 +156,13 @@ public class AnimatedMainMenu extends SimpleScreen {
         trademarkLabel.setPosition(PADDING, -PADDING, Anchor.BOTTOM | Anchor.LEFT);
 
         final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + GuiConstants.COPYRIGHT);
-        copyrightLabel.setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, PADDING, Anchor.BOTTOM), trademarkLabel.getAnchor());
+        copyrightLabel
+                .setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, PADDING, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
         container.add(almuraHeader, this.buttonContainer);
 
         // Disable escape keypress
-        registerKeyListener((keyChar, keyCode) -> {
-            if (keyCode == Keyboard.KEY_ESCAPE) {
-                new AnimatedMainMenu(null).display();
-                return true;
-            }
-            return false;
-        });
+        registerKeyListener((keyChar, keyCode) -> false);
 
         // Add content to screen
         addToScreen(new UIAnimatedBackground(this));
