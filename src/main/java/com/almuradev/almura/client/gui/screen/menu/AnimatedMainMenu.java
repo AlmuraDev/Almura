@@ -178,7 +178,7 @@ public class AnimatedMainMenu extends SimpleScreen {
         addToScreen(issuesButton);
 
         // OpenGL Warning
-        if (GLContext.getCapabilities().OpenGL20 && OpenGlHelper.areShadersSupported()) {
+        if (!GLContext.getCapabilities().OpenGL20 && !OpenGlHelper.areShadersSupported()) {
             final UILabel glWarning1 = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextStyles.BOLD,
                     TextColors.DARK_RED, "Warning! This graphics card does not support OpenGL 2.0.")));
             glWarning1.setPosition(2, 2, Anchor.TOP | Anchor.LEFT);
