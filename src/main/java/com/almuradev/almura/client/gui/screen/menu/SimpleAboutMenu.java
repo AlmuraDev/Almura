@@ -97,7 +97,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                         new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_ZIDANE + ".png"),
                         String.format(SKIN_URL_BASE, GuiConstants.UNIQUE_ID_ZIDANE.toString()),
                         32, 32), null),
-                Text.of(TextColors.AQUA, "Zidane"),
+                Text.of(TextColors.BLUE, "Zidane"),
                 Text.of(TextColors.WHITE, "Zidane is the biggest driving force behind Almura. Without him this project would simply "
                                 + "not be where it stands today.",
                         Text.NEW_LINE, Text.NEW_LINE,
@@ -153,10 +153,25 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
                         GuiConstants.AVATAR_GENERIC_LOCATION,
+                        new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_WOLFEYE + ".png"),
+                        String.format(SKIN_URL_BASE, GuiConstants.UNIQUE_ID_WOLFEYE.toString()),
+                        32, 32), null),
+                Text.of(TextColors.RED, "Wolfeye"),
+                Text.of(TextColors.WHITE, "Wolfeye has stuck with Almura through both good and bad times. She is by far the most loyal person to "
+                                + "Almura.",
+                        Text.NEW_LINE, Text.NEW_LINE,
+                        TextStyles.BOLD, "Titles", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
+                        "  • Lead Moderator", Text.NEW_LINE,
+                        "  • Destroyer of Worlds")));
+        elementList.add(new AboutListElement(
+                this,
+                this.list,
+                new UIImage(this, new GuiRemoteTexture(
+                        GuiConstants.AVATAR_GENERIC_LOCATION,
                         new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_MUMFREY + ".png"),
                         String.format(SKIN_URL_BASE, GuiConstants.UNIQUE_ID_MUMFREY.toString()),
                         32, 32), null),
-                Text.of(TextColors.DARK_PURPLE, "Mumfrey"),
+                Text.of(TextColors.GRAY, "Mumfrey"),
                 Text.of(TextColors.WHITE, "Mumfrey is the brains behind the Mixin technology used in Almura.",
                         Text.NEW_LINE, Text.NEW_LINE,
                         TextStyles.BOLD, "Titles", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
@@ -170,7 +185,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                         new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_BLOOD + ".png"),
                         String.format(SKIN_URL_BASE, GuiConstants.UNIQUE_ID_BLOOD.toString()),
                         32, 32), null),
-                Text.of(TextColors.RED, "Blood"),
+                Text.of(TextColors.DARK_RED, "Blood"),
                 Text.of(TextColors.WHITE, "Acknowledgement for past contributions to Almura such as Cauldron.",
                         Text.NEW_LINE, Text.NEW_LINE,
                         TextStyles.BOLD, "Titles", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
