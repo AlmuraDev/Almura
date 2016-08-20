@@ -27,8 +27,12 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GLContext;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Color;
 
 import java.awt.Desktop;
@@ -50,6 +54,7 @@ public class AnimatedMainMenu extends SimpleScreen {
         super(parent);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void construct() {
         final UIBackgroundContainer container = new UIBackgroundContainer(this);
@@ -57,7 +62,7 @@ public class AnimatedMainMenu extends SimpleScreen {
         container.setPosition(0, -10, Anchor.MIDDLE | Anchor.CENTER);
         container.setSize(GuiConstants.BUTTON_WIDTH_LONG, 205);
 
-        // Almura Header
+        // Almura header
         final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConstants.ALMURA_LOGO_LOCATION), null);
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
@@ -156,13 +161,12 @@ public class AnimatedMainMenu extends SimpleScreen {
         trademarkLabel.setPosition(PADDING, -PADDING, Anchor.BOTTOM | Anchor.LEFT);
 
         final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + GuiConstants.COPYRIGHT);
-        copyrightLabel
-                .setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, PADDING, Anchor.BOTTOM), trademarkLabel.getAnchor());
+        copyrightLabel.setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, PADDING, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
         container.add(almuraHeader, this.buttonContainer);
 
-        // Disable escape keypress
-        registerKeyListener((keyChar, keyCode) -> false);
+        // Disable escape key press
+        registerKeyListener((keyChar, keyCode) -> keyCode == Keyboard.KEY_ESCAPE);
 
         // Add content to screen
         addToScreen(new UIAnimatedBackground(this));
@@ -172,6 +176,20 @@ public class AnimatedMainMenu extends SimpleScreen {
         addToScreen(shopButton);
         addToScreen(forumsButton);
         addToScreen(issuesButton);
+
+        // OpenGL Warning
+        if (GLContext.getCapabilities().OpenGL20 && OpenGlHelper.areShadersSupported()) {
+            final UILabel glWarning1 = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextStyles.BOLD,
+                    TextColors.DARK_RED, "Warning! This graphics card does not support OpenGL 2.0.")));
+            glWarning1.setPosition(2, 2, Anchor.TOP | Anchor.LEFT);
+
+            final UILabel glWarning2 = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextStyles.BOLD,
+                    TextColors.DARK_RED, "Future versions of Minecraft may not be compatible.")));
+            glWarning2.setPosition(2, SimpleScreen.getPaddedY(glWarning1, 2), Anchor.TOP | Anchor.LEFT);
+
+            addToScreen(glWarning1);
+            addToScreen(glWarning2);
+        }
     }
 
     @Override

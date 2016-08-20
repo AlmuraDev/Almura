@@ -17,6 +17,7 @@ public class GuiConstants {
     public static final String FORUM_URL = "http://www.almuramc.com";
     public static final String ISSUES_URL = "https://github.com/AlmuraDev/Almura/issues";
     public static final String MAP_URL = "http://srv1.almuramc.com:8123";
+    public static final String OPENGL_WARNING_URL = "https://help.mojang.com/customer/portal/articles/325948?ref=game";
     public static final String SHOP_URL = ""; // TODO: Proper URL
     public static final String SKIN_URL_BASE = "https://mc-heads.net/avatar/%s/%d.png";
     public static final String STATISTICS_URL = "http://srv1.almuramc.com:8080";
