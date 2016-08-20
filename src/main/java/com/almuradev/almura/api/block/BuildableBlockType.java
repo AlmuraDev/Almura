@@ -6,6 +6,7 @@
 package com.almuradev.almura.api.block;
 
 import com.almuradev.almura.api.BuildableCatalogType;
+import com.almuradev.almura.api.block.rotable.RotableBlockType;
 import com.almuradev.almura.api.creativetab.CreativeTab;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -16,23 +17,23 @@ public interface BuildableBlockType extends BuildableCatalogType, BlockType {
 
     @SuppressWarnings("unchecked")
     static Builder builder() {
-        return Sponge.getRegistry().createBuilder(Builder.class);
+        return Sponge.getRegistry().createBuilder(RotableBlockType.Builder.class);
     }
 
     interface Builder<BLOCK extends BuildableBlockType, BUILDER extends Builder<BLOCK, BUILDER>>
             extends BuildableCatalogType.Builder<BLOCK, BUILDER> {
 
-        Builder<BLOCK, BUILDER> unlocalizedName(String dictName);
+        BUILDER unlocalizedName(String dictName);
 
-        Builder<BLOCK, BUILDER> material(Material material);
+        BUILDER material(Material material);
 
-        Builder<BLOCK, BUILDER> mapColor(MapColor mapColor);
+        BUILDER mapColor(MapColor mapColor);
 
-        Builder<BLOCK, BUILDER> hardness(float hardness);
+        BUILDER hardness(float hardness);
 
-        Builder<BLOCK, BUILDER> resistance(float resistance);
+        BUILDER resistance(float resistance);
 
-        Builder<BLOCK, BUILDER> creativeTab(CreativeTab tab);
+        BUILDER creativeTab(CreativeTab tab);
 
         @Override
         default BLOCK build(String id, String name) {

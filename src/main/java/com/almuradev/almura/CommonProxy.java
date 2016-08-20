@@ -6,8 +6,10 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.api.block.BuildableBlockType;
+import com.almuradev.almura.api.block.rotable.RotableBlockType;
 import com.almuradev.almura.api.creativetab.CreativeTab;
 import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
+import com.almuradev.almura.block.builder.rotable.AbstractRotableTypeBuilder;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
@@ -44,6 +46,8 @@ public abstract class CommonProxy {
 
         Sponge.getRegistry().registerModule(CreativeTab.class, CreativeTabRegistryModule.getInstance());
         Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
+        Sponge.getRegistry().registerBuilderSupplier(RotableBlockType.Builder.class, AbstractRotableTypeBuilder.BuilderImpl::new);
+
 
         Sponge.getEventManager().registerListeners(Almura.instance.container, this);
 

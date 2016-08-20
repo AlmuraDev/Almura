@@ -7,19 +7,62 @@ package com.almuradev.almura.block;
 
 import com.almuradev.almura.block.builder.rotable.AbstractRotableTypeBuilder;
 import com.almuradev.almura.mixin.interfaces.IMixinBuildableBlockType;
-import com.almuradev.almura.mixin.interfaces.IMixinRotableBlockType;
 import com.google.common.base.Objects;
-import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.spongepowered.api.CatalogType;
 
-public final class GenericRotable extends BlockDirectional {
+public final class GenericRotable extends BlockHorizontal {
 
     public GenericRotable(String modid, String id, AbstractRotableTypeBuilder<?, ?> builder) {
-        super(builder.material);
+        super(builder.material, builder.mapColor);
         this.setRegistryName(modid, id);
-        ((IMixinRotableBlockType) (Object) this).setMapColor(builder.mapColor);
+        this.setUnlocalizedName(builder.dictName);
         this.setCreativeTab((CreativeTabs) builder.tab);
+        this.setHardness(builder.hardness);
+        this.setResistance(builder.resistance);
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
+    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return this.getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta));
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return ((EnumFacing)state.getValue(FACING)).getHorizontalIndex();
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, FACING);
     }
 
     @Override

@@ -11,6 +11,9 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.api.block.rotable.RotableBlockType;
 import com.almuradev.almura.block.GenericRotable;
 import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.ItemBlock;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @SuppressWarnings("unchecked")
@@ -23,7 +26,17 @@ public abstract class AbstractRotableTypeBuilder<ROTABLE extends RotableBlockTyp
         public RotableBlockType build(String id) {
             checkNotNull(id);
 
-            return (RotableBlockType) (Object) GameRegistry.register(new GenericRotable(Almura.PLUGIN_ID, id, this));
+            final GenericRotable block = GameRegistry.register(new GenericRotable(Almura.PLUGIN_ID, id, this));
+
+            final ItemBlock itemBlock = new ItemBlock(block);
+            itemBlock.setRegistryName(Almura.PLUGIN_ID, id);
+
+            ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation(Almura.PLUGIN_ID + ":" + id, "facing=south"));
+
+            // TODO Make this configurable and make Almura GenericItemBlock
+            GameRegistry.register(itemBlock);
+
+            return (RotableBlockType) (Object) block;
         }
     }
 }

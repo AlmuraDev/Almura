@@ -12,12 +12,14 @@ import com.flowpowered.math.vector.Vector4f;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import net.malisis.core.renderer.icon.Icon;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResource;
@@ -27,6 +29,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.model.IModelState;
+import net.minecraftforge.common.model.TRSRTransformation;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
@@ -55,7 +58,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
 
     private ChildShapeModel(ResourceLocation parentModelLocation, Collection<ResourceLocation> textureLocations, List<Quad.Texture> textures, Quad
             .Texture particleTexture) {
-        super(Lists.newArrayList(parentModelLocation), textureLocations, null);
+        super(Lists.newArrayList(parentModelLocation), textureLocations, ModelRotation.X0_Y0);
         this.parentModelLocation = parentModelLocation;
         this.textures = textures;
         this.particleTexture = particleTexture;
@@ -63,7 +66,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
 
     @Override
     public Baked bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
-        return new Baked(this, format, bakedTextureGetter);
+        return new Baked(state, this, format, bakedTextureGetter);
     }
 
     @Override
@@ -124,8 +127,10 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
 
     public static final class Baked extends AbstractShapeModel.Baked<ChildShapeModel> {
 
+        final IModelState state;
         final VertexFormat format;
         final Function<ResourceLocation, TextureAtlasSprite> textureGetter;
+        final TRSRTransformation transformation;
         ParentShapeModel parentModel;
         List<BakedQuad> quads;
         TextureAtlasSprite particleSprite;
@@ -133,10 +138,16 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                 isThirdPersonRightHandCached, isThirdPersonLeftHandCached;
         private Matrix4f gui, ground, fixed, firstPersonRightHand, firstPersonLeftHand, thirdPersonRightHand, thirdPersonLeftHand;
 
-        Baked(ChildShapeModel cookableModel, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
+        Baked(IModelState state, ChildShapeModel cookableModel, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
             super(cookableModel);
+            this.state = state;
             this.format = format;
             this.textureGetter = textureGetter;
+            if (this.state != null) {
+                this.transformation = this.state.apply(Optional.absent()).orNull();
+            } else {
+                this.transformation = null;
+            }
         }
 
         @Override
@@ -205,7 +216,15 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                         for (int e = 0; e < this.format.getElementCount(); e++) {
                             switch (this.format.getElement(e).getUsage()) {
                                 case POSITION:
-                                    builder.put(e, vertex.x, vertex.y, vertex.z, 1f);
+                                    if (transformation != null) {
+                                        final Matrix4f transform = transformation.getMatrix();
+                                        final javax.vecmath.Vector4f position = new javax.vecmath.Vector4f(vertex.x, vertex.y, vertex.z, 1f);
+                                        final javax.vecmath.Vector4f transformed = new javax.vecmath.Vector4f();
+                                        transform.transform(position, transformed);
+                                        builder.put(e, transformed.getX(), transformed.getY(), transformed.getZ(), transformed.getW());
+                                    } else {
+                                        builder.put(e, vertex.x, vertex.y, vertex.z, 1f);
+                                    }
                                     break;
                                 case UV:
                                     builder.put(e, icon.getInterpolatedU(vertex.u * 16f), icon.getInterpolatedV(vertex.v * 16f), 0f, 1f);
@@ -228,6 +247,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
 
                     baked.add(builder.build());
                 }
+
                 this.quads = baked;
             }
 

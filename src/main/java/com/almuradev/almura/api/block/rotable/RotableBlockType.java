@@ -17,6 +17,5 @@ public interface RotableBlockType extends BuildableBlockType {
 
     interface Builder<ROTABLE extends RotableBlockType, BUILDER extends Builder<ROTABLE, BUILDER>> extends BuildableBlockType.Builder<ROTABLE,
             BUILDER> {
-
     }
 }
