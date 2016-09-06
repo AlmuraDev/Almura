@@ -5,6 +5,8 @@
  */
 package com.almuradev.almura.server;
 
+import cpw.mods.fml.common.gameevent.TickEvent;
+
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.content.Page;
 import com.almuradev.almura.content.PageRegistry;
@@ -23,6 +25,7 @@ import java.util.Map;
 public class ServerProxy extends CommonProxy {
 
     public static final String CLASSPATH = "com.almuradev.almura.server.ServerProxy";
+    private int tickCounter;
 
     @Override
     public void onInitialization(FMLInitializationEvent event) {
@@ -48,6 +51,16 @@ public class ServerProxy extends CommonProxy {
         for (Map.Entry<String, Page> entry : PageRegistry.getAll().entrySet()) {
             CommonProxy.NETWORK_FORGE.sendTo(new S00PageInformation(entry.getValue()), (EntityPlayerMP) event.player);
             CommonProxy.NETWORK_FORGE.sendTo(new S02PageOpen("Welcome"), (EntityPlayerMP) event.player);
+        }
+    }
+    
+    @SubscribeEvent
+    public void ServerTickEvent(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            if (this.tickCounter % 40 == 0) {
+                System.out.println("Events: " + event.getListenerList().toString());
+            }
+            ++this.tickCounter;
         }
     }
 }
