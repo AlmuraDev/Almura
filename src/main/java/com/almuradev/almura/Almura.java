@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) 2014 - 2016 AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura;
 
@@ -16,6 +16,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +26,7 @@ public class Almura {
     public static final Pack INTERNAL_PACK = new Pack("internal");
     public static final String MOD_ID = "almura";
     public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID);
-    public static String GUI_VERSION = "b111";
+    public static String GUI_VERSION = "b115";
     public static String PACK_VERSION = "1.4";
     public static String FORGE_VERSION = "1.7.10-1614";
 
@@ -51,7 +52,7 @@ public class Almura {
     }
 
     @EventHandler
-    public void onServerStarting(FMLServerStartingEvent event) {
+    public void onServerStarting(FMLServerStartingEvent event) {        
         PROXY.onServerStarting(event);
     }
 }

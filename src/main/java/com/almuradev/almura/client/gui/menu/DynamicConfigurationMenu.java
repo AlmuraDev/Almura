@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2015 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) 2014 - 2016 AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.client.gui.menu;
 
@@ -17,6 +17,10 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UISelect;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.resources.SkinManager;
+import net.minecraft.client.resources.SkinManager.SkinAvailableCallback;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -177,6 +181,20 @@ public class DynamicConfigurationMenu extends SimpleGui {
         graphicsButton.setName("button.graphics");
         graphicsButton.register(this);
 
+        // Create the skin refresh button
+        final UIButton skinRefreshButton = new UIButton(this, "Refresh Skin");
+        skinRefreshButton.setSize(50, 16);
+        skinRefreshButton.setPosition(-padding, -padding-50, Anchor.RIGHT | Anchor.BOTTOM);
+        skinRefreshButton.setName("button.refreshskin");
+        skinRefreshButton.register(this);
+        
+        // Disable button if player object isn't created.
+        if (Minecraft.getMinecraft().thePlayer == null) {
+            skinRefreshButton.setDisabled(true);
+        } else {
+            skinRefreshButton.setDisabled(false);
+        }
+        
         // Create the save button
         final UIButton saveButton = new UIButton(this, "Save");
         saveButton.setSize(50, 16);
@@ -194,7 +212,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
         form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, residenceHudCheckBox, animalHeatCheckBox,
                 almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox,
                 graphicsButton, backButton, saveButton, chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu,
-                chestDistanceDownMenu, hudTypeLabel, hudTypeSelect, optimizedLightingCheckbox);
+                chestDistanceDownMenu, hudTypeLabel, hudTypeSelect, optimizedLightingCheckbox, skinRefreshButton);
 
         if (this.mc.thePlayer == null) {
             addToScreen(new UIAnimatedBackground(this));
@@ -207,8 +225,11 @@ public class DynamicConfigurationMenu extends SimpleGui {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.graphics":
                 Configuration.setOptimizedConfig();
-                mc.displayGuiScreen(new DynamicConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to"
-                        + " apply settings.", "Almura"));
+                new DynamicConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to apply settings.", "Almura").display();
+                break;
+            case "button.refreshskin":
+                Minecraft.getMinecraft().getSkinManager().func_152790_a(Minecraft.getMinecraft().getSession().getProfile(), Minecraft.getMinecraft().thePlayer, true);
+                new DynamicConfirmMenu(parent.isPresent() ? parent.get() : null, "Skin refresh requested.", "Wait 60 seconds before trying again.", "Almura").display();
                 break;
             case "button.back":
                 close();
