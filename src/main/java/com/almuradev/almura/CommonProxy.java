@@ -43,6 +43,7 @@ import com.almuradev.almura.server.network.play.S01OpenBlockInformationGui;
 import com.almuradev.almura.server.network.play.S01PageDelete;
 import com.almuradev.almura.server.network.play.S02OpenBlockWireframeGui;
 import com.almuradev.almura.server.network.play.S02PageOpen;
+import com.almuradev.almura.server.network.play.S03PlayerAccessories;
 import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.util.FileSystem;
 import com.google.common.base.Optional;
@@ -75,6 +76,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.network.play.server.S36PacketSignEditorOpen;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraftforge.common.MinecraftForge;
@@ -103,6 +105,7 @@ public class CommonProxy {
         CommonProxy.NETWORK_FORGE.registerMessage(S01PageDelete.class, S01PageDelete.class, 5, Side.CLIENT);
         CommonProxy.NETWORK_FORGE.registerMessage(S01PageDelete.class, S01PageDelete.class, 6, Side.SERVER);
         CommonProxy.NETWORK_FORGE.registerMessage(S02PageOpen.class, S02PageOpen.class, 7, Side.CLIENT);
+        CommonProxy.NETWORK_FORGE.registerMessage(S03PlayerAccessories.class, S03PlayerAccessories.class, 8, Side.CLIENT);
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());
         GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");
         GameRegistry.registerFuelHandler(new PackFuelHandler());
@@ -478,6 +481,54 @@ public class CommonProxy {
                 if (itemSunflowerSeed != null) {
                     event.drops.add(new ItemStack(itemSunflowerSeed, 3));
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        final EntityPlayerMP player = (EntityPlayerMP) event.player;
+        final String commandSenderName = player.getCommandSenderName();
+
+        if (commandSenderName.equalsIgnoreCase("mcsfam")) {
+            // TODO Abby's accessories
+            // Tell everyone else about Abby's accessories
+            // Username, accessory identifier, filename
+            NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), player.worldObj.provider
+                    .dimensionId);
+        } else {
+            // TODO Dockter - Figure out how to send this a few ticks later in Forge.
+            if (player.worldObj.getPlayerEntityByName("mcsfam") != null) {
+                NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        // Tell everyone that Abby no longer is here
+        if (event.player.getCommandSenderName().equalsIgnoreCase("mcsfam")) {
+            NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, event.player.getCommandSenderName(), "halo", "halo_abby"), event.player
+                    .worldObj.provider.dimensionId);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        final EntityPlayerMP player = (EntityPlayerMP) event.player;
+        final String commandSenderName = player.getCommandSenderName();
+
+        if (commandSenderName.equalsIgnoreCase("NinjaZidane")) {
+            // TODO Abby's accessories
+            // Tell everyone else about Abby's accessories
+            // Username, accessory identifier, filename
+            NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), event.toDim);
+            NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, player.getCommandSenderName(), "halo", "halo_abby"), event.fromDim);
+
+        } else {
+            // TODO Dockter - Figure out how to send this a few ticks later in Forge.
+            if (MinecraftServer.getServer().worldServerForDimension(event.toDim).getPlayerEntityByName("NinjaZidane") != null) {
+                NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "NinjaZidane", "halo", "halo_abby"), player);
             }
         }
     }

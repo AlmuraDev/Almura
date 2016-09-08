@@ -21,17 +21,25 @@ public class Halo implements IAccessory<ModelBiped> {
 
     @Override
     public void onAttached(EntityLivingBase base, ResourceLocation textureLocation, ModelBiped root) {
-        right = new ModelRenderer(root, 0, 2);
+        right = new ModelRenderer(root, 0, 0);
         right.addBox(-3F, -14F, -2F, 1, 1, 4);
+        right.setTextureSize(64, 64);
+        right.mirror = true;
 
         front = new ModelRenderer(root, 0, 0);
         front.addBox(-2F, -14F, -3F, 4, 1, 1);
+        front.setTextureSize(64, 64);
+        front.mirror = true;
 
-        left = new ModelRenderer(root, 0, 9);
+        left = new ModelRenderer(root, 0, 0);
         left.addBox(2F, -14F, -2F, 1, 1, 4);
+        left.setTextureSize(64, 64);
+        left.mirror = true;
 
-        back = new ModelRenderer(root, 0, 7);
+        back = new ModelRenderer(root, 0, 0);
         back.addBox(-2F, -14F, 2F, 4, 1, 1);
+        back.setTextureSize(64, 64);
+        back.mirror = true;
     }
 
     @Override
@@ -39,19 +47,19 @@ public class Halo implements IAccessory<ModelBiped> {
         Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
 
         right.rotateAngleY = root.bipedHead.rotateAngleY;
-        right.rotateAngleX = root.bipedHead.rotateAngleX;
+        right.rotateAngleX = -root.bipedHead.rotateAngleX;
         right.render(scale);
 
         front.rotateAngleY = root.bipedHead.rotateAngleY;
-        front.rotateAngleX = root.bipedHead.rotateAngleX;
+        front.rotateAngleX = -root.bipedHead.rotateAngleX;
         front.render(scale);
 
         left.rotateAngleY = root.bipedHead.rotateAngleY;
-        left.rotateAngleX = root.bipedHead.rotateAngleX;
+        left.rotateAngleX = -root.bipedHead.rotateAngleX;
         left.render(scale);
 
         back.rotateAngleY = root.bipedHead.rotateAngleY;
-        back.rotateAngleX = root.bipedHead.rotateAngleX;
+        back.rotateAngleX = -root.bipedHead.rotateAngleX;
         back.render(scale);
     }
 

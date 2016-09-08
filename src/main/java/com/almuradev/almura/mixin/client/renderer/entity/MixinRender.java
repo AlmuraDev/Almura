@@ -6,6 +6,8 @@
 package com.almuradev.almura.mixin.client.renderer.entity;
 
 import com.almuradev.almura.client.DisplayNameManager;
+import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
+import com.almuradev.almura.util.RenderUtil;
 import com.google.common.base.Optional;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -18,6 +20,8 @@ import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+
+import java.util.Set;
 
 @Mixin(Render.class)
 public abstract class MixinRender {
@@ -34,6 +38,12 @@ public abstract class MixinRender {
 
         if (d3 <= (double) (p_147906_9_ * p_147906_9_)) {
             if (p_147906_1_ instanceof EntityPlayer) {
+                final Optional<Set<AccessoryManager.TexturedAccessory>> optAccessories = AccessoryManager.getAccessories(p_147906_1_
+                        .getCommandSenderName());
+                if (optAccessories.isPresent() && !optAccessories.get().isEmpty()) {
+                    p_147906_5_ += RenderUtil.getDisplayNameInitialOffset();
+                }
+
                 // Left: Display Name, Right: Title
                 final DisplayNameManager.Tuple<Optional<String>, Optional<String>> tuple = DisplayNameManager.getDisplayNameAndTitle(
                         p_147906_1_.getCommandSenderName());

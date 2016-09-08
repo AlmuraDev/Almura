@@ -18,6 +18,7 @@ import com.almuradev.almura.client.renderer.accessories.type.Tail;
 import com.almuradev.almura.client.renderer.accessories.type.TopHat;
 import com.almuradev.almura.client.renderer.accessories.type.Wings;
 import com.almuradev.almura.util.FileSystem;
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -106,13 +107,13 @@ public class AccessoryManager {
         }
     }
 
-    public static Set<TexturedAccessory> getAccessories(String player) {
-        return ACCESSORIES_BY_ENTITIES.get(player);
+    public static Optional<Set<TexturedAccessory>> getAccessories(String player) {
+        return Optional.fromNullable(ACCESSORIES_BY_ENTITIES.get(player));
     }
 
     @SuppressWarnings("unchecked")
     public static void onRenderPlayerSpecialEventPost(RenderPlayerEvent.Specials.Post event) {
-        final Set<AccessoryManager.TexturedAccessory> entityAccessories = AccessoryManager.getAccessories(event.entityPlayer.getCommandSenderName());
+        final Set<AccessoryManager.TexturedAccessory> entityAccessories = AccessoryManager.getAccessories(event.entityPlayer.getCommandSenderName()).orNull();
         if (entityAccessories != null) {
             for (AccessoryManager.TexturedAccessory accessory : entityAccessories) {
                 accessory.accessoryType

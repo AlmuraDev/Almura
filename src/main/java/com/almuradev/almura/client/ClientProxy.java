@@ -5,8 +5,6 @@
  */
 package com.almuradev.almura.client;
 
-import com.almuradev.almura.client.network.play.B03ChunkRegenWand;
-
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Configuration;
@@ -24,6 +22,7 @@ import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
 import com.almuradev.almura.client.network.play.B00PlayerDeathConfirmation;
 import com.almuradev.almura.client.network.play.B01ResTokenConfirmation;
 import com.almuradev.almura.client.network.play.B02ClientDetailsResponse;
+import com.almuradev.almura.client.network.play.B03ChunkRegenWand;
 import com.almuradev.almura.client.renderer.accessories.AccessoryManager;
 import com.almuradev.almura.content.Page;
 import com.almuradev.almura.content.PageRegistry;
@@ -43,7 +42,6 @@ import com.almuradev.almura.server.network.play.bukkit.B00PlayerDisplayName;
 import com.almuradev.almura.server.network.play.bukkit.B01PlayerCurrency;
 import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInformation;
 import com.almuradev.almura.server.network.play.bukkit.B03ResidenceInformation;
-import com.almuradev.almura.server.network.play.bukkit.B04PlayerAccessories;
 import com.almuradev.almura.server.network.play.bukkit.B05GuiController;
 import com.almuradev.almura.server.network.play.bukkit.B06ClientDetailsRequest;
 import com.google.common.base.Optional;
@@ -95,7 +93,7 @@ public class ClientProxy extends CommonProxy {
         NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInformation.class, B02AdditionalWorldInformation.class, 2, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B03ResidenceInformation.class, B03ResidenceInformation.class, 3, Side.CLIENT);
-        NETWORK_BUKKIT.registerMessage(B04PlayerAccessories.class, B04PlayerAccessories.class, 4, Side.CLIENT);
+        //NETWORK_BUKKIT.registerMessage(S03PlayerAccessories.class, S03PlayerAccessories.class, 4, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B05GuiController.class, B05GuiController.class, 5, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B00PlayerDeathConfirmation.class, B00PlayerDeathConfirmation.class, 6, Side.SERVER);
         NETWORK_BUKKIT.registerMessage(B01ResTokenConfirmation.class, B01ResTokenConfirmation.class, 7, Side.SERVER);
