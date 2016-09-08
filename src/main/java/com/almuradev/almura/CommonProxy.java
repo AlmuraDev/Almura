@@ -92,9 +92,12 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CommonProxy {
     public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
+    private final Timer threadTrigger = new Timer("ScheduledTasks", true);
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
         CommonProxy.NETWORK_FORGE.registerMessage(S00AdditionalWorldInformation.class, S00AdditionalWorldInformation.class, 0, Side.CLIENT);
@@ -205,20 +208,20 @@ public class CommonProxy {
                         //For seeds to work, they require a soil
                         ((INodeContainer) block).addNode(soilNode);
                         final String
-                                textureName =
-                                reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
+                        textureName =
+                        reader.getNode(PackKeys.TEXTURE.getKey()).getString(PackKeys.TEXTURE.getDefaultValue()).split(".png")[0];
                         final PackSeeds
-                                seed =
-                                PackCreator
-                                        .createCropSeed(((PackCrops) block).getPack(), ((IPackObject) block).getIdentifier(),
-                                                (Block) soilNode.getSoil().minecraftObject, (PackCrops) block,
-                                                textureName,
-                                                reader.getNode(PackKeys.NODE_SEED.getKey()));
+                        seed =
+                        PackCreator
+                        .createCropSeed(((PackCrops) block).getPack(), ((IPackObject) block).getIdentifier(),
+                                (Block) soilNode.getSoil().minecraftObject, (PackCrops) block,
+                                textureName,
+                                reader.getNode(PackKeys.NODE_SEED.getKey()));
                         if (GameRegistry.findItem(Almura.MOD_ID, seed.getPack().getName() + "\\" + seed.getIdentifier()) != null) {
                             Almura.LOGGER
-                                    .error("Crop [" + ((PackCrops) block).getIdentifier() + "] in [" + ((PackCrops) block).getPack().getName()
-                                            + "] is trying to add seed [" + seed.getIdentifier()
-                                            + "] but it already exists. You may only have one seed per crop.");
+                            .error("Crop [" + ((PackCrops) block).getIdentifier() + "] in [" + ((PackCrops) block).getPack().getName()
+                                    + "] is trying to add seed [" + seed.getIdentifier()
+                                    + "] but it already exists. You may only have one seed per crop.");
                         } else {
                             GameRegistry.registerItem(seed, seed.getPack().getName() + "\\" + seed.getIdentifier());
                             seedsToAdd.add(seed);
@@ -330,7 +333,7 @@ public class CommonProxy {
                 }
             }
         }
-        
+
         Almura.LOGGER.info("Loaded -> " + pack);
 
         // Generator | Weight (Heavy values run later)
@@ -417,10 +420,10 @@ public class CommonProxy {
                                         prop.getSource().minecraftObject instanceof ItemBlock ? ((ItemBlock) prop.getSource()
                                                 .minecraftObject).blockInstance : prop.getSource().minecraftObject;
 
-                                if (minecraftObject == propMinecraftObject && heldStack.getMetadata() == prop.getSource().data) {
-                                    found = true;
-                                    break;
-                                }
+                                        if (minecraftObject == propMinecraftObject && heldStack.getMetadata() == prop.getSource().data) {
+                                            found = true;
+                                            break;
+                                        }
                             }
                         }
                     }
@@ -467,7 +470,7 @@ public class CommonProxy {
             if (te != null && te instanceof TileEntitySign) {
                 if (event.entityPlayer instanceof EntityPlayerMP) {
                     ((EntityPlayerMP) event.entityPlayer).playerNetServerHandler
-                            .sendPacket(new S36PacketSignEditorOpen(te.xCoord, te.yCoord, te.zCoord));
+                    .sendPacket(new S36PacketSignEditorOpen(te.xCoord, te.yCoord, te.zCoord));
                 }
             }
         }
@@ -491,15 +494,21 @@ public class CommonProxy {
         final String commandSenderName = player.getCommandSenderName();
 
         if (commandSenderName.equalsIgnoreCase("mcsfam")) {
-            // TODO Abby's accessories
-            // Tell everyone else about Abby's accessories
-            // Username, accessory identifier, filename
-            NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), player.worldObj.provider
-                    .dimensionId);
+            this.threadTrigger.schedule(new TimerTask() {
+                public void run() {
+                    NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), player.worldObj.provider.dimensionId);
+                    this.cancel();
+                }
+            }, 60L, 60L);
         } else {
             // TODO Dockter - Figure out how to send this a few ticks later in Forge.
             if (player.worldObj.getPlayerEntityByName("mcsfam") != null) {
-                NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
+                this.threadTrigger.schedule(new TimerTask() {
+                    public void run() {
+                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
+                        this.cancel();
+                    }
+                }, 60L, 60L);
             }
         }
     }
@@ -514,21 +523,29 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
-    public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+    public void onPlayerChangedDimension(final PlayerEvent.PlayerChangedDimensionEvent event) {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
 
         if (commandSenderName.equalsIgnoreCase("mcsfam")) {
-            // TODO Abby's accessories
-            // Tell everyone else about Abby's accessories
-            // Username, accessory identifier, filename
-            NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), event.toDim);
-            NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, player.getCommandSenderName(), "halo", "halo_abby"), event.fromDim);
+            this.threadTrigger.schedule(new TimerTask() {
+                public void run() {
+                    NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), event.toDim);
+                    NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, player.getCommandSenderName(), "halo", "halo_abby"), event.fromDim);
+                    this.cancel();
+                }
+            }, 60L, 60L);
+
 
         } else {
-            // TODO Dockter - Figure out how to send this a few ticks later in Forge.
             if (MinecraftServer.getServer().worldServerForDimension(event.toDim).getPlayerEntityByName("mcsfam") != null) {
-                NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
+                this.threadTrigger.schedule(new TimerTask() {                
+                    public void run() {
+                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
+                        this.cancel();
+                    }
+                }, 60L, 60L);
+
             }
         }
     }
@@ -543,11 +560,11 @@ public class CommonProxy {
         if (optPage.isPresent()) {
             page = optPage.get();
             page
-                    .setIndex(message.index)
-                    .setLastContributor(ctx.getServerHandler().playerEntity.getCommandSenderName())
-                    .setLastModified(new Date())
-                    .setTitle(message.title)
-                    .setContents(PageUtil.replaceColorCodes("&", message.contents, true));
+            .setIndex(message.index)
+            .setLastContributor(ctx.getServerHandler().playerEntity.getCommandSenderName())
+            .setLastModified(new Date())
+            .setTitle(message.title)
+            .setContents(PageUtil.replaceColorCodes("&", message.contents, true));
         } else {
             // String identifier, int index, String name, Date created, String author, Date lastModified, String lastContributor, String contents
             page = new Page(message.identifier, message.index, message.title, new Date(),
