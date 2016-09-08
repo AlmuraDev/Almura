@@ -509,27 +509,35 @@ public class CommonProxy {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
         Timer timer = new Timer ();
-        if (commandSenderName.equalsIgnoreCase("mcsfam")) {            
+        if (commandSenderName.equalsIgnoreCase("mcsfam")) {
             TimerTask packetTask = new TimerTask () {
+                int repeat = 0;
                 @Override
                 public void run () {
                     NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), player.worldObj.provider.dimensionId);
                     NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "wings", "wings1"), player.worldObj.provider.dimensionId);
-                    this.cancel();
+                    if (repeat == 4) {
+                        this.cancel();
+                    }
+                    repeat = repeat + 1;
                 }
             };
-            timer.schedule(packetTask, 2000L);
+            timer.schedule(packetTask, 2000L, 2000L);
         } else {
             if (player.worldObj.getPlayerEntityByName("mcsfam") != null) {
                 TimerTask packetTask = new TimerTask () {
+                    int repeat = 0;
                     @Override
                     public void run () {
                         NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
                         NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "wings", "wings1"), player);
-                        this.cancel();
+                        if (repeat == 4) {
+                            this.cancel();
+                        }
+                        repeat = repeat + 1;
                     }
                 };
-                timer.schedule(packetTask, 2000L);
+                timer.schedule(packetTask, 2000L, 2000L);
             }
         }
     }
