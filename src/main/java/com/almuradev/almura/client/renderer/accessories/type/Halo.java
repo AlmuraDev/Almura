@@ -47,19 +47,19 @@ public class Halo implements IAccessory<ModelBiped> {
         Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
 
         right.rotateAngleY = root.bipedHead.rotateAngleY;
-        right.rotateAngleX = -root.bipedHead.rotateAngleX;
+        right.rotateAngleX = root.bipedHead.rotateAngleX;
         right.render(scale);
 
         front.rotateAngleY = root.bipedHead.rotateAngleY;
-        front.rotateAngleX = -root.bipedHead.rotateAngleX;
+        front.rotateAngleX = root.bipedHead.rotateAngleX;
         front.render(scale);
 
         left.rotateAngleY = root.bipedHead.rotateAngleY;
-        left.rotateAngleX = -root.bipedHead.rotateAngleX;
+        left.rotateAngleX = root.bipedHead.rotateAngleX;
         left.render(scale);
 
         back.rotateAngleY = root.bipedHead.rotateAngleY;
-        back.rotateAngleX = -root.bipedHead.rotateAngleX;
+        back.rotateAngleX = root.bipedHead.rotateAngleX;
         back.render(scale);
     }
 

@@ -97,7 +97,7 @@ import java.util.TimerTask;
 
 public class CommonProxy {
     public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
-    private final Timer threadTrigger = new Timer("ScheduledTasks", true);
+    private final Timer delayedPacket = new Timer();        
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
         CommonProxy.NETWORK_FORGE.registerMessage(S00AdditionalWorldInformation.class, S00AdditionalWorldInformation.class, 0, Side.CLIENT);
@@ -492,25 +492,36 @@ public class CommonProxy {
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
-
+        Timer timer = new Timer ();
+        System.out.println("System Time: " + System.currentTimeMillis());
         if (commandSenderName.equalsIgnoreCase("mcsfam")) {
-            this.threadTrigger.schedule(new TimerTask() {
-                public void run() {
+            System.out.println("Equals MCSFAM");            
+            TimerTask packetTask = new TimerTask () {
+                @Override
+                public void run () {
+                    System.out.println("Task1");
+                    System.out.println("System2 Time: " + System.currentTimeMillis());
                     NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), player.worldObj.provider.dimensionId);
                     this.cancel();
                 }
-            }, 60L, 60L);
+            };   
+            timer.schedule(packetTask, 2000L);
         } else {
+            System.out.println("DOES NOT Equal MCSFAM");
             // TODO Dockter - Figure out how to send this a few ticks later in Forge.
             if (player.worldObj.getPlayerEntityByName("mcsfam") != null) {
-                this.threadTrigger.schedule(new TimerTask() {
-                    public void run() {
-                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
+                TimerTask packetTask = new TimerTask () {
+                    @Override
+                    public void run () {
+                        System.out.println("Task2");
+                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);                        
                         this.cancel();
                     }
-                }, 60L, 60L);
+                };
+                timer.schedule(packetTask, 2000L);
             }
         }
+        
     }
 
     @SubscribeEvent
@@ -526,26 +537,30 @@ public class CommonProxy {
     public void onPlayerChangedDimension(final PlayerEvent.PlayerChangedDimensionEvent event) {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
-
+        Timer timer = new Timer ();
+        System.out.println("System Time: " + System.currentTimeMillis());
         if (commandSenderName.equalsIgnoreCase("mcsfam")) {
-            this.threadTrigger.schedule(new TimerTask() {
-                public void run() {
+            TimerTask packetTask = new TimerTask () {
+                @Override
+                public void run () {
                     NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), event.toDim);
                     NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, player.getCommandSenderName(), "halo", "halo_abby"), event.fromDim);
+                    System.out.println("Task3");
                     this.cancel();
                 }
-            }, 60L, 60L);
-
-
+            };
+            timer.schedule(packetTask, 2000L);
         } else {
             if (MinecraftServer.getServer().worldServerForDimension(event.toDim).getPlayerEntityByName("mcsfam") != null) {
-                this.threadTrigger.schedule(new TimerTask() {                
-                    public void run() {
+                TimerTask packetTask = new TimerTask () {
+                    @Override
+                    public void run () {
                         NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
+                        System.out.println("Task5");
                         this.cancel();
                     }
-                }, 60L, 60L);
-
+                };
+                timer.schedule(packetTask, 2000L);
             }
         }
     }

@@ -58,7 +58,7 @@ public class ServerProxy extends CommonProxy {
     public void ServerTickEvent(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             if (this.tickCounter % 40 == 0) {
-                System.out.println("Events: " + event.getListenerList().toString());
+                //System.out.println("Events: " + event.getListenerList().toString());
             }
             ++this.tickCounter;
         }
