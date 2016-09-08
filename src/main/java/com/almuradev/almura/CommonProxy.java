@@ -509,28 +509,23 @@ public class CommonProxy {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
         Timer timer = new Timer ();
-        System.out.println("System Time: " + System.currentTimeMillis());
-        if (commandSenderName.equalsIgnoreCase("mcsfam")) {
-            System.out.println("Equals MCSFAM");
+        if (commandSenderName.equalsIgnoreCase("mcsfam")) {            
             TimerTask packetTask = new TimerTask () {
                 @Override
                 public void run () {
-                    System.out.println("Task1");
-                    System.out.println("System2 Time: " + System.currentTimeMillis());
                     NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), player.worldObj.provider.dimensionId);
+                    NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "wings", "wings1"), player.worldObj.provider.dimensionId);
                     this.cancel();
                 }
             };
             timer.schedule(packetTask, 2000L);
         } else {
-            System.out.println("DOES NOT Equal MCSFAM");
-            // TODO Dockter - Figure out how to send this a few ticks later in Forge.
             if (player.worldObj.getPlayerEntityByName("mcsfam") != null) {
                 TimerTask packetTask = new TimerTask () {
                     @Override
                     public void run () {
-                        System.out.println("Task2");
                         NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
+                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "wings", "wings1"), player);
                         this.cancel();
                     }
                 };
@@ -542,8 +537,8 @@ public class CommonProxy {
     public void handlePlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         // Tell everyone that Abby no longer is here
         if (event.player.getCommandSenderName().equalsIgnoreCase("mcsfam")) {
-            NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, event.player.getCommandSenderName(), "halo", "halo_abby"), event.player
-                    .worldObj.provider.dimensionId);
+            NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, event.player.getCommandSenderName(), "halo", "halo_abby"), event.player.worldObj.provider.dimensionId);
+            NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, event.player.getCommandSenderName(), "wings", "wings1"), event.player.worldObj.provider.dimensionId);
         }
     }
 
@@ -551,14 +546,14 @@ public class CommonProxy {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
         Timer timer = new Timer ();
-        System.out.println("System Time: " + System.currentTimeMillis());
         if (commandSenderName.equalsIgnoreCase("mcsfam")) {
             TimerTask packetTask = new TimerTask () {
                 @Override
                 public void run () {
                     NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), event.toDim);
                     NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, player.getCommandSenderName(), "halo", "halo_abby"), event.fromDim);
-                    System.out.println("Task3");
+                    NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "wings", "wings1"), event.toDim);
+                    NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, player.getCommandSenderName(), "wings", "wings1"), event.fromDim);
                     this.cancel();
                 }
             };
@@ -569,7 +564,7 @@ public class CommonProxy {
                     @Override
                     public void run () {
                         NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
-                        System.out.println("Task5");
+                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "wings", "wings1"), player);
                         this.cancel();
                     }
                 };
