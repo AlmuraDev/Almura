@@ -488,14 +488,30 @@ public class CommonProxy {
         }
     }
 
+    // Server only events
+
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        handlePlayerLoggedIn(event);
+    }
+
+    @SubscribeEvent
+    public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        handlePlayerLoggedOut(event);
+    }
+
+    @SubscribeEvent
+    public void onPlayerChangedDimension(final PlayerEvent.PlayerChangedDimensionEvent event) {
+        handlePlayerChangedDimension(event);
+    }
+
+    public void handlePlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
         Timer timer = new Timer ();
         System.out.println("System Time: " + System.currentTimeMillis());
         if (commandSenderName.equalsIgnoreCase("mcsfam")) {
-            System.out.println("Equals MCSFAM");            
+            System.out.println("Equals MCSFAM");
             TimerTask packetTask = new TimerTask () {
                 @Override
                 public void run () {
@@ -504,7 +520,7 @@ public class CommonProxy {
                     NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(true, player.getCommandSenderName(), "halo", "halo_abby"), player.worldObj.provider.dimensionId);
                     this.cancel();
                 }
-            };   
+            };
             timer.schedule(packetTask, 2000L);
         } else {
             System.out.println("DOES NOT Equal MCSFAM");
@@ -514,18 +530,16 @@ public class CommonProxy {
                     @Override
                     public void run () {
                         System.out.println("Task2");
-                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);                        
+                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
                         this.cancel();
                     }
                 };
                 timer.schedule(packetTask, 2000L);
             }
         }
-        
     }
 
-    @SubscribeEvent
-    public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+    public void handlePlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         // Tell everyone that Abby no longer is here
         if (event.player.getCommandSenderName().equalsIgnoreCase("mcsfam")) {
             NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, event.player.getCommandSenderName(), "halo", "halo_abby"), event.player
@@ -533,8 +547,7 @@ public class CommonProxy {
         }
     }
 
-    @SubscribeEvent
-    public void onPlayerChangedDimension(final PlayerEvent.PlayerChangedDimensionEvent event) {
+    public void handlePlayerChangedDimension(final PlayerEvent.PlayerChangedDimensionEvent event) {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
         Timer timer = new Timer ();

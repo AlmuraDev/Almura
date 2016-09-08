@@ -5,18 +5,15 @@
  */
 package com.almuradev.almura.server;
 
-import cpw.mods.fml.common.gameevent.TickEvent;
-
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.content.Page;
 import com.almuradev.almura.content.PageRegistry;
 import com.almuradev.almura.server.network.play.S00PageInformation;
 import com.almuradev.almura.server.network.play.S01PageDelete;
 import com.almuradev.almura.server.network.play.S02PageOpen;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 
@@ -26,13 +23,6 @@ public class ServerProxy extends CommonProxy {
 
     public static final String CLASSPATH = "com.almuradev.almura.server.ServerProxy";
     private int tickCounter;
-
-    @Override
-    public void onInitialization(FMLInitializationEvent event) {
-        super.onInitialization(event);
-
-        FMLCommonHandler.instance().bus().register(this);
-    }
 
     @Override
     public void handlePageDelete(MessageContext ctx, S01PageDelete message) {
@@ -46,8 +36,10 @@ public class ServerProxy extends CommonProxy {
         return true;
     }
 
-    @SubscribeEvent
-    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+    @Override
+    public void handlePlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        super.handlePlayerLoggedIn(event);
+
         for (Map.Entry<String, Page> entry : PageRegistry.getAll().entrySet()) {
             CommonProxy.NETWORK_FORGE.sendTo(new S00PageInformation(entry.getValue()), (EntityPlayerMP) event.player);
             CommonProxy.NETWORK_FORGE.sendTo(new S02PageOpen("Welcome"), (EntityPlayerMP) event.player);
