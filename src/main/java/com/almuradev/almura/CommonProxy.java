@@ -518,7 +518,7 @@ public class CommonProxy {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
 
-        if (commandSenderName.equalsIgnoreCase("NinjaZidane")) {
+        if (commandSenderName.equalsIgnoreCase("mcsfam")) {
             // TODO Abby's accessories
             // Tell everyone else about Abby's accessories
             // Username, accessory identifier, filename
@@ -527,8 +527,8 @@ public class CommonProxy {
 
         } else {
             // TODO Dockter - Figure out how to send this a few ticks later in Forge.
-            if (MinecraftServer.getServer().worldServerForDimension(event.toDim).getPlayerEntityByName("NinjaZidane") != null) {
-                NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "NinjaZidane", "halo", "halo_abby"), player);
+            if (MinecraftServer.getServer().worldServerForDimension(event.toDim).getPlayerEntityByName("mcsfam") != null) {
+                NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
             }
         }
     }
