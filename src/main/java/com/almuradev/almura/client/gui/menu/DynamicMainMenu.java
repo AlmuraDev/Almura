@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.gui.menu;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Configuration;
 import com.almuradev.almura.client.FontRenderOptionsConstants;
 import com.almuradev.almura.client.gui.SimpleGui;
 import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
@@ -139,6 +140,13 @@ public class DynamicMainMenu extends SimpleGui {
                 break;
             case "button.quit":
                 close();
+        }
+    }
+
+    @Override
+    public void update(int mouseX, int mouseY, float partialTick) {
+        if (Configuration.FIRST_LAUNCH) {
+            new UpdateDetectedGUI(parent.isPresent() ? parent.get() : null).display();
         }
     }
 }

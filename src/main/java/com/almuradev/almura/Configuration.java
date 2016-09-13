@@ -136,6 +136,7 @@ public class Configuration {
             root = loader.load();
         }
         root.getNode(PATH_CLIENT_FIRST_LAUNCH).setValue(value);
+        Configuration.FIRST_LAUNCH = false;
         loader.save(root);
     }
 
@@ -158,6 +159,12 @@ public class Configuration {
             mc.gameSettings.resourcePacks.add("Almura Preferred Font.zip");
         }
         mc.gameSettings.saveOptions();
+        try {
+            setFirstLaunch(false);
+        } catch (IOException crash) {
+            crash.printStackTrace();
+        }
+        mc.refreshResources();
     }
 
     public static void setHUDType(String value) {

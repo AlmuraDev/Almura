@@ -97,7 +97,6 @@ import java.util.TimerTask;
 
 public class CommonProxy {
     public static final SimpleNetworkWrapper NETWORK_FORGE = new SimpleNetworkWrapper("AM|FOR");
-    private final Timer delayedPacket = new Timer();        
 
     public void onPreInitialization(FMLPreInitializationEvent event) {
         CommonProxy.NETWORK_FORGE.registerMessage(S00AdditionalWorldInformation.class, S00AdditionalWorldInformation.class, 0, Side.CLIENT);
@@ -509,7 +508,7 @@ public class CommonProxy {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
         Timer timer = new Timer ();
-        if (commandSenderName.equalsIgnoreCase("mcsfam")) {
+        if (commandSenderName.equalsIgnoreCase("docksj")) {
             TimerTask packetTask = new TimerTask () {
                 int repeat = 0;
                 @Override
@@ -524,13 +523,13 @@ public class CommonProxy {
             };
             timer.schedule(packetTask, 2000L, 2000L);
         } else {
-            if (player.worldObj.getPlayerEntityByName("mcsfam") != null) {
+            if (player.worldObj.getPlayerEntityByName("docksj") != null) {
                 TimerTask packetTask = new TimerTask () {
                     int repeat = 0;
                     @Override
                     public void run () {
-                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
-                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "wings", "wings1"), player);
+                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "docksj", "halo", "halo_abby"), player);
+                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "docksj", "wings", "wings1"), player);
                         if (repeat == 4) {
                             this.cancel();
                         }
@@ -544,7 +543,7 @@ public class CommonProxy {
 
     public void handlePlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         // Tell everyone that Abby no longer is here
-        if (event.player.getCommandSenderName().equalsIgnoreCase("mcsfam")) {
+        if (event.player.getCommandSenderName().equalsIgnoreCase("docksj")) {
             NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, event.player.getCommandSenderName(), "halo", "halo_abby"), event.player.worldObj.provider.dimensionId);
             NETWORK_FORGE.sendToDimension(new S03PlayerAccessories(false, event.player.getCommandSenderName(), "wings", "wings1"), event.player.worldObj.provider.dimensionId);
         }
@@ -554,7 +553,7 @@ public class CommonProxy {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
         Timer timer = new Timer ();
-        if (commandSenderName.equalsIgnoreCase("mcsfam")) {
+        if (commandSenderName.equalsIgnoreCase("docksj")) {
             TimerTask packetTask = new TimerTask () {
                 @Override
                 public void run () {
@@ -567,12 +566,12 @@ public class CommonProxy {
             };
             timer.schedule(packetTask, 2000L);
         } else {
-            if (MinecraftServer.getServer().worldServerForDimension(event.toDim).getPlayerEntityByName("mcsfam") != null) {
+            if (MinecraftServer.getServer().worldServerForDimension(event.toDim).getPlayerEntityByName("docksj") != null) {
                 TimerTask packetTask = new TimerTask () {
                     @Override
                     public void run () {
-                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "halo", "halo_abby"), player);
-                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "mcsfam", "wings", "wings1"), player);
+                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "docksj", "halo", "halo_abby"), player);
+                        NETWORK_FORGE.sendTo(new S03PlayerAccessories(true, "docksj", "wings", "wings1"), player);
                         this.cancel();
                     }
                 };

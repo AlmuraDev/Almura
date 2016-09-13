@@ -18,6 +18,7 @@ import com.almuradev.almura.client.gui.ingame.IngameOptions;
 import com.almuradev.almura.client.gui.ingame.hud.IngameAlmuraHUD;
 import com.almuradev.almura.client.gui.ingame.hud.IngameLessHUD;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
+import com.almuradev.almura.client.gui.menu.DynamicConfirmMenu;
 import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
 import com.almuradev.almura.client.network.play.B00PlayerDeathConfirmation;
 import com.almuradev.almura.client.network.play.B01ResTokenConfirmation;
@@ -85,10 +86,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onPreInitialization(FMLPreInitializationEvent event) {
         super.onPreInitialization(event);
-        if (Configuration.FIRST_LAUNCH) {
-            Configuration.setOptimizedConfig();
-        }
-        // Register handlers for Bukkit packets
+               // Register handlers for Bukkit packets
         NETWORK_BUKKIT.registerMessage(B00PlayerDisplayName.class, B00PlayerDisplayName.class, 0, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B01PlayerCurrency.class, B01PlayerCurrency.class, 1, Side.CLIENT);
         NETWORK_BUKKIT.registerMessage(B02AdditionalWorldInformation.class, B02AdditionalWorldInformation.class, 2, Side.CLIENT);
@@ -120,17 +118,8 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onGuiOpenEvent(GuiOpenEvent event) {
         if (event.gui instanceof GuiMainMenu) {
-            if (Configuration.FIRST_LAUNCH) {
-                Configuration.setOptimizedConfig();
-                try {
-                    Configuration.setFirstLaunch(false);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
             event.setCanceled(true);
             new DynamicMainMenu(null).display();
-
         }
 
         if (event.gui instanceof GuiIngameMenu) {

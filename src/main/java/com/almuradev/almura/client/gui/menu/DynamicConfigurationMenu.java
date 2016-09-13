@@ -225,7 +225,7 @@ public class DynamicConfigurationMenu extends SimpleGui {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.graphics":
                 Configuration.setOptimizedConfig();
-                new DynamicConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved.", "Please restart your game to apply settings.", "Almura").display();
+                new DynamicConfirmMenu(parent.isPresent() ? parent.get() : null, "Changes Saved and applied.", "", "Almura").display();
                 break;
             case "button.refreshskin":
                 Minecraft.getMinecraft().getSkinManager().func_152790_a(Minecraft.getMinecraft().getSession().getProfile(), Minecraft.getMinecraft().thePlayer, true);
