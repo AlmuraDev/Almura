@@ -25,6 +25,8 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
 
@@ -35,23 +37,8 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
     private UIButton almuraDevButton;
     private UILabel liveServerOnline;
     private UILabel devServerOnline;
-    private final Thread QUERIER = new Thread(new Runnable() {
-
-        @Override
-        public void run() {
-            while (true) {
-                if (!Thread.interrupted()) {
-                    queryServers();
-                }
-
-                try {
-                    Thread.sleep(600);
-                } catch (InterruptedException e) {
-                    break;
-                }
-            }
-        }
-    });
+    Timer timer = null;
+    boolean isRunning = false;
 
     public DynamicServerMenu(SimpleGui parent) {
         super(parent);
@@ -132,21 +119,23 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
 
         addToScreen(new UIAnimatedBackground(this));
         addToScreen(form);
-
-        QUERIER.start();
     }
 
     @Override
     public void onClose() {
+        // Future note, this window isn't technically closed when you try and connect to a server.  This is a chicken and egg issue.  Hence the need for the below update method to restart timer.
         super.onClose();
-        QUERIER.interrupt();
+        isRunning = false;
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) throws IOException, URISyntaxException {
         if (!event.getComponent().getName().toLowerCase().equals("button.server.web")
                 || (!event.getComponent().getName().toLowerCase().equals("button.server.map"))) {
-            close();
+            close();  //This doesn't close this screen when connecting to a server.
         }
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.server.almura.live":
@@ -167,6 +156,11 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
                 Desktop.getDesktop().browse(new URI("http://www.almuramc.com"));
                 break;
         }
+    }
+    
+    @Override
+    public void update(int mouseX, int mouseY, float partialTick) {
+        startTimer();
     }
 
     public void queryServers() {
@@ -204,6 +198,20 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
             }
 
         } catch (Exception ignored) {
+        }
+    }
+    
+    public void startTimer() {
+        if (!isRunning) {
+            timer = new Timer ();
+            TimerTask packetTask = new TimerTask () {
+                @Override
+                public void run () {
+                    isRunning = true;
+                    queryServers();
+                }
+            };
+            timer.schedule(packetTask, 0L, 3000L);
         }
     }
 }
