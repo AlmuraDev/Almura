@@ -204,14 +204,14 @@ public class DynamicServerMenu extends SimpleGui implements GuiYesNoCallback {
     public void startTimer() {
         if (!isRunning) {
             timer = new Timer ();
-            TimerTask packetTask = new TimerTask () {
+            TimerTask updateListTask = new TimerTask () {
                 @Override
                 public void run () {
                     isRunning = true;
                     queryServers();
                 }
             };
-            timer.schedule(packetTask, 0L, 3000L);
+            timer.schedule(updateListTask, 0L, 3000L);
         }
     }
 }
