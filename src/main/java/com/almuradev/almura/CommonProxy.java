@@ -44,6 +44,8 @@ import com.almuradev.almura.server.network.play.S01PageDelete;
 import com.almuradev.almura.server.network.play.S02OpenBlockWireframeGui;
 import com.almuradev.almura.server.network.play.S02PageOpen;
 import com.almuradev.almura.server.network.play.S03PlayerAccessories;
+import com.almuradev.almura.special.block.Caches;
+import com.almuradev.almura.special.block.CachesTileEntity;
 import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.util.FileSystem;
 import com.google.common.base.Optional;
@@ -110,11 +112,13 @@ public class CommonProxy {
         CommonProxy.NETWORK_FORGE.registerMessage(S03PlayerAccessories.class, S03PlayerAccessories.class, 8, Side.CLIENT);
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());
         GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");
+        GameRegistry.registerTileEntity(CachesTileEntity.class, Almura.MOD_ID + ":caches");
         GameRegistry.registerFuelHandler(new PackFuelHandler());
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
         Tabs.fakeStaticLoad();
         Items.fakeStaticLoad();
+        Caches.fakeStaticLoad();
 
         try {
             GameObjectMapper.load();
