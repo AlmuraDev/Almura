@@ -173,8 +173,15 @@ public class Pack {
     /**
      * INTERNAL USE ONLY
      */
+    public void addBlock(Block block) {
+        this.blocks.add(block);
+    }
+
+    /**
+     * INTERNAL USE ONLY
+     */
     public void addItem(Item item) {
-        items.add(item);
+        this.items.add(item);
     }
 
     @Override

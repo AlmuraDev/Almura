@@ -28,6 +28,5 @@ public abstract class MixinWorld {
         if (Configuration.USE_OPTIMIZED_LIGHTING) {
             this.lightUpdateBlockList = new int[256];
         }
-        System.out.println(lightUpdateBlockList.length);
     }
 }

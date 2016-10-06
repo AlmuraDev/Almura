@@ -45,6 +45,7 @@ import com.almuradev.almura.server.network.play.S02OpenBlockWireframeGui;
 import com.almuradev.almura.server.network.play.S02PageOpen;
 import com.almuradev.almura.server.network.play.S03PlayerAccessories;
 import com.almuradev.almura.special.block.Caches;
+import com.almuradev.almura.special.block.CachesBlock;
 import com.almuradev.almura.special.block.CachesTileEntity;
 import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.util.FileSystem;
@@ -77,12 +78,14 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S36PacketSignEditorOpen;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.BonemealEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -118,7 +121,7 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.register(this);
         Tabs.fakeStaticLoad();
         Items.fakeStaticLoad();
-        Caches.fakeStaticLoad();
+        Caches.init();
 
         try {
             GameObjectMapper.load();
@@ -506,6 +509,40 @@ public class CommonProxy {
     @SubscribeEvent
     public void onPlayerChangedDimension(final PlayerEvent.PlayerChangedDimensionEvent event) {
         handlePlayerChangedDimension(event);
+    }
+
+    @SubscribeEvent
+    public void onItemTooltip(ItemTooltipEvent event) {
+        final ItemStack stack = event.itemStack;
+        if (stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).blockInstance instanceof CachesBlock) {
+            if (stack.hasTagCompound()) {
+                final NBTTagCompound compound = stack.getTagCompound();
+
+                if (compound.hasKey("tag")) {
+                    final NBTTagCompound tagCompound = compound.getCompoundTag("tag");
+
+                    if (tagCompound.hasKey(CachesTileEntity.TAG_CACHE)) {
+                        final NBTTagCompound cachesCompound = tagCompound.getCompoundTag(CachesTileEntity.TAG_CACHE);
+
+                        if (cachesCompound.hasKey(CachesTileEntity.TAG_CACHE_CONTENTS)) {
+                            // TODO If this ends up hurting performance, move the item name and the current contents to NBT in separate tags.
+                            final ItemStack cache = ItemStack.loadItemStackFromNBT(cachesCompound.getCompoundTag(CachesTileEntity
+                                    .TAG_CACHE_CONTENTS));
+
+                            if (cache != null) {
+                                event.toolTip.add("Cache Used: " + cache.stackSize);
+                            }
+                        }
+
+                        if (cachesCompound.hasKey(CachesTileEntity.TAG_CACHE_MAX_STACK_SIZE)) {
+                            final int maxStackSize = cachesCompound.getInteger(CachesTileEntity.TAG_CACHE_MAX_STACK_SIZE);
+
+                            event.toolTip.add("Cache Limit: " + maxStackSize);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void handlePlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
