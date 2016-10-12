@@ -18,7 +18,6 @@ import com.almuradev.almura.client.gui.ingame.IngameOptions;
 import com.almuradev.almura.client.gui.ingame.hud.IngameAlmuraHUD;
 import com.almuradev.almura.client.gui.ingame.hud.IngameLessHUD;
 import com.almuradev.almura.client.gui.ingame.residence.IngameResidenceHUD;
-import com.almuradev.almura.client.gui.menu.DynamicConfirmMenu;
 import com.almuradev.almura.client.gui.menu.DynamicMainMenu;
 import com.almuradev.almura.client.network.play.B00PlayerDeathConfirmation;
 import com.almuradev.almura.client.network.play.B01ResTokenConfirmation;
@@ -45,7 +44,10 @@ import com.almuradev.almura.server.network.play.bukkit.B02AdditionalWorldInforma
 import com.almuradev.almura.server.network.play.bukkit.B03ResidenceInformation;
 import com.almuradev.almura.server.network.play.bukkit.B05GuiController;
 import com.almuradev.almura.server.network.play.bukkit.B06ClientDetailsRequest;
+import com.almuradev.almura.special.block.CachesTileEntity;
+import com.almuradev.almura.special.block.CachesTileEntitySpecialRenderer;
 import com.google.common.base.Optional;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -69,8 +71,6 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
-
-import java.io.IOException;
 
 public class ClientProxy extends CommonProxy {
 
@@ -110,6 +110,7 @@ public class ClientProxy extends CommonProxy {
         // Setup client permissibles
         PermissionsHelper.register();
         ClientCommandHandler.instance.registerCommand(new ClientCommand());
+        ClientRegistry.bindTileEntitySpecialRenderer(CachesTileEntity.class, new CachesTileEntitySpecialRenderer());
         // Hook into event bus
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);

@@ -12,13 +12,12 @@ import net.minecraft.block.Block;
 
 public class Caches {
 
-
-    public static final Block BLOCK_IRON_CACHE = GameRegistry.registerBlock(new CachesBlock("iron_cache", "Iron Cache", 64000, Tabs.TAB_STORAGE)
-            , CachesItemBlock.class, "iron_cache");
-
     // TODO test code
-    public static final Block BLOCK_IRON_CACHE_2 = GameRegistry.registerBlock(new CachesBlock("iron_cache2", "Iron Cache 2", 64, Tabs.TAB_STORAGE)
-            , CachesItemBlock.class, "iron_cache2");
+    public static final Block BLOCK_IRON_CACHE_2 = GameRegistry.registerBlock(new CachesBlock("iron_cache_64", "iron_cache", "Iron Cache", 64, Tabs
+            .TAB_STORAGE), CachesItemBlock.class, "iron_cache_64");
+
+    public static final Block BLOCK_IRON_CACHE = GameRegistry.registerBlock(new CachesBlock("iron_cache_64000", "iron_cache", "Iron Cache", 64000,
+                    Tabs.TAB_STORAGE), CachesItemBlock.class, "iron_cache_64000");
 
     private Caches() {}
 

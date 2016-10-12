@@ -35,11 +35,11 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     private final int initialCacheLimit;
     private IIcon tb, side, front;
 
-    public CachesBlock(String unlocalizedName, String displayName, int initialCacheLimit, CreativeTabs tabs) {
+    public CachesBlock(String unlocalizedName, String textureName, String displayName, int initialCacheLimit, CreativeTabs tabs) {
         super(Material.rock);
         this.initialCacheLimit = initialCacheLimit;
         setUnlocalizedName(unlocalizedName);
-        setTextureName(Almura.MOD_ID + ":internal/blocks/" + unlocalizedName);
+        setTextureName(Almura.MOD_ID + ":internal/blocks/" + textureName);
         setHardness(50.0F);
         setResistance(2000.0F);
         setStepSound(soundTypePiston);
@@ -158,6 +158,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                             player.addChatComponentMessage(new ChatComponentText("Added " + printoutStackSize + " to the cache."));
                         }
 
+                        te.markDirty();
                         break;
                     }
                 }
@@ -227,8 +228,14 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     }
 
     @Override
+    public int getRenderType() {
+        return 0;
+    }
+
+    @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta) {
+        //mmmmm Pumpkin Pie
         return side == 1 ? this.tb : (side == 0 ? this.tb : (meta == 2 && side == 2 ? this.front : (meta == 3 && side == 5 ? this.front
                 : (meta == 0 && side == 3 ? this.front : (meta == 1 && side == 4 ? this.front : this.side)))));
     }
