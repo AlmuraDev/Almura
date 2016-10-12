@@ -92,14 +92,19 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
             final ItemStack cache = ((CachesTileEntity) te).getCache();
             final ItemStack held = player.getHeldItem();
 
-            // TODO Fix dupe code below...
-            // If you right-click with empty hand, withdrawal stacks of whatever the Player inventory maximum stack size is or whatever the
-            // cache has left, whichever is lower.
+            /*
+             * How cache interaction works:
+             *
+             * 1. If empty hand and cache exists, withdrawal from the cache up to the inventory stack limit or the cache usage, whichever is lower.
+             * 2. If filled hand and cache does not exist, merge filled hand to become a new cache (up to cache limit).
+             * 3. If cache exists, search for and merge appropriate stack from inventory (up to cache limit)
+             */
+
             if (held == null && cache != null) {
                 final int cacheSize = cache.stackSize;
 
                 ItemStack toAdd = new ItemStack(cache.getItem(), player.inventory.getInventoryStackLimit() >
-                        cacheSize ? player.inventory.getInventoryStackLimit() : cacheSize, cache.getMetadata());
+                        cacheSize ? cacheSize : player.inventory.getInventoryStackLimit(), cache.getMetadata());
 
                 if (!player.inventory.addItemStackToInventory(toAdd)) {
                     player.addChatComponentMessage(new ChatComponentText("Cannot withdrawal from cache as your inventory is full!"));
@@ -111,16 +116,12 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
                     ((CachesTileEntity) te).setInventorySlotContents(0, toAdd);
                 }
-
-                // If you right click with filled hand and empty cache, merge it.
             } else if (held != null && cache == null) {
                 final int heldStackSize = held.stackSize;
                 player.setCurrentItemOrArmor(0, ((CachesTileEntity) te).mergeStackIntoSlot(held));
                 player.addChatComponentMessage(new ChatComponentText("Added " + (player.getHeldItem() == null ? heldStackSize : player
                         .getHeldItem().stackSize - heldStackSize) + " to the cache."));
-
-                // If you right click with filled hand and a cache who is not empty, merge a stack from our inventory into the cache.
-            } else if (held != null) {
+            } else if (cache != null) {
                 // Search inventory for items that are similar to the cache (only non-matching aspect is the stack size)
                 for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
                     final ItemStack slotStack = player.inventory.getStackInSlot(i);
@@ -132,17 +133,22 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                     if (slotStack.isItemEqual(cache)) {
                         final int slotStackSize = slotStack.stackSize;
                         final ItemStack remaining = ((CachesTileEntity) te).mergeStackIntoSlot(slotStack);
+                        int printoutStackSize = slotStackSize;
                         if (remaining == null) {
                             player.inventory.setInventorySlotContents(i, null);
-                            player.addChatComponentMessage(new ChatComponentText("Added " + slotStackSize + " to the cache."));
                         } else {
-                            player.addChatComponentMessage(new ChatComponentText("Added " + (slotStackSize - remaining.stackSize) + " to the "
-                                    + "cache."));
+                            printoutStackSize = slotStackSize - remaining.stackSize;
                         }
+
+                        if (printoutStackSize == 0) {
+                            player.addChatComponentMessage(new ChatComponentText("Cannot add more to cache as it is full!"));
+                        } else {
+                            player.addChatComponentMessage(new ChatComponentText("Added " + printoutStackSize + " to the cache."));
+                        }
+
                         break;
                     }
                 }
-
             }
 
             player.openContainer.detectAndSendChanges();
