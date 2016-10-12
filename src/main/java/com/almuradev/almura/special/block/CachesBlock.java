@@ -6,12 +6,18 @@
 package com.almuradev.almura.special.block;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.client.gui.util.ExternalIcon;
 import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
+import com.almuradev.almura.util.FileSystem;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -20,17 +26,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 public final class CachesBlock extends BlockContainer implements IPackObject {
 
-    private final int initialStackSize;
+    private final int initialCacheLimit;
+    private IIcon tb, side, front;
 
-    public CachesBlock(String unlocalizedName, String displayName, int initialStackSize, CreativeTabs tabs) {
+    public CachesBlock(String unlocalizedName, String displayName, int initialCacheLimit, CreativeTabs tabs) {
         super(Material.rock);
-        this.initialStackSize = initialStackSize;
+        this.initialCacheLimit = initialCacheLimit;
         setUnlocalizedName(unlocalizedName);
-        setTextureName(Almura.MOD_ID + ":textures/" + unlocalizedName);
+        setTextureName(Almura.MOD_ID + ":internal/blocks/" + unlocalizedName);
         setHardness(50.0F);
         setResistance(2000.0F);
         setStepSound(soundTypePiston);
@@ -51,7 +60,6 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
             final TileEntity te = worldIn.getTileEntity(x, y, z);
 
-            // TODO Once cache limit is set on all stacks, move this out of this check
             if (te instanceof CachesTileEntity && ((CachesTileEntity) te).getCache() != null) {
 
                 final NBTTagCompound cachesCompound = new NBTTagCompound();
@@ -71,11 +79,11 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                 itemIn.setStackDisplayName(itemIn.getDisplayName() + " (" + ((CachesTileEntity) te).getCache().getDisplayName() + ")");
             }
 
-            float f = 0.7F;
-            double d0 = (double) (worldIn.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            double d1 = (double) (worldIn.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            double d2 = (double) (worldIn.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            EntityItem entityitem = new EntityItem(worldIn, (double) x + d0, (double) y + d1, (double) z + d2, itemIn);
+            final float f = 0.7F;
+            final double d0 = (double) (worldIn.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+            final double d1 = (double) (worldIn.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+            final double d2 = (double) (worldIn.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+            final EntityItem entityitem = new EntityItem(worldIn, (double) x + d0, (double) y + d1, (double) z + d2, itemIn);
             entityitem.delayBeforeCanPickup = 10;
             worldIn.spawnEntityInWorld(entityitem);
         }
@@ -101,20 +109,24 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
              */
 
             if (held == null && cache != null) {
-                final int cacheSize = cache.stackSize;
 
-                ItemStack toAdd = new ItemStack(cache.getItem(), player.inventory.getInventoryStackLimit() >
-                        cacheSize ? cacheSize : player.inventory.getInventoryStackLimit(), cache.getMetadata());
+                ItemStack toAdd = new ItemStack(cache.getItem(), cache.stackSize > player.inventory.getInventoryStackLimit() ? player.inventory
+                        .getInventoryStackLimit() : cache.stackSize);
+
+                int preMerge = toAdd.stackSize;
 
                 if (!player.inventory.addItemStackToInventory(toAdd)) {
                     player.addChatComponentMessage(new ChatComponentText("Cannot withdrawal from cache as your inventory is full!"));
                     return false;
                 } else {
-                    if (toAdd.stackSize == 0) {
-                        toAdd = null;
+                    ItemStack newCache = cache;
+                    newCache.stackSize -= (preMerge - toAdd.stackSize);
+
+                    if (newCache.stackSize == 0) {
+                        newCache = null;
                     }
 
-                    ((CachesTileEntity) te).setInventorySlotContents(0, toAdd);
+                    ((CachesTileEntity) te).setInventorySlotContents(0, newCache);
                 }
             } else if (held != null && cache == null) {
                 final int heldStackSize = held.stackSize;
@@ -165,6 +177,9 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     @Override
     public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack itemIn) {
         if (!worldIn.isRemote) {
+            int l = MathHelper.floor_double((double)(placer.rotationYaw * 4.0F / 360.0F) + 2.5D) & 3;
+            worldIn.setBlockMetadataWithNotify(x, y, z, l, 2);
+
             final TileEntity te = worldIn.getTileEntity(x, y, z);
             if (!(te instanceof CachesTileEntity)) {
                 return;
@@ -204,6 +219,21 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister reg) {
+        this.tb = new ExternalIcon(getTextureName() + "_tb", FileSystem.CONFIG_IMAGES_PATH).register((TextureMap) reg);
+        this.side = new ExternalIcon(getTextureName() + "_side", FileSystem.CONFIG_IMAGES_PATH).register((TextureMap) reg);
+        this.front = new ExternalIcon(getTextureName() + "_front", FileSystem.CONFIG_IMAGES_PATH).register((TextureMap) reg);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(int side, int meta) {
+        return side == 1 ? this.tb : (side == 0 ? this.tb : (meta == 2 && side == 2 ? this.front : (meta == 3 && side == 5 ? this.front
+                : (meta == 0 && side == 3 ? this.front : (meta == 1 && side == 4 ? this.front : this.side)))));
+    }
+
+    @Override
     public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
         return willHarvest || super.removedByPlayer(world, player, x, y, z, false);
     }
@@ -215,7 +245,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new CachesTileEntity(this.initialStackSize);
+        return new CachesTileEntity(this.initialCacheLimit);
     }
 
     @Override
@@ -229,6 +259,6 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     }
 
     public int getCacheLimit() {
-        return this.initialStackSize;
+        return this.initialCacheLimit;
     }
 }
