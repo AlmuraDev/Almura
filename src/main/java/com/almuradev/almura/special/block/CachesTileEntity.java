@@ -24,16 +24,10 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
     public static final String TAG_CACHE_MAX_STACK_SIZE = "MaxStackSize";
     public static final String TAG_CACHE_CONTENTS = "Contents";
 
-    // Packet-only
-    private static final String TAG_CACHE_STACK_SIZE = "StackSize";
-
     public static final int DEFAULT_MAX_STACK_SIZE = 64;
 
     private ItemStack cache;
     private int maxStackSize;
-
-    @SideOnly(Side.CLIENT)
-    private int stackSize;
 
     @SideOnly(Side.CLIENT)
     private boolean isEmpty;
@@ -92,27 +86,28 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
     @Override
     public Packet getDescriptionPacket() {
         final NBTTagCompound sync = new NBTTagCompound();
-        sync.setInteger(TAG_CACHE_STACK_SIZE, this.cache == null ? -1 : this.cache.stackSize);
+        if (this.cache != null) {
+            final NBTTagCompound contents = new NBTTagCompound();
+            sync.setTag(TAG_CACHE_CONTENTS, this.cache.writeToNBT(contents));
+        }
         sync.setInteger(TAG_CACHE_MAX_STACK_SIZE, this.maxStackSize);
         return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 0, sync);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-        if (pkt.getNbtCompound().hasKey(TAG_CACHE_STACK_SIZE)) {
-            this.stackSize = pkt.getNbtCompound().getInteger(TAG_CACHE_STACK_SIZE);
-        } else {
-            this.stackSize = -1;
+        if (pkt.getNbtCompound().hasKey(TAG_CACHE_CONTENTS)) {
+            this.cache = ItemStack.loadItemStackFromNBT(pkt.getNbtCompound().getCompoundTag(TAG_CACHE_CONTENTS));
         }
+
         if (pkt.getNbtCompound().hasKey(TAG_CACHE_MAX_STACK_SIZE)) {
             this.maxStackSize = pkt.getNbtCompound().getInteger(TAG_CACHE_MAX_STACK_SIZE);
         } else {
-            this.maxStackSize = 0;
+            this.maxStackSize = DEFAULT_MAX_STACK_SIZE;
         }
-
-        this.isEmpty = this.stackSize == -1;
+        this.isEmpty = this.cache == null;
         this.hasContents = !this.isEmpty;
-        this.isFull = this.stackSize == this.maxStackSize;
+        this.isFull = this.hasContents && this.cache.stackSize == this.maxStackSize;
 
         this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
     }
@@ -214,7 +209,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
 
     @SideOnly(Side.CLIENT)
     public int getServerStackSize() {
-        return this.stackSize;
+        return this.cache == null ? 0 : this.cache.stackSize;
     }
 
     @SideOnly(Side.CLIENT)

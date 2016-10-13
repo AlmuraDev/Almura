@@ -5,14 +5,15 @@
  */
 package com.almuradev.almura.special.block;
 
+import com.almuradev.almura.Configuration;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
@@ -21,21 +22,28 @@ import java.util.Locale;
 
 public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
 
-    EntityItem visualItem;
+    private EntityItem visualItem;
 
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTick) {
+        visualItem = null;
+
         // Impossible
-        if (!(te instanceof CachesTileEntity) || te.getWorld() == null) {
+        if (!(te instanceof CachesTileEntity) || te.getWorld() == null || ((CachesTileEntity) te).getCache() == null) {
+            return;
+        }
+
+        EntityClientPlayerMP viewer = (EntityClientPlayerMP) Minecraft.getMinecraft().renderViewEntity;
+        if (viewer == null) {
+            viewer = Minecraft.getMinecraft().thePlayer;
+        }
+
+        // TODO Dockter needs to add this to config
+        if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) > (Configuration.DISTANCE_RENDER_SIGN * 16)) {
             return;
         }
 
         final CachesTileEntity cte = (CachesTileEntity) te;
-        // Is empty, return
-        if (cte.getServerStackSize() == -1) {
-            visualItem = null;
-            return;
-        }
         final int metadata = cte.getBlockMetadata();
 
         float angle = 0f;
@@ -43,18 +51,19 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         translatedX = x;
         translatedZ = z;
 
-        if (metadata == 0) {
+
+        if (metadata == 0) { // South
             translatedX += 0.5;
             translatedZ += 1.015;
-        } else if (metadata == 1) {
+        } else if (metadata == 1) { // West
             angle = -90f;
             translatedX -= 0.015;
             translatedZ += 0.5;
-        } else if (metadata == 2) {
+        } else if (metadata == 2) { // North
             angle = 180f;
             translatedX += 0.5;
             translatedZ -= 0.015;
-        } else if (metadata == 3) {
+        } else if (metadata == 3) { //East
             translatedX += 1.015;
             translatedZ += 0.5;
             angle = 90f;
@@ -63,12 +72,17 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         // Draw ItemType 2D visual in front
         GL11.glPushMatrix();
 
-        if (visualItem == null) {
-            visualItem = new EntityItem(te.getWorld(), 0, 0, 0, new ItemStack(Blocks.stone));
-            visualItem.hoverStart = 0.0f;
-        }
+        final EntityItem visualItem = new EntityItem(te.getWorld(), 0, 0, 0, cte.getCache());
+        visualItem.hoverStart = 0.0f;
 
         GL11.glTranslated(translatedX, y + 0.35, translatedZ);
+        GL11.glRotatef(180f, 0, 1, 0);
+        final int brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord + 1, te.zCoord, 0);
+
+        int j = brightness % 65536;
+        int k = brightness / 65536;
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j / 1.0F, (float)k / 1.0F);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         RenderItem.renderInFrame = true;
         RenderManager.instance.renderEntityWithPosYaw(visualItem, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
@@ -87,7 +101,7 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         final FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
         final String cacheStatus = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerStackSize()) + "/" +
                 NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
-        renderer.drawString(cacheStatus, -renderer.getStringWidth(cacheStatus) / 2, (int) y - 10, 255);
+        renderer.drawString(cacheStatus, -renderer.getStringWidth(cacheStatus) / 2, (int) y - 10, 0);
         GL11.glPopMatrix();
     }
 }

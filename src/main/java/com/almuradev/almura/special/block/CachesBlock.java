@@ -246,11 +246,6 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     }
 
     @Override
-    public boolean isToolEffective(String type, int metadata) {
-        return super.isToolEffective(type, metadata);
-    }
-
-    @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new CachesTileEntity(this.initialCacheLimit);
     }
