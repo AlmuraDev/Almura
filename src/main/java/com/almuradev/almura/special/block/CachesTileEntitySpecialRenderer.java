@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
@@ -72,7 +73,10 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         // Draw ItemType 2D visual in front
         GL11.glPushMatrix();
 
-        final EntityItem visualItem = new EntityItem(te.getWorld(), 0, 0, 0, cte.getCache());
+        final ItemStack visualStack = ItemStack.copyItemStack(cte.getCache());
+        visualStack.stackSize = 1;
+
+        final EntityItem visualItem = new EntityItem(te.getWorld(), 0, 0, 0, visualStack);
         visualItem.hoverStart = 0.0f;
 
         GL11.glTranslated(translatedX, y + 0.35, translatedZ);
