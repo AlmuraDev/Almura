@@ -221,11 +221,10 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     }
 
     @Override
-    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
-
+    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
         final TileEntity te = world.getTileEntity(x, y, z);
         if (!(te instanceof CachesTileEntity)) {
-            return super.removedByPlayer(world, player, x, y, z, willHarvest);
+            return;
         }
 
         final ItemStack cache = ((CachesTileEntity) te).getCache();
@@ -239,7 +238,6 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
             if (!player.inventory.addItemStackToInventory(toAdd)) {
                 player.addChatComponentMessage(new ChatComponentText("Cannot withdrawal from cache as your inventory is full!"));
-                return false;
             } else {
                 ItemStack newCache = cache;
                 newCache.stackSize -= (preMerge - toAdd.stackSize);
@@ -251,9 +249,11 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                 ((CachesTileEntity) te).setInventorySlotContents(0, newCache);
             }
         }
+    }
 
+    @Override
+    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
         return player.isSneaking() && super.removedByPlayer(world, player, x, y, z, willHarvest);
-
     }
 
     @Override
