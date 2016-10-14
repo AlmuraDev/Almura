@@ -108,27 +108,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
              * 3. If cache exists, search for and merge appropriate stack from inventory (up to cache limit)
              */
 
-            if (held == null && cache != null) {
-
-                ItemStack toAdd = new ItemStack(cache.getItem(), cache.stackSize > player.inventory.getInventoryStackLimit() ? player.inventory
-                        .getInventoryStackLimit() : cache.stackSize);
-
-                int preMerge = toAdd.stackSize;
-
-                if (!player.inventory.addItemStackToInventory(toAdd)) {
-                    player.addChatComponentMessage(new ChatComponentText("Cannot withdrawal from cache as your inventory is full!"));
-                    return false;
-                } else {
-                    ItemStack newCache = cache;
-                    newCache.stackSize -= (preMerge - toAdd.stackSize);
-
-                    if (newCache.stackSize == 0) {
-                        newCache = null;
-                    }
-
-                    ((CachesTileEntity) te).setInventorySlotContents(0, newCache);
-                }
-            } else if (held != null && cache == null) {
+            if (held != null && cache == null) {
                 final int heldStackSize = held.stackSize;
                 player.setCurrentItemOrArmor(0, ((CachesTileEntity) te).mergeStackIntoSlot(held));
                 player.addChatComponentMessage(new ChatComponentText("Added " + (player.getHeldItem() == null ? heldStackSize : player
@@ -242,7 +222,38 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
     @Override
     public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
-        return willHarvest || super.removedByPlayer(world, player, x, y, z, false);
+
+        final TileEntity te = world.getTileEntity(x, y, z);
+        if (!(te instanceof CachesTileEntity)) {
+            return super.removedByPlayer(world, player, x, y, z, willHarvest);
+        }
+
+        final ItemStack cache = ((CachesTileEntity) te).getCache();
+
+        if (cache != null) {
+
+            ItemStack toAdd = new ItemStack(cache.getItem(), cache.stackSize > player.inventory.getInventoryStackLimit() ? player.inventory
+                    .getInventoryStackLimit() : cache.stackSize);
+
+            int preMerge = toAdd.stackSize;
+
+            if (!player.inventory.addItemStackToInventory(toAdd)) {
+                player.addChatComponentMessage(new ChatComponentText("Cannot withdrawal from cache as your inventory is full!"));
+                return false;
+            } else {
+                ItemStack newCache = cache;
+                newCache.stackSize -= (preMerge - toAdd.stackSize);
+
+                if (newCache.stackSize == 0) {
+                    newCache = null;
+                }
+
+                ((CachesTileEntity) te).setInventorySlotContents(0, newCache);
+            }
+        }
+
+        return player.isSneaking() && super.removedByPlayer(world, player, x, y, z, willHarvest);
+
     }
 
     @Override
