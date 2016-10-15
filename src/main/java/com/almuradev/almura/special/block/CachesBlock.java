@@ -130,8 +130,6 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
                     if (printoutStackSize == 0) {
                         player.addChatComponentMessage(new ChatComponentText("Cannot add more to cache as it is full!"));
-                    } else {
-                        player.addChatComponentMessage(new ChatComponentText("Added " + printoutStackSize + " to the cache."));
                     }
                 } else {
                     // Search inventory for items that are similar to the cache (only non-matching aspect is the stack size)
@@ -154,8 +152,6 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
                             if (printoutStackSize == 0) {
                                 player.addChatComponentMessage(new ChatComponentText("Cannot add more to cache as it is full!"));
-                            } else {
-                                player.addChatComponentMessage(new ChatComponentText("Added " + printoutStackSize + " to the cache."));
                             }
 
                             break;
@@ -295,8 +291,14 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
         if (cache != null) {
 
-            ItemStack toAdd = new ItemStack(cache.getItem(), cache.stackSize > player.inventory.getInventoryStackLimit() ? player.inventory
-                    .getInventoryStackLimit() : cache.stackSize, cache.getMetadata());
+            final int maxItemStackSize = cache.getItem().getItemStackLimit();
+            final int cacheStackSize = cache.stackSize;
+            final int inventoryMaxStackSize = player.inventory.getInventoryStackLimit();
+
+            final int stackSize = maxItemStackSize < cacheStackSize ? maxItemStackSize : cacheStackSize > inventoryMaxStackSize ?
+                    inventoryMaxStackSize : cacheStackSize;
+
+            ItemStack toAdd = new ItemStack(cache.getItem(), stackSize, cache.getMetadata());
 
             int preMerge = toAdd.stackSize;
 
