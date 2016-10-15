@@ -150,6 +150,11 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     }
 
     @Override
+    public void onBlockClicked(World worldIn, int x, int y, int z, EntityPlayer player) {
+        this.handleLeftClickBlock(worldIn, player, x, y, z);
+    }
+
+    @Override
     public void harvestBlock(World worldIn, EntityPlayer player, int x, int y, int z, int meta) {
         super.harvestBlock(worldIn, player, x, y, z, meta);
         worldIn.setBlockToAir(x, y, z);
