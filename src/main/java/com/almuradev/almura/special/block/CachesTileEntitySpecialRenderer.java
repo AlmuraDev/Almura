@@ -52,22 +52,26 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         translatedX = x;
         translatedZ = z;
 
-
+        int brightness = 0;
         if (metadata == 0) { // South
             translatedX += 0.5;
             translatedZ += 1.015;
+            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord, te.zCoord - 1, 0);
         } else if (metadata == 1) { // West
             angle = -90f;
             translatedX -= 0.015;
             translatedZ += 0.5;
+            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord + 1, te.yCoord, te.zCoord, 0);
         } else if (metadata == 2) { // North
             angle = 180f;
             translatedX += 0.5;
             translatedZ -= 0.015;
+            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord, te.zCoord + 1, 0);
         } else if (metadata == 3) { //East
             translatedX += 1.015;
             translatedZ += 0.5;
             angle = 90f;
+            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord - 1, te.yCoord, te.zCoord, 0);
         }
 
         // Draw ItemType 2D visual in front
@@ -81,8 +85,7 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
 
         GL11.glTranslated(translatedX, y + 0.35, translatedZ);
         GL11.glRotatef(180f, 0, 1, 0);
-        final int brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord + 1, te.zCoord, 0);
-
+        
         int j = brightness % 65536;
         int k = brightness / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j / 1.0F, (float)k / 1.0F);
@@ -103,9 +106,11 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         float scaleFactor = 0.6666667F * 0.016666668F;
         GL11.glScalef(scaleFactor, -scaleFactor, scaleFactor);
         final FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
-        final String cacheStatus = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize) + "/" +
-                NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
-        renderer.drawString(cacheStatus, -renderer.getStringWidth(cacheStatus) / 2, (int) y - 10, 0);
+        final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize);
+        final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
+        renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 19, 0);
+        renderer.drawString("-------", -renderer.getStringWidth("-------") / 2, (int) y - 15, 0);
+        renderer.drawString(cacheMaxQuantity, -renderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 10, 0);
         GL11.glPopMatrix();
     }
 }
