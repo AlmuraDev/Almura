@@ -103,7 +103,7 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         float scaleFactor = 0.6666667F * 0.016666668F;
         GL11.glScalef(scaleFactor, -scaleFactor, scaleFactor);
         final FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
-        final String cacheStatus = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerStackSize()) + "/" +
+        final String cacheStatus = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize) + "/" +
                 NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
         renderer.drawString(cacheStatus, -renderer.getStringWidth(cacheStatus) / 2, (int) y - 10, 0);
         GL11.glPopMatrix();

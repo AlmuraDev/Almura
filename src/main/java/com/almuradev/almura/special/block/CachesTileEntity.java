@@ -9,8 +9,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -56,7 +58,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
                 this.maxStackSize = cacheCompound.getInteger(TAG_CACHE_MAX_STACK_SIZE);
             }
             if (cacheCompound.hasKey(TAG_CACHE_CONTENTS)) {
-                this.cache = ItemStack.loadItemStackFromNBT(cacheCompound.getCompoundTag(TAG_CACHE_CONTENTS));
+                this.cache = this.loadItemStackFromNBT(cacheCompound.getCompoundTag(TAG_CACHE_CONTENTS));
             }
         }
     }
@@ -68,9 +70,10 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
         if (this.cache != null) {
             final NBTTagCompound cacheCompound = new NBTTagCompound();
             cacheCompound.setInteger(TAG_CACHE_MAX_STACK_SIZE, this.maxStackSize);
+
             final NBTTagCompound cacheContentsCompound = new NBTTagCompound();
-            this.cache.writeToNBT(cacheContentsCompound);
-            cacheCompound.setTag(TAG_CACHE_CONTENTS, cacheContentsCompound);
+            cacheCompound.setTag(TAG_CACHE_CONTENTS, this.writeToNBT(this.cache, cacheContentsCompound));
+
             compound.setTag(TAG_CACHE, cacheCompound);
         }
     }
@@ -88,7 +91,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
         final NBTTagCompound sync = new NBTTagCompound();
         if (this.cache != null) {
             final NBTTagCompound contents = new NBTTagCompound();
-            sync.setTag(TAG_CACHE_CONTENTS, this.cache.writeToNBT(contents));
+            sync.setTag(TAG_CACHE_CONTENTS, this.writeToNBT(this.cache, contents));
         }
         sync.setInteger(TAG_CACHE_MAX_STACK_SIZE, this.maxStackSize);
         return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 0, sync);
@@ -97,7 +100,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         if (pkt.getNbtCompound().hasKey(TAG_CACHE_CONTENTS)) {
-            this.cache = ItemStack.loadItemStackFromNBT(pkt.getNbtCompound().getCompoundTag(TAG_CACHE_CONTENTS));
+            this.cache = this.loadItemStackFromNBT(pkt.getNbtCompound().getCompoundTag(TAG_CACHE_CONTENTS));
         }
 
         if (pkt.getNbtCompound().hasKey(TAG_CACHE_MAX_STACK_SIZE)) {
@@ -269,5 +272,38 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
         }
 
         return toMerge;
+    }
+
+    private ItemStack loadItemStackFromNBT(NBTTagCompound compound) {
+        final ItemStack itemStack = new ItemStack((Block) null);
+        this.readFromNBT(itemStack, compound);
+        return itemStack.getItem() == null ? null : itemStack;
+    }
+
+    private NBTTagCompound readFromNBT(ItemStack itemStack, NBTTagCompound compound) {
+        itemStack.setItem(Item.getItemById(compound.getShort("id")));
+        itemStack.stackSize = compound.getInteger("Count");
+        int metadata = compound.getShort("Damage");
+        if (metadata < 0) {
+            metadata = 0;
+        }
+        itemStack.setMetadata(metadata);
+
+        if (compound.hasKey("tag", 10)) {
+            itemStack.setTagCompound(compound.getCompoundTag("tag"));
+        }
+        return compound;
+    }
+
+    private NBTTagCompound writeToNBT(ItemStack itemStack, NBTTagCompound compound) {
+        compound.setShort("id", (short) Item.getIdFromItem(itemStack.getItem()));
+        compound.setInteger("Count", itemStack.stackSize);
+        compound.setShort("Damage", (short) itemStack.getMetadata());
+
+        if (itemStack.getTagCompound() != null) {
+            compound.setTag("tag", itemStack.getTagCompound());
+        }
+
+        return compound;
     }
 }
