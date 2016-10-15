@@ -84,8 +84,8 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         visualItem.hoverStart = 0.0f;
 
         GL11.glTranslated(translatedX, y + 0.35, translatedZ);
-        GL11.glRotatef(180f, 0, 1, 0);
-        
+        // Rotate
+        GL11.glRotatef(angle, 0, 1f, 0);
         int j = brightness % 65536;
         int k = brightness / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j / 1.0F, (float)k / 1.0F);
