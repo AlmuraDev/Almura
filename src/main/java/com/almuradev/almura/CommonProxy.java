@@ -526,7 +526,7 @@ public class CommonProxy {
 
                         if (cachesCompound.hasKey(CachesTileEntity.TAG_CACHE_CONTENTS)) {
                             // TODO If this ends up hurting performance, move the item name and the current contents to NBT in separate tags.
-                            final ItemStack cache = ItemStack.loadItemStackFromNBT(cachesCompound.getCompoundTag(CachesTileEntity
+                            final ItemStack cache = CachesTileEntity.loadItemStackFromNBT(cachesCompound.getCompoundTag(CachesTileEntity
                                     .TAG_CACHE_CONTENTS));
 
                             if (cache != null) {

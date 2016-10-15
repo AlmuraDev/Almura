@@ -14,6 +14,7 @@ import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.util.FileSystem;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -66,7 +67,8 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                 cachesCompound.setInteger(CachesTileEntity.TAG_CACHE_MAX_STACK_SIZE, ((CachesTileEntity) te).getInventoryStackLimit());
 
                 final NBTTagCompound cachesContentsCompound = new NBTTagCompound();
-                cachesCompound.setTag(CachesTileEntity.TAG_CACHE_CONTENTS, ((CachesTileEntity) te).getCache().writeToNBT(cachesContentsCompound));
+                cachesCompound.setTag(CachesTileEntity.TAG_CACHE_CONTENTS, CachesTileEntity.writeToNBT(((CachesTileEntity) te)
+                        .getCache(), cachesContentsCompound));
 
                 final NBTTagCompound tagCompound = new NBTTagCompound();
                 tagCompound.setTag(CachesTileEntity.TAG_CACHE, cachesCompound);
@@ -189,7 +191,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
                         final ItemStack cache;
                         if (cachesCompound.hasKey(CachesTileEntity.TAG_CACHE_CONTENTS)) {
-                            cache = ItemStack.loadItemStackFromNBT(cachesCompound.getCompoundTag(CachesTileEntity.TAG_CACHE_CONTENTS));
+                            cache = CachesTileEntity.loadItemStackFromNBT(cachesCompound.getCompoundTag(CachesTileEntity.TAG_CACHE_CONTENTS));
                         } else {
                             cache = null;
                         }
@@ -233,7 +235,8 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                 this.handleLeftClickBlock(world, player, x, y, z);
             }
         }
-        return player.isSneaking() && super.removedByPlayer(world, player, x, y, z, willHarvest);
+
+        return !(player.capabilities.isCreativeMode && !player.isSneaking());
     }
 
     @Override
@@ -286,5 +289,9 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
         }
 
         return false;
+    }
+
+    @Override
+    public void breakBlock(World worldIn, int x, int y, int z, Block blockBroken, int meta) {
     }
 }
