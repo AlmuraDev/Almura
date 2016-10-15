@@ -28,11 +28,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 public final class CachesBlock extends BlockContainer implements IPackObject {
 
@@ -98,11 +94,6 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
         if (!worldIn.isRemote) {
             final TileEntity te = worldIn.getTileEntity(x, y, z);
             if (!(te instanceof CachesTileEntity)) {
-                return false;
-            }
-
-            final PlayerInteractEvent event = new PlayerInteractEvent(player, PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK, x, y, z, side, worldIn);
-            if (MinecraftForge.EVENT_BUS.post(event)) {
                 return false;
             }
 
@@ -268,22 +259,6 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
             return true;
         }
 
-        // TODO Need to see if it is not expected to get an interact event like this in Creative
-        if (!player.capabilities.isCreativeMode) {
-
-            final Vec3 position = Vec3.createVectorHelper(player.posX, player.posY + (player.getEyeHeight() - player.getDefaultEyeHeight()), player
-                    .posZ);
-            final Vec3 look = player.getLook(1f);
-            final Vec3 trace = position.addVector(look.xCoord, look.yCoord, look.zCoord);
-
-            final MovingObjectPosition rayTrace = player.worldObj.rayTraceBlocks(position, trace, false, false, true);
-
-            final PlayerInteractEvent event = new PlayerInteractEvent(player, PlayerInteractEvent.Action.LEFT_CLICK_BLOCK, x, y, z, rayTrace
-                    .sideHit, world);
-            if (MinecraftForge.EVENT_BUS.post(event)) {
-                return false;
-            }
-        }
         final ItemStack cache = ((CachesTileEntity) te).getCache();
 
         if (cache != null) {

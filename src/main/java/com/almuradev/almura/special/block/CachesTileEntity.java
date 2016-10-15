@@ -58,7 +58,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
                 this.maxStackSize = cacheCompound.getInteger(TAG_CACHE_MAX_STACK_SIZE);
             }
             if (cacheCompound.hasKey(TAG_CACHE_CONTENTS)) {
-                this.cache = this.loadItemStackFromNBT(cacheCompound.getCompoundTag(TAG_CACHE_CONTENTS));
+                this.cache = CachesTileEntity.loadItemStackFromNBT(cacheCompound.getCompoundTag(TAG_CACHE_CONTENTS));
             }
         }
     }
@@ -72,7 +72,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
             cacheCompound.setInteger(TAG_CACHE_MAX_STACK_SIZE, this.maxStackSize);
 
             final NBTTagCompound cacheContentsCompound = new NBTTagCompound();
-            cacheCompound.setTag(TAG_CACHE_CONTENTS, this.writeToNBT(this.cache, cacheContentsCompound));
+            cacheCompound.setTag(TAG_CACHE_CONTENTS, CachesTileEntity.writeToNBT(this.cache, cacheContentsCompound));
 
             compound.setTag(TAG_CACHE, cacheCompound);
         }
@@ -91,7 +91,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
         final NBTTagCompound sync = new NBTTagCompound();
         if (this.cache != null) {
             final NBTTagCompound contents = new NBTTagCompound();
-            sync.setTag(TAG_CACHE_CONTENTS, this.writeToNBT(this.cache, contents));
+            sync.setTag(TAG_CACHE_CONTENTS, CachesTileEntity.writeToNBT(this.cache, contents));
         }
         sync.setInteger(TAG_CACHE_MAX_STACK_SIZE, this.maxStackSize);
         return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 0, sync);
@@ -100,7 +100,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         if (pkt.getNbtCompound().hasKey(TAG_CACHE_CONTENTS)) {
-            this.cache = this.loadItemStackFromNBT(pkt.getNbtCompound().getCompoundTag(TAG_CACHE_CONTENTS));
+            this.cache = CachesTileEntity.loadItemStackFromNBT(pkt.getNbtCompound().getCompoundTag(TAG_CACHE_CONTENTS));
         }
 
         if (pkt.getNbtCompound().hasKey(TAG_CACHE_MAX_STACK_SIZE)) {
@@ -210,13 +210,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
         return this.cache;
     }
 
-    @SideOnly(Side.CLIENT)
-    public int getServerStackSize() {
-        return this.cache == null ? 0 : this.cache.stackSize;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public int getServerMaxStackSize() {
+    @SideOnly(Side.CLIENT) int getServerMaxStackSize() {
         return this.maxStackSize;
     }
 
@@ -235,7 +229,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
         return this.isFull;
     }
 
-    protected void setInventoryStackLimit(int limit) {
+    void setInventoryStackLimit(int limit) {
         this.maxStackSize = limit;
     }
 
@@ -251,7 +245,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
      * @param toMerge The stack to merge
      * @return See above
      */
-    public ItemStack mergeStackIntoSlot(ItemStack toMerge) {
+    ItemStack mergeStackIntoSlot(ItemStack toMerge) {
         checkNotNull(toMerge);
 
         if (this.cache == null) {
@@ -274,13 +268,13 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
         return toMerge;
     }
 
-    private ItemStack loadItemStackFromNBT(NBTTagCompound compound) {
+    public static ItemStack loadItemStackFromNBT(NBTTagCompound compound) {
         final ItemStack itemStack = new ItemStack((Block) null);
-        this.readFromNBT(itemStack, compound);
+        CachesTileEntity.readFromNBT(itemStack, compound);
         return itemStack.getItem() == null ? null : itemStack;
     }
 
-    private NBTTagCompound readFromNBT(ItemStack itemStack, NBTTagCompound compound) {
+    public static NBTTagCompound readFromNBT(ItemStack itemStack, NBTTagCompound compound) {
         itemStack.setItem(Item.getItemById(compound.getShort("id")));
         itemStack.stackSize = compound.getInteger("Count");
         int metadata = compound.getShort("Damage");
@@ -295,7 +289,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
         return compound;
     }
 
-    private NBTTagCompound writeToNBT(ItemStack itemStack, NBTTagCompound compound) {
+    public static NBTTagCompound writeToNBT(ItemStack itemStack, NBTTagCompound compound) {
         compound.setShort("id", (short) Item.getIdFromItem(itemStack.getItem()));
         compound.setInteger("Count", itemStack.stackSize);
         compound.setShort("Damage", (short) itemStack.getMetadata());
