@@ -116,34 +116,54 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                 player.addChatComponentMessage(new ChatComponentText("Added " + (player.getHeldItem() == null ? heldStackSize : player
                         .getHeldItem().stackSize - heldStackSize) + " to the cache."));
             } else if (cache != null) {
-                // Search inventory for items that are similar to the cache (only non-matching aspect is the stack size)
-                for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                    final ItemStack slotStack = player.inventory.getStackInSlot(i);
-                    if (slotStack == null) {
-                        continue;
+                // Creative allows you to just infinitely fill the cache
+                if (player.capabilities.isCreativeMode) {
+                    final ItemStack toAdd = new ItemStack(cache.getItem(), cache.getItem().getItemStackLimit(), cache
+                            .getMetadata());
+
+                    int addStackSize = toAdd.stackSize;
+                    final ItemStack remaining = ((CachesTileEntity) te).mergeStackIntoSlot(toAdd);
+                    int printoutStackSize = addStackSize;
+                    if (remaining != null) {
+                        printoutStackSize = addStackSize - remaining.stackSize;
                     }
 
-                    // Slot stack matches cache stack, merge it
-                    if (slotStack.isItemEqual(cache)) {
-                        final int slotStackSize = slotStack.stackSize;
-                        final ItemStack remaining = ((CachesTileEntity) te).mergeStackIntoSlot(slotStack);
-                        int printoutStackSize = slotStackSize;
-                        if (remaining == null) {
-                            player.inventory.setInventorySlotContents(i, null);
-                        } else {
-                            printoutStackSize = slotStackSize - remaining.stackSize;
+                    if (printoutStackSize == 0) {
+                        player.addChatComponentMessage(new ChatComponentText("Cannot add more to cache as it is full!"));
+                    } else {
+                        player.addChatComponentMessage(new ChatComponentText("Added " + printoutStackSize + " to the cache."));
+                    }
+                } else {
+                    // Search inventory for items that are similar to the cache (only non-matching aspect is the stack size)
+                    for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                        final ItemStack slotStack = player.inventory.getStackInSlot(i);
+                        if (slotStack == null) {
+                            continue;
                         }
 
-                        if (printoutStackSize == 0) {
-                            player.addChatComponentMessage(new ChatComponentText("Cannot add more to cache as it is full!"));
-                        } else {
-                            player.addChatComponentMessage(new ChatComponentText("Added " + printoutStackSize + " to the cache."));
-                        }
+                        // Slot stack matches cache stack, merge it
+                        if (slotStack.isItemEqual(cache)) {
+                            final int slotStackSize = slotStack.stackSize;
+                            final ItemStack remaining = ((CachesTileEntity) te).mergeStackIntoSlot(slotStack);
+                            int printoutStackSize = slotStackSize;
+                            if (remaining == null) {
+                                player.inventory.setInventorySlotContents(i, null);
+                            } else {
+                                printoutStackSize = slotStackSize - remaining.stackSize;
+                            }
 
-                        te.markDirty();
-                        break;
+                            if (printoutStackSize == 0) {
+                                player.addChatComponentMessage(new ChatComponentText("Cannot add more to cache as it is full!"));
+                            } else {
+                                player.addChatComponentMessage(new ChatComponentText("Added " + printoutStackSize + " to the cache."));
+                            }
+
+                            break;
+                        }
                     }
                 }
+
+                te.markDirty();
             }
 
             player.openContainer.detectAndSendChanges();
@@ -236,7 +256,14 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
             }
         }
 
-        return !(player.capabilities.isCreativeMode && !player.isSneaking());
+        // Handle creative removal here
+        if (player.capabilities.isCreativeMode && player.isSneaking()) {
+            world.setBlockToAir(x, y, z);
+            return true;
+        }
+
+        // We return true to let Vanilla know "Yes it was removed" but the actual removal and item drop happens in harvestBlock
+        return true;
     }
 
     @Override
@@ -293,5 +320,6 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
     @Override
     public void breakBlock(World worldIn, int x, int y, int z, Block blockBroken, int meta) {
+        // Removal of TE is delayed to harvestBlock
     }
 }
