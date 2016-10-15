@@ -10,7 +10,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class CachesItemBlock extends ItemBlock {
 
@@ -21,7 +23,7 @@ public class CachesItemBlock extends ItemBlock {
     @Override
     public void addInformation(ItemStack itemStack, EntityPlayer player, List tooltip, boolean p_77624_4_) {
         if (itemStack.getTagCompound() == null) {
-            tooltip.add("Cache Limit: " + ((CachesBlock) this.blockInstance).getCacheLimit());
+            tooltip.add("Cache Limit: " + NumberFormat.getNumberInstance(Locale.US).format(((CachesBlock) this.blockInstance).getCacheLimit()));
         }
     }
 }

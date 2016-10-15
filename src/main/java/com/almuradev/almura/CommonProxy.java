@@ -94,8 +94,10 @@ import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -530,14 +532,14 @@ public class CommonProxy {
                                     .TAG_CACHE_CONTENTS));
 
                             if (cache != null) {
-                                event.toolTip.add("Cache Used: " + cache.stackSize);
+                                event.toolTip.add("Cache Used: " + NumberFormat.getNumberInstance(Locale.US).format(cache.stackSize));
                             }
                         }
 
                         if (cachesCompound.hasKey(CachesTileEntity.TAG_CACHE_MAX_STACK_SIZE)) {
                             final int maxStackSize = cachesCompound.getInteger(CachesTileEntity.TAG_CACHE_MAX_STACK_SIZE);
 
-                            event.toolTip.add("Cache Limit: " + maxStackSize);
+                            event.toolTip.add("Cache Limit: " + NumberFormat.getNumberInstance(Locale.US).format(maxStackSize));
                         }
                     }
                 }
