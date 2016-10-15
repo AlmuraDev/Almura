@@ -227,9 +227,11 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
     @Override
     public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
-        // Here commences our traditional circus music...
-        if (player.capabilities.isCreativeMode) {
-            this.handleLeftClickBlock(world, player, x, y, z);
+        if (!world.isRemote) {
+            // Here commences our traditional circus music...
+            if (player.capabilities.isCreativeMode) {
+                this.handleLeftClickBlock(world, player, x, y, z);
+            }
         }
         return player.isSneaking() && super.removedByPlayer(world, player, x, y, z, willHarvest);
     }
@@ -264,7 +266,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
         if (cache != null) {
 
             ItemStack toAdd = new ItemStack(cache.getItem(), cache.stackSize > player.inventory.getInventoryStackLimit() ? player.inventory
-                    .getInventoryStackLimit() : cache.stackSize);
+                    .getInventoryStackLimit() : cache.stackSize, cache.getMetadata());
 
             int preMerge = toAdd.stackSize;
 
