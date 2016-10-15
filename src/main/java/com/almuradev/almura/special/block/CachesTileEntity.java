@@ -154,12 +154,9 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
         if (index == 0) {
-            boolean isDirty = stack != this.cache || (this.cache != null && this.cache.stackSize != stack.stackSize);
             this.cache = stack;
 
-            if (isDirty) {
-                this.markDirty();
-            }
+            this.markDirty();
         }
     }
 
