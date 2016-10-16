@@ -260,11 +260,12 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
      * @return See above
      */
     ItemStack mergeStackIntoSlot(ItemStack toMerge) {
-
+        System.out.println("toMerge: " + toMerge);
         checkNotNull(toMerge);
 
         if (this.cache == null) {
             this.setInventorySlotContents(0, toMerge);
+            System.out.println("Set Default Content");
             return null;
         }
 
@@ -272,8 +273,10 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
             this.cache.stackSize = this.getInventoryStackLimit();
             toMerge.stackSize = (this.cache.stackSize + toMerge.stackSize) - this.getInventoryStackLimit();
         } else {
-            this.cache.stackSize =+ toMerge.stackSize;
-            toMerge.stackSize =+ toMerge.stackSize;
+            System.out.println("Start Size: " + this.cache.stackSize);
+            this.cache.stackSize += toMerge.stackSize;
+            toMerge.stackSize -= toMerge.stackSize;
+            System.out.println("End Size: " + this.cache.stackSize);
         }
 
         if (toMerge.stackSize == 0) {
