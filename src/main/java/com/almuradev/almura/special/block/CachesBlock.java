@@ -41,7 +41,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
         this.initialCacheLimit = initialCacheLimit;
         setUnlocalizedName(unlocalizedName);
         setTextureName(Almura.MOD_ID + ":internal/blocks/" + textureName);
-        setHardness(50.0F);
+        setHardness(20.0F);
         setResistance(2000.0F);
         setStepSound(soundTypePiston);
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, this.getUnlocalizedName() + ".name", displayName);
