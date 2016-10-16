@@ -5,8 +5,9 @@
     "refmap": "mixins.almura.refmap.json",
     "mixins": [
         "block.MixinBlockTallGrass",
-        "block.MixinBlockWall",
+        "block.MixinBlockWall",        
         "inventory.MixinContainerWorkbench",
+        "inventory.MixinItemStack",
         "item.crafting.MixinShapedRecipes",
         "item.crafting.MixinShapelessRecipes",
         "network.play.client.MixinC01PacketChatMessage",

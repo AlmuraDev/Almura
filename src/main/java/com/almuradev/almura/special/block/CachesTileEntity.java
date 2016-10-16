@@ -7,6 +7,7 @@ package com.almuradev.almura.special.block;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.almuradev.almura.extension.item.IItemStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -21,13 +22,14 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
-public final class CachesTileEntity extends TileEntity implements IInventory, ISidedInventory {
+public final class CachesTileEntity extends TileEntity implements IInventory, ISidedInventory, IItemStack {
 
     public static final String TAG_CACHE = "Cache";
     public static final String TAG_CACHE_MAX_STACK_SIZE = "MaxStackSize";
     public static final String TAG_CACHE_CONTENTS = "Contents";
     public static final int[] SLOTS = { 0 };
     public static final int DEFAULT_MAX_STACK_SIZE = 64;
+    public static boolean isCache = true;
 
     private ItemStack cache;
     private int maxStackSize;
@@ -46,6 +48,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     }
 
     public CachesTileEntity(int maxStackSize) {
+        this.markAsCacheStack(true);
         this.maxStackSize = maxStackSize;
     }
 
@@ -337,5 +340,15 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
         }
 
         return this.cache == null || this.cache.isItemEqual(stack);
+    }
+
+    @Override
+    public boolean isCache() {
+        return isCache;
+    }
+
+    @Override
+    public boolean markAsCacheStack(boolean value) {
+        return isCache = value;
     }
 }
