@@ -12,6 +12,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,12 +21,12 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
-public final class CachesTileEntity extends TileEntity implements IInventory {
+public final class CachesTileEntity extends TileEntity implements IInventory, ISidedInventory {
 
     public static final String TAG_CACHE = "Cache";
     public static final String TAG_CACHE_MAX_STACK_SIZE = "MaxStackSize";
     public static final String TAG_CACHE_CONTENTS = "Contents";
-
+    public static final int[] SLOTS = { 0, 1 };
     public static final int DEFAULT_MAX_STACK_SIZE = 64;
 
     private ItemStack cache;
@@ -131,6 +132,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
+        System.out.println("Decrease Inventory" + count);
         if (index != 0) {
             return null;
         }
@@ -153,6 +155,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
 
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
+        System.out.println("Set Inventory" + stack);
         if (index == 0) {
             this.cache = stack;
 
@@ -296,5 +299,29 @@ public final class CachesTileEntity extends TileEntity implements IInventory {
         }
 
         return compound;
+    }
+
+       
+    @Override
+    public int[] getSlotsForFace(int p_94128_1_) {
+        return SLOTS;
+    }
+
+    @Override
+    public boolean canInsertItem(int slot, ItemStack stack, int side) {
+        if (slot != 0) {
+            return false;
+        }
+
+        return this.cache == null || this.cache.isItemEqual(stack);
+    }
+
+    @Override
+    public boolean canExtractItem(int slot, ItemStack stack, int side) {
+        if (slot != 0) {
+            return false;
+        }
+
+        return this.cache == null || this.cache.isItemEqual(stack);
     }
 }
