@@ -22,14 +22,13 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
-public final class CachesTileEntity extends TileEntity implements IInventory, ISidedInventory, IItemStack {
+public final class CachesTileEntity extends TileEntity implements IInventory, ISidedInventory {
 
     public static final String TAG_CACHE = "Cache";
     public static final String TAG_CACHE_MAX_STACK_SIZE = "MaxStackSize";
     public static final String TAG_CACHE_CONTENTS = "Contents";
     public static final int[] SLOTS = { 0 };
     public static final int DEFAULT_MAX_STACK_SIZE = 64;
-    public static boolean isCache = true;
 
     private ItemStack cache;
     private int maxStackSize;
@@ -48,7 +47,6 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     }
 
     public CachesTileEntity(int maxStackSize) {
-        this.markAsCacheStack(true);
         this.maxStackSize = maxStackSize;
     }
 
@@ -63,6 +61,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
             }
             if (cacheCompound.hasKey(TAG_CACHE_CONTENTS)) {
                 this.cache = CachesTileEntity.loadItemStackFromNBT(cacheCompound.getCompoundTag(TAG_CACHE_CONTENTS));
+                ((IItemStack) (Object) this.cache).markAsCacheStack(true);
             }
         }
     }
@@ -168,6 +167,10 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
                 }
             }
 
+            if (this.cache != null) {
+                ((IItemStack) (Object) this.cache).markAsCacheStack(true);
+            }
+
             this.markDirty();
         }
     }
@@ -175,6 +178,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     void actuallySetInventorySlotContent(int index, ItemStack stack) {
         if (index == 0) {
             this.cache = stack;
+            ((IItemStack) (Object) this.cache).markAsCacheStack(true);
         }
 
         this.markDirty();
@@ -326,29 +330,11 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
 
     @Override
     public boolean canInsertItem(int slot, ItemStack stack, int side) {
-        if (slot != 0) {
-            return false;
-        }
-
-        return this.cache == null || this.cache.isItemEqual(stack);
+        return slot == 0 && (this.cache == null || this.cache.isItemEqual(stack));
     }
 
     @Override
     public boolean canExtractItem(int slot, ItemStack stack, int side) {
-        if (slot != 0) {
-            return false;
-        }
-
-        return this.cache == null || this.cache.isItemEqual(stack);
-    }
-
-    @Override
-    public boolean isCache() {
-        return isCache;
-    }
-
-    @Override
-    public boolean markAsCacheStack(boolean value) {
-        return isCache = value;
+        return slot == 0 && (this.cache == null || this.cache.isItemEqual(stack));
     }
 }

@@ -9,5 +9,5 @@ public interface IItemStack {
 
     boolean isCache();
     
-    boolean markAsCacheStack(boolean value);
+    void markAsCacheStack(boolean value);
 }
