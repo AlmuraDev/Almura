@@ -26,7 +26,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     public static final String TAG_CACHE = "Cache";
     public static final String TAG_CACHE_MAX_STACK_SIZE = "MaxStackSize";
     public static final String TAG_CACHE_CONTENTS = "Contents";
-    public static final int[] SLOTS = { 0, 1 };
+    public static final int[] SLOTS = { 0 };
     public static final int DEFAULT_MAX_STACK_SIZE = 64;
 
     private ItemStack cache;
@@ -123,7 +123,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
 
     @Override
     public ItemStack getStackInSlot(int slotIn) {
-        if (slotIn == 0) {
+        if (slotIn != 0) {
             return null;
         }
 
@@ -132,7 +132,6 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
-        System.out.println("Decrease Inventory" + count);
         if (index != 0) {
             return null;
         }
@@ -155,7 +154,6 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
 
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
-        System.out.println("Set Inventory" + stack);
         if (index == 0) {
             if (this.cache == null) {
                 this.cache = stack;
@@ -262,6 +260,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
      * @return See above
      */
     ItemStack mergeStackIntoSlot(ItemStack toMerge) {
+
         checkNotNull(toMerge);
 
         if (this.cache == null) {
@@ -273,8 +272,8 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
             this.cache.stackSize = this.getInventoryStackLimit();
             toMerge.stackSize = (this.cache.stackSize + toMerge.stackSize) - this.getInventoryStackLimit();
         } else {
-            this.cache.stackSize += toMerge.stackSize;
-            toMerge.stackSize -= toMerge.stackSize;
+            this.cache.stackSize =+ toMerge.stackSize;
+            toMerge.stackSize =+ toMerge.stackSize;
         }
 
         if (toMerge.stackSize == 0) {
@@ -319,7 +318,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
 
        
     @Override
-    public int[] getSlotsForFace(int p_94128_1_) {
+    public int[] getSlotsForFace(int face) {
         return SLOTS;
     }
 
