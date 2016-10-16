@@ -313,7 +313,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                     newCache = null;
                 }
 
-                ((CachesTileEntity) te).setInventorySlotContents(0, newCache);
+                ((CachesTileEntity) te).actuallySetInventorySlotContent(0, newCache);
             }
         }
 
