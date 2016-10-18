@@ -178,7 +178,9 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     void actuallySetInventorySlotContent(int index, ItemStack stack) {
         if (index == 0) {
             this.cache = stack;
-            ((IItemStack) (Object) this.cache).markAsCacheStack(true);
+            if (stack != null) {
+                ((IItemStack) (Object) this.cache).markAsCacheStack(true);
+            }
         }
 
         this.markDirty();
