@@ -7,6 +7,7 @@
         "block.MixinBlockTallGrass",
         "block.MixinBlockWall",
         "inventory.MixinContainerWorkbench",
+        "entity.player.MixinEntityPlayer",
         "item.crafting.MixinShapedRecipes",
         "item.crafting.MixinShapelessRecipes",
         "network.play.client.MixinC01PacketChatMessage",
