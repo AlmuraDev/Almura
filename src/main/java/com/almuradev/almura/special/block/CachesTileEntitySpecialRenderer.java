@@ -108,9 +108,9 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         final FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
         final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize);
         final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
-        renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 20, 0);
+        renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 20, 255);
         renderer.drawString("-------", -renderer.getStringWidth("-------") / 2, (int) y - 15, 0);
-        renderer.drawString(cacheMaxQuantity, -renderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 10, 0);
+        renderer.drawString(cacheMaxQuantity, -renderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 10, 255);
         GL11.glPopMatrix();
     }
 }

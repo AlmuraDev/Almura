@@ -7,7 +7,6 @@ package com.almuradev.almura.special.block;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.extension.item.IItemStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -27,10 +26,13 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     public static final String TAG_CACHE = "Cache";
     public static final String TAG_CACHE_MAX_STACK_SIZE = "MaxStackSize";
     public static final String TAG_CACHE_CONTENTS = "Contents";
-    public static final int[] SLOTS = { 0 };
-    public static final int DEFAULT_MAX_STACK_SIZE = 64;
+    private static final int HOPPER_SLOT_INSERT = 1, HOPPER_SLOT_OUTPUT = 2;
+    private static final int[] SLOTS = {HOPPER_SLOT_INSERT, HOPPER_SLOT_OUTPUT};
+    static final int DEFAULT_MAX_STACK_SIZE = 64;
 
     private ItemStack cache;
+    private ItemStack[] states = new ItemStack[2];
+
     private int maxStackSize;
 
     @SideOnly(Side.CLIENT)
@@ -61,7 +63,6 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
             }
             if (cacheCompound.hasKey(TAG_CACHE_CONTENTS)) {
                 this.cache = CachesTileEntity.loadItemStackFromNBT(cacheCompound.getCompoundTag(TAG_CACHE_CONTENTS));
-                ((IItemStack) (Object) this.cache).markAsCacheStack(true);
             }
         }
     }
@@ -70,15 +71,15 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
 
-        if (this.cache != null) {
-            final NBTTagCompound cacheCompound = new NBTTagCompound();
-            cacheCompound.setInteger(TAG_CACHE_MAX_STACK_SIZE, this.maxStackSize);
+        final NBTTagCompound cacheCompound = new NBTTagCompound();
+        cacheCompound.setInteger(TAG_CACHE_MAX_STACK_SIZE, this.maxStackSize);
 
+        if (this.cache != null) {
             final NBTTagCompound cacheContentsCompound = new NBTTagCompound();
             cacheCompound.setTag(TAG_CACHE_CONTENTS, CachesTileEntity.writeToNBT(this.cache, cacheContentsCompound));
-
-            compound.setTag(TAG_CACHE, cacheCompound);
         }
+
+        compound.setTag(TAG_CACHE, cacheCompound);
     }
 
     @Override
@@ -104,6 +105,8 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         if (pkt.getNbtCompound().hasKey(TAG_CACHE_CONTENTS)) {
             this.cache = CachesTileEntity.loadItemStackFromNBT(pkt.getNbtCompound().getCompoundTag(TAG_CACHE_CONTENTS));
+        } else {
+            this.cache = null;
         }
 
         if (pkt.getNbtCompound().hasKey(TAG_CACHE_MAX_STACK_SIZE)) {
@@ -120,33 +123,65 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
 
     @Override
     public int getSizeInventory() {
-        return 1;
+        return 2;
     }
 
     @Override
     public ItemStack getStackInSlot(int slotIn) {
-        if (slotIn != 0) {
+
+        // If slot is 1, this must be a Hopper/some mech. This needs circus-level handling
+        if (slotIn != HOPPER_SLOT_INSERT) {
+            return this.cache;
+        }
+
+        if (this.cache == null) {
             return null;
         }
 
-        return this.cache;
+        if (this.cache.stackSize == this.getInventoryStackLimit()) {
+            return this.cache;
+        }
+
+        if (states[HOPPER_SLOT_INSERT] == null) {
+            final ItemStack toReturn = this.cache.copy();
+            toReturn.stackSize = 1;
+            states[HOPPER_SLOT_INSERT] = toReturn;
+        } else if (states[HOPPER_SLOT_INSERT].stackSize > 1) {
+            this.cache.stackSize += 1;
+            this.actuallySetInventorySlotContent(0, this.cache);
+            states[HOPPER_SLOT_INSERT] = null;
+        }
+
+        return states[HOPPER_SLOT_INSERT];
     }
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
-        if (index != 0) {
+        if (index != HOPPER_SLOT_OUTPUT) {
             return null;
         }
 
-        ItemStack ret = this.cache;
-        if (count >= cache.stackSize) {
+        System.err.println("Decrementing stack for slot: " + index + " with count of: " + count);
+
+        if (this.cache == null) {
+            return null;
+        }
+
+        ItemStack toReturn;
+
+        if (this.cache.stackSize <= count) {
+            toReturn = this.cache;
             this.cache = null;
         } else {
-            ret = ret.splitStack(count);
+            toReturn = this.cache.splitStack(count);
+            if (this.cache.stackSize <= 0) {
+                this.cache = null;
+            }
         }
 
         this.markDirty();
-        return ret;
+
+        return toReturn;
     }
 
     @Override
@@ -155,20 +190,16 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     }
 
     @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {  //Hoppers don't call this in Cache != null, it has its own increment method.
-        if (index == 0) {
+    public void setInventorySlotContents(int index, ItemStack stack) {
+        if (index != HOPPER_SLOT_OUTPUT) {
             if (this.cache == null) {
                 this.cache = stack;
             } else {
                 if (stack != null) {
-                    this.cache.stackSize =+ stack.stackSize;
+                    this.mergeStackIntoSlot(stack);
                 } else {
                     this.cache = null;
                 }
-            }
-
-            if (this.cache != null) {
-                ((IItemStack) (Object) this.cache).markAsCacheStack(true);
             }
 
             this.markDirty();
@@ -176,13 +207,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     }
 
     void actuallySetInventorySlotContent(int index, ItemStack stack) {
-        if (index == 0) {
-            this.cache = stack;
-            if (stack != null) {
-                ((IItemStack) (Object) this.cache).markAsCacheStack(true);
-            }
-        }
-
+        this.cache = stack;
         this.markDirty();
     }
 
@@ -221,7 +246,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        if (index != 0) {
+        if (index != HOPPER_SLOT_INSERT) {
             return false;
         }
 
@@ -272,7 +297,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
         checkNotNull(toMerge);
 
         if (this.cache == null) {
-            this.setInventorySlotContents(0, toMerge);
+            this.actuallySetInventorySlotContent(0, toMerge);
             return null;
         }
 
@@ -332,11 +357,11 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
 
     @Override
     public boolean canInsertItem(int slot, ItemStack stack, int side) {
-        return slot == 0 && (this.cache == null || this.cache.isItemEqual(stack));
+        return slot == HOPPER_SLOT_INSERT && (this.cache == null || this.cache.isItemEqual(stack));
     }
 
     @Override
     public boolean canExtractItem(int slot, ItemStack stack, int side) {
-        return slot == 0 && (this.cache == null || this.cache.isItemEqual(stack));
+        return slot == HOPPER_SLOT_OUTPUT;
     }
 }
