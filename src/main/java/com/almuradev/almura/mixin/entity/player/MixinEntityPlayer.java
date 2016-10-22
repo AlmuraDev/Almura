@@ -65,7 +65,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements ICom
         }
 
         if (!this.onGround) {
-            //f /= 5.0F;
+            f /= 5.0F;
         }
 
         f = ForgeEventFactory.getBreakSpeed(this$, p_146096_1_, meta, f, x, y, z);

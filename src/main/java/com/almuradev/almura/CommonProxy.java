@@ -44,6 +44,7 @@ import com.almuradev.almura.server.network.play.S01PageDelete;
 import com.almuradev.almura.server.network.play.S02OpenBlockWireframeGui;
 import com.almuradev.almura.server.network.play.S02PageOpen;
 import com.almuradev.almura.server.network.play.S03PlayerAccessories;
+import com.almuradev.almura.server.network.play.S04OpenFarmInformationGui;
 import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.util.FileSystem;
 import com.google.common.base.Optional;
@@ -108,6 +109,7 @@ public class CommonProxy {
         CommonProxy.NETWORK_FORGE.registerMessage(S01PageDelete.class, S01PageDelete.class, 6, Side.SERVER);
         CommonProxy.NETWORK_FORGE.registerMessage(S02PageOpen.class, S02PageOpen.class, 7, Side.CLIENT);
         CommonProxy.NETWORK_FORGE.registerMessage(S03PlayerAccessories.class, S03PlayerAccessories.class, 8, Side.CLIENT);
+        CommonProxy.NETWORK_FORGE.registerMessage(S04OpenFarmInformationGui.class, S04OpenFarmInformationGui.class, 9, Side.CLIENT);
         NetworkRegistry.INSTANCE.registerGuiHandler(Almura.INSTANCE, new AlmuraContainerHandler());
         GameRegistry.registerTileEntity(PackContainerTileEntity.class, Almura.MOD_ID + ":pack_container");
         GameRegistry.registerFuelHandler(new PackFuelHandler());
