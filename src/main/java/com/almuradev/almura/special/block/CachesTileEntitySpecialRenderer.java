@@ -56,22 +56,22 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         if (metadata == 0) { // South
             translatedX += 0.5;
             translatedZ += 1.015;
-            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord, te.zCoord - 1, 0);
+            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord, te.zCoord + 1, 0);
         } else if (metadata == 1) { // West
             angle = -90f;
             translatedX -= 0.015;
             translatedZ += 0.5;
-            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord + 1, te.yCoord, te.zCoord, 0);
+            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord - 1, te.yCoord, te.zCoord, 0);
         } else if (metadata == 2) { // North
             angle = 180f;
             translatedX += 0.5;
             translatedZ -= 0.015;
-            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord, te.zCoord + 1, 0);
+            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord, te.zCoord - 1, 0);
         } else if (metadata == 3) { //East
             translatedX += 1.015;
             translatedZ += 0.5;
             angle = 90f;
-            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord - 1, te.yCoord, te.zCoord, 0);
+            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord+ 1, te.yCoord, te.zCoord, 0);
         }
 
         // Draw ItemType 2D visual in front
@@ -108,9 +108,9 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         final FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
         final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize);
         final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
-        renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 20, 255);
+        renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 20, 0);
         renderer.drawString("-------", -renderer.getStringWidth("-------") / 2, (int) y - 15, 0);
-        renderer.drawString(cacheMaxQuantity, -renderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 10, 255);
+        renderer.drawString(cacheMaxQuantity, -renderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 10, 0);
         GL11.glPopMatrix();
     }
 }
