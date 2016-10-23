@@ -64,21 +64,29 @@ public class FarmsAlmanac extends AlmuraItem {
                     fertile = true;
                 }    
             }
+            
+            int areaBlockLight;
+            int sunlight;
 
             BiomeGenBase biomegenbase = world.getBiomeGenForCoords(x, z);
             float temp = biomegenbase.getFloatTemperature(x, y, z);
             float rain = biomegenbase.rainfall;
-            final int areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
-            final int sunLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
+            if (block instanceof PackCrops) {
+                areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
+                sunlight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
+            } else {
+                areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y+1, z);
+                sunlight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y+1, z) - world.skylightSubtracted;   
+            }
                         
             if (block != null && farm) {
                 ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S0BPacketAnimation(player, 0));
                 player.swingItem();
-                CommonProxy.NETWORK_FORGE.sendTo(new S04OpenFarmersAlmanacGui(block, metadata, fertile, temp, rain, areaBlockLight, sunLight), (EntityPlayerMP) player);
+                CommonProxy.NETWORK_FORGE.sendTo(new S04OpenFarmersAlmanacGui(block, metadata, fertile, temp, rain, areaBlockLight, sunlight), (EntityPlayerMP) player);
             }
             
             if (block != null && !farm) {
-                player.addChatComponentMessage(new ChatComponentText(Colors.DARK_GRAY + "[Farm Information Wand] - " + Colors.BLUE + "Can only be used on Farmland or a Crop."));
+                player.addChatComponentMessage(new ChatComponentText(Colors.WHITE + "[Farmers Almanac] - " + Colors.BLUE + "Can only be used on Farmland or a Crop."));
             }
         }
         return false;

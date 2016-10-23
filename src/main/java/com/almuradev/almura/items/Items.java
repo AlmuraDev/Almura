@@ -28,7 +28,7 @@ public class Items {
     public static final WireframeWand WAND_WIREFRAME = new WireframeWand("wand.wireframe", "Wireframe Wand", "wireframe_wand", Tabs.TAB_TOOLS);
     public static final ChunkRegenWand WAND_CHUNKREGEN = new ChunkRegenWand("wand.chunkregen", "ChunkRegen Wand", "chunkregen_wand", Tabs.TAB_TOOLS);
     public static final ChunkPopulateWand WAND_CHUNKPOPULATE = new ChunkPopulateWand("wand.chunkpopulate", "Chunk Populate Wand", "explosion_wand", Tabs.TAB_TOOLS);
-    public static final FarmsAlmanac FARMERS_ALMANAC = new FarmsAlmanac("almanac.farm", "Farms Almanac", "farms_almanac", Tabs.TAB_TOOLS);
+    public static final FarmsAlmanac FARMERS_ALMANAC = new FarmsAlmanac("almanac.farmers", "Farmers Almanac", "farmers_almanac", Tabs.TAB_TOOLS);
 
     public static void fakeStaticLoad() {
         Almura.INTERNAL_PACK.addItem(WAND_EXPLOSION);
