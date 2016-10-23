@@ -30,8 +30,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     private static final int[] SLOTS = {HOPPER_SLOT_INSERT, HOPPER_SLOT_OUTPUT};
     static final int DEFAULT_MAX_STACK_SIZE = 64;
 
-    private ItemStack cache;
-    private ItemStack[] states = new ItemStack[2];
+    private ItemStack cache, state;
 
     private int maxStackSize;
 
@@ -48,7 +47,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
         this.maxStackSize = DEFAULT_MAX_STACK_SIZE; //fallback
     }
 
-    public CachesTileEntity(int maxStackSize) {
+    CachesTileEntity(int maxStackSize) {
         this.maxStackSize = maxStackSize;
     }
 
@@ -142,17 +141,17 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
             return this.cache;
         }
 
-        if (states[HOPPER_SLOT_INSERT] == null) {
+        if (state == null) {
             final ItemStack toReturn = this.cache.copy();
             toReturn.stackSize = 1;
-            states[HOPPER_SLOT_INSERT] = toReturn;
-        } else if (states[HOPPER_SLOT_INSERT].stackSize > 1) {
+            state = toReturn;
+        } else if (state.stackSize > 1) {
             this.cache.stackSize += 1;
             this.actuallySetInventorySlotContent(0, this.cache);
-            states[HOPPER_SLOT_INSERT] = null;
+            state = null;
         }
 
-        return states[HOPPER_SLOT_INSERT];
+        return state;
     }
 
     @Override
@@ -160,8 +159,6 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
         if (index != HOPPER_SLOT_OUTPUT) {
             return null;
         }
-
-        System.err.println("Decrementing stack for slot: " + index + " with count of: " + count);
 
         if (this.cache == null) {
             return null;
@@ -223,7 +220,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
 
     @Override
     public int getInventoryStackLimit() {
-        return this.maxStackSize; // TODO Configurable
+        return this.maxStackSize;
     }
 
     @Override
@@ -322,7 +319,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
         return itemStack.getItem() == null ? null : itemStack;
     }
 
-    public static NBTTagCompound readFromNBT(ItemStack itemStack, NBTTagCompound compound) {
+    private static NBTTagCompound readFromNBT(ItemStack itemStack, NBTTagCompound compound) {
         itemStack.setItem(Item.getItemById(compound.getShort("id")));
         itemStack.stackSize = compound.getInteger("Count");
         int metadata = compound.getShort("Damage");
@@ -337,7 +334,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
         return compound;
     }
 
-    public static NBTTagCompound writeToNBT(ItemStack itemStack, NBTTagCompound compound) {
+    static NBTTagCompound writeToNBT(ItemStack itemStack, NBTTagCompound compound) {
         compound.setShort("id", (short) Item.getIdFromItem(itemStack.getItem()));
         compound.setInteger("Count", itemStack.stackSize);
         compound.setShort("Damage", (short) itemStack.getMetadata());

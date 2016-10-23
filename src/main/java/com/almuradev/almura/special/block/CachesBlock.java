@@ -33,12 +33,12 @@ import net.minecraft.world.World;
 
 public final class CachesBlock extends BlockContainer implements IPackObject {
 
-    private final int initialCacheLimit;
+    private final int cacheLimit;
     private IIcon tb, side, front;
 
-    public CachesBlock(String unlocalizedName, String textureName, String displayName, int initialCacheLimit, CreativeTabs tabs) {
+    CachesBlock(String unlocalizedName, String textureName, String displayName, int cacheLimit, CreativeTabs tabs) {
         super(Material.rock);
-        this.initialCacheLimit = initialCacheLimit;
+        this.cacheLimit = cacheLimit;
         setUnlocalizedName(unlocalizedName);
         setTextureName(Almura.MOD_ID + ":internal/blocks/" + textureName);
         setHardness(20.0F);
@@ -264,7 +264,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new CachesTileEntity(this.initialCacheLimit);
+        return new CachesTileEntity(this.cacheLimit);
     }
 
     @Override
@@ -278,7 +278,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     }
 
     public int getCacheLimit() {
-        return this.initialCacheLimit;
+        return this.cacheLimit;
     }
 
     private boolean handleLeftClickBlock(World world, EntityPlayer player, int x, int y, int z) {

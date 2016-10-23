@@ -24,11 +24,8 @@ import java.util.Locale;
 
 public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
 
-    private EntityItem visualItem;
-
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTick) {
-        visualItem = null;
 
         // Impossible
         if (!(te instanceof CachesTileEntity) || te.getWorld() == null || ((CachesTileEntity) te).getCache() == null) {

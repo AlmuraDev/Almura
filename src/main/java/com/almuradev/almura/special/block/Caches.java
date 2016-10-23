@@ -9,6 +9,8 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.tabs.Tabs;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 
 public class Caches {
 
@@ -27,5 +29,37 @@ public class Caches {
         Almura.INTERNAL_PACK.addBlock(BLOCK_EMERALD_CACHE);
         Almura.INTERNAL_PACK.addBlock(BLOCK_DIAMOND_CACHE);
         Almura.INTERNAL_PACK.addBlock(BLOCK_REDSTONE_CACHE);
+
+        GameRegistry.addShapedRecipe(new ItemStack(Caches.BLOCK_IRON_CACHE, 1, 0),
+                "BBB",
+                "BCB",
+                "BBB",
+                'B', Blocks.iron_block,
+                'C', Blocks.chest
+        );
+
+        GameRegistry.addShapedRecipe(new ItemStack(Caches.BLOCK_GOLD_CACHE, 1, 0),
+                "BBB",
+                "BCB",
+                "BBB",
+                'B', Blocks.gold_block,
+                'C', BLOCK_IRON_CACHE
+        );
+
+        GameRegistry.addShapedRecipe(new ItemStack(Caches.BLOCK_EMERALD_CACHE, 1, 0),
+                "BBB",
+                "BCB",
+                "BBB",
+                'B', Blocks.emerald_block,
+                'C', BLOCK_GOLD_CACHE
+        );
+
+        GameRegistry.addShapedRecipe(new ItemStack(Caches.BLOCK_DIAMOND_CACHE, 1, 0),
+                "BBB",
+                "BCB",
+                "BBB",
+                'B', Blocks.diamond_block,
+                'C', BLOCK_EMERALD_CACHE
+        );
     }
 }

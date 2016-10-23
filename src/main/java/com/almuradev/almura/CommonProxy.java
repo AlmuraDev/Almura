@@ -46,6 +46,7 @@ import com.almuradev.almura.server.network.play.S02PageOpen;
 import com.almuradev.almura.server.network.play.S03PlayerAccessories;
 import com.almuradev.almura.special.block.Caches;
 import com.almuradev.almura.special.block.CachesBlock;
+import com.almuradev.almura.special.block.CachesItemBlock;
 import com.almuradev.almura.special.block.CachesTileEntity;
 import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.util.FileSystem;
@@ -353,6 +354,7 @@ public class CommonProxy {
         if (!(event.craftMatrix instanceof InventoryCrafting)) {
             return;
         }
+
         IRecipe recipe = null;
 
         for (Object obj : CraftingManager.getInstance().getRecipeList()) {
@@ -366,6 +368,60 @@ public class CommonProxy {
         }
 
         if (recipe == null) {
+
+            final ItemStack crafted = event.crafting;
+            if (crafted.getItem() instanceof CachesItemBlock) {
+
+                final CachesBlock block = (CachesBlock) ((CachesItemBlock) crafted.getItem()).blockInstance;
+
+                if (block == Caches.BLOCK_GOLD_CACHE || block == Caches.BLOCK_EMERALD_CACHE || block == Caches.BLOCK_DIAMOND_CACHE) {
+
+                    final ItemStack preUpgrade = event.craftMatrix.getStackInSlot(4);
+
+                    if (preUpgrade != null) {
+                        // Read the previous cache compound to extract the contents
+                        final NBTTagCompound preUpgradeCompound = preUpgrade.getTagCompound();
+
+                        if (preUpgradeCompound != null && preUpgradeCompound.hasKey("tag")) {
+                            final NBTTagCompound preUpgradeTagCompound = preUpgradeCompound.getCompoundTag("tag");
+
+                            if (preUpgradeTagCompound.hasKey(CachesTileEntity.TAG_CACHE)) {
+                                final NBTTagCompound preUpgradeCacheCompound = preUpgradeTagCompound.getCompoundTag(CachesTileEntity.TAG_CACHE);
+
+                                if (preUpgradeCacheCompound.hasKey(CachesTileEntity.TAG_CACHE_CONTENTS)) {
+                                    final NBTTagCompound preCacheContentsCompound = (NBTTagCompound) preUpgradeCacheCompound.getCompoundTag
+                                            (CachesTileEntity.TAG_CACHE_CONTENTS).copy();
+                                    final ItemStack cache = CachesTileEntity.loadItemStackFromNBT(preCacheContentsCompound);
+
+                                    crafted.setStackDisplayName(crafted.getDisplayName() + " (" + cache.getDisplayName() + ")");
+
+                                    NBTTagCompound compound = crafted.getTagCompound();
+
+                                    if (compound == null) {
+                                        compound = new NBTTagCompound();
+                                    }
+
+                                    final int maxCacheSize = block.getCacheLimit();
+
+                                    final NBTTagCompound tagCompound = compound.getCompoundTag("tag");
+                                    final NBTTagCompound cacheCompound = tagCompound.getCompoundTag(CachesTileEntity.TAG_CACHE);
+                                    final NBTTagCompound cacheContentsCompound =
+                                            (NBTTagCompound) preUpgradeCacheCompound.getCompoundTag(CachesTileEntity
+                                                    .TAG_CACHE_CONTENTS).copy();
+
+                                    cacheCompound.setInteger(CachesTileEntity.TAG_CACHE_MAX_STACK_SIZE, maxCacheSize);
+                                    cacheCompound.setTag(CachesTileEntity.TAG_CACHE_CONTENTS, cacheContentsCompound);
+                                    tagCompound.setTag(CachesTileEntity.TAG_CACHE, cacheCompound);
+                                    compound.setTag("tag", tagCompound);
+                                    crafted.setTagCompound(compound);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
             return;
         }
 
