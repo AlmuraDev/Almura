@@ -3,13 +3,12 @@
  *
  * Copyright (c) 2014 - 2016 AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.items.wands;
+package com.almuradev.almura.items;
 
 import com.almuradev.almura.CommonProxy;
-import com.almuradev.almura.items.AlmuraItem;
 import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.server.network.play.S01OpenBlockInformationGui;
-import com.almuradev.almura.server.network.play.S04OpenFarmInformationGui;
+import com.almuradev.almura.server.network.play.S04OpenFarmersAlmanacGui;
 import com.almuradev.almura.util.Colors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFarmland;
@@ -19,14 +18,15 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S0BPacketAnimation;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
-public class FarmWand extends AlmuraItem {
+public class FarmsAlmanac extends AlmuraItem {
 
-    public FarmWand(String unlocalizedName, String displayName, String textureName, CreativeTabs creativeTab) {
+    public FarmsAlmanac(String unlocalizedName, String displayName, String textureName, CreativeTabs creativeTab) {
         super(unlocalizedName, displayName, textureName, creativeTab);
     }
 
@@ -49,7 +49,7 @@ public class FarmWand extends AlmuraItem {
             final Block block = world.getBlock(x, y, z);
             final int metadata = world.getBlockMetadata(x, y, z);            
             boolean fertile = false;   
-            boolean farm = false;
+            boolean farm = false;            
             
             if (block instanceof BlockFarmland || block instanceof PackCrops) {
                 farm = true;
@@ -68,11 +68,13 @@ public class FarmWand extends AlmuraItem {
             BiomeGenBase biomegenbase = world.getBiomeGenForCoords(x, z);
             float temp = biomegenbase.getFloatTemperature(x, y, z);
             float rain = biomegenbase.rainfall;
+            final int areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
+            final int sunLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
                         
             if (block != null && farm) {
                 ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S0BPacketAnimation(player, 0));
                 player.swingItem();
-                CommonProxy.NETWORK_FORGE.sendTo(new S04OpenFarmInformationGui(block, metadata, fertile, temp, rain), (EntityPlayerMP) player);
+                CommonProxy.NETWORK_FORGE.sendTo(new S04OpenFarmersAlmanacGui(block, metadata, fertile, temp, rain, areaBlockLight, sunLight), (EntityPlayerMP) player);
             }
             
             if (block != null && !farm) {

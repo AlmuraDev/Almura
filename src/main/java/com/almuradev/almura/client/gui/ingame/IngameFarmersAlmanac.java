@@ -23,20 +23,24 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFarmland;
 
-public class IngameFarmInformation extends SimpleGui {
+public class IngameFarmersAlmanac extends SimpleGui {
 
     private final Block block;
     private final int metadata;
     private final boolean fertile;
     private final float temp;
-    private final float rain;    
+    private final float rain;
+    private final int areaBlockLight;
+    private final int sunlight;
 
-    public IngameFarmInformation(Block block, int metadata, boolean fertile, float temp, float rain) {
+    public IngameFarmersAlmanac(Block block, int metadata, boolean fertile, float temp, float rain, int areaBlockLight, int sunlight) {
         this.block = block;        
         this.metadata = metadata;
         this.fertile = fertile;
         this.temp = temp;
         this.rain = rain;
+        this.areaBlockLight = areaBlockLight;
+        this.sunlight = sunlight;
         construct();
     }
 
@@ -61,6 +65,8 @@ public class IngameFarmInformation extends SimpleGui {
         String groundTemp = "";
         String groundMoisture = "";
         String rainAmount = "";
+        String sunlightText;
+        String areaBlockLightText;
         
         //Frozen = Temp =< 0.14
         
@@ -88,8 +94,24 @@ public class IngameFarmInformation extends SimpleGui {
         } else {
             rainAmount = "" + Colors.RED + rain;
         }
+        
+        if (sunlight < 6) {
+            sunlightText = "" + Colors.RED + sunlight;
+        } else {
+            sunlightText = "" + Colors.DARK_GREEN + sunlight;
+        }
+        
+        if (areaBlockLight < 6) {
+            if (sunlight < 6) {
+                areaBlockLightText = "" + Colors.RED + areaBlockLight;
+            } else {
+                areaBlockLightText = "" + Colors.YELLOW + areaBlockLight;
+            }
+        } else {
+            areaBlockLightText = "" + Colors.DARK_GREEN + areaBlockLight;
+        }
 
-        final UIForm form = new UIForm(this, formWidth, formHeight, "Farm Information");
+        final UIForm form = new UIForm(this, formWidth, formHeight, "Farmers Almanac");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         final UIImage blockImage = new UIImage(this, new GuiTexture(UIImage.BLOCKS_TEXTURE), block.getIcon(0, metadata));
@@ -125,8 +147,11 @@ public class IngameFarmInformation extends SimpleGui {
         final UILabel biomeRainLabel = new UILabel(this, Colors.GRAY + "Biome Rain: " + rainAmount);
         biomeRainLabel.setPosition(xPadding, getPaddedY(temperaturedataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
-        final UILabel lightValueLabel = new UILabel(this, Colors.GRAY + "Light value: " + Colors.BLUE + block.getLightValue());
-        lightValueLabel.setPosition(xPadding, getPaddedY(biomeRainLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+        final UILabel sunlightValueLabel = new UILabel(this, Colors.GRAY + "Sunlight Value: " + sunlightText);
+        sunlightValueLabel.setPosition(xPadding, getPaddedY(biomeRainLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+        
+        final UILabel areaLightValueLabel = new UILabel(this, Colors.GRAY + "Area Light Value: " + areaBlockLightText);
+        areaLightValueLabel.setPosition(xPadding, getPaddedY(sunlightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
         
         UILabel modelNameLabel = null;
 
@@ -134,7 +159,7 @@ public class IngameFarmInformation extends SimpleGui {
 
             final IModelContainer modelContainer = (IModelContainer) block;
             final UILabel textureNameLabel = new UILabel(this, Colors.GRAY + "Texture Name: " + Colors.BLUE + block.getTextureName());
-            textureNameLabel.setPosition(xPadding, getPaddedY(lightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+            textureNameLabel.setPosition(xPadding, getPaddedY(areaLightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             form.getContentContainer().add(textureNameLabel);
 
             String modelName;
@@ -174,7 +199,7 @@ public class IngameFarmInformation extends SimpleGui {
             if (block instanceof PackBlock) {
                 harvestToolLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             } else {
-                harvestToolLabel.setPosition(xPadding, getPaddedY(lightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+                harvestToolLabel.setPosition(xPadding, getPaddedY(areaLightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             }
             formHeight += 10;
             form.getContentContainer().add(harvestToolLabel);
@@ -188,7 +213,7 @@ public class IngameFarmInformation extends SimpleGui {
         closeButton.setName("button.close");
         closeButton.register(this);
 
-        form.getContentContainer().add(blockImage, localizedNameLabel, unlocalizedNameLabel, metadataLabel, moisturedataLabel, temperaturedataLabel, biomeRainLabel, lightValueLabel, closeButton);
+        form.getContentContainer().add(blockImage, localizedNameLabel, unlocalizedNameLabel, metadataLabel, moisturedataLabel, temperaturedataLabel, biomeRainLabel, sunlightValueLabel, areaLightValueLabel, closeButton);
 
         addToScreen(form);
     }
