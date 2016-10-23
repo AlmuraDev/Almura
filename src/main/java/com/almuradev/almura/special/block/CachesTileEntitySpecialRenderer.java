@@ -40,7 +40,7 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         }
 
         // TODO Dockter needs to add this to config
-        if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) > (Configuration.DISTANCE_RENDER_SIGN * 16)) {
+        if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) > (Configuration.DISTANCE_RENDER_CHEST * 16)) {
             return;
         }
 
@@ -105,7 +105,8 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
 
         float scaleFactor = 0.6666667F * 0.016666668F;
         GL11.glScalef(scaleFactor, -scaleFactor, scaleFactor);
-        final FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
+        
+        final FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;        
         final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize);
         final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
         renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 20, 0);
