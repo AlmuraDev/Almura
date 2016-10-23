@@ -74,7 +74,7 @@ public class IngameAlmuraHUD extends SimpleGui {
         // ////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
         // Almura Title
-        final UILabel almuraTitle = new UILabel(this, "Almura");
+        final UILabel almuraTitle = new UILabel(this, "Almura Origins");
         almuraTitle.setPosition(0, 2, Anchor.CENTER);
         almuraTitle.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
 

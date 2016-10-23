@@ -45,6 +45,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
 
@@ -106,28 +107,64 @@ public class PackCrops extends BlockCrops implements IPackObject, IBlockTextureC
         }
 
         boolean canGrow = isGrowthEven(world, x, y, z);
-        if (!canGrow) {
-            return;
-        }
-
-        final LightNode lightNode = stage.getNode(LightNode.class);
-        boolean checkLight = lightNode != null && lightNode.getValue().getSource();
+        boolean isFertile = world.getBlockMetadata(x, y-1, z) > 0;
         boolean canAdvance = false;
+        boolean canRevert = false;
 
-        if (checkLight) {
-            final int minLightLevel = lightNode.getValue().getMin();
-            final int maxLightLevel = lightNode.getValue().getMax();
-            final int areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
-            final int worldLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
-            if (areaBlockLight >= minLightLevel && areaBlockLight <= maxLightLevel) {
-                canAdvance = true;
-            } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
+        // Remove this check when PackCrop properly finished the temp. check.
+        if (!isBonemeal) {
+            if (!isFertile) {
+                // Ground lacks water, growth cannot continue.
+                canRevert = true;
+            }
+
+            if (!canRevert) {
+                BiomeGenBase biomegenbase = world.getBiomeGenForCoords(x, z);
+                float f = biomegenbase.getFloatTemperature(x, y, z);
+
+                if (f < 0.14F) {
+                    // Ground is frozen stupid, can't grow frozen crops.
+                    canRevert = true;
+                }
+            }
+
+            // Bring on the pain...
+            if (canRevert) {
+                if (metadata > 0) {
+                    stage.onGrowth(world, x, y, z, random);
+                    final Stage newStage = stages.get(metadata - 1);
+                    newStage.onGrown(world, x, y, z, random);
+                    if (!world.isRemote) {
+                        world.setBlockMetadataWithNotify(x, y, z, metadata - 1, 3);
+                        return;
+                    }
+                }
+            }        
+
+            if (!canGrow || !isFertile) {
+                return;
+            }
+
+            final LightNode lightNode = stage.getNode(LightNode.class);
+            boolean checkLight = lightNode != null && lightNode.getValue().getSource();
+
+            if (checkLight) {
+                final int minLightLevel = lightNode.getValue().getMin();
+                final int maxLightLevel = lightNode.getValue().getMax();
+                final int areaBlockLight = world.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
+                final int worldLight = world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) - world.skylightSubtracted;
+                if (areaBlockLight >= minLightLevel && areaBlockLight <= maxLightLevel) {
+                    canAdvance = true;
+                } else if (worldLight >= minLightLevel && worldLight <= maxLightLevel) {
+                    canAdvance = true;
+                }
+            } else {
                 canAdvance = true;
             }
         } else {
-            canAdvance = true;
+            canAdvance = true; //Force OK because bonemeal is being used.
         }
-
+        
         if (canAdvance) {
             if (!isBonemeal) {
                 stage.onTick(world, x, y, z, random);

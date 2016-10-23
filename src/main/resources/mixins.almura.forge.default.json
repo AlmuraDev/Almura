@@ -7,7 +7,11 @@
         "block.MixinBlockTallGrass",
         "block.MixinBlockWall",        
         "inventory.MixinContainerWorkbench",
+<<<<<<< HEAD
         "inventory.MixinItemStack",
+=======
+        "entity.player.MixinEntityPlayer",
+>>>>>>> master
         "item.crafting.MixinShapedRecipes",
         "item.crafting.MixinShapelessRecipes",
         "network.play.client.MixinC01PacketChatMessage",
