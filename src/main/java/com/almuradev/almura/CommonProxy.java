@@ -44,14 +44,11 @@ import com.almuradev.almura.server.network.play.S01PageDelete;
 import com.almuradev.almura.server.network.play.S02OpenBlockWireframeGui;
 import com.almuradev.almura.server.network.play.S02PageOpen;
 import com.almuradev.almura.server.network.play.S03PlayerAccessories;
-<<<<<<< HEAD
 import com.almuradev.almura.special.block.Caches;
 import com.almuradev.almura.special.block.CachesBlock;
 import com.almuradev.almura.special.block.CachesItemBlock;
 import com.almuradev.almura.special.block.CachesTileEntity;
-=======
 import com.almuradev.almura.server.network.play.S04OpenFarmInformationGui;
->>>>>>> master
 import com.almuradev.almura.tabs.Tabs;
 import com.almuradev.almura.util.FileSystem;
 import com.google.common.base.Optional;
