@@ -6,7 +6,6 @@
 package com.almuradev.almura.special.block;
 
 import com.almuradev.almura.Configuration;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
@@ -105,23 +104,13 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         GL11.glScalef(scaleFactor, -scaleFactor, scaleFactor);
 
         final FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
-        String name = "default";
 
-        Block block = te.getWorld().getBlock(te.xCoord, te.yCoord, te.zCoord);
-        if (block == Caches.BLOCK_IRON_CACHE)
-            name = "Iron Cache";
-        if (block == Caches.BLOCK_GOLD_CACHE)
-            name = "Gold Cache";
-        if (block == Caches.BLOCK_EMERALD_CACHE)
-            name = "Emerald Cache";
-        if (block == Caches.BLOCK_DIAMOND_CACHE)
-            name = "Diamond Cache";
-        if (block == Caches.BLOCK_REDSTONE_CACHE)
-            name = "Redstone Cache";
+        final CachesBlock block = (CachesBlock) te.getWorld().getBlock(te.xCoord, te.yCoord, te.zCoord);
+        final String displayName = block.getDisplayName();
 
         final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize);
         final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
-        renderer.drawString(name, -renderer.getStringWidth(name) / 2, (int) y - 85, 0);
+        renderer.drawString(displayName, -renderer.getStringWidth(displayName) / 2, (int) y - 85, 0);
         renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 20, 0);
         renderer.drawString("-------", -renderer.getStringWidth("-------") / 2, (int) y - 15, 0);
         renderer.drawString(cacheMaxQuantity, -renderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 10, 0);
