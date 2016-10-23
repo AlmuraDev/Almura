@@ -393,7 +393,7 @@ public class CommonProxy {
                                             (CachesTileEntity.TAG_CACHE_CONTENTS).copy();
                                     final ItemStack cache = CachesTileEntity.loadItemStackFromNBT(preCacheContentsCompound);
 
-                                    crafted.setStackDisplayName(crafted.getDisplayName() + " (" + cache.getDisplayName() + ")");
+                                    crafted.setStackDisplayName(block.getDisplayName() + " (" + cache.getDisplayName() + ")");
 
                                     NBTTagCompound compound = crafted.getTagCompound();
 

@@ -35,6 +35,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
     private final int cacheLimit;
     private IIcon tb, side, front;
+    private final String displayName;
 
     CachesBlock(String unlocalizedName, String textureName, String displayName, int cacheLimit, CreativeTabs tabs) {
         super(Material.rock);
@@ -45,6 +46,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
         setResistance(2000.0F);
         setStepSound(soundTypePiston);
         LanguageRegistry.put(Languages.ENGLISH_AMERICAN, this.getUnlocalizedName() + ".name", displayName);
+        this.displayName = displayName;
         if (tabs != null) {
             setCreativeTab(tabs);
         }
@@ -78,7 +80,8 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
                 itemIn.setTagCompound(compound);
 
-                itemIn.setStackDisplayName(itemIn.getDisplayName() + " (" + ((CachesTileEntity) te).getCache().getDisplayName() + ")");
+                itemIn.setStackDisplayName(((CachesBlock) ((CachesItemBlock) itemIn.getItem()).blockInstance).getDisplayName() + " (" + (
+                        (CachesTileEntity) te).getCache().getDisplayName() + ")");
             }
 
             final float f = 0.7F;
@@ -279,6 +282,10 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
     public int getCacheLimit() {
         return this.cacheLimit;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     private boolean handleLeftClickBlock(World world, EntityPlayer player, int x, int y, int z) {
