@@ -120,7 +120,7 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         if (block == Caches.BLOCK_DIAMOND_CACHE)
             name = "Diamond Cache";
         if (block == Caches.BLOCK_REDSTONE_CACHE)
-            name = "Emerald Cache";
+            name = "Redstone Cache";
 
         final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize);
         final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
