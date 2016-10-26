@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
@@ -27,8 +28,14 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTick) {
 
-        // Impossible
         if (!(te instanceof CachesTileEntity) || te.getWorld() == null || ((CachesTileEntity) te).getCache() == null) {
+            return;
+        }
+
+        final Block block = te.getWorld().getBlock(te.xCoord, te.yCoord, te.zCoord);
+
+        // Sometimes the client caches a TE and tries to render it when the world data isn't added (or is air)
+        if (block == null || block == Blocks.air) {
             return;
         }
 
@@ -69,7 +76,7 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
             translatedX += 1.015;
             translatedZ += 0.5;
             angle = 90f;
-            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord+ 1, te.yCoord, te.zCoord, 0);
+            brightness = te.getWorld().getLightBrightnessForSkyBlocks(te.xCoord + 1, te.yCoord, te.zCoord, 0);
         }
 
         // Draw ItemType 2D visual in front
@@ -86,7 +93,7 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         GL11.glRotatef(angle, 0, 1f, 0);
         int j = brightness % 65536;
         int k = brightness / 65536;
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j / 1.0F, (float)k / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j / 1.0F, (float) k / 1.0F);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         RenderItem.renderInFrame = true;
@@ -105,17 +112,15 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         GL11.glScalef(scaleFactor, -scaleFactor, scaleFactor);
 
         final FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
-        if (te.getWorld().getBlock(te.xCoord, te.yCoord, te.zCoord) != null && te.getWorld().getBlock(te.xCoord, te.yCoord, te.zCoord) != Block.getBlockById(0)) {            
-            final CachesBlock block = (CachesBlock) te.getWorld().getBlock(te.xCoord, te.yCoord, te.zCoord);
-            final String displayName = block.getDisplayName();
 
-            final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize);
-            final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
-            renderer.drawString(displayName, -renderer.getStringWidth(displayName) / 2, (int) y - 85, 0);
-            renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 20, 0);
-            renderer.drawString("-------", -renderer.getStringWidth("-------") / 2, (int) y - 15, 0);
-            renderer.drawString(cacheMaxQuantity, -renderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 10, 0);
-            GL11.glPopMatrix();
-        }
+        final String displayName = ((CachesBlock) block).getDisplayName();
+
+        final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize);
+        final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
+        renderer.drawString(displayName, -renderer.getStringWidth(displayName) / 2, (int) y - 85, 0);
+        renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 20, 0);
+        renderer.drawString("-------", -renderer.getStringWidth("-------") / 2, (int) y - 15, 0);
+        renderer.drawString(cacheMaxQuantity, -renderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 10, 0);
+        GL11.glPopMatrix();
     }
 }
