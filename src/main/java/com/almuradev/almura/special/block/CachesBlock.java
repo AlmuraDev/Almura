@@ -306,6 +306,9 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                     inventoryMaxStackSize : cacheStackSize;
 
             ItemStack toAdd = new ItemStack(cache.getItem(), stackSize, cache.getMetadata());
+            if (cache.getTagCompound() != null) {
+                toAdd.setTagCompound((NBTTagCompound) cache.getTagCompound().copy());
+            }
 
             int preMerge = toAdd.stackSize;
 
