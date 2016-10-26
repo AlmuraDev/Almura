@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
@@ -34,8 +33,8 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
 
         final Block block = te.getWorld().getBlock(te.xCoord, te.yCoord, te.zCoord);
 
-        // Sometimes the client caches a TE and tries to render it when the world data isn't added (or is air)
-        if (block == null || block == Blocks.air) {
+        // Ensure the block at this position is our block
+        if (!(block instanceof CachesBlock)) {
             return;
         }
 
@@ -50,6 +49,7 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         }
 
         final CachesTileEntity cte = (CachesTileEntity) te;
+        final ItemStack cache = cte.getCache();
         final int metadata = cte.getBlockMetadata();
 
         float angle = 0f;
@@ -115,8 +115,8 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
 
         final String displayName = ((CachesBlock) block).getDisplayName();
 
-        final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getCache().stackSize);
-        final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(((CachesTileEntity) te).getServerMaxStackSize());
+        final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(cache.stackSize);
+        final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(cte.getServerMaxStackSize());
         renderer.drawString(displayName, -renderer.getStringWidth(displayName) / 2, (int) y - 85, 0);
         renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 20, 0);
         renderer.drawString("-------", -renderer.getStringWidth("-------") / 2, (int) y - 15, 0);
