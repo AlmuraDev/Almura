@@ -27,8 +27,15 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTick) {
 
-        if (!(te instanceof CachesTileEntity) || te.getWorld() == null || ((CachesTileEntity) te).getCache() == null) {
+        
+        if (!(te instanceof CachesTileEntity) || te.getWorld() == null) {
             return;
+        }
+        
+        boolean empty = false;
+        
+        if (((CachesTileEntity) te).getCache() == null) {
+            empty = true;
         }
 
         final Block block = te.getWorld().getBlock(te.xCoord, te.yCoord, te.zCoord);
@@ -43,14 +50,16 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
             viewer = Minecraft.getMinecraft().thePlayer;
         }
 
-        // TODO Dockter needs to add this to config
         if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) > (Configuration.DISTANCE_RENDER_CHEST * 16)) {
             return;
         }
 
         final CachesTileEntity cte = (CachesTileEntity) te;
-        final ItemStack cache = cte.getCache();
         final int metadata = cte.getBlockMetadata();
+        ItemStack cache = null;
+        if (!empty) {
+            cache = cte.getCache();
+        }
 
         float angle = 0f;
         double translatedX, translatedZ;
@@ -81,12 +90,16 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
 
         // Draw ItemType 2D visual in front
         GL11.glPushMatrix();
+        ItemStack visualStack = null;
+        EntityItem visualItem = null;
+        
+        if (!empty) {
+            visualStack = ItemStack.copyItemStack(cte.getCache());
+            visualStack.stackSize = 1;
 
-        final ItemStack visualStack = ItemStack.copyItemStack(cte.getCache());
-        visualStack.stackSize = 1;
-
-        final EntityItem visualItem = new EntityItem(te.getWorld(), 0, 0, 0, visualStack);
-        visualItem.hoverStart = 0.0f;
+            visualItem = new EntityItem(te.getWorld(), 0, 0, 0, visualStack);
+            visualItem.hoverStart = 0.0f;
+        }
 
         GL11.glTranslated(translatedX, y + 0.35, translatedZ);
         // Rotate
@@ -97,7 +110,9 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         RenderItem.renderInFrame = true;
-        RenderManager.instance.renderEntityWithPosYaw(visualItem, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+        if (!empty) {
+            RenderManager.instance.renderEntityWithPosYaw(visualItem, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+        }
         RenderItem.renderInFrame = false;
 
         GL11.glPopMatrix();
@@ -113,11 +128,27 @@ public class CachesTileEntitySpecialRenderer extends TileEntitySpecialRenderer {
 
         final FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
 
-        final String displayName = ((CachesBlock) block).getDisplayName();
+        String displayName = "";
 
-        final String cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(cache.stackSize);
+        if (empty) {
+            displayName = ((CachesBlock) block).getDisplayName();
+        } else {
+            displayName = cache.getDisplayName();
+        }
+
+        String cacheQuantity = "0";
+
+        if (!empty) {
+            cacheQuantity = NumberFormat.getNumberInstance(Locale.US).format(cache.stackSize);
+        }
+
         final String cacheMaxQuantity = NumberFormat.getNumberInstance(Locale.US).format(cte.getServerMaxStackSize());
-        renderer.drawString(displayName, -renderer.getStringWidth(displayName) / 2, (int) y - 85, 0);
+        if (displayName.length() > 20) {
+            renderer.drawString(displayName.substring(0, 14), -renderer.getStringWidth(displayName.substring(1,14)) / 2, (int) y - 85, 0);
+            renderer.drawString(displayName.substring(14, displayName.length()), -renderer.getStringWidth(displayName.substring(15,displayName.length())) / 2, (int) y - 75, 0);
+        } else {
+            renderer.drawString(displayName, -renderer.getStringWidth(displayName) / 2, (int) y - 85, 0);
+        }
         renderer.drawString(cacheQuantity, -renderer.getStringWidth(cacheQuantity) / 2, (int) y - 20, 0);
         renderer.drawString("-------", -renderer.getStringWidth("-------") / 2, (int) y - 15, 0);
         renderer.drawString(cacheMaxQuantity, -renderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 10, 0);

@@ -21,6 +21,8 @@ import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockCocoa;
+import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
 
 public class IngameFarmersAlmanac extends SimpleGui {
@@ -117,11 +119,16 @@ public class IngameFarmersAlmanac extends SimpleGui {
         final UIImage blockImage = new UIImage(this, new GuiTexture(UIImage.BLOCKS_TEXTURE), block.getIcon(0, metadata));
         blockImage.setPosition(xPadding, (yPadding + 3) * 2, Anchor.LEFT | Anchor.TOP);
 
-        final String localized = block.getLocalizedName();
+        String localized = block.getLocalizedName();
+        if (localized.equalsIgnoreCase("Crops")) {
+            localized = "Wheat"; //Wheat is normally displayed as Crops, well not here...
+        }
         UILabel localizedNameLabel = new UILabel(this, Colors.WHITE + getFormattedString(localized, 22, "..."));
         localizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), blockImage.getY(), Anchor.LEFT | Anchor.TOP);
+        localizedNameLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_110);
 
-        final UILabel unlocalizedNameLabel = new UILabel(this, Colors.GRAY + getFormattedString(block.getUnlocalizedName(), 60, "..."));
+        //final UILabel unlocalizedNameLabel = new UILabel(this, Colors.GRAY + getFormattedString(block.getUnlocalizedName(), 60, "..."));
+        final UILabel unlocalizedNameLabel = new UILabel(this, Colors.GRAY + getFormattedString("", 60, "..."));  //Temporarily disabled.
         unlocalizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), getPaddedY(localizedNameLabel, 0), Anchor.LEFT | Anchor.TOP);
         unlocalizedNameLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
@@ -133,6 +140,10 @@ public class IngameFarmersAlmanac extends SimpleGui {
             if (block instanceof PackCrops) {
                 final PackCrops crop = (PackCrops) block;
                 metadataLabel.setText(Colors.GRAY + "Growth Stage: " + Colors.BLUE + metadata + " of " + (crop.getStages().size()-1));
+            }
+            
+            if (block instanceof BlockCrops) {
+                metadataLabel.setText(Colors.GRAY + "Growth Stage: " + Colors.BLUE + metadata + " of 7");
             }
         }
         
@@ -147,18 +158,28 @@ public class IngameFarmersAlmanac extends SimpleGui {
         final UILabel biomeRainLabel = new UILabel(this, Colors.GRAY + "Biome Rain: " + rainAmount);
         biomeRainLabel.setPosition(xPadding, getPaddedY(temperaturedataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
-        final UILabel sunlightValueLabel = new UILabel(this, Colors.GRAY + "Sunlight Value: " + sunlightText);
+        final UILabel sunlightValueLabel = new UILabel(this, Colors.GRAY + "Natural Sunlight Value: " + sunlightText);
         sunlightValueLabel.setPosition(xPadding, getPaddedY(biomeRainLabel, yPadding), Anchor.LEFT | Anchor.TOP);
         
-        final UILabel areaLightValueLabel = new UILabel(this, Colors.GRAY + "Area Light Value: " + areaBlockLightText);
+        final UILabel areaLightValueLabel = new UILabel(this, Colors.GRAY + "Artificial Light Value: " + areaBlockLightText);
         areaLightValueLabel.setPosition(xPadding, getPaddedY(sunlightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+        
+        if (block instanceof BlockCocoa) {
+            metadataLabel.setText(Colors.GRAY + "Growth Stage: " + Colors.BLUE + metadata + " of 9");
+            // The following values are hidden because growth of Cocoa isn't dependent on these values.
+            moisturedataLabel.setText("");
+            temperaturedataLabel.setText("");
+            biomeRainLabel.setText("");
+            sunlightValueLabel.setText("");
+            areaLightValueLabel.setText("");
+        }
         
         UILabel modelNameLabel = null;
 
         if (block instanceof IModelContainer && block instanceof IPackObject) {
 
             final IModelContainer modelContainer = (IModelContainer) block;
-            final UILabel textureNameLabel = new UILabel(this, Colors.GRAY + "Texture Name: " + Colors.BLUE + block.getTextureName());
+            final UILabel textureNameLabel = new UILabel(this, Colors.GRAY + "Texture Name: " + Colors.BLUE + block.getTextureName()+".png");
             textureNameLabel.setPosition(xPadding, getPaddedY(areaLightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             form.getContentContainer().add(textureNameLabel);
 
@@ -172,7 +193,7 @@ public class IngameFarmersAlmanac extends SimpleGui {
                 modelName = modelContainer.getModelName();
             }
 
-            modelNameLabel = new UILabel(this, Colors.GRAY + "Model Name: " + Colors.BLUE + modelName);
+            modelNameLabel = new UILabel(this, Colors.GRAY + "Model Name: " + Colors.BLUE + modelName+".shape");
             modelNameLabel.setPosition(xPadding, getPaddedY(textureNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             form.getContentContainer().add(modelNameLabel);
 

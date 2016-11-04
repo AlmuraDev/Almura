@@ -11,6 +11,8 @@ import com.almuradev.almura.server.network.play.S01OpenBlockInformationGui;
 import com.almuradev.almura.server.network.play.S04OpenFarmersAlmanacGui;
 import com.almuradev.almura.util.Colors;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockCocoa;
+import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,19 +49,19 @@ public class FarmsAlmanac extends AlmuraItem {
             }
 
             final Block block = world.getBlock(x, y, z);
-            final int metadata = world.getBlockMetadata(x, y, z);            
+            final int metadata = world.getBlockMetadata(x, y, z);
             boolean fertile = false;   
             boolean farm = false;            
             
-            if (block instanceof BlockFarmland || block instanceof PackCrops) {
+            if (block instanceof BlockFarmland || block instanceof PackCrops || block instanceof BlockCrops || block instanceof BlockCocoa) {
                 farm = true;
             }
             
-            if (block instanceof PackCrops) {
+            if (block instanceof PackCrops || block instanceof BlockCrops) {
                 if (world.getBlockMetadata(x, y-1, z) > 0) {
                     fertile = true;
                 }   
-            } else {
+            } else { //Farmland or Cocoa
                 if (world.getBlockMetadata(x, y, z) > 0) {
                     fertile = true;
                 }    
@@ -86,7 +88,7 @@ public class FarmsAlmanac extends AlmuraItem {
             }
             
             if (block != null && !farm) {
-                player.addChatComponentMessage(new ChatComponentText(Colors.WHITE + "[Farmers Almanac] - " + Colors.BLUE + "Can only be used on Farmland or a Crop."));
+                player.addChatComponentMessage(new ChatComponentText(Colors.WHITE + "[Farmers Almanac] - " + Colors.GRAY + "Can only be used on Farmland or a Crop."));
             }
         }
         return false;
