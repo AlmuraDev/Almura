@@ -137,13 +137,13 @@ public class IngameFarmersAlmanac extends SimpleGui {
         if (block instanceof BlockFarmland) {
             //metadataLabel.setText(Colors.GRAY + "Growth Stage: " + Colors.BLUE + "N/A");
         } else {
+            if (block instanceof BlockCrops) {
+                metadataLabel.setText(Colors.GRAY + "Growth Stage: " + Colors.BLUE + metadata + " of 7");
+            }
+            
             if (block instanceof PackCrops) {
                 final PackCrops crop = (PackCrops) block;
                 metadataLabel.setText(Colors.GRAY + "Growth Stage: " + Colors.BLUE + metadata + " of " + (crop.getStages().size()-1));
-            }
-            
-            if (block instanceof BlockCrops) {
-                metadataLabel.setText(Colors.GRAY + "Growth Stage: " + Colors.BLUE + metadata + " of 7");
             }
         }
         
@@ -187,7 +187,7 @@ public class IngameFarmersAlmanac extends SimpleGui {
 
             if (block instanceof PackCrops) {
                 final PackCrops crop = (PackCrops) block;
-                final Stage stage = crop.getStages().get(metadata);                
+                final Stage stage = crop.getStages().get(metadata);
                 modelName = stage.getModelName();
             } else {
                 modelName = modelContainer.getModelName();

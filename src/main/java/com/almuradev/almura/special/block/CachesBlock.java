@@ -172,7 +172,9 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
     @Override
     public void onBlockClicked(World worldIn, int x, int y, int z, EntityPlayer player) {
-        this.handleLeftClickBlock(worldIn, player, x, y, z);
+        if (!worldIn.isRemote) {
+            this.handleLeftClickBlock(worldIn, player, x, y, z);
+        }
     }
 
     @Override
