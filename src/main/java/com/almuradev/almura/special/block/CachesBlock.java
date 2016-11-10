@@ -30,6 +30,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import org.lwjgl.input.Keyboard;
 
 public final class CachesBlock extends BlockContainer implements IPackObject {
 
@@ -113,6 +114,10 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
              * 3. If cache exists, search for and merge appropriate stack from inventory (up to cache limit)
              */
 
+            if (player.isSneaking()) {
+                return false;
+            }
+            
             if (held != null && cache == null) {
                 final int heldStackSize = held.stackSize;
                 player.setCurrentItemOrArmor(0, ((CachesTileEntity) te).mergeStackIntoSlot(held));
@@ -157,7 +162,11 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                                 player.addChatComponentMessage(new ChatComponentText("Cannot add more to cache as it is full!"));
                             }
 
-                            break;
+                            if (player.getHeldItem() == null) {
+                                // Skip the break and cycle through all slots to deposit all of the same thing.
+                            } else {
+                                break;
+                            }
                         }
                     }
                 }
@@ -295,7 +304,11 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
         if (!(te instanceof CachesTileEntity)) {
             return true;
         }
-
+        
+        if (player.isSneaking()) {
+            return false;
+        }
+              
         final ItemStack cache = ((CachesTileEntity) te).getCache();
 
         if (cache != null) {
@@ -304,8 +317,13 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
             final int cacheStackSize = cache.stackSize;
             final int inventoryMaxStackSize = player.inventory.getInventoryStackLimit();
 
-            final int stackSize = maxItemStackSize < cacheStackSize ? maxItemStackSize : cacheStackSize > inventoryMaxStackSize ?
-                    inventoryMaxStackSize : cacheStackSize;
+            int stackSize = 0;
+            
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+                stackSize = 1;
+            } else {
+                stackSize = maxItemStackSize < cacheStackSize ? maxItemStackSize : cacheStackSize > inventoryMaxStackSize ? inventoryMaxStackSize : cacheStackSize;
+            }
 
             ItemStack toAdd = new ItemStack(cache.getItem(), stackSize, cache.getMetadata());
             if (cache.getTagCompound() != null) {
