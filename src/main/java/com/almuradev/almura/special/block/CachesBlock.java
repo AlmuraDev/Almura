@@ -11,6 +11,7 @@ import com.almuradev.almura.lang.LanguageRegistry;
 import com.almuradev.almura.lang.Languages;
 import com.almuradev.almura.pack.IPackObject;
 import com.almuradev.almura.pack.Pack;
+import com.almuradev.almura.pack.container.PackContainerTileEntity;
 import com.almuradev.almura.util.FileSystem;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -23,6 +24,8 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -298,6 +301,20 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     public String getDisplayName() {
         return displayName;
     }
+    
+    @Override
+    public boolean hasComparatorInputOverride() {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride(World world, int x, int y, int z, int metadata) {
+        final TileEntity te = world.getTileEntity(x, y, z);
+        if (te != null && te instanceof CachesTileEntity) {
+            return Container.calcRedstoneFromInventory((CachesTileEntity) te);
+        }
+        return super.getComparatorInputOverride(world, x, y, z, metadata);
+    }
 
     private boolean handleLeftClickBlock(World world, EntityPlayer player, int x, int y, int z) {
         final TileEntity te = world.getTileEntity(x, y, z);
@@ -305,8 +322,8 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
             return true;
         }
         
-        if (player.isSneaking()) {
-            return false;
+        if (player.isSneaking() && player.getHeldItem().getItem() == Item.itemRegistry.getObject("redstone")) {
+            return false;  // Specifically added for SignShop compatibility.
         }
               
         final ItemStack cache = ((CachesTileEntity) te).getCache();
@@ -317,13 +334,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
             final int cacheStackSize = cache.stackSize;
             final int inventoryMaxStackSize = player.inventory.getInventoryStackLimit();
 
-            int stackSize = 0;
-            
-            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-                stackSize = 1;
-            } else {
-                stackSize = maxItemStackSize < cacheStackSize ? maxItemStackSize : cacheStackSize > inventoryMaxStackSize ? inventoryMaxStackSize : cacheStackSize;
-            }
+            final int stackSize = !player.isSneaking() ? 1 : maxItemStackSize < cacheStackSize ? maxItemStackSize : cacheStackSize > inventoryMaxStackSize ? inventoryMaxStackSize : cacheStackSize;
 
             ItemStack toAdd = new ItemStack(cache.getItem(), stackSize, cache.getMetadata());
             if (cache.getTagCompound() != null) {

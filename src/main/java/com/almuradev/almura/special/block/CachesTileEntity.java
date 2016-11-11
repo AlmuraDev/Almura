@@ -263,6 +263,12 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     public boolean isEmptyOnServer() {
         return this.isEmpty;
     }
+    
+    public ItemStack[] getContents() {
+        ItemStack[] contents = new ItemStack[1];
+        contents[0] = this.cache;
+        return contents;
+    }
 
     @SideOnly(Side.CLIENT)
     public boolean hasContentsOnServer() {
