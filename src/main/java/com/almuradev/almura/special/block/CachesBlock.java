@@ -301,20 +301,6 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
     public String getDisplayName() {
         return displayName;
     }
-    
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
-    @Override
-    public int getComparatorInputOverride(World world, int x, int y, int z, int metadata) {
-        final TileEntity te = world.getTileEntity(x, y, z);
-        if (te != null && te instanceof CachesTileEntity) {
-            return Container.calcRedstoneFromInventory((CachesTileEntity) te);
-        }
-        return super.getComparatorInputOverride(world, x, y, z, metadata);
-    }
 
     private boolean handleLeftClickBlock(World world, EntityPlayer player, int x, int y, int z) {
         final TileEntity te = world.getTileEntity(x, y, z);
