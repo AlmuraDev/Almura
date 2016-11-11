@@ -265,7 +265,7 @@ public final class CachesTileEntity extends TileEntity implements IInventory, IS
     }
     
     public ItemStack[] getContents() {
-        ItemStack[] contents = new ItemStack[1];
+        ItemStack[] contents = new ItemStack[64];
         contents[0] = this.cache;
         return contents;
     }

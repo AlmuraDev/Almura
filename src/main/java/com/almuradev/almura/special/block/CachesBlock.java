@@ -322,7 +322,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
             return true;
         }
         
-        if (player.isSneaking() && player.getHeldItem().getItem() == Item.itemRegistry.getObject("redstone")) {
+        if (player.isSneaking() && player.getHeldItem()!=null && player.getHeldItem().getItem() == Item.itemRegistry.getObject("redstone")) {
             return false;  // Specifically added for SignShop compatibility.
         }
               
@@ -334,7 +334,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
             final int cacheStackSize = cache.stackSize;
             final int inventoryMaxStackSize = player.inventory.getInventoryStackLimit();
 
-            final int stackSize = !player.isSneaking() ? 1 : maxItemStackSize < cacheStackSize ? maxItemStackSize : cacheStackSize > inventoryMaxStackSize ? inventoryMaxStackSize : cacheStackSize;
+            final int stackSize = player.isSneaking() ? 1 : maxItemStackSize < cacheStackSize ? maxItemStackSize : cacheStackSize > inventoryMaxStackSize ? inventoryMaxStackSize : cacheStackSize;
 
             ItemStack toAdd = new ItemStack(cache.getItem(), stackSize, cache.getMetadata());
             if (cache.getTagCompound() != null) {
