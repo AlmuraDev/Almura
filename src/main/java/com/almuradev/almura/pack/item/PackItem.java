@@ -29,6 +29,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
@@ -60,6 +61,11 @@ public class PackItem extends Item implements IPackObject, ITextureContainer, IM
         setTextureName(Almura.MOD_ID + ":images/" + textureName);
         if (showInCreativeTab) {
             setCreativeTab(Tabs.getTabByName(creativeTabName));
+        }
+        
+        // Zidane, a better system needed here for 1.10+
+        if (getUnlocalizedName().equalsIgnoreCase("item.Tools\\grinder")) {
+            this.setMaxDurability(10);
         }
     }
 

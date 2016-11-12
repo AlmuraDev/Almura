@@ -46,11 +46,23 @@ public abstract class MixinShapelessRecipes implements IShapelessRecipe {
                     while (iter.hasNext()) {
                         final ItemStack recipeStack = (ItemStack) iter.next();
 
+                        if (slotStack.getItem() != recipeStack.getItem())
+                            continue;
+                        
+                        if (checkMultiQuantity && (slotStack.stackSize < recipeStack.stackSize)) 
+                            continue;
+                        
+                        if (!slotStack.getUnlocalizedName().equalsIgnoreCase("item.Tools\\grinder")) {
+                            // Zidane this was how I got it to skip the durability check against this fake tool.
+                            if (slotStack.getMetadata() != 32767 && slotStack.getMetadata() != recipeStack.getMetadata())
+                            continue;
+                        }
+                        /*  //Original
                         if (slotStack.getItem() != recipeStack.getItem() || (checkMultiQuantity && (slotStack.stackSize < recipeStack.stackSize))
                                 || slotStack.getMetadata() != 32767 && slotStack.getMetadata() != recipeStack.getMetadata()) {
                             continue;
-                        }
-
+                        } */
+                        
                         isWithinGrid = true;
                         iter.remove();
                         break;

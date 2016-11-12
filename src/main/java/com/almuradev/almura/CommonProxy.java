@@ -25,6 +25,7 @@ import com.almuradev.almura.pack.crop.PackCrops;
 import com.almuradev.almura.pack.crop.PackSeeds;
 import com.almuradev.almura.pack.crop.Stage;
 import com.almuradev.almura.pack.generator.PackGenerator;
+import com.almuradev.almura.pack.item.PackItem;
 import com.almuradev.almura.pack.item.PackItemBlock;
 import com.almuradev.almura.pack.mapper.EntityMapper;
 import com.almuradev.almura.pack.mapper.GameObjectMapper;
@@ -70,6 +71,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
@@ -356,6 +358,40 @@ public class CommonProxy {
         if (!(event.craftMatrix instanceof InventoryCrafting)) {
             return;
         }
+
+        // Zidane, this was added to increase the damage on the fake tool and return the new itemStack to the players inventory.
+        for (int i = 0; i < 9; i++) {
+            if (event.craftMatrix.getStackInSlot(i) != null && event.craftMatrix.getStackInSlot(i).getUnlocalizedName().equalsIgnoreCase("item.Tools\\grinder")) {
+                ItemStack reUseItem = new ItemStack(event.craftMatrix.getStackInSlot(i).getItem(),1,event.craftMatrix.getStackInSlot(i).getMetadata());
+                reUseItem.damageItem(1, event.player);
+                // MaxDurability == 10 for this.  Each damage level goes up + 1, not down as the GUI displays.  The math is backwards
+                if (reUseItem.getMetadata() < reUseItem.getMaxDurability()) {
+                    boolean found = false;
+                    // Search player Inventory for a stack that already exists that matches what is about to be created.
+                    for (int j = 0; j < event.player.inventory.getSizeInventory(); ++j) {
+                        if (event.player.inventory.getStackInSlot(j) != null && event.player.inventory.getStackInSlot(j).isItemEqual(reUseItem)) {
+                            if (event.player.inventory.getStackInSlot(j).stackSize < event.player.inventory.getStackInSlot(j).getMaxStackSize()) {
+                                event.player.inventory.getStackInSlot(j).stackSize +=1;
+                                found = true;
+                            }
+                        }
+                    }
+
+                    if (!found) {
+                        // Nothing found, try and put it into the players inventory as a new stack.
+                        if(!event.player.inventory.addItemStackToInventory(reUseItem)) {
+                            // Couldn't put stack in inventory, its full.  Spawn EntityItem on ground with reUseItem stack.
+                            if (!event.player.worldObj.isRemote) {
+                                // Only create entities on the server else you'll get ghosts.
+                                EntityItem item = new EntityItem(event.player.worldObj, event.player.posX, event.player.posY, event.player.posZ, reUseItem);
+                                event.player.worldObj.spawnEntityInWorld(item);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // End Fake Tools.
 
         IRecipe recipe = null;
 

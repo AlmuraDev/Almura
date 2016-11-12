@@ -155,7 +155,14 @@ public class PackFood extends ItemFood implements IPackObject, ITextureContainer
     public void setModelContainer(PackModelContainer modelContainer) {
         this.modelContainer = Optional.fromNullable(modelContainer);
     }
-
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void onCreated(ItemStack itemStack, World world, EntityPlayer player) {
+        
+        //System.out.println("Player created: " + itemStack.getUnlocalizedName());
+    }
+    
     @Override
     public String getModelName() {
         return modelName;
