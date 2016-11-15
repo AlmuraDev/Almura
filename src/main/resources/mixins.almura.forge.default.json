@@ -10,6 +10,8 @@
         "entity.player.MixinEntityPlayer",
         "item.crafting.MixinShapedRecipes",
         "item.crafting.MixinShapelessRecipes",
+        "item.MixinItemBucket",
+        "item.MixinItemBucketMilk",
         "network.play.client.MixinC01PacketChatMessage",
         "network.play.client.MixinC12PacketUpdateSign",
         "network.play.server.MixinS33PacketUpdateSign",
