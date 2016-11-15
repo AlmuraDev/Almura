@@ -105,7 +105,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
             if (!(te instanceof CachesTileEntity)) {
                 return false;
             }
-
+            boolean depositAll = false;
             final ItemStack cache = ((CachesTileEntity) te).getCache();
             final ItemStack held = player.getHeldItem();
 
@@ -119,6 +119,10 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
 
             if (player.isSneaking()) {
                 return false;
+            }
+            
+            if (player.getHeldItem() == null) {
+                depositAll = true;
             }
             
             if (held != null && cache == null) {
@@ -165,9 +169,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                                 player.addChatComponentMessage(new ChatComponentText("Cannot add more to cache as it is full!"));
                             }
 
-                            if (player.getHeldItem() == null) {
-                                // Skip the break and cycle through all slots to deposit all of the same thing.
-                            } else {
+                            if (!depositAll) {
                                 break;
                             }
                         }
