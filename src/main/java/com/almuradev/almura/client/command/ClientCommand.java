@@ -12,7 +12,9 @@ import com.almuradev.almura.pack.Pack;
 import com.almuradev.almura.pack.PackCreator;
 import com.almuradev.almura.pack.PackKeys;
 import com.almuradev.almura.pack.PackUtil;
+import com.almuradev.almura.pack.item.PackItem;
 import com.almuradev.almura.pack.model.PackModelContainer;
+import com.almuradev.almura.util.Colors;
 import com.almuradev.almura.util.FileSystem;
 import com.almuradev.almura.util.Functions;
 import com.google.common.collect.Maps;
@@ -21,6 +23,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
@@ -48,10 +53,44 @@ public class ClientCommand extends CommandBase {
         if (!(sender instanceof EntityPlayer)) {
             return;
         }
+        
+        if (args.length == 0) {
+            sender.addChatMessage(new ChatComponentText(Colors.WHITE + "[Almura Commands] - " + Colors.GRAY + "missing required arguments."));
+            return;
+        }
 
+        EntityPlayer player = (EntityPlayer)sender;
+        
         switch (args[0].toUpperCase()) {
             case "RELOAD":
-                onCommandReload((EntityPlayer) sender, Arrays.copyOfRange(args, 1, args.length));
+                if (player.worldObj.isRemote) {
+                    onCommandReload((EntityPlayer) sender, Arrays.copyOfRange(args, 1, args.length));
+                }
+                break;
+                
+            case "LOOKUP":
+                if (player.getHeldItem() != null) {                        
+                    ItemStack item  = player.getHeldItem();
+                    sender.addChatMessage(new ChatComponentText(Colors.WHITE + "[A/C] - Unlocalized Name: " + Colors.GRAY + item.getUnlocalizedName()));
+                    sender.addChatMessage(new ChatComponentText(Colors.WHITE + "[A/C] - Display Name: " + Colors.GRAY + item.getDisplayName()));
+                } else {
+                    sender.addChatMessage(new ChatComponentText(Colors.WHITE + "[A/C] - Item Lookup: " + Colors.GRAY + "Player hand is empty."));
+                }
+                break;
+                
+            case "TRY":
+                
+                break;
+                
+            case "REFRESHSKIN":
+                if (player.worldObj.isRemote) {
+                    Minecraft.getMinecraft().getSkinManager().func_152790_a(Minecraft.getMinecraft().getSession().getProfile(), Minecraft.getMinecraft().thePlayer, true);
+                    sender.addChatMessage(new ChatComponentText(Colors.WHITE + "[A/C] - Refresh Skin: " + Colors.GRAY + "Skin refresh initiated."));
+                    break;
+                }
+
+            default:
+                sender.addChatMessage(new ChatComponentText(Colors.WHITE + "[Almura Commands] - " + Colors.GRAY + "specified argument is not valid."));
                 break;
         }
     }

@@ -51,6 +51,7 @@ import com.almuradev.almura.special.block.CachesItemBlock;
 import com.almuradev.almura.special.block.CachesTileEntity;
 import com.almuradev.almura.server.network.play.S04OpenFarmersAlmanacGui;
 import com.almuradev.almura.tabs.Tabs;
+import com.almuradev.almura.util.Colors;
 import com.almuradev.almura.util.FileSystem;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -71,7 +72,9 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
@@ -87,6 +90,7 @@ import net.minecraft.network.play.server.S36PacketSignEditorOpen;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -99,6 +103,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -359,38 +364,11 @@ public class CommonProxy {
             return;
         }
 
-        // Zidane, this was added to increase the damage on the fake tool and return the new itemStack to the players inventory.
-        for (int i = 0; i < 9; i++) {
-            if (event.craftMatrix.getStackInSlot(i) != null && event.craftMatrix.getStackInSlot(i).getUnlocalizedName().equalsIgnoreCase("item.Tools\\grinder")) {
-                ItemStack reUseItem = new ItemStack(event.craftMatrix.getStackInSlot(i).getItem(),1,event.craftMatrix.getStackInSlot(i).getMetadata());
-                reUseItem.damageItem(1, event.player);
-                // MaxDurability == 10 for this.  Each damage level goes up + 1, not down as the GUI displays.  The math is backwards
-                if (reUseItem.getMetadata() < reUseItem.getMaxDurability()) {
-                    boolean found = false;
-                    // Search player Inventory for a stack that already exists that matches what is about to be created.
-                    for (int j = 0; j < event.player.inventory.getSizeInventory(); ++j) {
-                        if (event.player.inventory.getStackInSlot(j) != null && event.player.inventory.getStackInSlot(j).isItemEqual(reUseItem)) {
-                            if (event.player.inventory.getStackInSlot(j).stackSize < event.player.inventory.getStackInSlot(j).getMaxStackSize()) {
-                                event.player.inventory.getStackInSlot(j).stackSize +=1;
-                                found = true;
-                            }
-                        }
-                    }
-
-                    if (!found) {
-                        // Nothing found, try and put it into the players inventory as a new stack.
-                        if(!event.player.inventory.addItemStackToInventory(reUseItem)) {
-                            // Couldn't put stack in inventory, its full.  Spawn EntityItem on ground with reUseItem stack.
-                            if (!event.player.worldObj.isRemote) {
-                                // Only create entities on the server else you'll get ghosts.
-                                EntityItem item = new EntityItem(event.player.worldObj, event.player.posX, event.player.posY, event.player.posZ, reUseItem);
-                                event.player.worldObj.spawnEntityInWorld(item);
-                            }
-                        }
-                    }
-                }
+        for (int i = 0; i < 9; i++) {  // Scan the crafting matrix.
+            if (event.craftMatrix.getStackInSlot(i) != null) {
+                almuraItemCrafted (event.player, event.craftMatrix.getStackInSlot(i).getUnlocalizedName(), event.craftMatrix.getStackInSlot(i));
             }
-        }
+        } 
         // End Fake Tools.
 
         IRecipe recipe = null;
@@ -774,6 +752,76 @@ public class CommonProxy {
             PageUtil.deletePage(identifier);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    
+    @SuppressWarnings("unused")
+    private void almuraItemCrafted (EntityPlayer player, String name, ItemStack currentStack) {
+        int damage = 0;
+        ItemStack reUseItem = null;
+        switch (name.toUpperCase()) {
+            case "ITEM.TOOLS\\GRINDER":
+                reUseItem = new ItemStack(currentStack.getItem(),1,currentStack.getMetadata());
+                damage = 1;                
+                break;
+                
+            case "ITEM.INGREDIENTS\\VINEGAR":
+            case "ITEM.INGREDIENTS\\BROTH_BEEF":
+            case "ITEM.INGREDIENTS\\BROTH_CHICKEN":
+            case "ITEM.INGREDIENTS\\BROTH_FISH":
+            case "ITEM.INGREDIENTS\\BROTH_MILK":
+            case "ITEM.INGREDIENTS\\BROTH_TOMATO":
+            case "ITEM.INGREDIENTS\\BROTH_VEGETABLE":
+            case "ITEM.INGREDIENTS\\PASTA_WHITESAUCE":
+            case "ITEM.INGREDIENTS\\PASTA_REDSAUCE":
+            case "ITEM.INGREDIENTS\\VEGETABLEOIL":
+            case "ITEM.INGREDIENTS\\MATERIALS_SODAWATER":
+                reUseItem = new ItemStack(GameRegistry.findItem(Almura.MOD_ID, "Ingredients\\glass_cruet"),1); //Return Glass Jar used to create the Vinegar Item.
+                break;
+                
+            case "ITEM.INGREDIENTS\\PEANUTBUTTER":
+            case "ITEM.INGREDIENTS\\JELLY_ORANGE":
+            case "ITEM.INGREDIENTS\\JELLY_APPLE":
+                reUseItem = new ItemStack(GameRegistry.findItem(Almura.MOD_ID, "Ingredients\\glass_jar"),1); //Return Glass Jar used to create the Vinegar Item.
+                break;
+
+            default:               
+                return; //Exit this method because an above wasn't found.        
+        }
+        
+        if (reUseItem == null) {
+            System.out.println("Almura System Error: ItemStack is null");
+            return;
+        }
+        
+        if (damage > 0) {
+            reUseItem.damageItem(damage,player);
+            if (!(reUseItem.getMetadata() < reUseItem.getMaxDurability())) {                
+                return; // Item durability of returned exceeds maximum.
+            }
+        }
+        
+        boolean found = false;
+        // Search player Inventory for a stack that already exists that matches what is about to be created.
+        for (int j = 0; j < player.inventory.getSizeInventory(); ++j) {
+            if (player.inventory.getStackInSlot(j) != null && player.inventory.getStackInSlot(j).isItemEqual(reUseItem)) {
+                if (player.inventory.getStackInSlot(j).stackSize < player.inventory.getStackInSlot(j).getMaxStackSize()) {
+                    player.inventory.getStackInSlot(j).stackSize +=1;
+                    found = true;
+                }
+            }
+        }
+
+        if (!found) {
+            // Nothing found, try and put it into the players inventory as a new stack.
+            if(!player.inventory.addItemStackToInventory(reUseItem)) {
+                // Couldn't put stack in inventory, its full.  Spawn EntityItem on ground with reUseItem stack.
+                if (!player.worldObj.isRemote) {
+                    // Only create entities on the server else you'll get ghosts.
+                    EntityItem item = new EntityItem(player.worldObj, player.posX, player.posY, player.posZ, reUseItem);
+                    player.worldObj.spawnEntityInWorld(item);
+                }
+            }
         }
     }
 }
