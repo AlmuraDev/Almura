@@ -79,7 +79,7 @@ public class ClientCommand extends CommandBase {
                 break;
                 
             case "TRY":
-                
+
                 break;
                 
             case "REFRESHSKIN":
