@@ -782,6 +782,8 @@ public class CommonProxy {
             case "ITEM.INGREDIENTS\\PEANUTBUTTER":
             case "ITEM.INGREDIENTS\\JELLY_ORANGE":
             case "ITEM.INGREDIENTS\\JELLY_APPLE":
+            case "ITEM.INGREDIENTS\\SALT":
+            case "ITEM.INGREDIENTS\\PEPPER":
                 reUseItem = new ItemStack(GameRegistry.findItem(Almura.MOD_ID, "Ingredients\\glass_jar"),1); //Return Glass Jar used to create the Vinegar Item.
                 break;
 
