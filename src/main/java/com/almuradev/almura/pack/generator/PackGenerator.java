@@ -19,11 +19,11 @@ import java.util.Random;
 
 public class PackGenerator implements IWorldGenerator {
     private final Block marbleOre;
-    private final Block saltOre;
+    private final Block saltore;
 
     public PackGenerator() {
-        this.marbleOre = GameRegistry.findBlock(Almura.MOD_ID, "Ores\\marbleOre");
-        this.saltOre = GameRegistry.findBlock(Almura.MOD_ID, "Ores\\saltOre");
+        this.marbleOre = GameRegistry.findBlock(Almura.MOD_ID, "Ores\\marbleOre");  //This is capitalized on purpose, don't change.
+        this.saltore = GameRegistry.findBlock(Almura.MOD_ID, "Ores\\saltore");
     }
 
     @Override
@@ -40,7 +40,7 @@ public class PackGenerator implements IWorldGenerator {
                 genMarble.generate(world, random, blockX, blockY, blockZ);
             }
             
-            final WorldGenMinable genSalt = new WorldGenMinable(this.saltOre, 0, 10, Blocks.stone);
+            final WorldGenMinable genSalt = new WorldGenMinable(this.saltore, 0, 10, Blocks.stone);
             for (int numVeins = 0; numVeins < 3; numVeins++) {
                 final int blockX =  (chunkX * 16) + random.nextInt(16);
                 final int blockY = random.nextInt(64);
