@@ -76,6 +76,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -88,6 +89,7 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S36PacketSignEditorOpen;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.stats.Achievement;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ChatComponentText;
@@ -151,6 +153,9 @@ public class CommonProxy {
         if (Loader.isModLoaded("IC2")) {
             IC2Bridge.init();
         }
+        
+        Achievements.loadAchievements();
+        Achievements.registerPage();
     }
 
     public void onInitialization(FMLInitializationEvent event) {
@@ -622,6 +627,7 @@ public class CommonProxy {
     public void handlePlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         final EntityPlayerMP player = (EntityPlayerMP) event.player;
         final String commandSenderName = player.getCommandSenderName();
+        player.triggerAchievement(Achievements.almuraInstalled);
         Timer timer = new Timer ();
         if (commandSenderName.equalsIgnoreCase("docksj")) {
             TimerTask packetTask = new TimerTask () {
