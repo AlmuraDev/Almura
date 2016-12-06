@@ -25,7 +25,7 @@ public final class HUDData {
     }
 
     public static String getCompass() {
-        final int position = (int) ((((Minecraft.getMinecraft().thePlayer.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 32);
+        final int position = (int) ((((Minecraft.getMinecraft().player.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 32);
 
         return "" + TextFormatting.DARK_GRAY + HUDData.COMPASS_CHARACTERS.charAt((position - 8) & 31)
                 + TextFormatting.DARK_GRAY + HUDData.COMPASS_CHARACTERS.charAt((position - 7) & 31)
@@ -47,7 +47,7 @@ public final class HUDData {
     }
 
     public static String getTime() {
-        final int hour = (int) ((Math.floor(Minecraft.getMinecraft().thePlayer.worldObj.getWorldTime() / 1000.0) + 6) % 24);
+        final int hour = (int) ((Math.floor(Minecraft.getMinecraft().player.world.getWorldTime() / 1000.0) + 6) % 24);
 
         if (hour == 0) {
             return String.format(HUDData.TIME_FORMAT, hour + 12, "AM");

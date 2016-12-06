@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.util.builders;
+package com.almuradev.almura.client.gui.util.builder;
 
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
@@ -11,7 +11,7 @@ import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.renderer.font.FontRenderOptions;
+import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.renderer.font.MalisisFont;
 import net.malisis.core.renderer.icon.GuiIcon;
 import org.spongepowered.api.text.Text;
@@ -21,7 +21,7 @@ public final class UIButtonBuilder {
 
     private final MalisisGui gui;
     private UIContainer container;
-    private FontRenderOptions fro, hoverFro;
+    private FontOptions fro, hoverFro;
     private int width, height, x, y, anchor;
     private MalisisFont font;
     private Object object;
@@ -82,12 +82,12 @@ public final class UIButtonBuilder {
         return this;
     }
 
-    public UIButtonBuilder fro(FontRenderOptions fro) {
+    public UIButtonBuilder fro(FontOptions fro) {
         this.fro = fro;
         return this;
     }
 
-    public UIButtonBuilder hoverFro(FontRenderOptions hoverFro) {
+    public UIButtonBuilder hoverFro(FontOptions hoverFro) {
         this.hoverFro = hoverFro;
         return this;
     }
@@ -169,10 +169,10 @@ public final class UIButtonBuilder {
             button.register(this.object);
         }
         if (this.fro != null) {
-            button.setFontRenderOptions(this.fro);
+            button.setFontOptions(this.fro);
         }
         if (this.hoverFro != null) {
-            button.setHoveredFontRendererOptions(this.hoverFro);
+            button.setHoveredFontOptions(this.hoverFro);
         }
         if (this.font != null) {
             button.setFont(this.font);

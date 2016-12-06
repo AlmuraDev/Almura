@@ -3,12 +3,12 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.menu;
+package com.almuradev.almura.client.gui.screen.menu;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
-import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
+import com.almuradev.almura.client.gui.component.UIAnimatedBackground;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.category.DebugCategory;
@@ -177,7 +177,7 @@ public class DynamicConfigurationMenu extends SimpleScreen {
 //                graphicsButton, backButton, saveButton, chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu,
 //                chestDistanceDownMenu, hudTypeLabel, hudTypeSelect, optimizedLightingCheckbox);
 
-        if (this.mc.thePlayer == null) {
+        if (this.mc.player == null) {
             addToScreen(new UIAnimatedBackground(this));
         }
         //addToScreen(form);

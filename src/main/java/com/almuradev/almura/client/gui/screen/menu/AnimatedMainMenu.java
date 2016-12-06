@@ -6,11 +6,10 @@
 package com.almuradev.almura.client.gui.screen.menu;
 
 import com.almuradev.almura.client.gui.GuiConstants;
-import com.almuradev.almura.client.gui.components.UIAnimatedBackground;
+import com.almuradev.almura.client.gui.component.UIAnimatedBackground;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
-import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
-import com.almuradev.almura.client.gui.util.builders.FontRenderOptionsBuilder;
-import com.almuradev.almura.client.gui.util.builders.UIButtonBuilder;
+import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -18,11 +17,11 @@ import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.relauncher.Side;
@@ -119,8 +118,8 @@ public class AnimatedMainMenu extends SimpleScreen {
         final UIButton quitButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .text(Text.of("Quit"))
-                .fro(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_RED).shadow(true).build())
-                .hoverFro(FontRenderOptionsBuilder.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
+                .fro(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_RED).shadow(true).build())
+                .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(GuiConstants.BUTTON_WIDTH_LONG, GuiConstants.BUTTON_HEIGHT)
                 .position(singleplayerButton.getX(), SimpleScreen.getPaddedY(optionsButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)

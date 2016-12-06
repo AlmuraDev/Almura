@@ -7,13 +7,12 @@ package com.almuradev.almura.client.gui.screen.ingame.hud;
 
 import com.almuradev.almura.client.gui.GuiConstants;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
-import com.almuradev.almura.client.gui.util.builders.FontRenderOptionsBuilder;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.renderer.font.FontRenderOptions;
+import net.malisis.core.renderer.font.FontOptions;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.format.TextColors;
@@ -21,13 +20,11 @@ import org.spongepowered.api.text.format.TextColors;
 @SideOnly(Side.CLIENT)
 public class MinimalHUD extends AbstractHUD {
 
-    private static final FontRenderOptions FRO_HUD;
+    private static final FontOptions FRO_HUD;
     private static final int PADDING = 1;
 
     static {
-        FRO_HUD = new FontRenderOptions();
-        FRO_HUD.color = TextColors.WHITE.getColor().getRgb();
-        FRO_HUD.shadow = true;
+        FRO_HUD = FontOptions.builder().color(TextColors.WHITE.getColor().getRgb()).shadow().build();
     }
 
     private UILabel clockLabel;
@@ -47,14 +44,14 @@ public class MinimalHUD extends AbstractHUD {
         overlayContainer.setClipContent(false);
 
         // Display name
-        final UILabel nameLabel = new UILabel(this, mc.thePlayer.getDisplayName().getFormattedText());
+        final UILabel nameLabel = new UILabel(this, mc.player.getDisplayName().getFormattedText());
         nameLabel.setPosition(PADDING, PADDING, Anchor.TOP | Anchor.LEFT);
-        nameLabel.setFontRenderOptions(FRO_HUD);
+        nameLabel.setFontOptions(FRO_HUD);
 
         // Economy
         economyLabel = new UILabel(this, "$0.00");
         economyLabel.setPosition(PADDING, SimpleScreen.getPaddedY(nameLabel, PADDING), Anchor.TOP | Anchor.LEFT);
-        economyLabel.setFontRenderOptions(FRO_HUD);
+        economyLabel.setFontOptions(FRO_HUD);
 
         // Clock
         final UIImage clockImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_CLOCK);
@@ -63,7 +60,7 @@ public class MinimalHUD extends AbstractHUD {
 
         clockLabel = new UILabel(this, "12:00AM");
         clockLabel.setPosition(SimpleScreen.getPaddedX(clockImage, PADDING), SimpleScreen.getPaddedY(economyLabel, PADDING), clockImage.getAnchor());
-        clockLabel.setFontRenderOptions(FRO_HUD);
+        clockLabel.setFontOptions(FRO_HUD);
 
         // Compass
         final UIBackgroundContainer compassContainer = new UIBackgroundContainer(this, 50, 10);
@@ -73,27 +70,27 @@ public class MinimalHUD extends AbstractHUD {
 
         compassLabel = new UILabel(this, "");
         compassLabel.setPosition(1, 1, Anchor.CENTER | Anchor.MIDDLE);
-        compassLabel.setFontRenderOptions(FontRenderOptionsBuilder.builder().from(FRO_HUD).shadow(false).build());
+        compassLabel.setFontOptions(FontOptions.builder().from(FRO_HUD).shadow(false).build());
 
         compassContainer.add(compassLabel);
 
         // World
         worldLabel = new UILabel(this, "World");
         worldLabel.setPosition(0, SimpleScreen.getPaddedY(compassContainer, PADDING), Anchor.TOP | Anchor.CENTER);
-        worldLabel.setFontRenderOptions(FRO_HUD);
+        worldLabel.setFontOptions(FRO_HUD);
 
         // Coordinates
-        coordinatesXLabel = new UILabel(this, (int) mc.thePlayer.posX + " X");
+        coordinatesXLabel = new UILabel(this, (int) mc.player.posX + " X");
         coordinatesXLabel.setPosition(-PADDING, PADDING, Anchor.TOP | Anchor.RIGHT);
-        coordinatesXLabel.setFontRenderOptions(FRO_HUD);
+        coordinatesXLabel.setFontOptions(FRO_HUD);
 
-        coordinatesYLabel = new UILabel(this, (int) mc.thePlayer.posY + " Y");
+        coordinatesYLabel = new UILabel(this, (int) mc.player.posY + " Y");
         coordinatesYLabel.setPosition(-PADDING, SimpleScreen.getPaddedY(coordinatesXLabel, PADDING), Anchor.TOP | Anchor.RIGHT);
-        coordinatesYLabel.setFontRenderOptions(FRO_HUD);
+        coordinatesYLabel.setFontOptions(FRO_HUD);
 
-        coordinatesZLabel = new UILabel(this, (int) mc.thePlayer.posZ + " Z");
+        coordinatesZLabel = new UILabel(this, (int) mc.player.posZ + " Z");
         coordinatesZLabel.setPosition(-PADDING, SimpleScreen.getPaddedY(coordinatesYLabel, PADDING), Anchor.TOP | Anchor.RIGHT);
-        coordinatesZLabel.setFontRenderOptions(FRO_HUD);
+        coordinatesZLabel.setFontOptions(FRO_HUD);
 
         overlayContainer.add(nameLabel, economyLabel, clockImage, clockLabel, compassContainer, worldLabel, coordinatesXLabel, coordinatesYLabel,
                 coordinatesZLabel);
@@ -116,9 +113,9 @@ public class MinimalHUD extends AbstractHUD {
         economyLabel.setText(HUDData.PLAYER_CURRENCY);
 
         // Coordinates
-        coordinatesXLabel.setText((int) mc.thePlayer.posX + " X");
-        coordinatesYLabel.setText((int) mc.thePlayer.posY + " Y");
-        coordinatesZLabel.setText((int) mc.thePlayer.posZ + " Z");
+        coordinatesXLabel.setText((int) mc.player.posX + " X");
+        coordinatesYLabel.setText((int) mc.player.posY + " Y");
+        coordinatesZLabel.setText((int) mc.player.posZ + " Z");
     }
 
     @Override

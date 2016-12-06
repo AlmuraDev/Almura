@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-// TODO Special registration for buildingBlocks to map to Building_Blocks.
+// TODO Special registration for buildingBlocks to instance to Building_Blocks.
 public final class CreativeTabRegistryModule implements AdditionalCatalogRegistryModule<CreativeTab> {
 
     @RegisterCatalog(CreativeTabs.class)

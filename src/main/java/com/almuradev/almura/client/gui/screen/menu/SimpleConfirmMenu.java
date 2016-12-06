@@ -3,10 +3,10 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.menu;
+package com.almuradev.almura.client.gui.screen.menu;
 
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
-import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
+import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -40,11 +40,11 @@ public class SimpleConfirmMenu extends SimpleScreen {
 
         // Create the message label
         final UILabel messageLabel1 = new UILabel(this, TextFormatting.AQUA + message1);
-        messageLabel1.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
+        messageLabel1.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
         messageLabel1.setPosition(0, -5, Anchor.CENTER | Anchor.MIDDLE);
 
         final UILabel messageLabel2 = new UILabel(this, TextFormatting.WHITE + message2);
-        messageLabel2.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
+        messageLabel2.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
         messageLabel2.setPosition(0, +5, Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the close button

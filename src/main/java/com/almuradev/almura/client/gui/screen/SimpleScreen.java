@@ -99,8 +99,8 @@ public abstract class SimpleScreen extends MalisisGui {
     @Override
     public final void close() {
         Keyboard.enableRepeatEvents(false);
-        if (this.mc.thePlayer != null) {
-            this.mc.thePlayer.closeScreen();
+        if (this.mc.player != null) {
+            this.mc.player.closeScreen();
         }
 
         this.onClose();

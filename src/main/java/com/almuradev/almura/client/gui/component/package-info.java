@@ -4,4 +4,4 @@
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 @org.spongepowered.api.util.annotation.NonnullByDefault
-package com.almuradev.almura.client.gui.util.builders;
+package com.almuradev.almura.client.gui.component;

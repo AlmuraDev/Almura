@@ -7,15 +7,15 @@ package com.almuradev.almura.client.gui.screen.ingame;
 
 import com.almuradev.almura.client.gui.GuiConstants;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
-import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
-import com.almuradev.almura.client.gui.util.builders.FontRenderOptionsBuilder;
-import com.almuradev.almura.client.gui.util.builders.UIButtonBuilder;
+import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
@@ -100,7 +100,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
                 .tooltip(Text.of("Map"))
-                .build("button.map");
+                .build("button.instance");
 
         final UIButton statisticsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
@@ -156,8 +156,8 @@ public final class SimpleIngameMenu extends SimpleScreen {
         final UIButton quitButton = new UIButtonBuilder(this)
                 .container(contentContainer)
                 .text(Text.of("Quit"))
-                .fro(FontRenderOptionsBuilder.builder().from(FontRenderOptionsConstants.FRO_COLOR_RED).shadow(true).build())
-                .hoverFro(FontRenderOptionsBuilder.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
+                .fro(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_RED).shadow(true).build())
+                .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(GuiConstants.BUTTON_WIDTH_SHORT, GuiConstants.BUTTON_HEIGHT)
                 .position(0, SimpleScreen.getPaddedY(shortcutContainer, 25))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -179,11 +179,11 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 Desktop.getDesktop().browse(new URI(GuiConstants.SHOP_URL));
                 break;
             case "button.guide":
-                if (this.mc.thePlayer != null) {
+                if (this.mc.player != null) {
                     this.close();
                 }
                 break;
-            case "button.map":
+            case "button.instance":
                 Desktop.getDesktop().browse(new URI(GuiConstants.MAP_URL));
                 break;
             case "button.statistics":
@@ -191,8 +191,8 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 break;
             case "button.achievements":
                 close();
-                if (this.mc.thePlayer != null) {
-                    this.mc.displayGuiScreen(new GuiAchievements(this, this.mc.thePlayer.getStatFileWriter()));
+                if (this.mc.player != null) {
+                    this.mc.displayGuiScreen(new GuiAchievements(this, this.mc.player.getStatFileWriter()));
                 }
                 break;
             case "button.forums":
@@ -206,7 +206,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 break;
             case "button.quit":
                 close();
-                this.mc.theWorld.sendQuittingDisconnectingPacket();
+                this.mc.world.sendQuittingDisconnectingPacket();
                 this.mc.loadWorld(null);
                 this.mc.displayGuiScreen(new GuiMainMenu());
                 break;

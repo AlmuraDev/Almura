@@ -6,8 +6,8 @@
 package com.almuradev.almura.client.gui.screen.ingame.hud;
 
 import com.almuradev.almura.client.gui.GuiConstants;
-import com.almuradev.almura.client.gui.components.UIPropertyBar;
-import com.almuradev.almura.client.gui.util.FontRenderOptionsConstants;
+import com.almuradev.almura.client.gui.component.UIPropertyBar;
+import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -47,19 +47,19 @@ public class LegacyHUD extends AbstractHUD {
         // ////////////////////////////// LEFT COLUMN //////////////////////////////////////
 
         // Player Display Name
-        playerTitle = new UILabel(this, mc.thePlayer.getDisplayName().getFormattedText());
+        playerTitle = new UILabel(this, mc.player.getDisplayName().getFormattedText());
         playerTitle.setPosition(6, 2, Anchor.LEFT);
-        playerTitle.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
+        playerTitle.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
 
         // Player Display Mode
         playerMode = new UILabel(this, "");
         playerMode.setPosition(playerTitle.getX() + playerTitle.getText().length() + 4, 2, Anchor.LEFT);
-        playerMode.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
+        playerMode.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
 
         // Player Currency
         playerCurrency = new UILabel(this, " ");
         playerCurrency.setPosition(playerMode.getX() + playerMode.getText().length() + 10, 2, Anchor.LEFT);
-        playerCurrency.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
+        playerCurrency.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
 
         // Health Property
         healthProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_HEART).setPosition(4, 14);
@@ -72,7 +72,7 @@ public class LegacyHUD extends AbstractHUD {
         // Almura Title
         final UILabel almuraTitle = new UILabel(this, "Almura");
         almuraTitle.setPosition(-10, 2, Anchor.TOP | Anchor.CENTER);
-        almuraTitle.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE);
+        almuraTitle.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
 
         // Hunger Property
         hungerProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_HUNGER).setPosition(-11, 14, Anchor.CENTER);
@@ -89,7 +89,7 @@ public class LegacyHUD extends AbstractHUD {
         // Player Coordinates Label
         playerCoords = new UILabel(this, "x: 0 y: 0 z: 0");
         playerCoords.setPosition(-73, 2, Anchor.RIGHT);
-        playerCoords.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
+        playerCoords.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // World Image
         worldImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_WORLD);
@@ -97,7 +97,7 @@ public class LegacyHUD extends AbstractHUD {
 
         worldDisplay = new UILabel(this, HUDData.WORLD_NAME);
         worldDisplay.setPosition(-5, 2, Anchor.RIGHT);
-        worldDisplay.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
+        worldDisplay.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // Player Image
         playerImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_PLAYER);
@@ -107,12 +107,12 @@ public class LegacyHUD extends AbstractHUD {
         // Player Count Label
         serverCount = new UILabel(this, "--");
         serverCount.setPosition(-110, 14, Anchor.RIGHT);
-        serverCount.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
+        serverCount.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // Player Compass Label
         playerCompass = new UILabel(this, "");
         playerCompass.setPosition(-51, 14, Anchor.RIGHT);
-        playerCompass.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
+        playerCompass.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // Compass Image
         compassImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_COMPASS);
@@ -126,7 +126,7 @@ public class LegacyHUD extends AbstractHUD {
         // World Time Label
         worldTime = new UILabel(this, "7pm");
         worldTime.setPosition(-5, 14, Anchor.RIGHT);
-        worldTime.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
+        worldTime.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // XP Property
         xpProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_XP).setPosition(-27, 24, Anchor.RIGHT);
@@ -135,7 +135,7 @@ public class LegacyHUD extends AbstractHUD {
         // XP Level Label
         xpLevel = new UILabel(this, "1");
         xpLevel.setPosition(-5, 24, Anchor.RIGHT);
-        xpLevel.setFontRenderOptions(FontRenderOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
+        xpLevel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         gradientContainer
                 .add(playerTitle, playerMode, playerCurrency, healthProperty, armorProperty, almuraTitle, hungerProperty, staminaProperty,
@@ -150,34 +150,34 @@ public class LegacyHUD extends AbstractHUD {
     public void update(int mouseX, int mouseY, float partialTick) {
 
         // Player Name
-        playerTitle.setText(this.mc.thePlayer.getDisplayName().getFormattedText());
+        playerTitle.setText(this.mc.player.getDisplayName().getFormattedText());
 
         // Player Health
-        healthProperty.setAmount(this.mc.thePlayer.getHealth() / this.mc.thePlayer.getMaxHealth());
+        healthProperty.setAmount(this.mc.player.getHealth() / this.mc.player.getMaxHealth());
 
         // Player Armor
-        armorProperty.setAmount(ForgeHooks.getTotalArmorValue(this.mc.thePlayer) / 20F);
+        armorProperty.setAmount(ForgeHooks.getTotalArmorValue(this.mc.player) / 20F);
 
         // Player Hunger
-        hungerProperty.setAmount(this.mc.thePlayer.getFoodStats().getFoodLevel() / 20F);
+        hungerProperty.setAmount(this.mc.player.getFoodStats().getFoodLevel() / 20F);
 
         // Player Stamina
-        staminaProperty.setAmount(this.mc.thePlayer.getFoodStats().getSaturationLevel() / 20F);
+        staminaProperty.setAmount(this.mc.player.getFoodStats().getSaturationLevel() / 20F);
 
         // Player Experience
-        xpProperty.setAmount(this.mc.thePlayer.experience);
+        xpProperty.setAmount(this.mc.player.experience);
 
         // Player Experience level
-        xpLevel.setText(Integer.toString(this.mc.thePlayer.experienceLevel));
+        xpLevel.setText(Integer.toString(this.mc.player.experienceLevel));
 
         // Player Mode
-        playerMode.setText(this.mc.thePlayer.capabilities.isCreativeMode ? "(C)" : "");
+        playerMode.setText(this.mc.player.capabilities.isCreativeMode ? "(C)" : "");
 
         // Server Time
         worldTime.setText(HUDData.getTime());
 
         // Player Coordinates
-        playerCoords.setText(String.format("x: %d y: %d z: %d", (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ));
+        playerCoords.setText(String.format("x: %d y: %d z: %d", (int) mc.player.posX, (int) mc.player.posY, (int) mc.player.posZ));
 
         // Player Compass
         playerCompass.setText(HUDData.getCompass());

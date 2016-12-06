@@ -1,15 +1,15 @@
 #
 # Entity Mappings
 #
-# This file is used to map "agreed on" namings for entities for use in the pack system.
+# This file is used to instance "agreed on" namings for entities for use in the pack system.
 #
 # Example:
 #
 # minecraft: (This is the modid, consult your mod author to figure out what their modid is)
-#     Player: (This is the real registered identifier) player (This is the name you want to map too)
+#     Player: (This is the real registered identifier) carrier (This is the name you want to instance too)
 #
 minecraft:
-    Player: player
+    Player: carrier
     Zombie: zombie
     Skeleton: skeleton
     Enderman: enderman

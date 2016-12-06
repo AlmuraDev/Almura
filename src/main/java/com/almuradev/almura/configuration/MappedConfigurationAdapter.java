@@ -37,7 +37,7 @@ public final class MappedConfigurationAdapter<T extends AbstractConfiguration> {
         try {
             this.mapper = ObjectMapper.forClass(configClass).bindToNew();
         } catch (ObjectMappingException e) {
-            throw new RuntimeException("Failed to construct mapper for config class [" + configClass + "]!");
+            throw new RuntimeException("Failed to construct mapper for config class [" + configClass + "]!", e);
         }
         this.root = SimpleCommentedConfigurationNode.root(options);
         if (Files.notExists(configPath)) {

@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.components;
+package com.almuradev.almura.client.gui.component;
 
 import com.almuradev.almura.client.gui.GuiConstants;
 import net.malisis.core.client.gui.GuiRenderer;
