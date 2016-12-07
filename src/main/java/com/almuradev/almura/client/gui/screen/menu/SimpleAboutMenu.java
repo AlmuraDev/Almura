@@ -194,6 +194,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 .text(Text.of("Done"))
                 .size(98, 20)
                 .position(0, -15)
+                .z(1)
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
                 .listener(this)
                 .build("button.done");

@@ -22,7 +22,7 @@ public final class UIButtonBuilder {
     private final MalisisGui gui;
     private UIContainer container;
     private FontOptions fro, hoverFro;
-    private int width, height, x, y, anchor;
+    private int width, height, x, y, z, anchor;
     private MalisisFont font;
     private Object object;
     private Text text;
@@ -125,6 +125,10 @@ public final class UIButtonBuilder {
         return this;
     }
 
+    public UIButtonBuilder z(int z) {
+        this.z = z;
+        return this;
+    }
     public UIButtonBuilder anchor(int anchor) {
         this.anchor = anchor;
         return this;
@@ -181,6 +185,7 @@ public final class UIButtonBuilder {
             this.container.add(button);
         }
         button.setDisabled(!this.enabled);
+        button.setZIndex(this.z);
 
         return button;
     }
