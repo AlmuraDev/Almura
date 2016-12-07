@@ -103,15 +103,13 @@ public final class UIButtonBuilder {
     }
 
     public UIButtonBuilder position(int x, int y) {
-        this.x(x);
-        this.y(y);
-        return this;
+        return this.position(x, y, 0);
     }
 
-    public UIButtonBuilder position(int x, int y, int anchor) {
+    public UIButtonBuilder position(int x, int y, int z) {
         this.x(x);
         this.y(y);
-        this.anchor(anchor);
+        this.z(z);
         return this;
     }
 
