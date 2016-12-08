@@ -10,7 +10,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.FileSystem;
 import com.almuradev.almura.api.block.BuildableBlockType;
-import com.almuradev.almura.api.block.rotable.RotableBlockType;
 import com.almuradev.almura.api.creativetab.CreativeTab;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.serializer.CreativeTabSerializer;
@@ -75,7 +74,7 @@ public final class PackManager {
         final String fileName = file.getFileName().toString().split("\\.")[0];
 
         final BlockConfiguration configuration = adapter.getConfig();
-        final BuildableBlockType.Builder builder = RotableBlockType.builder()
+        final BuildableBlockType.Builder builder = BuildableBlockType.builder()
                 .unlocalizedName(parentName + "." + fileName)
                 .hardness(configuration.general.hardness)
                 .resistance(configuration.general.resistance);

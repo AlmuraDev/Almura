@@ -6,7 +6,6 @@
 package com.almuradev.almura.api.block;
 
 import com.almuradev.almura.api.BuildableCatalogType;
-import com.almuradev.almura.api.block.rotable.RotableBlockType;
 import com.almuradev.almura.api.creativetab.CreativeTab;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -17,7 +16,7 @@ public interface BuildableBlockType extends BuildableCatalogType, BlockType {
 
     @SuppressWarnings("unchecked")
     static Builder builder() {
-        return Sponge.getRegistry().createBuilder(RotableBlockType.Builder.class);
+        return Sponge.getRegistry().createBuilder(BuildableBlockType.Builder.class);
     }
 
     interface Builder<BLOCK extends BuildableBlockType, BUILDER extends Builder<BLOCK, BUILDER>>

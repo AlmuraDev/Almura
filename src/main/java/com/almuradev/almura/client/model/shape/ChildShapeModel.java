@@ -221,16 +221,26 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                                         final javax.vecmath.Vector4f position = new javax.vecmath.Vector4f(vertex.x, vertex.y, vertex.z, 1f);
                                         final javax.vecmath.Vector4f transformed = new javax.vecmath.Vector4f();
                                         transform.transform(position, transformed);
-                                        builder.put(e, transformed.getX(), transformed.getY(), transformed.getZ(), transformed.getW());
+                                        builder.put(e, transformed.getX(), transformed.getY(), transformed.getZ());
                                     } else {
-                                        builder.put(e, vertex.x, vertex.y, vertex.z, 1f);
+                                        builder.put(e, vertex.x, vertex.y, vertex.z);
                                     }
                                     break;
                                 case UV:
-                                    builder.put(e, icon.getInterpolatedU(vertex.u * 16f), icon.getInterpolatedV(vertex.v * 16f), 0f, 1f);
+                                    float widthFactor = 16f / sprite.getIconWidth();
+                                    float heightFactor = 16f / sprite.getIconHeight();
+
+                                    float factorOriginX = widthFactor * texture.x;
+                                    float factorOriginY = heightFactor * texture.y;
+                                    float factorWidth = widthFactor * texture.width;
+                                    float factorHeight = heightFactor * texture.height;
+
+                                    builder.put(e, sprite.getInterpolatedU(vertex.u == 0 ? factorOriginX
+                                            : factorOriginX + factorWidth), sprite.getInterpolatedV(vertex.v == 0 ? factorOriginY : factorOriginY +
+                                            factorHeight));
                                     break;
                                 case NORMAL:
-                                    builder.put(e, normal.getX(), normal.getY(), normal.getZ(), 1f);
+                                    builder.put(e, normal.getX(), normal.getY(), normal.getZ());
                                     break;
                                 case COLOR:
                                     final Vector4f color = quad.color;
@@ -239,7 +249,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                                     break;
                                 case PADDING:
                                     // This is used internally by the client to inject lightmap data for block models
-                                    builder.put(e, 0f, 0f, 0f, 0f);
+                                    builder.put(e, 0f);
                                     break;
                             }
                         }
