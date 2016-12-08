@@ -50,7 +50,7 @@ public final class CreativeTabRegistryModule implements AdditionalCatalogRegistr
     }
 
     @Override
-    @DelayedRegistration(RegistrationPhase.INIT)
+    @DelayedRegistration(RegistrationPhase.PRE_INIT)
     public void registerDefaults() {
         for (net.minecraft.creativetab.CreativeTabs minecraftTab : net.minecraft.creativetab.CreativeTabs.CREATIVE_TAB_ARRAY) {
             if (this.isInvalidTab(minecraftTab)) {

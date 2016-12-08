@@ -7,6 +7,7 @@ package com.almuradev.almura.configuration.serializer;
 
 import com.almuradev.almura.api.creativetab.CreativeTab;
 import com.google.common.reflect.TypeToken;
+import net.minecraft.creativetab.CreativeTabs;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
@@ -15,16 +16,13 @@ public final class CreativeTabSerializer implements TypeSerializer<CreativeTab> 
 
     @Override
     public CreativeTab deserialize(TypeToken<?> typeToken, ConfigurationNode configurationNode) throws ObjectMappingException {
-        //        final Optional<CreativeTab> optCreativeTab = Sponge.getRegistry().getType(CreativeTab.class, (String) configurationNode.getValue());
-        //        if (optCreativeTab.isPresent()) {
-        //            return optCreativeTab.get();
-        //        }
-        return (CreativeTab) net.minecraft.creativetab.CreativeTabs.MISC;
+        //return Sponge.getRegistry().getType(CreativeTab.class, (String) configurationNode.getValue()).orElse(null);
+        return (CreativeTab) CreativeTabs.MISC;
     }
 
     @Override
     public void serialize(TypeToken<?> typeToken, CreativeTab creativeTab, ConfigurationNode configurationNode)
             throws ObjectMappingException {
-        configurationNode.setValue("misc");
+        configurationNode.setValue(creativeTab.getName());
     }
 }

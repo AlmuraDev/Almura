@@ -7,6 +7,7 @@ package com.almuradev.almura.client.model.shape;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.model.TransformPart;
+import com.almuradev.almura.mixin.interfaces.IMixinTextureAtlasSprite;
 import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector4f;
 import com.google.common.base.Charsets;
@@ -14,7 +15,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import net.malisis.core.renderer.icon.Icon;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -165,9 +165,20 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
             if (this.particleSprite == null) {
                 final Quad.Texture particleTexture = this.cookableModel.particleTexture;
                 final TextureAtlasSprite particleSheetSprite = this.textureGetter.apply(particleTexture.location);
+
                 if (particleSheetSprite != null) {
-                    final Icon malisisIcon = new Icon(particleSheetSprite);
-                    this.particleSprite = malisisIcon.clip(particleTexture.x, particleTexture.y, particleTexture.width, particleTexture.height);
+                    // We need to create a sprite from part of the sprite sheet
+                    this.particleSprite = new TextureAtlasSprite(particleSheetSprite.getIconName());
+                    this.particleSprite.copyFrom(particleSheetSprite);
+                    ((IMixinTextureAtlasSprite) this.particleSprite).setOriginX(particleTexture.x);
+                    ((IMixinTextureAtlasSprite) this.particleSprite).setOriginY(particleTexture.y);
+                    this.particleSprite.setIconWidth(particleTexture.width);
+                    this.particleSprite.setIconHeight(particleTexture.height);
+                    // Use the entire segment we've cut out
+                    ((IMixinTextureAtlasSprite) this.particleSprite).setMinU(0f);
+                    ((IMixinTextureAtlasSprite) this.particleSprite).setMinV(0f);
+                    ((IMixinTextureAtlasSprite) this.particleSprite).setMaxU(1f);
+                    ((IMixinTextureAtlasSprite) this.particleSprite).setMaxV(1f);
                 } else {
                     Almura.instance.logger.warn("Particle texture for model [{}] using texture entry [{}] was not found! Using fallback texture "
                             + "instead...", this.cookableModel, this.cookableModel.particleTexture);
@@ -203,13 +214,11 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                         sprite = ModelLoader.White.INSTANCE;
                     }
 
-                    final TextureAtlasSprite icon = new Icon(sprite).clip(texture.x, texture.y, texture.width, texture.height);
-
                     final Vector3f normal = quad.normal;
 
                     final UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(this.format);
                     builder.setContractUVs(true);
-                    builder.setTexture(icon);
+                    builder.setTexture(sprite);
                     builder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
 
                     for (Quad.Vertex vertex : quad.vertices) {

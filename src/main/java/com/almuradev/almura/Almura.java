@@ -33,6 +33,8 @@ public class Almura {
     @Listener
     public void onGameConstruction(GameConstructionEvent event) {
         instance = this;
+
+        proxy.onGameConstruction(event);
     }
 
     @Listener

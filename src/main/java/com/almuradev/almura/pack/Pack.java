@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A "Pack" acts as a {@link CatalogType} whose goal is to be a container of CatalogTypes.
+ */
 public final class Pack implements CatalogType {
 
     private final String id, name;

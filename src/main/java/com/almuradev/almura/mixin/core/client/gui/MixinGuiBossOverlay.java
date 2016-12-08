@@ -16,6 +16,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Optional;
 
+/**
+ * This Mixin's objective is to have the Mojang BossBar's respect a Y offset provided by the HUD in-use
+ */
 @Mixin(GuiBossOverlay.class)
 public abstract class MixinGuiBossOverlay extends Gui {
 

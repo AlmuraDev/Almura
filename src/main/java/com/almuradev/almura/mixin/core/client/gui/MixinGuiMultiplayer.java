@@ -19,6 +19,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * This mixin's objective is to force Almura's server entries (PUBLIC/DEV) into the Minecraft server list.
+ */
 @Mixin(GuiMultiplayer.class)
 public abstract class MixinGuiMultiplayer extends GuiScreen {
 

@@ -56,8 +56,6 @@ public final class ClientProxy extends CommonProxy {
 
     @Override
     public void onGamePreInitialization(GamePreInitializationEvent event) {
-        super.onGamePreInitialization(event);
-
         this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults().setHeader(HEADER),
                 FileSystem.PATH_CONFIG_CLIENT);
         try {
@@ -84,6 +82,8 @@ public final class ClientProxy extends CommonProxy {
         OBJLoader.INSTANCE.addDomain(Almura.PLUGIN_ID);
         ModelLoaderRegistry.registerLoader(new ShapeLoader());
         MinecraftForge.EVENT_BUS.register(this);
+
+        super.onGamePreInitialization(event);
     }
 
     @SubscribeEvent

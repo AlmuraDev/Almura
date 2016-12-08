@@ -9,8 +9,11 @@
         "block.MixinBlock",
         "block.MixinBlockCrops",
         "block.MixinBlockHorizontal",
+        "creativetab.MixinCreativeTabs"
+    ],
+    "client": [
         "client.gui.MixinGuiBossOverlay",
         "client.gui.MixinGuiMultiplayer",
-        "creativetab.MixinCreativeTabs"
+        "client.renderer.texture.MixinTextureAtlasSprite"
     ]
 }

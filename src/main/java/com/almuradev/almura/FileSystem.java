@@ -16,7 +16,7 @@ public final class FileSystem {
     public static final Path PATH_CONFIG_CLIENT = PATH_CONFIG.resolve("client.conf");
     public static final Path PATH_CONFIG_PACKS = PATH_CONFIG.resolve("packs");
 
-    public static void init() {
+    public static void construct() {
         if (Files.notExists(PATH_CONFIG_PACKS)) {
             try {
                 Files.createDirectories(PATH_CONFIG_PACKS);
