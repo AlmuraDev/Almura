@@ -142,7 +142,7 @@ public final class UIButtonBuilder {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"deprecation", "unchecked"})
     public UIButton build(String id) {
         final UIButton button = new UIButton(this.gui);
         button.setPosition(x, y);

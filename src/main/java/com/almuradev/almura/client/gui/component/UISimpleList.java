@@ -11,6 +11,7 @@ import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.container.UIListContainer;
 import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
+import net.minecraft.client.gui.GuiScreen;
 
 public class UISimpleList<S extends UIContainer<S>> extends UIListContainer<UISimpleList<S>, S> {
 
@@ -43,4 +44,8 @@ public class UISimpleList<S extends UIContainer<S>> extends UIListContainer<UISi
         element.draw(renderer, mouseX, mouseY, partialTick);
     }
 
+    @Override
+    public float getScrollStep() {
+        return (GuiScreen.isCtrlKeyDown() ? 0.125F : 0.075F);
+    }
 }

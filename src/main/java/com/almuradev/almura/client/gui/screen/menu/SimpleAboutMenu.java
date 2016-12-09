@@ -20,6 +20,7 @@ import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.container.UIListContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -46,7 +47,7 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class SimpleAboutMenu extends SimpleContainerScreen {
 
-    private UISimpleList<AboutListElement> list;
+    private UISimpleList list;
     private UITextField textField;
 
     public SimpleAboutMenu(@Nullable SimpleScreen parent) {
@@ -257,7 +258,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         }
     }
 
-    protected static final class AboutListElement extends UIContainer<AboutListElement> {
+    protected static final class AboutListElement extends UIBackgroundContainer {
 
         private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
         private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
@@ -278,77 +279,43 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         private AboutListElement(MalisisGui gui, UIComponent parent, UIImage image, int imageWidth, int imageHeight, int imageX, int imageY, int
                 padding, Text text, Text contentText) {
             super(gui);
+
+            // Set parent
             this.parent = parent;
+
+            // Create image
             this.image = image;
             this.image.setSize(imageWidth, imageHeight);
             this.image.setPosition(imageX, imageY, Anchor.MIDDLE | Anchor.LEFT);
+
+            // Create label
             this.label = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text));
-            this.label.setPosition(SimpleScreen.getPaddedX(image, padding), 3);
+            this.label.setPosition(SimpleScreen.getPaddedX(image, padding), 2);
+
+            // Set content text
             this.contentText = contentText;
+
+            // Add image/label
             this.add(this.image, this.label);
 
+            // Set size
             this.setSize(((UIListContainer) this.getParent()).getContentWidth() - 3, image.getHeight() + 6);
+
+            // Set padding
+            this.setPadding(1, 1);
+
+            // Set colors
+            this.setColor(INNER_COLOR);
+            this.setBorder(BORDER_COLOR, 1, 255);
         }
 
         @Override
         public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            super.drawBackground(renderer, mouseX, mouseY, partialTick);
-
-            if (this != ((UIListContainer) this.parent).getSelected()) {
+            if (this.parent instanceof UIListContainer && this != ((UIListContainer) this.parent).getSelected()) {
                 return;
             }
 
-            renderer.enableBlending();
-            renderer.disableTextures();
-            this.rp.usePerVertexAlpha.set(true);
-            this.rp.usePerVertexColor.set(true);
-
-            // Border
-            this.shape.resetState();
-            this.shape.setSize(((UIListContainer)this.getParent()).getContentWidth() , this.image.getHeight() + 6);
-            this.shape.setPosition(0, 0);
-            this.shape.getVertexes("TopLeft")
-                    .get(0)
-                    .setColor(BORDER_COLOR)
-                    .setAlpha(255);
-            this.shape.getVertexes("TopRight")
-                    .get(0)
-                    .setColor(BORDER_COLOR)
-                    .setAlpha(255);
-            this.shape.getVertexes("BottomLeft")
-                    .get(0)
-                    .setColor(BORDER_COLOR)
-                    .setAlpha(255);
-            this.shape.getVertexes("BottomRight")
-                    .get(0)
-                    .setColor(BORDER_COLOR)
-                    .setAlpha(255);
-            renderer.drawShape(shape, rp);
-
-            // Inner
-            this.shape.resetState();
-            this.shape.setSize(((UIListContainer)this.getParent()).getContentWidth() - 2, this.image.getHeight() + 4);
-            this.shape.setPosition(1, 1);
-            this.shape.getVertexes("TopLeft")
-                    .get(0)
-                    .setColor(INNER_COLOR)
-                    .setAlpha(255);
-            this.shape.getVertexes("TopRight")
-                    .get(0)
-                    .setColor(INNER_COLOR)
-                    .setAlpha(255);
-            this.shape.getVertexes("BottomLeft")
-                    .get(0)
-                    .setColor(INNER_COLOR)
-                    .setAlpha(255);
-            this.shape.getVertexes("BottomRight")
-                    .get(0)
-                    .setColor(INNER_COLOR)
-                    .setAlpha(255);
-            renderer.drawShape(shape, rp);
-            renderer.next();
-
-            renderer.enableTextures();
+            super.drawBackground(renderer, mouseX, mouseY, partialTick);
         }
     }
 }

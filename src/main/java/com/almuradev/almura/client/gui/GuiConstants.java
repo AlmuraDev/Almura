@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui;
 
 import com.almuradev.almura.Almura;
 import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.renderer.icon.GuiIcon;
 import net.minecraft.util.ResourceLocation;
 
@@ -30,7 +31,14 @@ public class GuiConstants {
     public static final ResourceLocation SPONGEPOWERED_LOGO_LOCATION;
     public static final ResourceLocation AVATAR_GENERIC_LOCATION;
     public static final GuiTexture TEXTURE_SPRITESHEET;
+    public static final GuiTexture VANILLA_ICON_SPRITESHEET;
     public static final GuiIcon ICON_EMPTY;
+    public static final GuiIcon VANILLA_ICON_HEART_BACKGROUND;
+    public static final GuiIcon VANILLA_ICON_HEART_FOREGROUND;
+    public static final GuiIcon VANILLA_ICON_HUNGER_BACKGROUND;
+    public static final GuiIcon VANILLA_ICON_HUNGER_FOREGROUND;
+    public static final GuiIcon VANILLA_ICON_ARMOR;
+    public static final GuiIcon VANILLA_ICON_AIR;
     public static final GuiIcon LEGACY_ICON_BAR;
     public static final GuiIcon LEGACY_ICON_HEART;
     public static final GuiIcon LEGACY_ICON_ARMOR;
@@ -77,8 +85,16 @@ public class GuiConstants {
         AVATAR_GENERIC_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/generic.png");
 
         TEXTURE_SPRITESHEET = new GuiTexture(LOCATION_GUI_SPRITE_SHEET, 300, 144);
+        VANILLA_ICON_SPRITESHEET = new GuiTexture(MalisisGui.ICONS, 256, 256);
 
         ICON_EMPTY = TEXTURE_SPRITESHEET.getIcon(299, 141, 1, 1);
+
+        VANILLA_ICON_HEART_BACKGROUND = VANILLA_ICON_SPRITESHEET.getIcon(16, 0, 9, 9);
+        VANILLA_ICON_HEART_FOREGROUND = VANILLA_ICON_SPRITESHEET.getIcon(52, 0, 9, 9);
+        VANILLA_ICON_HUNGER_BACKGROUND = VANILLA_ICON_SPRITESHEET.getIcon(16, 27, 9, 9);
+        VANILLA_ICON_HUNGER_FOREGROUND = VANILLA_ICON_SPRITESHEET.getIcon(52, 27, 9, 9);
+        VANILLA_ICON_ARMOR = VANILLA_ICON_SPRITESHEET.getIcon(34, 9, 9, 9);
+        VANILLA_ICON_AIR = VANILLA_ICON_SPRITESHEET.getIcon(16, 18, 9, 9);
 
         LEGACY_ICON_BAR = TEXTURE_SPRITESHEET.getIcon(0, 126, 256, 14);
         LEGACY_ICON_HEART = TEXTURE_SPRITESHEET.getIcon(149, 62, 26, 26);

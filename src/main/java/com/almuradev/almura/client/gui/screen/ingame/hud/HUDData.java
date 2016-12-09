@@ -16,10 +16,9 @@ public final class HUDData {
     public static final String COMPASS_CHARACTERS = "S.......W.......N.......E.......";
     public static final String TIME_FORMAT = "%2d%s";
 
-    public static String PLAYER_CURRENCY = "";
+    public static String PLAYER_CURRENCY = "1,000,000,000";
     public static String WORLD_NAME = "";
-    public static String SERVER_COUNT = "";
-
+    public static int SERVER_PLAYER_COUNT, SERVER_PLAYER_MAX_COUNT = 0;
 
     private HUDData() {
     }
