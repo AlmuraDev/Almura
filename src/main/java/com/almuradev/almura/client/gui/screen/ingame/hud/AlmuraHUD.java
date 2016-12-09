@@ -12,6 +12,7 @@ import com.almuradev.almura.client.gui.component.UIExpandingLabel;
 import com.almuradev.almura.client.gui.component.UIPropertyBar;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
@@ -22,6 +23,8 @@ import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.renderer.icon.Icon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -39,6 +42,7 @@ public class AlmuraHUD extends AbstractHUD {
 
     private UILabel compassLabel, coordsLabel, currencyLabel, playerCountLabel, playerLabel, timeLabel, worldLabel;
     private UIImage timeImage, currencyImage, playerCountImage, playerImage;
+    private UIPropertyBar healthBar, armorBar, hungerBar, airBar;
     private UIBackgroundContainer leftContainer, middleContainer, rightContainer;
 
     @Override
@@ -83,28 +87,28 @@ public class AlmuraHUD extends AbstractHUD {
         tempContainer.setColor(Color.ofRgb(0, 0, 0).getRgb());
         tempContainer.setBorder(Color.ofRgb(70, 70, 70).getRgb(), 1, 200);
 
-        final UIPropertyBar healthBar = new UIPropertyBar(this, 75, 9);
+        healthBar = new UIPropertyBar(this, 75, 9);
         healthBar.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
         healthBar.setColor(Color.ofRgb(187, 19, 19).getRgb());
         healthBar.setBackgroundIcon(GuiConstants.VANILLA_ICON_HEART_BACKGROUND);
         healthBar.setForegroundIcon(GuiConstants.VANILLA_ICON_HEART_FOREGROUND);
         healthBar.setAmount(1.0f);
 
-        final UIPropertyBar armorBar = new UIPropertyBar(this, 75, 9);
+        armorBar = new UIPropertyBar(this, 75, 9);
         armorBar.setPosition(0, SimpleScreen.getPaddedY(healthBar, 1), Anchor.CENTER | Anchor.TOP);
         armorBar.setColor(Color.ofRgb(184, 185, 196).getRgb());
         armorBar.setBackgroundIcon(GuiConstants.VANILLA_ICON_ARMOR);
         armorBar.setForegroundIcon(GuiConstants.ICON_EMPTY);
         armorBar.setAmount(0.75f);
 
-        final UIPropertyBar hungerBar = new UIPropertyBar(this, 75, 9);
+        hungerBar = new UIPropertyBar(this, 75, 9);
         hungerBar.setPosition(0, SimpleScreen.getPaddedY(armorBar, 1), Anchor.CENTER | Anchor.TOP);
         hungerBar.setColor(Color.ofRgb(157, 109, 67).getRgb());
         hungerBar.setBackgroundIcon(GuiConstants.VANILLA_ICON_HUNGER_BACKGROUND);
         hungerBar.setForegroundIcon(GuiConstants.VANILLA_ICON_HUNGER_FOREGROUND);
         hungerBar.setAmount(0.50f);
 
-        final UIPropertyBar airBar = new UIPropertyBar(this, 75, 9);
+        airBar = new UIPropertyBar(this, 75, 9);
         airBar.setPosition(0, SimpleScreen.getPaddedY(hungerBar, 1), Anchor.CENTER | Anchor.TOP);
         airBar.setColor(Color.ofRgb(0, 148, 255).getRgb());
         airBar.setBackgroundIcon(GuiConstants.VANILLA_ICON_AIR);
@@ -178,6 +182,38 @@ public class AlmuraHUD extends AbstractHUD {
         if (Minecraft.getMinecraft().player == null || Minecraft.getMinecraft().player.world == null) {
             return;
         }
+
+        // Set health
+        this.healthBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getHealth(),
+                0f, Minecraft.getMinecraft().player.getMaxHealth(),
+                0f, 1f));
+
+        // Set armor
+        int maxArmor = 0;
+        int currentArmor = 0;
+        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+            if (slot == EntityEquipmentSlot.MAINHAND || slot == EntityEquipmentSlot.OFFHAND) {
+                continue;
+            }
+            final ItemStack stack = Minecraft.getMinecraft().player.getItemStackFromSlot(slot);
+            if (stack.getItem() instanceof ItemArmor) {
+                maxArmor += ((ItemArmor) stack.getItem()).getArmorMaterial().getDurability(slot);
+                currentArmor += stack.getItem().getDamage(stack);
+            }
+        }
+
+        this.armorBar.setAmount(MathUtil.ConvertToRange(maxArmor - currentArmor, 0f, maxArmor, 0f, 1f));
+
+        // TODO Hardcoded value of 20 as maximum as FoodStats has no native way of getting the maximum value. Go Team Mojang!
+        // Set hunger
+        this.hungerBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getFoodStats().getFoodLevel(),
+                0f, 20,
+                0f, 1f));
+//
+//        // Set air
+//        this.airBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getAir(),
+//                0f, Minecraft.getMinecraft().player.getAi(),
+//                0f, 1f));
 
         this.compassLabel.setText(HUDData.getCompass());
         this.coordsLabel.setText(
