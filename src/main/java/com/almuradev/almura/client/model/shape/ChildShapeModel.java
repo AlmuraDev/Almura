@@ -167,18 +167,20 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                 final TextureAtlasSprite particleSheetSprite = this.textureGetter.apply(particleTexture.location);
 
                 if (particleSheetSprite != null) {
+                    float widthFactor = 16f / particleSheetSprite.getIconWidth();
+                    float heightFactor = 16f / particleSheetSprite.getIconHeight();
+                    float factorOriginX = widthFactor * particleTexture.x;
+                    float factorOriginY = heightFactor * particleTexture.y;
+                    float factorWidth = widthFactor * particleTexture.width;
+                    float factorHeight = heightFactor * particleTexture.height;
+
                     // We need to create a sprite from part of the sprite sheet
                     this.particleSprite = new TextureAtlasSprite(particleSheetSprite.getIconName());
                     this.particleSprite.copyFrom(particleSheetSprite);
-                    ((IMixinTextureAtlasSprite) this.particleSprite).setOriginX(particleTexture.x);
-                    ((IMixinTextureAtlasSprite) this.particleSprite).setOriginY(particleTexture.y);
-                    this.particleSprite.setIconWidth(particleTexture.width);
-                    this.particleSprite.setIconHeight(particleTexture.height);
-                    // Use the entire segment we've cut out
-                    ((IMixinTextureAtlasSprite) this.particleSprite).setMinU(0f);
-                    ((IMixinTextureAtlasSprite) this.particleSprite).setMinV(0f);
-                    ((IMixinTextureAtlasSprite) this.particleSprite).setMaxU(1f);
-                    ((IMixinTextureAtlasSprite) this.particleSprite).setMaxV(1f);
+                    ((IMixinTextureAtlasSprite) this.particleSprite).setMinU(particleSheetSprite.getInterpolatedU(factorOriginX));
+                    ((IMixinTextureAtlasSprite) this.particleSprite).setMaxU(particleSheetSprite.getInterpolatedU(factorOriginX + factorWidth));
+                    ((IMixinTextureAtlasSprite) this.particleSprite).setMinV(particleSheetSprite.getInterpolatedV(factorOriginY));
+                    ((IMixinTextureAtlasSprite) this.particleSprite).setMaxV(particleSheetSprite.getInterpolatedV(factorOriginY + factorHeight));
                 } else {
                     Almura.instance.logger.warn("Particle texture for model [{}] using texture entry [{}] was not found! Using fallback texture "
                             + "instead...", this.cookableModel, this.cookableModel.particleTexture);

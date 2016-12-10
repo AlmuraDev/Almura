@@ -35,7 +35,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.spongepowered.gradle'
 apply plugin: 'org.spongepowered.plugin'
 
-defaultTasks 'clean', 'licenseFormat', 'sortAccessTransformers', 'build'
+defaultTasks 'clean', 'licenseFormat', 'sortAccessTransformers', 'sortClassFields', 'build'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -56,6 +56,8 @@ minecraft {
     useDepAts = true
 
     atSource project(':MalisisCore').sourceSets.main
+
+    coreMod = project.coreMod
 }
 
 deobfMcMCP { failOnAtError = false }
@@ -104,6 +106,10 @@ license {
     ignoreFailures true
     strictCheck true
     include '**/*.java'
+}
+
+sortClassFields {
+    add 'main', 'com.almuradev.almura.api.creativetab.CreativeTabs'
 }
 
 if (JavaVersion.current().isJava8Compatible() || JavaVersion.current().isJava9Compatible()) {

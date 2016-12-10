@@ -2,8 +2,8 @@ Almura
 =============
 
 ## Prerequisites
-* [Java] 7
-* [Gradle] 2.6+
+* [Java] 8
+* [Gradle] 3.2+
 
 ## Cloning
 If you are using Git, use this command to clone the project: `git clone git@github.com:AlmuraDev/Almura.git --recursive`
@@ -23,8 +23,13 @@ __For [IntelliJ]__
   2. Make sure you have the Gradle plugin enabled (File > Settings > Plugins).  
   3. Click File > Import Module and select the **build.gradle** file for Almura.
 
-## Running
-__Note 1:__ The following is aimed to help you setup run configurations for Eclipse and IntelliJ, if you do not want to be able to run Almura directly from your IDE then you can skip this.  
+## Building
+__Note:__ If you do not have [Gradle] installed then use ./gradlew for Unix systems or Git Bash and gradlew.bat for Windows systems in place of any 'gradle' command.
+
+In order to build Almura you simply need to run the `gradle` command. You can find the compiled JAR files in `./build/libs` but in most cases you'll only need 'almura-x.x-xxxx-rx.x.jar'.
+
+## Running (Manual Configuration)
+__Note 1:__ The following is aimed to help you setup run configurations for Eclipse and IntelliJ. If you do not want to be able to run Almura directly from your IDE then you can skip this.
 __Note 2:__ For more information regarding VM options or program arguments for Mixin, visit https://github.com/SpongePowered/Mixin/wiki/Mixin-Java-System-Properties
 
 __For [Eclipse]__  
@@ -48,8 +53,8 @@ __Client__
 |     Property      | Value                                                                                                              |
 |:-----------------:|:-------------------------------------------------------------------------------------------------------------------|
 |    Main class     | GradleStart                                                                                                        |
-|    VM options     | -Xincgc -Xmx2048M -Xms1024M -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin, -Dmixin.debug.verbose=true |
-| Program arguments | --tweakClass com.almuradev.almura.launch.AlmuraLaunchTweaker --mixin mixins.almura.forge.default.json              |
+|    VM options     | -Xincgc -Xms1024M -Xmx2048M -Dfml.coreMods.load=com.almuradev.almura.loader.AlmuraLoadingPlugin                    |
+| Program arguments |                                                                                                                    |
 | Working directory | ./run (Included in project)                                                                                        |
 | Module classpath  | Almura (IntelliJ Only)                                                                                             |
 
@@ -58,34 +63,11 @@ __Server__
 |     Property      | Value                                                                                                              |
 |:-----------------:|:-------------------------------------------------------------------------------------------------------------------|
 |    Main class     | GradleStartServer                                                                                                  |
-|    VM options     | -Xincgc -Xmx2048M -Xms1024M -Dfml.coreMods.load=net.malisis.core.asm.MalisisCorePlugin, -Dmixin.debug.verbose=true |
-| Program arguments | --tweakClass com.almuradev.almura.launch.AlmuraLaunchTweaker --mixin mixins.almura.forge.default.json              |
+|    VM options     | -Xincgc -Xms1024M -Xmx2048M -Dfml.coreMods.load=com.almuradev.almura.loader.AlmuraLoadingPlugin                    |
+| Program arguments |                                                                                                                    |
 | Working directory | ./run (Included in project)                                                                                        |
 | Module classpath  | Almura (IntelliJ Only)                                                                                             |
 
-
-## Building
-__Note:__ If you do not have [Gradle] installed then use ./gradlew for Unix systems or Git Bash and gradlew.bat for Windows systems in place of any 'gradle' command.
-
-In order to build Almura you simply need to run the `gradle` command. You can find the compiled JAR files in `./build/libs` but in most cases you'll only need 'almura-x.x-xxxx.jar'.
-
-## FAQ
-__Why do I get `javac: source release 1.7 requires target release 1.7` in IntelliJ when running the client configuration?__
->Sometimes another project can mess with the settings in IntelliJ. Fixing this is relatively easy.
-
->1. Go to 'File > Settings'.
->2. Click the drop down for 'Compiler' on the left-hand side and select 'Java Compiler'.
->3. Select Obsidian and set the 'Target bytecode version' as '1.7'.
->4. Click Apply and OK and try running it again.
-
-__Why do I get `Zip file rt.jar failed to read properly` in IntelliJ?__
->This is the result of Forge attempting to classload the Java runtime JAR, overall it is not an error that will cause any harm to your development and should be ignored.
-
-__A dependency was added, but my IDE is missing it! How do I add it?__
->If a new dependency was added, you can just restart your IDE and the Gradle plugin for that IDE should pull in the new dependencies.
-
-__Help! Things are not working!__
->Some issues can be resolved by deleting the '.gradle' folder in your user directory and running through the setup steps again, or even running `gradle cleanCache` and running through the setup again. Otherwise if you are having trouble with something that the README does not cover, feel free to join our IRC channel and ask for assistance.
 
 [Eclipse]: http://www.eclipse.org/
 [Gradle]: http://www.gradle.org/

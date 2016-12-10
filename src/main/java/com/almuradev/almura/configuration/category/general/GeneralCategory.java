@@ -20,5 +20,6 @@ public class GeneralCategory extends AbstractConfigurationCategory {
     @Setting public List<String> tooltip = new LinkedList<>();
     @Setting public float hardness = 1f;
     @Setting public float resistance = 1;
+    @Setting public String type = "";
 
 }

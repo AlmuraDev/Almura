@@ -5,12 +5,10 @@
  */
 package com.almuradev.almura.mixin.interfaces;
 
-// Could I have just done an AT? Sure...but AT's fucking suck
+/**
+ * Could I have just done an AT? Sure...but AT's fucking suck.
+ */
 public interface IMixinTextureAtlasSprite {
-
-    void setOriginX(int originX);
-
-    void setOriginY(int originY);
 
     void setMinU(float minU);
 

@@ -6,15 +6,17 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.api.block.BuildableBlockType;
-import com.almuradev.almura.api.block.rotable.RotableBlockType;
+import com.almuradev.almura.api.block.rotatable.HorizontalBlockType;
 import com.almuradev.almura.api.creativetab.CreativeTab;
 import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
-import com.almuradev.almura.block.builder.rotable.AbstractRotableTypeBuilder;
+import com.almuradev.almura.block.builder.rotatable.AbstractHorizontalTypeBuilder;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.network.NetworkUtil;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
-import com.almuradev.almura.pack.PackManager;
+import com.almuradev.almura.pack.PackFactory;
+import com.almuradev.almura.pack.PackFileType;
+import com.almuradev.almura.pack.PackLogicType;
 import com.almuradev.almura.registry.CreativeTabRegistryModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -34,7 +36,17 @@ import org.spongepowered.api.network.ChannelRegistrationException;
  */
 public abstract class CommonProxy {
 
-    protected ChannelBinding.IndexedMessageChannel network;
+    protected final ChannelBinding.IndexedMessageChannel network;
+    protected final PackFactory packFactory;
+
+    public CommonProxy() {
+        if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM|FOR")) {
+            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel [AM|FOR]");
+        }
+
+        network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
+        packFactory = new PackFactory();
+    }
 
     protected void onGameConstruction(GameConstructionEvent event) {
         registerFileSystem();
@@ -42,11 +54,10 @@ public abstract class CommonProxy {
         registerModules();
         registerBuilders();
         registerListeners();
-
     }
 
     protected void onGamePreInitialization(GamePreInitializationEvent event) {
-        PackManager.loadPacks(FileSystem.PATH_CONFIG_PACKS);
+        packFactory.loadPacks(FileSystem.PATH_CONFIG_PACKS);
     }
 
     public abstract MappedConfigurationAdapter<? extends AbstractConfiguration> getPlatformConfigAdapter();
@@ -55,17 +66,15 @@ public abstract class CommonProxy {
         return this.network;
     }
 
+    public PackFactory getPackFactory() {
+        return this.packFactory;
+    }
+
     protected void registerFileSystem() {
         FileSystem.construct();
     }
 
     protected void registerMessages() {
-        if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM|FOR")) {
-            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel [AM|FOR]");
-        }
-
-        network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
-
         this.network.registerMessage(SWorldInformationMessage.class, 0);
     }
 
@@ -74,8 +83,10 @@ public abstract class CommonProxy {
     }
 
     protected void registerBuilders() {
-        Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
-        Sponge.getRegistry().registerBuilderSupplier(RotableBlockType.Builder.class, AbstractRotableTypeBuilder.BuilderImpl::new);
+        packFactory.registerBuilder(PackFileType.BLOCK, PackLogicType.BASIC, BuildableBlockType.Builder.class, AbstractBlockTypeBuilder
+                .BuilderImpl::new);
+        packFactory.registerBuilder(PackFileType.BLOCK, PackLogicType.HORIZONTAL, HorizontalBlockType.Builder.class, AbstractHorizontalTypeBuilder
+                .BuilderImpl::new);
     }
 
     protected void registerListeners() {

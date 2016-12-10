@@ -1,0 +1,18 @@
+# 2.0
+
+{
+    "general" : {
+        "creative-tab" : {
+            "enabled" : true,
+            "tab" : "buildingBlocks"
+        },
+        "hardness" : -1,
+        "resistance" : 6000000,
+        "title" : "Statue (dawn goddess)",
+        "tooltip" : [],
+        "type" : "horizontal"
+    },
+    "item" : {
+        "model-variant" : "facing=south"
+    }
+}

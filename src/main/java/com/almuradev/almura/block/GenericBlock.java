@@ -25,8 +25,6 @@ public final class GenericBlock extends Block {
         this.setResistance(builder.resistance);
     }
 
-    // Move to GenericShapeBlock
-
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;

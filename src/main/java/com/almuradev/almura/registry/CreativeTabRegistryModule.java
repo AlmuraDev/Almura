@@ -11,8 +11,6 @@ import com.almuradev.almura.api.creativetab.CreativeTab;
 import com.almuradev.almura.api.creativetab.CreativeTabs;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
-import org.spongepowered.api.registry.RegistrationPhase;
-import org.spongepowered.api.registry.util.DelayedRegistration;
 import org.spongepowered.api.registry.util.RegisterCatalog;
 
 import java.util.Collection;
@@ -41,28 +39,15 @@ public final class CreativeTabRegistryModule implements AdditionalCatalogRegistr
 
     @Override
     public Optional<CreativeTab> getById(String id) {
-        return Optional.ofNullable(this.creativeTabMappings.get(checkNotNull(id)));
+        if (!checkNotNull(id).contains(":")) {
+            id = "minecraft:" + id;
+        }
+        return Optional.ofNullable(this.creativeTabMappings.get(id.toLowerCase(Locale.ENGLISH)));
     }
 
     @Override
     public Collection<CreativeTab> getAll() {
         return Collections.unmodifiableCollection(this.creativeTabMappings.values());
-    }
-
-    @Override
-    @DelayedRegistration(RegistrationPhase.PRE_INIT)
-    public void registerDefaults() {
-        for (net.minecraft.creativetab.CreativeTabs minecraftTab : net.minecraft.creativetab.CreativeTabs.CREATIVE_TAB_ARRAY) {
-            if (this.isInvalidTab(minecraftTab)) {
-                continue;
-            }
-            this.registerAdditionalCatalog((CreativeTab) minecraftTab);
-        }
-    }
-
-    private boolean isInvalidTab(net.minecraft.creativetab.CreativeTabs minecraftTab) {
-        return minecraftTab.equals(net.minecraft.creativetab.CreativeTabs.INVENTORY) ||
-                minecraftTab.equals(net.minecraft.creativetab.CreativeTabs.SEARCH);
     }
 
     private static final class Holder {

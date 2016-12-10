@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.block;
 
-import com.almuradev.almura.block.builder.rotable.AbstractRotableTypeBuilder;
+import com.almuradev.almura.block.builder.rotatable.AbstractHorizontalTypeBuilder;
 import com.almuradev.almura.mixin.interfaces.IMixinBuildableBlockType;
 import com.google.common.base.Objects;
 import net.minecraft.block.BlockHorizontal;
@@ -19,9 +19,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.api.CatalogType;
 
-public final class GenericRotable extends BlockHorizontal {
+public final class GenericHorizontal extends BlockHorizontal {
 
-    public GenericRotable(String modid, String id, AbstractRotableTypeBuilder<?, ?> builder) {
+    public GenericHorizontal(String modid, String id, AbstractHorizontalTypeBuilder<?, ?> builder) {
         super(builder.material, builder.mapColor);
         this.setRegistryName(modid, id);
         this.setUnlocalizedName(builder.dictName);
