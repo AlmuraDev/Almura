@@ -212,4 +212,9 @@ public class LegacyHUD extends AbstractHUD {
     public int getTabMenuOffsetY() {
         return 0;
     }
+
+    @Override
+    public int getPotionOffsetY() {
+        return 0;
+    }
 }

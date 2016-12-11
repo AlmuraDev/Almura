@@ -23,8 +23,9 @@ public final class FontOptionsConstants {
     public static final FontOptions FRO_COLOR_RED = FontOptions.builder().color(Color.ofRgb(255, 0, 0).getRgb()).build();
     public static final FontOptions FRO_COLOR_LIGHT_RED = FontOptions.builder().color(Color.ofRgb(255, 51, 51).getRgb()).build();
     public static final FontOptions FRO_COLOR_WHITE = FontOptions.builder().color(Color.WHITE.getRgb()).build();
-    public static final FontOptions FRO_COLOR_WHITE_SCALE_080 = FontOptions.builder().from(FRO_COLOR_WHITE).scale(0.8F).build();
     public static final FontOptions FRO_COLOR_WHITE_SCALE_050 = FontOptions.builder().from(FRO_COLOR_WHITE).scale(0.5f).build();
+    public static final FontOptions FRO_COLOR_WHITE_SCALE_075 = FontOptions.builder().from(FRO_COLOR_WHITE).scale(0.75f).build();
+    public static final FontOptions FRO_COLOR_WHITE_SCALE_080 = FontOptions.builder().from(FRO_COLOR_WHITE).scale(0.8F).build();
     public static final FontOptions FRO_SCALE_050 = FontOptions.builder().scale(0.50f).build();
     public static final FontOptions FRO_SCALE_065 = FontOptions.builder().scale(0.65f).build();
     public static final FontOptions FRO_SCALE_070 = FontOptions.builder().scale(0.70f).build();

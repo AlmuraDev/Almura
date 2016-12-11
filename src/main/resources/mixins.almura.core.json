@@ -13,6 +13,7 @@
     ],
     "client": [
         "client.gui.MixinGuiBossOverlay",
+        "client.gui.MixinGuiIngame",
         "client.gui.MixinGuiMultiplayer",
         "client.renderer.texture.MixinTextureAtlasSprite"
     ]

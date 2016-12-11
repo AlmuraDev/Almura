@@ -127,4 +127,9 @@ public class MinimalHUD extends AbstractHUD {
     public int getTabMenuOffsetY() {
         return 0;
     }
+
+    @Override
+    public int getPotionOffsetY() {
+        return 0;
+    }
 }

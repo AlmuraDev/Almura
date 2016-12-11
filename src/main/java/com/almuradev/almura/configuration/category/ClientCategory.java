@@ -21,8 +21,8 @@ public final class ClientCategory {
     @Setting(value = "first-launch", comment = "Instructs Almura if this is our first launch. Internal use only")
     public boolean firstLaunch = true;
 
-    @Setting(comment = "The hud type to use. Valid options are Almura|Minimal|Default")
-    public String hud = "Almura";
+    @Setting(comment = "The hud type to use. Valid options are Origin|Minimal|Legacy|Default")
+    public String hud = "Origin";
 
     @Setting(value = "enhanced-debug", comment = "Toggles Almura's unique custom debug screen")
     public boolean enhancedDebug = true;

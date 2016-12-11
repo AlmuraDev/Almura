@@ -9,6 +9,12 @@ import com.almuradev.almura.client.gui.GuiConstants;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
@@ -56,7 +62,7 @@ public abstract class SimpleScreen extends MalisisGui {
      * @param anchor The direction we're going
      * @return The padded X position
      */
-    public static int getPaddedX(UIComponent<?> component, int padding, int anchor) {
+    protected static int getPaddedX(UIComponent<?> component, int padding, int anchor) {
         if (anchor == Anchor.LEFT) {
             return component.getX() + component.getWidth() + padding;
         } else if (anchor == Anchor.RIGHT) {
@@ -72,7 +78,7 @@ public abstract class SimpleScreen extends MalisisGui {
      * @param padding The padding to use
      * @return The padded Y position
      */
-    public static int getPaddedY(UIComponent<?> component, int padding) {
+    protected static int getPaddedY(UIComponent<?> component, int padding) {
         return getPaddedY(component, padding, Anchor.TOP);
     }
 
@@ -83,7 +89,7 @@ public abstract class SimpleScreen extends MalisisGui {
      * @param anchor The direction we're going
      * @return The padded Y position
      */
-    public static int getPaddedY(UIComponent<?> component, int padding, int anchor) {
+    protected static int getPaddedY(UIComponent<?> component, int padding, int anchor) {
         if (anchor == Anchor.BOTTOM) {
             return component.getY() - component.getHeight() - padding;
         } else if (anchor == Anchor.TOP) {
@@ -112,6 +118,46 @@ public abstract class SimpleScreen extends MalisisGui {
     }
 
     protected void onClose() {
+    }
+
+    protected static void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase entityLivingBase)
+    {
+        GlStateManager.enableColorMaterial();
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float)posX, (float)posY, 50.0F);
+        GlStateManager.scale((float)(-scale), (float)scale, (float)scale);
+        GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+        float renderYawOffset = entityLivingBase.renderYawOffset;
+        float rotationYaw = entityLivingBase.rotationYaw;
+        float rotationPitch = entityLivingBase.rotationPitch;
+        float prevRotationYawHead = entityLivingBase.prevRotationYawHead;
+        float rotationYawHead = entityLivingBase.rotationYawHead;
+        GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
+        entityLivingBase.renderYawOffset = (float)Math.atan((double)(mouseX / 40.0F)) * 20.0F;
+        entityLivingBase.rotationYaw = (float)Math.atan((double)(mouseX / 40.0F)) * 40.0F;
+        entityLivingBase.rotationPitch = -((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F;
+        entityLivingBase.rotationYawHead = entityLivingBase.rotationYaw;
+        entityLivingBase.prevRotationYawHead = entityLivingBase.rotationYaw;
+        GlStateManager.translate(0.0F, 0.0F, 0.0F);
+        RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
+        rendermanager.setPlayerViewY(180.0F);
+        rendermanager.setRenderShadow(false);
+        rendermanager.doRenderEntity(entityLivingBase, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+        rendermanager.setRenderShadow(true);
+        entityLivingBase.renderYawOffset = renderYawOffset;
+        entityLivingBase.rotationYaw = rotationYaw;
+        entityLivingBase.rotationPitch = rotationPitch;
+        entityLivingBase.prevRotationYawHead = prevRotationYawHead;
+        entityLivingBase.rotationYawHead = rotationYawHead;
+        GlStateManager.popMatrix();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GlStateManager.disableTexture2D();
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 }
 

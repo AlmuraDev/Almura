@@ -10,7 +10,7 @@ import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.FileSystem;
 import com.almuradev.almura.client.gui.screen.ingame.SimpleIngameMenu;
 import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
-import com.almuradev.almura.client.gui.screen.ingame.hud.AlmuraHUD;
+import com.almuradev.almura.client.gui.screen.ingame.hud.OriginHUD;
 import com.almuradev.almura.client.gui.screen.ingame.hud.LegacyHUD;
 import com.almuradev.almura.client.gui.screen.ingame.hud.MinimalHUD;
 import com.almuradev.almura.client.gui.screen.menu.AnimatedMainMenu;
@@ -119,13 +119,23 @@ public final class ClientProxy extends CommonProxy {
         final ClientCategory clientCategory = this.configAdapter.getConfig().client;
 
         switch (clientCategory.hud.toLowerCase()) {
-            case "almura":
-                if (!(this.customIngameHud instanceof AlmuraHUD)) {
+            case "origin":
+                if (!(this.customIngameHud instanceof OriginHUD)) {
                     if (this.customIngameHud != null) {
                         this.customIngameHud.closeOverlay();
                     }
-                    this.customIngameHud = new AlmuraHUD();
+                    this.customIngameHud = new OriginHUD();
                     this.customIngameHud.displayOverlay();
+                }
+                switch (event.getType()) {
+                    case HEALTH:
+                    case ARMOR:
+                    case FOOD:
+                    case HEALTHMOUNT:
+                    case EXPERIENCE:
+                        event.setCanceled(true);
+                        break;
+                    default:
                 }
                 break;
             case "legacy":
