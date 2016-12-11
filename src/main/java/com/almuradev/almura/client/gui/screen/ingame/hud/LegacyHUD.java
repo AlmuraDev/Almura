@@ -6,7 +6,7 @@
 package com.almuradev.almura.client.gui.screen.ingame.hud;
 
 import com.almuradev.almura.client.gui.GuiConstants;
-import com.almuradev.almura.client.gui.component.UIPropertyBar;
+import com.almuradev.almura.client.gui.component.UILegacyPropertyBar;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -30,7 +30,7 @@ public class LegacyHUD extends AbstractHUD {
     private UILabel playerCompass;
     private UILabel worldTime;
     private UILabel xpLevel;
-    private UIPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
+    private UILegacyPropertyBar healthProperty, armorProperty, hungerProperty, staminaProperty, xpProperty;
     private UIImage clockImage, compassImage;
 
     @Override
@@ -62,10 +62,10 @@ public class LegacyHUD extends AbstractHUD {
         playerCurrency.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
 
         // Health Property
-        healthProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_HEART).setPosition(4, 14);
+        healthProperty = new UILegacyPropertyBar(this, GuiConstants.LEGACY_ICON_HEART).setPosition(4, 14);
 
         // Armor Property
-        armorProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_ARMOR).setPosition(4, 24);
+        armorProperty = new UILegacyPropertyBar(this, GuiConstants.LEGACY_ICON_ARMOR).setPosition(4, 24);
 
         // ////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
@@ -75,10 +75,10 @@ public class LegacyHUD extends AbstractHUD {
         almuraTitle.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
 
         // Hunger Property
-        hungerProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_HUNGER).setPosition(-11, 14, Anchor.CENTER);
+        hungerProperty = new UILegacyPropertyBar(this, GuiConstants.LEGACY_ICON_HUNGER).setPosition(-11, 14, Anchor.CENTER);
 
         // Stamina Property
-        staminaProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_STAMINA).setPosition(-11, 24, Anchor.CENTER);
+        staminaProperty = new UILegacyPropertyBar(this, GuiConstants.LEGACY_ICON_STAMINA).setPosition(-11, 24, Anchor.CENTER);
 
         // ////////////////////////////// RIGHT COLUMN //////////////////////////////////////
 
@@ -129,8 +129,8 @@ public class LegacyHUD extends AbstractHUD {
         worldTime.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // XP Property
-        xpProperty = new UIPropertyBar(this, GuiConstants.LEGACY_ICON_XP).setPosition(-27, 24, Anchor.RIGHT);
-        xpProperty.setColor(UIPropertyBar.LIGHT_GREEN.getRgb()).setRelativeColor(false);
+        xpProperty = new UILegacyPropertyBar(this, GuiConstants.LEGACY_ICON_XP).setPosition(-27, 24, Anchor.RIGHT);
+        xpProperty.setColor(UILegacyPropertyBar.LIGHT_GREEN.getRgb()).setRelativeColor(false);
 
         // XP Level Label
         xpLevel = new UILabel(this, "1");
@@ -189,7 +189,7 @@ public class LegacyHUD extends AbstractHUD {
         worldDisplay.setText(HUDData.WORLD_NAME);
 
         // Player Count
-        serverCount.setText(mc.isSingleplayer() ? "--" : HUDData.SERVER_COUNT);
+        serverCount.setText(mc.isSingleplayer() ? "--" : HUDData.SERVER_PLAYER_COUNT + "/" + HUDData.SERVER_PLAYER_MAX_COUNT);
 
         // Alignment
         playerMode.setPosition((playerTitle.getX() + playerTitle.getWidth() + 6), playerMode.getY(), playerMode.getAnchor());
@@ -210,6 +210,11 @@ public class LegacyHUD extends AbstractHUD {
 
     @Override
     public int getTabMenuOffsetY() {
+        return 0;
+    }
+
+    @Override
+    public int getPotionOffsetY() {
         return 0;
     }
 }

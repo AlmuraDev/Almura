@@ -29,11 +29,7 @@ public abstract class MixinGuiBossOverlay extends Gui {
 
         final Optional<AbstractHUD> customHud = proxy.getCustomIngameHud();
 
-        if (customHud.isPresent()) {
-            // Check hud instance here, adjust 6 value as needed
-            return customHud.get().getOriginBossBarOffsetY();
-        } else {
-            return 12;
-        }
+        // Check hud instance here, adjust 6 value as needed
+        return customHud.map(AbstractHUD::getOriginBossBarOffsetY).orElse(12);
     }
 }

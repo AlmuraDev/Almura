@@ -13,6 +13,7 @@ import com.almuradev.almura.block.builder.rotatable.AbstractHorizontalTypeBuilde
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.network.NetworkUtil;
+import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
 import com.almuradev.almura.pack.PackFactory;
 import com.almuradev.almura.pack.PackFileType;
@@ -76,6 +77,7 @@ public abstract class CommonProxy {
 
     protected void registerMessages() {
         this.network.registerMessage(SWorldInformationMessage.class, 0);
+        this.network.registerMessage(SServerInformationMessage.class, 1);
     }
 
     protected void registerModules() {
@@ -96,6 +98,26 @@ public abstract class CommonProxy {
     @Listener(order = Order.LAST)
     public void onClientConnectionJoin(ClientConnectionEvent.Join event) {
         NetworkUtil.sendWorldHUDData(event.getTargetEntity(), event.getTargetEntity().getTransform());
+
+        SServerInformationMessage message = new SServerInformationMessage(Sponge.getServer().getOnlinePlayers().size(),
+                Sponge.getServer().getMaxPlayers());
+
+        for (Player player : Sponge.getServer().getOnlinePlayers()) {
+            this.network.sendTo(player, message);
+        }
+        this.network.sendTo(event.getTargetEntity(), message);
+    }
+
+    @Listener(order = Order.LAST)
+    public void onClientConnectLeave(ClientConnectionEvent.Disconnect event) {
+        NetworkUtil.sendWorldHUDData(event.getTargetEntity(), event.getTargetEntity().getTransform());
+        for (Player player : Sponge.getServer().getOnlinePlayers()) {
+            if (player == event.getTargetEntity()) {
+                continue;
+            }
+            this.network.sendTo(player, new SServerInformationMessage(Sponge.getServer().getOnlinePlayers().size(),
+                    Sponge.getServer().getMaxPlayers()));
+        }
     }
 
     @Listener(order = Order.LAST)

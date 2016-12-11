@@ -10,6 +10,7 @@ import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.FileSystem;
 import com.almuradev.almura.client.gui.screen.ingame.SimpleIngameMenu;
 import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
+import com.almuradev.almura.client.gui.screen.ingame.hud.OriginHUD;
 import com.almuradev.almura.client.gui.screen.ingame.hud.LegacyHUD;
 import com.almuradev.almura.client.gui.screen.ingame.hud.MinimalHUD;
 import com.almuradev.almura.client.gui.screen.menu.AnimatedMainMenu;
@@ -18,6 +19,7 @@ import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
 import com.almuradev.almura.network.NetworkHandlers;
+import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -102,7 +104,8 @@ public final class ClientProxy extends CommonProxy {
     @Override
     protected void registerMessages() {
         super.registerMessages();
-        this.network.addHandler(SWorldInformationMessage.class, Platform.Type.CLIENT, new NetworkHandlers.S00WorldInformationHandler());
+        this.network.addHandler(SWorldInformationMessage.class, Platform.Type.CLIENT, new NetworkHandlers.SWorldInformationHandler());
+        this.network.addHandler(SServerInformationMessage.class, Platform.Type.CLIENT, new NetworkHandlers.SServerInformationHandler());
     }
 
     @Override
@@ -116,7 +119,26 @@ public final class ClientProxy extends CommonProxy {
         final ClientCategory clientCategory = this.configAdapter.getConfig().client;
 
         switch (clientCategory.hud.toLowerCase()) {
-            case "almura":
+            case "origin":
+                if (!(this.customIngameHud instanceof OriginHUD)) {
+                    if (this.customIngameHud != null) {
+                        this.customIngameHud.closeOverlay();
+                    }
+                    this.customIngameHud = new OriginHUD();
+                    this.customIngameHud.displayOverlay();
+                }
+                switch (event.getType()) {
+                    case HEALTH:
+                    case ARMOR:
+                    case FOOD:
+                    case HEALTHMOUNT:
+                    case EXPERIENCE:
+                        event.setCanceled(true);
+                        break;
+                    default:
+                }
+                break;
+            case "legacy":
                 if (!(this.customIngameHud instanceof LegacyHUD)) {
                     if (this.customIngameHud != null) {
                         this.customIngameHud.closeOverlay();

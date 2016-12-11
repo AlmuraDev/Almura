@@ -7,19 +7,21 @@ package com.almuradev.almura.client.gui.screen.ingame.hud;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.GameType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public final class HUDData {
 
+    public static boolean IS_ECONOMY_PRESENT = false;
     public static final String COMPASS_CHARACTERS = "S.......W.......N.......E.......";
     public static final String TIME_FORMAT = "%2d%s";
 
-    public static String PLAYER_CURRENCY = "";
+    public static String PLAYER_CURRENCY = "1,000,000,000";
     public static String WORLD_NAME = "";
-    public static String SERVER_COUNT = "";
-
+    public static int SERVER_PLAYER_COUNT, SERVER_PLAYER_MAX_COUNT = 0;
+    public static GameType GAME_TYPE = GameType.SURVIVAL;
 
     private HUDData() {
     }

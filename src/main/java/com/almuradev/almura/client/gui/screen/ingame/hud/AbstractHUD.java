@@ -12,4 +12,6 @@ public abstract class AbstractHUD extends SimpleScreen {
     public abstract int getOriginBossBarOffsetY();
 
     public abstract int getTabMenuOffsetY();
+
+    public abstract int getPotionOffsetY();
 }

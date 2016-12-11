@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui;
 
 import com.almuradev.almura.Almura;
 import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.renderer.icon.GuiIcon;
 import net.minecraft.util.ResourceLocation;
 
@@ -24,13 +25,23 @@ public class GuiConstants {
     public static final String TRADEMARK = "Minecraft is a registered trademark of Mojang AB";
     public static final String COPYRIGHT = "Copyright AlmuraDev 2012 - 2016";
     public static final ResourceLocation LOCATION_GUI_SPRITE_SHEET;
+    public static final ResourceLocation LOCATION_VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET;
     public static final ResourceLocation ALMURA_LOGO_LOCATION;
     public static final ResourceLocation ALMURA_MAN_LOCATION;
     public static final ResourceLocation SPONGIE_LOCATION;
     public static final ResourceLocation SPONGEPOWERED_LOGO_LOCATION;
     public static final ResourceLocation AVATAR_GENERIC_LOCATION;
     public static final GuiTexture TEXTURE_SPRITESHEET;
+    public static final GuiTexture VANILLA_ICON_SPRITESHEET;
+    public static final GuiTexture VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET;
     public static final GuiIcon ICON_EMPTY;
+    public static final GuiIcon VANILLA_ICON_HEART_BACKGROUND;
+    public static final GuiIcon VANILLA_ICON_HEART_FOREGROUND;
+    public static final GuiIcon VANILLA_ICON_HUNGER_BACKGROUND;
+    public static final GuiIcon VANILLA_ICON_HUNGER_FOREGROUND;
+    public static final GuiIcon VANILLA_ICON_ARMOR;
+    public static final GuiIcon VANILLA_ICON_AIR;
+    public static final GuiIcon VANILLA_ICON_MOUNT;
     public static final GuiIcon LEGACY_ICON_BAR;
     public static final GuiIcon LEGACY_ICON_HEART;
     public static final GuiIcon LEGACY_ICON_ARMOR;
@@ -42,6 +53,10 @@ public class GuiConstants {
     public static final GuiIcon LEGACY_ICON_MAP;
     public static final GuiIcon LEGACY_ICON_WORLD;
     public static final GuiIcon LEGACY_ICON_CLOCK;
+    public static final GuiIcon ICON_ORB_BLUE;
+    public static final GuiIcon ICON_ORB_BROWN;
+    public static final GuiIcon ICON_ORB_GRAY;
+    public static final GuiIcon ICON_ORB_GREEN;
     public static final GuiIcon ICON_CLOSE_NORMAL;
     public static final GuiIcon ICON_CLOSE_HOVER;
     public static final GuiIcon ICON_CLOSE_PRESSED;
@@ -70,6 +85,7 @@ public class GuiConstants {
 
     static {
         LOCATION_GUI_SPRITE_SHEET = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/gui.png");
+        LOCATION_VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET = new ResourceLocation("textures/gui/achievement/achievement_background.png");
         ALMURA_LOGO_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/almura_logo.png");
         ALMURA_MAN_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/almura_man.png");
         SPONGIE_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/spongie.png");
@@ -77,8 +93,18 @@ public class GuiConstants {
         AVATAR_GENERIC_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/generic.png");
 
         TEXTURE_SPRITESHEET = new GuiTexture(LOCATION_GUI_SPRITE_SHEET, 300, 144);
+        VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET = new GuiTexture(LOCATION_VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET, 256, 256);
+        VANILLA_ICON_SPRITESHEET = new GuiTexture(MalisisGui.ICONS, 256, 256);
 
         ICON_EMPTY = TEXTURE_SPRITESHEET.getIcon(299, 141, 1, 1);
+
+        VANILLA_ICON_HEART_BACKGROUND = VANILLA_ICON_SPRITESHEET.getIcon(16, 0, 9, 9);
+        VANILLA_ICON_HEART_FOREGROUND = VANILLA_ICON_SPRITESHEET.getIcon(52, 0, 9, 9);
+        VANILLA_ICON_HUNGER_BACKGROUND = VANILLA_ICON_SPRITESHEET.getIcon(16, 27, 9, 9);
+        VANILLA_ICON_HUNGER_FOREGROUND = VANILLA_ICON_SPRITESHEET.getIcon(52, 27, 9, 9);
+        VANILLA_ICON_ARMOR = VANILLA_ICON_SPRITESHEET.getIcon(34, 9, 9, 9);
+        VANILLA_ICON_AIR = VANILLA_ICON_SPRITESHEET.getIcon(16, 18, 9, 9);
+        VANILLA_ICON_MOUNT = VANILLA_ICON_SPRITESHEET.getIcon(88, 9, 9, 9);
 
         LEGACY_ICON_BAR = TEXTURE_SPRITESHEET.getIcon(0, 126, 256, 14);
         LEGACY_ICON_HEART = TEXTURE_SPRITESHEET.getIcon(149, 62, 26, 26);
@@ -91,6 +117,11 @@ public class GuiConstants {
         LEGACY_ICON_MAP = TEXTURE_SPRITESHEET.getIcon(0, 95, 32, 26);
         LEGACY_ICON_WORLD = TEXTURE_SPRITESHEET.getIcon(133, 93, 32, 32);
         LEGACY_ICON_CLOCK = TEXTURE_SPRITESHEET.getIcon(86, 64, 28, 26);
+
+        ICON_ORB_BLUE = TEXTURE_SPRITESHEET.getIcon(224, 66, 15, 15);
+        ICON_ORB_BROWN = TEXTURE_SPRITESHEET.getIcon(224, 81, 15, 15);
+        ICON_ORB_GRAY = TEXTURE_SPRITESHEET.getIcon(209, 81, 15, 15);
+        ICON_ORB_GREEN = TEXTURE_SPRITESHEET.getIcon(209, 66, 15, 15);
 
         ICON_CLOSE_NORMAL = TEXTURE_SPRITESHEET.getIcon(239, 69, 45, 19);
         ICON_CLOSE_HOVER = TEXTURE_SPRITESHEET.getIcon(239, 88, 45, 19);

@@ -118,7 +118,7 @@ public class AnimatedMainMenu extends SimpleScreen {
         final UIButton quitButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .text(Text.of("Quit"))
-                .fro(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_RED).shadow(true).build())
+                .fro(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_LIGHT_RED).shadow(true).build())
                 .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(GuiConstants.BUTTON_WIDTH_LONG, GuiConstants.BUTTON_HEIGHT)
                 .position(singleplayerButton.getX(), SimpleScreen.getPaddedY(optionsButton, PADDING))

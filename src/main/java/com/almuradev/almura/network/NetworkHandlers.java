@@ -6,6 +6,7 @@
 package com.almuradev.almura.network;
 
 import com.almuradev.almura.client.gui.screen.ingame.hud.HUDData;
+import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -23,12 +24,24 @@ public final class NetworkHandlers {
     }
 
     @SideOnly(Side.CLIENT)
-    public static final class S00WorldInformationHandler implements MessageHandler<SWorldInformationMessage> {
+    public static final class SWorldInformationHandler implements MessageHandler<SWorldInformationMessage> {
 
         @Override
         public void handleMessage(SWorldInformationMessage message, RemoteConnection connection, Platform.Type side) {
             if (side.isClient()) {
                 HUDData.WORLD_NAME = message.getWorldName();
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static final class SServerInformationHandler implements MessageHandler<SServerInformationMessage> {
+
+        @Override
+        public void handleMessage(SServerInformationMessage message, RemoteConnection connection, Platform.Type side) {
+            if (side.isClient()) {
+                HUDData.SERVER_PLAYER_COUNT = message.playerCount;
+                HUDData.SERVER_PLAYER_MAX_COUNT = message.maxPlayerCount;
             }
         }
     }
