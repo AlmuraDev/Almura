@@ -83,10 +83,8 @@ public abstract class CommonProxy {
     }
 
     protected void registerBuilders() {
-        packFactory.registerBuilder(PackFileType.BLOCK, PackLogicType.BASIC, BuildableBlockType.Builder.class, AbstractBlockTypeBuilder
-                .BuilderImpl::new);
-        packFactory.registerBuilder(PackFileType.BLOCK, PackLogicType.HORIZONTAL, HorizontalBlockType.Builder.class, AbstractHorizontalTypeBuilder
-                .BuilderImpl::new);
+        packFactory.registerBuilder(PackFileType.BLOCK, PackLogicType.BASIC, BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
+        packFactory.registerBuilder(PackFileType.BLOCK, PackLogicType.HORIZONTAL, HorizontalBlockType.Builder.class, AbstractHorizontalTypeBuilder.BuilderImpl::new);
     }
 
     protected void registerListeners() {

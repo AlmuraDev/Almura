@@ -56,8 +56,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
     private final List<Quad.Texture> textures;
     private final Quad.Texture particleTexture;
 
-    private ChildShapeModel(ResourceLocation parentModelLocation, Collection<ResourceLocation> textureLocations, List<Quad.Texture> textures, Quad
-            .Texture particleTexture) {
+    private ChildShapeModel(ResourceLocation parentModelLocation, Collection<ResourceLocation> textureLocations, List<Quad.Texture> textures, Quad.Texture particleTexture) {
         super(Lists.newArrayList(parentModelLocation), textureLocations, ModelRotation.X0_Y0);
         this.parentModelLocation = parentModelLocation;
         this.textures = textures;
