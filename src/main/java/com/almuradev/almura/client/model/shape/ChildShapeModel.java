@@ -218,6 +218,7 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
 
                     final Vector3f normal = quad.normal;
 
+                    // TODO Clip ahead of time to fix cracking texture
                     final UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(this.format);
                     builder.setContractUVs(true);
                     builder.setTexture(sprite);
@@ -240,7 +241,6 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                                 case UV:
                                     float widthFactor = 16f / sprite.getIconWidth();
                                     float heightFactor = 16f / sprite.getIconHeight();
-
                                     float factorOriginX = widthFactor * texture.x;
                                     float factorOriginY = heightFactor * texture.y;
                                     float factorWidth = widthFactor * texture.width;

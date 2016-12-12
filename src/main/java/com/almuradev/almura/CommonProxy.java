@@ -37,19 +37,17 @@ import org.spongepowered.api.network.ChannelRegistrationException;
  */
 public abstract class CommonProxy {
 
-    protected final ChannelBinding.IndexedMessageChannel network;
-    protected final PackFactory packFactory;
+    protected ChannelBinding.IndexedMessageChannel network;
+    protected PackFactory packFactory;
 
-    public CommonProxy() {
+    protected void onGameConstruction(GameConstructionEvent event) {
         if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM|FOR")) {
             throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel [AM|FOR]");
         }
 
         network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
         packFactory = new PackFactory();
-    }
 
-    protected void onGameConstruction(GameConstructionEvent event) {
         registerFileSystem();
         registerMessages();
         registerModules();

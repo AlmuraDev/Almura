@@ -48,9 +48,9 @@ public final class PackFactory {
             Supplier<? extends T> supplier) {
         final T builder = supplier.get();
 
-        if (!builder.getClass().equals(builderClass)) {
-            throw new IllegalArgumentException("Supplier object must be of same type as builder!");
-        }
+//        if (!builder.getClass().equals(builderClass)) {
+//            throw new IllegalArgumentException("Supplier object must be of same type as builder!");
+//        }
 
         Set<Pair<PackLogicType, ? super BuildableCatalogType.Builder>> builders = buildersByType.get(fileType);
         if (builders == null) {
@@ -66,7 +66,6 @@ public final class PackFactory {
         final Set<Pair<PackLogicType, ? super BuildableCatalogType.Builder>> builders = this.buildersByType.get(fileType);
         Pair<PackLogicType, ? super BuildableCatalogType.Builder> builder = null;
         if (builders != null) {
-
             for (Pair<PackLogicType, ? super BuildableCatalogType.Builder> current : builders) {
                 if (current.getLeft().equals(logicType)) {
                     builder = current;
@@ -75,7 +74,7 @@ public final class PackFactory {
             }
         }
 
-        return Optional.ofNullable((T) builder);
+        return Optional.ofNullable((T) (builder == null ? null : builder.getRight()));
     }
 
     public void loadPacks(Path rootDirectory) {
