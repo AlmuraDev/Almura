@@ -62,7 +62,7 @@ public abstract class SimpleScreen extends MalisisGui {
      * @param anchor The direction we're going
      * @return The padded X position
      */
-    protected static int getPaddedX(UIComponent<?> component, int padding, int anchor) {
+    public static int getPaddedX(UIComponent<?> component, int padding, int anchor) {
         if (anchor == Anchor.LEFT) {
             return component.getX() + component.getWidth() + padding;
         } else if (anchor == Anchor.RIGHT) {
@@ -78,7 +78,7 @@ public abstract class SimpleScreen extends MalisisGui {
      * @param padding The padding to use
      * @return The padded Y position
      */
-    protected static int getPaddedY(UIComponent<?> component, int padding) {
+    public static int getPaddedY(UIComponent<?> component, int padding) {
         return getPaddedY(component, padding, Anchor.TOP);
     }
 
@@ -89,7 +89,7 @@ public abstract class SimpleScreen extends MalisisGui {
      * @param anchor The direction we're going
      * @return The padded Y position
      */
-    protected static int getPaddedY(UIComponent<?> component, int padding, int anchor) {
+    public static int getPaddedY(UIComponent<?> component, int padding, int anchor) {
         if (anchor == Anchor.BOTTOM) {
             return component.getY() - component.getHeight() - padding;
         } else if (anchor == Anchor.TOP) {

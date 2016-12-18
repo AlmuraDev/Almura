@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.gui.component;
+package com.almuradev.almura.client.gui.component.hud;
 
 import com.almuradev.almura.client.gui.GuiConstants;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
@@ -16,11 +16,14 @@ import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.renderer.font.MalisisFont;
 import net.malisis.core.renderer.icon.GuiIcon;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import javax.annotation.Nullable;
 
+@SideOnly(Side.CLIENT)
 public class UIPropertyBar extends UIComponent {
     private static final int ICON_SIZE = 9;
 
@@ -29,7 +32,7 @@ public class UIPropertyBar extends UIComponent {
     private float amount = 1.0f;
     private Text text = Text.EMPTY;
     private MalisisFont font = MalisisFont.minecraftFont;
-    private FontOptions fontOptions = FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_WHITE).scale(0.65f).build();
+    private FontOptions fontOptions = FontOptionsConstants.FRO_COLOR_WHITE;
     private GuiTexture spritesheet = GuiConstants.VANILLA_ICON_SPRITESHEET;
 
     @Nullable private GuiIcon backgroundIcon, foregroundIcon;
@@ -188,6 +191,16 @@ public class UIPropertyBar extends UIComponent {
     @Override
     public int getHeight() {
         return ((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE : height);
+    }
+
+    @Override
+    public UIPropertyBar setPosition(int x, int y) {
+        return (UIPropertyBar) super.setPosition(x, y);
+    }
+
+    @Override
+    public UIPropertyBar setPosition(int x, int y, int anchor) {
+        return (UIPropertyBar) super.setPosition(x, y, anchor);
     }
 
     private int getConvertedFill() {
