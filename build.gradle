@@ -106,6 +106,9 @@ license {
     ignoreFailures true
     strictCheck true
     include '**/*.java'
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
 }
 
 sortClassFields {
