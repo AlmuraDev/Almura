@@ -240,10 +240,10 @@ final class ChildShapeModel extends AbstractShapeModel<ChildShapeModel, ChildSha
                                 case UV:
                                     float widthFactor = 16f / sprite.getIconWidth();
                                     float heightFactor = 16f / sprite.getIconHeight();
-                                    float factorOriginX = widthFactor * texture.x;
-                                    float factorOriginY = heightFactor * texture.y;
-                                    float factorWidth = widthFactor * texture.width;
-                                    float factorHeight = heightFactor * texture.height;
+                                    float factorOriginX = widthFactor * (texture.x / 16f);
+                                    float factorOriginY = heightFactor * (texture.y / 16f);
+                                    float factorWidth = widthFactor * (texture.width / 16f);
+                                    float factorHeight = heightFactor * (texture.height / 16f);
 
                                     builder.put(e, sprite.getInterpolatedU(vertex.u == 0 ? factorOriginX
                                             : factorOriginX + factorWidth), sprite.getInterpolatedV(vertex.v == 0 ? factorOriginY : factorOriginY +

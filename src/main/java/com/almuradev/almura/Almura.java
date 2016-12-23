@@ -24,7 +24,7 @@ public class Almura {
 
     public static Almura instance;
 
-    @SidedProxy(clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
+    @SidedProxy(modId = Almura.PLUGIN_ID, clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
     public static CommonProxy proxy;
 
     @Inject public Logger logger;

@@ -2,7 +2,7 @@
   "variants": {
     "normal": [
       {
-        "model": "almura:shape/child/alfalfa_seed_barrel.shape"
+        "model": "almura:alfalfa_seed_barrel.obj"
       }
     ]
   }
