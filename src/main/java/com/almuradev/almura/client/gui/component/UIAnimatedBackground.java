@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.component;
 
-import com.almuradev.almura.Almura;
+import com.almuradev.almura.Constants;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
@@ -76,7 +76,7 @@ public class UIAnimatedBackground extends UIComponent<UIAnimatedBackground> {
                 final DirectoryStream<Path> stateStream = Files.newDirectoryStream(Paths.get(url.toURI()));
 
                 for (Path backgroundPath : stateStream) {
-                    final ResourceLocation backgroundLocation = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/backgrounds/" +
+                    final ResourceLocation backgroundLocation = new ResourceLocation(Constants.Plugin.ID, "textures/gui/backgrounds/" +
                             state + "/" + backgroundPath.getFileName().toString());
                     STATE_TEXTURES.put(state, new GuiTexture(backgroundLocation));
                 }

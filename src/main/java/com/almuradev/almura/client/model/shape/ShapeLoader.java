@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.model.shape;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.Constants;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
@@ -23,7 +24,7 @@ public final class ShapeLoader implements ICustomModelLoader {
 
     @Override
     public boolean accepts(ResourceLocation modelLocation) {
-        return modelLocation.getResourceDomain().equals(Almura.PLUGIN_ID) && modelLocation.getResourcePath().endsWith(".shape");
+        return modelLocation.getResourceDomain().equals(Constants.Plugin.ID) && modelLocation.getResourcePath().endsWith(".shape");
     }
 
     @Override

@@ -14,8 +14,6 @@ import com.almuradev.almura.configuration.MappedConfigurationAdapter;
  */
 public final class ServerProxy extends CommonProxy {
 
-    public static final String CLASSPATH = "com.almuradev.almura.server.ServerProxy";
-
     @Override
     public MappedConfigurationAdapter<? extends AbstractConfiguration> getPlatformConfigAdapter() {
         return null;

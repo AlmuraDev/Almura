@@ -8,7 +8,7 @@ package com.almuradev.almura.pack;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.FileSystem;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.api.BuildableCatalogType;
 import com.almuradev.almura.api.block.BuildableBlockType;
 import com.almuradev.almura.api.creativetab.CreativeTab;
@@ -159,7 +159,7 @@ public final class PackFactory {
 
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            if (!dir.equals(FileSystem.PATH_CONFIG_PACKS)) {
+            if (!dir.equals(Constants.FileSystem.PATH_CONFIG_PACKS)) {
                 Almura.instance.logger.info("Reading pack [{}] for catalog type candidates...", dir.getFileName().toString());
             }
             return FileVisitResult.CONTINUE;
@@ -189,7 +189,7 @@ public final class PackFactory {
 
         @Override
         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            if (!dir.equals(FileSystem.PATH_CONFIG_PACKS)) {
+            if (!dir.equals(Constants.FileSystem.PATH_CONFIG_PACKS)) {
                 final List<Path> candidates = this.candidatesByPack.getOrDefault(dir.getFileName().toString(), new LinkedList<>());
                 Almura.instance.logger.info("Found [{}] catalog type(s).", candidates.size());
             }

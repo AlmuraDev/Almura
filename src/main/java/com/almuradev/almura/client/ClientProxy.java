@@ -5,14 +5,13 @@
  */
 package com.almuradev.almura.client;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.CommonProxy;
-import com.almuradev.almura.FileSystem;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.screen.ingame.SimpleIngameMenu;
 import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
-import com.almuradev.almura.client.gui.screen.ingame.hud.OriginHUD;
 import com.almuradev.almura.client.gui.screen.ingame.hud.LegacyHUD;
 import com.almuradev.almura.client.gui.screen.ingame.hud.MinimalHUD;
+import com.almuradev.almura.client.gui.screen.ingame.hud.OriginHUD;
 import com.almuradev.almura.client.gui.screen.menu.AnimatedMainMenu;
 import com.almuradev.almura.client.model.shape.ShapeLoader;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
@@ -47,10 +46,6 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public final class ClientProxy extends CommonProxy {
 
-    public static final String CLASSPATH = "com.almuradev.almura.client.ClientProxy";
-
-    private static final String HEADER = "2.0\nAlmura client configuration\n\nFor further assistance, join #almura on EsperNet.";
-
     @Nullable
     private MappedConfigurationAdapter<ClientConfiguration> configAdapter;
     @Nullable
@@ -58,8 +53,8 @@ public final class ClientProxy extends CommonProxy {
 
     @Override
     public void onGamePreInitialization(GamePreInitializationEvent event) {
-        this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults().setHeader(HEADER),
-                FileSystem.PATH_CONFIG_CLIENT);
+        this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults()
+                .setHeader(Constants.Config.HEADER), Constants.FileSystem.PATH_CONFIG_CLIENT);
         try {
             this.configAdapter.load();
         } catch (IOException | ObjectMappingException e) {
@@ -81,7 +76,7 @@ public final class ClientProxy extends CommonProxy {
             }
         }
 
-        OBJLoader.INSTANCE.addDomain(Almura.PLUGIN_ID);
+        OBJLoader.INSTANCE.addDomain(Constants.Plugin.ID);
         ModelLoaderRegistry.registerLoader(new ShapeLoader());
         MinecraftForge.EVENT_BUS.register(this);
 

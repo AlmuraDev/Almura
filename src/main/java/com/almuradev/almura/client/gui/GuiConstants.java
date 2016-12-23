@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui;
 
-import com.almuradev.almura.Almura;
+import com.almuradev.almura.Constants;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.renderer.icon.GuiIcon;
@@ -84,13 +84,13 @@ public class GuiConstants {
     public static final int BUTTON_HEIGHT = 20;
 
     static {
-        LOCATION_GUI_SPRITE_SHEET = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/gui.png");
+        LOCATION_GUI_SPRITE_SHEET = new ResourceLocation(Constants.Plugin.ID, "textures/gui/gui.png");
         LOCATION_VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET = new ResourceLocation("textures/gui/achievement/achievement_background.png");
-        ALMURA_LOGO_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/almura_logo.png");
-        ALMURA_MAN_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/almura_man.png");
-        SPONGIE_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/spongie.png");
-        SPONGEPOWERED_LOGO_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/spongepowered_logo.png");
-        AVATAR_GENERIC_LOCATION = new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/generic.png");
+        ALMURA_LOGO_LOCATION = new ResourceLocation(Constants.Plugin.ID, "textures/gui/almura_logo.png");
+        ALMURA_MAN_LOCATION = new ResourceLocation(Constants.Plugin.ID, "textures/gui/almura_man.png");
+        SPONGIE_LOCATION = new ResourceLocation(Constants.Plugin.ID, "textures/gui/spongie.png");
+        SPONGEPOWERED_LOGO_LOCATION = new ResourceLocation(Constants.Plugin.ID, "textures/gui/spongepowered_logo.png");
+        AVATAR_GENERIC_LOCATION = new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/generic.png");
 
         TEXTURE_SPRITESHEET = new GuiTexture(LOCATION_GUI_SPRITE_SHEET, 300, 144);
         VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET = new GuiTexture(LOCATION_VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET, 256, 256);

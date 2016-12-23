@@ -5,8 +5,6 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.server.ServerProxy;
 import net.minecraftforge.fml.common.SidedProxy;
 import org.slf4j.Logger;
 import org.spongepowered.api.event.Listener;
@@ -17,14 +15,13 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import javax.inject.Inject;
 
-@Plugin(id = Almura.PLUGIN_ID)
+@Plugin(id = Constants.Plugin.ID)
 public class Almura {
-
-    public static final String PLUGIN_ID = "almura", GUI_VERSION = "3.0", PACK_VERSION = "1.5";
 
     public static Almura instance;
 
-    @SidedProxy(modId = Almura.PLUGIN_ID, clientSide = ClientProxy.CLASSPATH, serverSide = ServerProxy.CLASSPATH)
+    @SidedProxy(modId = Constants.Plugin.ID, clientSide = Constants.Plugin.PROXY_CLIENT_CLASSPATH,
+            serverSide = Constants.Plugin.PROXY_SERVER_CLASSPATH)
     public static CommonProxy proxy;
 
     @Inject public Logger logger;

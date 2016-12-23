@@ -7,7 +7,7 @@ package com.almuradev.almura.block.builder.rotatable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.Almura;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.api.block.rotatable.HorizontalBlockType;
 import com.almuradev.almura.block.GenericHorizontal;
 import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
@@ -26,12 +26,12 @@ public abstract class AbstractHorizontalTypeBuilder<HORIZONTAL extends Horizonta
         public HorizontalBlockType build(String id) {
             checkNotNull(id);
 
-            final GenericHorizontal block = GameRegistry.register(new GenericHorizontal(Almura.PLUGIN_ID, id, this));
+            final GenericHorizontal block = GameRegistry.register(new GenericHorizontal(Constants.Plugin.ID, id, this));
 
             final ItemBlock itemBlock = new ItemBlock(block);
-            itemBlock.setRegistryName(Almura.PLUGIN_ID, id);
+            itemBlock.setRegistryName(Constants.Plugin.ID, id);
 
-            ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation(Almura.PLUGIN_ID + ":" + id, "facing=south"));
+            ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation(Constants.Plugin.ID + ":" + id, "facing=south"));
 
             // TODO Make this configurable and make Almura GenericItemBlock
             GameRegistry.register(itemBlock);

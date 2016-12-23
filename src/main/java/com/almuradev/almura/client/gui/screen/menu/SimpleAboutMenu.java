@@ -5,12 +5,12 @@
  */
 package com.almuradev.almura.client.gui.screen.menu;
 
-import com.almuradev.almura.Almura;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.GuiConstants;
 import com.almuradev.almura.client.gui.GuiRemoteTexture;
+import com.almuradev.almura.client.gui.component.UISimpleList;
 import com.almuradev.almura.client.gui.screen.SimpleContainerScreen;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
-import com.almuradev.almura.client.gui.component.UISimpleList;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
 import com.google.common.collect.Lists;
@@ -21,7 +21,6 @@ import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.container.UIListContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -93,7 +92,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
                         GuiConstants.AVATAR_GENERIC_LOCATION,
-                        new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_ZIDANE + ".png"),
+                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_ZIDANE + ".png"),
                         String.format(GuiConstants.SKIN_URL_BASE, GuiConstants.UNIQUE_ID_ZIDANE.toString(), 32),
                         32, 32), null),
                 Text.of(TextColors.BLUE, "Zidane"),
@@ -109,7 +108,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
                         GuiConstants.AVATAR_GENERIC_LOCATION,
-                        new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_DOCKTER + ".png"),
+                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_DOCKTER + ".png"),
                         String.format(GuiConstants.SKIN_URL_BASE, GuiConstants.UNIQUE_ID_DOCKTER.toString(), 32),
                         32, 32), null),
                 Text.of(TextColors.GOLD, "Dockter"),
@@ -124,7 +123,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
                         GuiConstants.AVATAR_GENERIC_LOCATION,
-                        new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_GRINCH + ".png"),
+                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_GRINCH + ".png"),
                         String.format(GuiConstants.SKIN_URL_BASE, GuiConstants.UNIQUE_ID_GRINCH.toString(), 32),
                         32, 32), null),
                 Text.of(TextColors.DARK_GREEN, "Grinch"),
@@ -139,7 +138,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
                         GuiConstants.AVATAR_GENERIC_LOCATION,
-                        new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_WIFEE + ".png"),
+                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_WIFEE + ".png"),
                         String.format(GuiConstants.SKIN_URL_BASE, GuiConstants.UNIQUE_ID_WIFEE.toString(), 32),
                         32, 32), null),
                 Text.of(TextColors.LIGHT_PURPLE, "Wifee"),
@@ -152,7 +151,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
                         GuiConstants.AVATAR_GENERIC_LOCATION,
-                        new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_WOLFEYE + ".png"),
+                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_WOLFEYE + ".png"),
                         String.format(GuiConstants.SKIN_URL_BASE, GuiConstants.UNIQUE_ID_WOLFEYE.toString(), 32),
                         32, 32), null),
                 Text.of(TextColors.RED, "Wolfeye"),
@@ -167,7 +166,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
                         GuiConstants.AVATAR_GENERIC_LOCATION,
-                        new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_MUMFREY + ".png"),
+                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_MUMFREY + ".png"),
                         String.format(GuiConstants.SKIN_URL_BASE, GuiConstants.UNIQUE_ID_MUMFREY.toString(), 32),
                         32, 32), null),
                 Text.of(TextColors.GRAY, "Mumfrey"),
@@ -181,7 +180,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
                         GuiConstants.AVATAR_GENERIC_LOCATION,
-                        new ResourceLocation(Almura.PLUGIN_ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_BLOOD + ".png"),
+                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + GuiConstants.UNIQUE_ID_BLOOD + ".png"),
                         String.format(GuiConstants.SKIN_URL_BASE, GuiConstants.UNIQUE_ID_BLOOD.toString(), 32),
                         32, 32), null),
                 Text.of(TextColors.DARK_RED, "Blood"),

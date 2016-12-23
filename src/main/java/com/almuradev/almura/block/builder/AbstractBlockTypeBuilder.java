@@ -7,7 +7,7 @@ package com.almuradev.almura.block.builder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.Almura;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.api.block.BuildableBlockType;
 import com.almuradev.almura.api.creativetab.CreativeTab;
 import com.almuradev.almura.block.GenericBlock;
@@ -100,12 +100,12 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         public BuildableBlockType build(String id) {
             checkNotNull(id);
 
-            final GenericBlock block = GameRegistry.register(new GenericBlock(Almura.PLUGIN_ID, id, this));
+            final GenericBlock block = GameRegistry.register(new GenericBlock(Constants.Plugin.ID, id, this));
 
             final ItemBlock itemBlock = new ItemBlock(block);
-            itemBlock.setRegistryName(Almura.PLUGIN_ID, id);
+            itemBlock.setRegistryName(Constants.Plugin.ID, id);
 
-            ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation(Almura.PLUGIN_ID + ":" + id, "normal"));
+            ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation(Constants.Plugin.ID + ":" + id, "normal"));
 
             // TODO Make this configurable and make Almura GenericItemBlock
             GameRegistry.register(itemBlock);

@@ -56,7 +56,7 @@ public abstract class CommonProxy {
     }
 
     protected void onGamePreInitialization(GamePreInitializationEvent event) {
-        packFactory.loadPacks(FileSystem.PATH_CONFIG_PACKS);
+        packFactory.loadPacks(Constants.FileSystem.PATH_CONFIG_PACKS);
     }
 
     public abstract MappedConfigurationAdapter<? extends AbstractConfiguration> getPlatformConfigAdapter();
@@ -70,7 +70,7 @@ public abstract class CommonProxy {
     }
 
     protected void registerFileSystem() {
-        FileSystem.construct();
+        Constants.FileSystem.construct();
     }
 
     protected void registerMessages() {
