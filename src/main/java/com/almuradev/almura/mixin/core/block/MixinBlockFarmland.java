@@ -15,6 +15,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,7 +25,7 @@ import java.util.Random;
 @Mixin(BlockFarmland.class)
 public abstract class MixinBlockFarmland extends Block {
 
-    @Shadow public static final PropertyInteger MOISTURE = PropertyInteger.create("moisture", 0, 7);
+    @Shadow @Final public static PropertyInteger MOISTURE;
 
     public MixinBlockFarmland(Material materialIn) {
         super(materialIn);
