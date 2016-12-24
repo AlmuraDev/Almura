@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.client.model;
+package com.almuradev.almura.api.client.model.obj;
 
 public enum TransformPart {
     ROTATION,

@@ -27,7 +27,7 @@ public class UISimpleList<S extends UIContainer<S>> extends UIListContainer<UISi
 
     @Override
     public int getContentWidth() {
-        return super.getWidth() - (this.scrollbar.isVisible() ? this.scrollbar.getWidth() + 2: 0);
+        return super.getWidth() - (this.scrollbar.isVisible() ? this.scrollbar.getWidth() + 2 : 0);
     }
 
     @Override

@@ -7,8 +7,8 @@ package com.almuradev.almura.client.gui.screen.menu;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.component.UIAnimatedBackground;
+import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.category.DebugCategory;
@@ -172,10 +172,11 @@ public class DynamicConfigurationMenu extends SimpleScreen {
         backButton.setName("button.back");
         backButton.register(this);
 
-//        form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, animalHeatCheckBox,
-//                almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox, debugMappingsCheckBox, debugRecipesCheckBox,
-//                graphicsButton, backButton, saveButton, chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu,
-//                chestDistanceDownMenu, hudTypeLabel, hudTypeSelect, optimizedLightingCheckbox);
+        //        form.getContentContainer().add(signRenderDistance, itemFrameRenderDistance, chestRenderDistance, animalHeatCheckBox,
+        //                almuraDebugGuiCheckBox, debugModeCheckBox, debugLanguagesCheckBox, debugPacksCheckBox, debugMappingsCheckBox,
+        // debugRecipesCheckBox,
+        //                graphicsButton, backButton, saveButton, chatNotificationCheckBox, itemFrameDistanceDownMenu, signDistanceDownMenu,
+        //                chestDistanceDownMenu, hudTypeLabel, hudTypeSelect, optimizedLightingCheckbox);
 
         if (this.mc.player == null) {
             addToScreen(new UIAnimatedBackground(this));

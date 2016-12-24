@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
 public class UIPropertyBar extends UIComponent {
+
     private static final int ICON_SIZE = 9;
 
     private final GuiShape iconShape;
@@ -104,12 +105,12 @@ public class UIPropertyBar extends UIComponent {
         renderer.enableTextures();
     }
 
-    public void setText(Text text) {
-        this.text = text;
-    }
-
     public Text getText() {
         return this.text;
+    }
+
+    public void setText(Text text) {
+        this.text = text;
     }
 
     @SuppressWarnings("deprecation")

@@ -14,10 +14,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public final class HUDData {
 
-    public static boolean IS_ECONOMY_PRESENT = false;
     public static final String COMPASS_CHARACTERS = "S.......W.......N.......E.......";
     public static final String TIME_FORMAT = "%2d%s";
-
+    public static boolean IS_ECONOMY_PRESENT = false;
     public static String PLAYER_CURRENCY = "1,000,000,000";
     public static String WORLD_NAME = "";
     public static int SERVER_PLAYER_COUNT, SERVER_PLAYER_MAX_COUNT = 0;

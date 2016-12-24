@@ -160,7 +160,8 @@ public class AnimatedMainMenu extends SimpleScreen {
         trademarkLabel.setPosition(PADDING, -PADDING, Anchor.BOTTOM | Anchor.LEFT);
 
         final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + GuiConstants.COPYRIGHT);
-        copyrightLabel.setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, PADDING, Anchor.BOTTOM), trademarkLabel.getAnchor());
+        copyrightLabel
+                .setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, PADDING, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
         container.add(almuraHeader, this.buttonContainer);
 

@@ -86,7 +86,7 @@ public class UIStatsPanel extends UIHUDPanel {
     }
 
     public void updateHunger() {
-        this.hungerBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getFoodStats().getFoodLevel(),0, 20,0f, 1f));
+        this.hungerBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getFoodStats().getFoodLevel(), 0, 20, 0f, 1f));
     }
 
     public void updateAir() {
@@ -94,7 +94,7 @@ public class UIStatsPanel extends UIHUDPanel {
 
         // TODO Hardcoded to not care above 300, if we can do this better in the future then we should do so
         if (this.airBar.isVisible()) {
-            this.airBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getAir(),0, 300,0f, 1f));
+            this.airBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getAir(), 0, 300, 0f, 1f));
         }
     }
 
@@ -102,7 +102,8 @@ public class UIStatsPanel extends UIHUDPanel {
         EntityLivingBase ridingEntityLivingBase = (EntityLivingBase) Minecraft.getMinecraft().player.getRidingEntity();
         this.mountHealthBar.setVisible(ridingEntityLivingBase != null);
         if (this.mountHealthBar.isVisible() && ridingEntityLivingBase != null) {
-            this.mountHealthBar.setAmount(MathUtil.ConvertToRange(ridingEntityLivingBase.getHealth(), 0, ridingEntityLivingBase.getMaxHealth(), 0f, 1f));
+            this.mountHealthBar
+                    .setAmount(MathUtil.ConvertToRange(ridingEntityLivingBase.getHealth(), 0, ridingEntityLivingBase.getMaxHealth(), 0f, 1f));
             this.mountHealthBar.setPosition(0, SimpleScreen.getPaddedY(this.airBar.isVisible() ? this.airBar : this.hungerBar, 1));
         }
     }

@@ -1,8 +1,0 @@
-{
-  "variants": {
-      "facing=north": { "model": "almura:shape/child/CEP_Priest_goddess.shape", "y": 180 },
-      "facing=south": { "model": "almura:shape/child/CEP_Priest_goddess.shape" },
-      "facing=west":  { "model": "almura:shape/child/CEP_Priest_goddess.shape", "y": 90 },
-      "facing=east":  { "model": "almura:shape/child/CEP_Priest_goddess.shape", "y": 270 }
-  }
-}

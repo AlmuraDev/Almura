@@ -53,11 +53,13 @@ public class UIDetailsPanel extends UIHUDPanel {
 
     public void updateCoordinates() {
         this.coordsLabel.setText(
-                        TextFormatting.GOLD + "X: " + TextFormatting.RESET + NUMBER_FORMAT.format(Minecraft.getMinecraft().player.getPosition().getX()) +
+                TextFormatting.GOLD + "X: " + TextFormatting.RESET + NUMBER_FORMAT.format(Minecraft.getMinecraft().player.getPosition().getX()) +
                         "\n" +
-                        TextFormatting.GOLD + "Y: " + TextFormatting.RESET + NUMBER_FORMAT.format(Minecraft.getMinecraft().player.getPosition().getY()) +
+                        TextFormatting.GOLD + "Y: " + TextFormatting.RESET + NUMBER_FORMAT
+                        .format(Minecraft.getMinecraft().player.getPosition().getY()) +
                         "\n" +
-                        TextFormatting.GOLD + "Z: " + TextFormatting.RESET + NUMBER_FORMAT.format(Minecraft.getMinecraft().player.getPosition().getZ()));
+                        TextFormatting.GOLD + "Z: " + TextFormatting.RESET + NUMBER_FORMAT
+                        .format(Minecraft.getMinecraft().player.getPosition().getZ()));
     }
 
     public void updatePlayerCount() {

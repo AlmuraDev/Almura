@@ -99,33 +99,11 @@ public abstract class SimpleScreen extends MalisisGui {
         }
     }
 
-    /**
-     * Closes this {@link SimpleScreen} and displays the parent, if present.
-     */
-    @Override
-    public final void close() {
-        Keyboard.enableRepeatEvents(false);
-        if (this.mc.player != null) {
-            this.mc.player.closeScreen();
-        }
-
-        this.onClose();
-
-        this.mc.displayGuiScreen(this.parent.isPresent() ? this.parent.get() : null);
-        if (!this.parent.isPresent()) {
-            this.mc.setIngameFocus();
-        }
-    }
-
-    protected void onClose() {
-    }
-
-    protected static void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase entityLivingBase)
-    {
+    protected static void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase entityLivingBase) {
         GlStateManager.enableColorMaterial();
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float)posX, (float)posY, 50.0F);
-        GlStateManager.scale((float)(-scale), (float)scale, (float)scale);
+        GlStateManager.translate((float) posX, (float) posY, 50.0F);
+        GlStateManager.scale((float) (-scale), (float) scale, (float) scale);
         GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
         float renderYawOffset = entityLivingBase.renderYawOffset;
         float rotationYaw = entityLivingBase.rotationYaw;
@@ -135,10 +113,10 @@ public abstract class SimpleScreen extends MalisisGui {
         GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
         GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(-((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
-        entityLivingBase.renderYawOffset = (float)Math.atan((double)(mouseX / 40.0F)) * 20.0F;
-        entityLivingBase.rotationYaw = (float)Math.atan((double)(mouseX / 40.0F)) * 40.0F;
-        entityLivingBase.rotationPitch = -((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F;
+        GlStateManager.rotate(-((float) Math.atan((double) (mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
+        entityLivingBase.renderYawOffset = (float) Math.atan((double) (mouseX / 40.0F)) * 20.0F;
+        entityLivingBase.rotationYaw = (float) Math.atan((double) (mouseX / 40.0F)) * 40.0F;
+        entityLivingBase.rotationPitch = -((float) Math.atan((double) (mouseY / 40.0F))) * 20.0F;
         entityLivingBase.rotationYawHead = entityLivingBase.rotationYaw;
         entityLivingBase.prevRotationYawHead = entityLivingBase.rotationYaw;
         GlStateManager.translate(0.0F, 0.0F, 0.0F);
@@ -158,6 +136,27 @@ public abstract class SimpleScreen extends MalisisGui {
         GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GlStateManager.disableTexture2D();
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+    }
+
+    /**
+     * Closes this {@link SimpleScreen} and displays the parent, if present.
+     */
+    @Override
+    public final void close() {
+        Keyboard.enableRepeatEvents(false);
+        if (this.mc.player != null) {
+            this.mc.player.closeScreen();
+        }
+
+        this.onClose();
+
+        this.mc.displayGuiScreen(this.parent.isPresent() ? this.parent.get() : null);
+        if (!this.parent.isPresent()) {
+            this.mc.setIngameFocus();
+        }
+    }
+
+    protected void onClose() {
     }
 }
 

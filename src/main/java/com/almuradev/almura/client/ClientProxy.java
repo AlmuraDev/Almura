@@ -7,6 +7,7 @@ package com.almuradev.almura.client;
 
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Constants;
+import com.almuradev.almura.api.client.model.obj.OBJModelLoader;
 import com.almuradev.almura.client.gui.screen.ingame.SimpleIngameMenu;
 import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
 import com.almuradev.almura.client.gui.screen.ingame.hud.LegacyHUD;
@@ -23,7 +24,7 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -74,7 +75,9 @@ public final class ClientProxy extends CommonProxy {
             }
         }
 
-        OBJLoader.INSTANCE.addDomain(Constants.Plugin.ID);
+        ModelLoaderRegistry.registerLoader(OBJModelLoader.instance);
+        OBJModelLoader.instance.registerDomain(Constants.Plugin.ID);
+
         MinecraftForge.EVENT_BUS.register(this);
 
         super.onGamePreInitialization(event);
