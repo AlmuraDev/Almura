@@ -8,6 +8,7 @@
     "mixins": [
         "block.MixinBlock",
         "block.MixinBlockCrops",
+        "block.MixinBlockFarmland",
         "block.MixinBlockHorizontal",
         "creativetab.MixinCreativeTabs"
     ],
