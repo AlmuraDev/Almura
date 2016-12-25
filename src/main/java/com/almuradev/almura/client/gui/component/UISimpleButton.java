@@ -5,42 +5,55 @@
  */
 package com.almuradev.almura.client.gui.component;
 
-import com.almuradev.almura.Constants;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.renderer.icon.provider.GuiIconProvider;
 
 public class UISimpleButton extends UIButton {
 
     public UISimpleButton(MalisisGui gui) {
         super(gui);
-        this.construct();
     }
 
     public UISimpleButton(MalisisGui gui, String text) {
         super(gui, text);
-        this.construct();
     }
 
     public UISimpleButton(MalisisGui gui, UIImage image) {
         super(gui, image);
-        this.construct();
     }
 
-    private void construct() {
-        this.iconProvider = new GuiIconProvider(Constants.Gui.ICON_EMPTY);
-        this.iconPressedProvider = new GuiIconProvider(Constants.Gui.ICON_EMPTY);
-    }
-
+    // Draw nothing to avoid drawing the background images
     @Override
     public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        super.drawBackground(renderer, mouseX, mouseY, partialTick);
     }
 
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTicks) {
-        super.drawForeground(renderer, mouseX, mouseY, partialTicks);
+        int w;
+        int h;
+
+        if (image != null) {
+            w = image.getWidth();
+            h = image.getHeight();
+        } else {
+            w = (int) font.getStringWidth(text, fontOptions);
+            h = (int) font.getStringHeight(fontOptions);
+        }
+
+        int x = (width - w) / 2;
+        int y = (height - h) / 2;
+
+        x += offsetX;
+        y += offsetY;
+
+        if (image != null) {
+            image.setPosition(x, y);
+            image.setZIndex(zIndex);
+            image.draw(renderer, mouseX, mouseY, partialTicks);
+        } else {
+            renderer.drawText(font, text, x, y, zIndex, isHovered() ? hoveredFontOptions : fontOptions);
+        }
     }
 }
