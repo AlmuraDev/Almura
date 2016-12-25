@@ -10,6 +10,10 @@ package com.almuradev.almura.mixin.interfaces;
  */
 public interface IMixinTextureAtlasSprite {
 
+    void setOriginX(int originX);
+
+    void setOriginY(int originY);
+
     void setMinU(float minU);
 
     void setMinV(float minV);

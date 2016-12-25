@@ -8,7 +8,6 @@ import com.almuradev.almura.api.client.model.obj.geometry.VertexNormal;
 import com.almuradev.almura.api.client.model.obj.geometry.VertexTextureCoordinate;
 import com.almuradev.almura.api.client.model.obj.material.MaterialDefinition;
 import com.almuradev.almura.mixin.interfaces.IMixinTextureAtlasSprite;
-import com.almuradev.almura.util.MathUtil;
 import com.google.common.base.Function;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -80,14 +79,6 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
                 diffuseSprite = ModelLoader.White.INSTANCE;
             }
 
-            // Instruct the renderer to use the entire texture size
-            ((IMixinTextureAtlasSprite) diffuseSprite).setMaxU(1f);
-            ((IMixinTextureAtlasSprite) diffuseSprite).setMaxV(1f);
-
-            // The stitcher will upscale a texture to the next power of two...we must prepare to scale the uvs in-case this happens
-            final float scaleU = (float) MathUtil.getNextPowerOfTwo(diffuseSprite.getIconWidth()) / (float) diffuseSprite.getIconWidth();
-            final float scaleV = (float) MathUtil.getNextPowerOfTwo(diffuseSprite.getIconHeight()) / (float) diffuseSprite.getIconHeight();
-
             Face particleFace = null;
 
             for (Face face : group.getFaces()) {
@@ -123,7 +114,7 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
                                     v = 1f;
                                 }
 
-                                quadBuilder.put(e, u / scaleU, v / scaleV);
+                                quadBuilder.put(e, diffuseSprite.getInterpolatedU(u * 16f), diffuseSprite.getInterpolatedV(v * 16f));
                                 break;
                             case NORMAL:
                                 if (normal != null) {

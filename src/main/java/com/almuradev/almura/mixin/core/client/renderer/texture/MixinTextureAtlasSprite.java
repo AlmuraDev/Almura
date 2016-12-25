@@ -13,10 +13,22 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(TextureAtlasSprite.class)
 public abstract class MixinTextureAtlasSprite implements IMixinTextureAtlasSprite {
 
+    @Shadow protected int originX;
+    @Shadow protected int originY;
     @Shadow protected float minU;
     @Shadow protected float maxU;
     @Shadow protected float minV;
     @Shadow protected float maxV;
+
+    @Override
+    public void setOriginX(int originX) {
+        this.originX = originX;
+    }
+
+    @Override
+    public void setOriginY(int originY) {
+        this.originY = originY;
+    }
 
     @Override
     public void setMinU(float minU) {
