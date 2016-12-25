@@ -31,7 +31,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements ICom
         super(p_i1594_1_);        
     }
     
-    public float getBreakSpeed(Block p_146096_1_, boolean p_146096_2_, int meta, int x, int y, int z) {
+    public float getBreakSpeed(Block p_146096_1_, boolean p_146096_2_, int meta, int x, int y, int z) {        
         ItemStack stack = inventory.getCurrentItem();
         float f = (stack == null ? 1.0F : stack.getItem().getDigSpeed(stack, p_146096_1_, meta));
 
