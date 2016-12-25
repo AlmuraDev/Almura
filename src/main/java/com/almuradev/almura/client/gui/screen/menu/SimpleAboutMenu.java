@@ -5,13 +5,19 @@
  */
 package com.almuradev.almura.client.gui.screen.menu;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.ClientProxy;
 import com.almuradev.almura.client.gui.GuiRemoteTexture;
 import com.almuradev.almura.client.gui.component.UISimpleList;
 import com.almuradev.almura.client.gui.screen.SimpleContainerScreen;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
+import com.almuradev.almura.configuration.MappedConfigurationAdapter;
+import com.almuradev.almura.configuration.category.gui.about.AboutCategory;
+import com.almuradev.almura.configuration.category.gui.about.AboutEntryCategory;
+import com.almuradev.almura.configuration.type.ClientConfiguration;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
@@ -31,6 +37,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
@@ -38,8 +45,10 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -62,7 +71,66 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         this.list.setPosition(4, 0);
         this.list.setElementSpacing(4);
         this.list.setUnselect(false);
+
+        // Add defaults if they don't exist.
+        final MappedConfigurationAdapter<ClientConfiguration> configAdapter = ((ClientProxy) Almura.proxy).getPlatformConfigAdapter();
+        final ClientConfiguration configuration = configAdapter.getConfig();
+        final AboutCategory aboutCategory = configuration.gui.about;
+        if (configuration.gui.about.entries.isEmpty()) {
+            // Zidane
+            aboutCategory.entries.add(new AboutEntryCategory(TextColors.BLUE, "almura.menu.about.zidane.name",
+                    "almura.menu.about.zidane.description",
+                    "85271de5-8380-4db5-9f05-ada3b4aa785c",
+                    "almura.menu.about.zidane.titles.1",
+                    "almura.menu.about.zidane.titles.2",
+                    "almura.menu.about.zidane.titles.3"));
+            // Dockter
+            aboutCategory.entries.add(new AboutEntryCategory(TextColors.GOLD, "almura.menu.about.dockter.name",
+                    "almura.menu.about.dockter.description",
+                    "bcbce24c-20fc-4914-8f49-5aaed0cd3696",
+                    "almura.menu.about.dockter.titles.1",
+                    "almura.menu.about.dockter.titles.2",
+                    "almura.menu.about.dockter.titles.3"));
+            // Grinch
+            aboutCategory.entries.add(new AboutEntryCategory(TextColors.DARK_GREEN, "almura.menu.about.grinch.name",
+                    "almura.menu.about.grinch.description",
+                    "7c104888-df99-4224-a8ba-2c4e15dbc777",
+                    "almura.menu.about.grinch.titles.1",
+                    "almura.menu.about.grinch.titles.2",
+                    "almura.menu.about.grinch.titles.3"));
+            // Wifee
+            aboutCategory.entries.add(new AboutEntryCategory(TextColors.LIGHT_PURPLE, "almura.menu.about.wifee.name",
+                    "almura.menu.about.wifee.description",
+                    "5f757396-8bc7-4dff-8b1f-37fd454a86b7",
+                    "almura.menu.about.wifee.titles.1"));
+            // Wolfeye
+            aboutCategory.entries.add(new AboutEntryCategory(TextColors.RED, "almura.menu.about.wolfeye.name",
+                    "almura.menu.about.wolfeye.description",
+                    "33f9598e-9890-4f76-90ff-12cd73ca1e3c",
+                    "almura.menu.about.wolfeye.titles.1",
+                    "almura.menu.about.wolfeye.titles.2"));
+            // Mumfrey
+            aboutCategory.entries.add(new AboutEntryCategory(TextColors.GRAY, "almura.menu.about.mumfrey.name",
+                    "almura.menu.about.mumfrey.description",
+                    "e8e0361e-9b3b-481a-b06a-5c314a6c1ef0",
+                    "almura.menu.about.mumfrey.titles.1",
+                    "almura.menu.about.mumfrey.titles.2"));
+            // Blood
+            aboutCategory.entries.add(new AboutEntryCategory(TextColors.DARK_RED, "almura.menu.about.blood.name",
+                    "almura.menu.about.blood.description",
+                    "87caf570-b1fc-4100-bd95-3e7f1fa2e153",
+                    "almura.menu.about.blood.titles.1",
+                    "almura.menu.about.blood.titles.2"));
+            try {
+                ((ClientProxy) Almura.proxy).getPlatformConfigAdapter().save();
+            } catch (IOException | ObjectMappingException e) {
+                throw new RuntimeException("Failed to save config for class [" + configAdapter.getConfigClass() + "] in [" + configAdapter
+                        .getConfigPath() + "]!", e);
+            }
+        }
+
         final List<AboutListElement> elementList = Lists.newArrayList();
+        // Static entry
         elementList.add(new AboutListElement(
                 this,
                 this.list,
@@ -87,111 +155,29 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                         "  • Customized GUI for a more unique experience.", Text.NEW_LINE,
                         "  • Information guide system displayed in-game.", Text.NEW_LINE,
                         "  • Player accessory system for hats, wings, capes, earrings and more.")));
-        elementList.add(new AboutListElement(
-                this,
-                this.list,
-                new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.LOCATION_AVATAR_GENERIC,
-                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_ZIDANE + ".png"),
-                        String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_ZIDANE.toString(), 32),
-                        32, 32), null),
-                Text.of(TextColors.BLUE, "Zidane"),
-                Text.of(TextColors.WHITE, "Zidane is the biggest driving force behind Almura. Without him this project would simply "
-                                + "not be where it stands today.",
-                        Text.NEW_LINE, Text.NEW_LINE,
-                        TextStyles.BOLD, "Titles", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
-                        "  • Lead developer and co-founder of SpongePowered", Text.NEW_LINE,
-                        "  • Lead developer of AlmuraDev", Text.NEW_LINE,
-                        "  • Former Spoutcraft/Spout developer")));
-        elementList.add(new AboutListElement(
-                this,
-                this.list,
-                new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.LOCATION_AVATAR_GENERIC,
-                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_DOCKTER + ".png"),
-                        String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_DOCKTER.toString(), 32),
-                        32, 32), null),
-                Text.of(TextColors.GOLD, "Dockter"),
-                Text.of(TextColors.WHITE, "Dockter is the owner of Almura and AlmuraDev.",
-                        Text.NEW_LINE, Text.NEW_LINE,
-                        TextStyles.BOLD, "Titles", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
-                        "  • Developer, Lead Tester, and Owner for/of Almura", Text.NEW_LINE,
-                        "  • Chief Financial Officer for Sponge Foundation", Text.NEW_LINE,
-                        "  • Former Spoutcraft developer")));
-        elementList.add(new AboutListElement(
-                this,
-                this.list,
-                new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.LOCATION_AVATAR_GENERIC,
-                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_GRINCH + ".png"),
-                        String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_GRINCH.toString(), 32),
-                        32, 32), null),
-                Text.of(TextColors.DARK_GREEN, "Grinch"),
-                Text.of(TextColors.WHITE, "Grinch is a developer for Almura and the designer behind a majority of GUI elements.",
-                        Text.NEW_LINE, Text.NEW_LINE,
-                        TextStyles.BOLD, "Titles", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
-                        "  • Moderator and contributor to Sponge", Text.NEW_LINE,
-                        "  • Solder administrator for AlmuraDev", Text.NEW_LINE,
-                        "  • Developer for Almura")));
-        elementList.add(new AboutListElement(
-                this,
-                this.list,
-                new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.LOCATION_AVATAR_GENERIC,
-                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_WIFEE + ".png"),
-                        String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_WIFEE.toString(), 32),
-                        32, 32), null),
-                Text.of(TextColors.LIGHT_PURPLE, "Wifee"),
-                Text.of(TextColors.WHITE, "Wifee is the designer behind a majority of graphics and models seen in Almura.",
-                        Text.NEW_LINE, Text.NEW_LINE,
-                        TextStyles.BOLD, "Titles", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
-                        "  • Lead Graphics and Model artist for Almura")));
-        elementList.add(new AboutListElement(
-                this,
-                this.list,
-                new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.LOCATION_AVATAR_GENERIC,
-                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_WOLFEYE + ".png"),
-                        String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_WOLFEYE.toString(), 32),
-                        32, 32), null),
-                Text.of(TextColors.RED, "Wolfeye"),
-                Text.of(TextColors.WHITE, "Wolfeye has stuck with Almura through both good and bad times. She is by far the most loyal person to "
-                                + "Almura.",
-                        Text.NEW_LINE, Text.NEW_LINE,
-                        TextStyles.BOLD, "Titles", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
-                        "  • Lead Moderator", Text.NEW_LINE,
-                        "  • Destroyer of Worlds")));
-        elementList.add(new AboutListElement(
-                this,
-                this.list,
-                new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.LOCATION_AVATAR_GENERIC,
-                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_MUMFREY + ".png"),
-                        String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_MUMFREY.toString(), 32),
-                        32, 32), null),
-                Text.of(TextColors.GRAY, "Mumfrey"),
-                Text.of(TextColors.WHITE, "Mumfrey is the brains behind the Mixin technology used in Almura.",
-                        Text.NEW_LINE, Text.NEW_LINE,
-                        TextStyles.BOLD, "Titles", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
-                        "  • Developer for Sponge", Text.NEW_LINE,
-                        "  • Creator and maintainer of Mixin ASM for Java")));
-        elementList.add(new AboutListElement(
-                this,
-                this.list,
-                new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.LOCATION_AVATAR_GENERIC,
-                        new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_BLOOD + ".png"),
-                        String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_BLOOD.toString(), 32),
-                        32, 32), null),
-                Text.of(TextColors.DARK_RED, "Blood"),
-                Text.of(TextColors.WHITE, "Acknowledgement for past contributions to Almura such as Cauldron.",
-                        Text.NEW_LINE, Text.NEW_LINE,
-                        TextStyles.BOLD, "Titles", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
-                        "  • Developer and co-founder of SpongePowered", Text.NEW_LINE,
-                        "  • Former owner/developer of Cauldron")));
+
+        aboutCategory.entries.forEach(entry -> {
+            Text titles = Text.EMPTY;
+            for (String title : entry.titles) {
+                titles = titles.toBuilder().append(Text.of("  • ", I18n.format(title)), Text.NEW_LINE).build();
+            }
+            elementList.add(new AboutListElement(
+                    this,
+                    this.list,
+                    new UIImage(this, new GuiRemoteTexture(
+                            Constants.Gui.LOCATION_AVATAR_GENERIC,
+                            new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + entry.uniqueId + ".png"),
+                            String.format(Constants.Gui.SKIN_URL_BASE, UUID.fromString(entry.uniqueId), 32),
+                            32, 32), null),
+                    Text.of(entry.color, I18n.format(entry.name)),
+                    Text.of(TextColors.WHITE, I18n.format(entry.description),
+                            Text.NEW_LINE, Text.NEW_LINE,
+                            TextStyles.BOLD, I18n.format("almura.menu.about.titles"), TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
+                            titles)));
+        });
 
         final UIButton doneButton = new UIButtonBuilder(this)
-                .text(Text.of("Done"))
+                .text(Text.of(I18n.format("gui.done")))
                 .size(98, 20)
                 .position(0, -15, 1)
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)

@@ -101,13 +101,6 @@ public class Constants {
         public static final GuiIcon ICON_FA_TROPHY;
         public static final GuiIcon ICON_FA_BOOK;
         public static final GuiIcon ICON_FA_SHOPPING_BAG;
-        public static final UUID UNIQUE_ID_BLOOD;
-        public static final UUID UNIQUE_ID_DOCKTER;
-        public static final UUID UNIQUE_ID_GRINCH;
-        public static final UUID UNIQUE_ID_MUMFREY;
-        public static final UUID UNIQUE_ID_WIFEE;
-        public static final UUID UNIQUE_ID_WOLFEYE;
-        public static final UUID UNIQUE_ID_ZIDANE;
         public static final int BUTTON_WIDTH_LONG = 200;
         public static final int BUTTON_WIDTH_SHORT = 98;
         public static final int BUTTON_WIDTH_TINY = 64;
@@ -148,14 +141,6 @@ public class Constants {
             ICON_FA_TROPHY = SPRITE_SHEET_ALMURA.getIcon(96, 90, 16, 14);
             ICON_FA_BOOK = SPRITE_SHEET_ALMURA.getIcon(112, 90, 16, 14);
             ICON_FA_SHOPPING_BAG = SPRITE_SHEET_ALMURA.getIcon(128, 90, 14, 14);
-
-            UNIQUE_ID_BLOOD = UUID.fromString("87caf570-b1fc-4100-bd95-3e7f1fa2e153");
-            UNIQUE_ID_DOCKTER = UUID.fromString("bcbce24c-20fc-4914-8f49-5aaed0cd3696");
-            UNIQUE_ID_GRINCH = UUID.fromString("7c104888-df99-4224-a8ba-2c4e15dbc777");
-            UNIQUE_ID_MUMFREY = UUID.fromString("e8e0361e-9b3b-481a-b06a-5c314a6c1ef0");
-            UNIQUE_ID_WIFEE = UUID.fromString("5f757396-8bc7-4dff-8b1f-37fd454a86b7");
-            UNIQUE_ID_WOLFEYE = UUID.fromString("33f9598e-9890-4f76-90ff-12cd73ca1e3c");
-            UNIQUE_ID_ZIDANE = UUID.fromString("85271de5-8380-4db5-9f05-ada3b4aa785c");
         }
     }
 }
