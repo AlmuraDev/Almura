@@ -26,6 +26,7 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.renderer.font.FontOptions;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -49,7 +50,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
     private UITextField textField;
 
     public SimpleAboutMenu(@Nullable SimpleScreen parent) {
-        super(parent, Text.of("About"));
+        super(parent, Text.of(I18n.format("almura.menu.about")));
     }
 
     @SuppressWarnings({"deprecation", "unchecked"})

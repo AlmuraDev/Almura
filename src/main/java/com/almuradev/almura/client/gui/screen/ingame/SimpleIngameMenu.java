@@ -21,6 +21,7 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiShareToLan;
 import net.minecraft.client.gui.achievement.GuiAchievements;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Sponge;
@@ -54,7 +55,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         final UIButton backButton = new UIButtonBuilder(this)
-                .text("Back to game")
+                .text(I18n.format("menu.returnToGame"))
                 .size(220, 20)
                 .position(0, SimpleScreen.getPaddedY(almuraHeader, 10))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -78,7 +79,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of("Shop"))
+                .tooltip(Text.of(I18n.format("almura.menu.shop")))
                 .build("button.shop");
 
         final UIButton guideButton = new UIButtonBuilder(this)
@@ -88,7 +89,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(shopButton, PADDING), shopButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of("Guide"))
+                .tooltip(Text.of(I18n.format("almura.menu.guide")))
                 .enabled(guideAvailable)
                 .build("button.guide");
 
@@ -99,7 +100,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(guideButton, PADDING), guideButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of("Map"))
+                .tooltip(Text.of(I18n.format("item.map.name")))
                 .build("button.instance");
 
         final UIButton statisticsButton = new UIButtonBuilder(this)
@@ -109,7 +110,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(mapButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of("Statistics"))
+                .tooltip(Text.of(I18n.format("gui.stats")))
                 .build("button.statistics");
 
         final UIButton achievementsButton = new UIButtonBuilder(this)
@@ -119,7 +120,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(statisticsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of("Achievements"))
+                .tooltip(Text.of("gui.achievements"))
                 .build("button.achievements");
 
         final UIButton forumsButton = new UIButtonBuilder(this)
@@ -129,7 +130,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(achievementsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of("Forums"))
+                .tooltip(Text.of(I18n.format("almura.menu.forums")))
                 .build("button.forums");
 
         final UIButton lanButton = new UIButtonBuilder(this)
@@ -139,7 +140,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(forumsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of("Open to LAN"))
+                .tooltip(Text.of(I18n.format("menu.shareToLan")))
                 .enabled(lanAvaiable)
                 .build("button.lan");
 
@@ -150,12 +151,12 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(lanButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of("Options"))
+                .tooltip(Text.of(I18n.format("menu.options")))
                 .build("button.options");
 
         final UIButton quitButton = new UIButtonBuilder(this)
                 .container(contentContainer)
-                .text(Text.of("Quit"))
+                .text(Text.of(I18n.format("almura.menu.quit")))
                 .fro(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_LIGHT_RED).shadow(true).build())
                 .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(Constants.Gui.BUTTON_WIDTH_SHORT, Constants.Gui.BUTTON_HEIGHT)

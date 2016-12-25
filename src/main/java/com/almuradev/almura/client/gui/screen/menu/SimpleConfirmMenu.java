@@ -11,6 +11,7 @@ import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -48,7 +49,7 @@ public class SimpleConfirmMenu extends SimpleScreen {
         messageLabel2.setPosition(0, +5, Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the close button
-        final UIButton closeButton = new UIButton(this, "Close");
+        final UIButton closeButton = new UIButton(this, I18n.format("almura.menu.close"));
         closeButton.setSize(50, 16);
         closeButton.setPosition(-5, -5, Anchor.RIGHT | Anchor.BOTTOM);
         closeButton.setName("button.close");

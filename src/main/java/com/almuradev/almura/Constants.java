@@ -74,8 +74,6 @@ public class Constants {
         public static final String SHOP_URL = "http://www.almura.com"; // TODO: Proper URL
         public static final String SKIN_URL_BASE = "https://mc-heads.net/avatar/%s/%d.png";
         public static final String STATISTICS_URL = "http://srv1.almuramc.com:8080";
-        public static final String TRADEMARK = "Minecraft is a registered trademark of Mojang AB";
-        public static final String COPYRIGHT = "Copyright AlmuraDev 2012 - 2016";
         public static final ResourceLocation LOCATION_SPRITE_SHEET_ALMURA_GUI;
         public static final ResourceLocation LOCATION_SPRITE_SHEET_VANILLA_ACHIEVEMENT_BACKGROUND;
         public static final ResourceLocation LOCATION_ALMURA_LOGO;

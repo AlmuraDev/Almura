@@ -13,6 +13,7 @@ import net.minecraft.client.gui.ServerListEntryNormal;
 import net.minecraft.client.gui.ServerSelectionList;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
+import net.minecraft.client.resources.I18n;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,8 +26,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiMultiplayer.class)
 public abstract class MixinGuiMultiplayer extends GuiScreen {
 
-    private static final ServerData PUBLIC_SERVER_DATA = new ServerData("Live Server", "srv1.almuramc.com", false);
-    private static final ServerData DEV_SERVER_DATA = new ServerData("Dev Server", "dev.almuramc.com", false);
+    private static final ServerData PUBLIC_SERVER_DATA = new ServerData(I18n.format("almura.menu.liveServer"), "srv1.almuramc.com", false);
+    private static final ServerData DEV_SERVER_DATA = new ServerData(I18n.format("almura.menu.devServer"), "dev.almuramc.com", false);
     @Shadow private ServerSelectionList serverListSelector;
     @Shadow private GuiButton btnDeleteServer;
     @Shadow private GuiButton btnEditServer;

@@ -1,0 +1,14 @@
+almura.menu.shop=Shop
+almura.menu.guide=Guide
+almura.menu.forums=Forums
+almura.menu.quit=Quit
+almura.menu.mods=Mods
+almura.menu.about=About
+almura.menu.issues=Issues
+almura.menu.close=Close
+almura.menu.trademark=Minecraft is a registered trademark of Mojang AB
+almura.menu.copyright=Copyright AlmuraDev 2012 - 2017
+almura.menu.opengl1=Warning! This graphics card does not support OpenGL 2.0.
+almura.menu.opengl2=Future versions of Minecraft may not be compatible.
+almura.menu.liveServer=Live Server
+almura.menu.devServer=Dev Server

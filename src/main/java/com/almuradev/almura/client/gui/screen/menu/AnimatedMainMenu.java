@@ -22,6 +22,7 @@ import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.relauncher.Side;
@@ -72,7 +73,7 @@ public class AnimatedMainMenu extends SimpleScreen {
 
         final UIButton singleplayerButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .text(Text.of("Singleplayer"))
+                .text(Text.of(I18n.format("menu.singleplayer")))
                 .size(Constants.Gui.BUTTON_WIDTH_LONG, Constants.Gui.BUTTON_HEIGHT)
                 .position(0, 0)
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -81,7 +82,7 @@ public class AnimatedMainMenu extends SimpleScreen {
 
         final UIButton multiplayerButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .text(Text.of("Multiplayer"))
+                .text(Text.of(I18n.format("menu.multiplayer")))
                 .size(Constants.Gui.BUTTON_WIDTH_LONG, Constants.Gui.BUTTON_HEIGHT)
                 .position(0, SimpleScreen.getPaddedY(singleplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -90,7 +91,7 @@ public class AnimatedMainMenu extends SimpleScreen {
 
         final UIButton optionsButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .text(Text.of("Options"))
+                .text(Text.of(I18n.format("menu.options")))
                 .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
                 .position(-68, SimpleScreen.getPaddedY(multiplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -99,7 +100,7 @@ public class AnimatedMainMenu extends SimpleScreen {
 
         final UIButton modsButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .text(Text.of("Mods"))
+                .text(Text.of(I18n.format("almura.menu.mods")))
                 .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
                 .position(SimpleScreen.getPaddedX(optionsButton, PADDING), SimpleScreen.getPaddedY(multiplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -108,7 +109,7 @@ public class AnimatedMainMenu extends SimpleScreen {
 
         final UIButton aboutButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .text(Text.of("About"))
+                .text(Text.of(I18n.format("almura.menu.about")))
                 .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
                 .position(SimpleScreen.getPaddedX(modsButton, PADDING), SimpleScreen.getPaddedY(multiplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -117,7 +118,7 @@ public class AnimatedMainMenu extends SimpleScreen {
 
         final UIButton quitButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .text(Text.of("Quit"))
+                .text(Text.of(I18n.format("almura.menu.quit")))
                 .fro(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_LIGHT_RED).shadow(true).build())
                 .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(Constants.Gui.BUTTON_WIDTH_LONG, Constants.Gui.BUTTON_HEIGHT)
@@ -133,7 +134,7 @@ public class AnimatedMainMenu extends SimpleScreen {
                 .position(-PADDING, -PADDING)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(Text.of("Forums"))
+                .tooltip(Text.of(I18n.format("almura.menu.forums")))
                 .build("button.forums");
 
         final UIButton issuesButton = new UIButtonBuilder(this)
@@ -143,7 +144,7 @@ public class AnimatedMainMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(forumsButton, PADDING, Anchor.RIGHT), forumsButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(Text.of("Issues"))
+                .tooltip(Text.of(I18n.format(I18n.format("almura.menu.issues"))))
                 .build("button.issues");
 
         final UIButton shopButton = new UIButtonBuilder(this)
@@ -153,13 +154,13 @@ public class AnimatedMainMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(issuesButton, PADDING, Anchor.RIGHT), issuesButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(Text.of("Shop"))
+                .tooltip(Text.of(I18n.format("almura.menu.about")))
                 .build("button.shop");
 
-        final UILabel trademarkLabel = new UILabel(this, TextFormatting.YELLOW + Constants.Gui.TRADEMARK);
+        final UILabel trademarkLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.trademark"));
         trademarkLabel.setPosition(PADDING, -PADDING, Anchor.BOTTOM | Anchor.LEFT);
 
-        final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + Constants.Gui.COPYRIGHT);
+        final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.copyright"));
         copyrightLabel
                 .setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, PADDING, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
@@ -180,11 +181,11 @@ public class AnimatedMainMenu extends SimpleScreen {
         // OpenGL Warning
         if (!GLContext.getCapabilities().OpenGL20 && !OpenGlHelper.areShadersSupported()) {
             final UILabel glWarning1 = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextStyles.BOLD,
-                    TextColors.DARK_RED, "Warning! This graphics card does not support OpenGL 2.0.")));
+                    TextColors.DARK_RED, I18n.format("almura.menu.opengl1"))));
             glWarning1.setPosition(2, 2, Anchor.TOP | Anchor.LEFT);
 
             final UILabel glWarning2 = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextStyles.BOLD,
-                    TextColors.DARK_RED, "Future versions of Minecraft may not be compatible.")));
+                    TextColors.DARK_RED, I18n.format("almura.menu.opengl2"))));
             glWarning2.setPosition(2, SimpleScreen.getPaddedY(glWarning1, 2), Anchor.TOP | Anchor.LEFT);
 
             addToScreen(glWarning1);
