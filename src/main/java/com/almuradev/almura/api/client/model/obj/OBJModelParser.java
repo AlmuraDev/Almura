@@ -330,7 +330,7 @@ public class OBJModelParser {
                             final int lastSlashIndex = parentLocation.getResourcePath().lastIndexOf("/");
 
                             if (lastSlashIndex != -1) {
-                                parentPath = "textures/" + parentLocation.getResourcePath().substring(lastSlashIndex + 1,
+                                parentPath = parentLocation.getResourcePath().substring(lastSlashIndex + 1,
                                         parentLocation.getResourcePath().length());
                             }
                         }

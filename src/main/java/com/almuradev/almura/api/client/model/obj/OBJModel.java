@@ -11,34 +11,26 @@ import com.almuradev.almura.api.client.model.obj.geometry.Group;
 import com.almuradev.almura.api.client.model.obj.geometry.Vertex;
 import com.almuradev.almura.api.client.model.obj.geometry.VertexNormal;
 import com.almuradev.almura.api.client.model.obj.geometry.VertexTextureCoordinate;
+import com.almuradev.almura.api.client.model.obj.material.MaterialDefinition;
 import com.almuradev.almura.api.client.model.obj.material.MaterialLibrary;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.IModelCustomData;
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.client.model.IRetexturableModel;
 import net.minecraftforge.common.model.IModelState;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
-
-import javax.annotation.Nullable;
-import javax.vecmath.Matrix4f;
 
 /**
  * While MinecraftForge does have an OBJLoader and OBJModel, this approach doesn't require changes on the modeller's part when exporting from
@@ -48,21 +40,34 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
 
     private final ResourceLocation source;
     private final String name;
-    private final MaterialLibrary library;
-    private final LinkedHashMap<Vertex, Integer> vertices;
-    private final LinkedHashMap<VertexNormal, Integer> normals;
-    private final LinkedHashMap<VertexTextureCoordinate, Integer> textureCoordinates;
+    private final MaterialLibrary materialLibrary;
     private final Set<Group> groups;
+    private final Set<ResourceLocation> textures;
 
-    private OBJModel(ResourceLocation source, String name, MaterialLibrary library, LinkedHashMap<Vertex, Integer> vertices,
-            LinkedHashMap<VertexNormal, Integer> normals, LinkedHashMap<VertexTextureCoordinate, Integer> textureCoordinates, Set<Group> groups) {
+    private OBJModel(ResourceLocation source, String name, MaterialLibrary materialLibrary, Set<Group> groups) {
         this.source = source;
         this.name = name;
-        this.library = library;
-        this.vertices = vertices;
-        this.normals = normals;
-        this.textureCoordinates = textureCoordinates;
+        this.materialLibrary = materialLibrary;
         this.groups = groups;
+        this.textures = new HashSet<>();
+
+        for (MaterialDefinition materialDefinition : materialLibrary.getMaterialDefinitions()) {
+
+            final ResourceLocation diffuseLocation = materialDefinition.getDiffuseTexture().orElse(null);
+
+            if (diffuseLocation == null) {
+                continue;
+            }
+
+            if (diffuseLocation.getResourcePath().endsWith(".png")) {
+                this.textures.add(new ResourceLocation(diffuseLocation.getResourceDomain(), diffuseLocation
+                        .getResourcePath().split("\\.")[0]));
+            } else {
+                this.textures.add(diffuseLocation);
+            }
+
+
+        }
     }
 
     public static Builder builder() {
@@ -81,17 +86,17 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
 
     @Override
     public Collection<ResourceLocation> getDependencies() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public Collection<ResourceLocation> getTextures() {
-        return null;
+        return textures;
     }
 
     @Override
     public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
-        return null;
+        return new OBJBakedModel(this, state, format, bakedTextureGetter);
     }
 
     @Override
@@ -99,59 +104,29 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
         return null;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public ResourceLocation getSource() {
+        return this.source;
+    }
+
+    public MaterialLibrary getMaterialLibrary() {
+        return this.materialLibrary;
+    }
+
+    public Set<Group> getGroups() {
+        return this.groups;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("name", this.name)
                 .add("source", this.source)
-                .add("vertices", this.vertices)
-                .add("normals", this.normals)
-                .add("textureCoordinates", this.textureCoordinates)
                 .add("groups", this.groups)
                 .toString();
-    }
-
-    public static final class Baked implements IPerspectiveAwareModel {
-
-        @Override
-        public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-            return null;
-        }
-
-        @Override
-        public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-            return null;
-        }
-
-        @Override
-        public boolean isAmbientOcclusion() {
-            return false;
-        }
-
-        @Override
-        public boolean isGui3d() {
-            return false;
-        }
-
-        @Override
-        public boolean isBuiltInRenderer() {
-            return false;
-        }
-
-        @Override
-        public TextureAtlasSprite getParticleTexture() {
-            return null;
-        }
-
-        @Override
-        public ItemCameraTransforms getItemCameraTransforms() {
-            return null;
-        }
-
-        @Override
-        public ItemOverrideList getOverrides() {
-            return null;
-        }
     }
 
     public static final class Builder {
@@ -160,7 +135,7 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
         private LinkedHashMap<Vertex, Integer> vertices = new LinkedHashMap<>();
         private LinkedHashMap<VertexNormal, Integer> normals = new LinkedHashMap<>();
         private LinkedHashMap<VertexTextureCoordinate, Integer> textureCoordinates = new LinkedHashMap<>();
-        private Set<Group> groups = new HashSet<>();
+        private Set<Group> groups = new LinkedHashSet<>();
 
         public Builder materialLibrary(MaterialLibrary materialLibrary) {
             this.materialLibrary = materialLibrary;
@@ -213,10 +188,9 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
             checkState(source != null, "Source cannot be null!");
             checkState(name != null, "Name cannot be null!");
             checkState(!name.isEmpty(), "Name cannot be empty!");
-            checkState(!this.vertices.isEmpty(), "Vertices cannot be empty!");
             checkState(!this.groups.isEmpty(), "Groups cannot be empty!");
 
-            return new OBJModel(source, name, this.materialLibrary, this.vertices, this.normals, this.textureCoordinates, this.groups);
+            return new OBJModel(source, name, this.materialLibrary, this.groups);
         }
     }
 }
