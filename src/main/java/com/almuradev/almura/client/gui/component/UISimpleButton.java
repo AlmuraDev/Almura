@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.component;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -30,8 +30,8 @@ public class UISimpleButton extends UIButton {
     }
 
     private void construct() {
-        this.iconProvider = new GuiIconProvider(GuiConstants.ICON_EMPTY);
-        this.iconPressedProvider = new GuiIconProvider(GuiConstants.ICON_EMPTY);
+        this.iconProvider = new GuiIconProvider(Constants.Gui.ICON_EMPTY);
+        this.iconPressedProvider = new GuiIconProvider(Constants.Gui.ICON_EMPTY);
     }
 
     @Override

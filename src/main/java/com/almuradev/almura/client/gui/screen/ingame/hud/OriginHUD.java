@@ -5,16 +5,25 @@
  */
 package com.almuradev.almura.client.gui.screen.ingame.hud;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.component.hud.UIDetailsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIStatsPanel;
+import com.almuradev.almura.client.gui.component.hud.UITargetPanel;
 import com.almuradev.almura.client.gui.component.hud.UIUserPanel;
 import com.almuradev.almura.client.gui.component.hud.UIWorldPanel;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.component.container.UIContainer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
 public class OriginHUD extends AbstractHUD {
@@ -23,12 +32,13 @@ public class OriginHUD extends AbstractHUD {
     private UIStatsPanel statsPanel;
     private UIUserPanel userPanel;
     private UIWorldPanel worldPanel;
+    @Nullable private UITargetPanel targetPanel;
 
     @Override
     public void construct() {
         guiscreenBackground = false;
 
-        this.renderer.setDefaultTexture(GuiConstants.VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET);
+        this.renderer.setDefaultTexture(Constants.Gui.VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET);
 
         // User panel
         this.userPanel = new UIUserPanel(this, 124, 37);
@@ -74,6 +84,15 @@ public class OriginHUD extends AbstractHUD {
 
         this.detailsPanel.updateCoordinates();
         this.detailsPanel.updatePlayerCount();
+
+        if (this.targetPanel != null) {
+            this.targetPanel.updateHealth();
+            this.targetPanel.updateUsername();
+            if (!this.targetPanel.getEntity().isEntityAlive()) {
+                ((UIContainer) this.targetPanel.getParent()).remove(this.targetPanel);
+                this.targetPanel = null;
+            }
+        }
     }
 
     @Override
@@ -89,5 +108,33 @@ public class OriginHUD extends AbstractHUD {
     @Override
     public int getPotionOffsetY() {
         return this.detailsPanel.getHeight() + 2;
+    }
+
+    @SubscribeEvent
+    public void onEntityAttack(LivingAttackEvent event) {
+        final Entity source = event.getSource().getEntity();
+        final EntityLivingBase target = event.getEntityLiving();
+
+        if (this.targetPanel != null && target == this.targetPanel.getEntity()) {
+            return;
+        }
+
+        if (source == Minecraft.getMinecraft().player) {
+            this.targetPanel = new UITargetPanel(this, 124, 33, target);
+            this.targetPanel.setPosition(0, SimpleScreen.getPaddedY(this.statsPanel, 2));
+
+            addToScreen(this.targetPanel);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent
+    public void onEntityDeath(LivingDeathEvent event) {
+        final EntityLivingBase target = event.getEntityLiving();
+
+        if (this.targetPanel != null && target == this.targetPanel.getEntity()) {
+            ((UIContainer) this.targetPanel.getParent()).remove(this.targetPanel);
+            this.targetPanel = null;
+        }
     }
 }

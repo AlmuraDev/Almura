@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.component.hud;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
@@ -35,31 +35,31 @@ public class UIStatsPanel extends UIHUDPanel {
         this.healthBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, 2, Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(187, 19, 19).getRgb())
-                .setIcons(GuiConstants.VANILLA_ICON_HEART_BACKGROUND, GuiConstants.VANILLA_ICON_HEART_FOREGROUND);
+                .setIcons(Constants.Gui.VANILLA_ICON_HEART_BACKGROUND, Constants.Gui.VANILLA_ICON_HEART_FOREGROUND);
 
         // Armor
         this.armorBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.healthBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(184, 185, 196).getRgb())
-                .setBackgroundIcon(GuiConstants.VANILLA_ICON_ARMOR);
+                .setBackgroundIcon(Constants.Gui.VANILLA_ICON_ARMOR);
 
         // Hunger
         this.hungerBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.armorBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(157, 109, 67).getRgb())
-                .setIcons(GuiConstants.VANILLA_ICON_HUNGER_BACKGROUND, GuiConstants.VANILLA_ICON_HUNGER_FOREGROUND);
+                .setIcons(Constants.Gui.VANILLA_ICON_HUNGER_BACKGROUND, Constants.Gui.VANILLA_ICON_HUNGER_FOREGROUND);
 
         // Air
         this.airBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.hungerBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
-                .setBackgroundIcon(GuiConstants.VANILLA_ICON_AIR);
+                .setBackgroundIcon(Constants.Gui.VANILLA_ICON_AIR);
 
         // Mount Health
         this.mountHealthBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.airBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(239, 126, 74).getRgb())
-                .setBackgroundIcon(GuiConstants.VANILLA_ICON_MOUNT);
+                .setBackgroundIcon(Constants.Gui.VANILLA_ICON_MOUNT);
 
         this.add(this.healthBar, this.armorBar, this.hungerBar, this.airBar, this.mountHealthBar);
     }

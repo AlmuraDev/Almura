@@ -5,7 +5,8 @@
  */
 package com.almuradev.almura.client.gui.screen;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.gui.component.entity.RenderEntityAngle;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -42,7 +43,7 @@ public abstract class SimpleScreen extends MalisisGui {
      */
     public SimpleScreen(@Nullable SimpleScreen parent) {
         this.parent = Optional.ofNullable(parent);
-        this.renderer.setDefaultTexture(GuiConstants.TEXTURE_SPRITESHEET);
+        this.renderer.setDefaultTexture(Constants.Gui.TEXTURE_SPRITESHEET);
     }
 
     /**
@@ -99,33 +100,33 @@ public abstract class SimpleScreen extends MalisisGui {
         }
     }
 
-    protected static void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase entityLivingBase) {
+    public static void drawEntityOnScreen(int x, int y, float scale, RenderEntityAngle renderEntityAngle, EntityLivingBase entityLivingBase) {
         GlStateManager.enableColorMaterial();
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float) posX, (float) posY, 50.0F);
-        GlStateManager.scale((float) (-scale), (float) scale, (float) scale);
+        GlStateManager.translate(x, y, 50.0F);
+        GlStateManager.scale(-scale, scale, scale);
         GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-        float renderYawOffset = entityLivingBase.renderYawOffset;
+        float yawOffset = entityLivingBase.renderYawOffset;
         float rotationYaw = entityLivingBase.rotationYaw;
         float rotationPitch = entityLivingBase.rotationPitch;
         float prevRotationYawHead = entityLivingBase.prevRotationYawHead;
         float rotationYawHead = entityLivingBase.rotationYawHead;
-        GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(renderEntityAngle.pitch, 1.0f, 0.0f, 0.0f);
+        GlStateManager.rotate(renderEntityAngle.yaw, 0.0f, 1.0f, 0.0f);
+        GlStateManager.rotate(renderEntityAngle.roll, 0.0f, 0.0f, 1.0f);
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(-((float) Math.atan((double) (mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
-        entityLivingBase.renderYawOffset = (float) Math.atan((double) (mouseX / 40.0F)) * 20.0F;
-        entityLivingBase.rotationYaw = (float) Math.atan((double) (mouseX / 40.0F)) * 40.0F;
-        entityLivingBase.rotationPitch = -((float) Math.atan((double) (mouseY / 40.0F))) * 20.0F;
+        entityLivingBase.renderYawOffset = (float)Math.atan(0D) * 20.0F;
+        entityLivingBase.rotationYaw = (float)Math.atan(0D) * 40.0F;
+        entityLivingBase.rotationPitch = -((float)Math.atan(0D)) * 20.0F;
         entityLivingBase.rotationYawHead = entityLivingBase.rotationYaw;
         entityLivingBase.prevRotationYawHead = entityLivingBase.rotationYaw;
         GlStateManager.translate(0.0F, 0.0F, 0.0F);
-        RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
-        rendermanager.setPlayerViewY(180.0F);
-        rendermanager.setRenderShadow(false);
-        rendermanager.doRenderEntity(entityLivingBase, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
-        rendermanager.setRenderShadow(true);
-        entityLivingBase.renderYawOffset = renderYawOffset;
+        RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+        renderManager.setPlayerViewY(180.0F);
+        renderManager.setRenderShadow(false);
+        renderManager.doRenderEntity(entityLivingBase, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+        renderManager.setRenderShadow(true);
+        entityLivingBase.renderYawOffset = yawOffset;
         entityLivingBase.rotationYaw = rotationYaw;
         entityLivingBase.rotationPitch = rotationPitch;
         entityLivingBase.prevRotationYawHead = prevRotationYawHead;
@@ -136,6 +137,7 @@ public abstract class SimpleScreen extends MalisisGui {
         GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GlStateManager.disableTexture2D();
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+        RenderHelper.enableGUIStandardItemLighting();
     }
 
     /**

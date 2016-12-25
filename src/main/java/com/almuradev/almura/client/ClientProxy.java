@@ -79,6 +79,7 @@ public final class ClientProxy extends CommonProxy {
         OBJModelLoader.instance.registerDomain(Constants.Plugin.ID);
 
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(OriginHUD.class);
 
         super.onGamePreInitialization(event);
     }

@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.component;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
@@ -25,7 +25,7 @@ public class UILegacyPropertyBar extends UIComponent<UILegacyPropertyBar> {
     private final GuiIcon symbolIcon;
     private final int iconSize = 7;
     private final int iconGap = 3;
-    private GuiTexture texture = GuiConstants.TEXTURE_SPRITESHEET;
+    private GuiTexture texture = Constants.Gui.TEXTURE_SPRITESHEET;
     private boolean relativeColor = true;
     private int color = 0;
     private float amount;
@@ -36,7 +36,7 @@ public class UILegacyPropertyBar extends UIComponent<UILegacyPropertyBar> {
         setSize(105, 7);
 
         this.symbolIcon = symbolIcon;
-        this.barIcon = GuiConstants.LEGACY_ICON_BAR;
+        this.barIcon = Constants.Gui.LEGACY_ICON_BAR;
 
         iconShape = new SimpleGuiShape();
         iconShape.setSize(iconSize, iconSize);

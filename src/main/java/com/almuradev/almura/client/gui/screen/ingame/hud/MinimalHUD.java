@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.screen.ingame.hud;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -54,7 +54,7 @@ public class MinimalHUD extends AbstractHUD {
         economyLabel.setFontOptions(FRO_HUD);
 
         // Clock
-        final UIImage clockImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_CLOCK);
+        final UIImage clockImage = new UIImage(this, Constants.Gui.TEXTURE_SPRITESHEET, Constants.Gui.LEGACY_ICON_CLOCK);
         clockImage.setPosition(PADDING, SimpleScreen.getPaddedY(economyLabel, PADDING), Anchor.TOP | Anchor.LEFT);
         clockImage.setSize(7, 7);
 

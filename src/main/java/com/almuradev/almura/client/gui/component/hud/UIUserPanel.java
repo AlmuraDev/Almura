@@ -6,7 +6,6 @@
 package com.almuradev.almura.client.gui.component.hud;
 
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.client.gui.GuiConstants;
 import com.almuradev.almura.client.gui.GuiRemoteTexture;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.screen.ingame.hud.HUDData;
@@ -37,9 +36,9 @@ public class UIUserPanel extends UIHUDPanel {
 
         // Avatar
         this.userImage = new UIImage(gui, new GuiRemoteTexture(
-                GuiConstants.AVATAR_GENERIC_LOCATION,
+                Constants.Gui.AVATAR_GENERIC_LOCATION,
                 new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Minecraft.getMinecraft().player.getUniqueID() + ".png"),
-                String.format(GuiConstants.SKIN_URL_BASE, Minecraft.getMinecraft().player.getUniqueID().toString(), 16),
+                String.format(Constants.Gui.SKIN_URL_BASE, Minecraft.getMinecraft().player.getUniqueID().toString(), 16),
                 16, 16), null);
         this.userImage.setPosition(2, 2);
         this.userImage.setSize(16, 16);
