@@ -14,6 +14,7 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 @SideOnly(Side.CLIENT)
 public class UIWorldPanel extends UIHUDPanel {
@@ -43,8 +44,9 @@ public class UIWorldPanel extends UIHUDPanel {
         this.updateWorld();
     }
 
+    @SuppressWarnings("deprecation")
     public void updateCompass() {
-        this.compassLabel.setText(HUDData.getCompass());
+        this.compassLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(HUDData.getCompass()));
         this.compassLabel.setPosition(0, -1, Anchor.BOTTOM | Anchor.CENTER);
     }
 
