@@ -65,7 +65,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         elementList.add(new AboutListElement(
                 this,
                 this.list,
-                new UIImage(this, new GuiTexture(Constants.Gui.ALMURA_MAN_LOCATION), null), 23, 32, 5, 0, 8,
+                new UIImage(this, new GuiTexture(Constants.Gui.LOCATION_ALMURA_MAN), null), 23, 32, 5, 0, 8,
                 Text.of(TextColors.WHITE, "Almura"),
                 Text.of(TextColors.WHITE, "Almura was created and is maintained by the AlmuraDev Team (https://www.github.com/AlmuraDev/)",
                         Text.NEW_LINE, Text.NEW_LINE,
@@ -90,7 +90,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this,
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.AVATAR_GENERIC_LOCATION,
+                        Constants.Gui.LOCATION_AVATAR_GENERIC,
                         new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_ZIDANE + ".png"),
                         String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_ZIDANE.toString(), 32),
                         32, 32), null),
@@ -106,7 +106,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this,
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.AVATAR_GENERIC_LOCATION,
+                        Constants.Gui.LOCATION_AVATAR_GENERIC,
                         new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_DOCKTER + ".png"),
                         String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_DOCKTER.toString(), 32),
                         32, 32), null),
@@ -121,7 +121,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this,
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.AVATAR_GENERIC_LOCATION,
+                        Constants.Gui.LOCATION_AVATAR_GENERIC,
                         new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_GRINCH + ".png"),
                         String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_GRINCH.toString(), 32),
                         32, 32), null),
@@ -136,7 +136,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this,
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.AVATAR_GENERIC_LOCATION,
+                        Constants.Gui.LOCATION_AVATAR_GENERIC,
                         new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_WIFEE + ".png"),
                         String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_WIFEE.toString(), 32),
                         32, 32), null),
@@ -149,7 +149,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this,
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.AVATAR_GENERIC_LOCATION,
+                        Constants.Gui.LOCATION_AVATAR_GENERIC,
                         new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_WOLFEYE + ".png"),
                         String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_WOLFEYE.toString(), 32),
                         32, 32), null),
@@ -164,7 +164,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this,
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.AVATAR_GENERIC_LOCATION,
+                        Constants.Gui.LOCATION_AVATAR_GENERIC,
                         new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_MUMFREY + ".png"),
                         String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_MUMFREY.toString(), 32),
                         32, 32), null),
@@ -178,7 +178,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 this,
                 this.list,
                 new UIImage(this, new GuiRemoteTexture(
-                        Constants.Gui.AVATAR_GENERIC_LOCATION,
+                        Constants.Gui.LOCATION_AVATAR_GENERIC,
                         new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Constants.Gui.UNIQUE_ID_BLOOD + ".png"),
                         String.format(Constants.Gui.SKIN_URL_BASE, Constants.Gui.UNIQUE_ID_BLOOD.toString(), 32),
                         32, 32), null),

@@ -62,7 +62,7 @@ public class AnimatedMainMenu extends SimpleScreen {
         container.setSize(Constants.Gui.BUTTON_WIDTH_LONG, 205);
 
         // Almura header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(Constants.Gui.ALMURA_LOGO_LOCATION), null);
+        final UIImage almuraHeader = new UIImage(this, new GuiTexture(Constants.Gui.LOCATION_ALMURA_LOGO), null);
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
@@ -128,7 +128,7 @@ public class AnimatedMainMenu extends SimpleScreen {
 
         final UIButton forumsButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .icon(Constants.Gui.ICON_FORUM)
+                .icon(Constants.Gui.ICON_ENJIN)
                 .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
                 .position(-PADDING, -PADDING)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)

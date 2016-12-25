@@ -49,7 +49,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
         contentContainer.setAnchor(Anchor.MIDDLE | Anchor.CENTER);
 
         // Almura Header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(Constants.Gui.ALMURA_LOGO_LOCATION), null);
+        final UIImage almuraHeader = new UIImage(this, new GuiTexture(Constants.Gui.LOCATION_ALMURA_LOGO), null);
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
@@ -124,7 +124,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton forumsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
-                .icon(Constants.Gui.ICON_FORUM)
+                .icon(Constants.Gui.ICON_ENJIN)
                 .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(achievementsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)

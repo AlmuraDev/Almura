@@ -10,8 +10,6 @@ import com.almuradev.almura.Constants;
 import com.almuradev.almura.api.client.model.obj.OBJModelLoader;
 import com.almuradev.almura.client.gui.screen.ingame.SimpleIngameMenu;
 import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
-import com.almuradev.almura.client.gui.screen.ingame.hud.LegacyHUD;
-import com.almuradev.almura.client.gui.screen.ingame.hud.MinimalHUD;
 import com.almuradev.almura.client.gui.screen.ingame.hud.OriginHUD;
 import com.almuradev.almura.client.gui.screen.menu.AnimatedMainMenu;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
@@ -131,33 +129,6 @@ public final class ClientProxy extends CommonProxy {
                         event.setCanceled(true);
                         break;
                     default:
-                }
-                break;
-            case "legacy":
-                if (!(this.customIngameHud instanceof LegacyHUD)) {
-                    if (this.customIngameHud != null) {
-                        this.customIngameHud.closeOverlay();
-                    }
-                    this.customIngameHud = new LegacyHUD();
-                    this.customIngameHud.displayOverlay();
-                }
-                switch (event.getType()) {
-                    case HEALTH:
-                    case ARMOR:
-                    case FOOD:
-                    case EXPERIENCE:
-                        event.setCanceled(true);
-                        break;
-                    default:
-                }
-                break;
-            case "minimal":
-                if (!(this.customIngameHud instanceof MinimalHUD)) {
-                    if (this.customIngameHud != null) {
-                        this.customIngameHud.closeOverlay();
-                    }
-                    this.customIngameHud = new MinimalHUD();
-                    this.customIngameHud.displayOverlay();
                 }
                 break;
             default:

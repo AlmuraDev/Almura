@@ -40,7 +40,7 @@ public class UIDetailsPanel extends UIHUDPanel {
         // Player Count
         this.playerCountLabel = new UILabel(gui, "");
         this.playerCountLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
-        this.playerCountImage = new UIImage(gui, new GuiTexture(Constants.Gui.AVATAR_GENERIC_LOCATION), null);
+        this.playerCountImage = new UIImage(gui, new GuiTexture(Constants.Gui.LOCATION_AVATAR_GENERIC), null);
         this.playerCountImage.setSize(16, 16);
         this.playerCountImage.setPosition(SimpleScreen.getPaddedX(this.clockImage, 4, Anchor.RIGHT), 0, Anchor.MIDDLE | Anchor.RIGHT);
 

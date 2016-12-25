@@ -37,7 +37,7 @@ public class UIUserPanel extends UIHUDPanel {
 
         // Avatar
         this.userImage = new UIImage(gui, new GuiRemoteTexture(
-                Constants.Gui.AVATAR_GENERIC_LOCATION,
+                Constants.Gui.LOCATION_AVATAR_GENERIC,
                 new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Minecraft.getMinecraft().player.getUniqueID() + ".png"),
                 String.format(Constants.Gui.SKIN_URL_BASE, Minecraft.getMinecraft().player.getUniqueID().toString(), 16),
                 16, 16), null);

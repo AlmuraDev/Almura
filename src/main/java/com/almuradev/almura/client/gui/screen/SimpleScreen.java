@@ -42,7 +42,7 @@ public abstract class SimpleScreen extends MalisisGui {
      */
     public SimpleScreen(@Nullable SimpleScreen parent) {
         this.parent = Optional.ofNullable(parent);
-        this.renderer.setDefaultTexture(Constants.Gui.TEXTURE_SPRITESHEET);
+        this.renderer.setDefaultTexture(Constants.Gui.SPRITE_SHEET_ALMURA);
     }
 
     /**

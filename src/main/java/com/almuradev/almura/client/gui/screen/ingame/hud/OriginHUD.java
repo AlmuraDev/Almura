@@ -27,7 +27,7 @@ public class OriginHUD extends AbstractHUD {
     public void construct() {
         guiscreenBackground = false;
 
-        this.renderer.setDefaultTexture(Constants.Gui.VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET);
+        this.renderer.setDefaultTexture(Constants.Gui.SPRITE_SHEET_VANILLA_ACHIEVEMENT_BACKGROUND);
 
         // User panel
         this.userPanel = new UIUserPanel(this, 124, 37);

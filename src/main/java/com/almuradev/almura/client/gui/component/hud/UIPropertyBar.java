@@ -34,7 +34,7 @@ public class UIPropertyBar extends UIComponent {
     private Text text = Text.EMPTY;
     private MalisisFont font = MalisisFont.minecraftFont;
     private FontOptions fontOptions = FontOptionsConstants.FRO_COLOR_WHITE;
-    private GuiTexture spritesheet = Constants.Gui.VANILLA_ICON_SPRITESHEET;
+    private GuiTexture spritesheet = Constants.Gui.SPRITE_SHEET_VANILLA_ICON;
 
     @Nullable private GuiIcon backgroundIcon, foregroundIcon;
 
