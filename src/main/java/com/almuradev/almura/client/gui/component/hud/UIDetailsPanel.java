@@ -5,11 +5,12 @@
  */
 package com.almuradev.almura.client.gui.component.hud;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.component.UIExpandingLabel;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -39,7 +40,7 @@ public class UIDetailsPanel extends UIHUDPanel {
         // Player Count
         this.playerCountLabel = new UILabel(gui, "");
         this.playerCountLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
-        this.playerCountImage = new UIImage(gui, new GuiTexture(GuiConstants.AVATAR_GENERIC_LOCATION), null);
+        this.playerCountImage = new UIImage(gui, new GuiTexture(Constants.Gui.AVATAR_GENERIC_LOCATION), null);
         this.playerCountImage.setSize(16, 16);
         this.playerCountImage.setPosition(SimpleScreen.getPaddedX(this.clockImage, 4, Anchor.RIGHT), 0, Anchor.MIDDLE | Anchor.RIGHT);
 
@@ -49,6 +50,17 @@ public class UIDetailsPanel extends UIHUDPanel {
         this.coordsLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
 
         this.add(this.clockImage, this.playerCountLabel, this.playerCountImage, this.coordsLabel);
+    }
+
+    @Override
+    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+        if (Minecraft.getMinecraft().player == null || Minecraft.getMinecraft().player.world == null) {
+            return;
+        }
+
+        super.drawForeground(renderer, mouseX, mouseY, partialTick);
+        this.updateCoordinates();
+        this.updatePlayerCount();
     }
 
     public void updateCoordinates() {

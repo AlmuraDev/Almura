@@ -8,8 +8,10 @@ package com.almuradev.almura.client.gui.component.hud;
 import com.almuradev.almura.client.gui.screen.ingame.hud.HUDData;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -29,6 +31,16 @@ public class UIWorldPanel extends UIHUDPanel {
         this.worldLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
 
         this.add(this.compassLabel, this.worldLabel);
+    }
+
+    @Override
+    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+        if (Minecraft.getMinecraft().player == null || Minecraft.getMinecraft().player.world == null) {
+            return;
+        }
+        super.drawForeground(renderer, mouseX, mouseY, partialTick);
+        this.updateCompass();
+        this.updateWorld();
     }
 
     public void updateCompass() {

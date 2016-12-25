@@ -5,10 +5,11 @@
  */
 package com.almuradev.almura.client.gui.component.hud;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.text.Text;
 
 @SideOnly(Side.CLIENT)
 public class UIStatsPanel extends UIHUDPanel {
@@ -35,38 +37,54 @@ public class UIStatsPanel extends UIHUDPanel {
         this.healthBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, 2, Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(187, 19, 19).getRgb())
-                .setIcons(GuiConstants.VANILLA_ICON_HEART_BACKGROUND, GuiConstants.VANILLA_ICON_HEART_FOREGROUND);
+                .setIcons(Constants.Gui.VANILLA_ICON_HEART_BACKGROUND, Constants.Gui.VANILLA_ICON_HEART_FOREGROUND);
 
         // Armor
         this.armorBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.healthBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(184, 185, 196).getRgb())
-                .setBackgroundIcon(GuiConstants.VANILLA_ICON_ARMOR);
+                .setBackgroundIcon(Constants.Gui.VANILLA_ICON_ARMOR);
 
         // Hunger
         this.hungerBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.armorBar, 1), Anchor.TOP | Anchor.CENTER)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(157, 109, 67).getRgb())
-                .setIcons(GuiConstants.VANILLA_ICON_HUNGER_BACKGROUND, GuiConstants.VANILLA_ICON_HUNGER_FOREGROUND);
+                .setColor(org.spongepowered.api.util.Color.ofRgb(137, 89, 47).getRgb())
+                .setIcons(Constants.Gui.VANILLA_ICON_HUNGER_BACKGROUND, Constants.Gui.VANILLA_ICON_HUNGER_FOREGROUND);
 
         // Air
         this.airBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.hungerBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
-                .setBackgroundIcon(GuiConstants.VANILLA_ICON_AIR);
+                .setBackgroundIcon(Constants.Gui.VANILLA_ICON_AIR);
 
         // Mount Health
         this.mountHealthBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.airBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(239, 126, 74).getRgb())
-                .setBackgroundIcon(GuiConstants.VANILLA_ICON_MOUNT);
+                .setBackgroundIcon(Constants.Gui.VANILLA_ICON_MOUNT);
 
         this.add(this.healthBar, this.armorBar, this.hungerBar, this.airBar, this.mountHealthBar);
     }
 
+    @Override
+    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+        if (Minecraft.getMinecraft().player == null || Minecraft.getMinecraft().player.world == null) {
+            return;
+        }
+        super.drawForeground(renderer, mouseX, mouseY, partialTick);
+        this.updateHealth();
+        this.updateArmor();
+        this.updateHunger();
+        this.updateAir();
+        this.updateMountHealth();
+        this.updatePanel();
+    }
+
     public void updateHealth() {
-        this.healthBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getHealth(),
-                0f, Minecraft.getMinecraft().player.getMaxHealth(), 0f, 1f));
+        final float health = Minecraft.getMinecraft().player.getHealth();
+        final float maxHealth = Minecraft.getMinecraft().player.getMaxHealth();
+        this.healthBar.setAmount(MathUtil.ConvertToRange(health,0f, maxHealth, 0f, 1f));
+        this.healthBar.setText(Text.of(String.format("%.0f/%.0f", health, maxHealth)));
     }
 
     public void updateArmor() {
@@ -82,11 +100,14 @@ public class UIStatsPanel extends UIHUDPanel {
                 currentArmor += stack.getItem().getDamage(stack);
             }
         }
+        this.armorBar.setText(Text.of(String.format("%d/%d", currentArmor, maxArmor)));
         this.armorBar.setAmount(MathUtil.ConvertToRange(maxArmor - currentArmor, 0, maxArmor, 0f, 1f));
     }
 
     public void updateHunger() {
-        this.hungerBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getFoodStats().getFoodLevel(), 0, 20, 0f, 1f));
+        final float foodLevel = Minecraft.getMinecraft().player.getFoodStats().getFoodLevel();
+        this.hungerBar.setText(Text.of(String.format("%.0f/%d", foodLevel, 20)));
+        this.hungerBar.setAmount(MathUtil.ConvertToRange(foodLevel, 0, 20, 0f, 1f));
     }
 
     public void updateAir() {
@@ -94,16 +115,20 @@ public class UIStatsPanel extends UIHUDPanel {
 
         // TODO Hardcoded to not care above 300, if we can do this better in the future then we should do so
         if (this.airBar.isVisible()) {
+            final int air = Minecraft.getMinecraft().player.getAir();
+            this.airBar.setText(Text.of(String.format("%d/%d", air, 300)));
             this.airBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getAir(), 0, 300, 0f, 1f));
         }
     }
 
     public void updateMountHealth() {
-        EntityLivingBase ridingEntityLivingBase = (EntityLivingBase) Minecraft.getMinecraft().player.getRidingEntity();
+        final EntityLivingBase ridingEntityLivingBase = (EntityLivingBase) Minecraft.getMinecraft().player.getRidingEntity();
         this.mountHealthBar.setVisible(ridingEntityLivingBase != null);
         if (this.mountHealthBar.isVisible() && ridingEntityLivingBase != null) {
-            this.mountHealthBar
-                    .setAmount(MathUtil.ConvertToRange(ridingEntityLivingBase.getHealth(), 0, ridingEntityLivingBase.getMaxHealth(), 0f, 1f));
+            final float health = ridingEntityLivingBase.getHealth();
+            final float maxHealth = ridingEntityLivingBase.getMaxHealth();
+            this.mountHealthBar.setText(Text.of(String.format("%.0f/%.0f", health, maxHealth)));
+            this.mountHealthBar.setAmount(MathUtil.ConvertToRange(health, 0, maxHealth, 0f, 1f));
             this.mountHealthBar.setPosition(0, SimpleScreen.getPaddedY(this.airBar.isVisible() ? this.airBar : this.hungerBar, 1));
         }
     }

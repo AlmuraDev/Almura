@@ -5,14 +5,13 @@
  */
 package com.almuradev.almura.client.gui.screen.ingame.hud;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.component.hud.UIDetailsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIStatsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIUserPanel;
 import com.almuradev.almura.client.gui.component.hud.UIWorldPanel;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import net.malisis.core.client.gui.Anchor;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -28,7 +27,7 @@ public class OriginHUD extends AbstractHUD {
     public void construct() {
         guiscreenBackground = false;
 
-        this.renderer.setDefaultTexture(GuiConstants.VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET);
+        this.renderer.setDefaultTexture(Constants.Gui.VANILLA_ACHIEVEMENT_BACKGROUND_SPRITESHEET);
 
         // User panel
         this.userPanel = new UIUserPanel(this, 124, 37);
@@ -50,30 +49,6 @@ public class OriginHUD extends AbstractHUD {
         addToScreen(this.statsPanel);
         addToScreen(this.worldPanel);
         addToScreen(this.detailsPanel);
-    }
-
-    @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        if (Minecraft.getMinecraft().player == null || Minecraft.getMinecraft().player.world == null) {
-            return;
-        }
-
-        this.statsPanel.updateHealth();
-        this.statsPanel.updateArmor();
-        this.statsPanel.updateHunger();
-        this.statsPanel.updateAir();
-        this.statsPanel.updateMountHealth();
-        this.statsPanel.updatePanel();
-
-        this.userPanel.updateCurrency();
-        this.userPanel.updateExperience();
-        this.userPanel.updateLevel();
-
-        this.worldPanel.updateCompass();
-        this.worldPanel.updateWorld();
-
-        this.detailsPanel.updateCoordinates();
-        this.detailsPanel.updatePlayerCount();
     }
 
     @Override

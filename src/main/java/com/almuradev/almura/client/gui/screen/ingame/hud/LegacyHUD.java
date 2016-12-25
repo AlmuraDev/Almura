@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.screen.ingame.hud;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.component.UILegacyPropertyBar;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import net.malisis.core.client.gui.Anchor;
@@ -62,10 +62,10 @@ public class LegacyHUD extends AbstractHUD {
         playerCurrency.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
 
         // Health Property
-        healthProperty = new UILegacyPropertyBar(this, GuiConstants.LEGACY_ICON_HEART).setPosition(4, 14);
+        healthProperty = new UILegacyPropertyBar(this, Constants.Gui.LEGACY_ICON_HEART).setPosition(4, 14);
 
         // Armor Property
-        armorProperty = new UILegacyPropertyBar(this, GuiConstants.LEGACY_ICON_ARMOR).setPosition(4, 24);
+        armorProperty = new UILegacyPropertyBar(this, Constants.Gui.LEGACY_ICON_ARMOR).setPosition(4, 24);
 
         // ////////////////////////////// CENTER COLUMN //////////////////////////////////////
 
@@ -75,15 +75,15 @@ public class LegacyHUD extends AbstractHUD {
         almuraTitle.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
 
         // Hunger Property
-        hungerProperty = new UILegacyPropertyBar(this, GuiConstants.LEGACY_ICON_HUNGER).setPosition(-11, 14, Anchor.CENTER);
+        hungerProperty = new UILegacyPropertyBar(this, Constants.Gui.LEGACY_ICON_HUNGER).setPosition(-11, 14, Anchor.CENTER);
 
         // Stamina Property
-        staminaProperty = new UILegacyPropertyBar(this, GuiConstants.LEGACY_ICON_STAMINA).setPosition(-11, 24, Anchor.CENTER);
+        staminaProperty = new UILegacyPropertyBar(this, Constants.Gui.LEGACY_ICON_STAMINA).setPosition(-11, 24, Anchor.CENTER);
 
         // ////////////////////////////// RIGHT COLUMN //////////////////////////////////////
 
         // Map Image
-        mapImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_MAP);
+        mapImage = new UIImage(this, Constants.Gui.TEXTURE_SPRITESHEET, Constants.Gui.LEGACY_ICON_MAP);
         mapImage.setSize(8, 8);
 
         // Player Coordinates Label
@@ -92,7 +92,7 @@ public class LegacyHUD extends AbstractHUD {
         playerCoords.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // World Image
-        worldImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_WORLD);
+        worldImage = new UIImage(this, Constants.Gui.TEXTURE_SPRITESHEET, Constants.Gui.LEGACY_ICON_WORLD);
         worldImage.setSize(8, 8);
 
         worldDisplay = new UILabel(this, HUDData.WORLD_NAME);
@@ -100,7 +100,7 @@ public class LegacyHUD extends AbstractHUD {
         worldDisplay.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // Player Image
-        playerImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_PLAYER);
+        playerImage = new UIImage(this, Constants.Gui.TEXTURE_SPRITESHEET, Constants.Gui.LEGACY_ICON_PLAYER);
         playerImage.setPosition(-125, 14, Anchor.RIGHT);
         playerImage.setSize(8, 8);
 
@@ -115,12 +115,12 @@ public class LegacyHUD extends AbstractHUD {
         playerCompass.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // Compass Image
-        compassImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_COMPASS);
+        compassImage = new UIImage(this, Constants.Gui.TEXTURE_SPRITESHEET, Constants.Gui.LEGACY_ICON_COMPASS);
         compassImage.setPosition(-89, playerCompass.getY() - 1, Anchor.RIGHT);
         compassImage.setSize(8, 8);
 
         // Clock Image
-        clockImage = new UIImage(this, GuiConstants.TEXTURE_SPRITESHEET, GuiConstants.LEGACY_ICON_CLOCK);
+        clockImage = new UIImage(this, Constants.Gui.TEXTURE_SPRITESHEET, Constants.Gui.LEGACY_ICON_CLOCK);
         clockImage.setSize(8, 8);
 
         // World Time Label
@@ -129,7 +129,7 @@ public class LegacyHUD extends AbstractHUD {
         worldTime.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE_SCALE_080);
 
         // XP Property
-        xpProperty = new UILegacyPropertyBar(this, GuiConstants.LEGACY_ICON_XP).setPosition(-27, 24, Anchor.RIGHT);
+        xpProperty = new UILegacyPropertyBar(this, Constants.Gui.LEGACY_ICON_XP).setPosition(-27, 24, Anchor.RIGHT);
         xpProperty.setColor(UILegacyPropertyBar.LIGHT_GREEN.getRgb()).setRelativeColor(false);
 
         // XP Level Label

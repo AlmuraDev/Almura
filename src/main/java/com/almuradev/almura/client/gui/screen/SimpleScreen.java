@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.screen;
 
-import com.almuradev.almura.client.gui.GuiConstants;
+import com.almuradev.almura.Constants;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -42,7 +42,7 @@ public abstract class SimpleScreen extends MalisisGui {
      */
     public SimpleScreen(@Nullable SimpleScreen parent) {
         this.parent = Optional.ofNullable(parent);
-        this.renderer.setDefaultTexture(GuiConstants.TEXTURE_SPRITESHEET);
+        this.renderer.setDefaultTexture(Constants.Gui.TEXTURE_SPRITESHEET);
     }
 
     /**

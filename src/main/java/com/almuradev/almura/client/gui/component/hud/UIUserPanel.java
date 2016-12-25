@@ -6,13 +6,13 @@
 package com.almuradev.almura.client.gui.component.hud;
 
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.client.gui.GuiConstants;
 import com.almuradev.almura.client.gui.GuiRemoteTexture;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.screen.ingame.hud.HUDData;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import com.almuradev.almura.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -37,9 +37,9 @@ public class UIUserPanel extends UIHUDPanel {
 
         // Avatar
         this.userImage = new UIImage(gui, new GuiRemoteTexture(
-                GuiConstants.AVATAR_GENERIC_LOCATION,
+                Constants.Gui.AVATAR_GENERIC_LOCATION,
                 new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Minecraft.getMinecraft().player.getUniqueID() + ".png"),
-                String.format(GuiConstants.SKIN_URL_BASE, Minecraft.getMinecraft().player.getUniqueID().toString(), 16),
+                String.format(Constants.Gui.SKIN_URL_BASE, Minecraft.getMinecraft().player.getUniqueID().toString(), 16),
                 16, 16), null);
         this.userImage.setPosition(2, 2);
         this.userImage.setSize(16, 16);
@@ -55,7 +55,7 @@ public class UIUserPanel extends UIHUDPanel {
         this.levelLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
         this.experienceBar = new UIPropertyBar(gui, width - 10, 5);
         this.experienceBar.setPosition(0, -3, Anchor.BOTTOM | Anchor.CENTER);
-        this.experienceBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 211, 0).getRgb());
+        this.experienceBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
 
         // Currency
         this.currencyImage = new UIImage(gui, MalisisGui.BLOCK_TEXTURE, Icon.from(Items.EMERALD));
@@ -63,6 +63,17 @@ public class UIUserPanel extends UIHUDPanel {
         this.currencyLabel = new UILabel(gui, "");
 
         this.add(this.userImage, this.usernameLabel, this.levelLabel, this.experienceBar, this.currencyImage, this.currencyLabel);
+    }
+
+    @Override
+    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+        if (Minecraft.getMinecraft().player == null || Minecraft.getMinecraft().player.world == null) {
+            return;
+        }
+        super.drawForeground(renderer, mouseX, mouseY, partialTick);
+        this.updateCurrency();
+        this.updateExperience();
+        this.updateLevel();
     }
 
     public void updateCurrency() {
