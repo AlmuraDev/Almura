@@ -13,7 +13,6 @@ import org.spongepowered.api.util.Color;
 @SideOnly(Side.CLIENT)
 public final class FontOptionsConstants {
 
-    public static final FontOptions FRO_COLOR_ALMURA_BLUE = FontOptions.builder().color(Color.ofRgb(19, 111, 181).getRgb()).build();
     public static final FontOptions FRO_COLOR_GRAY = FontOptions.builder().color(Color.ofRgb(128, 128, 128).getRgb()).build();
     public static final FontOptions FRO_COLOR_ORANGE = FontOptions.builder().color(Color.ofRgb(255, 165, 0).getRgb()).build();
     public static final FontOptions FRO_COLOR_RED = FontOptions.builder().color(Color.ofRgb(255, 0, 0).getRgb()).build();
