@@ -1,5 +1,7 @@
 package com.almuradev.almura.mixin.entity.ai;
 
+import com.almuradev.almura.interfaces.entity.animal.IMixinEntityAnimal;
+
 import java.util.Random;
 
 import net.minecraft.entity.EntityAgeable;
@@ -47,9 +49,10 @@ public abstract class MixinEntityAIMate extends EntityAIBase {
             this.targetMate.setGrowingAge(6000);
             this.theAnimal.resetInLove();
             this.targetMate.resetInLove();
-            
-            /*
-            if (this.theAnimal.canSpawnTwin() && this.targetMate.canSpawnTwin()) { // << Not visible here.
+
+            IMixinEntityAnimal theAnimal = (IMixinEntityAnimal) this.theAnimal;
+            IMixinEntityAnimal targetMate = (IMixinEntityAnimal) this.targetMate;
+            if (theAnimal.canSpawnTwin() && targetMate.canSpawnTwin()) {
                 Random rn = new Random();
                 int chance = rn.nextInt(2) + 1;
                 if (chance == 1) {
@@ -58,10 +61,10 @@ public abstract class MixinEntityAIMate extends EntityAIBase {
                     entityTwin.setLocationAndAngles(this.theAnimal.posX, this.theAnimal.posY, this.theAnimal.posZ, 0.0F, 0.0F);
                     this.theWorld.spawnEntityInWorld(entityTwin);
                     
-                    this.theAnimal.setCanSpawnTwin(false);
-                    this.targetMate.setCanSpawnTwin(false);
+                    theAnimal.setCanSpawnTwin(false);
+                    targetMate.setCanSpawnTwin(false);
                 }
-            } */
+            }
            
             entityageable.setGrowingAge(-24000);
             entityageable.setLocationAndAngles(this.theAnimal.posX, this.theAnimal.posY, this.theAnimal.posZ, 0.0F, 0.0F);
