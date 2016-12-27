@@ -6,7 +6,11 @@
 package com.almuradev.almura.mixin.entity.animal;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.interfaces.entity.animal.IMixinEntityAnimal;
+
 import cpw.mods.fml.common.registry.GameRegistry;
+
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -15,9 +19,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(EntityPig.class)
-public abstract class MixinEntityPig extends MixinEntityAnimal {
-
-    public boolean twins = false;
+public abstract class MixinEntityPig extends EntityAnimal {
 
     public MixinEntityPig(World p_i1681_1_) {
         super(p_i1681_1_);        
@@ -26,11 +28,11 @@ public abstract class MixinEntityPig extends MixinEntityAnimal {
     @Overwrite
     public boolean isBreedingItem(ItemStack p_70877_1_) {
         if (p_70877_1_.getItem() == Items.carrot) {
-            setCanSpawnTwin(false);
+            ((IMixinEntityAnimal) this).setCanSpawnTwin(false);
             return true;
         }
         if (p_70877_1_.getItem() == GameRegistry.findItem(Almura.MOD_ID, "Food\\corn")) {
-            setCanSpawnTwin(true);
+            ((IMixinEntityAnimal) this).setCanSpawnTwin(true);
             return true;
         }
         return false;        
