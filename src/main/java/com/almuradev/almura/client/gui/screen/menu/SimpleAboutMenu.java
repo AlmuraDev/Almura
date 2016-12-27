@@ -62,7 +62,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         super(parent, Text.of(I18n.format("almura.menu.about")));
     }
 
-    @SuppressWarnings({"deprecation", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Override
     public void construct() {
         super.construct();
@@ -248,20 +248,20 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
         private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
 
-        public final Text contentText;
+        private final Text contentText;
         private final UIImage image;
         private final UILabel label;
 
-        private AboutListElement(MalisisGui gui, UIComponent parent, UIImage image, Text text) {
+        private AboutListElement(MalisisGui gui, UISimpleList parent, UIImage image, Text text) {
             this(gui, parent, image, text, Text.EMPTY);
         }
 
-        private AboutListElement(MalisisGui gui, UIComponent parent, UIImage image, Text text, Text contentText) {
+        private AboutListElement(MalisisGui gui, UISimpleList parent, UIImage image, Text text, Text contentText) {
             this(gui, parent, image, 32, 32, 2, 0, 4, text, contentText);
         }
 
-        @SuppressWarnings({"deprecation", "unchecked"})
-        private AboutListElement(MalisisGui gui, UIComponent parent, UIImage image, int imageWidth, int imageHeight, int imageX, int imageY, int
+        @SuppressWarnings("deprecation")
+        private AboutListElement(MalisisGui gui, UISimpleList parent, UIImage image, int imageWidth, int imageHeight, int imageX, int imageY, int
                 padding, Text text, Text contentText) {
             super(gui);
 
@@ -296,11 +296,17 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
 
         @Override
         public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            if (this.parent instanceof UIListContainer && this != ((UIListContainer) this.parent).getSelected()) {
-                return;
-            }
+            if (parent instanceof UISimpleList) {
+                final UISimpleList parent = (UISimpleList) this.parent;
 
-            super.drawBackground(renderer, mouseX, mouseY, partialTick);
+                final int width = parent.getContentWidth() - (parent.getScrollBar().isDisabled() ? 0 : parent.getScrollBar().getRawWidth() + 1);
+
+                setSize(width, getHeight());
+
+                if (this == parent.getSelected()) {
+                    super.drawBackground(renderer, mouseX, mouseY, partialTick);
+                }
+            }
         }
     }
 }

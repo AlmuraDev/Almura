@@ -78,7 +78,7 @@ public class SimpleContainerScreen extends SimpleScreen {
         private static final int BORDER_HEIGHT = 4;
         private final MalisisGui gui;
 
-        public UIVanillaContainer(MalisisGui gui) {
+        private UIVanillaContainer(MalisisGui gui) {
             super(gui);
             this.gui = gui;
         }
@@ -96,66 +96,24 @@ public class SimpleContainerScreen extends SimpleScreen {
             this.shape.resetState();
             this.shape.setSize(this.gui.width, BORDER_HEIGHT);
             this.shape.setPosition(0, -4);
-            this.shape.getVertexes("TopLeft")
-                    .get(0)
-                    .setColor(CONTAINER_COLOR)
-                    .setAlpha(255);
-            this.shape.getVertexes("TopRight")
-                    .get(0)
-                    .setColor(CONTAINER_COLOR)
-                    .setAlpha(255);
-            this.shape.getVertexes("BottomLeft")
-                    .get(0)
-                    .setColor(CONTAINER_COLOR)
-                    .setAlpha(120);
-            this.shape.getVertexes("BottomRight")
-                    .get(0)
-                    .setColor(0)
-                    .setAlpha(120);
+            this.shape.getVertexes("Top").forEach(row -> row.setColor(CONTAINER_COLOR).setAlpha(255));
+            this.shape.getVertexes("Bottom").forEach(row -> row.setColor(0).setAlpha(120));
             renderer.drawShape(shape, rp);
 
             // Middle
             this.shape.resetState();
             this.shape.setSize(this.gui.width, this.gui.height - 104);
             this.shape.setPosition(0, 0);
-            this.shape.getVertexes("TopLeft")
-                    .get(0)
-                    .setColor(CONTAINER_COLOR)
-                    .setAlpha(120);
-            this.shape.getVertexes("TopRight")
-                    .get(0)
-                    .setColor(CONTAINER_COLOR)
-                    .setAlpha(120);
-            this.shape.getVertexes("BottomLeft")
-                    .get(0)
-                    .setColor(CONTAINER_COLOR)
-                    .setAlpha(120);
-            this.shape.getVertexes("BottomRight")
-                    .get(0)
-                    .setColor(CONTAINER_COLOR)
-                    .setAlpha(120);
+            this.shape.getVertexes("Top").forEach(row -> row.setColor(CONTAINER_COLOR).setAlpha(120));
+            this.shape.getVertexes("Bottom").forEach(row -> row.setColor(0).setAlpha(120));
             renderer.drawShape(shape, rp);
 
             // Bottom border
             this.shape.resetState();
             this.shape.setSize(this.gui.width, BORDER_HEIGHT);
             this.shape.setPosition(0, this.gui.height - 104);
-            this.shape.getVertexes("TopLeft")
-                    .get(0)
-                    .setColor(0)
-                    .setAlpha(120);
-            this.shape.getVertexes("TopRight")
-                    .get(0)
-                    .setColor(0)
-                    .setAlpha(120);
-            this.shape.getVertexes("BottomLeft")
-                    .get(0)
-                    .setColor(0)
-                    .setAlpha(255);
-            this.shape.getVertexes("BottomRight")
-                    .get(0)
-                    .setColor(0)
-                    .setAlpha(255);
+            this.shape.getVertexes("Top").forEach(row -> row.setColor(CONTAINER_COLOR).setAlpha(120));
+            this.shape.getVertexes("Bottom").forEach(row -> row.setColor(0).setAlpha(255));
             renderer.drawShape(shape, rp);
             renderer.next();
 
