@@ -7,12 +7,12 @@ package com.almuradev.almura.api.client.model.obj;
 
 import com.almuradev.almura.api.client.model.obj.geometry.Face;
 import com.almuradev.almura.api.client.model.obj.geometry.Group;
+import com.almuradev.almura.api.client.model.obj.geometry.Perspective;
 import com.almuradev.almura.api.client.model.obj.geometry.Vertex;
 import com.almuradev.almura.api.client.model.obj.geometry.VertexDefinition;
 import com.almuradev.almura.api.client.model.obj.geometry.VertexNormal;
 import com.almuradev.almura.api.client.model.obj.geometry.VertexTextureCoordinate;
 import com.almuradev.almura.api.client.model.obj.material.MaterialDefinition;
-import com.almuradev.almura.mixin.interfaces.IMixinTextureAtlasSprite;
 import com.google.common.base.Function;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -52,7 +52,13 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
 
     @Override
     public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-        return MapWrapper.handlePerspective(this, this.state, cameraTransformType);
+        for (Perspective perspective : this.model.getPerspectives()) {
+            if (perspective.getTransformType().equals(cameraTransformType)) {
+                return Pair.of(this, perspective.getTransform().getMatrix());
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -140,34 +146,6 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
                 }
 
                 quads.add(quadBuilder.build());
-            }
-
-            // Calculate particle sprite
-            if (particleFace != null) {
-                this.particleSprite = new TextureAtlasSprite(diffuseSprite.getIconName());
-                final IMixinTextureAtlasSprite mixinSprite = (IMixinTextureAtlasSprite) this.particleSprite;
-                this.particleSprite.copyFrom(diffuseSprite);
-
-                int vertexDefNum = 0;
-
-                for (VertexDefinition vertex : particleFace.getVertices()) {
-                    final VertexTextureCoordinate textureCoordinate = vertex.getTextureCoordinate().orElse(null);
-                    if (textureCoordinate == null) {
-                        break;
-                    }
-
-                    if (vertexDefNum == 3) {
-                        mixinSprite.setMinU(textureCoordinate.getU());
-                        mixinSprite.setMinV(1f - textureCoordinate.getV());
-                    }
-
-                    if (vertexDefNum == 1) {
-                        mixinSprite.setMaxU(textureCoordinate.getU());
-                        mixinSprite.setMaxV(1f - textureCoordinate.getV());
-                    }
-
-                    vertexDefNum++;
-                }
             }
         }
 

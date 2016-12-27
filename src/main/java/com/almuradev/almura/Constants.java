@@ -53,6 +53,10 @@ public class Constants {
             public static final String VERTEX_TEXTURE_COORDINATE = "vt";
             public static final String GROUP = "g";
             public static final String FACE = "f";
+            public static final String PERSPECTIVE = "pe";
+            public static final String TRANSLATION = "tn";
+            public static final String ROTATION = "rn";
+            public static final String SCALE = "se";
         }
 
         public static final class Material {

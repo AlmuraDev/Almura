@@ -8,6 +8,7 @@ package com.almuradev.almura.api.client.model.obj;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.api.client.model.obj.geometry.Group;
+import com.almuradev.almura.api.client.model.obj.geometry.Perspective;
 import com.almuradev.almura.api.client.model.obj.geometry.Vertex;
 import com.almuradev.almura.api.client.model.obj.geometry.VertexNormal;
 import com.almuradev.almura.api.client.model.obj.geometry.VertexTextureCoordinate;
@@ -43,12 +44,14 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
     private final MaterialLibrary materialLibrary;
     private final Set<Group> groups;
     private final Set<ResourceLocation> textures;
+    private final Set<Perspective> perspectives;
 
-    private OBJModel(ResourceLocation source, String name, MaterialLibrary materialLibrary, Set<Group> groups) {
+    private OBJModel(ResourceLocation source, String name, MaterialLibrary materialLibrary, Set<Group> groups, Set<Perspective> perspectives) {
         this.source = source;
         this.name = name;
         this.materialLibrary = materialLibrary;
         this.groups = groups;
+        this.perspectives = perspectives;
         this.textures = new HashSet<>();
 
         for (MaterialDefinition materialDefinition : materialLibrary.getMaterialDefinitions()) {
@@ -120,12 +123,17 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
         return this.groups;
     }
 
+    public Set<Perspective> getPerspectives() {
+        return this.perspectives;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("name", this.name)
                 .add("source", this.source)
                 .add("groups", this.groups)
+                .add("perspectives", this.perspectives)
                 .toString();
     }
 
@@ -136,6 +144,7 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
         private LinkedHashMap<VertexNormal, Integer> normals = new LinkedHashMap<>();
         private LinkedHashMap<VertexTextureCoordinate, Integer> textureCoordinates = new LinkedHashMap<>();
         private Set<Group> groups = new LinkedHashSet<>();
+        private Set<Perspective> perspectives = new HashSet<>();
 
         public Builder materialLibrary(MaterialLibrary materialLibrary) {
             this.materialLibrary = materialLibrary;
@@ -184,13 +193,18 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
             return this;
         }
 
+        public Builder perspective(Perspective perspective) {
+            this.perspectives.add(perspective);
+            return this;
+        }
+
         public OBJModel build(ResourceLocation source, String name) {
             checkState(source != null, "Source cannot be null!");
             checkState(name != null, "Name cannot be null!");
             checkState(!name.isEmpty(), "Name cannot be empty!");
             checkState(!this.groups.isEmpty(), "Groups cannot be empty!");
 
-            return new OBJModel(source, name, this.materialLibrary, this.groups);
+            return new OBJModel(source, name, this.materialLibrary, this.groups, this.perspectives);
         }
     }
 }
