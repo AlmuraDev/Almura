@@ -10,6 +10,8 @@
         "entity.player.MixinEntityPlayer",
         "entity.animal.MixinEntityAnimal",
         "entity.animal.MixinEntityPig",
+        "entity.animal.MixinEntityChicken",
+        "entity.animal.MixinEntityCow",
         "entity.ai.MixinEntityAIMate",
         "item.crafting.MixinShapedRecipes",
         "item.crafting.MixinShapelessRecipes",

@@ -1,7 +1,6 @@
 package com.almuradev.almura.mixin.entity.animal;
 
-import com.almuradev.almura.interfaces.entity.animal.IMixinEntityAnimal;
-
+import com.almuradev.almura.extension.animal.IMixinEntityAnimal;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.IAnimals;

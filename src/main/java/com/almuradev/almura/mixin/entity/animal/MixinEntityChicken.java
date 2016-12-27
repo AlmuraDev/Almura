@@ -10,23 +10,23 @@ import com.almuradev.almura.extension.animal.IMixinEntityAnimal;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityPig;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-@Mixin(EntityPig.class)
-public abstract class MixinEntityPig extends EntityAnimal {
+@Mixin(EntityChicken.class)
+public abstract class MixinEntityChicken extends EntityAnimal {
 
-    public MixinEntityPig(World world) {
+    public MixinEntityChicken(World world) {
         super(world);        
     }
 
     @Overwrite
     public boolean isBreedingItem(ItemStack itemStack) {
-        if (itemStack.getItem() == Items.carrot) {
+        if (itemStack.getItem() == Items.wheat_seeds) {
             ((IMixinEntityAnimal) this).setCanSpawnTwin(false);
             return true;
         }
@@ -35,5 +35,24 @@ public abstract class MixinEntityPig extends EntityAnimal {
             return true;
         }
         return false;        
-    }   
+    } 
+
+    @Overwrite
+    protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
+        int j = this.rand.nextInt(3) + this.rand.nextInt(1 + p_70628_2_);
+
+        for (int k = 0; k < j; ++k) {
+            this.dropItem(Items.feather, 1);
+        }
+
+        j = this.rand.nextInt(3) + this.rand.nextInt(1 + p_70628_2_);
+
+        for (int k = 0; k < j; ++k) { //Fix enchantment check for increased loot drops.... 
+            if (this.isBurning()) {
+                this.dropItem(Items.cooked_chicken, 1);
+            } else {
+                this.dropItem(Items.chicken, 1);
+            }
+        }
+    }
 }

@@ -1,9 +1,8 @@
 package com.almuradev.almura.mixin.entity.ai;
 
-import com.almuradev.almura.interfaces.entity.animal.IMixinEntityAnimal;
-
 import java.util.Random;
 
+import com.almuradev.almura.extension.animal.IMixinEntityAnimal;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIMate;
@@ -24,10 +23,10 @@ public abstract class MixinEntityAIMate extends EntityAIBase {
     @Shadow private EntityAnimal theAnimal;
     @Shadow World theWorld;
     @Shadow private EntityAnimal targetMate;
-   
+
     @Overwrite
     private void spawnBaby() {
-                
+
         EntityAgeable entityageable = this.theAnimal.createChild(this.targetMate);
 
         if (entityageable != null) {
@@ -60,16 +59,16 @@ public abstract class MixinEntityAIMate extends EntityAIBase {
                     entityTwin.setGrowingAge(-24000);
                     entityTwin.setLocationAndAngles(this.theAnimal.posX, this.theAnimal.posY, this.theAnimal.posZ, 0.0F, 0.0F);
                     this.theWorld.spawnEntityInWorld(entityTwin);
-                    
+
                     theAnimal.setCanSpawnTwin(false);
                     targetMate.setCanSpawnTwin(false);
                 }
             }
-           
+
             entityageable.setGrowingAge(-24000);
             entityageable.setLocationAndAngles(this.theAnimal.posX, this.theAnimal.posY, this.theAnimal.posZ, 0.0F, 0.0F);
             this.theWorld.spawnEntityInWorld(entityageable);
-            
+
             Random random = this.theAnimal.getRNG();
 
             for (int i = 0; i < 7; ++i)
