@@ -24,7 +24,7 @@ public abstract class MixinEntityCow extends EntityAnimal {
         super(world);        
     }
 
-    @Overwrite
+    @Override
     public boolean isBreedingItem(ItemStack itemStack) {
         if (itemStack.getItem() == Items.wheat) {
             ((IMixinEntityAnimal) this).setCanSpawnTwin(false);
