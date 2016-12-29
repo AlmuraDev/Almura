@@ -18,12 +18,16 @@ import com.almuradev.almura.configuration.type.ClientConfiguration;
 import com.almuradev.almura.network.NetworkHandlers;
 import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.IResourcePack;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -33,6 +37,7 @@ import org.spongepowered.api.Platform;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -50,6 +55,13 @@ public final class ClientProxy extends CommonProxy {
 
     @Override
     public void onGamePreInitialization(GamePreInitializationEvent event) {
+        // Must be a better way to go about this...
+        final List<IResourcePack> resourcePacks = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(),
+                "defaultResourcePacks");
+        resourcePacks.add(new CustomFolderResourcePack("CustomFolderResourcePack: " + Constants.Plugin.NAME, Constants.FileSystem
+                .PATH_ASSETS_ALMURA, Constants.Plugin.ID));
+        Minecraft.getMinecraft().refreshResources();
+
         this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults()
                 .setHeader(Constants.Config.HEADER), Constants.FileSystem.PATH_CONFIG_CLIENT);
         try {
@@ -77,12 +89,12 @@ public final class ClientProxy extends CommonProxy {
         OBJModelLoader.instance.registerDomain(Constants.Plugin.ID);
 
         MinecraftForge.EVENT_BUS.register(this);
-
         super.onGamePreInitialization(event);
     }
 
     @SubscribeEvent
     public void onGuiScreen(GuiOpenEvent event) {
+        final GuiScreen screen = event.getGui();
         if (event.getGui() != null) {
             if (event.getGui().getClass().equals(GuiMainMenu.class)) {
                 event.setCanceled(true);

@@ -11,25 +11,34 @@ import net.malisis.core.renderer.icon.GuiIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.UUID;
+import java.util.Random;
 
 public class Constants {
 
+    public static final Random RANDOM = new Random();
+
     public static final class Plugin {
         public static final String ID = "almura";
+        public static final String NAME = WordUtils.capitalize(ID);
         public static final String PROXY_CLIENT_CLASSPATH = "com.almuradev.almura.client.ClientProxy";
         public static final String PROXY_SERVER_CLASSPATH = "com.almuradev.almura.server.ServerProxy";
     }
 
     public static final class FileSystem {
-        public static final Path PATH_CONFIG = Paths.get(".").resolve("config").resolve(Plugin.ID);
-        public static final Path PATH_CONFIG_CLIENT = PATH_CONFIG.resolve("client.conf");
-        public static final Path PATH_CONFIG_PACKS = PATH_CONFIG.resolve("packs");
+        public static final Path PATH_ROOT = Paths.get(".");
+        public static final Path PATH_ASSETS = PATH_ROOT.resolve("assets");
+        public static final Path PATH_ASSETS_ALMURA = PATH_ASSETS.resolve(Plugin.ID);
+
+        public static final Path PATH_CONFIG = PATH_ROOT.resolve("config");
+        public static final Path PATH_CONFIG_ALMURA = PATH_CONFIG.resolve(Plugin.ID);
+        public static final Path PATH_CONFIG_CLIENT = PATH_CONFIG_ALMURA.resolve("client.conf");
+        public static final Path PATH_CONFIG_PACKS = PATH_CONFIG_ALMURA.resolve("packs");
 
         public static void construct() {
             if (Files.notExists(PATH_CONFIG_PACKS)) {

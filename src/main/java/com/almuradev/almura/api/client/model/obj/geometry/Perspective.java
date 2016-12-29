@@ -8,6 +8,7 @@ package com.almuradev.almura.api.client.model.obj.geometry;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.flowpowered.math.vector.Vector3f;
+import com.google.common.base.Objects;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraftforge.common.model.TRSRTransformation;
 
@@ -32,6 +33,24 @@ public class Perspective {
 
     public TRSRTransformation getTransform() {
         return this.transform;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Perspective)) {
+            return false;
+        }
+
+        final Perspective other = (Perspective) obj;
+        return other.transformType.equals(this.transformType);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("transformType", this.transformType)
+                .add("transformation", this.transform)
+                .toString();
     }
 
     public static final class Builder {

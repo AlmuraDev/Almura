@@ -42,12 +42,15 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
     private final VertexFormat format;
     private final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
     private TextureAtlasSprite particleSprite = null;
+    private List<BakedQuad> quads;
 
     public OBJBakedModel(OBJModel model, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
         this.model = model;
         this.state = state;
         this.format = format;
         this.bakedTextureGetter = bakedTextureGetter;
+
+        // TODO Figure out how to do particle texture as we do some atlases.
     }
 
     @Override
@@ -63,93 +66,96 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-        final List<BakedQuad> quads = new LinkedList<>();
 
-        for (Group group : this.model.getGroups()) {
-            final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
+        if (this.quads == null) {
+            this.quads = new LinkedList<>();
 
-            TextureAtlasSprite diffuseSprite = null;
-            if (materialDefinition != null) {
-                if (materialDefinition.getDiffuseTexture().isPresent()) {
-                    final ResourceLocation diffuseLocation = materialDefinition.getDiffuseTexture().orElse(null);
+            for (Group group : this.model.getGroups()) {
+                final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
 
-                    if (diffuseLocation != null) {
+                TextureAtlasSprite diffuseSprite = null;
+                if (materialDefinition != null) {
+                    if (materialDefinition.getDiffuseTexture().isPresent()) {
+                        final ResourceLocation diffuseLocation = materialDefinition.getDiffuseTexture().orElse(null);
 
-                        if (diffuseLocation.getResourcePath().endsWith(".png")) {
-                            diffuseSprite =
-                                    this.bakedTextureGetter.apply(new ResourceLocation(diffuseLocation.getResourceDomain(), diffuseLocation
-                                            .getResourcePath().split("\\.")[0]));
-                        } else {
-                            diffuseSprite = this.bakedTextureGetter.apply(diffuseLocation);
-                        }
-                    }
-                }
-            }
+                        if (diffuseLocation != null) {
 
-            if (diffuseSprite == null) {
-                diffuseSprite = ModelLoader.White.INSTANCE;
-            }
-
-            Face particleFace = null;
-
-            for (Face face : group.getFaces()) {
-                if (particleFace == null) {
-                    particleFace = face;
-                }
-                final UnpackedBakedQuad.Builder quadBuilder = new UnpackedBakedQuad.Builder(this.format);
-                quadBuilder.setContractUVs(true);
-                quadBuilder.setTexture(diffuseSprite);
-                VertexNormal normal = null;
-
-                for (VertexDefinition vertexDef : face.getVertices()) {
-                    if (normal == null) {
-                        normal = vertexDef.getNormal().orElse(null);
-                    }
-
-                    for (int e = 0; e < this.format.getElementCount(); e++) {
-                        switch (this.format.getElement(e).getUsage()) {
-                            case POSITION:
-                                final Vertex vertex = vertexDef.getVertex();
-                                quadBuilder.put(e, vertex.getX(), vertex.getY(), vertex.getZ());
-                                break;
-                            case UV:
-                                final VertexTextureCoordinate textureCoordinate = vertexDef.getTextureCoordinate().orElse(null);
-
-                                float u, v;
-
-                                if (textureCoordinate != null) {
-                                    u = textureCoordinate.getU();
-                                    v = 1f - textureCoordinate.getV();
-                                } else {
-                                    u = 0f;
-                                    v = 1f;
-                                }
-
-                                quadBuilder.put(e, diffuseSprite.getInterpolatedU(u * 16f), diffuseSprite.getInterpolatedV(v * 16f));
-                                break;
-                            case NORMAL:
-                                if (normal != null) {
-                                    quadBuilder.put(e, normal.getX(), normal.getY(), normal.getZ());
-                                }
-                                break;
-                            case COLOR:
-                                quadBuilder.put(e, 1f, 1f, 1f, 1f);
-                                break;
-                            default:
-                                quadBuilder.put(e);
+                            if (diffuseLocation.getResourcePath().endsWith(".png")) {
+                                diffuseSprite =
+                                        this.bakedTextureGetter.apply(new ResourceLocation(diffuseLocation.getResourceDomain(), diffuseLocation
+                                                .getResourcePath().split("\\.")[0]));
+                            } else {
+                                diffuseSprite = this.bakedTextureGetter.apply(diffuseLocation);
+                            }
                         }
                     }
                 }
 
-                if (normal != null) {
-                    quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
+                if (diffuseSprite == null) {
+                    diffuseSprite = ModelLoader.White.INSTANCE;
                 }
 
-                quads.add(quadBuilder.build());
+                Face particleFace = null;
+
+                for (Face face : group.getFaces()) {
+                    if (particleFace == null) {
+                        particleFace = face;
+                    }
+                    final UnpackedBakedQuad.Builder quadBuilder = new UnpackedBakedQuad.Builder(this.format);
+                    quadBuilder.setContractUVs(true);
+                    quadBuilder.setTexture(diffuseSprite);
+                    VertexNormal normal = null;
+
+                    for (VertexDefinition vertexDef : face.getVertices()) {
+                        if (normal == null) {
+                            normal = vertexDef.getNormal().orElse(null);
+                        }
+
+                        for (int e = 0; e < this.format.getElementCount(); e++) {
+                            switch (this.format.getElement(e).getUsage()) {
+                                case POSITION:
+                                    final Vertex vertex = vertexDef.getVertex();
+                                    quadBuilder.put(e, vertex.getX(), vertex.getY(), vertex.getZ());
+                                    break;
+                                case UV:
+                                    final VertexTextureCoordinate textureCoordinate = vertexDef.getTextureCoordinate().orElse(null);
+
+                                    float u, v;
+
+                                    if (textureCoordinate != null) {
+                                        u = textureCoordinate.getU();
+                                        v = 1f - textureCoordinate.getV();
+                                    } else {
+                                        u = 0f;
+                                        v = 1f;
+                                    }
+
+                                    quadBuilder.put(e, diffuseSprite.getInterpolatedU(u * 16f), diffuseSprite.getInterpolatedV(v * 16f));
+                                    break;
+                                case NORMAL:
+                                    if (normal != null) {
+                                        quadBuilder.put(e, normal.getX(), normal.getY(), normal.getZ());
+                                    }
+                                    break;
+                                case COLOR:
+                                    quadBuilder.put(e, 1f, 1f, 1f, 1f);
+                                    break;
+                                default:
+                                    quadBuilder.put(e);
+                            }
+                        }
+                    }
+
+                    if (normal != null) {
+                        quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
+                    }
+
+                    this.quads.add(quadBuilder.build());
+                }
             }
         }
 
-        return quads;
+        return this.quads;
     }
 
     @Override

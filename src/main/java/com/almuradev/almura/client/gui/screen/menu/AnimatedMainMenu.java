@@ -6,7 +6,6 @@
 package com.almuradev.almura.client.gui.screen.menu;
 
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.client.gui.component.UIAnimatedBackground;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
@@ -170,7 +169,6 @@ public class AnimatedMainMenu extends SimpleScreen {
         registerKeyListener((keyChar, keyCode) -> keyCode == Keyboard.KEY_ESCAPE);
 
         // Add content to screen
-        addToScreen(new UIAnimatedBackground(this));
         addToScreen(container);
         addToScreen(trademarkLabel);
         addToScreen(copyrightLabel);

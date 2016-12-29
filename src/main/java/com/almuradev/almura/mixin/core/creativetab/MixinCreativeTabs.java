@@ -21,7 +21,7 @@ import org.spongepowered.common.SpongeImplHooks;
 public abstract class MixinCreativeTabs implements CreativeTab {
 
     @Shadow @Final private String tabLabel;
-    private String id, modId;
+    private String id;
 
     private CreativeTabs this$ = (CreativeTabs) (Object) this;
 
