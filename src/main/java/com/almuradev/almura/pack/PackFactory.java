@@ -19,8 +19,6 @@ import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.api.Sponge;
 
 import java.io.IOException;
@@ -30,21 +28,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
 
 public final class PackFactory {
 
     // BLOCK -> (BASIC, BuildableCatalogType.Builder)
-    private final Map<PackFileType, Set<Pair<PackLogicType, ? super BuildableCatalogType.Builder>>> buildersByType = new HashMap<>();
+    private final Map<PackFileType, ? super BuildableCatalogType.Builder> buildersByType = new HashMap<>();
     private final Map<String, Pack> packsById = new HashMap<>();
 
-    public <T extends BuildableCatalogType.Builder> void registerBuilder(PackFileType fileType, PackLogicType logicType, Class<T> builderClass,
+    public <T extends BuildableCatalogType.Builder> void registerBuilder(PackFileType fileType, Class<T> builderClass,
             Supplier<? extends T> supplier) {
         final T builder = supplier.get();
 
@@ -52,29 +50,12 @@ public final class PackFactory {
 //            throw new IllegalArgumentException("Supplier object must be of same type as builder!");
 //        }
 
-        Set<Pair<PackLogicType, ? super BuildableCatalogType.Builder>> builders = buildersByType.get(fileType);
-        if (builders == null) {
-            builders = new HashSet<>();
-            buildersByType.put(fileType, builders);
-        }
-
-        builders.add(new ImmutablePair<>(logicType, supplier.get()));
+        this.buildersByType.put(fileType, builder);
         Sponge.getRegistry().registerBuilderSupplier(builderClass, supplier);
     }
 
-    public <T extends BuildableCatalogType.Builder> Optional<T> get(PackFileType fileType, PackLogicType logicType) {
-        final Set<Pair<PackLogicType, ? super BuildableCatalogType.Builder>> builders = this.buildersByType.get(fileType);
-        Pair<PackLogicType, ? super BuildableCatalogType.Builder> builder = null;
-        if (builders != null) {
-            for (Pair<PackLogicType, ? super BuildableCatalogType.Builder> current : builders) {
-                if (current.getLeft().equals(logicType)) {
-                    builder = current;
-                    break;
-                }
-            }
-        }
-
-        return Optional.ofNullable((T) (builder == null ? null : builder.getRight()));
+    public <T extends BuildableCatalogType.Builder> Optional<T> getBuilder(PackFileType fileType) {
+        return Optional.ofNullable((T) this.buildersByType.get(fileType));
     }
 
     public void loadPacks(Path rootDirectory) {
@@ -92,14 +73,15 @@ public final class PackFactory {
             final Pack.Builder builder = Pack.builder();
 
             for (Path candidate : candidatesByPackEntry.getValue()) {
-                final String filetype = candidate.getFileName().toString().split("\\.")[1].toUpperCase();
-                final PackFileType type = PackFileType.from(filetype).orElse(null);
+                final String extension = candidate.getFileName().toString().split("\\.")[1].toUpperCase();
+                final PackFileType type = PackFileType.from(extension).orElse(null);
 
                 if (type != null) {
                     switch (type) {
                         case BLOCK:
+                        case HORIZONTAL:
                             try {
-                                final BuildableBlockType blockType = createBlockType(candidate);
+                                final BuildableBlockType blockType = createBlockType(candidate, type);
                                 // TODO Log null state
                                 if (blockType != null) {
                                     builder.object(blockType);
@@ -116,7 +98,8 @@ public final class PackFactory {
         }
     }
 
-    private BuildableBlockType createBlockType(Path file) throws IOException, ObjectMappingException {
+    @Nullable
+    private BuildableBlockType createBlockType(Path file, PackFileType fileType) throws IOException, ObjectMappingException {
         final ConfigurationOptions options = ConfigurationOptions.defaults().setSerializers(TypeSerializers.getDefaultSerializers().newChild()
                 .registerType(TypeToken.of(CreativeTab.class), new CreativeTabSerializer()));
         final MappedConfigurationAdapter<BlockConfiguration> adapter = new MappedConfigurationAdapter<>(BlockConfiguration.class, options, file);
@@ -124,16 +107,9 @@ public final class PackFactory {
 
         final String parentName = file.getParent().getFileName().toString();
         final String fileName = file.getFileName().toString().split("\\.")[0];
-
         final BlockConfiguration configuration = adapter.getConfig();
 
-        // TODO Make a factory object that determines the builder and uses common code
-        final PackLogicType logicType = PackLogicType.from(configuration.general.type).orElse(null);
-        if (logicType == null) {
-            return null;
-        }
-
-        final Optional<BuildableBlockType.Builder> optBuilder = this.get(PackFileType.BLOCK, logicType);
+        final Optional<BuildableBlockType.Builder> optBuilder = this.getBuilder(fileType);
 
         if (!optBuilder.isPresent()) {
             return null;
@@ -159,7 +135,7 @@ public final class PackFactory {
 
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            if (!dir.equals(Constants.FileSystem.PATH_CONFIG_PACKS)) {
+            if (!dir.equals(Constants.FileSystem.PATH_ASSETS_ALMURA_30_PACKS)) {
                 Almura.instance.logger.info("Reading pack [{}] for catalog type candidates...", dir.getFileName().toString());
             }
             return FileVisitResult.CONTINUE;
@@ -189,7 +165,7 @@ public final class PackFactory {
 
         @Override
         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            if (!dir.equals(Constants.FileSystem.PATH_CONFIG_PACKS)) {
+            if (!dir.equals(Constants.FileSystem.PATH_ASSETS_ALMURA_30_PACKS)) {
                 final List<Path> candidates = this.candidatesByPack.getOrDefault(dir.getFileName().toString(), new LinkedList<>());
                 Almura.instance.logger.info("Found [{}] catalog type(s).", candidates.size());
             }

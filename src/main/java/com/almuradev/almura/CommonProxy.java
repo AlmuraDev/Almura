@@ -12,12 +12,12 @@ import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.block.builder.rotatable.AbstractHorizontalTypeBuilder;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
+import com.almuradev.almura.creativetab.CreativeTabBuilderImpl;
 import com.almuradev.almura.network.NetworkUtil;
 import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
 import com.almuradev.almura.pack.PackFactory;
 import com.almuradev.almura.pack.PackFileType;
-import com.almuradev.almura.pack.PackLogicType;
 import com.almuradev.almura.registry.CreativeTabRegistryModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -56,7 +56,7 @@ public abstract class CommonProxy {
     }
 
     protected void onGamePreInitialization(GamePreInitializationEvent event) {
-        packFactory.loadPacks(Constants.FileSystem.PATH_CONFIG_PACKS);
+        packFactory.loadPacks(Constants.FileSystem.PATH_ASSETS_ALMURA_30_PACKS);
     }
 
     public abstract MappedConfigurationAdapter<? extends AbstractConfiguration> getPlatformConfigAdapter();
@@ -70,7 +70,6 @@ public abstract class CommonProxy {
     }
 
     protected void registerFileSystem() {
-        Constants.FileSystem.construct();
     }
 
     protected void registerMessages() {
@@ -83,8 +82,9 @@ public abstract class CommonProxy {
     }
 
     protected void registerBuilders() {
-        packFactory.registerBuilder(PackFileType.BLOCK, PackLogicType.BASIC, BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
-        packFactory.registerBuilder(PackFileType.BLOCK, PackLogicType.HORIZONTAL, HorizontalBlockType.Builder.class, AbstractHorizontalTypeBuilder.BuilderImpl::new);
+        Sponge.getRegistry().registerBuilderSupplier(CreativeTab.Builder.class, CreativeTabBuilderImpl::new);
+        packFactory.registerBuilder(PackFileType.BLOCK, BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
+        packFactory.registerBuilder(PackFileType.HORIZONTAL, HorizontalBlockType.Builder.class, AbstractHorizontalTypeBuilder.BuilderImpl::new);
     }
 
     protected void registerListeners() {

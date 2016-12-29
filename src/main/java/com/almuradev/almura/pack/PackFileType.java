@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public enum PackFileType {
     BLOCK,
+    HORIZONTAL,
     ITEM;
 
     public static Optional<PackFileType> from(String id) {

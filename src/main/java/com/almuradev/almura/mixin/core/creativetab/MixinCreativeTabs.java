@@ -6,9 +6,11 @@
 package com.almuradev.almura.mixin.core.creativetab;
 
 import com.almuradev.almura.api.creativetab.CreativeTab;
+import com.almuradev.almura.mixin.interfaces.IMixinCreativeTabs;
 import com.almuradev.almura.registry.CreativeTabRegistryModule;
 import com.google.common.base.Objects;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,9 +20,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.common.SpongeImplHooks;
 
 @Mixin(CreativeTabs.class)
-public abstract class MixinCreativeTabs implements CreativeTab {
+public abstract class MixinCreativeTabs implements CreativeTab, IMixinCreativeTabs {
 
     @Shadow @Final private String tabLabel;
+    @Shadow private ItemStack iconItemStack;
+
     private String id;
 
     private CreativeTabs this$ = (CreativeTabs) (Object) this;
@@ -54,5 +58,15 @@ public abstract class MixinCreativeTabs implements CreativeTab {
         return Objects.toStringHelper(CreativeTabs.class)
                 .add("tabLabel", this.tabLabel)
                 .toString();
+    }
+
+    @Override
+    public void setIconItemStack(ItemStack itemStack) {
+        this.iconItemStack = itemStack;
+    }
+
+    @Override
+    public org.spongepowered.api.item.inventory.ItemStack getTabIcon() {
+        return (org.spongepowered.api.item.inventory.ItemStack) (Object) this.iconItemStack;
     }
 }

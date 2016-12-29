@@ -13,48 +13,40 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Random;
 
 public class Constants {
 
-    public static final Random RANDOM = new Random();
-
     public static final class Plugin {
+
         public static final String ID = "almura";
         public static final String NAME = WordUtils.capitalize(ID);
         public static final String PROXY_CLIENT_CLASSPATH = "com.almuradev.almura.client.ClientProxy";
         public static final String PROXY_SERVER_CLASSPATH = "com.almuradev.almura.server.ServerProxy";
+        public static final String ASSETS_VERSION = "3.0";
     }
 
     public static final class FileSystem {
+
         public static final Path PATH_ROOT = Paths.get(".");
+
         public static final Path PATH_ASSETS = PATH_ROOT.resolve("assets");
         public static final Path PATH_ASSETS_ALMURA = PATH_ASSETS.resolve(Plugin.ID);
+        public static final Path PATH_ASSETS_ALMURA_30 = PATH_ASSETS_ALMURA.resolve(Plugin.ASSETS_VERSION);
+        public static final Path PATH_ASSETS_ALMURA_30_PACKS = PATH_ASSETS_ALMURA_30.resolve("packs");
 
         public static final Path PATH_CONFIG = PATH_ROOT.resolve("config");
         public static final Path PATH_CONFIG_ALMURA = PATH_CONFIG.resolve(Plugin.ID);
-        public static final Path PATH_CONFIG_CLIENT = PATH_CONFIG_ALMURA.resolve("client.conf");
-        public static final Path PATH_CONFIG_PACKS = PATH_CONFIG_ALMURA.resolve("packs");
-
-        public static void construct() {
-            if (Files.notExists(PATH_CONFIG_PACKS)) {
-                try {
-                    Files.createDirectories(PATH_CONFIG_PACKS);
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to create [" + PATH_CONFIG_PACKS + "]!", e);
-                }
-            }
-        }
+        public static final Path PATH_CONFIG_ALMURA_CLIENT = PATH_CONFIG_ALMURA.resolve("client.conf");
     }
 
     public static final class Model {
+
         public static final String COMMENT = "#";
 
         public static final class Obj {
+
             public static final String MATERIAL_LIBRARY = "mtllib";
             public static final String USE_MATERIAL = "usemtl";
             public static final String VERTEX = "v";
@@ -69,17 +61,21 @@ public class Constants {
         }
 
         public static final class Material {
+
             public static final String NEW_MATERIAL = "newmtl";
             public static final String DIFFUSE = "map_Kd";
         }
 
     }
+
     public static final class Config {
+
         public static final String HEADER = "2.0\nAlmura configuration\n\nFor further assistance, join #almura on EsperNet.";
     }
 
     @SideOnly(Side.CLIENT)
     public static final class Gui {
+
         public static final String FORUM_URL = "http://www.almuramc.com";
         public static final String ISSUES_URL = "https://github.com/AlmuraDev/Almura/issues";
         public static final String MAP_URL = "http://srv1.almuramc.com:8123";

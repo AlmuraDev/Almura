@@ -34,7 +34,7 @@ public final class CreativeTabRegistryModule implements AdditionalCatalogRegistr
 
     @Override
     public void registerAdditionalCatalog(CreativeTab extraCatalog) {
-        this.creativeTabMappings.put(checkNotNull(extraCatalog.getId()).toLowerCase(Locale.ENGLISH), extraCatalog);
+        this.creativeTabMappings.put(checkNotNull(extraCatalog).getId().toLowerCase(Locale.ENGLISH), extraCatalog);
     }
 
     @Override

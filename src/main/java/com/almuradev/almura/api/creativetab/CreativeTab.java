@@ -5,10 +5,22 @@
  */
 package com.almuradev.almura.api.creativetab;
 
-import org.spongepowered.api.CatalogType;
+import com.almuradev.almura.api.BuildableCatalogType;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.annotation.CatalogedBy;
 
 @CatalogedBy(CreativeTabs.class)
-public interface CreativeTab extends CatalogType {
+public interface CreativeTab extends BuildableCatalogType {
 
+    static Builder builder() {
+        return Sponge.getRegistry().createBuilder(Builder.class);
+    }
+
+    ItemStack getTabIcon();
+
+    interface Builder extends BuildableCatalogType.Builder<CreativeTab, Builder> {
+
+        Builder tabIcon(ItemStack itemStack);
+    }
 }

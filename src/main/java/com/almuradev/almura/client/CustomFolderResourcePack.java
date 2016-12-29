@@ -25,14 +25,12 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class CustomFolderResourcePack extends FolderResourcePack {
     private final String name;
-
     private final Set<String> availableNamespaces;
 
     public CustomFolderResourcePack(String name, Path root, String domain) {
         super(root.toFile());
 
         this.name = name;
-
         this.availableNamespaces = ImmutableSet.of(domain);
     }
 

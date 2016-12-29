@@ -63,7 +63,7 @@ public final class ClientProxy extends CommonProxy {
         Minecraft.getMinecraft().refreshResources();
 
         this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults()
-                .setHeader(Constants.Config.HEADER), Constants.FileSystem.PATH_CONFIG_CLIENT);
+                .setHeader(Constants.Config.HEADER), Constants.FileSystem.PATH_CONFIG_ALMURA_CLIENT);
         try {
             this.configAdapter.load();
         } catch (IOException | ObjectMappingException e) {
