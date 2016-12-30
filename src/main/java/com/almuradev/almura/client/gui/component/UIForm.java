@@ -16,7 +16,10 @@ import net.malisis.core.client.gui.component.container.UIWindow;
 import net.malisis.core.client.gui.component.control.IControlComponent;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.util.MouseButton;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class UIForm extends UIWindow {
     private UISimpleButton closeButton;
     private int topPadding, bottomPadding, leftPadding, rightPadding;

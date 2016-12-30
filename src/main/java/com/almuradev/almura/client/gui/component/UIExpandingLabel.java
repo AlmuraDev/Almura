@@ -8,7 +8,10 @@ package com.almuradev.almura.client.gui.component;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.util.bbcode.BBString;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class UIExpandingLabel extends UILabel {
 
     public UIExpandingLabel(MalisisGui gui, String text, boolean multiLine) {

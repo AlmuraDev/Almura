@@ -12,7 +12,10 @@ import net.malisis.core.client.gui.component.container.UIListContainer;
 import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class UISimpleList<S extends UIContainer<S>> extends UIListContainer<UISimpleList<S>, S> {
 
     public UISimpleList(MalisisGui gui, int width, int height) {

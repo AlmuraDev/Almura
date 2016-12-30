@@ -6,7 +6,10 @@
 package com.almuradev.almura.client.gui.screen.ingame.hud;
 
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public abstract class AbstractHUD extends SimpleScreen {
 
     public abstract int getOriginBossBarOffsetY();
