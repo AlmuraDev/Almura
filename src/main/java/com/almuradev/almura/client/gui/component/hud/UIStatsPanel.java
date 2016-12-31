@@ -83,7 +83,7 @@ public class UIStatsPanel extends UIHUDPanel {
     public void updateHealth() {
         final float health = Minecraft.getMinecraft().player.getHealth();
         final float maxHealth = Minecraft.getMinecraft().player.getMaxHealth();
-        this.healthBar.setAmount(MathUtil.ConvertToRange(health,0f, maxHealth, 0f, 1f));
+        this.healthBar.setAmount(MathUtil.convertToRange(health,0f, maxHealth, 0f, 1f));
         this.healthBar.setText(Text.of(String.format("%.0f/%.0f", health, maxHealth)));
     }
 
@@ -101,13 +101,13 @@ public class UIStatsPanel extends UIHUDPanel {
             }
         }
         this.armorBar.setText(Text.of(String.format("%d/%d", currentArmor, maxArmor)));
-        this.armorBar.setAmount(MathUtil.ConvertToRange(maxArmor - currentArmor, 0, maxArmor, 0f, 1f));
+        this.armorBar.setAmount(MathUtil.convertToRange(maxArmor - currentArmor, 0, maxArmor, 0f, 1f));
     }
 
     public void updateHunger() {
         final float foodLevel = Minecraft.getMinecraft().player.getFoodStats().getFoodLevel();
         this.hungerBar.setText(Text.of(String.format("%.0f/%d", foodLevel, 20)));
-        this.hungerBar.setAmount(MathUtil.ConvertToRange(foodLevel, 0, 20, 0f, 1f));
+        this.hungerBar.setAmount(MathUtil.convertToRange(foodLevel, 0, 20, 0f, 1f));
     }
 
     public void updateAir() {
@@ -117,7 +117,7 @@ public class UIStatsPanel extends UIHUDPanel {
         if (this.airBar.isVisible()) {
             final int air = Minecraft.getMinecraft().player.getAir();
             this.airBar.setText(Text.of(String.format("%d/%d", air, 300)));
-            this.airBar.setAmount(MathUtil.ConvertToRange(Minecraft.getMinecraft().player.getAir(), 0, 300, 0f, 1f));
+            this.airBar.setAmount(MathUtil.convertToRange(Minecraft.getMinecraft().player.getAir(), 0, 300, 0f, 1f));
         }
     }
 
@@ -128,7 +128,7 @@ public class UIStatsPanel extends UIHUDPanel {
             final float health = ridingEntityLivingBase.getHealth();
             final float maxHealth = ridingEntityLivingBase.getMaxHealth();
             this.mountHealthBar.setText(Text.of(String.format("%.0f/%.0f", health, maxHealth)));
-            this.mountHealthBar.setAmount(MathUtil.ConvertToRange(health, 0, maxHealth, 0f, 1f));
+            this.mountHealthBar.setAmount(MathUtil.convertToRange(health, 0, maxHealth, 0f, 1f));
             this.mountHealthBar.setPosition(0, SimpleScreen.getPaddedY(this.airBar.isVisible() ? this.airBar : this.hungerBar, 1));
         }
     }

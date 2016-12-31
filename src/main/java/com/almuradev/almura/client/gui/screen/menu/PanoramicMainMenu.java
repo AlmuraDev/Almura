@@ -43,13 +43,13 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public class AnimatedMainMenu extends SimpleScreen {
+public class PanoramicMainMenu extends PanoramicScreen {
 
     private static final int PADDING = 4;
 
     private UIBackgroundContainer buttonContainer;
 
-    public AnimatedMainMenu(@Nullable SimpleScreen parent) {
+    public PanoramicMainMenu(@Nullable SimpleScreen parent) {
         super(parent);
     }
 
@@ -66,7 +66,8 @@ public class AnimatedMainMenu extends SimpleScreen {
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
-        this.buttonContainer = new UIBackgroundContainer(this, Constants.Gui.BUTTON_WIDTH_LONG, (Constants.Gui.BUTTON_HEIGHT * 4) + (PADDING * 3));
+        this.buttonContainer = new UIBackgroundContainer(this, Constants.Gui.BUTTON_WIDTH_LONG + PADDING, (Constants.Gui.BUTTON_HEIGHT * 4) +
+                (PADDING * 3));
         this.buttonContainer.setPosition(0, SimpleScreen.getPaddedY(almuraHeader, 10), Anchor.TOP | Anchor.CENTER);
         this.buttonContainer.setBackgroundAlpha(0);
 

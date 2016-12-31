@@ -91,7 +91,7 @@ public class UIUserPanel extends UIHUDPanel {
         final int experience = (int) (Minecraft.getMinecraft().player.experience * experienceCap);
 
         this.experienceBar.setText(Text.of(experience + "/" + experienceCap));
-        this.experienceBar.setAmount(MathUtil.ConvertToRange(experience, 0, experienceCap, 0f, 1f));
+        this.experienceBar.setAmount(MathUtil.convertToRange(experience, 0, experienceCap, 0f, 1f));
     }
 
     public void updateLevel() {
