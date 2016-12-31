@@ -7,8 +7,8 @@ package com.almuradev.almura.registry;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.api.creativetab.CreativeTab;
-import com.almuradev.almura.api.creativetab.CreativeTabs;
+import com.almuradev.almura.creativetab.CreativeTab;
+import com.almuradev.almura.creativetab.CreativeTabs;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 import org.spongepowered.api.registry.util.RegisterCatalog;
@@ -34,7 +34,9 @@ public final class CreativeTabRegistryModule implements AdditionalCatalogRegistr
 
     @Override
     public void registerAdditionalCatalog(CreativeTab extraCatalog) {
-        this.creativeTabMappings.put(checkNotNull(extraCatalog).getId().toLowerCase(Locale.ENGLISH), extraCatalog);
+        checkNotNull(extraCatalog);
+        final String id = extraCatalog.getId().toLowerCase(Locale.ENGLISH);
+        this.creativeTabMappings.put(id, extraCatalog);
     }
 
     @Override

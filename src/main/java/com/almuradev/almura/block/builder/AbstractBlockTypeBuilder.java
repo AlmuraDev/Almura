@@ -8,9 +8,9 @@ package com.almuradev.almura.block.builder;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.api.block.BuildableBlockType;
-import com.almuradev.almura.api.creativetab.CreativeTab;
-import com.almuradev.almura.block.GenericBlock;
+import com.almuradev.almura.block.BuildableBlockType;
+import com.almuradev.almura.creativetab.CreativeTab;
+import com.almuradev.almura.block.impl.GenericBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -95,6 +95,10 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     }
 
     public static final class BuilderImpl extends AbstractBlockTypeBuilder<BuildableBlockType, BuilderImpl> {
+
+        public BuilderImpl() {
+
+        }
 
         @Override
         public BuildableBlockType build(String id) {

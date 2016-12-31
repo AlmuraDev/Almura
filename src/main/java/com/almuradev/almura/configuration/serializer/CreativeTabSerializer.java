@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.configuration.serializer;
 
-import com.almuradev.almura.api.creativetab.CreativeTab;
+import com.almuradev.almura.creativetab.CreativeTab;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;

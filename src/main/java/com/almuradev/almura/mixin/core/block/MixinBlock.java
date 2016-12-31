@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.mixin.core.block;
 
-import com.almuradev.almura.api.block.BuildableBlockType;
+import com.almuradev.almura.block.BuildableBlockType;
 import com.almuradev.almura.mixin.interfaces.IMixinBuildableBlockType;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;

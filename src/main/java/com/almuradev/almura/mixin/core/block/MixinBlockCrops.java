@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.mixin.core.block;
 
-import com.almuradev.almura.api.block.CropType;
+import com.almuradev.almura.block.CropType;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockCrops;
 import org.spongepowered.asm.mixin.Implements;

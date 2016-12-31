@@ -112,7 +112,7 @@ license {
 }
 
 sortClassFields {
-    add 'main', 'com.almuradev.almura.api.creativetab.CreativeTabs'
+    add 'main', 'com.almuradev.almura.creativetab.CreativeTabs'
 }
 
 if (JavaVersion.current().isJava8Compatible() || JavaVersion.current().isJava9Compatible()) {

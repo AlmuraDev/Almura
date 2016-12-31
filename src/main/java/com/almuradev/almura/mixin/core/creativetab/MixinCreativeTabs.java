@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.mixin.core.creativetab;
 
-import com.almuradev.almura.api.creativetab.CreativeTab;
+import com.almuradev.almura.creativetab.CreativeTab;
 import com.almuradev.almura.mixin.interfaces.IMixinCreativeTabs;
 import com.almuradev.almura.registry.CreativeTabRegistryModule;
 import com.google.common.base.Objects;
@@ -23,18 +23,10 @@ import org.spongepowered.common.SpongeImplHooks;
 public abstract class MixinCreativeTabs implements CreativeTab, IMixinCreativeTabs {
 
     @Shadow @Final private String tabLabel;
+    @Shadow @Final private int tabIndex;
     @Shadow private ItemStack iconItemStack;
 
     private String id;
-
-    private CreativeTabs this$ = (CreativeTabs) (Object) this;
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    public void onConstruction(String label, CallbackInfo ci) {
-        final String modId = SpongeImplHooks.getModIdFromClass(getClass());
-        this.id = modId + ":" + label;
-        CreativeTabRegistryModule.getInstance().registerAdditionalCatalog(this);
-    }
 
     @Inject(method = "<init>(ILjava/lang/String;)V", at = @At("RETURN"))
     public void onConstruction(int index, String label, CallbackInfo ci) {
@@ -56,6 +48,7 @@ public abstract class MixinCreativeTabs implements CreativeTab, IMixinCreativeTa
     @Override
     public String toString() {
         return Objects.toStringHelper(CreativeTabs.class)
+                .add("tabIndex", this.tabIndex)
                 .add("tabLabel", this.tabLabel)
                 .toString();
     }
@@ -68,5 +61,10 @@ public abstract class MixinCreativeTabs implements CreativeTab, IMixinCreativeTa
     @Override
     public org.spongepowered.api.item.inventory.ItemStack getTabIcon() {
         return (org.spongepowered.api.item.inventory.ItemStack) (Object) this.iconItemStack;
+    }
+
+    @Override
+    public int getTabIndex() {
+        return this.tabIndex;
     }
 }

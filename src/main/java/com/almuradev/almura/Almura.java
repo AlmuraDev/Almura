@@ -27,10 +27,12 @@ public class Almura {
     @Inject public Logger logger;
     @Inject public PluginContainer container;
 
+    public Almura() {
+        instance = this;
+    }
+
     @Listener
     public void onGameConstruction(GameConstructionEvent event) {
-        instance = this;
-
         proxy.onGameConstruction(event);
     }
 

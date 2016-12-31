@@ -13,14 +13,4 @@ public class MathUtil {
         float ratio = newDiff / originalDiff;
         return Math.round(((originalValue * ratio) + newMin) * 100.0f) / 100.0f;
     }
-
-    public static int getNextPowerOfTwo(int x) {
-        x = x - 1;
-        x |= x >> 1;
-        x |= x >> 2;
-        x |= x >> 4;
-        x |= x >> 8;
-        x |= x >> 16;
-        return x + 1;
-    }
 }

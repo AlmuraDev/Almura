@@ -7,7 +7,7 @@ package com.almuradev.almura.client;
 
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.api.client.model.obj.OBJModelLoader;
+import com.almuradev.almura.client.model.obj.OBJModelLoader;
 import com.almuradev.almura.client.gui.screen.ingame.SimpleIngameMenu;
 import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
 import com.almuradev.almura.client.gui.screen.ingame.hud.OriginHUD;
@@ -59,7 +59,7 @@ public final class ClientProxy extends CommonProxy {
         final List<IResourcePack> resourcePacks = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(),
                 "defaultResourcePacks");
         resourcePacks.add(new CustomFolderResourcePack("CustomFolderResourcePack: " + Constants.Plugin.NAME, Constants.FileSystem
-                .PATH_ASSETS_ALMURA, Constants.Plugin.ID));
+                .PATH_ASSETS_ALMURA_30, Constants.Plugin.ID));
         Minecraft.getMinecraft().refreshResources();
 
         this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults()

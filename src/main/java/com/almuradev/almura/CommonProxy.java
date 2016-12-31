@@ -5,19 +5,20 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.api.block.BuildableBlockType;
-import com.almuradev.almura.api.block.rotatable.HorizontalBlockType;
-import com.almuradev.almura.api.creativetab.CreativeTab;
+import com.almuradev.almura.block.BuildableBlockType;
+import com.almuradev.almura.block.rotatable.HorizontalType;
+import com.almuradev.almura.content.loader.stage.CreativeTabsStage;
+import com.almuradev.almura.content.loader.stage.MaterialsStage;
+import com.almuradev.almura.creativetab.CreativeTab;
 import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
-import com.almuradev.almura.block.builder.rotatable.AbstractHorizontalTypeBuilder;
+import com.almuradev.almura.block.builder.rotatable.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
+import com.almuradev.almura.content.loader.AssetLoader;
 import com.almuradev.almura.creativetab.CreativeTabBuilderImpl;
-import com.almuradev.almura.network.NetworkUtil;
+import com.almuradev.almura.util.NetworkUtil;
 import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
-import com.almuradev.almura.pack.PackFactory;
-import com.almuradev.almura.pack.PackFileType;
 import com.almuradev.almura.registry.CreativeTabRegistryModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -32,41 +33,44 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelRegistrationException;
 
+import java.io.IOException;
+
 /**
  * The common platform of Almura. All code meant to run on the client and both dedicated and integrated server go here.
  */
 public abstract class CommonProxy {
 
     protected ChannelBinding.IndexedMessageChannel network;
-    protected PackFactory packFactory;
+    protected AssetLoader assetLoader;
 
     protected void onGameConstruction(GameConstructionEvent event) {
         if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM|FOR")) {
             throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel [AM|FOR]");
         }
 
-        network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
-        packFactory = new PackFactory();
+        this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
+        this.assetLoader = new AssetLoader();
 
-        registerFileSystem();
-        registerMessages();
-        registerModules();
-        registerBuilders();
-        registerListeners();
+        this.registerFileSystem();
+        this.registerMessages();
+        this.registerModules();
+        this.registerBuilders();
+        this.registerLoaderStages();
+        this.registerListeners();
     }
 
     protected void onGamePreInitialization(GamePreInitializationEvent event) {
-        packFactory.loadPacks(Constants.FileSystem.PATH_ASSETS_ALMURA_30_PACKS);
+        try {
+            this.assetLoader.buildAssets(Constants.FileSystem.PATH_ASSETS_ALMURA_30_PACKS);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public abstract MappedConfigurationAdapter<? extends AbstractConfiguration> getPlatformConfigAdapter();
 
     public ChannelBinding.IndexedMessageChannel getNetwork() {
         return this.network;
-    }
-
-    public PackFactory getPackFactory() {
-        return this.packFactory;
     }
 
     protected void registerFileSystem() {
@@ -83,8 +87,13 @@ public abstract class CommonProxy {
 
     protected void registerBuilders() {
         Sponge.getRegistry().registerBuilderSupplier(CreativeTab.Builder.class, CreativeTabBuilderImpl::new);
-        packFactory.registerBuilder(PackFileType.BLOCK, BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
-        packFactory.registerBuilder(PackFileType.HORIZONTAL, HorizontalBlockType.Builder.class, AbstractHorizontalTypeBuilder.BuilderImpl::new);
+        Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
+        Sponge.getRegistry().registerBuilderSupplier(HorizontalType.Builder.class, HorizontalTypeBuilderImpl::new);
+    }
+
+    protected void registerLoaderStages() {
+        this.assetLoader.registerLoaderStage(CreativeTabsStage.instance);
+        this.assetLoader.registerLoaderStage(MaterialsStage.instance);
     }
 
     protected void registerListeners() {
