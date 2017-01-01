@@ -61,6 +61,11 @@ public class MaterialDefinition {
             return this;
         }
 
+        public Builder from(MaterialDefinition materialDefinition) {
+            this.diffuseTexture = materialDefinition.diffuseTexture;
+            return this;
+        }
+
         public MaterialDefinition build(String name) {
             checkState(name != null, "Name cannot be null!");
             checkState(!name.isEmpty(), "Name cannot be empty!");

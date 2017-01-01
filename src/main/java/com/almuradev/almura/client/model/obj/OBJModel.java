@@ -7,12 +7,14 @@ package com.almuradev.almura.client.model.obj;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.model.obj.geometry.Group;
 import com.almuradev.almura.client.model.obj.geometry.Vertex;
 import com.almuradev.almura.client.model.obj.geometry.VertexNormal;
 import com.almuradev.almura.client.model.obj.geometry.VertexTextureCoordinate;
 import com.almuradev.almura.client.model.obj.material.MaterialDefinition;
 import com.almuradev.almura.client.model.obj.material.MaterialLibrary;
+import com.almuradev.almura.util.ResourceLocationUtil;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
@@ -28,8 +30,10 @@ import net.minecraftforge.common.model.IModelState;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -74,14 +78,48 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
 
     @Override
     public IModel process(ImmutableMap<String, String> customData) {
-        // TODO
         return new OBJModel(this.source, this.name, this.materialLibrary, this.groups);
     }
 
     @Override
     public IModel retexture(ImmutableMap<String, String> textures) {
-        // TODO
-        return new OBJModel(this.source, this.name, this.materialLibrary, this.groups);
+        final MaterialLibrary.Builder matLibBuilder = MaterialLibrary.builder().from(this.materialLibrary);
+
+        for (Map.Entry<String, String> textureEntry : textures.entrySet()) {
+            final String rawMaterialDefinition = textureEntry.getKey();
+            final String rawResourceLocation = textureEntry.getValue();
+
+            // Texture replacements must start with # for the material definition
+            if (!rawMaterialDefinition.startsWith("#")) {
+                // TODO log this
+                continue;
+            } else {
+                final String materialDefinition = rawMaterialDefinition.substring(1, rawMaterialDefinition.length());
+                MaterialDefinition.Builder matDefBuilder = null;
+
+                final Iterator<MaterialDefinition> iterator = matLibBuilder.materialDefinitions().iterator();
+                while (iterator.hasNext()) {
+                    final MaterialDefinition current = iterator.next();
+                    if (current.getName().equalsIgnoreCase(materialDefinition)) {
+                        matDefBuilder = MaterialDefinition.builder().from(current);
+                        iterator.remove();
+                        break;
+                    }
+                }
+
+                if (matDefBuilder == null) {
+                    // TODO log this
+                    continue;
+                }
+
+                matDefBuilder.diffuseTexture(ResourceLocationUtil.resourceLocationFrom(rawResourceLocation, Constants.Plugin
+                        .ID, null));
+
+                matLibBuilder.materialDefinition(matDefBuilder.build(materialDefinition));
+            }
+        }
+
+        return new OBJModel(this.source, this.name, matLibBuilder.build(this.materialLibrary.getSource(), this.materialLibrary.getName()), this.groups);
     }
 
     @Override

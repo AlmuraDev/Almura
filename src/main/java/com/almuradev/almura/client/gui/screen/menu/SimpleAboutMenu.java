@@ -139,7 +139,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 Text.of(TextColors.WHITE, "Almura was created and is maintained by the AlmuraDev Team (https://www.github.com/AlmuraDev/)",
                         Text.NEW_LINE, Text.NEW_LINE,
                         TextStyles.BOLD, "The Beginning...", TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
-                        "Almura 1.0 was conceived on June 1st, 2011. It was catalog around Spoutcraft (1.7.3 beta). As the technology changed we were",
+                        "Almura 1.0 was conceived on June 1st, 2011. It was built around Spoutcraft (1.7.3 beta). As the technology changed we were",
                         " forced to abandon the Spoutcraft ecosystem in favor of the Forge one. ", TextColors.AQUA, "Zidane", TextColors.RESET,
                         " our lead developer for AlmuraDev finally put his foot down and said enough is enough which began our six ",
                         "month journey to migrate the features we had relied on in Spoutcraft to our new client.", Text.NEW_LINE,

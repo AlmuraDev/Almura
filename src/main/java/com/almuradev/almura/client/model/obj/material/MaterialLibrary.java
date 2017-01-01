@@ -5,9 +5,11 @@
  */
 package com.almuradev.almura.client.model.obj.material;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.HashSet;
@@ -66,6 +68,23 @@ public class MaterialLibrary {
 
         public Builder materialDefinition(MaterialDefinition materialDefinition) {
             this.materialDefinitions.add(materialDefinition);
+            return this;
+        }
+
+        public Set<MaterialDefinition> materialDefinitions() {
+            return ImmutableSet.copyOf(this.materialDefinitions);
+        }
+
+        public Builder from(MaterialLibrary materialLibrary) {
+            checkNotNull(materialLibrary);
+
+            for (MaterialDefinition definition : materialLibrary.getMaterialDefinitions()) {
+                this.materialDefinitions.add(MaterialDefinition.builder()
+                        .from(definition)
+                        .build(definition.getName())
+                );
+            }
+
             return this;
         }
 

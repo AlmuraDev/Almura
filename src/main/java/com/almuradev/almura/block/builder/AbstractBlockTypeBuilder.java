@@ -105,7 +105,9 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
             checkState(!id.isEmpty(), "Id cannot be empty!");
 
             final String[] idAndPath = id.split(":");
-            final Block block = GameRegistry.register(new GenericBlock(idAndPath[0], idAndPath[1], this).setRegistryName(idAndPath[1]));
+            final String modid = idAndPath[0];
+            final String name = idAndPath[1];
+            final Block block = GameRegistry.register(new GenericBlock(modid, name, this).setRegistryName(name));
             final Item item = GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 
             ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(id, "inventory"));
