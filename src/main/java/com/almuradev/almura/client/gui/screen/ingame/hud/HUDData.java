@@ -24,7 +24,7 @@ public final class HUDData {
     }
 
     public static Text getCompass() {
-        final int position = (int) ((((Minecraft.getMinecraft().player.rotationYaw + 11.25) % 360 + 360) % 360) / 360 * 32);
+        final int position = (int) ((((Minecraft.getMinecraft().player.rotationYaw + 5.25) % 360 + 360) % 360) / 360 * 32);
 
         return Text.of(TextColors.DARK_GRAY,
                 HUDData.COMPASS_CHARACTERS.charAt((position - 8) & 31),
