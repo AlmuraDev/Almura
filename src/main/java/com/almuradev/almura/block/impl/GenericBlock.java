@@ -5,8 +5,7 @@
  */
 package com.almuradev.almura.block.impl;
 
-import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
-import com.almuradev.almura.mixin.interfaces.IMixinBuildableBlockType;
+import com.almuradev.almura.block.BuildableBlockType;
 import com.google.common.base.Objects;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -18,13 +17,14 @@ import org.spongepowered.api.CatalogType;
 
 public final class GenericBlock extends Block {
 
-    public GenericBlock(String modid, String id, AbstractBlockTypeBuilder<?, ?> builder) {
-        super(builder.material, builder.mapColor);
-        this.setRegistryName(modid, id);
-        this.setUnlocalizedName(builder.dictName);
-        this.setCreativeTab((CreativeTabs) builder.tab);
-        this.setHardness(builder.hardness);
-        this.setResistance(builder.resistance);
+    private final BuildableBlockType apiType = (BuildableBlockType) (Object) this;
+
+    public GenericBlock(String modid, String id, BuildableBlockType.Builder<?, ?> builder) {
+        super(builder.material().orElse(null), builder.mapColor().orElse(null));
+        this.setUnlocalizedName(modid + "." + id.replace("/", "."));
+        this.setCreativeTab((CreativeTabs) (Object) builder.creativeTab().orElse(null));
+        this.setHardness(builder.hardness());
+        this.setResistance(builder.resistance());
     }
 
     @Override
@@ -54,7 +54,7 @@ public final class GenericBlock extends Block {
                 .add("unlocalizedName", this.getUnlocalizedName())
                 .add("material", this.blockMaterial)
                 .add("mapColor", this.blockMapColor)
-                .add("creativeTab", ((IMixinBuildableBlockType) (Object) this).getCreativeTab())
+                .add("creativeTab", this.apiType.getCreativeTab().orElse(null))
                 .toString();
     }
 }

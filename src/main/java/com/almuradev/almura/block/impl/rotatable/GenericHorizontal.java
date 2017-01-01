@@ -6,7 +6,7 @@
 package com.almuradev.almura.block.impl.rotatable;
 
 import com.almuradev.almura.block.builder.rotatable.HorizontalTypeBuilderImpl;
-import com.almuradev.almura.mixin.interfaces.IMixinBuildableBlockType;
+import com.almuradev.almura.block.rotatable.HorizontalType;
 import com.google.common.base.Objects;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.BlockStateContainer;
@@ -21,13 +21,14 @@ import org.spongepowered.api.CatalogType;
 
 public final class GenericHorizontal extends BlockHorizontal {
 
+    private final HorizontalType apiType = (HorizontalType) (Object) this;
+
     public GenericHorizontal(String modid, String id, HorizontalTypeBuilderImpl builder) {
-        super(builder.material, builder.mapColor);
-        this.setRegistryName(modid, id);
-        this.setUnlocalizedName(builder.dictName);
-        this.setCreativeTab((CreativeTabs) builder.tab);
-        this.setHardness(builder.hardness);
-        this.setResistance(builder.resistance);
+        super(builder.material().orElse(null), builder.mapColor().orElse(null));
+        this.setUnlocalizedName(modid + "." + id.replace("/", "."));
+        this.setCreativeTab((CreativeTabs) (Object) builder.creativeTab().orElse(null));
+        this.setHardness(builder.hardness());
+        this.setResistance(builder.resistance());
     }
 
     @Override
@@ -69,10 +70,10 @@ public final class GenericHorizontal extends BlockHorizontal {
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("id", ((CatalogType) (Object) this).getId())
-                .add("name", ((CatalogType) (Object) this).getName())
+                .add("unlocalizedName", this.getUnlocalizedName())
                 .add("material", this.blockMaterial)
                 .add("mapColor", this.blockMapColor)
-                .add("creativeTab", ((IMixinBuildableBlockType) (Object) this).getCreativeTab())
+                .add("creativeTab", this.apiType.getCreativeTab().orElse(null))
                 .toString();
     }
 }

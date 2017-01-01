@@ -6,19 +6,26 @@
 package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.BuildableCatalogType;
+import com.almuradev.almura.content.Pack;
 
 import javax.annotation.Nullable;
 
 public final class AssetContext<C extends BuildableCatalogType, B extends BuildableCatalogType.Builder> {
 
+    private final Pack pack;
     private final Asset asset;
     private final B builder;
     @Nullable
     private C catalog;
     
-    public AssetContext(Asset asset, B builder) {
+    public AssetContext(Pack pack, Asset asset, B builder) {
+        this.pack = pack;
         this.asset = asset;
         this.builder = builder;
+    }
+
+    public Pack getPack() {
+        return this.pack;
     }
 
     public Asset getAsset() {

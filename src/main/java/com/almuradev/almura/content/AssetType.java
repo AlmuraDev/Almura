@@ -9,6 +9,7 @@ import com.almuradev.almura.BuildableCatalogType;
 import com.almuradev.almura.block.BuildableBlockType;
 import com.almuradev.almura.block.rotatable.HorizontalType;
 import com.almuradev.almura.content.loader.stage.task.BuildCreativeTabTask;
+import com.almuradev.almura.content.loader.stage.task.SetCommonBlockAttributesTask;
 import com.almuradev.almura.content.loader.stage.task.SetCommonMaterialAttributesTask;
 import com.almuradev.almura.content.loader.stage.task.StageTask;
 import com.almuradev.almura.creativetab.CreativeTab;
@@ -18,8 +19,8 @@ import java.util.Locale;
 
 public enum AssetType {
     TAB(CreativeTab.Builder.class, BuildCreativeTabTask.instance),
-    BLOCK(BuildableBlockType.Builder.class, SetCommonMaterialAttributesTask.instance),
-    HORIZONTAL(HorizontalType.Builder.class, SetCommonMaterialAttributesTask.instance),
+    BLOCK(BuildableBlockType.Builder.class, SetCommonMaterialAttributesTask.instance, SetCommonBlockAttributesTask.instance),
+    HORIZONTAL(HorizontalType.Builder.class, SetCommonMaterialAttributesTask.instance, SetCommonBlockAttributesTask.instance),
     ITEM(BuildableItemType.Builder.class, SetCommonMaterialAttributesTask.instance);
 
     private final String loggerName;

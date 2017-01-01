@@ -6,12 +6,14 @@
 package com.almuradev.almura.block.builder.rotatable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.Constants;
 import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
-import com.almuradev.almura.block.rotatable.HorizontalType;
 import com.almuradev.almura.block.impl.rotatable.GenericHorizontal;
+import com.almuradev.almura.block.rotatable.HorizontalType;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -22,16 +24,13 @@ public class HorizontalTypeBuilderImpl extends AbstractBlockTypeBuilder<Horizont
     @Override
     public HorizontalType build(String id) {
         checkNotNull(id);
+        checkState(!id.isEmpty(), "Id cannot be empty!");
 
-        final GenericHorizontal block = GameRegistry.register(new GenericHorizontal(Constants.Plugin.ID, id, this));
+        final String[] idAndPath = id.split(":");
+        final Block block = GameRegistry.register(new GenericHorizontal(idAndPath[0], idAndPath[1], this).setRegistryName(idAndPath[1]));
+        final Item item = GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 
-        final ItemBlock itemBlock = new ItemBlock(block);
-        itemBlock.setRegistryName(Constants.Plugin.ID, id);
-
-        ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation(Constants.Plugin.ID + ":" + id, "facing=south"));
-
-        // TODO Make this configurable and make Almura GenericItemBlock
-        GameRegistry.register(itemBlock);
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(id, "inventory"));
 
         return (HorizontalType) (Object) block;
     }

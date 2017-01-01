@@ -6,71 +6,75 @@
 package com.almuradev.almura.block.builder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.Constants;
+import com.almuradev.almura.AbstractMaterialTypeBuilder;
 import com.almuradev.almura.block.BuildableBlockType;
-import com.almuradev.almura.creativetab.CreativeTab;
 import com.almuradev.almura.block.impl.GenericBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import java.util.Optional;
+
 @SuppressWarnings("unchecked")
-public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType, BUILDER extends AbstractBlockTypeBuilder<BLOCK, BUILDER>> implements
-        BuildableBlockType.Builder<BLOCK, BUILDER> {
+public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType, BUILDER extends AbstractBlockTypeBuilder<BLOCK, BUILDER>>
+        extends AbstractMaterialTypeBuilder<BLOCK, BUILDER> implements BuildableBlockType.Builder<BLOCK, BUILDER> {
 
-    public String dictName;
-    public CreativeTab tab;
-    public Material material;
-    public MapColor mapColor;
-    public float hardness;
-    public float resistance;
-
-    public AbstractBlockTypeBuilder() {
-        this.reset();
-    }
+    private Material material;
+    private MapColor mapColor;
+    private float hardness;
+    private float resistance;
 
     @Override
-    public BUILDER unlocalizedName(String dictName) {
-        checkNotNull(dictName);
-        this.dictName = dictName;
-        return (BUILDER) this;
-    }
-
-    @Override
-    public BUILDER material(Material material) {
+    public final BUILDER material(Material material) {
         checkNotNull(material);
         this.material = material;
         return (BUILDER) this;
     }
 
     @Override
-    public BUILDER mapColor(MapColor mapColor) {
+    public final Optional<Material> material() {
+        return Optional.ofNullable(this.material);
+    }
+
+    @Override
+    public final BUILDER mapColor(MapColor mapColor) {
         checkNotNull(mapColor);
         this.mapColor = mapColor;
         return (BUILDER) this;
     }
 
     @Override
-    public BUILDER hardness(float hardness) {
+    public final Optional<MapColor> mapColor() {
+        return Optional.ofNullable(this.mapColor);
+    }
+
+    @Override
+    public final BUILDER hardness(float hardness) {
         this.hardness = hardness;
         return (BUILDER) this;
     }
 
     @Override
-    public BUILDER resistance(float resistance) {
+    public final float hardness() {
+        return this.hardness;
+    }
+
+    @Override
+    public final BUILDER resistance(float resistance) {
         this.resistance = resistance;
         return (BUILDER) this;
     }
 
     @Override
-    public BUILDER creativeTab(CreativeTab tab) {
-        this.tab = tab;
-        return (BUILDER) this;
+    public final float resistance() {
+        return this.resistance;
     }
 
     @Override
@@ -86,7 +90,6 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
 
     @Override
     public BUILDER reset() {
-        this.tab = null;
         this.material = Material.GROUND;
         this.mapColor = MapColor.DIRT;
         this.hardness = -1f;
@@ -96,23 +99,16 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
 
     public static final class BuilderImpl extends AbstractBlockTypeBuilder<BuildableBlockType, BuilderImpl> {
 
-        public BuilderImpl() {
-
-        }
-
         @Override
         public BuildableBlockType build(String id) {
             checkNotNull(id);
+            checkState(!id.isEmpty(), "Id cannot be empty!");
 
-            final GenericBlock block = GameRegistry.register(new GenericBlock(Constants.Plugin.ID, id, this));
+            final String[] idAndPath = id.split(":");
+            final Block block = GameRegistry.register(new GenericBlock(idAndPath[0], idAndPath[1], this).setRegistryName(idAndPath[1]));
+            final Item item = GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 
-            final ItemBlock itemBlock = new ItemBlock(block);
-            itemBlock.setRegistryName(Constants.Plugin.ID, id);
-
-            ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation(Constants.Plugin.ID + ":" + id, "normal"));
-
-            // TODO Make this configurable and make Almura GenericItemBlock
-            GameRegistry.register(itemBlock);
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(id, "inventory"));
 
             return (BuildableBlockType) (Object) block;
         }

@@ -7,7 +7,6 @@ package com.almuradev.almura.client.model.obj;
 
 import com.almuradev.almura.client.model.obj.geometry.Face;
 import com.almuradev.almura.client.model.obj.geometry.Group;
-import com.almuradev.almura.client.model.obj.geometry.Perspective;
 import com.almuradev.almura.client.model.obj.geometry.Vertex;
 import com.almuradev.almura.client.model.obj.geometry.VertexDefinition;
 import com.almuradev.almura.client.model.obj.geometry.VertexNormal;
@@ -55,13 +54,7 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
 
     @Override
     public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-        for (Perspective perspective : this.model.getPerspectives()) {
-            if (perspective.getTransformType().equals(cameraTransformType)) {
-                return Pair.of(this, perspective.getTransform().getMatrix());
-            }
-        }
-
-        return null;
+        return MapWrapper.handlePerspective(this, this.state, cameraTransformType);
     }
 
     @Override

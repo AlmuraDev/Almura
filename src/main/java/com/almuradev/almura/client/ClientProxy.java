@@ -7,11 +7,11 @@ package com.almuradev.almura.client;
 
 import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.client.model.obj.OBJModelLoader;
 import com.almuradev.almura.client.gui.screen.ingame.SimpleIngameMenu;
 import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
 import com.almuradev.almura.client.gui.screen.ingame.hud.OriginHUD;
 import com.almuradev.almura.client.gui.screen.menu.PanoramicMainMenu;
+import com.almuradev.almura.client.model.obj.OBJModelLoader;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
@@ -85,6 +85,7 @@ public final class ClientProxy extends CommonProxy {
             }
         }
 
+        //OBJLoader.INSTANCE.addDomain(Constants.Plugin.ID);
         ModelLoaderRegistry.registerLoader(OBJModelLoader.instance);
         OBJModelLoader.instance.registerDomain(Constants.Plugin.ID);
 

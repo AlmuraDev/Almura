@@ -72,7 +72,7 @@ public class AssetLoader {
                             .build()
                             .load());
 
-                    assets.add(new AssetContext<>(asset, builder));
+                    assets.add(new AssetContext<>(pack, asset, builder));
                 }
             }
         }

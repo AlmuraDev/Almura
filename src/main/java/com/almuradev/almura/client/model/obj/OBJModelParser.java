@@ -10,8 +10,6 @@ import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.model.obj.geometry.Face;
 import com.almuradev.almura.client.model.obj.geometry.Group;
 import com.almuradev.almura.client.model.obj.geometry.MalformedGeometryException;
-import com.almuradev.almura.client.model.obj.geometry.MalformedPerspectiveException;
-import com.almuradev.almura.client.model.obj.geometry.Perspective;
 import com.almuradev.almura.client.model.obj.geometry.UVWOutOfBoundsException;
 import com.almuradev.almura.client.model.obj.geometry.Vertex;
 import com.almuradev.almura.client.model.obj.geometry.VertexDefinition;
@@ -21,8 +19,6 @@ import com.almuradev.almura.client.model.obj.material.MalformedMaterialLibraryEx
 import com.almuradev.almura.client.model.obj.material.MaterialDefinition;
 import com.almuradev.almura.client.model.obj.material.MaterialLibrary;
 import com.almuradev.almura.util.ResourceLocationUtil;
-import com.flowpowered.math.vector.Vector3f;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
@@ -34,7 +30,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -59,7 +54,6 @@ public class OBJModelParser {
 
             Group.Builder groupBuilder = null;
             String currentGroupName = null;
-            Perspective.Builder perspectiveBuilder = null;
 
             for (int i = 0; i < lines.size(); i++) {
                 final String line = lines.get(i);
@@ -277,68 +271,6 @@ public class OBJModelParser {
 
                         groupBuilder.face(faceBuilder.build());
                         break;
-                    case Constants.Model.Obj.PERSPECTIVE:
-                        if (perspectiveBuilder != null) {
-                            objBuilder.perspective(perspectiveBuilder.build());
-                        }
-
-                        ItemCameraTransforms.TransformType transformType = ItemCameraTransforms.TransformType.valueOf(lineContents[0].toUpperCase
-                                (Locale.ENGLISH));
-
-                        perspectiveBuilder = Perspective.builder();
-                        perspectiveBuilder.transformType(transformType);
-                        break;
-                    case Constants.Model.Obj.TRANSLATION:
-                        if (perspectiveBuilder == null) {
-                            throw new MalformedPerspectiveException("Encountered translation but no perspective has been specified! "
-                                    + "Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents));
-                        }
-
-                        try {
-                            final float x = Float.parseFloat(lineContents[0]);
-                            final float y = Float.parseFloat(lineContents[1]);
-                            final float z = Float.parseFloat(lineContents[2]);
-
-                            perspectiveBuilder.translation(new Vector3f(x, y, z));
-                        } catch (Exception e) {
-                            throw new MalformedPerspectiveException("Illegal translation encountered! Translation must have three float "
-                                    + "values. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents), e);
-                        }
-                        break;
-                    case Constants.Model.Obj.ROTATION:
-                        if (perspectiveBuilder == null) {
-                            throw new MalformedPerspectiveException("Encountered rotation but no perspective has been specified! "
-                                    + "Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents));
-                        }
-
-                        try {
-                            final float x = Float.parseFloat(lineContents[0]);
-                            final float y = Float.parseFloat(lineContents[1]);
-                            final float z = Float.parseFloat(lineContents[2]);
-
-                            perspectiveBuilder.rotation(new Vector3f(x, y, z));
-                        } catch (Exception e) {
-                            throw new MalformedPerspectiveException("Illegal rotation encountered! Rotation must have three float "
-                                    + "values. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents), e);
-                        }
-                        break;
-                    case Constants.Model.Obj.SCALE:
-                        if (perspectiveBuilder == null) {
-                            throw new MalformedPerspectiveException("Encountered scale but no perspective has been specified! "
-                                    + "Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents));
-                        }
-
-                        try {
-                            final float x = Float.parseFloat(lineContents[0]);
-                            final float y = Float.parseFloat(lineContents[1]);
-                            final float z = Float.parseFloat(lineContents[2]);
-
-                            perspectiveBuilder.scale(new Vector3f(x, y, z));
-                        } catch (Exception e) {
-                            throw new MalformedPerspectiveException("Illegal scale encountered! Scale must have three float "
-                                    + "values. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents), e);
-                        }
-                        break;
                     default:
                         Almura.instance.logger.debug("Encountered unsupported element [{}] while parsing obj! Source -> "
                                 + "Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents), lineHeader);
@@ -347,10 +279,6 @@ public class OBJModelParser {
 
             if (groupBuilder != null) {
                 objBuilder.group(groupBuilder.build(currentGroupName));
-            }
-
-            if (perspectiveBuilder != null) {
-                objBuilder.perspective(perspectiveBuilder.build());
             }
         }
 
