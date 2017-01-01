@@ -115,9 +115,9 @@ public class UIStatsPanel extends UIHUDPanel {
 
         // TODO Hardcoded to not care above 300, if we can do this better in the future then we should do so
         if (this.airBar.isVisible()) {
-            final int air = Minecraft.getMinecraft().player.getAir();
+            final int air = Math.max(Minecraft.getMinecraft().player.getAir(), 0);
             this.airBar.setText(Text.of(String.format("%d/%d", air, 300)));
-            this.airBar.setAmount(MathUtil.convertToRange(Minecraft.getMinecraft().player.getAir(), 0, 300, 0f, 1f));
+            this.airBar.setAmount(MathUtil.convertToRange(air, 0, 300, 0f, 1f));
         }
     }
 

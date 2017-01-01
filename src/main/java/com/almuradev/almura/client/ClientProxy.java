@@ -136,6 +136,7 @@ public final class ClientProxy extends CommonProxy {
                     case HEALTH:
                     case ARMOR:
                     case FOOD:
+                    case AIR:
                     case HEALTHMOUNT:
                     case EXPERIENCE:
                         event.setCanceled(true);
