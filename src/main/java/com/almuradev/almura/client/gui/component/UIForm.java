@@ -27,19 +27,19 @@ public class UIForm extends UIWindow {
 
     public UIForm(MalisisGui gui, int width, int height) {
         super(gui, width, height);
-        this.construct(gui);
+        this.construct();
     }
 
     public UIForm(MalisisGui gui, int width, int height, String title) {
         super(gui, title, width, height);
-        this.construct(gui);
+        this.construct();
     }
 
-    private void construct(MalisisGui gui) {
+    private void construct() {
         this.setTopPadding(20);
 
         this.closeButton = new UISimpleButton(getGui(), "x");
-        this.closeButton.setName("button.close");
+        this.closeButton.setName("button.form.close");
         this.closeButton.setPosition(-rightPadding, -(topPadding + 3), Anchor.TOP | Anchor.RIGHT);
         this.closeButton.register(this);
 
@@ -141,7 +141,7 @@ public class UIForm extends UIWindow {
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
-            case "button.close":
+            case "button.form.close":
                 if (this.closeButton.isInsideBounds(event.getX(), event.getY())) {
                     ((UIContainer) this.getParent()).remove(this);
                 }

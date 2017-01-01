@@ -91,7 +91,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
 
         final UIButton optionsButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .text(Text.of(I18n.format("menu.options")))
+                .text(Text.of(I18n.format("options.title")))
                 .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
                 .position(-68, SimpleScreen.getPaddedY(multiplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
