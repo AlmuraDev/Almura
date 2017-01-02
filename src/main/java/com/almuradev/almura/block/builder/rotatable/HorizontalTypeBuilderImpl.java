@@ -18,8 +18,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class HorizontalTypeBuilderImpl extends AbstractBlockTypeBuilder<HorizontalType, HorizontalTypeBuilderImpl> implements HorizontalType
-        .Builder<HorizontalType, HorizontalTypeBuilderImpl> {
+public class HorizontalTypeBuilderImpl extends AbstractBlockTypeBuilder<HorizontalType, HorizontalTypeBuilderImpl> implements
+        HorizontalType.Builder<HorizontalType, HorizontalTypeBuilderImpl> {
 
     @Override
     public HorizontalType build(String id) {

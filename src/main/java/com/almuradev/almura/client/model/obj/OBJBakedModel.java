@@ -26,6 +26,7 @@ import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.model.IModelState;
+import net.minecraftforge.common.model.TRSRTransformation;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.LinkedList;
@@ -33,6 +34,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector4f;
 
 public class OBJBakedModel implements IPerspectiveAwareModel {
 
@@ -60,8 +62,10 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
     @Override
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
 
-        if (this.quads == null) {
+        //if (this.quads == null) {
             this.quads = new LinkedList<>();
+
+            final TRSRTransformation transformation = this.state.apply(com.google.common.base.Optional.absent()).orNull();
 
             for (Group group : this.model.getGroups()) {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
@@ -108,7 +112,16 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
                             switch (this.format.getElement(e).getUsage()) {
                                 case POSITION:
                                     final Vertex vertex = vertexDef.getVertex();
-                                    quadBuilder.put(e, vertex.getX(), vertex.getY(), vertex.getZ());
+                                    if (transformation != null) {
+                                        final Matrix4f transform = transformation.getMatrix();
+                                        final Vector4f position = new Vector4f(vertex.getX(), vertex.getY(), vertex.getZ(), 1f);
+                                        final Vector4f transformed = new Vector4f();
+                                        transform.transform(position, transformed);
+                                        quadBuilder.put(e, transformed.getX(), transformed.getY(), transformed.getZ());
+                                    } else {
+                                        quadBuilder.put(e, vertex.getX(), vertex.getY(), vertex.getZ());
+                                    }
+
                                     break;
                                 case UV:
                                     final VertexTextureCoordinate textureCoordinate = vertexDef.getTextureCoordinate().orElse(null);
@@ -146,7 +159,7 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
                     this.quads.add(quadBuilder.build());
                 }
             }
-        }
+        //}
 
         return this.quads;
     }

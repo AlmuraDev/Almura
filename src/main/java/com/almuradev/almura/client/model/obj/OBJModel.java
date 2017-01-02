@@ -112,6 +112,7 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
                     continue;
                 }
 
+                // TODO Need to figure out if we have a parent
                 matDefBuilder.diffuseTexture(ResourceLocationUtil.resourceLocationFrom(rawResourceLocation, Constants.Plugin
                         .ID, null));
 

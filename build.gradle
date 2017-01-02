@@ -88,7 +88,7 @@ allprojects {
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeforge:1.11-+:dev'
+    compile 'org.spongepowered:spongeforge:1.11.2-+:dev'
     compile project(':MalisisCore')
 }
 

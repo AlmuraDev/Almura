@@ -9,7 +9,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.HashSet;
@@ -72,7 +71,7 @@ public class MaterialLibrary {
         }
 
         public Set<MaterialDefinition> materialDefinitions() {
-            return ImmutableSet.copyOf(this.materialDefinitions);
+            return this.materialDefinitions;
         }
 
         public Builder from(MaterialLibrary materialLibrary) {
@@ -90,7 +89,7 @@ public class MaterialLibrary {
 
         public MaterialLibrary build(ResourceLocation source, String name) {
             checkState(source != null, "Source cannot be null!");
-            checkState(name != null, "Name cannot be nulL!");
+            checkState(name != null, "Name cannot be null!");
             checkState(!name.isEmpty(), "Name cannot be empty!");
             checkState(!this.materialDefinitions.isEmpty(), "A material library must have at least one material definition!");
 
