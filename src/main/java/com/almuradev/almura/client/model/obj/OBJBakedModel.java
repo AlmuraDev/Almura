@@ -62,7 +62,7 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
     @Override
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
 
-        //if (this.quads == null) {
+        if (this.quads == null) {
             this.quads = new LinkedList<>();
 
             final TRSRTransformation transformation = this.state.apply(com.google.common.base.Optional.absent()).orNull();
@@ -159,7 +159,7 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
                     this.quads.add(quadBuilder.build());
                 }
             }
-        //}
+        }
 
         return this.quads;
     }
