@@ -7,7 +7,9 @@ package com.almuradev.almura.content.loader.stage.task;
 
 import com.almuradev.almura.MaterialType;
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.creativetab.CreativeTab;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.spongepowered.api.Sponge;
 
 public class SetCommonMaterialAttributesTask implements StageTask<MaterialType, MaterialType.Builder> {
 
@@ -20,9 +22,14 @@ public class SetCommonMaterialAttributesTask implements StageTask<MaterialType, 
 
         final boolean showInCreativeTab = root.getNode("general", "show-in-creative-tab").getBoolean(true);
 
-        // TODO Figure out the creative tab
         if (showInCreativeTab) {
+            final CreativeTab creativeTab = Sponge.getRegistry().getType(CreativeTab.class, context.getPack().getId()).orElse(null);
 
+            if (creativeTab == null) {
+                // TODO Log this
+            } else {
+                builder.creativeTab(creativeTab);
+            }
         }
     }
 }

@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
  */
 public class Pack implements CatalogType {
 
-    private final String id, name;
+    private final String id;
+    private final String name;
     private final Map<String, CatalogType> objectsById;
 
     Pack(String id, String name, Map<String, CatalogType> objectsById) {

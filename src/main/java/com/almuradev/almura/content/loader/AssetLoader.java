@@ -7,6 +7,7 @@ package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.BuildableCatalogType;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.loader.stage.LoaderStage;
@@ -137,7 +138,8 @@ public class AssetLoader {
 
             final String packName = packSourcePath.getFileName().toString();
 
-            final Pack pack = AssetLoader.this.packs.computeIfAbsent(packName, v -> Pack.builder().build(packName, WordUtils.capitalize(packName)));
+            final Pack pack = AssetLoader.this.packs.computeIfAbsent(packName, v -> Pack.builder().build(Constants.Plugin.ID + ":" + packName,
+                    WordUtils.capitalize(packName)));
 
             Almura.instance.logger.debug("Evaluating [{}] as a potential asset.", file);
             boolean matches = file.toString().matches(pattern.pattern());
