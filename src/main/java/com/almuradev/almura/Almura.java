@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2016 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) 2014 - 2017 AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura;
 
@@ -25,7 +25,7 @@ public class Almura {
     public static final Pack INTERNAL_PACK = new Pack("internal");
     public static final String MOD_ID = "almura";
     public static final Logger LOGGER = LogManager.getLogger(Almura.MOD_ID);
-    public static String GUI_VERSION = "b132";
+    public static String GUI_VERSION = "b133";
     public static String PACK_VERSION = "1.4";
     public static String FORGE_VERSION = "1.7.10-1614";
 

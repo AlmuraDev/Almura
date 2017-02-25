@@ -1,7 +1,7 @@
 /**
  * This file is part of Almura, All Rights Reserved.
  *
- * Copyright (c) 2014 - 2016 AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) 2014 - 2017 AlmuraDev <http://github.com/AlmuraDev/>
  */
 package com.almuradev.almura.client.gui.menu;
 
@@ -146,7 +146,8 @@ public class DynamicMainMenu extends SimpleGui {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         if (Configuration.FIRST_LAUNCH) {
-            new UpdateDetectedGUI(parent.isPresent() ? parent.get() : null).display();
+            //new UpdateDetectedGUI(parent.isPresent() ? parent.get() : null).display();
+            // This option for some reason was causing a buffer overflow in the texture manager which caused all textures to appear white.
         }
     }
 }
