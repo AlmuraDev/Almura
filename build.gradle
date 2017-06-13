@@ -19,7 +19,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.+'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
         classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.12.1'
         classpath 'org.spongepowered:mixingradle:0.4+'
         classpath 'org.spongepowered:spongegradle:0.5.+'
@@ -45,12 +45,12 @@ version = "${project.minecraftVersion}-${project.forgeVersion}-r${project.apiVer
 
 sourceSets {
     main {
-        refMap = "mixins.${project.name.toLowerCase()}.refmap.json"
+        ext.refMap = "mixins.${project.name.toLowerCase()}.refmap.json"
     }
 }
 
 minecraft {
-    forgeVersion = project.forgeVersion
+    version = "1.11.2-13.20.0.2315"
     runDir = 'run'
     mappings = project.mcpMappings
     useDepAts = true
