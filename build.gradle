@@ -19,8 +19,8 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
-        classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.12.1'
+        classpath "net.minecraftforge.gradle:ForgeGradle:${project.forgeGradleVersion}"
+        classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
         classpath 'org.spongepowered:mixingradle:0.4+'
         classpath 'org.spongepowered:spongegradle:0.5.+'
     }
@@ -41,7 +41,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 archivesBaseName = project.name.toLowerCase()
-version = "${project.minecraftVersion}-${project.forgeVersion}-r${project.apiVersion.split("-")[0]}"
+version = "${project.minecraftVersion}-${project.forgeBuild}-r${project.spongeAPIVersion.split("-")[0]}"
 
 sourceSets {
     main {
@@ -50,7 +50,7 @@ sourceSets {
 }
 
 minecraft {
-    version = "1.11.2-13.20.0.2315"
+    version = "${project.forgeVersion}"
     runDir = 'run'
     mappings = project.mcpMappings
     useDepAts = true
@@ -88,7 +88,7 @@ allprojects {
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeforge:1.11.2-+:dev'
+    compile "org.spongepowered:spongeforge:${project.spongeImplVersion}:dev"
     compile project(':MalisisCore')
 }
 
@@ -138,7 +138,7 @@ jar {
                 'Implementation-Title': project.name,
                 'Implementation-Version': version,
                 'Implementation-Vendor': url,
-                'FMLAT': 'almura_at.cfg'
+                'FMLAT': "${project.name.toLowerCase()}_at.cfg"
         )
     }
 }
