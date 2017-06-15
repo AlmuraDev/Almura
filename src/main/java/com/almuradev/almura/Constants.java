@@ -85,7 +85,7 @@ public class Constants {
         public static final String SKIN_URL_BASE = "https://mc-heads.net/avatar/%s/%d.png";
         public static final String STATISTICS_URL = "http://srv1.almuramc.com:8080";
         public static final ResourceLocation LOCATION_SPRITE_SHEET_ALMURA_GUI;
-        public static final ResourceLocation LOCATION_SPRITE_SHEET_VANILLA_ACHIEVEMENT_BACKGROUND;
+        public static final ResourceLocation LOCATION_SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS;
         public static final ResourceLocation LOCATION_ALMURA_LOGO;
         public static final ResourceLocation LOCATION_ALMURA_MAN;
         public static final ResourceLocation LOCATION_SPONGEPOWERED_SPONGIE;
@@ -93,7 +93,8 @@ public class Constants {
         public static final ResourceLocation LOCATION_AVATAR_GENERIC;
         public static final GuiTexture SPRITE_SHEET_ALMURA;
         public static final GuiTexture SPRITE_SHEET_VANILLA_ICON;
-        public static final GuiTexture SPRITE_SHEET_VANILLA_ACHIEVEMENT_BACKGROUND;
+        public static final GuiTexture SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS;
+        public static final GuiIcon ICON_VANILLA_ACHIEVEMENT_BACKGROUND;
         public static final GuiIcon ICON_EMPTY;
         public static final GuiIcon ICON_VANILLA_HEART_BACKGROUND;
         public static final GuiIcon ICON_VANILLA_HEART_FOREGROUND;
@@ -120,7 +121,7 @@ public class Constants {
 
         static {
             LOCATION_SPRITE_SHEET_ALMURA_GUI = new ResourceLocation(Constants.Plugin.ID, "textures/gui/gui.png");
-            LOCATION_SPRITE_SHEET_VANILLA_ACHIEVEMENT_BACKGROUND = new ResourceLocation("textures/gui/achievement/achievement_background.png");
+            LOCATION_SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS = new ResourceLocation("textures/gui/advancements/widgets.png");
             LOCATION_ALMURA_LOGO = new ResourceLocation(Constants.Plugin.ID, "textures/gui/almura_logo.png");
             LOCATION_ALMURA_MAN = new ResourceLocation(Constants.Plugin.ID, "textures/gui/almura_man.png");
             LOCATION_SPONGEPOWERED_SPONGIE = new ResourceLocation(Constants.Plugin.ID, "textures/gui/spongie.png");
@@ -128,7 +129,10 @@ public class Constants {
             LOCATION_AVATAR_GENERIC = new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/generic.png");
 
             SPRITE_SHEET_ALMURA = new GuiTexture(LOCATION_SPRITE_SHEET_ALMURA_GUI, 284, 106);
-            SPRITE_SHEET_VANILLA_ACHIEVEMENT_BACKGROUND = new GuiTexture(LOCATION_SPRITE_SHEET_VANILLA_ACHIEVEMENT_BACKGROUND, 256, 256);
+
+            SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS = new GuiTexture(LOCATION_SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS, 256, 256);
+            ICON_VANILLA_ACHIEVEMENT_BACKGROUND = SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS.getXYResizableIcon(0, 55, 200, 20, 5);
+
             SPRITE_SHEET_VANILLA_ICON = new GuiTexture(MalisisGui.ICONS, 256, 256);
 
             ICON_EMPTY = SPRITE_SHEET_ALMURA.getIcon(299, 141, 1, 1);
