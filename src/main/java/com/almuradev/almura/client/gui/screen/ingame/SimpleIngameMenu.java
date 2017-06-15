@@ -21,6 +21,7 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiShareToLan;
 import net.minecraft.client.gui.advancements.GuiAdvancement;
+import net.minecraft.client.gui.advancements.GuiScreenAdvancements;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -113,21 +114,21 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .tooltip(Text.of(I18n.format("gui.stats")))
                 .build("button.statistics");
 
-        final UIButton achievementsButton = new UIButtonBuilder(this)
+        final UIButton advancementsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
                 .icon(Constants.Gui.ICON_FA_TROPHY)
                 .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(statisticsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of("gui.achievements"))
-                .build("button.achievements");
+                .tooltip(Text.of("gui.advancements"))
+                .build("button.advancements");
 
         final UIButton forumsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
                 .icon(Constants.Gui.ICON_ENJIN)
                 .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(achievementsButton, PADDING), mapButton.getY())
+                .position(SimpleScreen.getPaddedX(advancementsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
                 .tooltip(Text.of(I18n.format("almura.menu.forums")))
@@ -191,12 +192,12 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 Desktop.getDesktop().browse(new URI(Constants.Gui.STATISTICS_URL));
                 break;
                 // TODO Figure out what this GUI now is
-//            case "button.achievements":
-//                close();
-//                if (this.mc.player != null) {
-//                    this.mc.displayGuiScreen(new GuiAdvance(this, this.mc.player.getStatFileWriter()));
-//                }
-//                break;
+            case "button.advancements":
+                close();
+                if (this.mc.player != null) {
+                    this.mc.displayGuiScreen(new GuiScreenAdvancements(this.mc.player.connection.func_191982_f()));
+                }
+                break;
             case "button.forums":
                 Desktop.getDesktop().browse(new URI(Constants.Gui.FORUM_URL));
                 break;
