@@ -48,6 +48,8 @@ public abstract class CommonProxy {
             throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel [AM|FOR]");
         }
 
+        this.loadConfig();
+
         this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
         this.assetLoader = new AssetLoader();
 
@@ -71,6 +73,9 @@ public abstract class CommonProxy {
 
     public ChannelBinding.IndexedMessageChannel getNetwork() {
         return this.network;
+    }
+
+    protected void loadConfig() {
     }
 
     protected void registerFileSystem() {

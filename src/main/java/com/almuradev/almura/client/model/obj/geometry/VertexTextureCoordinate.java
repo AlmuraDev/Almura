@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.model.obj.geometry;
 
 import com.flowpowered.math.vector.Vector3f;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class VertexTextureCoordinate extends Vector3f {
@@ -42,7 +43,7 @@ public class VertexTextureCoordinate extends Vector3f {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("index", this.index)
                 .add("u", this.getX())
                 .add("v", this.getY())

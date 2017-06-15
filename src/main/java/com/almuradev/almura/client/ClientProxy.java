@@ -55,6 +55,8 @@ public final class ClientProxy extends CommonProxy {
 
     @Override
     public void onGamePreInitialization(GamePreInitializationEvent event) {
+        super.onGamePreInitialization(event);
+
         // Must be a better way to go about this...
         final List<IResourcePack> resourcePacks = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(),
                 "defaultResourcePacks");
@@ -62,12 +64,20 @@ public final class ClientProxy extends CommonProxy {
                 .PATH_ASSETS_ALMURA_30, Constants.Plugin.ID));
         Minecraft.getMinecraft().refreshResources();
 
+        ModelLoaderRegistry.registerLoader(OBJModelLoader.instance);
+        OBJModelLoader.instance.registerDomain(Constants.Plugin.ID);
+
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @Override
+    protected void loadConfig() {
         this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults()
-                .setHeader(Constants.Config.HEADER), Constants.FileSystem.PATH_CONFIG_ALMURA_CLIENT);
+                .setHeader(Constants.Config.HEADER), Constants.FileSystem.PATH_CONFIG_ALMURA, Constants.FileSystem.CONFIG_CLIENT_NAME);
         try {
-            this.configAdapter.load();
+            this.configAdapter.loadDefaultConfig();
         } catch (IOException | ObjectMappingException e) {
-            throw new RuntimeException("Failed to load config for class [" + this.configAdapter.getConfigClass() + "] from [" + this.configAdapter
+            throw new RuntimeException("Failed to save default config for class [" + this.configAdapter.getConfigClass() + "] from [" + this.configAdapter
                     .getConfigPath() + "]!", e);
         }
 
@@ -84,13 +94,18 @@ public final class ClientProxy extends CommonProxy {
                         .getConfigPath() + "]!", e);
             }
         }
+    }
 
-        //OBJLoader.INSTANCE.addDomain(Constants.Plugin.ID);
-        ModelLoaderRegistry.registerLoader(OBJModelLoader.instance);
-        OBJModelLoader.instance.registerDomain(Constants.Plugin.ID);
+    @Override
+    protected void registerMessages() {
+        super.registerMessages();
+        this.network.addHandler(SWorldInformationMessage.class, Platform.Type.CLIENT, new NetworkHandlers.SWorldInformationHandler());
+        this.network.addHandler(SServerInformationMessage.class, Platform.Type.CLIENT, new NetworkHandlers.SServerInformationHandler());
+    }
 
-        MinecraftForge.EVENT_BUS.register(this);
-        super.onGamePreInitialization(event);
+    @Override
+    public MappedConfigurationAdapter<ClientConfiguration> getPlatformConfigAdapter() {
+        return this.configAdapter;
     }
 
     @SubscribeEvent
@@ -106,19 +121,6 @@ public final class ClientProxy extends CommonProxy {
             }
         }
     }
-
-    @Override
-    protected void registerMessages() {
-        super.registerMessages();
-        this.network.addHandler(SWorldInformationMessage.class, Platform.Type.CLIENT, new NetworkHandlers.SWorldInformationHandler());
-        this.network.addHandler(SServerInformationMessage.class, Platform.Type.CLIENT, new NetworkHandlers.SServerInformationHandler());
-    }
-
-    @Override
-    public MappedConfigurationAdapter<ClientConfiguration> getPlatformConfigAdapter() {
-        return this.configAdapter;
-    }
-
 
     @SubscribeEvent
     public void onRenderGameOverlayEventPre(RenderGameOverlayEvent.Pre event) {

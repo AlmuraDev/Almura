@@ -20,16 +20,19 @@ import java.nio.file.Path;
 public final class MappedConfigurationAdapter<T extends AbstractConfiguration> {
 
     private final Class<T> configClass;
-    private final Path configPath;
+    private final Path configFolder, configPath;
+    private final String fileName;
     private final HoconConfigurationLoader loader;
     private final ObjectMapper<T>.BoundInstance mapper;
 
     private ConfigurationNode root;
     private T config;
 
-    public MappedConfigurationAdapter(Class<T> configClass, ConfigurationOptions options, Path configPath) {
+    public MappedConfigurationAdapter(Class<T> configClass, ConfigurationOptions options, Path configFolder, String fileName) {
         this.configClass = configClass;
-        this.configPath = configPath;
+        this.configFolder = configFolder;
+        this.fileName = fileName;
+        this.configPath = this.configFolder.resolve(this.fileName);
         this.loader = HoconConfigurationLoader.builder()
                 .setRenderOptions(ConfigRenderOptions.defaults().setFormatted(true).setComments(true).setOriginComments(false))
                 .setDefaultOptions(options)
@@ -40,13 +43,6 @@ public final class MappedConfigurationAdapter<T extends AbstractConfiguration> {
             throw new RuntimeException("Failed to construct mapper for config class [" + configClass + "]!", e);
         }
         this.root = SimpleCommentedConfigurationNode.root(options);
-        if (Files.notExists(configPath)) {
-            try {
-                this.save();
-            } catch (IOException | ObjectMappingException e) {
-                throw new RuntimeException("Failed to save config for class [" + configClass + "] from [" + configPath + "]!", e);
-            }
-        }
     }
 
     public Class<T> getConfigClass() {
@@ -69,5 +65,14 @@ public final class MappedConfigurationAdapter<T extends AbstractConfiguration> {
     public void save() throws IOException, ObjectMappingException {
         this.mapper.serialize(this.root);
         this.loader.save(this.root);
+    }
+
+    public void loadDefaultConfig() throws IOException, ObjectMappingException {
+        if (Files.notExists(this.configFolder)) {
+            Files.createDirectories(this.configFolder);
+        }
+
+        this.save();
+        this.load();
     }
 }

@@ -8,6 +8,7 @@ package com.almuradev.almura.client.model.obj.material;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import net.minecraft.util.ResourceLocation;
 
@@ -54,7 +55,7 @@ public class MaterialLibrary {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", this.name)
                 .add("source", this.source)
                 .add("materialDefinitions", this.materialDefinitions)

@@ -51,13 +51,16 @@ sourceSets {
 
 minecraft {
     version = "${project.forgeVersion}"
-    runDir = 'run'
     mappings = project.mcpMappings
+    runDir = 'run'
     useDepAts = true
 
     atSource project(':MalisisCore').sourceSets.main
 
     coreMod = project.coreMod
+
+    // We don't use the obfuscated dev jar currently
+    makeObfSourceJar = false
 }
 
 deobfMcMCP { failOnAtError = false }

@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.block.impl;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
@@ -40,7 +41,7 @@ public class GenericSlab extends BlockSlab {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("id", ((CatalogType) (Object) this).getId())
                 .add("name", ((CatalogType) (Object) this).getName())
                 .toString();

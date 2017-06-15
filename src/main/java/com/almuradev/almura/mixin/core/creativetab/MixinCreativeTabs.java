@@ -8,6 +8,7 @@ package com.almuradev.almura.mixin.core.creativetab;
 import com.almuradev.almura.creativetab.CreativeTab;
 import com.almuradev.almura.mixin.interfaces.IMixinCreativeTabs;
 import com.almuradev.almura.registry.CreativeTabRegistryModule;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -47,7 +48,7 @@ public abstract class MixinCreativeTabs implements CreativeTab, IMixinCreativeTa
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(CreativeTabs.class)
+        return MoreObjects.toStringHelper(CreativeTabs.class)
                 .add("tabIndex", this.tabIndex)
                 .add("tabLabel", this.tabLabel)
                 .toString();

@@ -6,6 +6,7 @@
 package com.almuradev.almura.client.model.obj.geometry;
 
 import com.flowpowered.math.vector.Vector4f;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class Vertex extends Vector4f {
@@ -30,7 +31,7 @@ public class Vertex extends Vector4f {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("index", this.index)
                 .add("x", this.getX())
                 .add("y", this.getY())

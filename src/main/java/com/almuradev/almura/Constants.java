@@ -38,7 +38,8 @@ public class Constants {
 
         public static final Path PATH_CONFIG = PATH_ROOT.resolve("config");
         public static final Path PATH_CONFIG_ALMURA = PATH_CONFIG.resolve(Plugin.ID);
-        public static final Path PATH_CONFIG_ALMURA_CLIENT = PATH_CONFIG_ALMURA.resolve("client.conf");
+
+        public static final String CONFIG_CLIENT_NAME = "client.conf";
     }
 
     public static final class Model {

@@ -7,6 +7,7 @@ package com.almuradev.almura.block.impl.rotatable;
 
 import com.almuradev.almura.block.builder.rotatable.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.block.rotatable.HorizontalType;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.BlockStateContainer;
@@ -68,7 +69,7 @@ public final class GenericHorizontal extends BlockHorizontal {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("id", ((CatalogType) (Object) this).getId())
                 .add("unlocalizedName", this.getUnlocalizedName())
                 .add("material", this.blockMaterial)

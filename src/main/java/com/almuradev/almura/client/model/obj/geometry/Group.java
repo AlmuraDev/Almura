@@ -8,6 +8,7 @@ package com.almuradev.almura.client.model.obj.geometry;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.client.model.obj.material.MaterialDefinition;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import java.util.LinkedHashSet;
@@ -53,7 +54,7 @@ public class Group {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", this.name)
                 .add("materialDefinition", this.materialDefinition)
                 .add("faces", this.faces)

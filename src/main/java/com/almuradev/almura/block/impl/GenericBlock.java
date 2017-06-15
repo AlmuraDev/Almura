@@ -6,6 +6,7 @@
 package com.almuradev.almura.block.impl;
 
 import com.almuradev.almura.block.BuildableBlockType;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -49,7 +50,7 @@ public final class GenericBlock extends Block {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("id", ((CatalogType) (Object) this).getId())
                 .add("unlocalizedName", this.getUnlocalizedName())
                 .add("material", this.blockMaterial)

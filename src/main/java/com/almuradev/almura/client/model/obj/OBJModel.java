@@ -16,6 +16,7 @@ import com.almuradev.almura.client.model.obj.material.MaterialDefinition;
 import com.almuradev.almura.client.model.obj.material.MaterialLibrary;
 import com.almuradev.almura.util.ResourceLocationUtil;
 import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -161,7 +162,7 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", this.name)
                 .add("source", this.source)
                 .add("groups", this.groups)

@@ -82,7 +82,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         checkNotNull(value);
         final Block block = (Block) value;
         this.material(block.getMaterial(block.getDefaultState()));
-        this.mapColor(block.getMapColor(block.getDefaultState()));
+        // TODO Figure out how to do blockMapColor now
         this.hardness(block.getBlockHardness(block.getDefaultState(), null, null));
         this.resistance(block.blockResistance);
         return (BUILDER) this;

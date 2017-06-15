@@ -10,16 +10,15 @@ import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.util.MathUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
-import org.spongepowered.api.util.Color;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -111,7 +110,7 @@ public abstract class PanoramicScreen extends SimpleScreen {
         GlStateManager.viewport(0, 0, 256, 256);
 
         final Tessellator tessellator = Tessellator.getInstance();
-        final VertexBuffer buffer = tessellator.getBuffer();
+        final BufferBuilder buffer = tessellator.getBuffer();
 
         this.drawPanorama(tessellator, buffer, partialTicks);
         this.rotateAndBlurSkybox(tessellator, buffer);
@@ -146,7 +145,7 @@ public abstract class PanoramicScreen extends SimpleScreen {
         tessellator.draw();
     }
 
-    private void rotateAndBlurSkybox(Tessellator tessellator, VertexBuffer buffer) {
+    private void rotateAndBlurSkybox(Tessellator tessellator, BufferBuilder buffer) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(this.backgroundTexture);
         GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
@@ -184,7 +183,7 @@ public abstract class PanoramicScreen extends SimpleScreen {
         GlStateManager.colorMask(true, true, true, true);
     }
 
-    private void drawPanorama(Tessellator tessellator, VertexBuffer buffer, float partialTicks) {
+    private void drawPanorama(Tessellator tessellator, BufferBuilder buffer, float partialTicks) {
         GlStateManager.matrixMode(GL11.GL_PROJECTION);
         GlStateManager.pushMatrix();
         GlStateManager.loadIdentity();

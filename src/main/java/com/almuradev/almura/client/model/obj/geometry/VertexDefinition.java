@@ -7,6 +7,7 @@ package com.almuradev.almura.client.model.obj.geometry;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import java.util.Optional;
@@ -71,7 +72,7 @@ public class VertexDefinition {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("index", this.index)
                 .add("vertex", this.vertex)
                 .add("textureCoordinate", this.textureCoordinate)

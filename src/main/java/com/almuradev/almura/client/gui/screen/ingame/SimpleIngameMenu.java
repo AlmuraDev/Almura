@@ -20,7 +20,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiShareToLan;
-import net.minecraft.client.gui.achievement.GuiAchievements;
+import net.minecraft.client.gui.advancements.GuiAdvancement;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -190,12 +190,13 @@ public final class SimpleIngameMenu extends SimpleScreen {
             case "button.statistics":
                 Desktop.getDesktop().browse(new URI(Constants.Gui.STATISTICS_URL));
                 break;
-            case "button.achievements":
-                close();
-                if (this.mc.player != null) {
-                    this.mc.displayGuiScreen(new GuiAchievements(this, this.mc.player.getStatFileWriter()));
-                }
-                break;
+                // TODO Figure out what this GUI now is
+//            case "button.achievements":
+//                close();
+//                if (this.mc.player != null) {
+//                    this.mc.displayGuiScreen(new GuiAdvance(this, this.mc.player.getStatFileWriter()));
+//                }
+//                break;
             case "button.forums":
                 Desktop.getDesktop().browse(new URI(Constants.Gui.FORUM_URL));
                 break;

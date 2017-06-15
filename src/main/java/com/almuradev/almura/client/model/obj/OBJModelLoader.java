@@ -13,6 +13,7 @@ import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,6 +34,7 @@ public class OBJModelLoader implements ICustomModelLoader {
         return this.domains.contains(modelLocation.getResourceDomain()) && modelLocation.getResourcePath().endsWith(".obj");
     }
 
+    @Nullable
     @Override
     public IModel loadModel(ResourceLocation modelLocation) throws Exception {
         // Suppress the first model loading exception (like Forge does in their loader)
