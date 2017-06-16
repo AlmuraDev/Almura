@@ -31,6 +31,8 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     private float hardness;
     private float resistance;
 
+    private boolean hasCustomResistance = false;
+
     @Override
     public final BUILDER material(Material material) {
         checkNotNull(material);
@@ -67,8 +69,16 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     }
 
     @Override
+    public boolean hasCustomResistance() {
+        return this.hasCustomResistance;
+    }
+
+    @Override
     public final BUILDER resistance(float resistance) {
         this.resistance = resistance;
+        if (resistance != -1) {
+            this.hasCustomResistance = true;
+        }
         return (BUILDER) this;
     }
 
@@ -79,7 +89,8 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
 
     @Override
     public BUILDER from(BuildableBlockType value) {
-        checkNotNull(value);
+        super.from(value);
+
         final Block block = (Block) value;
         this.material(block.getMaterial(block.getDefaultState()));
         // TODO Figure out how to do blockMapColor now
@@ -90,10 +101,13 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
 
     @Override
     public BUILDER reset() {
+        super.reset();
+
         this.material = Material.GROUND;
         this.mapColor = MapColor.DIRT;
         this.hardness = -1f;
-        this.resistance = 6000000.0F;
+        this.resistance = -1f;
+        this.hasCustomResistance = false;
         return (BUILDER) this;
     }
 

@@ -34,6 +34,8 @@ public interface BuildableBlockType extends MaterialType, BlockType {
 
         float hardness();
 
+        boolean hasCustomResistance();
+
         BUILDER resistance(float resistance);
 
         float resistance();

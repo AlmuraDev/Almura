@@ -72,6 +72,12 @@ public class Constants {
     public static final class Config {
 
         public static final String HEADER = "2.0\nAlmura configuration\n\nFor further assistance, join #almura on EsperNet.";
+
+        public static final class BlockState {
+            public static final String GENERAL = "general";
+            public static final String HARDNESS = "hardness";
+            public static final String RESISTANCE = "resistance";
+        }
     }
 
     @SideOnly(Side.CLIENT)

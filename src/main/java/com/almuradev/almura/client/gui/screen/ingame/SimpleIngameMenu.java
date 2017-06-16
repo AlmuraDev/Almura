@@ -191,11 +191,10 @@ public final class SimpleIngameMenu extends SimpleScreen {
             case "button.statistics":
                 Desktop.getDesktop().browse(new URI(Constants.Gui.STATISTICS_URL));
                 break;
-                // TODO Figure out what this GUI now is
             case "button.advancements":
                 close();
                 if (this.mc.player != null) {
-                    this.mc.displayGuiScreen(new GuiScreenAdvancements(this.mc.player.connection.func_191982_f()));
+                    this.mc.displayGuiScreen(new GuiScreenAdvancements(this.mc.player.connection.func_191982_f())) ;
                 }
                 break;
             case "button.forums":

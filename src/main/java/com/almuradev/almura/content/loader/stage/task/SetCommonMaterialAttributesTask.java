@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.content.loader.stage.task;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.MaterialType;
 import com.almuradev.almura.content.loader.AssetContext;
 import com.almuradev.almura.creativetab.CreativeTab;
@@ -18,15 +19,15 @@ public class SetCommonMaterialAttributesTask implements StageTask<MaterialType, 
     @Override
     public void execute(AssetContext<MaterialType, MaterialType.Builder> context) throws TaskExecutionFailedException {
         final MaterialType.Builder builder = context.getBuilder();
-        final ConfigurationNode root = context.getAsset().getRoot();
+        final ConfigurationNode node = context.getAsset().getConfigurationNode();
 
-        final boolean showInCreativeTab = root.getNode("general", "show-in-creative-tab").getBoolean(true);
+        final boolean showInCreativeTab = node.getNode("general", "show-in-creative-tab").getBoolean(true);
 
         if (showInCreativeTab) {
             final CreativeTab creativeTab = Sponge.getRegistry().getType(CreativeTab.class, context.getPack().getId()).orElse(null);
 
             if (creativeTab == null) {
-                // TODO Log this
+                Almura.instance.logger.debug("Material type [{]] specified creative tab [{}] but it was not found in the registry!", context.getCatalog().getId(), context.getPack().getId());
             } else {
                 builder.creativeTab(creativeTab);
             }

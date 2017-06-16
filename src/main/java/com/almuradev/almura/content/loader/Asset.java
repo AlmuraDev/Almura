@@ -15,13 +15,13 @@ public class Asset {
     private final String name;
     private final AssetType assetType;
     private final Path path;
-    private final ConfigurationNode root;
+    private final ConfigurationNode node;
 
-    public Asset(String name, AssetType assetType, Path path, ConfigurationNode root) {
+    public Asset(String name, AssetType assetType, Path path, ConfigurationNode node) {
         this.name = name;
         this.assetType = assetType;
         this.path = path;
-        this.root = root;
+        this.node = node;
     }
 
     public String getName() {
@@ -36,7 +36,7 @@ public class Asset {
         return path;
     }
 
-    public ConfigurationNode getRoot() {
-        return root;
+    public ConfigurationNode getConfigurationNode() {
+        return node;
     }
 }

@@ -17,7 +17,7 @@ public class BuildCreativeTabTask implements StageTask<CreativeTab, CreativeTab.
     @Override
     public void execute(AssetContext<CreativeTab, CreativeTab.Builder> context) throws TaskExecutionFailedException {
         final Asset asset = context.getAsset();
-        final ConfigurationNode root = asset.getRoot();
+        final ConfigurationNode root = asset.getConfigurationNode();
         final String tabLabel = root.getNode("general", "label").getString("");
         if (tabLabel.isEmpty()) {
             throw new TaskExecutionFailedException("Tab label cannot be empty!");

@@ -25,7 +25,9 @@ public final class GenericBlock extends Block {
         this.setUnlocalizedName(modid + "." + id.replace("/", "."));
         this.setCreativeTab((CreativeTabs) (Object) builder.creativeTab().orElse(null));
         this.setHardness(builder.hardness());
-        this.setResistance(builder.resistance());
+        if (!builder.hasCustomResistance()) {
+            this.setResistance(builder.resistance());
+        }
     }
 
     @Override
