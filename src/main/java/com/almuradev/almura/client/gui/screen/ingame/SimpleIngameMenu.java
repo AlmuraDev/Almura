@@ -194,7 +194,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
             case "button.advancements":
                 close();
                 if (this.mc.player != null) {
-                    this.mc.displayGuiScreen(new GuiScreenAdvancements(this.mc.player.connection.func_191982_f())) ;
+                    this.mc.displayGuiScreen(new GuiScreenAdvancements(this.mc.player.connection.func_191982_f()));
                 }
                 break;
             case "button.forums":

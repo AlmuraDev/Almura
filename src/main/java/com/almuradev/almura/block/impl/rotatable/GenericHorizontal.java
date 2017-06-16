@@ -27,9 +27,11 @@ public final class GenericHorizontal extends BlockHorizontal {
     public GenericHorizontal(String modid, String id, HorizontalTypeBuilderImpl builder) {
         super(builder.material().orElse(null), builder.mapColor().orElse(null));
         this.setUnlocalizedName(modid + "." + id.replace("/", "."));
-        this.setCreativeTab((CreativeTabs) (Object) builder.creativeTab().orElse(null));
+        this.setCreativeTab((CreativeTabs) builder.creativeTab().orElse(null));
         this.setHardness(builder.hardness());
-        this.setResistance(builder.resistance());
+        if (builder.hasCustomResistance()) {
+            this.setResistance(builder.resistance());
+        }
     }
 
     @Override
@@ -59,7 +61,7 @@ public final class GenericHorizontal extends BlockHorizontal {
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        return ((EnumFacing)state.getValue(FACING)).getHorizontalIndex();
+        return state.getValue(FACING).getHorizontalIndex();
     }
 
     @Override
@@ -70,11 +72,13 @@ public final class GenericHorizontal extends BlockHorizontal {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("id", ((CatalogType) (Object) this).getId())
+                .add("id", this.apiType.getId())
                 .add("unlocalizedName", this.getUnlocalizedName())
+                .add("creativeTab", this.apiType.getCreativeTab().orElse(null))
                 .add("material", this.blockMaterial)
                 .add("mapColor", this.blockMapColor)
-                .add("creativeTab", this.apiType.getCreativeTab().orElse(null))
+                .add("hardness", this.blockHardness)
+                .add("resistance", this.blockResistance)
                 .toString();
     }
 }
