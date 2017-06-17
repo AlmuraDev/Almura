@@ -12,6 +12,8 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
 
 public interface BuildableBlockType extends MaterialType, BlockType {
 
@@ -22,29 +24,36 @@ public interface BuildableBlockType extends MaterialType, BlockType {
 
     interface Builder<BLOCK extends BuildableBlockType, BUILDER extends Builder<BLOCK, BUILDER>> extends MaterialType.Builder<BLOCK, BUILDER> {
 
-        BUILDER material(Material material);
-
         Optional<Material> material();
 
-        BUILDER mapColor(MapColor mapColor);
+        BUILDER material(Material material);
 
         Optional<MapColor> mapColor();
 
+        BUILDER mapColor(MapColor mapColor);
+
+        OptionalDouble hardness();
+
         BUILDER hardness(float hardness);
 
-        float hardness();
+        OptionalDouble lightEmission();
 
-        boolean hasCustomResistance();
+        BUILDER lightEmission(float lightEmission);
+
+        OptionalInt lightOpacity();
+
+        BUILDER lightOpacity(int lightOpacity);
+
+        OptionalDouble resistance();
 
         BUILDER resistance(float resistance);
-
-        float resistance();
 
         @Override
         default BLOCK build(String id, String name) {
             return build(id);
         }
 
+        @Override
         BLOCK build(String id);
     }
 }

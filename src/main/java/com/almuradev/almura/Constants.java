@@ -76,6 +76,9 @@ public class Constants {
         public static final class BlockState {
             public static final String GENERAL = "general";
             public static final String HARDNESS = "hardness";
+            public static final String LIGHT = "light";
+            public static final String LIGHT_EMISSION = "emission";
+            public static final String LIGHT_OPACITY = "opacity";
             public static final String RESISTANCE = "resistance";
         }
     }
