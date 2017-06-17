@@ -10,9 +10,9 @@ import com.almuradev.almura.content.loader.stage.task.SetCommonBlockAttributesTa
 import com.almuradev.almura.content.loader.stage.task.StageTask;
 import com.almuradev.almura.content.loader.stage.task.SetCommonMaterialAttributesTask;
 
-public class MaterialsStage implements LoaderStage {
+public class LoadMaterialsStage implements LoaderStage {
 
-    public static final MaterialsStage instance = new MaterialsStage();
+    public static final LoadMaterialsStage instance = new LoadMaterialsStage();
 
     @Override
     public AssetType[] getValidAssetTypes() {

@@ -8,7 +8,7 @@ package com.almuradev.almura.content;
 import com.almuradev.almura.BuildableCatalogType;
 import com.almuradev.almura.block.BuildableBlockType;
 import com.almuradev.almura.block.rotatable.HorizontalType;
-import com.almuradev.almura.content.loader.stage.task.BuildCreativeTabTask;
+import com.almuradev.almura.content.loader.stage.task.CreateCreativeTabTask;
 import com.almuradev.almura.content.loader.stage.task.SetCommonBlockAttributesTask;
 import com.almuradev.almura.content.loader.stage.task.SetCommonMaterialAttributesTask;
 import com.almuradev.almura.content.loader.stage.task.StageTask;
@@ -18,7 +18,7 @@ import com.almuradev.almura.item.BuildableItemType;
 import java.util.Locale;
 
 public enum AssetType {
-    TAB(CreativeTab.Builder.class, BuildCreativeTabTask.instance),
+    TAB(CreativeTab.Builder.class, CreateCreativeTabTask.instance),
     BLOCK(BuildableBlockType.Builder.class, SetCommonMaterialAttributesTask.instance, SetCommonBlockAttributesTask.instance),
     HORIZONTAL(HorizontalType.Builder.class, SetCommonMaterialAttributesTask.instance, SetCommonBlockAttributesTask.instance),
     ITEM(BuildableItemType.Builder.class, SetCommonMaterialAttributesTask.instance);

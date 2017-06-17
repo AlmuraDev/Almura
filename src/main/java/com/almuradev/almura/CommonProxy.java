@@ -7,8 +7,8 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.block.BuildableBlockType;
 import com.almuradev.almura.block.rotatable.HorizontalType;
-import com.almuradev.almura.content.loader.stage.CreativeTabsStage;
-import com.almuradev.almura.content.loader.stage.MaterialsStage;
+import com.almuradev.almura.content.loader.stage.LoadCreativeTabsStage;
+import com.almuradev.almura.content.loader.stage.LoadMaterialsStage;
 import com.almuradev.almura.creativetab.CreativeTab;
 import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.block.builder.rotatable.HorizontalTypeBuilderImpl;
@@ -97,8 +97,8 @@ public abstract class CommonProxy {
     }
 
     protected void registerLoaderStages() {
-        this.assetLoader.registerLoaderStage(CreativeTabsStage.instance);
-        this.assetLoader.registerLoaderStage(MaterialsStage.instance);
+        this.assetLoader.registerLoaderStage(LoadCreativeTabsStage.instance);
+        this.assetLoader.registerLoaderStage(LoadMaterialsStage.instance);
     }
 
     protected void registerListeners() {

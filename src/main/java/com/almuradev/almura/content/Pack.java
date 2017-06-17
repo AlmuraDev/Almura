@@ -63,7 +63,7 @@ public class Pack implements CatalogType {
         checkArgument(!this.objectsById.containsValue(object), "Attempt to double add catalog type to pack!");
     }
 
-    public Set<CatalogType> getObjects() {
+    public Set<CatalogType> getChildren() {
         return this.objectsById.values().stream().collect(Collectors.toSet());
     }
 

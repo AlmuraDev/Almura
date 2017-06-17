@@ -7,11 +7,11 @@ package com.almuradev.almura.content.loader.stage;
 
 import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.loader.stage.task.StageTask;
-import com.almuradev.almura.content.loader.stage.task.BuildCreativeTabTask;
+import com.almuradev.almura.content.loader.stage.task.CreateCreativeTabTask;
 
-public class CreativeTabsStage implements LoaderStage {
+public class LoadCreativeTabsStage implements LoaderStage {
 
-    public static final CreativeTabsStage instance = new CreativeTabsStage();
+    public static final LoadCreativeTabsStage instance = new LoadCreativeTabsStage();
 
     @Override
     public AssetType[] getValidAssetTypes() {
@@ -23,7 +23,7 @@ public class CreativeTabsStage implements LoaderStage {
     @Override
     public StageTask<?, ?>[] getStageTasks() {
         return new StageTask<?, ?>[]{
-                BuildCreativeTabTask.instance
+                CreateCreativeTabTask.instance
         };
     }
 }

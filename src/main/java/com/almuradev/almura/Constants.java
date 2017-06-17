@@ -73,13 +73,21 @@ public class Constants {
 
         public static final String HEADER = "2.0\nAlmura configuration\n\nFor further assistance, join #almura on EsperNet.";
 
-        public static final class BlockState {
-            public static final String GENERAL = "general";
+        public static final String GENERAL = "general";
+
+        // TODO Nest Material and then Block in Material? Nesting can get absurd...
+        public static final String SHOW_IN_CREATIVE_TAB = "show-in-creative-tab";
+
+        public static final class Block {
             public static final String HARDNESS = "hardness";
             public static final String LIGHT = "light";
             public static final String LIGHT_EMISSION = "emission";
             public static final String LIGHT_OPACITY = "opacity";
             public static final String RESISTANCE = "resistance";
+        }
+
+        public static final class CreativeTab {
+            public static final String LABEL = "label";
         }
     }
 

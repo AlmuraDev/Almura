@@ -21,23 +21,27 @@ public class SetCommonBlockAttributesTask implements StageTask<BuildableBlockTyp
     public void execute(AssetContext<BuildableBlockType, BuildableBlockType.Builder> context) throws TaskExecutionFailedException {
         final BuildableBlockType.Builder builder = context.getBuilder();
         final ConfigurationNode node = context.getAsset().getConfigurationNode();
-        final ConfigurationNode generalNode = node.getNode(Constants.Config.BlockState.GENERAL);
-        builder.hardness(generalNode.getNode(Constants.Config.BlockState.HARDNESS).getFloat(1f));
+        final ConfigurationNode generalNode = node.getNode(Constants.Config.GENERAL);
 
-        final ConfigurationNode lightNode = generalNode.getNode(Constants.Config.BlockState.LIGHT);
+        final ConfigurationNode hardnessNode = generalNode.getNode(Constants.Config.Block.HARDNESS);
+        if (!hardnessNode.isVirtual()) {
+            builder.hardness(hardnessNode.getFloat());
+        }
+
+        final ConfigurationNode lightNode = generalNode.getNode(Constants.Config.Block.LIGHT);
         if (!lightNode.isVirtual()) {
-            final ConfigurationNode emissionNode = lightNode.getNode(Constants.Config.BlockState.LIGHT_EMISSION);
+            final ConfigurationNode emissionNode = lightNode.getNode(Constants.Config.Block.LIGHT_EMISSION);
             if (!emissionNode.isVirtual()) {
                 final float emission = emissionNode.getFloat();
                 builder.lightEmission(emission > 1f ? emission / 15f : emission); // * 15f in Block#setLightLevel
             }
-            final ConfigurationNode opacity = lightNode.getNode(Constants.Config.BlockState.LIGHT_OPACITY);
+            final ConfigurationNode opacity = lightNode.getNode(Constants.Config.Block.LIGHT_OPACITY);
             if (!opacity.isVirtual()) {
                 builder.lightOpacity(opacity.getInt());
             }
         }
 
-        final ConfigurationNode resistanceNode = generalNode.getNode(Constants.Config.BlockState.RESISTANCE);
+        final ConfigurationNode resistanceNode = generalNode.getNode(Constants.Config.Block.RESISTANCE);
         if (!resistanceNode.isVirtual()) {
             builder.resistance(resistanceNode.getFloat());
         }
