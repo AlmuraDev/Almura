@@ -9,6 +9,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.AbstractMaterialTypeBuilder;
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.block.BuildableBlockType;
 import com.almuradev.almura.block.impl.GenericBlock;
 import net.minecraft.block.Block;
@@ -144,7 +145,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         final String name = idAndPath[1];
 
         final Block block = GameRegistry.register(this.createBlock((BUILDER) this).setRegistryName(name));
-        block.setUnlocalizedName(modid + "." + id.replace("/", "."));
+        block.setUnlocalizedName(modid + "." + id.replace(Constants.Plugin.ID.concat(":"), "").replace("/", "."));
         block.setCreativeTab((CreativeTabs) this.creativeTab().orElse(null));
         this.hardness().ifPresent(hardness -> block.setHardness((float) hardness));
         this.resistance().ifPresent(resistance -> block.setResistance((float) resistance));
