@@ -6,17 +6,16 @@
 package com.almuradev.almura.block.impl;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.api.CatalogType;
 
-public class GenericSlab extends BlockSlab {
+public class GenericSlabBlock extends BlockSlab {
 
-    public GenericSlab(Material materialIn) {
-        super(materialIn);
+    public GenericSlabBlock(Material material) {
+        super(material);
     }
 
     @Override

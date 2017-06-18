@@ -25,18 +25,18 @@ public class Asset {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public AssetType getAssetType() {
-        return assetType;
+        return this.assetType;
     }
 
     public Path getPath() {
-        return path;
+        return this.path;
     }
 
     public ConfigurationNode getConfigurationNode() {
-        return node;
+        return this.node;
     }
 }

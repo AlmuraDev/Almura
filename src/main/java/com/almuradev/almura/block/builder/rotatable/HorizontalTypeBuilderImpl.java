@@ -6,7 +6,7 @@
 package com.almuradev.almura.block.builder.rotatable;
 
 import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
-import com.almuradev.almura.block.impl.rotatable.GenericHorizontal;
+import com.almuradev.almura.block.impl.rotatable.GenericHorizontalBlock;
 import com.almuradev.almura.block.rotatable.HorizontalType;
 import net.minecraft.block.Block;
 
@@ -15,6 +15,6 @@ public class HorizontalTypeBuilderImpl extends AbstractBlockTypeBuilder<Horizont
 
     @Override
     protected Block createBlock(HorizontalTypeBuilderImpl builder) {
-        return new GenericHorizontal(builder);
+        return new GenericHorizontalBlock(builder);
     }
 }

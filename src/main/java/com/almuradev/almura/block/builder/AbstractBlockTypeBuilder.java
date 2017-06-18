@@ -12,6 +12,7 @@ import com.almuradev.almura.AbstractMaterialTypeBuilder;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.block.BuildableBlockType;
 import com.almuradev.almura.block.impl.GenericBlock;
+import com.almuradev.almura.block.BlockAABB;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -27,12 +28,16 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
-@SuppressWarnings("unchecked")
+import javax.annotation.Nullable;
+
+@SuppressWarnings({"unchecked", "OptionalUsedAsFieldOrParameterType"})
 public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType, BUILDER extends AbstractBlockTypeBuilder<BLOCK, BUILDER>>
         extends AbstractMaterialTypeBuilder<BLOCK, BUILDER> implements BuildableBlockType.Builder<BLOCK, BUILDER> {
 
-    private Material material;
-    private MapColor mapColor;
+    @Nullable private Material material;
+    @Nullable private MapColor mapColor;
+    private BlockAABB.Collision collisionAABB = BlockAABB.Collision.VANILLA;
+    private BlockAABB.WireFrame wireFrameAABB = BlockAABB.WireFrame.VANILLA;
     private OptionalDouble hardness = OptionalDouble.empty();
     private OptionalDouble lightEmission = OptionalDouble.empty();
     private OptionalInt lightOpacity = OptionalInt.empty();
@@ -57,6 +62,28 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     @Override
     public final BUILDER mapColor(MapColor mapColor) {
         this.mapColor = checkNotNull(mapColor);
+        return (BUILDER) this;
+    }
+
+    @Override
+    public final BlockAABB.Collision collisionAABB() {
+        return this.collisionAABB;
+    }
+
+    @Override
+    public final BUILDER collisionAABB(final BlockAABB.Collision bb) {
+        this.collisionAABB = bb;
+        return (BUILDER) this;
+    }
+
+    @Override
+    public final BlockAABB.WireFrame wireFrameAABB() {
+        return this.wireFrameAABB;
+    }
+
+    @Override
+    public final BUILDER wireFrameAABB(final BlockAABB.WireFrame bb) {
+        this.wireFrameAABB = bb;
         return (BUILDER) this;
     }
 
@@ -127,6 +154,8 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
 
         this.material = Material.GROUND;
         this.mapColor = MapColor.DIRT;
+        this.collisionAABB = BlockAABB.Collision.VANILLA;
+        this.wireFrameAABB = BlockAABB.WireFrame.VANILLA;
         this.hardness = OptionalDouble.empty();
         this.lightEmission = OptionalDouble.empty();
         this.lightOpacity = OptionalInt.empty();

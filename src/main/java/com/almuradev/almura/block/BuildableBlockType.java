@@ -32,6 +32,14 @@ public interface BuildableBlockType extends MaterialType, BlockType {
 
         BUILDER mapColor(MapColor mapColor);
 
+        BlockAABB.Collision collisionAABB();
+
+        BUILDER collisionAABB(final BlockAABB.Collision bb);
+
+        BlockAABB.WireFrame wireFrameAABB();
+
+        BUILDER wireFrameAABB(final BlockAABB.WireFrame bb);
+
         OptionalDouble hardness();
 
         BUILDER hardness(float hardness);

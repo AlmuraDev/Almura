@@ -19,6 +19,6 @@ public class GenericCreativeTabs extends CreativeTabs {
 
     @Override
     public ItemStack getTabIconItem() {
-        return tabItemStack;
+        return this.tabItemStack;
     }
 }

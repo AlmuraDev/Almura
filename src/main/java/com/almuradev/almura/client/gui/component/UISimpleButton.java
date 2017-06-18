@@ -37,26 +37,26 @@ public class UISimpleButton extends UIButton {
         int w;
         int h;
 
-        if (image != null) {
-            w = image.getWidth();
-            h = image.getHeight();
+        if (this.image != null) {
+            w = this.image.getWidth();
+            h = this.image.getHeight();
         } else {
-            w = (int) font.getStringWidth(text, fontOptions);
-            h = (int) font.getStringHeight(fontOptions);
+            w = (int) this.font.getStringWidth(this.text, this.fontOptions);
+            h = (int) this.font.getStringHeight(this.fontOptions);
         }
 
-        int x = (width - w) / 2;
-        int y = (height - h) / 2;
+        int x = (this.width - w) / 2;
+        int y = (this.height - h) / 2;
 
-        x += offsetX;
-        y += offsetY;
+        x += this.offsetX;
+        y += this.offsetY;
 
-        if (image != null) {
-            image.setPosition(x, y);
-            image.setZIndex(zIndex);
-            image.draw(renderer, mouseX, mouseY, partialTicks);
+        if (this.image != null) {
+            this.image.setPosition(x, y);
+            this.image.setZIndex(this.zIndex);
+            this.image.draw(renderer, mouseX, mouseY, partialTicks);
         } else {
-            renderer.drawText(font, text, x, y, zIndex, isHovered() ? hoveredFontOptions : fontOptions);
+            renderer.drawText(this.font, this.text, x, y, this.zIndex, isHovered() ? this.hoveredFontOptions : this.fontOptions);
         }
     }
 }

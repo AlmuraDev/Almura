@@ -7,6 +7,7 @@ package com.almuradev.almura.block.impl.rotatable;
 
 import com.almuradev.almura.block.builder.rotatable.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.block.rotatable.HorizontalType;
+import com.almuradev.almura.block.BlockAABB;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.BlockStateContainer;
@@ -14,35 +15,65 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public final class GenericHorizontal extends BlockHorizontal {
+import javax.annotation.Nullable;
 
-    public GenericHorizontal(HorizontalTypeBuilderImpl builder) {
+public final class GenericHorizontalBlock extends BlockHorizontal {
+
+    private final BlockAABB.Collision collisionAABB;
+    private final BlockAABB.WireFrame wireFrameAABB;
+
+    public GenericHorizontalBlock(HorizontalTypeBuilderImpl builder) {
         super(builder.material().orElse(null), builder.mapColor().orElse(null));
+        this.collisionAABB = builder.collisionAABB();
+        this.wireFrameAABB = builder.wireFrameAABB();
     }
 
+    @Deprecated
+    @Nullable
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return this.collisionAABB.provided ? this.collisionAABB.horizontal()[state.getValue(FACING).getHorizontalIndex()] : super.getCollisionBoundingBox(state, world, pos);
+    }
+
+    @Deprecated
+    @Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World world, BlockPos pos) {
+        return this.wireFrameAABB.bb != null ? this.wireFrameAABB.horizontal()[state.getValue(FACING).getHorizontalIndex()].offset(pos) : super.getSelectedBoundingBox(state, world, pos);
+    }
+
+    @Deprecated
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
+    @Deprecated
     @Override
     public boolean isFullCube(IBlockState state) {
         return false;
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public BlockRenderLayer getBlockLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
+    @Deprecated
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
+    @Deprecated
     @Override
     public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta));

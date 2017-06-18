@@ -90,7 +90,7 @@ public abstract class PanoramicScreen extends SimpleScreen {
         this.backgroundTexture = Minecraft.getMinecraft().getTextureManager().getDynamicTextureLocation("background", new DynamicTexture(256, 256));
 
         // Don't show the vanilla background
-        guiscreenBackground = false;
+        this.guiscreenBackground = false;
     }
 
     @Override
@@ -230,7 +230,7 @@ public abstract class PanoramicScreen extends SimpleScreen {
                         break;
                 }
 
-                Minecraft.getMinecraft().getTextureManager().bindTexture(bundle.getResourceLocations()[j]);
+                Minecraft.getMinecraft().getTextureManager().bindTexture(this.bundle.getResourceLocations()[j]);
                 buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
                 final int alpha = 255 / (i + 1);
                 buffer.pos(-1.0D, -1.0D, 1.0D).tex(0.0D, 0.0D).color(255, 255, 255, alpha).endVertex();
@@ -296,16 +296,16 @@ public abstract class PanoramicScreen extends SimpleScreen {
                 throw new FileNotFoundException("Panoramic pack not complete! Must have six files with the same name ending in 0-5!");
             }
 
-            resources[0] = new ResourceLocation(Constants.Plugin.ID, Constants.FileSystem.PATH_ASSETS_ALMURA_30.relativize(path).toString());
+            this.resources[0] = new ResourceLocation(Constants.Plugin.ID, Constants.FileSystem.PATH_ASSETS_ALMURA_30.relativize(path).toString());
             for (int i = 1; i < 6; i++) {
-                resources[i] = new ResourceLocation(resources[0].getResourceDomain(), resources[0].getResourcePath().replace("0.png", i + ".png"));
+                this.resources[i] = new ResourceLocation(this.resources[0].getResourceDomain(), this.resources[0].getResourcePath().replace("0.png", i + ".png"));
             }
         }
 
         public PanoramicBundle(ResourceLocation baseLocation) {
-            resources[0] = baseLocation;
+            this.resources[0] = baseLocation;
             for (int i = 1; i < 6; i++) {
-                resources[i] = new ResourceLocation(resources[0].getResourceDomain(), resources[0].getResourcePath().replace("0.png", i + ".png"));
+                this.resources[i] = new ResourceLocation(this.resources[0].getResourceDomain(), this.resources[0].getResourcePath().replace("0.png", i + ".png"));
             }
         }
 

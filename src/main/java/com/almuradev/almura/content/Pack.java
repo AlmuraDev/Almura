@@ -96,7 +96,7 @@ public class Pack implements CatalogType {
             checkNotNull(name);
             checkState(!name.isEmpty(), "Name cannot be empty!");
 
-            return new Pack(id, name, objectsById);
+            return new Pack(id, name, this.objectsById);
         }
     }
 }

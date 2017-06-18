@@ -17,6 +17,6 @@ public class UIHUDPanel extends UIPanel {
 
     public UIHUDPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
-        iconProvider = new GuiIconProvider(Constants.Gui.ICON_VANILLA_ACHIEVEMENT_BACKGROUND);
+        this.iconProvider = new GuiIconProvider(Constants.Gui.ICON_VANILLA_ACHIEVEMENT_BACKGROUND);
     }
 }

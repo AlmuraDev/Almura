@@ -185,7 +185,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 .build("button.done");
 
         this.textField = new UITextField(this, "", true);
-        this.textField.setPosition(SimpleScreen.getPaddedX(list, 4), 0);
+        this.textField.setPosition(SimpleScreen.getPaddedX(this.list, 4), 0);
         this.textField.setEditable(false);
         this.textField.setFontOptions(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_WHITE).shadow(false).build());
 
@@ -193,7 +193,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         this.list.register(this);
         this.list.select(elementList.get(0));
 
-        this.getContainer().add(list, textField);
+        this.getContainer().add(this.list, this.textField);
 
         final UILabel spongeForgeVersionLabel = new UILabel(this, TextFormatting.WHITE + "SpongeForge: " + ((Optional<String>) Sponge.getPlatform()
                 .asMap().get("ImplementationVersion")).orElse("dev"));
@@ -239,7 +239,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         if (event.getSelected() instanceof AboutListElement) {
             final AboutListElement element = (AboutListElement) event.getSelected();
 
-            textField.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(element.contentText));
+            this.textField.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(element.contentText));
         }
     }
 
@@ -296,7 +296,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
 
         @Override
         public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            if (parent instanceof UISimpleList) {
+            if (this.parent instanceof UISimpleList) {
                 final UISimpleList parent = (UISimpleList) this.parent;
 
                 final int width = parent.getContentWidth() - (parent.getScrollBar().isDisabled() ? 0 : parent.getScrollBar().getRawWidth() + 1);

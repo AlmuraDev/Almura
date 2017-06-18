@@ -29,11 +29,11 @@ public final class AssetContext<C extends BuildableCatalogType, B extends Builda
     }
 
     public Asset getAsset() {
-        return asset;
+        return this.asset;
     }
 
     public B getBuilder() {
-        return builder;
+        return this.builder;
     }
 
     @Nullable

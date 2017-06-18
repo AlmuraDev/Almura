@@ -84,6 +84,14 @@ public class Constants {
             public static final String LIGHT_EMISSION = "emission";
             public static final String LIGHT_OPACITY = "opacity";
             public static final String RESISTANCE = "resistance";
+
+            public static final class AABB {
+                public static final String KEY = "aabb";
+                public static final String COLLISION = "collision";
+                public static final String WIREFRAME = "wireframe";
+                public static final String TYPE = "type";
+                public static final String BOX = "box";
+            }
         }
 
         public static final class CreativeTab {

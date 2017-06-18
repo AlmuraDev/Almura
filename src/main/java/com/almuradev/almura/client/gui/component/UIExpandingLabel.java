@@ -44,7 +44,7 @@ public class UIExpandingLabel extends UILabel {
         this.text = text;
         this.bbText = null;
         calculateSize();
-        if (multiLine) {
+        if (this.multiLine) {
             buildLines();
         }
 
@@ -55,12 +55,12 @@ public class UIExpandingLabel extends UILabel {
     protected void calculateSize() {
         this.textWidth = 0;
         for (String line : this.text.split("\\n")) {
-            int lineWidth = (int) font.getStringWidth(line, fontOptions) + 5;
+            int lineWidth = (int) this.font.getStringWidth(line, this.fontOptions) + 5;
             if (this.textWidth < lineWidth) {
-                textWidth = lineWidth;
+                this.textWidth = lineWidth;
             }
         }
         this.textHeight = this.getContentHeight();
-        setSize(textWidth, textHeight);
+        setSize(this.textWidth, this.textHeight);
     }
 }

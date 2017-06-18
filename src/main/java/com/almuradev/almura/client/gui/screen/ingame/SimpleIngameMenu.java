@@ -43,7 +43,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
     @Override
     public void construct() {
-        guiscreenBackground = true;
+        this.guiscreenBackground = true;
 
         final UIBackgroundContainer contentContainer = new UIBackgroundContainer(this);
         contentContainer.setBackgroundAlpha(0);

@@ -28,7 +28,7 @@ public final class SWorldInformationMessage implements Message {
     }
 
     public String getWorldName() {
-        return worldName;
+        return this.worldName;
     }
 
     @Override
