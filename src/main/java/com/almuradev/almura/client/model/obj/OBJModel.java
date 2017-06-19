@@ -17,7 +17,6 @@ import com.almuradev.almura.client.model.obj.material.MaterialLibrary;
 import com.almuradev.almura.util.ResourceLocationUtil;
 import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

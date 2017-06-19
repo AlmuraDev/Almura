@@ -6,10 +6,10 @@
 package com.almuradev.almura.content.loader.stage.task;
 
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.block.BuildableBlockType;
 import com.almuradev.almura.content.Pack;
+import com.almuradev.almura.content.block.BlockAABB;
+import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.loader.AssetContext;
-import com.almuradev.almura.block.BlockAABB;
 import ninja.leaping.configurate.ConfigurationNode;
 
 import java.util.Locale;

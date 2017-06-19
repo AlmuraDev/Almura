@@ -5,21 +5,21 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.block.BuildableBlockType;
-import com.almuradev.almura.block.rotatable.HorizontalType;
-import com.almuradev.almura.content.loader.stage.LoadCreativeTabsStage;
-import com.almuradev.almura.content.loader.stage.LoadMaterialsStage;
-import com.almuradev.almura.creativetab.CreativeTab;
-import com.almuradev.almura.block.builder.AbstractBlockTypeBuilder;
-import com.almuradev.almura.block.builder.rotatable.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
+import com.almuradev.almura.content.block.BuildableBlockType;
+import com.almuradev.almura.content.block.builder.AbstractBlockTypeBuilder;
+import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilderImpl;
+import com.almuradev.almura.content.block.rotatable.HorizontalType;
+import com.almuradev.almura.content.item.group.ItemGroup;
+import com.almuradev.almura.content.item.group.ItemGroupBuilderImpl;
 import com.almuradev.almura.content.loader.AssetLoader;
-import com.almuradev.almura.creativetab.CreativeTabBuilderImpl;
-import com.almuradev.almura.util.NetworkUtil;
+import com.almuradev.almura.content.loader.stage.LoadItemGroupsStage;
+import com.almuradev.almura.content.loader.stage.LoadMaterialsStage;
 import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
-import com.almuradev.almura.registry.CreativeTabRegistryModule;
+import com.almuradev.almura.registry.ItemGroupRegistryModule;
+import com.almuradev.almura.util.NetworkUtil;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -87,17 +87,17 @@ public abstract class CommonProxy {
     }
 
     protected void registerModules() {
-        Sponge.getRegistry().registerModule(CreativeTab.class, CreativeTabRegistryModule.getInstance());
+        Sponge.getRegistry().registerModule(ItemGroup.class, ItemGroupRegistryModule.getInstance());
     }
 
     protected void registerBuilders() {
-        Sponge.getRegistry().registerBuilderSupplier(CreativeTab.Builder.class, CreativeTabBuilderImpl::new);
+        Sponge.getRegistry().registerBuilderSupplier(ItemGroup.Builder.class, ItemGroupBuilderImpl::new);
         Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
         Sponge.getRegistry().registerBuilderSupplier(HorizontalType.Builder.class, HorizontalTypeBuilderImpl::new);
     }
 
     protected void registerLoaderStages() {
-        this.assetLoader.registerLoaderStage(LoadCreativeTabsStage.instance);
+        this.assetLoader.registerLoaderStage(LoadItemGroupsStage.instance);
         this.assetLoader.registerLoaderStage(LoadMaterialsStage.instance);
     }
 

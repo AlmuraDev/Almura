@@ -6,13 +6,12 @@
 package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.BuildableCatalogType;
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.loader.stage.LoaderStage;
 import com.almuradev.almura.content.loader.stage.task.StageTask;
 import com.almuradev.almura.content.loader.stage.task.TaskExecutionFailedException;
+import com.almuradev.almura.registry.BuildableCatalogType;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import org.apache.commons.lang3.text.WordUtils;
 import org.spongepowered.api.Sponge;

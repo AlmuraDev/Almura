@@ -7,7 +7,6 @@ package com.almuradev.almura.client.model.obj.geometry;
 
 import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 public class VertexNormal extends Vector3f {
 

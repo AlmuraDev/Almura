@@ -8,7 +8,6 @@ package com.almuradev.almura.client.model.obj.geometry;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 import java.util.LinkedHashSet;
 

@@ -5,9 +5,9 @@
  */
 package com.almuradev.almura.configuration.category.general;
 
-import com.almuradev.almura.creativetab.CreativeTab;
-import com.almuradev.almura.creativetab.CreativeTabs;
 import com.almuradev.almura.configuration.AbstractConfigurationCategory;
+import com.almuradev.almura.content.item.group.ItemGroup;
+import com.almuradev.almura.content.item.group.ItemGroups;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -15,5 +15,5 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class CreativeTabCategory extends AbstractConfigurationCategory {
 
     @Setting public boolean enabled = false;
-    @Setting public CreativeTab tab = CreativeTabs.FOOD;
+    @Setting public ItemGroup tab = ItemGroups.FOOD;
 }

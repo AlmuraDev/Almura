@@ -20,7 +20,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiShareToLan;
-import net.minecraft.client.gui.advancements.GuiAdvancement;
 import net.minecraft.client.gui.advancements.GuiScreenAdvancements;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
