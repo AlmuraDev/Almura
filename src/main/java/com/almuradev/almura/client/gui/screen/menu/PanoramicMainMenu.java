@@ -194,7 +194,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
 
     @Override
     public void onClose() {
-        mc.shutdown();
+        this.mc.shutdown();
     }
 
     @Subscribe

@@ -58,18 +58,18 @@ public class UIPropertyBar extends UIComponent {
         if (this.backgroundIcon != null) {
             this.iconShape.resetState();
             this.iconShape.setSize(ICON_SIZE, ICON_SIZE);
-            this.rp.icon.set(backgroundIcon);
+            this.rp.icon.set(this.backgroundIcon);
             renderer.drawShape(this.iconShape, this.rp);
         }
 
-        if (foregroundIcon != null) {
+        if (this.foregroundIcon != null) {
             this.iconShape.resetState();
             this.iconShape.setSize(ICON_SIZE, ICON_SIZE);
-            this.rp.icon.set(foregroundIcon);
+            this.rp.icon.set(this.foregroundIcon);
             renderer.drawShape(this.iconShape, this.rp);
         }
 
-        if (backgroundIcon != null || foregroundIcon != null) {
+        if (this.backgroundIcon != null || this.foregroundIcon != null) {
             renderer.next();
 
             shapeWidth = this.width - ICON_SIZE - 2;
@@ -95,10 +95,10 @@ public class UIPropertyBar extends UIComponent {
         this.shape.resetState();
         this.shape.setSize(this.getConvertedFill(), shapeHeight - 2);
         this.shape.setPosition(shapeX + 1, 2);
-        this.shape.getVertexes("TopLeft").get(0).setColor(color).setAlpha(alpha);
-        this.shape.getVertexes("TopRight").get(0).setColor(color).setAlpha(alpha);
-        this.shape.getVertexes("BottomLeft").get(0).setColor(color).setAlpha(alpha);
-        this.shape.getVertexes("BottomRight").get(0).setColor(color).setAlpha(alpha);
+        this.shape.getVertexes("TopLeft").get(0).setColor(this.color).setAlpha(this.alpha);
+        this.shape.getVertexes("TopRight").get(0).setColor(this.color).setAlpha(this.alpha);
+        this.shape.getVertexes("BottomLeft").get(0).setColor(this.color).setAlpha(this.alpha);
+        this.shape.getVertexes("BottomRight").get(0).setColor(this.color).setAlpha(this.alpha);
         renderer.drawShape(this.shape, this.rp);
 
         renderer.next();
@@ -116,13 +116,13 @@ public class UIPropertyBar extends UIComponent {
     @SuppressWarnings("deprecation")
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        if (text != Text.EMPTY) {
-            final String rawText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(text);
-            int textWidth = (int) font.getStringWidth(rawText, fontOptions);
-            int textHeight = (int) font.getStringHeight(fontOptions);
+        if (this.text != Text.EMPTY) {
+            final String rawText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.text);
+            int textWidth = (int) this.font.getStringWidth(rawText, this.fontOptions);
+            int textHeight = (int) this.font.getStringHeight(this.fontOptions);
 
-            int x = (((backgroundIcon != null || foregroundIcon != null) ? ICON_SIZE + 4 + width : width) - textWidth) / 2;
-            int y = (((backgroundIcon != null || foregroundIcon != null) ? ICON_SIZE : height) / 2) - (textHeight / 2);
+            int x = (((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE + 4 + this.width : this.width) - textWidth) / 2;
+            int y = (((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE : this.height) / 2) - (textHeight / 2);
 
             if (x == 0) {
                 x = 1;
@@ -130,7 +130,7 @@ public class UIPropertyBar extends UIComponent {
             if (y == 0) {
                 y = 1;
             }
-            renderer.drawText(font, rawText, x, y, zIndex, fontOptions);
+            renderer.drawText(this.font, rawText, x, y, this.zIndex, this.fontOptions);
         }
     }
 
@@ -191,7 +191,7 @@ public class UIPropertyBar extends UIComponent {
 
     @Override
     public int getHeight() {
-        return ((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE : height);
+        return ((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE : this.height);
     }
 
     @Override

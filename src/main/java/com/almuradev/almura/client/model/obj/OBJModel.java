@@ -131,7 +131,7 @@ public class OBJModel implements IRetexturableModel, IModelCustomData {
 
     @Override
     public Collection<ResourceLocation> getTextures() {
-        return textures;
+        return this.textures;
     }
 
     @Override

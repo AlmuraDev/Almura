@@ -6,11 +6,10 @@
 package com.almuradev.almura.block.impl;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import net.minecraft.block.BlockCrops;
 import org.spongepowered.api.CatalogType;
 
-public final class GenericCrops extends BlockCrops {
+public final class GenericCropBlock extends BlockCrops {
 
     @Override
     public String toString() {

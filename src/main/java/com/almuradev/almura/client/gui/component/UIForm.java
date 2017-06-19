@@ -40,11 +40,11 @@ public class UIForm extends UIWindow {
 
         this.closeButton = new UISimpleButton(getGui(), "x");
         this.closeButton.setName("button.form.close");
-        this.closeButton.setPosition(-rightPadding, -(topPadding + 3), Anchor.TOP | Anchor.RIGHT);
+        this.closeButton.setPosition(-this.rightPadding, -(this.topPadding + 3), Anchor.TOP | Anchor.RIGHT);
         this.closeButton.register(this);
 
-        if (titleLabel != null) {
-            titleLabel.setPosition(0, -topPadding, Anchor.TOP | Anchor.CENTER);
+        if (this.titleLabel != null) {
+            this.titleLabel.setPosition(0, -this.topPadding, Anchor.TOP | Anchor.CENTER);
         }
     }
 
@@ -131,8 +131,8 @@ public class UIForm extends UIWindow {
         final int xPos = getParent().relativeX(x) - relativeX(lastX);
         final int yPos = getParent().relativeY(y) - relativeY(lastY);
 
-        final int targetX = Math.min(parentContainer.getWidth() - width, Math.max(xPos, 0));
-        final int targetY = Math.min(parentContainer.getHeight() - height, Math.max(yPos, 0));
+        final int targetX = Math.min(parentContainer.getWidth() - this.width, Math.max(xPos, 0));
+        final int targetY = Math.min(parentContainer.getHeight() - this.height, Math.max(yPos, 0));
         setPosition(targetX, targetY, Anchor.NONE);
         return true;
     }
@@ -166,13 +166,13 @@ public class UIForm extends UIWindow {
         int x = super.componentX(component);
         int a = Anchor.horizontal(component.getAnchor());
         if (a == Anchor.LEFT || a == Anchor.NONE) {
-            x += leftPadding;
+            x += this.leftPadding;
         } else if (a == Anchor.RIGHT) {
-            x -= rightPadding;
+            x -= this.rightPadding;
         }
 
         if (!(component instanceof IControlComponent)) {
-            x -= xOffset;
+            x -= this.xOffset;
         }
 
         return x;
@@ -184,13 +184,13 @@ public class UIForm extends UIWindow {
         int y = super.componentY(component);
         int a = Anchor.vertical(component.getAnchor());
         if (a == Anchor.TOP || a == Anchor.NONE) {
-            y += topPadding;
+            y += this.topPadding;
         } else if (a == Anchor.BOTTOM) {
-            y -= bottomPadding;
+            y -= this.bottomPadding;
         }
 
         if (!(component instanceof IControlComponent)) {
-            y -= yOffset;
+            y -= this.yOffset;
         }
         return y;
     }

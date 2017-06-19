@@ -6,24 +6,52 @@
 package com.almuradev.almura.block.impl;
 
 import com.almuradev.almura.block.BuildableBlockType;
+import com.almuradev.almura.block.BlockAABB;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
 
 public final class GenericBlock extends Block {
 
+    private final BlockAABB.Collision collisionAABB;
+    private final BlockAABB.WireFrame wireFrameAABB;
+
     public GenericBlock(BuildableBlockType.Builder<?, ?> builder) {
         super(builder.material().orElse(null), builder.mapColor().orElse(null));
+        this.collisionAABB = builder.collisionAABB();
+        this.wireFrameAABB = builder.wireFrameAABB();
     }
 
+    @Deprecated
+    @Nullable
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return this.collisionAABB.provided ? this.collisionAABB.bb : super.getCollisionBoundingBox(state, world, pos);
+    }
+
+    @Deprecated
+    @Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World world, BlockPos pos) {
+        return this.wireFrameAABB.bb != null ? this.wireFrameAABB.bb.offset(pos) : super.getSelectedBoundingBox(state, world, pos);
+    }
+
+    @Deprecated
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
+    @Deprecated
     @Override
     public boolean isFullCube(IBlockState state) {
         return false;
@@ -35,6 +63,7 @@ public final class GenericBlock extends Block {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public BlockRenderLayer getBlockLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }

@@ -8,9 +8,9 @@ package com.almuradev.almura.block.impl;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
 
-public class GenericStairs extends BlockStairs {
+public class GenericStairsBlock extends BlockStairs {
 
-    public GenericStairs(IBlockState modelState) {
+    public GenericStairsBlock(IBlockState modelState) {
         super(modelState);
     }
 }

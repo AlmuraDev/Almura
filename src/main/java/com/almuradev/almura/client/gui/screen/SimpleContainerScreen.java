@@ -32,8 +32,8 @@ public class SimpleContainerScreen extends SimpleScreen {
     @SuppressWarnings("deprecation")
     @Override
     public void construct() {
-        if (title != Text.EMPTY) {
-            final UILabel titleLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(title));
+        if (this.title != Text.EMPTY) {
+            final UILabel titleLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.title));
             titleLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
             titleLabel.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
 
@@ -44,7 +44,7 @@ public class SimpleContainerScreen extends SimpleScreen {
         this.container.setPosition(0, 36);
         this.container.setSize(this.width, this.height - 102);
         this.container.setClipContent(true);
-        this.addToScreen(container);
+        this.addToScreen(this.container);
     }
 
     /**
@@ -98,7 +98,7 @@ public class SimpleContainerScreen extends SimpleScreen {
             this.shape.setPosition(0, -4);
             this.shape.getVertexes("Top").forEach(row -> row.setColor(CONTAINER_COLOR).setAlpha(255));
             this.shape.getVertexes("Bottom").forEach(row -> row.setColor(0).setAlpha(120));
-            renderer.drawShape(shape, rp);
+            renderer.drawShape(this.shape, this.rp);
 
             // Middle
             this.shape.resetState();
@@ -106,7 +106,7 @@ public class SimpleContainerScreen extends SimpleScreen {
             this.shape.setPosition(0, 0);
             this.shape.getVertexes("Top").forEach(row -> row.setColor(CONTAINER_COLOR).setAlpha(120));
             this.shape.getVertexes("Bottom").forEach(row -> row.setColor(0).setAlpha(120));
-            renderer.drawShape(shape, rp);
+            renderer.drawShape(this.shape, this.rp);
 
             // Bottom border
             this.shape.resetState();
@@ -114,7 +114,7 @@ public class SimpleContainerScreen extends SimpleScreen {
             this.shape.setPosition(0, this.gui.height - 104);
             this.shape.getVertexes("Top").forEach(row -> row.setColor(CONTAINER_COLOR).setAlpha(120));
             this.shape.getVertexes("Bottom").forEach(row -> row.setColor(0).setAlpha(255));
-            renderer.drawShape(shape, rp);
+            renderer.drawShape(this.shape, this.rp);
             renderer.next();
 
             this.setSize(this.gui.width, this.gui.height - 104);

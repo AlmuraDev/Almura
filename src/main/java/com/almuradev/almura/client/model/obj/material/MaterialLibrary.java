@@ -94,7 +94,7 @@ public class MaterialLibrary {
             checkState(!name.isEmpty(), "Name cannot be empty!");
             checkState(!this.materialDefinitions.isEmpty(), "A material library must have at least one material definition!");
 
-            return new MaterialLibrary(source, name, materialDefinitions);
+            return new MaterialLibrary(source, name, this.materialDefinitions);
         }
     }
 }

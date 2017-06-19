@@ -69,7 +69,7 @@ public class OBJModelParser {
 
                 switch (lineHeader) {
                     case Constants.Model.Obj.MATERIAL_LIBRARY:
-                        final ResourceLocation parent = ResourceLocationUtil.getParent(source).orElse(null);
+                        final ResourceLocation parent = ResourceLocationUtil.getParent(this.source).orElse(null);
                         objBuilder.materialLibrary(this.parseMaterialLibrary(ResourceLocationUtil.resourceLocationFrom(lineContents[0],
                                 Constants.Plugin.ID, parent.getResourcePath())));
                         break;

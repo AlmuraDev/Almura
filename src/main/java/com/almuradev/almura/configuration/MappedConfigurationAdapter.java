@@ -36,7 +36,7 @@ public final class MappedConfigurationAdapter<T extends AbstractConfiguration> {
         this.loader = HoconConfigurationLoader.builder()
                 .setRenderOptions(ConfigRenderOptions.defaults().setFormatted(true).setComments(true).setOriginComments(false))
                 .setDefaultOptions(options)
-                .setPath(configPath).build();
+                .setPath(this.configPath).build();
         try {
             this.mapper = ObjectMapper.forClass(configClass).bindToNew();
         } catch (ObjectMappingException e) {
@@ -46,7 +46,7 @@ public final class MappedConfigurationAdapter<T extends AbstractConfiguration> {
     }
 
     public Class<T> getConfigClass() {
-        return configClass;
+        return this.configClass;
     }
 
     public Path getConfigPath() {

@@ -25,7 +25,7 @@ public class OriginHUD extends AbstractHUD {
 
     @Override
     public void construct() {
-        guiscreenBackground = false;
+        this.guiscreenBackground = false;
 
         this.renderer.setDefaultTexture(Constants.Gui.SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS);
 

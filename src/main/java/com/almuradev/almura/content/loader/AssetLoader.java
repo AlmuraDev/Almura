@@ -142,10 +142,10 @@ public class AssetLoader {
                     WordUtils.capitalize(packName)));
 
             Almura.instance.logger.debug("Evaluating [{}] as a potential asset.", file);
-            boolean matches = file.toString().matches(pattern.pattern());
+            boolean matches = file.toString().matches(this.pattern.pattern());
 
             if (matches) {
-                AssetLoader.this.assetFilesByTypeInPack.computeIfAbsent(pack, k -> new LinkedHashMap<>()).computeIfAbsent(assetType, k -> new
+                AssetLoader.this.assetFilesByTypeInPack.computeIfAbsent(pack, k -> new LinkedHashMap<>()).computeIfAbsent(this.assetType, k -> new
                         LinkedList<>()).add(file);
             }
 

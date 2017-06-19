@@ -3,5 +3,11 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-@org.spongepowered.api.util.annotation.NonnullByDefault
 package com.almuradev.almura.content.loader;
+
+import ninja.leaping.configurate.ConfigurationNode;
+
+public interface ConfigurationNodeDeserializer<T> {
+
+    T deserialize(final ConfigurationNode node);
+}

@@ -62,11 +62,11 @@ public final class UIButtonBuilder {
     }
 
     public UIButtonBuilder icon(GuiIcon icon) {
-        return this.image(new UIImage(gui, null, icon));
+        return this.image(new UIImage(this.gui, null, icon));
     }
 
     public UIButtonBuilder texture(GuiTexture texture) {
-        return this.image(new UIImage(gui, texture, null));
+        return this.image(new UIImage(this.gui, texture, null));
     }
 
     public UIButtonBuilder size(int width, int height) {
@@ -149,7 +149,7 @@ public final class UIButtonBuilder {
     @SuppressWarnings({"deprecation", "unchecked"})
     public UIButton build(String id) {
         final UIButton button = new UIButton(this.gui);
-        button.setPosition(x, y);
+        button.setPosition(this.x, this.y);
         if (id != null) {
             button.setName(id);
         }

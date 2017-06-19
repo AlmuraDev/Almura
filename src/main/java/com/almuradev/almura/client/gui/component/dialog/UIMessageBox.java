@@ -49,7 +49,7 @@ public class UIMessageBox extends UIForm {
         this.setTopPadding(topPadding);
         this.setBottomPadding(bottomPadding);
 
-        if (!message.isEmpty()) {
+        if (!this.message.isEmpty()) {
             final UIExpandingLabel messageLabel = new UIExpandingLabel(gui, this.message, true);
             final int width = gui.width == 0 ? Math.max(messageLabel.getWidth() + 3, 250) : Math.min(Math.max(messageLabel.getWidth() + 3, 250),
                     gui.width);
@@ -124,9 +124,9 @@ public class UIMessageBox extends UIForm {
 
     @Override
     public void onClose() {
-        if (consumer != null) {
+        if (this.consumer != null) {
             try {
-                consumer.accept(result);
+                this.consumer.accept(this.result);
             } catch (Exception e) {
                 Almura.instance.logger.error("An exception occurred while executing the consumer!", e);
             }
@@ -182,7 +182,7 @@ public class UIMessageBox extends UIForm {
         final SimpleScreen screen = new SimpleScreen(gui) {
             @Override
             public void construct() {
-                guiscreenBackground = false;
+                this.guiscreenBackground = false;
                 // Disable escape key press
                 registerKeyListener((keyChar, keyCode) -> keyCode == Keyboard.KEY_ESCAPE);
                 addToScreen(new UIMessageBox(this, title, message, buttons, consumer)
@@ -193,31 +193,31 @@ public class UIMessageBox extends UIForm {
 
             @Override
             public void drawScreen(int mouseX, int mouseY, float partialTick) {
-                parent.ifPresent(screen -> screen.drawScreen(mouseX, mouseY, partialTick));
+                this.parent.ifPresent(screen -> screen.drawScreen(mouseX, mouseY, partialTick));
                 super.drawScreen(mouseX, mouseY, partialTick);
             }
 
             @Override
             public void updateScreen() {
-                parent.ifPresent(MalisisGui::updateScreen);
+                this.parent.ifPresent(MalisisGui::updateScreen);
                 super.updateScreen();
             }
 
             @Override
             public void onResize(Minecraft minecraft, int width, int height) {
-                parent.ifPresent(screen -> screen.onResize(minecraft, width, height));
+                this.parent.ifPresent(screen -> screen.onResize(minecraft, width, height));
                 super.onResize(minecraft, width, height);
             }
 
             @Override
             public void update(int mouseX, int mouseY, float partialTick) {
-                parent.ifPresent(screen -> screen.update(mouseX, mouseY, partialTick));
+                this.parent.ifPresent(screen -> screen.update(mouseX, mouseY, partialTick));
                 super.update(mouseX, mouseY, partialTick);
             }
 
             @Override
             public void updateGui() {
-                parent.ifPresent(MalisisGui::updateGui);
+                this.parent.ifPresent(MalisisGui::updateGui);
                 super.updateGui();
             }
         };

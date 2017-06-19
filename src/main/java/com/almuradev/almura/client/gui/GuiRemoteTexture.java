@@ -87,7 +87,7 @@ public class GuiRemoteTexture extends GuiTexture {
 
         @Override
         public void loadTexture(IResourceManager resourceManager) throws IOException {
-            TextureUtil.uploadTextureImageAllocate(getGlTextureId(), image, false, false);
+            TextureUtil.uploadTextureImageAllocate(getGlTextureId(), this.image, false, false);
         }
     }
 }
