@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura.content.loader;
 
-import com.almuradev.almura.content.AssetType;
 import ninja.leaping.configurate.ConfigurationNode;
 
 import java.nio.file.Path;

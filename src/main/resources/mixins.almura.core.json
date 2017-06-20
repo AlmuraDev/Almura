@@ -1,7 +1,7 @@
 {
     "required": true,
     "minVersion": "0.5.11",
-    "package": "com.almuradev.almura.mixin.core",
+    "package": "com.almuradev.almura.asm.mixin.core",
     "refmap": "mixins.almura.refmap.json",
     "target": "@env(DEFAULT)",
     "compatibilityLevel": "JAVA_8",

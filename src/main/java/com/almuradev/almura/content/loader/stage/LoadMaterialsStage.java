@@ -5,10 +5,10 @@
  */
 package com.almuradev.almura.content.loader.stage;
 
-import com.almuradev.almura.content.AssetType;
+import com.almuradev.almura.content.loader.AssetType;
 import com.almuradev.almura.content.loader.stage.task.SetCommonBlockAttributesTask;
-import com.almuradev.almura.content.loader.stage.task.StageTask;
 import com.almuradev.almura.content.loader.stage.task.SetCommonMaterialAttributesTask;
+import com.almuradev.almura.content.loader.stage.task.StageTask;
 
 public class LoadMaterialsStage implements LoaderStage {
 

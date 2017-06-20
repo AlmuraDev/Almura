@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.content.loader.stage.task;
 
-import com.almuradev.almura.BuildableCatalogType;
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.registry.BuildableCatalogType;
 
 public interface StageTask<C extends BuildableCatalogType, B extends BuildableCatalogType.Builder> {
 

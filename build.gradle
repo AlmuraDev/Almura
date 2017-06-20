@@ -115,7 +115,7 @@ license {
 }
 
 sortClassFields {
-    add 'main', 'com.almuradev.almura.creativetab.CreativeTabs'
+    add 'main', 'com.almuradev.almura.content.item.group.ItemGroups'
 }
 
 if (JavaVersion.current().isJava8Compatible() || JavaVersion.current().isJava9Compatible()) {

@@ -77,6 +77,7 @@ public class Constants {
 
         // TODO Nest Material and then Block in Material? Nesting can get absurd...
         public static final String SHOW_IN_CREATIVE_TAB = "show-in-creative-tab";
+        public static final String ITEM_GROUP_DISPLAY = "item-group-display";
 
         public static final class Block {
             public static final String HARDNESS = "hardness";
@@ -94,7 +95,7 @@ public class Constants {
             }
         }
 
-        public static final class CreativeTab {
+        public static final class ItemGroup {
             public static final String LABEL = "label";
         }
     }

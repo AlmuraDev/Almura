@@ -9,7 +9,6 @@ import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.category.ClientCategory;
 import com.almuradev.almura.configuration.category.DebugCategory;
 import com.almuradev.almura.configuration.category.gui.GuiCategory;
-import com.almuradev.almura.configuration.category.gui.about.AboutCategory;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 

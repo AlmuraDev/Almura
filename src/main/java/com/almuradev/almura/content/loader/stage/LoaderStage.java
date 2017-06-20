@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.content.loader.stage;
 
-import com.almuradev.almura.content.AssetType;
+import com.almuradev.almura.content.loader.AssetType;
 import com.almuradev.almura.content.loader.stage.task.StageTask;
 
 public interface LoaderStage {

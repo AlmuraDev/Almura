@@ -8,7 +8,6 @@ package com.almuradev.almura.client.model.obj.material;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Optional;
