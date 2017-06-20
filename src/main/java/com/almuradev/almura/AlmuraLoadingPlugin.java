@@ -41,6 +41,6 @@ public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
 
     @Override
     public String getAccessTransformerClass() {
-        return "com.almuradev.almura.asm.AlmuraAccessTransformer";
+        return "com.almuradev.almura.asm.transformer.AlmuraAccessTransformer";
     }
 }
