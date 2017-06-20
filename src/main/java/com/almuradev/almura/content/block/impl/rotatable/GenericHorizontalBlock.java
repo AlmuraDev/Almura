@@ -10,6 +10,7 @@ import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilde
 import com.almuradev.almura.content.block.rotatable.HorizontalType;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -30,7 +31,7 @@ public final class GenericHorizontalBlock extends BlockHorizontal {
     private final BlockAABB.WireFrame wireFrameAABB;
 
     public GenericHorizontalBlock(HorizontalTypeBuilderImpl builder) {
-        super(builder.material().orElse(null), builder.mapColor().orElse(null));
+        super((Material) builder.material(), builder.mapColor().orElse(null));
         this.collisionAABB = builder.collisionAABB();
         this.wireFrameAABB = builder.wireFrameAABB();
     }

@@ -5,14 +5,18 @@
  */
 package com.almuradev.almura.content.loader.stage.task;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.block.BlockAABB;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.content.material.Material;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.spongepowered.api.Sponge;
 
 import java.util.Locale;
+import java.util.Optional;
 
 public class SetCommonBlockAttributesTask implements StageTask<BuildableBlockType, BuildableBlockType.Builder> {
 
@@ -32,6 +36,14 @@ public class SetCommonBlockAttributesTask implements StageTask<BuildableBlockTyp
 
         // General
         final ConfigurationNode generalNode = node.getNode(Constants.Config.GENERAL);
+
+        final ConfigurationNode materialNode = generalNode.getNode(Constants.Config.Block.MATERIAL);
+        if (!materialNode.isVirtual()) {
+            final Optional<Material> material = Sponge.getRegistry().getType(Material.class, materialNode.getString());
+            material.ifPresent(builder::material);
+        } else {
+            Almura.instance.logger.debug("Block '{}' at '{}' does not have a material", context.getAsset().getName(), context.getAsset().getPath().toString());
+        }
 
         final ConfigurationNode hardnessNode = generalNode.getNode(Constants.Config.Block.HARDNESS);
         if (!hardnessNode.isVirtual()) {
