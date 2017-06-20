@@ -5,13 +5,12 @@
  */
 package com.almuradev.almura.content.block;
 
+import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import com.almuradev.almura.content.material.MaterialType;
-import net.minecraft.block.material.MapColor;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 
-import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
@@ -28,7 +27,7 @@ public interface BuildableBlockType extends MaterialType, BlockType {
 
         BUILDER material(Material material);
 
-        Optional<MapColor> mapColor();
+        MapColor mapColor();
 
         BUILDER mapColor(MapColor mapColor);
 

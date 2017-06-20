@@ -9,6 +9,7 @@ import com.almuradev.almura.content.block.BlockAABB;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
@@ -27,7 +28,7 @@ public final class GenericBlock extends Block {
     private final BlockAABB.WireFrame wireFrameAABB;
 
     public GenericBlock(BuildableBlockType.Builder<?, ?> builder) {
-        super((Material) builder.material(), builder.mapColor().orElse(null));
+        super((Material) builder.material(), (MapColor) builder.mapColor());
         this.collisionAABB = builder.collisionAABB();
         this.wireFrameAABB = builder.wireFrameAABB();
     }

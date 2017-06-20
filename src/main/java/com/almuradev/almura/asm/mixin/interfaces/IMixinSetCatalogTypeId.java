@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.asm.mixin.interfaces;
 
-public interface IMixinMaterial {
+public interface IMixinSetCatalogTypeId {
 
     void setId(final String id, final String name);
 }

@@ -6,11 +6,11 @@
 package com.almuradev.almura.asm.mixin.core.block.material;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MapColor;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(Material.class)
-public class MixinMaterial implements com.almuradev.almura.content.material.Material, IMixinSetCatalogTypeId {
+@Mixin(MapColor.class)
+public class MixinMapColor implements com.almuradev.almura.content.material.MapColor, IMixinSetCatalogTypeId {
 
     private String id;
     private String name;
