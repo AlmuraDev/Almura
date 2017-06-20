@@ -19,6 +19,7 @@ buildscript {
         }
     }
     dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
         classpath "net.minecraftforge.gradle:ForgeGradle:${project.forgeGradleVersion}"
         classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
         classpath 'org.spongepowered:mixingradle:0.4+'
@@ -30,6 +31,7 @@ buildscript {
 evaluationDependsOn ':MalisisCore'
 
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'com.github.hierynomus.license'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.spongepowered.gradle'
@@ -92,6 +94,7 @@ allprojects {
 
 dependencies {
     compile "org.spongepowered:spongeforge:${project.spongeImplVersion}:dev"
+    compile 'ninja.leaping.configurate:configurate-json:3.3'
     compile project(':MalisisCore')
 }
 
@@ -134,6 +137,8 @@ compileJava {
 }
 
 jar {
+    classifier 'base'
+
     manifest {
         attributes(
                 'Built-By': System.properties['user.name'],
@@ -144,4 +149,21 @@ jar {
                 'FMLAT': "${project.name.toLowerCase()}_at.cfg"
         )
     }
+}
+
+shadowJar {
+    mainSpec.sourcePaths.clear()
+    dependsOn reobfJar
+    classifier ''
+    exclude 'dummyThing'
+    dependencies {
+        include dependency('ninja.leaping.configurate:configurate-json')
+    }
+    afterEvaluate {
+        from zipTree(reobfJar.jar)
+    }
+}
+
+artifacts {
+    archives shadowJar
 }

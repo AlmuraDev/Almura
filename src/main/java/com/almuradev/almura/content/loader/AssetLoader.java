@@ -12,7 +12,7 @@ import com.almuradev.almura.content.loader.stage.LoaderStage;
 import com.almuradev.almura.content.loader.stage.task.StageTask;
 import com.almuradev.almura.content.loader.stage.task.TaskExecutionFailedException;
 import com.almuradev.almura.registry.BuildableCatalogType;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.json.JSONConfigurationLoader;
 import org.apache.commons.lang3.text.WordUtils;
 import org.spongepowered.api.Sponge;
 
@@ -67,7 +67,7 @@ public class AssetLoader {
 
                     final String assetName = assetFile.getFileName().toString().split("\\.")[0];
 
-                    final Asset asset = new Asset(assetName, assetType, assetFile, HoconConfigurationLoader.builder()
+                    final Asset asset = new Asset(assetName, assetType, assetFile, JSONConfigurationLoader.builder()
                             .setPath(assetFile)
                             .build()
                             .load());
