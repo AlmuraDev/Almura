@@ -13,9 +13,9 @@ import com.almuradev.almura.content.block.BlockAABB;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.impl.GenericBlock;
 import com.almuradev.almura.content.material.AbstractMaterialTypeBuilder;
+import com.almuradev.almura.content.material.Material;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -44,8 +44,8 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     private OptionalDouble resistance = OptionalDouble.empty();
 
     @Override
-    public final Optional<Material> material() {
-        return Optional.ofNullable(this.material);
+    public final Material material() {
+        return this.material;
     }
 
     @Override
@@ -138,7 +138,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         final Block block = (Block) value;
         final IBlockState defaultState = block.getDefaultState();
 
-        this.material(block.getMaterial(defaultState));
+        this.material((Material) block.getMaterial(defaultState));
         // TODO Figure out how to do blockMapColor now
         this.hardness(block.getBlockHardness(defaultState, null, null));
         this.lightEmission(block.getLightValue(defaultState, null, null));
@@ -152,7 +152,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     public BUILDER reset() {
         super.reset();
 
-        this.material = Material.GROUND;
+        this.material = (Material) net.minecraft.block.material.Material.GROUND;
         this.mapColor = MapColor.DIRT;
         this.collisionAABB = BlockAABB.Collision.VANILLA;
         this.wireFrameAABB = BlockAABB.WireFrame.VANILLA;

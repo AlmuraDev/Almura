@@ -5,9 +5,9 @@
  */
 package com.almuradev.almura.content.block;
 
+import com.almuradev.almura.content.material.Material;
 import com.almuradev.almura.content.material.MaterialType;
 import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 
@@ -24,7 +24,7 @@ public interface BuildableBlockType extends MaterialType, BlockType {
 
     interface Builder<BLOCK extends BuildableBlockType, BUILDER extends Builder<BLOCK, BUILDER>> extends MaterialType.Builder<BLOCK, BUILDER> {
 
-        Optional<Material> material();
+        Material material();
 
         BUILDER material(Material material);
 

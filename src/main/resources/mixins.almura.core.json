@@ -10,6 +10,7 @@
         "block.MixinBlockCrops",
         "block.MixinBlockFarmland",
         "block.MixinBlockHorizontal",
+        "block.material.MixinMaterial",
         "creativetab.MixinCreativeTabs"
     ],
     "client": [
