@@ -16,10 +16,12 @@ import com.almuradev.almura.content.item.group.ItemGroupBuilderImpl;
 import com.almuradev.almura.content.loader.AssetLoader;
 import com.almuradev.almura.content.loader.stage.LoadItemGroupsStage;
 import com.almuradev.almura.content.loader.stage.LoadMaterialsStage;
+import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
 import com.almuradev.almura.registry.ItemGroupRegistryModule;
+import com.almuradev.almura.registry.MapColorRegistryModule;
 import com.almuradev.almura.registry.MaterialRegistryModule;
 import com.almuradev.almura.util.NetworkUtil;
 import org.spongepowered.api.GameRegistry;
@@ -92,6 +94,7 @@ public abstract class CommonProxy {
     protected void registerModules() {
         final GameRegistry registry = Sponge.getRegistry();
         registry.registerModule(ItemGroup.class, ItemGroupRegistryModule.getInstance());
+        registry.registerModule(MapColor.class, new MapColorRegistryModule());
         registry.registerModule(Material.class, new MaterialRegistryModule());
     }
 

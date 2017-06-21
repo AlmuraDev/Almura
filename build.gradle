@@ -119,6 +119,8 @@ license {
 
 sortClassFields {
     add 'main', 'com.almuradev.almura.content.item.group.ItemGroups'
+    add 'main', 'com.almuradev.almura.content.material.MapColors'
+    add 'main', 'com.almuradev.almura.content.material.Materials'
 }
 
 if (JavaVersion.current().isJava8Compatible() || JavaVersion.current().isJava9Compatible()) {

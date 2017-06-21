@@ -84,6 +84,7 @@ public class Constants {
             public static final String LIGHT = "light";
             public static final String LIGHT_EMISSION = "emission";
             public static final String LIGHT_OPACITY = "opacity";
+            public static final String MAP_COLOR = "map-color";
             public static final String MATERIAL = "material";
             public static final String RESISTANCE = "resistance";
 

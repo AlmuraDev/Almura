@@ -11,6 +11,7 @@ import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.block.BlockAABB;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
@@ -42,7 +43,15 @@ public class SetCommonBlockAttributesTask implements StageTask<BuildableBlockTyp
             final Optional<Material> material = Sponge.getRegistry().getType(Material.class, materialNode.getString());
             material.ifPresent(builder::material);
         } else {
-            Almura.instance.logger.debug("Block '{}' at '{}' does not have a material", context.getAsset().getName(), context.getAsset().getPath().toString());
+            Almura.instance.logger.debug("Block '{}' at '{}' does not have a {}", context.getAsset().getName(), context.getAsset().getPath().toString(), Constants.Config.Block.MATERIAL);
+        }
+
+        final ConfigurationNode mapColorNode = generalNode.getNode(Constants.Config.Block.MAP_COLOR);
+        if (!mapColorNode.isVirtual()) {
+            final Optional<MapColor> MapColor = Sponge.getRegistry().getType(MapColor.class, mapColorNode.getString());
+            MapColor.ifPresent(builder::mapColor);
+        } else {
+            Almura.instance.logger.debug("Block '{}' at '{}' does not have a {}", context.getAsset().getName(), context.getAsset().getPath().toString(), Constants.Config.Block.MAP_COLOR);
         }
 
         final ConfigurationNode hardnessNode = generalNode.getNode(Constants.Config.Block.HARDNESS);
