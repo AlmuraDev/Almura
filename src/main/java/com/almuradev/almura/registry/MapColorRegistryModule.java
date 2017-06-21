@@ -83,9 +83,11 @@ public class MapColorRegistryModule implements CatalogRegistryModule<MapColor> {
         this.register("light_blue_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193560_ab);
     }
 
-    private void register(final String id, final net.minecraft.block.material.MapColor material) {
-        this.map.put(id, (MapColor) material);
-        ((IMixinSetCatalogTypeId) material).setId(SpongeImplHooks.getModIdFromClass(material.getClass()) + ':' + id, id);
+    private void register(String id, final net.minecraft.block.material.MapColor color) {
+        final String name = id;
+        id = SpongeImplHooks.getModIdFromClass(color.getClass()) + ':' + id;
+        this.map.put(id, (MapColor) color);
+        ((IMixinSetCatalogTypeId) color).setId(id, name);
     }
 
     @Override

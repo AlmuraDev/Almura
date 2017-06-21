@@ -87,6 +87,7 @@ public class Constants {
             public static final String MAP_COLOR = "map-color";
             public static final String MATERIAL = "material";
             public static final String RESISTANCE = "resistance";
+            public static final String SOUND_GROUP = "sound-group";
 
             public static final class AABB {
                 public static final String KEY = "aabb";
@@ -94,6 +95,16 @@ public class Constants {
                 public static final String WIREFRAME = "wireframe";
                 public static final String TYPE = "type";
                 public static final String BOX = "box";
+            }
+
+            public static final class SoundGroup {
+                public static final String VOLUME = "volume";
+                public static final String PITCH = "pitch";
+                public static final String BREAK_SOUND = "break-sound";
+                public static final String STEP_SOUND = "step-sound";
+                public static final String PLACE_SOUND = "place-sound";
+                public static final String HIT_SOUND = "hit-sound";
+                public static final String FALL_SOUND = "fall-sound";
             }
         }
 

@@ -7,19 +7,23 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.content.block.rotatable.HorizontalType;
+import com.almuradev.almura.content.block.sound.BlockSoundGroupBuilder;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.item.group.ItemGroupBuilderImpl;
 import com.almuradev.almura.content.loader.AssetLoader;
+import com.almuradev.almura.content.loader.stage.LoadBlockSoundGroupsStage;
 import com.almuradev.almura.content.loader.stage.LoadItemGroupsStage;
 import com.almuradev.almura.content.loader.stage.LoadMaterialsStage;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
+import com.almuradev.almura.registry.BlockSoundGroupRegistryModule;
 import com.almuradev.almura.registry.ItemGroupRegistryModule;
 import com.almuradev.almura.registry.MapColorRegistryModule;
 import com.almuradev.almura.registry.MaterialRegistryModule;
@@ -93,18 +97,22 @@ public abstract class CommonProxy {
 
     protected void registerModules() {
         final GameRegistry registry = Sponge.getRegistry();
+        registry.registerModule(BlockSoundGroup.class, new BlockSoundGroupRegistryModule());
         registry.registerModule(ItemGroup.class, ItemGroupRegistryModule.getInstance());
         registry.registerModule(MapColor.class, new MapColorRegistryModule());
         registry.registerModule(Material.class, new MaterialRegistryModule());
     }
 
     protected void registerBuilders() {
-        Sponge.getRegistry().registerBuilderSupplier(ItemGroup.Builder.class, ItemGroupBuilderImpl::new);
-        Sponge.getRegistry().registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
-        Sponge.getRegistry().registerBuilderSupplier(HorizontalType.Builder.class, HorizontalTypeBuilderImpl::new);
+        final GameRegistry registry = Sponge.getRegistry();
+        registry.registerBuilderSupplier(BlockSoundGroup.Builder.class, BlockSoundGroupBuilder::new);
+        registry.registerBuilderSupplier(ItemGroup.Builder.class, ItemGroupBuilderImpl::new);
+        registry.registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
+        registry.registerBuilderSupplier(HorizontalType.Builder.class, HorizontalTypeBuilderImpl::new);
     }
 
     protected void registerLoaderStages() {
+        this.assetLoader.registerLoaderStage(LoadBlockSoundGroupsStage.INSTANCE);
         this.assetLoader.registerLoaderStage(LoadItemGroupsStage.instance);
         this.assetLoader.registerLoaderStage(LoadMaterialsStage.instance);
     }

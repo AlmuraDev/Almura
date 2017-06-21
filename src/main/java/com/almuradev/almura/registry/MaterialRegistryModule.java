@@ -67,9 +67,11 @@ public class MaterialRegistryModule implements CatalogRegistryModule<Material> {
         this.register("structure_void", net.minecraft.block.material.Material.STRUCTURE_VOID);
     }
 
-    private void register(final String id, final net.minecraft.block.material.Material material) {
+    private void register(String id, final net.minecraft.block.material.Material material) {
+        final String name = id;
+        id = SpongeImplHooks.getModIdFromClass(material.getClass()) + ':' + id;
         this.map.put(id, (Material) material);
-        ((IMixinSetCatalogTypeId) material).setId(SpongeImplHooks.getModIdFromClass(material.getClass()) + ':' + id, id);
+        ((IMixinSetCatalogTypeId) material).setId(id, name);
     }
 
     @Override
