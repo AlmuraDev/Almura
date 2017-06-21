@@ -5,12 +5,14 @@
  */
 package com.almuradev.almura.content.block;
 
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import com.almuradev.almura.content.material.MaterialType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
@@ -54,6 +56,10 @@ public interface BuildableBlockType extends MaterialType, BlockType {
         OptionalDouble resistance();
 
         BUILDER resistance(float resistance);
+
+        Optional<BlockSoundGroup> soundGroup();
+
+        BUILDER soundGroup(BlockSoundGroup group);
 
         @Override
         default BLOCK build(String id, String name) {

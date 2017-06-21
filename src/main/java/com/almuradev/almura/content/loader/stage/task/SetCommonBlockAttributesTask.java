@@ -9,11 +9,15 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.block.BlockAABB;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
+import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.AssetContext;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.slf4j.Logger;
+import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Sponge;
 
 import java.util.Locale;
@@ -27,6 +31,8 @@ public class SetCommonBlockAttributesTask implements StageTask<BuildableBlockTyp
     public void execute(AssetContext<BuildableBlockType, BuildableBlockType.Builder> context) throws TaskExecutionFailedException {
         final BuildableBlockType.Builder builder = context.getBuilder();
         final ConfigurationNode node = context.getAsset().getConfigurationNode();
+        final GameRegistry registry = Sponge.getRegistry();
+        final Logger logger = Almura.instance.logger;
 
         // AABB
         final ConfigurationNode aabbNode = node.getNode(Constants.Config.Block.AABB.KEY);
@@ -40,18 +46,26 @@ public class SetCommonBlockAttributesTask implements StageTask<BuildableBlockTyp
 
         final ConfigurationNode materialNode = generalNode.getNode(Constants.Config.Block.MATERIAL);
         if (!materialNode.isVirtual()) {
-            final Optional<Material> material = Sponge.getRegistry().getType(Material.class, materialNode.getString());
+            final Optional<Material> material = registry.getType(Material.class, materialNode.getString());
             material.ifPresent(builder::material);
         } else {
-            Almura.instance.logger.debug("Block '{}' at '{}' does not have a {}", context.getAsset().getName(), context.getAsset().getPath().toString(), Constants.Config.Block.MATERIAL);
+            this.doesNotHave(context.getAsset(), Constants.Config.Block.MATERIAL);
         }
 
         final ConfigurationNode mapColorNode = generalNode.getNode(Constants.Config.Block.MAP_COLOR);
         if (!mapColorNode.isVirtual()) {
-            final Optional<MapColor> MapColor = Sponge.getRegistry().getType(MapColor.class, mapColorNode.getString());
-            MapColor.ifPresent(builder::mapColor);
+            final Optional<MapColor> mapColor = registry.getType(MapColor.class, mapColorNode.getString());
+            mapColor.ifPresent(builder::mapColor);
         } else {
-            Almura.instance.logger.debug("Block '{}' at '{}' does not have a {}", context.getAsset().getName(), context.getAsset().getPath().toString(), Constants.Config.Block.MAP_COLOR);
+            this.doesNotHave(context.getAsset(), Constants.Config.Block.MAP_COLOR);
+        }
+
+        final ConfigurationNode soundGroupNode = generalNode.getNode(Constants.Config.Block.SOUND_GROUP);
+        if (!soundGroupNode.isVirtual()) {
+            final Optional<BlockSoundGroup> soundGroup = registry.getType(BlockSoundGroup.class, soundGroupNode.getString());
+            soundGroup.ifPresent(builder::soundGroup);
+        } else {
+            this.doesNotHave(context.getAsset(), Constants.Config.Block.SOUND_GROUP);
         }
 
         final ConfigurationNode hardnessNode = generalNode.getNode(Constants.Config.Block.HARDNESS);
@@ -79,5 +93,9 @@ public class SetCommonBlockAttributesTask implements StageTask<BuildableBlockTyp
 
         final Pack pack = context.getPack();
         builder.build(Constants.Plugin.ID + ":" + pack.getName().toLowerCase(Locale.ENGLISH) + "/" + context.getAsset().getName());
+    }
+
+    private void doesNotHave(final Asset asset, final String what) {
+        Almura.instance.logger.debug("Block '{}' at '{}' does not have a {}", asset.getName(), asset.getPath().toString(), what);
     }
 }

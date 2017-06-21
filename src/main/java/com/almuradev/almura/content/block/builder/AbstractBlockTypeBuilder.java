@@ -10,12 +10,14 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.block.BlockAABB;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.impl.GenericBlock;
 import com.almuradev.almura.content.material.AbstractMaterialTypeBuilder;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -24,6 +26,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
@@ -41,6 +44,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     private OptionalDouble lightEmission = OptionalDouble.empty();
     private OptionalInt lightOpacity = OptionalInt.empty();
     private OptionalDouble resistance = OptionalDouble.empty();
+    @Nullable private BlockSoundGroup soundGroup;
 
     @Override
     public final Material material() {
@@ -131,6 +135,17 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     }
 
     @Override
+    public Optional<BlockSoundGroup> soundGroup() {
+        return Optional.ofNullable(this.soundGroup);
+    }
+
+    @Override
+    public BUILDER soundGroup(BlockSoundGroup group) {
+        this.soundGroup = group;
+        return (BUILDER) this;
+    }
+
+    @Override
     public BUILDER from(BuildableBlockType value) {
         super.from(value);
 
@@ -143,6 +158,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         this.lightEmission(block.getLightValue(defaultState, null, null));
         this.lightOpacity(block.getLightOpacity(defaultState, null, null));
         this.resistance(block.blockResistance);
+        this.soundGroup((BlockSoundGroup) block.getSoundType());
 
         return (BUILDER) this;
     }
@@ -159,6 +175,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         this.lightEmission = OptionalDouble.empty();
         this.lightOpacity = OptionalInt.empty();
         this.resistance = OptionalDouble.empty();
+        this.soundGroup = null;
 
         return (BUILDER) this;
     }
@@ -175,6 +192,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         final Block block = GameRegistry.register(this.createBlock((BUILDER) this).setRegistryName(name));
         block.setUnlocalizedName(modid + "." + id.replace(Constants.Plugin.ID.concat(":"), "").replace("/", "."));
         block.setCreativeTab((CreativeTabs) this.itemGroup().orElse(null));
+        this.soundGroup().ifPresent(sound -> block.setSoundType((SoundType) sound));
         this.hardness().ifPresent(hardness -> block.setHardness((float) hardness));
         this.resistance().ifPresent(resistance -> block.setResistance((float) resistance));
         this.lightEmission().ifPresent(emission -> block.setLightLevel((float) emission));
