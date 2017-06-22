@@ -41,6 +41,10 @@ public interface BuildableBlockType extends MaterialType, BlockType {
 
         BUILDER wireFrameAABB(final BlockAABB.WireFrame bb);
 
+        OptionalDouble slipperiness();
+
+        BUILDER slipperiness(double slipperiness);
+
         OptionalDouble hardness();
 
         BUILDER hardness(float hardness);
