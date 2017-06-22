@@ -80,6 +80,7 @@ public class Constants {
         public static final String ITEM_GROUP_DISPLAY = "item-group-display";
 
         public static final class Block {
+            public static final String SLIPPERINESS = "slipperiness";
             public static final String HARDNESS = "hardness";
             public static final String LIGHT = "light";
             public static final String LIGHT_EMISSION = "emission";

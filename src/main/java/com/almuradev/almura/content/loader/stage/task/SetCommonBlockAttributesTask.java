@@ -68,6 +68,11 @@ public class SetCommonBlockAttributesTask implements StageTask<BuildableBlockTyp
             this.doesNotHave(context.getAsset(), Constants.Config.Block.SOUND_GROUP);
         }
 
+        final ConfigurationNode slipperinessNode = generalNode.getNode(Constants.Config.Block.SLIPPERINESS);
+        if (!slipperinessNode.isVirtual()) {
+            builder.slipperiness(slipperinessNode.getFloat());
+        }
+
         final ConfigurationNode hardnessNode = generalNode.getNode(Constants.Config.Block.HARDNESS);
         if (!hardnessNode.isVirtual()) {
             builder.hardness(hardnessNode.getFloat());

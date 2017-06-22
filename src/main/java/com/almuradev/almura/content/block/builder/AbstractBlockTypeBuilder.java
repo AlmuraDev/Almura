@@ -40,6 +40,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     @Nullable private MapColor mapColor;
     private BlockAABB.Collision collisionAABB = BlockAABB.Collision.VANILLA;
     private BlockAABB.WireFrame wireFrameAABB = BlockAABB.WireFrame.VANILLA;
+    private OptionalDouble slipperiness = OptionalDouble.empty();
     private OptionalDouble hardness = OptionalDouble.empty();
     private OptionalDouble lightEmission = OptionalDouble.empty();
     private OptionalInt lightOpacity = OptionalInt.empty();
@@ -87,6 +88,17 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     @Override
     public final BUILDER wireFrameAABB(final BlockAABB.WireFrame bb) {
         this.wireFrameAABB = bb;
+        return (BUILDER) this;
+    }
+
+    @Override
+    public OptionalDouble slipperiness() {
+        return this.slipperiness;
+    }
+
+    @Override
+    public BUILDER slipperiness(double slipperiness) {
+        this.slipperiness = OptionalDouble.of(slipperiness);
         return (BUILDER) this;
     }
 
@@ -192,6 +204,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         final Block block = GameRegistry.register(this.createBlock((BUILDER) this).setRegistryName(name));
         block.setUnlocalizedName(modid + "." + id.replace(Constants.Plugin.ID.concat(":"), "").replace("/", "."));
         block.setCreativeTab((CreativeTabs) this.itemGroup().orElse(null));
+        this.slipperiness().ifPresent(slipperiness -> block.slipperiness = (float) slipperiness);
         this.soundGroup().ifPresent(sound -> block.setSoundType((SoundType) sound));
         this.hardness().ifPresent(hardness -> block.setHardness((float) hardness));
         this.resistance().ifPresent(resistance -> block.setResistance((float) resistance));
