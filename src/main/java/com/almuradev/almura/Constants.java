@@ -90,6 +90,7 @@ public class Constants {
             public static final String MATERIAL = "material";
             public static final String RESISTANCE = "resistance";
             public static final String SOUND_GROUP = "sound-group";
+            public static final String BREAK = "break";
 
             public static final class AABB {
                 public static final String KEY = "aabb";
@@ -108,10 +109,30 @@ public class Constants {
                 public static final String HIT_SOUND = "hit-sound";
                 public static final String FALL_SOUND = "fall-sound";
             }
+
+            public interface BlockBreak {
+                String WITH = "with";
+                String APPLY = "apply";
+                String DROPS = "drops";
+
+                interface Drop {
+                    String EXPERIENCE = "experience";
+                    String ITEM = "item";
+                }
+            }
         }
 
         public static final class ItemGroup {
             public static final String ICON = "icon";
+        }
+    }
+
+    public interface Type {
+        interface VariableAmount {
+            String AMOUNT = "amount";
+            String BONUS = "bonus";
+            String BONUS_AMOUNT = "amount";
+            String BONUS_CHANCE = "chance";
         }
     }
 

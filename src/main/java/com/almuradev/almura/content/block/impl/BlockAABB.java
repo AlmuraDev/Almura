@@ -102,7 +102,7 @@ public class BlockAABB {
             this.provided = type == Type.CUSTOM || type == Type.NONE;
         }
 
-        public static final class Deserializer implements ConfigurationNodeDeserializer<Optional<Collision>> {
+        public static final class Deserializer implements ConfigurationNodeDeserializer<Collision> {
 
             private Deserializer() {
             }
@@ -140,7 +140,7 @@ public class BlockAABB {
             super(bb);
         }
 
-        public static final class Deserializer implements ConfigurationNodeDeserializer<Optional<WireFrame>> {
+        public static final class Deserializer implements ConfigurationNodeDeserializer<WireFrame> {
 
             private Deserializer() {
             }

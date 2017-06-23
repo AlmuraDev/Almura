@@ -5,22 +5,26 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.asm.mixin.interfaces.IMixinAlmuraBlock;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.content.AssetType;
-import com.almuradev.almura.content.loader.AssetLoader;
-import com.almuradev.almura.content.loader.AssetPipeline;
-import com.almuradev.almura.content.loader.AssetRegistry;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilderImpl;
+import com.almuradev.almura.content.block.data.blockbreak.BlockBreak;
+import com.almuradev.almura.content.block.data.blockbreak.drop.Drop;
+import com.almuradev.almura.content.block.data.blockbreak.drop.ExperienceDrop;
 import com.almuradev.almura.content.block.rotatable.HorizontalType;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.sound.BlockSoundGroupBuilder;
 import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.item.builder.AbstractItemTypeBuilder;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.item.group.ItemGroupBuilderImpl;
+import com.almuradev.almura.content.loader.AssetLoader;
+import com.almuradev.almura.content.loader.AssetPipeline;
+import com.almuradev.almura.content.loader.AssetRegistry;
 import com.almuradev.almura.content.loader.LoaderPhase;
 import com.almuradev.almura.content.loader.task.SetBlockAttributesTask;
 import com.almuradev.almura.content.loader.task.SetBlockSoundGroupAttributesTask;
@@ -37,6 +41,11 @@ import com.almuradev.almura.registry.ItemGroupRegistryModule;
 import com.almuradev.almura.registry.MapColorRegistryModule;
 import com.almuradev.almura.registry.MaterialRegistryModule;
 import com.almuradev.almura.util.NetworkUtil;
+import net.minecraft.block.Block;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -49,10 +58,13 @@ import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelRegistrationException;
 
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * The common platform of Almura. All code meant to run on the client and both dedicated and integrated server go here.
@@ -96,6 +108,8 @@ public abstract class CommonProxy {
         }
         this.assetPipeline.process(LoaderPhase.CONSTRUCTION, this.assetRegistry);
         this.assetLoader.registerSpongeOnlyCatalogTypes();
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     protected void onGamePreInitialization(GamePreInitializationEvent event) {
@@ -201,5 +215,45 @@ public abstract class CommonProxy {
         if (!event.getFromTransform().getExtent().equals(event.getToTransform().getExtent())) {
             NetworkUtil.sendWorldHUDData(event.getTargetEntity(), event.getToTransform());
         }
+    }
+
+    // This is only necessary to get xp handled correctly for Player breaks in the Forge ecosystem
+    // Make sure to attempt to go first so we can set xp so that mods/plugins can override us if necessary
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onBlockBreak(BlockEvent.BreakEvent event) {
+        final Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
+
+        if (!(block instanceof IMixinAlmuraBlock)) {
+            return;
+        }
+
+        int exp = this.getXpToDrop((ItemType) event.getPlayer().getActiveItemStack().getItem(), (IMixinAlmuraBlock) block, event.getWorld()
+                .rand);
+
+        if (exp == -1) {
+            // if no exp for this itemstack, fallback to empty hand and check again
+            exp = this.getXpToDrop(ItemStack.empty().getItem(), (IMixinAlmuraBlock) block, event.getWorld().rand);
+        }
+
+        if (exp != -1) {
+            event.setExpToDrop(exp);
+        }
+    }
+
+    private int getXpToDrop(ItemType usedType, IMixinAlmuraBlock block, Random random) {
+        int exp = -1;
+
+        for (BlockBreak kitkat : block.getBreaks()) {
+            if (kitkat.doesItemMatch(usedType)) {
+                for (Drop drop : kitkat.getDrops()) {
+                    if (drop instanceof ExperienceDrop) {
+                        final ExperienceDrop expDrop = (ExperienceDrop) drop;
+                        exp += expDrop.flooredAmount(random);
+                    }
+                }
+            }
+        }
+
+        return exp;
     }
 }

@@ -6,6 +6,7 @@
 package com.almuradev.almura.content.block;
 
 import com.almuradev.almura.content.block.impl.BlockAABB;
+import com.almuradev.almura.content.block.data.blockbreak.BlockBreak;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
@@ -13,6 +14,7 @@ import com.almuradev.almura.content.material.MaterialType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -65,6 +67,10 @@ public interface BuildableBlockType extends MaterialType, BlockType {
         Optional<BlockSoundGroup> soundGroup();
 
         BUILDER soundGroup(BlockSoundGroup group);
+
+        List<BlockBreak> breaks();
+
+        BUILDER breaks(final List<BlockBreak> breaks);
 
         @Override
         BLOCK build(String id);

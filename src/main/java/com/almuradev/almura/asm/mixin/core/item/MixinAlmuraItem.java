@@ -3,14 +3,12 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.asm.mixin.core.block;
+package com.almuradev.almura.asm.mixin.core.item;
 
-import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateBlockAttributes;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
-import com.almuradev.almura.content.block.BuildableBlockType;
-import com.almuradev.almura.content.block.impl.GenericBlock;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
+import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.item.group.ItemGroup;
+import com.almuradev.almura.content.item.impl.GenericItem;
 import com.almuradev.almura.content.loader.CatalogDelegate;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.relauncher.Side;
@@ -21,17 +19,15 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-@Mixin(value = {GenericBlock.class})
-public abstract class MixinDelegateBlockAttributes extends MixinBlock implements BuildableBlockType, IMixinDelegateMaterialAttributes,
-        IMixinDelegateBlockAttributes {
+@Mixin(value = {GenericItem.class})
+public abstract class MixinAlmuraItem extends MixinItem implements BuildableItemType, IMixinDelegateMaterialAttributes {
 
     @Nullable private CatalogDelegate<ItemGroup> itemGroupDelegate;
-    @Nullable private CatalogDelegate<BlockSoundGroup> blockSoundGroupDelegate;
 
     @Override
     public Optional<ItemGroup> getItemGroup() {
-        if (this.displayOnCreativeTab != null) {
-            return Optional.of((ItemGroup) this.displayOnCreativeTab);
+        if (this.tabToDisplayOn != null) {
+            return Optional.of((ItemGroup) this.tabToDisplayOn);
         }
 
         // Having no delegate instance means it was truly null
@@ -40,9 +36,9 @@ public abstract class MixinDelegateBlockAttributes extends MixinBlock implements
         }
 
         final ItemGroup cached = this.itemGroupDelegate.getCatalog();
-        this.displayOnCreativeTab = (CreativeTabs) (Object) cached;
+        this.tabToDisplayOn = (CreativeTabs) (Object) cached;
 
-        return Optional.of((ItemGroup) this.displayOnCreativeTab);
+        return Optional.of((ItemGroup) this.tabToDisplayOn);
     }
 
     @Override
@@ -50,13 +46,9 @@ public abstract class MixinDelegateBlockAttributes extends MixinBlock implements
         this.itemGroupDelegate = itemGroupDelegate;
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
-    public CreativeTabs getCreativeTabToDisplayOn() {
+    public CreativeTabs getCreativeTab() {
         return (CreativeTabs) (Object) this.getItemGroup().orElse(null);
-    }
-
-    @Override
-    public void setBlockSoundGroupDelegate(CatalogDelegate<BlockSoundGroup> blockSoundGroupDelegate) {
-        this.blockSoundGroupDelegate = blockSoundGroupDelegate;
     }
 }

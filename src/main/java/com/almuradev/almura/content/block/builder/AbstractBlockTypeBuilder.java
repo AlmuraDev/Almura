@@ -10,6 +10,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
 import com.almuradev.almura.content.block.impl.BlockAABB;
+import com.almuradev.almura.content.block.data.blockbreak.BlockBreak;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.impl.GenericBlock;
@@ -20,6 +21,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -40,6 +43,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     private OptionalInt lightOpacity = OptionalInt.empty();
     private OptionalDouble resistance = OptionalDouble.empty();
     @Nullable private BlockSoundGroup soundGroup;
+    private List<BlockBreak> breaks = Collections.emptyList();
 
     @Override
     public final Material material() {
@@ -148,6 +152,17 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     @Override
     public BUILDER soundGroup(BlockSoundGroup group) {
         this.soundGroup = group;
+        return (BUILDER) this;
+    }
+
+    @Override
+    public List<BlockBreak> breaks() {
+        return this.breaks;
+    }
+
+    @Override
+    public BUILDER breaks(List<BlockBreak> breaks) {
+        this.breaks = breaks;
         return (BUILDER) this;
     }
 

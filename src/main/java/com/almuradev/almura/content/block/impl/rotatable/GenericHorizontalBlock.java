@@ -5,8 +5,10 @@
  */
 package com.almuradev.almura.content.block.impl.rotatable;
 
+import com.almuradev.almura.asm.mixin.interfaces.IMixinAlmuraBlock;
 import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilderImpl;
+import com.almuradev.almura.content.block.data.blockbreak.BlockBreak;
 import com.almuradev.almura.content.block.rotatable.HorizontalType;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.BlockHorizontal;
@@ -15,6 +17,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -23,6 +28,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +42,7 @@ public final class GenericHorizontalBlock extends BlockHorizontal {
         super((Material) builder.material(), (MapColor) builder.mapColor());
         this.collisionAABB = builder.collisionAABB();
         this.wireFrameAABB = builder.wireFrameAABB();
+        ((IMixinAlmuraBlock) (Object) this).setBreaks(builder.breaks());
     }
 
     @Deprecated

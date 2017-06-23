@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.content.block.impl;
 
+import com.almuradev.almura.asm.mixin.interfaces.IMixinAlmuraBlock;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.Block;
@@ -30,6 +31,7 @@ public final class GenericBlock extends Block {
         super((Material) builder.material(), (MapColor) builder.mapColor());
         this.collisionAABB = builder.collisionAABB();
         this.wireFrameAABB = builder.wireFrameAABB();
+        ((IMixinAlmuraBlock) (Object) this).setBreaks(builder.breaks());
     }
 
     @Deprecated

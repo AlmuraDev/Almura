@@ -7,7 +7,17 @@ package com.almuradev.almura.configuration.serializer;
 
 import ninja.leaping.configurate.ConfigurationNode;
 
+import java.util.Optional;
+
 public interface ConfigurationNodeDeserializer<T> {
 
-    T deserialize(final ConfigurationNode node);
+    default T requiredDeserialize(final ConfigurationNode node, final String string) {
+        return this.deserialize(node).orElseThrow(() -> new IllegalArgumentException(string));
+    }
+
+    default T defaultedDeserialize(final ConfigurationNode node, final T defaultValue) {
+        return this.deserialize(node).orElse(defaultValue);
+    }
+
+    Optional<T> deserialize(final ConfigurationNode node);
 }

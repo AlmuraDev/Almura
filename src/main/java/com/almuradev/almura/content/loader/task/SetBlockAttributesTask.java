@@ -8,6 +8,8 @@ package com.almuradev.almura.content.loader.task;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.block.impl.BlockAABB;
+import com.almuradev.almura.content.Pack;
+import com.almuradev.almura.content.block.data.blockbreak.BlockBreakSerializer;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.loader.Asset;
@@ -88,6 +90,11 @@ public class SetBlockAttributesTask implements StageTask<BuildableBlockType, Bui
         final ConfigurationNode resistanceNode = generalNode.getNode(Constants.Config.Block.RESISTANCE);
         if (!resistanceNode.isVirtual()) {
             builder.resistance(resistanceNode.getFloat());
+        }
+
+        final ConfigurationNode breakNode = node.getNode(Constants.Config.Block.BREAK);
+        if (!breakNode.isVirtual()) {
+            BlockBreakSerializer.INSTANCE.deserialize(breakNode).ifPresent(builder::breaks);
         }
     }
 

@@ -8,6 +8,8 @@ package com.almuradev.almura.content.loader;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nullable;
 
 /**
@@ -16,7 +18,7 @@ import javax.annotation.Nullable;
  * {@link CatalogType} will be and the catalog's id. Finally, the {@link CatalogType} is lazy loaded when game logic requests the catalog.
  * @param <C> The type of the catalog
  */
-public final class CatalogDelegate<C extends CatalogType> {
+public final class CatalogDelegate<C extends CatalogType> implements Predicate<C> {
     private final String catalogId;
     private final Class<C> catalogClass;
     @Nullable
@@ -34,17 +36,20 @@ public final class CatalogDelegate<C extends CatalogType> {
     }
 
     public C getCatalog() {
-        if (this.instance != null) {
-            return this.instance;
-        }
-
-        this.instance = Sponge.getRegistry().getType(this.catalogClass, this.catalogId).orElse(null);
-
-        if (this.instance == null) {
+        @Nullable final C instance = this.getCatalog0();
+        if (instance == null) {
             // TODO
             throw new IllegalStateException();
         }
+        return instance;
+    }
 
+    @Nullable
+    private C getCatalog0() {
+        if (this.instance != null) {
+            return this.instance;
+        }
+        this.instance = Sponge.getRegistry().getType(this.catalogClass, this.catalogId).orElse(null);
         return this.instance;
     }
 
@@ -52,9 +57,14 @@ public final class CatalogDelegate<C extends CatalogType> {
         this.instance = instance;
     }
 
-    public CatalogDelegate<C> copy() {
-        final CatalogDelegate<C> clone = new CatalogDelegate<>(this.catalogClass, this.catalogId);
-        clone.setCatalog(this.instance);
-        return clone;
+    @Override
+    public boolean test(final C type) {
+        return this.getCatalog().equals(type);
+    }
+
+    @Override
+    public String toString() {
+        final C instance = this.getCatalog0();
+        return instance != null ? "SuppliedDelegate{delegate=" + instance + '}' : "EmptyDelegate{type=" + this.catalogClass + ", id=" + this.catalogId + '}';
     }
 }
