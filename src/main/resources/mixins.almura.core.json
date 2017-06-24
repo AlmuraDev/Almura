@@ -13,7 +13,8 @@
         "block.MixinSoundType",
         "block.material.MixinMapColor",
         "block.material.MixinMaterial",
-        "creativetab.MixinCreativeTabs"
+        "creativetab.MixinCreativeTabs",
+        "item.MixinItem"
     ],
     "client": [
         "client.gui.MixinGuiBossOverlay",

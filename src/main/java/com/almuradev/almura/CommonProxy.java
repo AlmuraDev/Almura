@@ -7,18 +7,29 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
+<<<<<<< HEAD
+=======
+import com.almuradev.almura.content.AssetType;
+import com.almuradev.almura.content.loader.AssetPipeline;
+import com.almuradev.almura.content.loader.AssetRegistry;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
+>>>>>>> Start re-write of loader for Forge registry events.
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.content.block.rotatable.HorizontalType;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.sound.BlockSoundGroupBuilder;
+import com.almuradev.almura.content.item.BuildableItemType;
+import com.almuradev.almura.content.item.builder.AbstractItemTypeBuilder;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.item.group.ItemGroupBuilderImpl;
-import com.almuradev.almura.content.loader.AssetLoader;
-import com.almuradev.almura.content.loader.stage.LoadBlockSoundGroupsStage;
-import com.almuradev.almura.content.loader.stage.LoadItemGroupsStage;
-import com.almuradev.almura.content.loader.stage.LoadMaterialsStage;
+import com.almuradev.almura.content.loader.LoaderPhase;
+import com.almuradev.almura.content.loader.task.SetBlockAttributesTask;
+import com.almuradev.almura.content.loader.task.SetBlockSoundGroupAttributesTask;
+import com.almuradev.almura.content.loader.task.SetItemAttributesTask;
+import com.almuradev.almura.content.loader.task.SetItemGroupAttributesTask;
+import com.almuradev.almura.content.loader.task.SetMaterialAttributesTask;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import com.almuradev.almura.network.play.SServerInformationMessage;
@@ -50,7 +61,8 @@ import java.io.IOException;
 public abstract class CommonProxy {
 
     protected ChannelBinding.IndexedMessageChannel network;
-    protected AssetLoader assetLoader;
+    protected AssetRegistry assetRegistry;
+    protected AssetPipeline assetPipeline;
 
     protected void onGameConstruction(GameConstructionEvent event) {
         if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable(Constants.Plugin.NETWORK_CHANNEL)) {
@@ -59,23 +71,37 @@ public abstract class CommonProxy {
 
         this.loadConfig();
 
-        this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, Constants.Plugin.NETWORK_CHANNEL);
-        this.assetLoader = new AssetLoader();
-
+        this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
+        this.assetRegistry = new AssetRegistry();
+        this.assetPipeline = new AssetPipeline();
         this.registerFileSystem();
         this.registerMessages();
-        this.registerModules();
+        this.registerRegistryModules();
+        this.registerPipelineStages();
         this.registerBuilders();
-        this.registerLoaderStages();
         this.registerListeners();
+    }
+
+    private void registerPipelineStages() {
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.SOUNDGROUP, SetBlockSoundGroupAttributesTask.class);
+
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEMGROUP, SetItemGroupAttributesTask.class);
+
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.BLOCK, SetMaterialAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.BLOCK, SetBlockAttributesTask.class);
+
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEM, SetMaterialAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEM, SetItemAttributesTask.class);
     }
 
     protected void onGamePreInitialization(GamePreInitializationEvent event) {
         try {
-            this.assetLoader.buildAssets(Constants.FileSystem.PATH_ASSETS_ALMURA_30_PACKS);
+            this.assetRegistry.loadAssetFiles(Constants.FileSystem.PATH_ASSETS_ALMURA_30_PACKS);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        this.assetPipeline.process(LoaderPhase.PRE_INIT, this.assetRegistry);
     }
 
     public abstract MappedConfigurationAdapter<? extends AbstractConfiguration> getPlatformConfigAdapter();
@@ -95,7 +121,7 @@ public abstract class CommonProxy {
         this.network.registerMessage(SServerInformationMessage.class, 1);
     }
 
-    protected void registerModules() {
+    protected void registerRegistryModules() {
         final GameRegistry registry = Sponge.getRegistry();
         registry.registerModule(BlockSoundGroup.class, new BlockSoundGroupRegistryModule());
         registry.registerModule(ItemGroup.class, ItemGroupRegistryModule.getInstance());
@@ -107,14 +133,13 @@ public abstract class CommonProxy {
         final GameRegistry registry = Sponge.getRegistry();
         registry.registerBuilderSupplier(BlockSoundGroup.Builder.class, BlockSoundGroupBuilder::new);
         registry.registerBuilderSupplier(ItemGroup.Builder.class, ItemGroupBuilderImpl::new);
+
+        // Block
         registry.registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
         registry.registerBuilderSupplier(HorizontalType.Builder.class, HorizontalTypeBuilderImpl::new);
-    }
 
-    protected void registerLoaderStages() {
-        this.assetLoader.registerLoaderStage(LoadBlockSoundGroupsStage.INSTANCE);
-        this.assetLoader.registerLoaderStage(LoadItemGroupsStage.instance);
-        this.assetLoader.registerLoaderStage(LoadMaterialsStage.instance);
+        // Item
+        registry.registerBuilderSupplier(BuildableItemType.Builder.class, AbstractItemTypeBuilder.BuilderImpl::new);
     }
 
     protected void registerListeners() {

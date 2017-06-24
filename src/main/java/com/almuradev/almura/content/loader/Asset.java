@@ -5,18 +5,19 @@
  */
 package com.almuradev.almura.content.loader;
 
+import com.almuradev.almura.content.AssetType;
 import ninja.leaping.configurate.ConfigurationNode;
 
 import java.nio.file.Path;
 
-public class Asset {
+public final class Asset {
 
     private final String name;
     private final AssetType assetType;
     private final Path path;
     private final ConfigurationNode node;
 
-    public Asset(String name, AssetType assetType, Path path, ConfigurationNode node) {
+    Asset(String name, AssetType assetType, Path path, ConfigurationNode node) {
         this.name = name;
         this.assetType = assetType;
         this.path = path;

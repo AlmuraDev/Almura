@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.content.block;
 
+import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
@@ -64,11 +65,6 @@ public interface BuildableBlockType extends MaterialType, BlockType {
         Optional<BlockSoundGroup> soundGroup();
 
         BUILDER soundGroup(BlockSoundGroup group);
-
-        @Override
-        default BLOCK build(String id, String name) {
-            return build(id);
-        }
 
         @Override
         BLOCK build(String id);

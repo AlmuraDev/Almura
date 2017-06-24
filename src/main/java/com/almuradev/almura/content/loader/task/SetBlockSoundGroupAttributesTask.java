@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.loader.stage.task;
+package com.almuradev.almura.content.loader.task;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -14,15 +14,13 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 
-public enum CreateBlockSoundGroupTask implements StageTask<BlockSoundGroup, BlockSoundGroup.Builder> {
-    INSTANCE;
+public class SetBlockSoundGroupAttributesTask implements StageTask<BlockSoundGroup, BlockSoundGroup.Builder> {
 
     @Override
-    public void execute(AssetContext<BlockSoundGroup, BlockSoundGroup.Builder> context) throws TaskExecutionFailedException {
+    public void execute(AssetContext<BlockSoundGroup, BlockSoundGroup.Builder> context) {
         final BlockSoundGroup.Builder builder = context.getBuilder();
         final ConfigurationNode node = context.getAsset().getConfigurationNode();
 
-        final String id = context.getAsset().getName();
         builder
                 .volume(node.getNode(Constants.Config.Block.SoundGroup.VOLUME).getDouble())
                 .pitch(node.getNode(Constants.Config.Block.SoundGroup.PITCH).getDouble())
@@ -31,7 +29,6 @@ public enum CreateBlockSoundGroupTask implements StageTask<BlockSoundGroup, Bloc
                 .placeSound(this.getSound(node, Constants.Config.Block.SoundGroup.PLACE_SOUND))
                 .hitSound(this.getSound(node, Constants.Config.Block.SoundGroup.HIT_SOUND))
                 .fallSound(this.getSound(node, Constants.Config.Block.SoundGroup.FALL_SOUND));
-        context.setCatalog(Sponge.getRegistry().register(BlockSoundGroup.class, builder.build(Constants.Plugin.ID + ':' + id, id)));
     }
 
     private SoundType getSound(final ConfigurationNode node, final String key) {

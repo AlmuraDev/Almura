@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.content.loader;
 
+import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.registry.BuildableCatalogType;
 
@@ -18,7 +19,7 @@ public final class AssetContext<C extends BuildableCatalogType, B extends Builda
     @Nullable
     private C catalog;
     
-    public AssetContext(Pack pack, Asset asset, B builder) {
+    AssetContext(Pack pack, Asset asset, B builder) {
         this.pack = pack;
         this.asset = asset;
         this.builder = builder;
@@ -30,6 +31,10 @@ public final class AssetContext<C extends BuildableCatalogType, B extends Builda
 
     public Asset getAsset() {
         return this.asset;
+    }
+
+    public AssetType getAssetType() {
+        return this.asset.getAssetType();
     }
 
     public B getBuilder() {

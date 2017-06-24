@@ -23,7 +23,7 @@ public interface MaterialType extends BuildableCatalogType {
 
         @Override
         default MATERIAL build(String id, String name) {
-            return build(id);
+            return this.build(id);
         }
 
         MATERIAL build(String id);

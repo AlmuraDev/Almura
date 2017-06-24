@@ -32,7 +32,7 @@ public abstract class AbstractMaterialTypeBuilder<MATERIAL extends MaterialType,
     }
 
     @Override
-    public BUILDER from(MaterialType value) {
+    public BUILDER from(MATERIAL value) {
         checkNotNull(value);
         this.itemGroup = value.getItemGroup().orElse(null);
         return (BUILDER) this;

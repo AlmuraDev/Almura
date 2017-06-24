@@ -10,7 +10,7 @@ import net.minecraft.block.material.MapColor;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(MapColor.class)
-public class MixinMapColor implements com.almuradev.almura.content.material.MapColor, IMixinSetCatalogTypeId {
+public abstract class MixinMapColor implements com.almuradev.almura.content.material.MapColor, IMixinSetCatalogTypeId {
 
     private String id;
     private String name;
