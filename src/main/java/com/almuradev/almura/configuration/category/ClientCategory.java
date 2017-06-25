@@ -43,6 +43,7 @@ public final class ClientCategory {
     public void optimizeGame() {
         // TODO Dockter, update your optimization changes
         final Minecraft mc = Minecraft.getMinecraft();
+        mc.gameSettings.autoJump = false;
         mc.gameSettings.ambientOcclusion = 0;
         mc.gameSettings.mipmapLevels = 0;
         mc.gameSettings.guiScale = 3;
