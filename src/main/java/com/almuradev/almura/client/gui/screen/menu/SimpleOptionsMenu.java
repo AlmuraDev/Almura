@@ -15,12 +15,14 @@ import com.google.common.base.Converter;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISlider;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.resources.I18n;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -60,6 +62,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 .listener(this)
                 .build("button.hudType");
 
+        final boolean isOrigin = config.client.hud.equalsIgnoreCase("origin");
         sliderOriginHudOpacity = new UISliderBuilder(this, Converter.<Float, Integer>from(f -> (int) (f * 255), i -> (float) i / 255))
                 .text("HUD Opacity: %d")
                 .value(config.client.originHudOpacity)
@@ -67,8 +70,9 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 .position(-(CONTROL_WIDTH / 2 + CONTROL_PADDING),  getPaddedY(buttonHudType, CONTROL_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
-                .enabled(config.client.hud.equalsIgnoreCase("origin"))
+                .enabled(isOrigin)
                 .build("slider.originHudOpacity");
+        sliderOriginHudOpacity.setAlpha(isOrigin ? 255 : 128);
 
         final UISlider<OptionsConverter.Options> sliderChestDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
                 .text("Chest Distance: %s")
@@ -140,10 +144,22 @@ public class SimpleOptionsMenu extends SimpleScreen {
     public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName()) {
             case "button.hudType":
-                final boolean isOrigin = config.client.hud.equalsIgnoreCase("origin");
+                // Check if the current HUD is the Origin HUD
+                boolean isOrigin = config.client.hud.equalsIgnoreCase("origin");
                 config.client.hud = isOrigin ? "vanilla" : "origin";
-                buttonHudType.setText("HUD: " + (!isOrigin ? "Origin" : "Vanilla"));
+                // Flip the boolean since we're now on the vanilla HUD
+                isOrigin = !isOrigin;
+
+                buttonHudType.setText("HUD: " + (isOrigin ? "Origin" : "Vanilla"));
+                sliderOriginHudOpacity.setAlpha(isOrigin ? 255 : 128);
                 sliderOriginHudOpacity.setDisabled(!isOrigin);
+
+                if (isOrigin) {
+                    sliderOriginHudOpacity.setTooltip((UITooltip) null);
+                } else {
+                    sliderOriginHudOpacity.setTooltip("Only available when Origin HUD is in use.");
+                }
+
                 break;
             case "button.done":
                 this.close();
