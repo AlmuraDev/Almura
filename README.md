@@ -22,6 +22,7 @@ __For [IntelliJ]__
   1. Run `gradle setupDecompWorkspace --refresh-dependencies`  
   2. Make sure you have the Gradle plugin enabled (File > Settings > Plugins).  
   3. Click File > Import Module and select the **build.gradle** file for Almura.
+  4. On the import screen, uncheck `Create separate module per source set`
 
 ## Building
 __Note:__ If you do not have [Gradle] installed then use ./gradlew for Unix systems or Git Bash and gradlew.bat for Windows systems in place of any 'gradle' command.
@@ -53,8 +54,8 @@ __Client__
 |     Property      | Value                                                                                                              |
 |:-----------------:|:-------------------------------------------------------------------------------------------------------------------|
 |    Main class     | GradleStart                                                                                                        |
-|    VM options     | -Xincgc -Xms1024M -Xmx2048M -Dfml.coreMods.load=com.almuradev.almura.loader.AlmuraLoadingPlugin                    |
-| Program arguments |                                                                                                                    |
+|    VM options     | -Xincgc -Xms1024M -Xmx2048M -Dfml.coreMods.load=com.almuradev.almura.AlmuraLoadingPlugin                           |
+| Program arguments | --noCoreSearch                                                                                                     |
 | Working directory | ./run (Included in project)                                                                                        |
 | Module classpath  | Almura (IntelliJ Only)                                                                                             |
 
@@ -63,8 +64,8 @@ __Server__
 |     Property      | Value                                                                                                              |
 |:-----------------:|:-------------------------------------------------------------------------------------------------------------------|
 |    Main class     | GradleStartServer                                                                                                  |
-|    VM options     | -Xincgc -Xms1024M -Xmx2048M -Dfml.coreMods.load=com.almuradev.almura.loader.AlmuraLoadingPlugin                    |
-| Program arguments |                                                                                                                    |
+|    VM options     | -Xincgc -Xms1024M -Xmx2048M -Dfml.coreMods.load=com.almuradev.almura.AlmuraLoadingPlugin                           |
+| Program arguments | --noCoreSearch                                                                                                     |
 | Working directory | ./run (Included in project)                                                                                        |
 | Module classpath  | Almura (IntelliJ Only)                                                                                             |
 
