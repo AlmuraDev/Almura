@@ -9,13 +9,13 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySignRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ResourceLocation;
@@ -101,7 +101,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
             if (config.client.signTextRenderDistance == 0) {
                 renderText(te, destroyStage);
             } else {
-                EntityPlayerSP viewer = (EntityPlayerSP) Minecraft.getMinecraft().getRenderViewEntity();
+                EntityLivingBase viewer = (EntityLivingBase) Minecraft.getMinecraft().getRenderViewEntity();
                 if (viewer == null) {
                     viewer = Minecraft.getMinecraft().player;
                 }

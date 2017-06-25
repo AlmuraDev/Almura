@@ -8,10 +8,10 @@ package com.almuradev.almura.asm.mixin.core.client.renderer.tileentity;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderItemFrame;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,7 +34,7 @@ public abstract class MixinRenderItemFrame extends Render {
             return;
         }
 
-        EntityPlayerSP viewer = (EntityPlayerSP) Minecraft.getMinecraft().getRenderViewEntity();
+        EntityLivingBase viewer = (EntityLivingBase) Minecraft.getMinecraft().getRenderViewEntity();
         if (viewer == null) {
             viewer = Minecraft.getMinecraft().player;
         }
