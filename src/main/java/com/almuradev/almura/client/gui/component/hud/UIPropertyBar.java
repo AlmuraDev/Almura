@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.component.hud;
 
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.util.MathUtil;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
@@ -16,6 +17,7 @@ import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.renderer.font.MalisisFont;
 import net.malisis.core.renderer.icon.GuiIcon;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
@@ -86,22 +88,25 @@ public class UIPropertyBar extends UIComponent {
         this.shape.resetState();
         this.shape.setSize(shapeWidth, shapeHeight);
         this.shape.setPosition(shapeX, 1);
-        this.shape.getVertexes("TopLeft").get(0).setColor(0).setAlpha(180);
-        this.shape.getVertexes("TopRight").get(0).setColor(0).setAlpha(180);
-        this.shape.getVertexes("BottomLeft").get(0).setColor(0).setAlpha(180);
-        this.shape.getVertexes("BottomRight").get(0).setColor(0).setAlpha(180);
+
+        final int alpha = (int) MathUtil.squash(this.getAlpha() - 75, 0, 255);
+        this.shape.getVertexes("TopLeft").get(0).setColor(0).setAlpha(alpha);
+        this.shape.getVertexes("TopRight").get(0).setColor(0).setAlpha(alpha);
+        this.shape.getVertexes("BottomLeft").get(0).setColor(0).setAlpha(alpha);
+        this.shape.getVertexes("BottomRight").get(0).setColor(0).setAlpha(alpha);
         renderer.drawShape(this.shape, this.rp);
 
         this.shape.resetState();
         this.shape.setSize(this.getConvertedFill(), shapeHeight - 2);
         this.shape.setPosition(shapeX + 1, 2);
-        this.shape.getVertexes("TopLeft").get(0).setColor(this.color).setAlpha(this.alpha);
-        this.shape.getVertexes("TopRight").get(0).setColor(this.color).setAlpha(this.alpha);
-        this.shape.getVertexes("BottomLeft").get(0).setColor(this.color).setAlpha(this.alpha);
-        this.shape.getVertexes("BottomRight").get(0).setColor(this.color).setAlpha(this.alpha);
+        this.shape.getVertexes("TopLeft").get(0).setColor(this.color).setAlpha(this.getAlpha());
+        this.shape.getVertexes("TopRight").get(0).setColor(this.color).setAlpha(this.getAlpha());
+        this.shape.getVertexes("BottomLeft").get(0).setColor(this.color).setAlpha(this.getAlpha());
+        this.shape.getVertexes("BottomRight").get(0).setColor(this.color).setAlpha(this.getAlpha());
         renderer.drawShape(this.shape, this.rp);
 
         renderer.next();
+        renderer.disableBlending();
         renderer.enableTextures();
     }
 

@@ -36,6 +36,9 @@ public final class ClientCategory {
     @Setting(value = "sign-text-render-distance", comment = "Controls a sign text's render distance. Valid options are 0|16|32|64|128 (blocks)")
     public int signTextRenderDistance = 16;
 
+    @Setting(value = "origin-hud-opacity", comment = "Determines the opacity used for the Origin HUD. Default: 255; Range: 0-255")
+    public int originHudOpacity = 255;
+
     /**
      * Called on first launch to optimize the client's GUI settings. Addresses many users lack of knowledge of
      * the various settings that can lead to better FPS. Improves overall experience with Almura.

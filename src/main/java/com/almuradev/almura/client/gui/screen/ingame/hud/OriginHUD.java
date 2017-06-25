@@ -5,12 +5,14 @@
  */
 package com.almuradev.almura.client.gui.screen.ingame.hud;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.component.hud.UIDetailsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIStatsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIUserPanel;
 import com.almuradev.almura.client.gui.component.hud.UIWorldPanel;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
+import com.almuradev.almura.configuration.type.ClientConfiguration;
 import net.malisis.core.client.gui.Anchor;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -18,6 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class OriginHUD extends AbstractHUD {
 
+    private final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
     private UIDetailsPanel detailsPanel;
     private UIStatsPanel statsPanel;
     private UIUserPanel userPanel;
@@ -49,6 +52,15 @@ public class OriginHUD extends AbstractHUD {
         addToScreen(this.statsPanel);
         addToScreen(this.worldPanel);
         addToScreen(this.detailsPanel);
+    }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        userPanel.setAlpha(config.client.originHudOpacity);
+        statsPanel.setAlpha(config.client.originHudOpacity);
+        worldPanel.setAlpha(config.client.originHudOpacity);
+        detailsPanel.setAlpha(config.client.originHudOpacity);
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override
