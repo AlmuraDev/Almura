@@ -13,6 +13,7 @@ almura.menu.opengl1=Warning! This graphics card does not support OpenGL 2.0.
 almura.menu.opengl2=Future versions of Minecraft may not be compatible.
 almura.menu.liveServer=Live Server
 almura.menu.devServer=Dev Server
+almura.menu.options=Almura - Options
 
 almura.menu.about.titles=Titles
 almura.menu.about.zidane.name=Zidane

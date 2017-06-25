@@ -17,6 +17,7 @@ import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.input.Keyboard;
 import org.spongepowered.api.text.Text;
@@ -36,8 +37,7 @@ public class UIMessageBox extends UIForm {
     private final String message;
     private MessageBoxResult result;
 
-    private UIMessageBox(MalisisGui gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer
-            consumer) {
+    private UIMessageBox(MalisisGui gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer consumer) {
         super(gui, 0, 0, title);
         this.messageBoxButtons = buttons;
         this.message = message;
@@ -199,7 +199,7 @@ public class UIMessageBox extends UIForm {
 
             @Override
             public void updateScreen() {
-                this.parent.ifPresent(MalisisGui::updateScreen);
+                this.parent.ifPresent(GuiScreen::updateScreen);
                 super.updateScreen();
             }
 
@@ -211,13 +211,14 @@ public class UIMessageBox extends UIForm {
 
             @Override
             public void update(int mouseX, int mouseY, float partialTick) {
-                this.parent.ifPresent(screen -> screen.update(mouseX, mouseY, partialTick));
+                this.parent.filter(screen -> screen instanceof MalisisGui).ifPresent(screen -> ((MalisisGui) screen).update(mouseX, mouseY,
+                        partialTick));
                 super.update(mouseX, mouseY, partialTick);
             }
 
             @Override
             public void updateGui() {
-                this.parent.ifPresent(MalisisGui::updateGui);
+                this.parent.filter(screen -> screen instanceof MalisisGui).ifPresent(screen -> ((MalisisGui) screen).updateGui());
                 super.updateGui();
             }
         };

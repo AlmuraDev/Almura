@@ -11,6 +11,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -20,6 +21,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -27,7 +29,7 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public abstract class SimpleScreen extends MalisisGui {
 
-    protected final Optional<SimpleScreen> parent;
+    protected final Optional<GuiScreen> parent;
 
     /**
      * Creates a gui with an absent parent
@@ -41,7 +43,7 @@ public abstract class SimpleScreen extends MalisisGui {
      *
      * @param parent the {@link SimpleScreen} that we came from
      */
-    public SimpleScreen(@Nullable SimpleScreen parent) {
+    public SimpleScreen(@Nullable GuiScreen parent) {
         this.parent = Optional.ofNullable(parent);
         this.renderer.setDefaultTexture(Constants.Gui.SPRITE_SHEET_ALMURA);
     }
@@ -100,51 +102,13 @@ public abstract class SimpleScreen extends MalisisGui {
         }
     }
 
-    public static void drawEntityOnScreen(int x, int y, float scale, RenderEntityAngle renderEntityAngle, EntityLivingBase entityLivingBase) {
-        GlStateManager.enableColorMaterial();
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(x, y, 50.0F);
-        GlStateManager.scale(-scale, scale, scale);
-        GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-        float yawOffset = entityLivingBase.renderYawOffset;
-        float rotationYaw = entityLivingBase.rotationYaw;
-        float rotationPitch = entityLivingBase.rotationPitch;
-        float prevRotationYawHead = entityLivingBase.prevRotationYawHead;
-        float rotationYawHead = entityLivingBase.rotationYawHead;
-        GlStateManager.rotate(renderEntityAngle.pitch, 1.0f, 0.0f, 0.0f);
-        GlStateManager.rotate(renderEntityAngle.yaw, 0.0f, 1.0f, 0.0f);
-        GlStateManager.rotate(renderEntityAngle.roll, 0.0f, 0.0f, 1.0f);
-        RenderHelper.enableStandardItemLighting();
-        entityLivingBase.renderYawOffset = (float)Math.atan(0D) * 20.0F;
-        entityLivingBase.rotationYaw = (float)Math.atan(0D) * 40.0F;
-        entityLivingBase.rotationPitch = -((float)Math.atan(0D)) * 20.0F;
-        entityLivingBase.rotationYawHead = entityLivingBase.rotationYaw;
-        entityLivingBase.prevRotationYawHead = entityLivingBase.rotationYaw;
-        GlStateManager.translate(0.0F, 0.0F, 0.0F);
-        RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
-        renderManager.setPlayerViewY(180.0F);
-        renderManager.setRenderShadow(false);
-        renderManager.doRenderEntity(entityLivingBase, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
-        renderManager.setRenderShadow(true);
-        entityLivingBase.renderYawOffset = yawOffset;
-        entityLivingBase.rotationYaw = rotationYaw;
-        entityLivingBase.rotationPitch = rotationPitch;
-        entityLivingBase.prevRotationYawHead = prevRotationYawHead;
-        entityLivingBase.rotationYawHead = rotationYawHead;
-        GlStateManager.popMatrix();
-        RenderHelper.disableStandardItemLighting();
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
-        GlStateManager.disableTexture2D();
-        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-        RenderHelper.enableGUIStandardItemLighting();
-    }
-
     /**
      * Closes this {@link SimpleScreen} and displays the parent, if present.
      */
     @Override
-    public final void close() {
+    public void close() {
+        setFocusedComponent(null, true);
+        setHoveredComponent(null, true);
         Keyboard.enableRepeatEvents(false);
         if (this.mc.player != null) {
             this.mc.player.closeScreen();
@@ -152,10 +116,14 @@ public abstract class SimpleScreen extends MalisisGui {
 
         this.onClose();
 
-        this.mc.displayGuiScreen(this.parent.isPresent() ? this.parent.get() : null);
+        this.mc.displayGuiScreen(parent.orElse(null));
         if (!this.parent.isPresent()) {
             this.mc.setIngameFocus();
         }
+    }
+
+    public void addToScreen(UIComponent... components) {
+        Arrays.stream(components).forEach(this::addToScreen);
     }
 
     protected void onClose() {

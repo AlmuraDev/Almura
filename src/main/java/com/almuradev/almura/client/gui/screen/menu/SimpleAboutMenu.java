@@ -252,10 +252,6 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         private final UIImage image;
         private final UILabel label;
 
-        private AboutListElement(MalisisGui gui, UISimpleList parent, UIImage image, Text text) {
-            this(gui, parent, image, text, Text.EMPTY);
-        }
-
         private AboutListElement(MalisisGui gui, UISimpleList parent, UIImage image, Text text, Text contentText) {
             this(gui, parent, image, 32, 32, 2, 0, 4, text, contentText);
         }

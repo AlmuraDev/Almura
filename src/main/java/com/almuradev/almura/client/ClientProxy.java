@@ -37,6 +37,7 @@ import org.spongepowered.api.Platform;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,10 +75,11 @@ public final class ClientProxy extends CommonProxy {
     protected void loadConfig() {
         this.configAdapter = new MappedConfigurationAdapter<>(ClientConfiguration.class, ConfigurationOptions.defaults()
                 .setHeader(Constants.Config.HEADER), Constants.FileSystem.PATH_CONFIG_ALMURA, Constants.FileSystem.CONFIG_CLIENT_NAME);
+
         try {
-            this.configAdapter.loadDefaultConfig();
+            this.configAdapter.load();
         } catch (IOException | ObjectMappingException e) {
-            throw new RuntimeException("Failed to save default config for class [" + this.configAdapter.getConfigClass() + "] from [" + this.configAdapter
+            throw new RuntimeException("Failed to save config for class [" + this.configAdapter.getConfigClass() + "] in [" + this.configAdapter
                     .getConfigPath() + "]!", e);
         }
 
@@ -147,6 +149,7 @@ public final class ClientProxy extends CommonProxy {
                     default:
                 }
                 break;
+            case "vanilla":
             default:
                 if (this.customIngameHud != null) {
                     this.customIngameHud.closeOverlay();

@@ -1,5 +1,11 @@
+/*
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.asm.mixin.core.client.gui;
 
+import com.almuradev.almura.client.gui.screen.menu.SimpleOptionsMenu;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionSlider;
 import net.minecraft.client.gui.GuiOptions;
@@ -23,7 +29,6 @@ public abstract class MixinGuiOptions extends GuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     public void onInitGui(CallbackInfo ci) {
         final GuiButton almuraButton = new GuiButton(300, this.width / 2 - 155, this.height / 6 + 144 - 6, 150, 20, "Almura");
-        almuraButton.enabled = false;
         buttonList.add(almuraButton);
 
         /*
@@ -43,7 +48,7 @@ public abstract class MixinGuiOptions extends GuiScreen {
     @Inject(method = "actionPerformed", at = @At("RETURN"))
     protected void actionPerformed(GuiButton button, CallbackInfo ci) throws IOException {
         if (button.enabled && button.id == 300) { // Almura button
-            // Open screen
+            new SimpleOptionsMenu((GuiOptions) (Object) this).display();
         }
     }
 }
