@@ -22,7 +22,6 @@ import net.malisis.core.client.gui.event.ComponentEvent;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.resources.I18n;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
 import java.util.Arrays;
