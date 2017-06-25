@@ -19,16 +19,17 @@ import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.loader.CatalogDelegate;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -48,8 +49,7 @@ public abstract class MixinAlmuraBlock extends MixinBlock implements BuildableBl
         IMixinDelegateBlockAttributes, IMixinAlmuraBlock {
 
     @Nullable private CatalogDelegate<ItemGroup> itemGroupDelegate;
-    @Nullable private CatalogDelegate<BlockSoundGroup> blockSoundGroupDelegate;
-
+    @Nullable private CatalogDelegate<BlockSoundGroup> soundGroupDelegate;
     private List<BlockBreak> breaks;
 
     @Override
@@ -80,8 +80,13 @@ public abstract class MixinAlmuraBlock extends MixinBlock implements BuildableBl
     }
 
     @Override
-    public void setBlockSoundGroupDelegate(CatalogDelegate<BlockSoundGroup> blockSoundGroupDelegate) {
-        this.blockSoundGroupDelegate = blockSoundGroupDelegate;
+    public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity) {
+        return this.soundGroupDelegate != null ? (SoundType) this.soundGroupDelegate.getCatalog() : super.getSoundType(state, world, pos, entity);
+    }
+
+    @Override
+    public void setSoundGroupDelegate(CatalogDelegate<BlockSoundGroup> blockSoundGroupDelegate) {
+        this.soundGroupDelegate = blockSoundGroupDelegate;
     }
 
     @Override

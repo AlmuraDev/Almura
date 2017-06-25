@@ -5,40 +5,63 @@
  */
 package com.almuradev.almura.content.block.sound;
 
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.registry.BuildableCatalogType;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 
 // Extension of SpongeAPI BlockSoundGroup to make it a catalog type
 public interface BlockSoundGroup extends org.spongepowered.api.block.BlockSoundGroup, BuildableCatalogType {
 
+    static Builder builder() {
+        return Sponge.getRegistry().createBuilder(Builder.class);
+    }
+
     interface Builder extends BuildableCatalogType.Builder<BlockSoundGroup, Builder> {
+
+        String id();
+
+        Builder id(final String id);
 
         double volume();
 
-        Builder volume(double volume);
+        Builder volume(final double volume);
 
         double pitch();
 
-        Builder pitch(double pitch);
+        Builder pitch(final double pitch);
 
         SoundType breakSound();
 
-        Builder breakSound(SoundType sound);
+        Builder breakSound(final SoundType sound);
 
         SoundType stepSound();
 
-        Builder stepSound(SoundType sound);
+        Builder stepSound(final SoundType sound);
 
         SoundType placeSound();
 
-        Builder placeSound(SoundType sound);
+        Builder placeSound(final SoundType sound);
 
         SoundType hitSound();
 
-        Builder hitSound(SoundType sound);
+        Builder hitSound(final SoundType sound);
 
         SoundType fallSound();
 
-        Builder fallSound(SoundType sound);
+        Builder fallSound(final SoundType sound);
+
+        boolean isPopulated(final PopulationCheckType type);
+
+        Builder softFrom(final BlockSoundGroup group);
+
+        default BlockSoundGroup build() {
+            return this.build(Constants.Plugin.ID + ':' + this.id(), this.id());
+        }
+
+        enum PopulationCheckType {
+            VOLUME_PITCH,
+            SOUNDS;
+        }
     }
 }

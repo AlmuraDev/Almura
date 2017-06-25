@@ -101,6 +101,7 @@ public class Constants {
             }
 
             public static final class SoundGroup {
+                public static final String PARENT = "parent";
                 public static final String VOLUME = "volume";
                 public static final String PITCH = "pitch";
                 public static final String BREAK_SOUND = "break-sound";

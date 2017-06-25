@@ -7,13 +7,14 @@ package com.almuradev.almura.content.loader.task;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
+import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.block.data.blockbreak.BlockBreakSerializer;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
-import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.content.loader.CatalogDelegate;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -21,6 +22,7 @@ import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Sponge;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class SetBlockAttributesTask implements StageTask<BuildableBlockType, BuildableBlockType.Builder> {
 
@@ -58,8 +60,11 @@ public class SetBlockAttributesTask implements StageTask<BuildableBlockType, Bui
 
         final ConfigurationNode soundGroupNode = generalNode.getNode(Constants.Config.Block.SOUND_GROUP);
         if (!soundGroupNode.isVirtual()) {
-            final Optional<BlockSoundGroup> soundGroup = registry.getType(BlockSoundGroup.class, soundGroupNode.getString());
-            soundGroup.ifPresent(builder::soundGroup);
+            if (soundGroupNode.getValue() instanceof String) {
+                builder.soundGroup(new CatalogDelegate<>(BlockSoundGroup.class, soundGroupNode.getString()));
+            } else {
+                builder.soundGroup(new CatalogDelegate<>(BlockSoundGroup.class, UUID.randomUUID().toString().replace("-", "")));
+            }
         } else {
             this.doesNotHave(context.getAsset(), Constants.Config.Block.SOUND_GROUP);
         }

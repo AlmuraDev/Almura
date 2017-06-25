@@ -8,6 +8,7 @@ package com.almuradev.almura.content.block;
 import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.block.data.blockbreak.BlockBreak;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
+import com.almuradev.almura.content.loader.CatalogDelegate;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import com.almuradev.almura.content.material.MaterialType;
@@ -64,9 +65,9 @@ public interface BuildableBlockType extends MaterialType, BlockType {
 
         BUILDER resistance(float resistance);
 
-        Optional<BlockSoundGroup> soundGroup();
+        Optional<CatalogDelegate<BlockSoundGroup>> soundGroup();
 
-        BUILDER soundGroup(BlockSoundGroup group);
+        BUILDER soundGroup(CatalogDelegate<BlockSoundGroup> group);
 
         List<BlockBreak> breaks();
 

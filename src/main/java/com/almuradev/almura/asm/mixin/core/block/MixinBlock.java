@@ -9,12 +9,13 @@ import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,6 +30,7 @@ public abstract class MixinBlock implements BuildableBlockType {
 
     @Nullable
     @Shadow public CreativeTabs displayOnCreativeTab;
+    @Shadow protected SoundType blockSoundType;
 
     @Shadow protected ThreadLocal<EntityPlayer> harvesters;
 
@@ -41,6 +43,8 @@ public abstract class MixinBlock implements BuildableBlockType {
     }
 
     @Shadow public abstract void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune);
+
+    @Shadow public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity) { return null; }
 
     @Override
     public Optional<ItemGroup> getItemGroup() {
