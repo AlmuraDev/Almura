@@ -94,7 +94,9 @@ public class UIDebugPanel extends UIHUDPanel {
         if (this.minecraft.isReducedDebug()) {
             this.drawProperty(renderer, "Chunk-relative", String.format("%d %d %d", fx & 15, fy & 15, fz & 15), 4, this.getAutoSizeHeight());
         } else {
-            this.drawProperty(renderer, "XYZ", String.format("%.3f, %.3f, %.3f", view.posX, y, view.posZ), 4, this.getAutoSizeHeight());
+            this.drawProperty(renderer, "X", String.format("%.3f", x), 4, this.getAutoSizeHeight());
+            this.drawProperty(renderer, "Y", String.format("%.3f", y), 4, this.getAutoSizeHeight());
+            this.drawProperty(renderer, "Z", String.format("%.3f", z), 4, this.getAutoSizeHeight());
             final EnumFacing facing = view.getHorizontalFacing();
             final String facingTowards;
             switch (facing) {
