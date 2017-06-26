@@ -27,6 +27,15 @@ buildscript {
     }
 }
 
+allprojects {
+    // Fix conflicts with HOCON library (SF requires 1.3.0)
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute module('com.typesafe:config') with module('com.typesafe:config:1.3.1')
+        }
+    }
+}
+
 // Load MalisisCore Gradle project first
 evaluationDependsOn ':MalisisCore'
 
@@ -82,13 +91,6 @@ repositories {
     maven {
         name = 'sponge'
         url = 'http://repo.spongepowered.org/maven'
-    }
-}
-
-allprojects {
-    // Fix conflicts with HOCON library (SF requires 1.3.0)
-    configurations.forgeGradleMcDeps {
-        exclude group: 'com.typesafe', module: 'config'
     }
 }
 
