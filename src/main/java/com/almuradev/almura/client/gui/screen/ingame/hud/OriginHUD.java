@@ -52,7 +52,7 @@ public class OriginHUD extends AbstractHUD {
         this.detailsPanel.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
 
         // Debug panel
-        this.debugPanel = new UIDebugPanel(this, 155, 118);
+        this.debugPanel = new UIDebugPanel(this, 155, 64);
         this.debugPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, 2), Anchor.TOP | Anchor.RIGHT);
 
         addToScreen(this.userPanel, this.statsPanel, this.worldPanel, this.detailsPanel, this.debugPanel);

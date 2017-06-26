@@ -38,6 +38,7 @@ public class UIDebugPanel extends UIHUDPanel {
     private static final TextTemplate KEY_VALUE_TEXT_TEMPLATE = TextTemplate.of(
             TextTemplate.arg("key").color(TextColors.WHITE), ": ",
             TextTemplate.arg("value").color(TextColors.GRAY));
+    private static final double XYZ_SINGLE_LINE_MAX = 100000d;
     private final Minecraft minecraft = Minecraft.getMinecraft();
     private final Text title;
     private final int titleWidth;
@@ -91,12 +92,11 @@ public class UIDebugPanel extends UIHUDPanel {
         this.drawProperty(renderer, "Memory", this.getMemoryDetails(), 4, this.getAutoSizeHeight());
         this.drawProperty(renderer, "FPS", String.valueOf(Minecraft.getDebugFPS()), 4, this.getAutoSizeHeight());
         // Respect reduced debug
-        if (this.minecraft.isReducedDebug()) {
+        final boolean reducedDebug = this.minecraft.isReducedDebug();
+        if (reducedDebug) {
             this.drawProperty(renderer, "Chunk-relative", String.format("%d %d %d", fx & 15, fy & 15, fz & 15), 4, this.getAutoSizeHeight());
         } else {
-            this.drawProperty(renderer, "X", String.format("%.3f", x), 4, this.getAutoSizeHeight());
-            this.drawProperty(renderer, "Y", String.format("%.3f", y), 4, this.getAutoSizeHeight());
-            this.drawProperty(renderer, "Z", String.format("%.3f", z), 4, this.getAutoSizeHeight());
+            this.renderXYZ(renderer, x, y, z);
             final EnumFacing facing = view.getHorizontalFacing();
             final String facingTowards;
             switch (facing) {
@@ -131,7 +131,10 @@ public class UIDebugPanel extends UIHUDPanel {
         if (omo != null && omo.typeOfHit == RayTraceResult.Type.BLOCK && omo.getBlockPos() != null) {
             final BlockPos lookPos = omo.getBlockPos();
 
-            this.drawProperty(renderer, "Look", String.format("%d %d %d", lookPos.getX(), lookPos.getY(), lookPos.getZ()), 4, this.getAutoSizeHeight());
+            // Respect reduced debug
+            if (!reducedDebug) {
+                this.renderLook(renderer, lookPos.getX(), lookPos.getY(), lookPos.getZ());
+            }
 
             IBlockState lookState = this.minecraft.world.getBlockState(lookPos);
             if (this.minecraft.world.getWorldType() != WorldType.DEBUG_ALL_BLOCK_STATES) {
@@ -177,6 +180,26 @@ public class UIDebugPanel extends UIHUDPanel {
         }
 
         this.minecraft.mcProfiler.endSection();
+    }
+
+    private void renderXYZ(final GuiRenderer renderer, final double x, final double y, final double z) {
+        if (x >= XYZ_SINGLE_LINE_MAX || y >= XYZ_SINGLE_LINE_MAX || z >= XYZ_SINGLE_LINE_MAX) {
+            this.drawProperty(renderer, "X", String.format("%.3f", x), 4, this.getAutoSizeHeight());
+            this.drawProperty(renderer, "Y", String.format("%.3f", y), 4, this.getAutoSizeHeight());
+            this.drawProperty(renderer, "Z", String.format("%.3f", z), 4, this.getAutoSizeHeight());
+        } else {
+            this.drawProperty(renderer, "XYZ", String.format("%.3f, %.3f, %.3f", x, y, z), 4, this.getAutoSizeHeight());
+        }
+    }
+
+    private void renderLook(final GuiRenderer renderer, final int x, final int y, final int z) {
+        if (x >= XYZ_SINGLE_LINE_MAX || y >= XYZ_SINGLE_LINE_MAX || z >= XYZ_SINGLE_LINE_MAX) {
+            this.drawProperty(renderer, "Look X", String.format("%d", x), 4, this.getAutoSizeHeight());
+            this.drawProperty(renderer, "Look Y", String.format("%d", y), 4, this.getAutoSizeHeight());
+            this.drawProperty(renderer, "Look Z", String.format("%d", z), 4, this.getAutoSizeHeight());
+        } else {
+            this.drawProperty(renderer, "Look", String.format("%d %d %d", x, y, z), 4, this.getAutoSizeHeight());
+        }
     }
 
     public boolean getAutoSize() {
