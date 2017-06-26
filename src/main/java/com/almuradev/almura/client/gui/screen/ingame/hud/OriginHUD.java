@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.screen.ingame.hud;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.gui.component.hud.UIDebugPanel;
 import com.almuradev.almura.client.gui.component.hud.UIDetailsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIStatsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIUserPanel;
@@ -14,6 +15,7 @@ import com.almuradev.almura.client.gui.component.hud.UIWorldPanel;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
 import net.malisis.core.client.gui.Anchor;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -21,6 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class OriginHUD extends AbstractHUD {
 
     private final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
+    private UIDebugPanel debugPanel;
     private UIDetailsPanel detailsPanel;
     private UIStatsPanel statsPanel;
     private UIUserPanel userPanel;
@@ -48,18 +51,24 @@ public class OriginHUD extends AbstractHUD {
         this.detailsPanel = new UIDetailsPanel(this, 124, 37);
         this.detailsPanel.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
 
-        addToScreen(this.userPanel);
-        addToScreen(this.statsPanel);
-        addToScreen(this.worldPanel);
-        addToScreen(this.detailsPanel);
+        // Debug panel
+        this.debugPanel = new UIDebugPanel(this, 155, 118);
+        this.debugPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, 2), Anchor.TOP | Anchor.RIGHT);
+
+        addToScreen(this.userPanel, this.statsPanel, this.worldPanel, this.detailsPanel, this.debugPanel);
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        // Set current alpha value
         userPanel.setAlpha(config.client.originHudOpacity);
         statsPanel.setAlpha(config.client.originHudOpacity);
         worldPanel.setAlpha(config.client.originHudOpacity);
         detailsPanel.setAlpha(config.client.originHudOpacity);
+        debugPanel.setAlpha(config.client.originHudOpacity);
+
+        debugPanel.setVisible(Minecraft.getMinecraft().gameSettings.showDebugInfo);
+
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 

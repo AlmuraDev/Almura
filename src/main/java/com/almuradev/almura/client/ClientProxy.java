@@ -112,7 +112,6 @@ public final class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onGuiScreen(GuiOpenEvent event) {
-        final GuiScreen screen = event.getGui();
         if (event.getGui() != null) {
             if (event.getGui().getClass().equals(GuiMainMenu.class)) {
                 event.setCanceled(true);
@@ -144,6 +143,7 @@ public final class ClientProxy extends CommonProxy {
                     case AIR:
                     case HEALTHMOUNT:
                     case EXPERIENCE:
+                    case DEBUG:
                         event.setCanceled(true);
                         break;
                     default:
