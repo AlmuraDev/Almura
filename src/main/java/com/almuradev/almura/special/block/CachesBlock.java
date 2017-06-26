@@ -338,7 +338,7 @@ public final class CachesBlock extends BlockContainer implements IPackObject {
                 ItemStack newCache = cache;
                 newCache.stackSize -= (preMerge - toAdd.stackSize);
 
-                if (newCache.stackSize == 0) {
+                if (newCache.stackSize <= 0) {  //Added 4/22/2017 to catch bug with cache getting into negative numbers.
                     newCache = null;
                 }
 
