@@ -53,13 +53,13 @@ public abstract class CommonProxy {
     protected AssetLoader assetLoader;
 
     protected void onGameConstruction(GameConstructionEvent event) {
-        if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable("AM|FOR")) {
-            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel [AM|FOR]");
+        if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable(Constants.Plugin.NETWORK_CHANNEL)) {
+            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel [" + Constants.Plugin.NETWORK_CHANNEL + ']');
         }
 
         this.loadConfig();
 
-        this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
+        this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, Constants.Plugin.NETWORK_CHANNEL);
         this.assetLoader = new AssetLoader();
 
         this.registerFileSystem();

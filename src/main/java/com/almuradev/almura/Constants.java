@@ -24,6 +24,7 @@ public class Constants {
         public static final String NAME = WordUtils.capitalize(ID);
         public static final String PROXY_CLIENT_CLASSPATH = "com.almuradev.almura.client.ClientProxy";
         public static final String PROXY_SERVER_CLASSPATH = "com.almuradev.almura.server.ServerProxy";
+        public static final String NETWORK_CHANNEL = "AM|FOR";
         public static final String ASSETS_VERSION = "3.0";
     }
 
