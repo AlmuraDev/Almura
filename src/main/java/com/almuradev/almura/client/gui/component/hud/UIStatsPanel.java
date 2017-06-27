@@ -13,6 +13,7 @@ import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
@@ -122,9 +123,11 @@ public class UIStatsPanel extends UIHUDPanel {
     }
 
     public void updateMountHealth() {
-        final EntityLivingBase ridingEntityLivingBase = (EntityLivingBase) Minecraft.getMinecraft().player.getRidingEntity();
-        this.mountHealthBar.setVisible(ridingEntityLivingBase != null);
-        if (this.mountHealthBar.isVisible() && ridingEntityLivingBase != null) {
+        final Entity entity = Minecraft.getMinecraft().player.getRidingEntity();
+        final boolean entityIsLiving = entity != null && entity instanceof EntityLivingBase;
+        this.mountHealthBar.setVisible(entityIsLiving);
+        if (entityIsLiving) {
+            final EntityLivingBase ridingEntityLivingBase = (EntityLivingBase) entity;
             final float health = ridingEntityLivingBase.getHealth();
             final float maxHealth = ridingEntityLivingBase.getMaxHealth();
             this.mountHealthBar.setText(Text.of(String.format("%.0f/%.0f", health, maxHealth)));

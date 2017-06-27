@@ -7,8 +7,9 @@ package com.almuradev.almura.client.gui.screen.ingame.hud;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.client.gui.component.hud.UIDebugPanel;
+import com.almuradev.almura.client.gui.component.hud.UIDebugDetailsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIDetailsPanel;
+import com.almuradev.almura.client.gui.component.hud.UIDebugBlockPanel;
 import com.almuradev.almura.client.gui.component.hud.UIStatsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIUserPanel;
 import com.almuradev.almura.client.gui.component.hud.UIWorldPanel;
@@ -23,7 +24,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class OriginHUD extends AbstractHUD {
 
     private final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
-    private UIDebugPanel debugPanel;
+    private UIDebugDetailsPanel debugDetailsPanel;
+    private UIDebugBlockPanel debugBlockPanel;
     private UIDetailsPanel detailsPanel;
     private UIStatsPanel statsPanel;
     private UIUserPanel userPanel;
@@ -43,6 +45,10 @@ public class OriginHUD extends AbstractHUD {
         this.statsPanel = new UIStatsPanel(this, 124, 49);
         this.statsPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, 2));
 
+        // Debug block panel
+        this.debugBlockPanel = new UIDebugBlockPanel(this, 124, 45);
+        this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.statsPanel, 2));
+
         // World panel
         this.worldPanel = new UIWorldPanel(this, 124, 33);
         this.worldPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
@@ -51,11 +57,11 @@ public class OriginHUD extends AbstractHUD {
         this.detailsPanel = new UIDetailsPanel(this, 124, 37);
         this.detailsPanel.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
 
-        // Debug panel
-        this.debugPanel = new UIDebugPanel(this, 155, 64);
-        this.debugPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, 2), Anchor.TOP | Anchor.RIGHT);
+        // Debug details panel
+        this.debugDetailsPanel = new UIDebugDetailsPanel(this, 155, 64);
+        this.debugDetailsPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, 2), Anchor.TOP | Anchor.RIGHT);
 
-        addToScreen(this.userPanel, this.statsPanel, this.worldPanel, this.detailsPanel, this.debugPanel);
+        addToScreen(this.userPanel, this.statsPanel, this.debugBlockPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel);
     }
 
     @Override
@@ -65,9 +71,14 @@ public class OriginHUD extends AbstractHUD {
         statsPanel.setAlpha(config.client.originHudOpacity);
         worldPanel.setAlpha(config.client.originHudOpacity);
         detailsPanel.setAlpha(config.client.originHudOpacity);
-        debugPanel.setAlpha(config.client.originHudOpacity);
 
-        debugPanel.setVisible(Minecraft.getMinecraft().gameSettings.showDebugInfo);
+        final boolean isDebugEnabled = Minecraft.getMinecraft().gameSettings.showDebugInfo;
+        this.debugDetailsPanel.setVisible(isDebugEnabled);
+        if (isDebugEnabled) {
+            this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.statsPanel, 2));
+            this.debugBlockPanel.setAlpha(config.client.originHudOpacity);
+            this.debugDetailsPanel.setAlpha(config.client.originHudOpacity);
+        }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

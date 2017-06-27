@@ -33,7 +33,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import java.util.Map;
 
 
-public class UIDebugPanel extends UIHUDPanel {
+public class UIDebugDetailsPanel extends UIHUDPanel {
 
     private static final TextTemplate KEY_VALUE_TEXT_TEMPLATE = TextTemplate.of(
             TextTemplate.arg("key").color(TextColors.WHITE), ": ",
@@ -50,7 +50,7 @@ public class UIDebugPanel extends UIHUDPanel {
     private int autoWidth;
     private int autoHeight;
 
-    public UIDebugPanel(MalisisGui gui, int width, int height) {
+    public UIDebugDetailsPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
         this.baseWidth = width;
         this.baseHeight = height;
@@ -135,43 +135,7 @@ public class UIDebugPanel extends UIHUDPanel {
             if (!reducedDebug) {
                 this.renderLook(renderer, lookPos.getX(), lookPos.getY(), lookPos.getZ());
             }
-
-            IBlockState lookState = this.minecraft.world.getBlockState(lookPos);
-            if (this.minecraft.world.getWorldType() != WorldType.DEBUG_ALL_BLOCK_STATES) {
-                lookState = lookState.getActualState(this.minecraft.world, lookPos);
-            }
-
-            this.clipContent = false;
-
-            if (lookState.getBlock() != Blocks.AIR) {
-                this.drawBlock(renderer, lookState, 4, this.getAutoSizeHeight() + 2);
-                this.drawText(renderer, Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(lookState.getBlock())), 24, this.autoHeight - 18, false, true);
-
-                final boolean hasValidContent = !lookState.getProperties().isEmpty();
-
-                if (hasValidContent) {
-                    this.autoHeight -= 6;
-                }
-
-                for (Map.Entry<IProperty<?>, Comparable<?>> entry : lookState.getProperties().entrySet()) {
-                    final IProperty property = entry.getKey();
-                    final String name = property.getName();
-                    final Comparable value = entry.getValue();
-                    final String describedValue = property.getName(value);
-                    if (value instanceof Boolean) {
-                        this.drawText(renderer, Text.of(TextColors.WHITE, name, ": ", ((Boolean) value) ? TextColors.GREEN : TextColors.RED, describedValue),24, this.autoHeight);
-                    } else {
-                        this.drawProperty(renderer, name, describedValue, 24, this.autoHeight);
-                    }
-                }
-
-                if (hasValidContent) {
-                    this.autoHeight -= 4;
-                }
-            }
         }
-
-        this.autoHeight += 4; // Extra padding
 
         // AutoSizing
         if (this.autoSize) {
@@ -222,6 +186,7 @@ public class UIDebugPanel extends UIHUDPanel {
         drawText(renderer, text, x, y, true, true);
     }
 
+    @SuppressWarnings("deprecation")
     private void drawText(GuiRenderer renderer, Text text, int x, int y, boolean adjustAutoHeight, boolean adjustAutoWidth) {
         renderer.drawText(this.font, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), x, y, this.zIndex, this.fontOptions);
 
@@ -238,6 +203,7 @@ public class UIDebugPanel extends UIHUDPanel {
         drawProperty(renderer, key, value, x, y, true, true);
     }
 
+    @SuppressWarnings("deprecation")
     private void drawProperty(GuiRenderer renderer, String key, String value, int x, int y, boolean adjustAutoHeight, boolean adjustAutoWidth) {
         final Text text = KEY_VALUE_TEXT_TEMPLATE.apply(ImmutableMap.of("key", Text.of(key),"value", Text.of(value))).build();
         renderer.drawText(this.font, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), x, y, this.zIndex, this.fontOptions);
@@ -247,18 +213,9 @@ public class UIDebugPanel extends UIHUDPanel {
             this.autoHeight += (int) this.font.getStringHeight(this.fontOptions) + 4;
         }
         if (adjustAutoWidth) {
-            this.autoWidth = Math.max(Minecraft.getMinecraft().fontRenderer.getStringWidth(TextSerializers.PLAIN.serialize(text).trim()) + x + 2, this
-                    .autoWidth);
+            this.autoWidth = Math.max(Minecraft.getMinecraft().fontRenderer.getStringWidth(TextSerializers.PLAIN.serialize(text).trim()) + x + 2,
+                    this.autoWidth);
         }
-    }
-
-    private void drawBlock(GuiRenderer renderer, IBlockState blockState, int x, int y) {
-        //renderer.bindTexture(MalisisGui.BLOCK_TEXTURE);
-        renderer.drawItemStack(new ItemStack(blockState.getBlock()), x, y);
-
-        // AutoSize properties
-        this.autoWidth = Math.max(16, this.autoWidth);
-        this.autoHeight += 20;
     }
 
     private String getJavaDetails() {
