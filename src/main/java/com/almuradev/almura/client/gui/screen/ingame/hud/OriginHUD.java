@@ -7,12 +7,12 @@ package com.almuradev.almura.client.gui.screen.ingame.hud;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.client.gui.component.hud.UIDebugDetailsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIDetailsPanel;
-import com.almuradev.almura.client.gui.component.hud.UIDebugBlockPanel;
 import com.almuradev.almura.client.gui.component.hud.UIStatsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIUserPanel;
 import com.almuradev.almura.client.gui.component.hud.UIWorldPanel;
+import com.almuradev.almura.client.gui.component.hud.debug.UIDebugBlockPanel;
+import com.almuradev.almura.client.gui.component.hud.debug.UIDebugDetailsPanel;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
 import net.malisis.core.client.gui.Anchor;

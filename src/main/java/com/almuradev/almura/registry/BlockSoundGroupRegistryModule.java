@@ -9,7 +9,6 @@ import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.sound.BlockSoundGroups;
 import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
-import org.spongepowered.api.registry.CatalogRegistryModule;
 import org.spongepowered.api.registry.RegistrationPhase;
 import org.spongepowered.api.registry.util.DelayedRegistration;
 import org.spongepowered.api.registry.util.RegisterCatalog;

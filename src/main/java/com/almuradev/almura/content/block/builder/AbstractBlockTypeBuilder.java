@@ -10,9 +10,9 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.block.BlockAABB;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.impl.GenericBlock;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.material.AbstractMaterialTypeBuilder;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;

@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura.content.block.sound;
 
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import org.spongepowered.api.util.generator.dummy.DummyObjectProvider;
 
 public final class BlockSoundGroups {

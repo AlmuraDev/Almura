@@ -1,5 +1,11 @@
-package com.almuradev.almura.client.gui.component.hud;
+/*
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
+ */
+package com.almuradev.almura.client.gui.component.hud.debug;
 
+import com.almuradev.almura.client.gui.component.hud.UIHUDPanel;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import com.google.common.collect.ImmutableMap;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -14,10 +20,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
 import org.spongepowered.api.text.format.TextColors;

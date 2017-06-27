@@ -21,7 +21,6 @@ import com.almuradev.almura.network.play.SWorldInformationMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -37,7 +36,6 @@ import org.spongepowered.api.Platform;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 

@@ -7,11 +7,11 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.content.block.rotatable.HorizontalType;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.sound.BlockSoundGroupBuilder;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.item.group.ItemGroupBuilderImpl;
