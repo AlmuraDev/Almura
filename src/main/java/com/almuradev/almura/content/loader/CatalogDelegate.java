@@ -1,3 +1,8 @@
+/*
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.content.loader;
 
 import org.spongepowered.api.CatalogType;
@@ -17,6 +22,12 @@ public final class CatalogDelegate<C extends CatalogType> {
     @Nullable
     private C instance;
 
+    public static <C extends CatalogType> CatalogDelegate<C> of(C instance) {
+        final CatalogDelegate delegate = new CatalogDelegate(instance.getClass(), instance.getId());
+        delegate.setCatalog(instance);
+        return delegate;
+    }
+
     public CatalogDelegate(Class<C> catalogClass, String catalogId) {
         this.catalogClass = catalogClass;
         this.catalogId = catalogId;
@@ -35,5 +46,15 @@ public final class CatalogDelegate<C extends CatalogType> {
         }
 
         return this.instance;
+    }
+
+    void setCatalog(C instance) {
+        this.instance = instance;
+    }
+
+    public CatalogDelegate<C> copy() {
+        final CatalogDelegate<C> clone = new CatalogDelegate<>(this.catalogClass, this.catalogId);
+        clone.setCatalog(this.instance);
+        return clone;
     }
 }

@@ -52,11 +52,13 @@ public final class AssetRegistry {
         for (Map.Entry<AssetType, Map<Pack, List<Path>>> assetTypeEntry : this.packsFilesByAssetType.entrySet()) {
             final AssetType assetType = assetTypeEntry.getKey();
 
+            final Map<Pack, List<AssetContext>> assetContextualsByPack = this.contextualsInPackByType.computeIfAbsent(assetType, v -> new LinkedHashMap<>());
+
             for (Map.Entry<Pack, List<Path>> packEntry : assetTypeEntry.getValue().entrySet()) {
                 final Pack pack = packEntry.getKey();
                 final List<Path> packFiles = packEntry.getValue();
 
-                final List<AssetContext> assetContexts = this.contexualsInPack.computeIfAbsent(pack, v -> new LinkedList<>());
+                final List<AssetContext> assetContexts = assetContextualsByPack.computeIfAbsent(pack, v -> new LinkedList<>());
 
                 for (Path file : packFiles) {
                     final BuildableCatalogType.Builder builder = Sponge.getRegistry().createBuilder(assetType.getBuilderClass());
@@ -71,8 +73,7 @@ public final class AssetRegistry {
                     assetContexts.add(new AssetContext<>(pack, asset, builder));
                 }
 
-                this.contextualsInPackByType.computeIfAbsent(assetType, k -> new LinkedHashMap<>()).computeIfAbsent(pack, k -> new LinkedList<>())
-                        .addAll(assetContexts);
+                this.contexualsInPack.computeIfAbsent(pack, v -> new LinkedList<>()).addAll(assetContexts);
             }
         }
     }
@@ -90,13 +91,11 @@ public final class AssetRegistry {
         private final Path sourcePath;
         private final AssetType assetType;
         private final String assetName;
-        private final Pattern pattern;
 
         AssetFilesOnlyVisitor(Path sourcePath, AssetType assetType) {
             this.sourcePath = sourcePath;
             this.assetType = assetType;
             this.assetName = this.assetType.name().toLowerCase(Locale.ENGLISH);
-            this.pattern = Pattern.compile(".*\\." + this.assetName + "$");
         }
 
         @Override
@@ -113,18 +112,21 @@ public final class AssetRegistry {
                 return FileVisitResult.CONTINUE;
             }
 
+            boolean matches = file.toString().endsWith("." + this.assetType.name().toLowerCase());
+
+            if (!matches) {
+                return FileVisitResult.CONTINUE;
+            }
+
             final String packName = packSourcePath.getFileName().toString();
 
             final Pack pack = AssetRegistry.this.packsById.computeIfAbsent(packName, v -> Pack.builder().build(Constants.Plugin.ID + ":" + packName,
                     WordUtils.capitalize(packName)));
 
             Almura.instance.logger.debug("Evaluating [{}] as a potential asset.", file);
-            boolean matches = file.toString().matches(this.pattern.pattern());
 
-            if (matches) {
-                AssetRegistry.this.packsFilesByAssetType.computeIfAbsent(this.assetType, k -> new LinkedHashMap<>()).computeIfAbsent(pack, k -> new
-                        LinkedList<>()).add(file);
-            }
+            AssetRegistry.this.packsFilesByAssetType.computeIfAbsent(this.assetType, k -> new LinkedHashMap<>()).computeIfAbsent(pack, k -> new
+                    LinkedList<>()).add(file);
 
             return FileVisitResult.CONTINUE;
         }

@@ -5,13 +5,12 @@
  */
 package com.almuradev.almura.content.loader.task;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.content.loader.CatalogDelegate;
 import com.almuradev.almura.content.material.MaterialType;
 import ninja.leaping.configurate.ConfigurationNode;
-import org.spongepowered.api.Sponge;
 
 public class SetMaterialAttributesTask implements StageTask<MaterialType, MaterialType.Builder> {
 
@@ -23,14 +22,7 @@ public class SetMaterialAttributesTask implements StageTask<MaterialType, Materi
         final boolean displayInItemGroup = node.getNode(Constants.Config.GENERAL, Constants.Config.ITEM_GROUP_DISPLAY).getBoolean(true);
 
         if (displayInItemGroup) {
-            final ItemGroup itemGroup = Sponge.getRegistry().getType(ItemGroup.class, context.getPack().getId()).orElse(null);
-
-            if (itemGroup == null) {
-                Almura.instance.logger.debug("Material type '{}' specified item group '{}' but it was not found in the registry!", context
-                        .getCatalog().getId(), context.getPack().getId());
-            } else {
-                builder.itemGroup(itemGroup);
-            }
+            builder.itemGroup(new CatalogDelegate<>(ItemGroup.class, context.getPack().getId()));
         }
     }
 }

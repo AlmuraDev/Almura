@@ -20,5 +20,6 @@ public class SetItemGroupAttributesTask implements StageTask<ItemGroup, ItemGrou
 
         // TODO If tab label is virtual, use filename
         final String tabLabel = root.getNode(Constants.Config.GENERAL, Constants.Config.ItemGroup.LABEL).getString("");
+
     }
 }

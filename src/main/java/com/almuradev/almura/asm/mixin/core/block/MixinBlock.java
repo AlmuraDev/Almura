@@ -14,11 +14,14 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 // Makes all blocks BuildableBlockTypes (so they can be used in Almura's framework)
-@Mixin(Block.class)
+@Mixin(value = Block.class, priority = 999)
 public abstract class MixinBlock extends net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl<Block> implements BuildableBlockType {
 
-    @Shadow private CreativeTabs displayOnCreativeTab;
+    @Nullable
+    @Shadow public CreativeTabs displayOnCreativeTab;
 
     @Override
     public Optional<ItemGroup> getItemGroup() {

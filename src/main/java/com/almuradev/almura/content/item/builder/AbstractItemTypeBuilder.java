@@ -1,9 +1,14 @@
+/*
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.content.item.builder;
 
+import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
 import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.item.impl.GenericItem;
 import com.almuradev.almura.content.material.AbstractMaterialTypeBuilder;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -19,7 +24,8 @@ public abstract class AbstractItemTypeBuilder<ITEM extends BuildableItemType, BU
 
         final Item item = this.createItem((BUILDER) this).setRegistryName(id);
         item.setUnlocalizedName(id.replace(":", "."));
-        item.setCreativeTab((CreativeTabs) this.itemGroup().orElse(null));
+
+        ((IMixinDelegateMaterialAttributes) item).setItemGroupDelegate(this.itemGroup());
 
         return (ITEM) (Object) item;
     }

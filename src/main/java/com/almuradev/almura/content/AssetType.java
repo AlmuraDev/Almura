@@ -18,25 +18,19 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
 public enum AssetType {
-    ITEMGROUP(ItemGroup.Builder.class, CreativeTabs.class),
-    BLOCK(BuildableBlockType.Builder.class, Block.class),
-    HORIZONTAL(HorizontalType.Builder.class, BlockHorizontal.class),
-    ITEM(BuildableItemType.Builder.class, Item.class),
-    SOUNDGROUP(BlockSoundGroup.Builder.class, SoundType.class);
+    ITEMGROUP(ItemGroup.Builder.class),
+    BLOCK(BuildableBlockType.Builder.class),
+    HORIZONTAL(HorizontalType.Builder.class),
+    ITEM(BuildableItemType.Builder.class),
+    SOUNDGROUP(BlockSoundGroup.Builder.class);
 
     private final Class<? extends BuildableCatalogType.Builder> builderClass;
-    private final Class minecraftParentClass;
 
-    AssetType(Class<? extends BuildableCatalogType.Builder> builderClass, Class minecraftParentClass) {
+    AssetType(Class<? extends BuildableCatalogType.Builder> builderClass) {
         this.builderClass = builderClass;
-        this.minecraftParentClass = minecraftParentClass;
     }
 
     public Class<? extends BuildableCatalogType.Builder> getBuilderClass() {
         return this.builderClass;
-    }
-
-    public Class getMinecraftParentClass() {
-        return this.minecraftParentClass;
     }
 }

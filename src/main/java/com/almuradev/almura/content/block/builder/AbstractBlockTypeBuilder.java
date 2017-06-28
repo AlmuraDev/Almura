@@ -8,23 +8,17 @@ package com.almuradev.almura.content.block.builder;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-<<<<<<< HEAD
-import com.almuradev.almura.Constants;
-import com.almuradev.almura.content.block.BlockAABB;
-=======
+import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
 import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
->>>>>>> Start re-write of loader for Forge registry events.
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.impl.GenericBlock;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.material.AbstractMaterialTypeBuilder;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -200,7 +194,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         final Block block = this.createBlock((BUILDER) this).setRegistryName(id);
         block.setUnlocalizedName(id.replace(":", "."));
 
-        this.itemGroup().ifPresent(itemGroup -> block.setCreativeTab((CreativeTabs) itemGroup));
+        ((IMixinDelegateMaterialAttributes) block).setItemGroupDelegate(this.itemGroup());
         this.slipperiness().ifPresent(slipperiness -> block.slipperiness = (float) slipperiness);
         this.soundGroup().ifPresent(sound -> block.setSoundType((SoundType) sound));
         this.hardness().ifPresent(hardness -> block.setHardness((float) hardness));

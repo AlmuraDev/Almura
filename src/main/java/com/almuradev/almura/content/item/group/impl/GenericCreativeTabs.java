@@ -5,20 +5,22 @@
  */
 package com.almuradev.almura.content.item.group.impl;
 
+import com.almuradev.almura.content.item.group.ItemGroup;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 
-public class GenericCreativeTab extends CreativeTabs {
+public class GenericCreativeTabs extends CreativeTabs {
 
-    private final ItemStack tabItemStack;
-
-    public GenericCreativeTab(String label, ItemStack tabItemStack) {
+    public GenericCreativeTabs(String label) {
         super(label);
-        this.tabItemStack = tabItemStack;
+    }
+
+    public GenericCreativeTabs(int index, String label) {
+        super(index, label);
     }
 
     @Override
     public ItemStack getTabIconItem() {
-        return this.tabItemStack;
+        return (ItemStack) (Object) ((ItemGroup) this).getTabIcon();
     }
 }

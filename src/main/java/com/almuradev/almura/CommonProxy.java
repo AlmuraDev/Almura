@@ -7,18 +7,15 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
-<<<<<<< HEAD
-=======
 import com.almuradev.almura.content.AssetType;
+import com.almuradev.almura.content.loader.AssetLoader;
 import com.almuradev.almura.content.loader.AssetPipeline;
 import com.almuradev.almura.content.loader.AssetRegistry;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
->>>>>>> Start re-write of loader for Forge registry events.
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.content.block.rotatable.HorizontalType;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.sound.BlockSoundGroupBuilder;
 import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.item.builder.AbstractItemTypeBuilder;
@@ -63,6 +60,7 @@ public abstract class CommonProxy {
     protected ChannelBinding.IndexedMessageChannel network;
     protected AssetRegistry assetRegistry;
     protected AssetPipeline assetPipeline;
+    protected AssetLoader assetLoader;
 
     protected void onGameConstruction(GameConstructionEvent event) {
         if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable(Constants.Plugin.NETWORK_CHANNEL)) {
@@ -74,24 +72,14 @@ public abstract class CommonProxy {
         this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
         this.assetRegistry = new AssetRegistry();
         this.assetPipeline = new AssetPipeline();
+        this.assetLoader = new AssetLoader(this.assetRegistry);
+
         this.registerFileSystem();
         this.registerMessages();
         this.registerRegistryModules();
         this.registerPipelineStages();
         this.registerBuilders();
         this.registerListeners();
-    }
-
-    private void registerPipelineStages() {
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.SOUNDGROUP, SetBlockSoundGroupAttributesTask.class);
-
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEMGROUP, SetItemGroupAttributesTask.class);
-
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.BLOCK, SetMaterialAttributesTask.class);
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.BLOCK, SetBlockAttributesTask.class);
-
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEM, SetMaterialAttributesTask.class);
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEM, SetItemAttributesTask.class);
     }
 
     protected void onGamePreInitialization(GamePreInitializationEvent event) {
@@ -101,7 +89,13 @@ public abstract class CommonProxy {
             e.printStackTrace();
         }
 
+        try {
+            this.assetRegistry.loadAssetContextuals();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.assetPipeline.process(LoaderPhase.PRE_INIT, this.assetRegistry);
+        this.assetLoader.registerSpongeOnlyCatalogTypes();
     }
 
     public abstract MappedConfigurationAdapter<? extends AbstractConfiguration> getPlatformConfigAdapter();
@@ -127,6 +121,18 @@ public abstract class CommonProxy {
         registry.registerModule(ItemGroup.class, ItemGroupRegistryModule.getInstance());
         registry.registerModule(MapColor.class, new MapColorRegistryModule());
         registry.registerModule(Material.class, new MaterialRegistryModule());
+    }
+
+    private void registerPipelineStages() {
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.SOUNDGROUP, SetBlockSoundGroupAttributesTask.class);
+
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEMGROUP, SetItemGroupAttributesTask.class);
+
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.BLOCK, SetMaterialAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.BLOCK, SetBlockAttributesTask.class);
+
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEM, SetMaterialAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEM, SetItemAttributesTask.class);
     }
 
     protected void registerBuilders() {

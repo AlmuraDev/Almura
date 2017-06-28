@@ -19,12 +19,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.common.SpongeImplHooks;
 
-@Mixin(CreativeTabs.class)
+@Mixin(value = CreativeTabs.class, priority = 999)
 public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs {
 
     @Shadow @Final private String tabLabel;
     @Shadow @Final private int tabIndex;
-    @Shadow private ItemStack iconItemStack;
+    @Shadow public ItemStack iconItemStack;
 
     private String id;
 
@@ -46,19 +46,6 @@ public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs
     }
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(CreativeTabs.class)
-                .add("tabIndex", this.tabIndex)
-                .add("tabLabel", this.tabLabel)
-                .toString();
-    }
-
-    @Override
-    public void setIconItemStack(ItemStack itemStack) {
-        this.iconItemStack = itemStack;
-    }
-
-    @Override
     public org.spongepowered.api.item.inventory.ItemStack getTabIcon() {
         return (org.spongepowered.api.item.inventory.ItemStack) (Object) this.iconItemStack;
     }
@@ -66,5 +53,19 @@ public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs
     @Override
     public int getTabIndex() {
         return this.tabIndex;
+    }
+
+    @Override
+    public void setIconItemStack(ItemStack stack) {
+        this.iconItemStack = stack;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(CreativeTabs.class)
+                .add("tabIndex", this.tabIndex)
+                .add("tabLabel", this.tabLabel)
+                .add("tabIcon", this.iconItemStack)
+                .toString();
     }
 }

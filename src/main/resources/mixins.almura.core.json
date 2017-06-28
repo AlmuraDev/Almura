@@ -10,11 +10,14 @@
         "block.MixinBlockCrops",
         "block.MixinBlockFarmland",
         "block.MixinBlockHorizontal",
+        "block.MixinDelegateBlockAttributes",
         "block.MixinSoundType",
         "block.material.MixinMapColor",
         "block.material.MixinMaterial",
         "creativetab.MixinCreativeTabs",
-        "item.MixinItem"
+        "creativetab.MixinDelegateItemGroupAttributes",
+        "item.MixinItem",
+        "item.MixinDelegateItemAttributes",
     ],
     "client": [
         "client.gui.MixinGuiBossOverlay",

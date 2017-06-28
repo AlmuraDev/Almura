@@ -1,14 +1,23 @@
+/*
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.block.BuildableBlockType;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.item.BuildableItemType;
+import com.almuradev.almura.content.item.group.ItemGroup;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -17,13 +26,14 @@ import java.util.List;
 import java.util.Map;
 
 // TODO kashike, cleanup the duplication here a bit will ya?
-@Mod.EventBusSubscriber(modid = Constants.Plugin.ID)
 public final class AssetLoader {
 
     private final AssetRegistry registry;
 
     public AssetLoader(AssetRegistry registry) {
         this.registry = registry;
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent
@@ -84,6 +94,17 @@ public final class AssetLoader {
                 context.setCatalog(itemType);
 
                 pack.add(itemType);
+            }
+        }
+    }
+
+    public void registerSpongeOnlyCatalogTypes() {
+        // ItemGroups
+        for (Map.Entry<Pack, List<AssetContext>> packByAssetTypeEntry : this.registry.getPackAssetContextualsFor(AssetType.ITEMGROUP).entrySet()) {
+            for (AssetContext assetContext : packByAssetTypeEntry.getValue()) {
+                final ItemGroup itemGroup = (ItemGroup) assetContext.getBuilder().build(Constants.Plugin.ID + ":" + assetContext.getAsset().getName
+                                (), assetContext.getAsset().getName());
+                assetContext.setCatalog(itemGroup);
             }
         }
     }
