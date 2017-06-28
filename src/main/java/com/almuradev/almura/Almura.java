@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import org.slf4j.Logger;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -39,5 +40,10 @@ public class Almura {
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
         proxy.onGamePreInitialization(event);
+    }
+
+    @Listener
+    public void onGameInitialization(GameInitializationEvent event) {
+        proxy.onGameInitialization(event);
     }
 }

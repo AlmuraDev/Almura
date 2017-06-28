@@ -64,13 +64,16 @@ public class ItemGroupBuilderImpl implements ItemGroup.Builder {
         checkNotNull(name);
         checkState(!name.isEmpty(), "Name cannot be empty!");
 
-        final CreativeTabs creativeTabs = new GenericCreativeTabs(id);
+        final String registryName = id.split(":")[1];
+
+        // TODO Implement getId and set it properly in MixinCreativeTabs
+        final CreativeTabs creativeTabs = new GenericCreativeTabs(registryName.replace(":", ".").replace("/", "."));
         if (itemTypeDelegate != null) {
             ((IMixinDelegateItemGroupAttributes) creativeTabs).setItemTypeDelegate(this.itemTypeDelegate);
         } else {
             ((IMixinCreativeTabs) creativeTabs).setIconItemStack((net.minecraft.item.ItemStack) (Object) this.itemStack);
         }
 
-        return (ItemGroup) (Object) new GenericCreativeTabs(id);
+        return (ItemGroup) (Object) creativeTabs;
     }
 }

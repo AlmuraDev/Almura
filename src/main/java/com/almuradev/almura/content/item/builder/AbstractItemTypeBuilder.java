@@ -22,8 +22,10 @@ public abstract class AbstractItemTypeBuilder<ITEM extends BuildableItemType, BU
         checkNotNull(id);
         checkState(!id.isEmpty(), "Id cannot be empty!");
 
-        final Item item = this.createItem((BUILDER) this).setRegistryName(id);
-        item.setUnlocalizedName(id.replace(":", "."));
+        final String registryName = id.split(":")[1];
+
+        final Item item = this.createItem((BUILDER) this).setRegistryName(registryName);
+        item.setUnlocalizedName(id.replace(":", ".").replace("/", "."));
 
         ((IMixinDelegateMaterialAttributes) item).setItemGroupDelegate(this.itemGroup());
 

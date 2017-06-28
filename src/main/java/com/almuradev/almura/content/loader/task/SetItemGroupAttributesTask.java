@@ -9,7 +9,9 @@ import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.content.loader.CatalogDelegate;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.spongepowered.api.item.ItemType;
 
 public class SetItemGroupAttributesTask implements StageTask<ItemGroup, ItemGroup.Builder> {
 
@@ -18,8 +20,9 @@ public class SetItemGroupAttributesTask implements StageTask<ItemGroup, ItemGrou
         final Asset asset = context.getAsset();
         final ConfigurationNode root = asset.getConfigurationNode();
 
-        // TODO If tab label is virtual, use filename
-        final String tabLabel = root.getNode(Constants.Config.GENERAL, Constants.Config.ItemGroup.LABEL).getString("");
-
+        final ConfigurationNode iconNode = root.getNode(Constants.Config.GENERAL, Constants.Config.ItemGroup.ICON);
+        if (!iconNode.isVirtual()) {
+            context.getBuilder().tabIcon(new CatalogDelegate<>(ItemType.class, iconNode.getString()));
+        }
     }
 }

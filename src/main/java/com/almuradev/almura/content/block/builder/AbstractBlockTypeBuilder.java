@@ -191,8 +191,10 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         checkNotNull(id);
         checkState(!id.isEmpty(), "Id cannot be empty!");
 
-        final Block block = this.createBlock((BUILDER) this).setRegistryName(id);
-        block.setUnlocalizedName(id.replace(":", "."));
+        final String registryName = id.split(":")[1];
+
+        final Block block = this.createBlock((BUILDER) this).setRegistryName(registryName);
+        block.setUnlocalizedName(id.replace(":", ".").replace("/", "."));
 
         ((IMixinDelegateMaterialAttributes) block).setItemGroupDelegate(this.itemGroup());
         this.slipperiness().ifPresent(slipperiness -> block.slipperiness = (float) slipperiness);

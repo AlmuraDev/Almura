@@ -9,18 +9,19 @@ import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.block.BuildableBlockType;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ public final class AssetLoader {
             for (AssetContext context : packByAssetTypeEntry.getValue()) {
                 final Asset asset = context.getAsset();
                 final BuildableBlockType.Builder builder = (BuildableBlockType.Builder) context.getBuilder();
-                final String blockId = Constants.Plugin.ID + ":" + pack.getId() + "." + asset.getName();
+                final String blockId = pack.getId() + "/" + asset.getName();
 
                 final BuildableBlockType blockType = builder.build(blockId);
 
@@ -85,15 +86,27 @@ public final class AssetLoader {
             for (AssetContext context : packByAssetTypeEntry.getValue()) {
                 final Asset asset = context.getAsset();
                 final BuildableItemType.Builder builder = (BuildableItemType.Builder) context.getBuilder();
-                final String blockId = Constants.Plugin.ID + ":" + pack.getId() + "." + asset.getName();
+                final String itemId = pack.getId() + "/" + asset.getName();
 
-                final BuildableItemType itemType = builder.build(blockId);
+                final BuildableItemType itemType = builder.build(itemId);
 
                 event.getRegistry().register((Item) itemType);
 
                 context.setCatalog(itemType);
 
                 pack.add(itemType);
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onRegisterModels(ModelRegistryEvent event) {
+        for (Map.Entry<Pack, List<AssetContext>> packByAssetTypeEntry : this.registry.getPackAssetContextualsFor(AssetType.ITEM).entrySet()) {
+            for (AssetContext context : packByAssetTypeEntry.getValue()) {
+                ModelLoader.setCustomModelResourceLocation((Item) context.getCatalog(), 0, new ModelResourceLocation(context.getCatalog().getId(),
+                        "inventory"));
+
             }
         }
     }

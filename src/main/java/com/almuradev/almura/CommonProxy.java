@@ -45,6 +45,7 @@ import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
@@ -80,9 +81,7 @@ public abstract class CommonProxy {
         this.registerPipelineStages();
         this.registerBuilders();
         this.registerListeners();
-    }
 
-    protected void onGamePreInitialization(GamePreInitializationEvent event) {
         try {
             this.assetRegistry.loadAssetFiles(Constants.FileSystem.PATH_ASSETS_ALMURA_30_PACKS);
         } catch (IOException e) {
@@ -94,8 +93,16 @@ public abstract class CommonProxy {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.assetPipeline.process(LoaderPhase.PRE_INIT, this.assetRegistry);
+        this.assetPipeline.process(LoaderPhase.CONSTRUCTION, this.assetRegistry);
         this.assetLoader.registerSpongeOnlyCatalogTypes();
+    }
+
+    protected void onGamePreInitialization(GamePreInitializationEvent event) {
+
+    }
+
+    protected void onGameInitialization(GameInitializationEvent event) {
+
     }
 
     public abstract MappedConfigurationAdapter<? extends AbstractConfiguration> getPlatformConfigAdapter();
@@ -124,15 +131,15 @@ public abstract class CommonProxy {
     }
 
     private void registerPipelineStages() {
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.BLOCK_SOUNDGROUP, SetBlockSoundGroupAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK_SOUNDGROUP, SetBlockSoundGroupAttributesTask.class);
 
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEMGROUP, SetItemGroupAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEMGROUP, SetItemGroupAttributesTask.class);
 
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.BLOCK, SetMaterialAttributesTask.class);
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.BLOCK, SetBlockAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK, SetMaterialAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK, SetBlockAttributesTask.class);
 
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEM, SetMaterialAttributesTask.class);
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEM, SetItemAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEM, SetMaterialAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEM, SetItemAttributesTask.class);
     }
 
     protected void registerBuilders() {

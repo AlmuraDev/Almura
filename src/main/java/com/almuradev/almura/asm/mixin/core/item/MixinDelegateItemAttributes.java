@@ -1,3 +1,8 @@
+/*
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
+ */
 package com.almuradev.almura.asm.mixin.core.item;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
@@ -9,8 +14,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Optional;
 
@@ -19,8 +22,7 @@ import javax.annotation.Nullable;
 @Mixin(value = {GenericItem.class}, priority = 1001)
 public abstract class MixinDelegateItemAttributes extends MixinItem implements BuildableItemType, IMixinDelegateMaterialAttributes {
 
-    @Nullable
-    private CatalogDelegate<ItemGroup> itemGroupDelegate;
+    @Nullable private CatalogDelegate<ItemGroup> itemGroupDelegate;
 
     @Override
     public Optional<ItemGroup> getItemGroup() {
@@ -44,7 +46,6 @@ public abstract class MixinDelegateItemAttributes extends MixinItem implements B
         this.itemGroupDelegate = itemGroupDelegate;
     }
 
-    @Overwrite
     @Nullable
     @SideOnly(Side.CLIENT)
     public CreativeTabs getCreativeTab() {
