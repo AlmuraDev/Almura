@@ -124,7 +124,7 @@ public abstract class CommonProxy {
     }
 
     private void registerPipelineStages() {
-        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.SOUNDGROUP, SetBlockSoundGroupAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.BLOCK_SOUNDGROUP, SetBlockSoundGroupAttributesTask.class);
 
         this.assetPipeline.registerStage(LoaderPhase.PRE_INIT, AssetType.ITEMGROUP, SetItemGroupAttributesTask.class);
 

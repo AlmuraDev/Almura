@@ -11,23 +11,24 @@ import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.registry.BuildableCatalogType;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.SoundType;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 
 public enum AssetType {
-    ITEMGROUP(ItemGroup.Builder.class),
-    BLOCK(BuildableBlockType.Builder.class),
-    HORIZONTAL(HorizontalType.Builder.class),
-    ITEM(BuildableItemType.Builder.class),
-    SOUNDGROUP(BlockSoundGroup.Builder.class);
+    BLOCK("block", BuildableBlockType.Builder.class),
+    HORIZONTAL_BLOCK("horizontal", HorizontalType.Builder.class),
+    BLOCK_SOUNDGROUP("soundgroup", BlockSoundGroup.Builder.class),
+    ITEM("item", BuildableItemType.Builder.class),
+    ITEMGROUP("itemgroup", ItemGroup.Builder.class);
 
+    private final String extension;
     private final Class<? extends BuildableCatalogType.Builder> builderClass;
 
-    AssetType(Class<? extends BuildableCatalogType.Builder> builderClass) {
+    AssetType(final String extension, final Class<? extends BuildableCatalogType.Builder> builderClass) {
+        this.extension = extension;
         this.builderClass = builderClass;
+    }
+
+    public String getExtension() {
+        return this.extension;
     }
 
     public Class<? extends BuildableCatalogType.Builder> getBuilderClass() {

@@ -112,7 +112,7 @@ public final class AssetRegistry {
                 return FileVisitResult.CONTINUE;
             }
 
-            boolean matches = file.toString().endsWith("." + this.assetType.name().toLowerCase());
+            boolean matches = file.toString().endsWith("." + this.assetType.getExtension());
 
             if (!matches) {
                 return FileVisitResult.CONTINUE;
