@@ -30,6 +30,9 @@ public abstract class MixinGuiIngame extends Gui {
 
     @Shadow @Final protected Minecraft mc;
 
+    /**
+     * @author Steven Downer (Grinch)
+     */
     @Overwrite
     protected void renderPotionEffects(ScaledResolution resolution)
     {

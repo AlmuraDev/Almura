@@ -142,6 +142,8 @@ public final class ClientProxy extends CommonProxy {
                     case AIR:
                     case HEALTHMOUNT:
                     case EXPERIENCE:
+                    case BOSSINFO:
+                    case BOSSHEALTH:
                     case DEBUG:
                         event.setCanceled(true);
                         break;

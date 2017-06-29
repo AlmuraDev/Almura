@@ -5,31 +5,27 @@
  */
 package com.almuradev.almura.asm.mixin.core.client.gui;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
+import com.almuradev.almura.asm.mixin.interfaces.IMixinGuiBossOverlay;
+import net.minecraft.client.gui.BossInfoClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiBossOverlay;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.Optional;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * This Mixin's objective is to have the Mojang BossBar's respect a Y offset provided by the HUD in-use
  */
 @Mixin(GuiBossOverlay.class)
-public abstract class MixinGuiBossOverlay extends Gui {
+public abstract class MixinGuiBossOverlay extends Gui implements IMixinGuiBossOverlay {
 
-    @ModifyVariable(method = "Lnet/minecraft/client/gui/GuiBossOverlay;renderBossHealth()V", at = @At(value = "INVOKE", target =
-            "Lnet/minecraft/client/gui/ScaledResolution;getScaledWidth()I", shift = At.Shift.BY, by = 6), ordinal = 1)
-    private int adjustYRenderCoordinate(int j) {
-        final ClientProxy proxy = (ClientProxy) Almura.proxy;
+    @Shadow @Final private Map<UUID, BossInfoClient> mapBossInfos;
 
-        final Optional<AbstractHUD> customHud = proxy.getCustomIngameHud();
-
-        // Check hud instance here, adjust 6 value as needed
-        return customHud.map(AbstractHUD::getOriginBossBarOffsetY).orElse(12);
+    @Override
+    public Map<UUID, BossInfoClient> getBossInfo() {
+        return this.mapBossInfos;
     }
 }
