@@ -100,7 +100,12 @@ public final class AssetRegistry {
 
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            Almura.instance.logger.debug("Scanning pack [{}] for files matching asset type [{}].", dir, this.assetName);
+            // Ignore the root of the packs folder
+            final Path packSourcePath = dir.getParent();
+            if (!packSourcePath.equals(this.sourcePath)) {
+                Almura.instance.logger.debug("Scanning pack [{}] for files matching asset type [{}].", dir, this.assetName);
+                return FileVisitResult.CONTINUE;
+            }
             return FileVisitResult.CONTINUE;
         }
 

@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.content.loader;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.loader.task.StageTask;
@@ -19,18 +20,18 @@ public final class AssetPipeline {
     private final Map<LoaderPhase, Map<AssetType, List<StageTask>>> stagesByAssetTypeByPhase = new HashMap<>();
 
     public AssetPipeline registerStage(LoaderPhase phase, AssetType assetType, Class<? extends StageTask> clazz) {
-        StageTask task = null;
+        final StageTask task;
         try {
             task = clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            // TODO Could silence these...
-            e.printStackTrace();
+            throw new IllegalArgumentException(e);
         }
 
         if (task == null) {
             // TODO Tasks require a no-arg constructor
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Task '" + clazz + "' requires a no-args constructor!");
         }
+
         this.stagesByAssetTypeByPhase
                 .computeIfAbsent(phase, k -> new HashMap<>())
                 .computeIfAbsent(assetType, k -> new LinkedList<>())
@@ -40,7 +41,6 @@ public final class AssetPipeline {
     }
 
     public AssetPipeline process(LoaderPhase phase, AssetRegistry registry) {
-
         // TODO Log to debugger that we're processing all files
         final Map<AssetType, List<StageTask>> assetTypeListMap = this.stagesByAssetTypeByPhase.get(phase);
         if (assetTypeListMap != null) {
@@ -49,13 +49,26 @@ public final class AssetPipeline {
 
                 final List<StageTask> stageTasks = assetTypeListMap.get(assetTypeMapEntry.getKey());
 
-                for (Map.Entry<Pack, List<AssetContext>> packListEntry : assetTypeMapEntry.getValue().entrySet()) {
+                if (stageTasks != null) {
 
-                    for (AssetContext assetContext : packListEntry.getValue()) {
+                    for (Map.Entry<Pack, List<AssetContext>> packListEntry : assetTypeMapEntry.getValue().entrySet()) {
 
-                        for (StageTask stageTask : stageTasks) {
-                            stageTask.execute(assetContext);
+                        Almura.instance.logger.info("Processing assets of type [{}] in pack [{}] for phase [{}].", assetTypeMapEntry.getKey().name(),
+                                packListEntry.getKey().getName(), phase.name());
+
+                        int contextualCount = 0;
+
+                        for (AssetContext assetContext : packListEntry.getValue()) {
+
+                            for (StageTask stageTask : stageTasks) {
+                                stageTask.execute(assetContext);
+                            }
+
+                            contextualCount++;
                         }
+
+                        Almura.instance.logger.info("Processed [{}] [{}] in pack [{}] for phase [{}].", contextualCount, assetTypeMapEntry.getKey
+                                        ().name(), packListEntry.getKey().getName(), phase.name());
                     }
                 }
             }

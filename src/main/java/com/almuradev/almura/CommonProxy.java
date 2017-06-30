@@ -138,6 +138,9 @@ public abstract class CommonProxy {
         this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK, SetMaterialAttributesTask.class);
         this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK, SetBlockAttributesTask.class);
 
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.HORIZONTAL_BLOCK, SetMaterialAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.HORIZONTAL_BLOCK, SetBlockAttributesTask.class);
+
         this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEM, SetMaterialAttributesTask.class);
         this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEM, SetItemAttributesTask.class);
     }

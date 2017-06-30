@@ -22,6 +22,8 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.item.ItemType;
 
 import java.util.List;
 import java.util.Map;
@@ -102,10 +104,24 @@ public final class AssetLoader {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onRegisterModels(ModelRegistryEvent event) {
+        for (Map.Entry<Pack, List<AssetContext>> packByAssetTypeEntry : this.registry.getPackAssetContextualsFor(AssetType.BLOCK).entrySet()) {
+            for (AssetContext context : packByAssetTypeEntry.getValue()) {
+                final ItemType itemBlock = Sponge.getRegistry().getType(ItemType.class, context.getCatalog().getId()).orElse(null);
+
+                if (itemBlock != null) {
+                    ModelLoader.setCustomModelResourceLocation((Item) itemBlock, 0, new ModelResourceLocation(context.getCatalog().getId(),
+                            "normal"));
+                }
+            }
+        }
+
         for (Map.Entry<Pack, List<AssetContext>> packByAssetTypeEntry : this.registry.getPackAssetContextualsFor(AssetType.ITEM).entrySet()) {
             for (AssetContext context : packByAssetTypeEntry.getValue()) {
-                ModelLoader.setCustomModelResourceLocation((Item) context.getCatalog(), 0, new ModelResourceLocation(context.getCatalog().getId(),
-                        "inventory"));
+                final ModelResourceLocation modelResourceLocation = new ModelResourceLocation(context.getCatalog().getId().split(":")[0] + ":" + 
+                        context
+                        .getCatalog().getId().split("/")[1], "normal");
+
+                ModelLoader.setCustomModelResourceLocation((Item) context.getCatalog(), 0, modelResourceLocation);
 
             }
         }
