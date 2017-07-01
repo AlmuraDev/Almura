@@ -81,16 +81,16 @@ public class UIStatsPanel extends UIHUDPanel {
         this.updatePanel();
     }
 
-    public void updateHealth() {
+    private void updateHealth() {
         final float health = Minecraft.getMinecraft().player.getHealth();
         final float maxHealth = Minecraft.getMinecraft().player.getMaxHealth();
         this.healthBar.setAmount(MathUtil.convertToRange(health,0f, maxHealth, 0f, 1f));
         this.healthBar.setText(Text.of(String.format("%.0f/%.0f", health, maxHealth)));
     }
 
-    public void updateArmor() {
+    private void updateArmor() {
         int maxArmor = 0;
-        int currentArmor = 0;
+        int currentDamage = 0;
         for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
             if (slot == EntityEquipmentSlot.MAINHAND || slot == EntityEquipmentSlot.OFFHAND) {
                 continue;
@@ -98,20 +98,21 @@ public class UIStatsPanel extends UIHUDPanel {
             final ItemStack stack = Minecraft.getMinecraft().player.getItemStackFromSlot(slot);
             if (stack.getItem() instanceof ItemArmor) {
                 maxArmor += ((ItemArmor) stack.getItem()).getArmorMaterial().getDurability(slot);
-                currentArmor += stack.getItem().getDamage(stack);
+                currentDamage += stack.getItem().getDamage(stack);
             }
         }
+        final int currentArmor = maxArmor - currentDamage;
         this.armorBar.setText(Text.of(String.format("%d/%d", currentArmor, maxArmor)));
-        this.armorBar.setAmount(MathUtil.convertToRange(maxArmor - currentArmor, 0, maxArmor, 0f, 1f));
+        this.armorBar.setAmount(MathUtil.convertToRange(currentArmor, 0, maxArmor, 0f, 1f));
     }
 
-    public void updateHunger() {
+    private void updateHunger() {
         final float foodLevel = Minecraft.getMinecraft().player.getFoodStats().getFoodLevel();
         this.hungerBar.setText(Text.of(String.format("%.0f/%d", foodLevel, 20)));
         this.hungerBar.setAmount(MathUtil.convertToRange(foodLevel, 0, 20, 0f, 1f));
     }
 
-    public void updateAir() {
+    private void updateAir() {
         this.airBar.setVisible(Minecraft.getMinecraft().player.isInsideOfMaterial(Material.WATER));
 
         // TODO Hardcoded to not care above 300, if we can do this better in the future then we should do so
@@ -122,7 +123,7 @@ public class UIStatsPanel extends UIHUDPanel {
         }
     }
 
-    public void updateMountHealth() {
+    private void updateMountHealth() {
         final Entity entity = Minecraft.getMinecraft().player.getRidingEntity();
         final boolean entityIsLiving = entity != null && entity instanceof EntityLivingBase;
         this.mountHealthBar.setVisible(entityIsLiving);
@@ -136,7 +137,7 @@ public class UIStatsPanel extends UIHUDPanel {
         }
     }
 
-    public void updatePanel() {
+    private void updatePanel() {
         int newHeight = 0;
         newHeight += this.healthBar.isVisible() ? this.healthBar.getHeight() : 0;
         newHeight += this.armorBar.isVisible() ? this.armorBar.getHeight() : 0;
