@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.client.model.obj;
 
+import com.almuradev.almura.asm.mixin.interfaces.IMixinTextureAtlasSprite;
 import com.almuradev.almura.client.model.obj.geometry.Face;
 import com.almuradev.almura.client.model.obj.geometry.Group;
 import com.almuradev.almura.client.model.obj.geometry.Vertex;
@@ -42,10 +43,16 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
     private final IModelState state;
     private final VertexFormat format;
     private final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
-    private TextureAtlasSprite particleSprite = null;
+    @Nullable
     private List<BakedQuad> quads;
 
-    public OBJBakedModel(OBJModel model, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+
+    // TEST CODE
+    private TextureAtlasSprite particleDiffuseSprite = ModelLoader.White.INSTANCE;
+    @Nullable
+    private Face particleFace;
+
+    OBJBakedModel(OBJModel model, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
         this.model = model;
         this.state = state;
         this.format = format;
@@ -92,11 +99,10 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
                     diffuseSprite = ModelLoader.White.INSTANCE;
                 }
 
-                Face particleFace = null;
-
                 for (Face face : group.getFaces()) {
-                    if (particleFace == null) {
-                        particleFace = face;
+                    if (this.particleFace == null) {
+                        this.particleFace = face;
+                        this.particleDiffuseSprite = diffuseSprite;
                     }
                     final UnpackedBakedQuad.Builder quadBuilder = new UnpackedBakedQuad.Builder(this.format);
                     quadBuilder.setContractUVs(true);
@@ -181,7 +187,7 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        return this.particleSprite;
+        return this.particleDiffuseSprite;
     }
 
     @Override
