@@ -12,8 +12,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public abstract class AbstractHUD extends SimpleScreen {
 
-    public abstract int getOriginBossBarOffsetY();
-
     public abstract int getTabMenuOffsetY();
 
     public abstract int getPotionOffsetY();

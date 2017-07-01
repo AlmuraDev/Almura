@@ -48,9 +48,9 @@ public class UIPropertyBar extends UIComponent {
 
     @Override
     public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        int shapeWidth = this.width;
-        int shapeHeight = this.height;
-        int shapeX = 0;
+        int barWidth = this.width;
+        int barHeight = this.height;
+        int barX = 0;
 
         if (this.backgroundIcon != null || this.foregroundIcon != null) {
             renderer.bindTexture(this.spritesheet);
@@ -73,36 +73,19 @@ public class UIPropertyBar extends UIComponent {
         if (this.backgroundIcon != null || this.foregroundIcon != null) {
             renderer.next();
 
-            shapeWidth = this.width - ICON_SIZE - 2;
-            shapeHeight = ICON_SIZE - 2;
-            shapeX = ICON_SIZE + 2;
+            barWidth = this.width - ICON_SIZE - 2;
+            barHeight = ICON_SIZE - 2;
+            barX = ICON_SIZE + 2;
         }
 
 
         renderer.enableBlending();
         renderer.disableTextures();
-        this.rp.usePerVertexAlpha.set(true);
-        this.rp.usePerVertexColor.set(true);
-
         this.shape.resetState();
-        this.shape.setSize(shapeWidth, shapeHeight);
-        this.shape.setPosition(shapeX, 1);
 
         final int alpha = (int) MathUtil.squash(this.getAlpha() - 75, 0, 255);
-        this.shape.getVertexes("TopLeft").get(0).setColor(0).setAlpha(alpha);
-        this.shape.getVertexes("TopRight").get(0).setColor(0).setAlpha(alpha);
-        this.shape.getVertexes("BottomLeft").get(0).setColor(0).setAlpha(alpha);
-        this.shape.getVertexes("BottomRight").get(0).setColor(0).setAlpha(alpha);
-        renderer.drawShape(this.shape, this.rp);
-
-        this.shape.resetState();
-        this.shape.setSize(this.getConvertedFill(), shapeHeight - 2);
-        this.shape.setPosition(shapeX + 1, 2);
-        this.shape.getVertexes("TopLeft").get(0).setColor(this.color).setAlpha(this.getAlpha());
-        this.shape.getVertexes("TopRight").get(0).setColor(this.color).setAlpha(this.getAlpha());
-        this.shape.getVertexes("BottomLeft").get(0).setColor(this.color).setAlpha(this.getAlpha());
-        this.shape.getVertexes("BottomRight").get(0).setColor(this.color).setAlpha(this.getAlpha());
-        renderer.drawShape(this.shape, this.rp);
+        renderer.drawRectangle(barX, 1, this.zIndex, barWidth, barHeight, 0, alpha);
+        renderer.drawRectangle(barX + 1, 2, this.zIndex, this.getConvertedFill(), barHeight - 2, this.color, this.getAlpha());
 
         renderer.next();
         renderer.disableBlending();
@@ -126,7 +109,8 @@ public class UIPropertyBar extends UIComponent {
             int textHeight = (int) this.font.getStringHeight(this.fontOptions);
 
             int x = (((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE + 4 + this.width : this.width) - textWidth) / 2;
-            int y = (((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE : this.height) / 2) - (textHeight / 2);
+
+            int y = (ICON_SIZE - textHeight) / 2;
 
             if (x == 0) {
                 x = 1;

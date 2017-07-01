@@ -53,8 +53,8 @@ public class UIUserPanel extends UIHUDPanel {
         this.levelLabel = new UILabel(gui, "");
         this.levelLabel.setPosition(SimpleScreen.getPaddedX(this.userImage, 3), SimpleScreen.getPaddedY(this.usernameLabel, 0));
         this.levelLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
-        this.experienceBar = new UIPropertyBar(gui, width - 10, 5);
-        this.experienceBar.setPosition(0, -3, Anchor.BOTTOM | Anchor.CENTER);
+        this.experienceBar = new UIPropertyBar(gui, width - 10, 7);
+        this.experienceBar.setPosition(0, -2, Anchor.BOTTOM | Anchor.CENTER);
         this.experienceBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
 
         // Currency
@@ -76,7 +76,7 @@ public class UIUserPanel extends UIHUDPanel {
         this.updateLevel();
     }
 
-    public void updateCurrency() {
+    private void updateCurrency() {
         this.currencyImage.setVisible(HUDData.IS_ECONOMY_PRESENT);
         this.currencyLabel.setVisible(HUDData.IS_ECONOMY_PRESENT);
         if (HUDData.IS_ECONOMY_PRESENT) {
@@ -86,7 +86,7 @@ public class UIUserPanel extends UIHUDPanel {
         }
     }
 
-    public void updateExperience() {
+    private void updateExperience() {
         final int experienceCap = Minecraft.getMinecraft().player.xpBarCap();
         final int experience = (int) (Minecraft.getMinecraft().player.experience * experienceCap);
 
@@ -94,7 +94,7 @@ public class UIUserPanel extends UIHUDPanel {
         this.experienceBar.setAmount(MathUtil.convertToRange(experience, 0, experienceCap, 0f, 1f));
     }
 
-    public void updateLevel() {
+    private void updateLevel() {
         this.levelLabel.setText("Lv. " + Minecraft.getMinecraft().player.experienceLevel);
     }
 }

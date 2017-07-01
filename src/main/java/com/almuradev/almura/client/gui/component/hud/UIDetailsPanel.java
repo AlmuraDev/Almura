@@ -66,7 +66,7 @@ public class UIDetailsPanel extends UIHUDPanel {
         this.updatePlayerCount();
     }
 
-    public void updateCoordinates() {
+    private void updateCoordinates() {
         this.coordsLabel.setText(
                 TextFormatting.GOLD + "X: " + TextFormatting.RESET + NUMBER_FORMAT.format(Minecraft.getMinecraft().player.getPosition().getX()) +
                         "\n" +
@@ -77,7 +77,7 @@ public class UIDetailsPanel extends UIHUDPanel {
                         .format(Minecraft.getMinecraft().player.getPosition().getZ()));
     }
 
-    public void updatePlayerCount() {
+    private void updatePlayerCount() {
         final boolean isOnline = !Minecraft.getMinecraft().isSingleplayer() || (Minecraft.getMinecraft().isSingleplayer() && Minecraft.getMinecraft()
                 .getIntegratedServer().getPublic());
         if (isOnline) {

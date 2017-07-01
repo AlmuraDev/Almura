@@ -19,7 +19,6 @@ import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
 import net.malisis.core.client.gui.Anchor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiBossOverlay;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -27,6 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class OriginHUD extends AbstractHUD {
 
+    private static final int padding = 1;
     private final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
     private UIBossBarPanel bossBarPanel;
     private UIDebugDetailsPanel debugDetailsPanel;
@@ -48,11 +48,11 @@ public class OriginHUD extends AbstractHUD {
 
         // Stats panel
         this.statsPanel = new UIStatsPanel(this, 124, 49);
-        this.statsPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, 2));
+        this.statsPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, padding));
 
         // Debug block panel
         this.debugBlockPanel = new UIDebugBlockPanel(this, 124, 45);
-        this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.statsPanel, 2));
+        this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.statsPanel, padding));
 
         // World panel
         this.worldPanel = new UIWorldPanel(this, 124, 33);
@@ -64,11 +64,11 @@ public class OriginHUD extends AbstractHUD {
 
         // Debug details panel
         this.debugDetailsPanel = new UIDebugDetailsPanel(this, 155, 64);
-        this.debugDetailsPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, 2), Anchor.TOP | Anchor.RIGHT);
+        this.debugDetailsPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, padding), Anchor.TOP | Anchor.RIGHT);
 
         // Boss bar panel
         this.bossBarPanel = new UIBossBarPanel(this, 124, 33);
-        this.bossBarPanel.setPosition(0, SimpleScreen.getPaddedY(this.worldPanel, 2), Anchor.TOP | Anchor.CENTER);
+        this.bossBarPanel.setPosition(0, SimpleScreen.getPaddedY(this.worldPanel, padding), Anchor.TOP | Anchor.CENTER);
 
         addToScreen(this.userPanel, this.statsPanel, this.debugBlockPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel,
                 this.bossBarPanel);
@@ -87,15 +87,15 @@ public class OriginHUD extends AbstractHUD {
         this.debugDetailsPanel.setVisible(isDebugEnabled);
         if (isDebugEnabled) {
             // Get proper position based on what potion effects are being shown
-            int yOffset = SimpleScreen.getPaddedY(this.detailsPanel, 2);
+            int yOffset = SimpleScreen.getPaddedY(this.detailsPanel, padding);
             if (Minecraft.getMinecraft().player.getActivePotionEffects().stream().anyMatch(potion -> potion.getPotion().isBeneficial())) {
-                yOffset += 26; // 24 for potion icon, 2 for padding
+                yOffset += 25; // 24 for potion icon, 2 for padding
             }
             if (Minecraft.getMinecraft().player.getActivePotionEffects().stream().anyMatch(potion -> !potion.getPotion().isBeneficial())) {
-                yOffset += 26; // 24 for potion icon, 2 for padding
+                yOffset += 25; // 24 for potion icon, 2 for padding
             }
             // Debug block panel
-            this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.statsPanel, 2));
+            this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.statsPanel, padding));
             this.debugBlockPanel.setAlpha(config.client.originHudOpacity);
 
             // Debug details panel
@@ -113,17 +113,12 @@ public class OriginHUD extends AbstractHUD {
     }
 
     @Override
-    public int getOriginBossBarOffsetY() {
-        return this.worldPanel.getHeight() + 12;
-    }
-
-    @Override
     public int getTabMenuOffsetY() {
-        return this.worldPanel.getHeight() + 2;
+        return this.worldPanel.getHeight() + padding;
     }
 
     @Override
     public int getPotionOffsetY() {
-        return this.detailsPanel.getHeight() + 2;
+        return this.detailsPanel.getHeight() + padding;
     }
 }

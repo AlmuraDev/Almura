@@ -43,7 +43,7 @@ public class UIStatsPanel extends UIHUDPanel {
         // Armor
         this.armorBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.healthBar, 1), Anchor.TOP | Anchor.CENTER)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(184, 185, 196).getRgb())
+                .setColor(org.spongepowered.api.util.Color.ofRgb(102, 103, 109).getRgb())
                 .setBackgroundIcon(Constants.Gui.ICON_VANILLA_ARMOR);
 
         // Hunger

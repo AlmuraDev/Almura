@@ -44,13 +44,12 @@ public class UIWorldPanel extends UIHUDPanel {
         this.updateWorld();
     }
 
-    @SuppressWarnings("deprecation")
-    public void updateCompass() {
+    @SuppressWarnings("deprecation") private void updateCompass() {
         this.compassLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(HUDData.getCompass()));
         this.compassLabel.setPosition(0, -1, Anchor.BOTTOM | Anchor.CENTER);
     }
 
-    public void updateWorld() {
+    private void updateWorld() {
         this.worldLabel.setText(HUDData.WORLD_NAME);
         this.worldLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
     }

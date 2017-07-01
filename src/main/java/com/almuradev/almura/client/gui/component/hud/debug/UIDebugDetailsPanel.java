@@ -139,7 +139,7 @@ public class UIDebugDetailsPanel extends AbstractDebugPanel {
     }
 
     private String getJavaDetails() {
-        return System.getProperty("java.version") + " " + (this.minecraft.isJava64bit() ? 64 : 32) + "bit";
+        return String.format("%s x%d", System.getProperty("java.version"), (this.minecraft.isJava64bit() ? 64 : 86));
     }
 
     private String getMemoryDetails() {
