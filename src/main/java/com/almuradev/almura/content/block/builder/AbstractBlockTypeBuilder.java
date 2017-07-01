@@ -8,23 +8,17 @@ package com.almuradev.almura.content.block.builder;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.Constants;
-import com.almuradev.almura.content.block.BlockAABB;
+import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
+import com.almuradev.almura.content.block.impl.BlockAABB;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.impl.GenericBlock;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.material.AbstractMaterialTypeBuilder;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -159,7 +153,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
 
     @Override
     public BUILDER from(BuildableBlockType value) {
-        super.from(value);
+        super.from((BLOCK) value);
 
         final Block block = (Block) value;
         final IBlockState defaultState = block.getDefaultState();
@@ -197,23 +191,18 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         checkNotNull(id);
         checkState(!id.isEmpty(), "Id cannot be empty!");
 
-        final String[] idAndPath = id.split(":");
-        final String modid = idAndPath[0];
-        final String name = idAndPath[1];
+        final String registryName = id.split(":")[1];
 
-        final Block block = GameRegistry.register(this.createBlock((BUILDER) this).setRegistryName(name));
-        block.setUnlocalizedName(modid + "." + id.replace(Constants.Plugin.ID.concat(":"), "").replace("/", "."));
-        block.setCreativeTab((CreativeTabs) this.itemGroup().orElse(null));
+        final Block block = this.createBlock((BUILDER) this).setRegistryName(registryName);
+        block.setUnlocalizedName(id.replace(":", ".").replace("/", "."));
+
+        ((IMixinDelegateMaterialAttributes) block).setItemGroupDelegate(this.itemGroup());
         this.slipperiness().ifPresent(slipperiness -> block.slipperiness = (float) slipperiness);
         this.soundGroup().ifPresent(sound -> block.setSoundType((SoundType) sound));
         this.hardness().ifPresent(hardness -> block.setHardness((float) hardness));
         this.resistance().ifPresent(resistance -> block.setResistance((float) resistance));
         this.lightEmission().ifPresent(emission -> block.setLightLevel((float) emission));
         this.lightOpacity().ifPresent(block::setLightOpacity);
-
-        final Item item = GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
-
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(id, "inventory"));
 
         return (BLOCK) (Object) block;
     }

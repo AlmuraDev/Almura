@@ -5,23 +5,20 @@
  */
 package com.almuradev.almura.registry;
 
-import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
 import com.almuradev.almura.content.material.Material;
 import com.almuradev.almura.content.material.Materials;
 import org.spongepowered.api.registry.CatalogRegistryModule;
 import org.spongepowered.api.registry.RegistrationPhase;
 import org.spongepowered.api.registry.util.DelayedRegistration;
 import org.spongepowered.api.registry.util.RegisterCatalog;
-import org.spongepowered.common.SpongeImplHooks;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-public class MaterialRegistryModule implements CatalogRegistryModule<Material> {
+public class MaterialRegistryModule implements CatalogRegistryModule<Material>, RegistryHelper {
 
     @RegisterCatalog(Materials.class)
     public final Map<String, Material> map = new HashMap<>(36);
@@ -68,19 +65,12 @@ public class MaterialRegistryModule implements CatalogRegistryModule<Material> {
     }
 
     private void register(String id, final net.minecraft.block.material.Material material) {
-        final String name = id;
-        id = SpongeImplHooks.getModIdFromClass(material.getClass()) + ':' + id;
-        this.map.put(id, (Material) material);
-        ((IMixinSetCatalogTypeId) material).setId(id, name);
+        this.registerSetId(this.map, id, material);
     }
 
     @Override
     public Optional<Material> getById(String id) {
-        id = id.toLowerCase(Locale.ENGLISH);
-        if (!id.contains(":")) {
-            id = "minecraft:" + id;
-        }
-        return Optional.ofNullable(this.map.get(id));
+        return Optional.ofNullable(this.map.get(this.withDomain(id)));
     }
 
     @Override

@@ -111,7 +111,7 @@ public class Constants {
         }
 
         public static final class ItemGroup {
-            public static final String LABEL = "label";
+            public static final String ICON = "icon";
         }
     }
 

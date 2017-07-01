@@ -9,5 +9,5 @@ import net.minecraft.item.ItemStack;
 
 public interface IMixinCreativeTabs {
 
-    void setIconItemStack(ItemStack itemStack);
+    void setIconItemStack(ItemStack stack);
 }

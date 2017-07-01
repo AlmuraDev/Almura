@@ -19,6 +19,11 @@ public interface BuildableItemType extends MaterialType, ItemType {
     interface Builder<ITEM extends BuildableItemType, BUILDER extends Builder<ITEM, BUILDER>> extends MaterialType.Builder<ITEM, BUILDER> {
 
         @Override
-        ITEM build(String id, String name);
+        default ITEM build(String id, String name) {
+            return build(id);
+        }
+
+        @Override
+        ITEM build(String id);
     }
 }

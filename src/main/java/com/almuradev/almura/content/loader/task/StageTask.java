@@ -3,12 +3,12 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.loader.stage.task;
+package com.almuradev.almura.content.loader.task;
 
 import com.almuradev.almura.content.loader.AssetContext;
 import com.almuradev.almura.registry.BuildableCatalogType;
 
 public interface StageTask<C extends BuildableCatalogType, B extends BuildableCatalogType.Builder> {
 
-    void execute(AssetContext<C, B> context) throws TaskExecutionFailedException;
+    void execute(AssetContext<C, B> context);
 }

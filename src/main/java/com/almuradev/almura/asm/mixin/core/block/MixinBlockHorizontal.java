@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 
 // Makes all horizontals RotableBlockTypes (so they can be used in Almura's framework)
-@Mixin(BlockHorizontal.class)
-@Implements(value = @Interface(iface = HorizontalType.class, prefix = "rotable$"))
+@Mixin(value = BlockHorizontal.class, priority = 999)
+@Implements(value = @Interface(iface = HorizontalType.class, prefix = "rotatable$"))
 public abstract class MixinBlockHorizontal extends Block {
 
     // ignore

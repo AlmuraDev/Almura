@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.content.block.impl.rotatable;
 
-import com.almuradev.almura.content.block.BlockAABB;
+import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.content.block.rotatable.HorizontalType;
 import com.google.common.base.MoreObjects;

@@ -6,6 +6,7 @@
 package com.almuradev.almura.asm.mixin.core.creativetab;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinCreativeTabs;
+import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.registry.ItemGroupRegistryModule;
 import com.google.common.base.MoreObjects;
@@ -17,21 +18,19 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.common.SpongeImplHooks;
 
-@Mixin(CreativeTabs.class)
-public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs {
+@Mixin(value = CreativeTabs.class, priority = 999)
+public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs, IMixinSetCatalogTypeId {
 
     @Shadow @Final private String tabLabel;
     @Shadow @Final private int tabIndex;
-    @Shadow private ItemStack iconItemStack;
+    @Shadow public ItemStack iconItemStack;
 
     private String id;
 
     @Inject(method = "<init>(ILjava/lang/String;)V", at = @At("RETURN"))
     public void onConstruction(int index, String label, CallbackInfo ci) {
-        final String modId = SpongeImplHooks.getModIdFromClass(getClass());
-        this.id = modId + ":" + label;
+        this.id = label; // HACK: re-set using setId(String, String) when registerAdditionalCatalog is called
         ItemGroupRegistryModule.getInstance().registerAdditionalCatalog(this);
     }
 
@@ -46,16 +45,9 @@ public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs
     }
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(CreativeTabs.class)
-                .add("tabIndex", this.tabIndex)
-                .add("tabLabel", this.tabLabel)
-                .toString();
-    }
-
-    @Override
-    public void setIconItemStack(ItemStack itemStack) {
-        this.iconItemStack = itemStack;
+    public void setId(String id, String name) {
+        this.id = id;
+        // name is `this.tabLabel`, we can ignore the parameter
     }
 
     @Override
@@ -66,5 +58,19 @@ public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs
     @Override
     public int getTabIndex() {
         return this.tabIndex;
+    }
+
+    @Override
+    public void setIconItemStack(ItemStack stack) {
+        this.iconItemStack = stack;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(CreativeTabs.class)
+                .add("tabIndex", this.tabIndex)
+                .add("tabLabel", this.tabLabel)
+                .add("tabIcon", this.iconItemStack)
+                .toString();
     }
 }

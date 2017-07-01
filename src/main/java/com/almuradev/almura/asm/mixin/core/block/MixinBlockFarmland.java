@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Random;
 
-@Mixin(BlockFarmland.class)
+@Mixin(value = BlockFarmland.class, priority = 999)
 public abstract class MixinBlockFarmland extends Block {
 
     @Shadow @Final public static PropertyInteger MOISTURE;

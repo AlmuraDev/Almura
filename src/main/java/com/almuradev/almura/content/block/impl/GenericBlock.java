@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura.content.block.impl;
 
-import com.almuradev.almura.content.block.BlockAABB;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.Block;

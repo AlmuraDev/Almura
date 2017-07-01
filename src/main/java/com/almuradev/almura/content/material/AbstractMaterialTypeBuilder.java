@@ -8,13 +8,14 @@ package com.almuradev.almura.content.material;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.content.item.group.ItemGroup;
+import com.almuradev.almura.content.loader.CatalogDelegate;
 
 import java.util.Optional;
 
 public abstract class AbstractMaterialTypeBuilder<MATERIAL extends MaterialType, BUILDER extends AbstractMaterialTypeBuilder<MATERIAL, BUILDER>>
         implements MaterialType.Builder<MATERIAL, BUILDER> {
 
-    private ItemGroup itemGroup;
+    private CatalogDelegate<ItemGroup> itemGroupDelegate;
 
     public AbstractMaterialTypeBuilder() {
         this.reset();
@@ -22,25 +23,31 @@ public abstract class AbstractMaterialTypeBuilder<MATERIAL extends MaterialType,
 
     @Override
     public final BUILDER itemGroup(ItemGroup itemGroup) {
-        this.itemGroup = itemGroup;
+        this.itemGroupDelegate = CatalogDelegate.of(itemGroup);
         return (BUILDER) this;
     }
 
     @Override
-    public final Optional<ItemGroup> itemGroup() {
-        return Optional.ofNullable(this.itemGroup);
+    public final CatalogDelegate<ItemGroup> itemGroup() {
+        return this.itemGroupDelegate;
     }
 
     @Override
-    public BUILDER from(MaterialType value) {
+    public final BUILDER itemGroup(CatalogDelegate<ItemGroup> itemGroupDelegate) {
+        this.itemGroupDelegate = itemGroupDelegate;
+        return (BUILDER) this;
+    }
+
+    @Override
+    public BUILDER from(MATERIAL value) {
         checkNotNull(value);
-        this.itemGroup = value.getItemGroup().orElse(null);
+        value.getItemGroup().ifPresent(itemGroup -> this.itemGroupDelegate = CatalogDelegate.of(itemGroup));
         return (BUILDER) this;
     }
 
     @Override
     public BUILDER reset() {
-        this.itemGroup = null;
+        this.itemGroupDelegate = null;
         return (BUILDER) this;
     }
 }

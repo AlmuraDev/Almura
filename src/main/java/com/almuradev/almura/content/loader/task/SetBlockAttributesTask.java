@@ -3,36 +3,30 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.loader.stage.task;
+package com.almuradev.almura.content.loader.task;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.content.Pack;
-import com.almuradev.almura.content.block.BlockAABB;
-import com.almuradev.almura.content.block.BuildableBlockType;
+import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
+import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.AssetContext;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import ninja.leaping.configurate.ConfigurationNode;
-import org.slf4j.Logger;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Sponge;
 
-import java.util.Locale;
 import java.util.Optional;
 
-public class SetCommonBlockAttributesTask implements StageTask<BuildableBlockType, BuildableBlockType.Builder> {
-
-    public static final SetCommonBlockAttributesTask instance = new SetCommonBlockAttributesTask();
+public class SetBlockAttributesTask implements StageTask<BuildableBlockType, BuildableBlockType.Builder> {
 
     @Override
-    public void execute(AssetContext<BuildableBlockType, BuildableBlockType.Builder> context) throws TaskExecutionFailedException {
+    public void execute(AssetContext<BuildableBlockType, BuildableBlockType.Builder> context) {
         final BuildableBlockType.Builder builder = context.getBuilder();
         final ConfigurationNode node = context.getAsset().getConfigurationNode();
         final GameRegistry registry = Sponge.getRegistry();
-        final Logger logger = Almura.instance.logger;
 
         // AABB
         final ConfigurationNode aabbNode = node.getNode(Constants.Config.Block.AABB.KEY);
@@ -95,9 +89,6 @@ public class SetCommonBlockAttributesTask implements StageTask<BuildableBlockTyp
         if (!resistanceNode.isVirtual()) {
             builder.resistance(resistanceNode.getFloat());
         }
-
-        final Pack pack = context.getPack();
-        builder.build(Constants.Plugin.ID + ":" + pack.getName().toLowerCase(Locale.ENGLISH) + "/" + context.getAsset().getName());
     }
 
     private void doesNotHave(final Asset asset, final String what) {

@@ -7,18 +7,26 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
+import com.almuradev.almura.content.AssetType;
+import com.almuradev.almura.content.loader.AssetLoader;
+import com.almuradev.almura.content.loader.AssetPipeline;
+import com.almuradev.almura.content.loader.AssetRegistry;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.block.builder.AbstractBlockTypeBuilder;
 import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.content.block.rotatable.HorizontalType;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.sound.BlockSoundGroupBuilder;
+import com.almuradev.almura.content.item.BuildableItemType;
+import com.almuradev.almura.content.item.builder.AbstractItemTypeBuilder;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.item.group.ItemGroupBuilderImpl;
-import com.almuradev.almura.content.loader.AssetLoader;
-import com.almuradev.almura.content.loader.stage.LoadBlockSoundGroupsStage;
-import com.almuradev.almura.content.loader.stage.LoadItemGroupsStage;
-import com.almuradev.almura.content.loader.stage.LoadMaterialsStage;
+import com.almuradev.almura.content.loader.LoaderPhase;
+import com.almuradev.almura.content.loader.task.SetBlockAttributesTask;
+import com.almuradev.almura.content.loader.task.SetBlockSoundGroupAttributesTask;
+import com.almuradev.almura.content.loader.task.SetItemAttributesTask;
+import com.almuradev.almura.content.loader.task.SetItemGroupAttributesTask;
+import com.almuradev.almura.content.loader.task.SetMaterialAttributesTask;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import com.almuradev.almura.network.play.SServerInformationMessage;
@@ -37,6 +45,7 @@ import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
@@ -50,6 +59,8 @@ import java.io.IOException;
 public abstract class CommonProxy {
 
     protected ChannelBinding.IndexedMessageChannel network;
+    protected AssetRegistry assetRegistry;
+    protected AssetPipeline assetPipeline;
     protected AssetLoader assetLoader;
 
     protected void onGameConstruction(GameConstructionEvent event) {
@@ -59,23 +70,39 @@ public abstract class CommonProxy {
 
         this.loadConfig();
 
-        this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, Constants.Plugin.NETWORK_CHANNEL);
-        this.assetLoader = new AssetLoader();
+        this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
+        this.assetRegistry = new AssetRegistry();
+        this.assetPipeline = new AssetPipeline();
+        this.assetLoader = new AssetLoader(this.assetRegistry);
 
         this.registerFileSystem();
         this.registerMessages();
-        this.registerModules();
+        this.registerRegistryModules();
+        this.registerPipelineStages();
         this.registerBuilders();
-        this.registerLoaderStages();
         this.registerListeners();
-    }
 
-    protected void onGamePreInitialization(GamePreInitializationEvent event) {
         try {
-            this.assetLoader.buildAssets(Constants.FileSystem.PATH_ASSETS_ALMURA_30_PACKS);
+            this.assetRegistry.loadAssetFiles(Constants.FileSystem.PATH_ASSETS_ALMURA_30_PACKS);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        try {
+            this.assetRegistry.loadAssetContextuals();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.assetPipeline.process(LoaderPhase.CONSTRUCTION, this.assetRegistry);
+        this.assetLoader.registerSpongeOnlyCatalogTypes();
+    }
+
+    protected void onGamePreInitialization(GamePreInitializationEvent event) {
+
+    }
+
+    protected void onGameInitialization(GameInitializationEvent event) {
+
     }
 
     public abstract MappedConfigurationAdapter<? extends AbstractConfiguration> getPlatformConfigAdapter();
@@ -95,7 +122,7 @@ public abstract class CommonProxy {
         this.network.registerMessage(SServerInformationMessage.class, 1);
     }
 
-    protected void registerModules() {
+    protected void registerRegistryModules() {
         final GameRegistry registry = Sponge.getRegistry();
         registry.registerModule(BlockSoundGroup.class, new BlockSoundGroupRegistryModule());
         registry.registerModule(ItemGroup.class, ItemGroupRegistryModule.getInstance());
@@ -103,18 +130,32 @@ public abstract class CommonProxy {
         registry.registerModule(Material.class, new MaterialRegistryModule());
     }
 
+    private void registerPipelineStages() {
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK_SOUNDGROUP, SetBlockSoundGroupAttributesTask.class);
+
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEMGROUP, SetItemGroupAttributesTask.class);
+
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK, SetMaterialAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK, SetBlockAttributesTask.class);
+
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.HORIZONTAL_BLOCK, SetMaterialAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.HORIZONTAL_BLOCK, SetBlockAttributesTask.class);
+
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEM, SetMaterialAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEM, SetItemAttributesTask.class);
+    }
+
     protected void registerBuilders() {
         final GameRegistry registry = Sponge.getRegistry();
         registry.registerBuilderSupplier(BlockSoundGroup.Builder.class, BlockSoundGroupBuilder::new);
         registry.registerBuilderSupplier(ItemGroup.Builder.class, ItemGroupBuilderImpl::new);
+
+        // Block
         registry.registerBuilderSupplier(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new);
         registry.registerBuilderSupplier(HorizontalType.Builder.class, HorizontalTypeBuilderImpl::new);
-    }
 
-    protected void registerLoaderStages() {
-        this.assetLoader.registerLoaderStage(LoadBlockSoundGroupsStage.INSTANCE);
-        this.assetLoader.registerLoaderStage(LoadItemGroupsStage.instance);
-        this.assetLoader.registerLoaderStage(LoadMaterialsStage.instance);
+        // Item
+        registry.registerBuilderSupplier(BuildableItemType.Builder.class, AbstractItemTypeBuilder.BuilderImpl::new);
     }
 
     protected void registerListeners() {
