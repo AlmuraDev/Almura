@@ -18,6 +18,7 @@
         "creativetab.MixinDelegateItemGroupAttributes",
         "item.MixinItem",
         "item.MixinDelegateItemAttributes",
+        "world.MixinBossBarColor"
     ],
     "client": [
         "client.gui.MixinGuiBossOverlay",

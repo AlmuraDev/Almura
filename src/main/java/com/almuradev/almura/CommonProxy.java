@@ -32,6 +32,7 @@ import com.almuradev.almura.content.material.Material;
 import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
 import com.almuradev.almura.registry.BlockSoundGroupRegistryModule;
+import com.almuradev.almura.registry.BossBarColorRegistryModule;
 import com.almuradev.almura.registry.ItemGroupRegistryModule;
 import com.almuradev.almura.registry.MapColorRegistryModule;
 import com.almuradev.almura.registry.MaterialRegistryModule;
@@ -124,6 +125,7 @@ public abstract class CommonProxy {
 
     protected void registerRegistryModules() {
         final GameRegistry registry = Sponge.getRegistry();
+        registry.registerModule(new BossBarColorRegistryModule());
         registry.registerModule(BlockSoundGroup.class, new BlockSoundGroupRegistryModule());
         registry.registerModule(ItemGroup.class, ItemGroupRegistryModule.getInstance());
         registry.registerModule(MapColor.class, new MapColorRegistryModule());
