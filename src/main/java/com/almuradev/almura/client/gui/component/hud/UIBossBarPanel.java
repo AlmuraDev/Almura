@@ -86,8 +86,7 @@ public class UIBossBarPanel extends UIHUDPanel {
         } else if (bossBar.getOverlay() == BossBarOverlays.NOTCHED_20) { // NOTCHED_20
             this.drawNotched(renderer, bossBar, startY, contentWidth, 20);
         } else { // PROGRESS
-            this.drawNotched(renderer, bossBar, startY, contentWidth, 10);
-//            this.drawProgress(renderer, bossBar, startY, contentWidth);
+            this.drawProgress(renderer, bossBar, startY, contentWidth);
         }
     }
 
