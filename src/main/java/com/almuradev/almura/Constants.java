@@ -126,7 +126,7 @@ public class Constants {
         public static final String SKIN_URL_BASE = "https://mc-heads.net/avatar/%s/%d.png";
         public static final String STATISTICS_URL = "http://srv1.almuramc.com:8080";
         public static final ResourceLocation LOCATION_SPRITE_SHEET_ALMURA_GUI;
-        public static final ResourceLocation LOCATION_SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS;
+        public static final ResourceLocation LOCATION_SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY;
         public static final ResourceLocation LOCATION_ALMURA_LOGO;
         public static final ResourceLocation LOCATION_ALMURA_MAN;
         public static final ResourceLocation LOCATION_SPONGEPOWERED_SPONGIE;
@@ -134,8 +134,8 @@ public class Constants {
         public static final ResourceLocation LOCATION_AVATAR_GENERIC;
         public static final GuiTexture SPRITE_SHEET_ALMURA;
         public static final GuiTexture SPRITE_SHEET_VANILLA_ICON;
-        public static final GuiTexture SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS;
-        public static final GuiIcon ICON_VANILLA_ACHIEVEMENT_BACKGROUND;
+        public static final GuiTexture SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY;
+        public static final GuiIcon ICON_VANILLA_CONTAINER_INVENTORY;
         public static final GuiIcon ICON_EMPTY;
         public static final GuiIcon ICON_VANILLA_HEART_BACKGROUND;
         public static final GuiIcon ICON_VANILLA_HEART_FOREGROUND;
@@ -162,7 +162,7 @@ public class Constants {
 
         static {
             LOCATION_SPRITE_SHEET_ALMURA_GUI = new ResourceLocation(Constants.Plugin.ID, "textures/gui/gui.png");
-            LOCATION_SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS = new ResourceLocation("textures/gui/advancements/widgets.png");
+            LOCATION_SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY = new ResourceLocation("textures/gui/container/inventory.png");
             LOCATION_ALMURA_LOGO = new ResourceLocation(Constants.Plugin.ID, "textures/gui/almura_logo.png");
             LOCATION_ALMURA_MAN = new ResourceLocation(Constants.Plugin.ID, "textures/gui/almura_man.png");
             LOCATION_SPONGEPOWERED_SPONGIE = new ResourceLocation(Constants.Plugin.ID, "textures/gui/spongie.png");
@@ -170,10 +170,7 @@ public class Constants {
             LOCATION_AVATAR_GENERIC = new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/generic.png");
 
             SPRITE_SHEET_ALMURA = new GuiTexture(LOCATION_SPRITE_SHEET_ALMURA_GUI, 284, 106);
-
-            SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS = new GuiTexture(LOCATION_SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS, 256, 256);
-            ICON_VANILLA_ACHIEVEMENT_BACKGROUND = SPRITE_SHEET_VANILLA_ADVANCEMENTS_WIDGETS.getXYResizableIcon(0, 55, 200, 20, 5);
-
+            SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY = new GuiTexture(LOCATION_SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY, 256, 256);
             SPRITE_SHEET_VANILLA_ICON = new GuiTexture(MalisisGui.ICONS, 256, 256);
 
             ICON_EMPTY = SPRITE_SHEET_ALMURA.getIcon(299, 141, 1, 1);
@@ -185,6 +182,7 @@ public class Constants {
             ICON_VANILLA_ARMOR = SPRITE_SHEET_VANILLA_ICON.getIcon(34, 9, 9, 9);
             ICON_VANILLA_AIR = SPRITE_SHEET_VANILLA_ICON.getIcon(16, 18, 9, 9);
             ICON_VANILLA_MOUNT = SPRITE_SHEET_VANILLA_ICON.getIcon(88, 9, 9, 9);
+            ICON_VANILLA_CONTAINER_INVENTORY = SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY.getXYResizableIcon(141, 166, 24, 24, 5);
 
             ICON_ENJIN = SPRITE_SHEET_ALMURA.getIcon(0, 90, 16, 16);
 
