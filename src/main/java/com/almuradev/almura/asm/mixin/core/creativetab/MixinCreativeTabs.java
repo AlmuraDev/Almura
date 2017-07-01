@@ -6,6 +6,7 @@
 package com.almuradev.almura.asm.mixin.core.creativetab;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinCreativeTabs;
+import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.registry.ItemGroupRegistryModule;
 import com.google.common.base.MoreObjects;
@@ -17,10 +18,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.common.SpongeImplHooks;
 
 @Mixin(value = CreativeTabs.class, priority = 999)
-public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs {
+public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs, IMixinSetCatalogTypeId {
 
     @Shadow @Final private String tabLabel;
     @Shadow @Final private int tabIndex;
@@ -30,8 +30,7 @@ public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs
 
     @Inject(method = "<init>(ILjava/lang/String;)V", at = @At("RETURN"))
     public void onConstruction(int index, String label, CallbackInfo ci) {
-        final String modId = SpongeImplHooks.getModIdFromClass(getClass());
-        this.id = modId + ":" + label;
+        this.id = label; // HACK: re-set using setId(String, String) when registerAdditionalCatalog is called
         ItemGroupRegistryModule.getInstance().registerAdditionalCatalog(this);
     }
 
@@ -43,6 +42,12 @@ public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs
     @Override
     public String getName() {
         return this.tabLabel;
+    }
+
+    @Override
+    public void setId(String id, String name) {
+        this.id = id;
+        // name is `this.tabLabel`, we can ignore the parameter
     }
 
     @Override

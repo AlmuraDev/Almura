@@ -20,10 +20,10 @@ import java.util.Map;
 import java.util.Optional;
 
 // TODO Special registration for buildingBlocks to instance to Building_Blocks.
-public final class ItemGroupRegistryModule implements AdditionalCatalogRegistryModule<ItemGroup> {
+public final class ItemGroupRegistryModule implements AdditionalCatalogRegistryModule<ItemGroup>, RegistryHelper {
 
     @RegisterCatalog(ItemGroups.class)
-    private final Map<String, ItemGroup> mappings = Maps.newHashMap();
+    private final Map<String, ItemGroup> map = Maps.newHashMap();
 
     private ItemGroupRegistryModule() {
     }
@@ -33,23 +33,20 @@ public final class ItemGroupRegistryModule implements AdditionalCatalogRegistryM
     }
 
     @Override
-    public void registerAdditionalCatalog(ItemGroup extraCatalog) {
-        checkNotNull(extraCatalog);
-        final String id = extraCatalog.getId().toLowerCase(Locale.ENGLISH);
-        this.mappings.put(id, extraCatalog);
+    public void registerAdditionalCatalog(ItemGroup group) {
+        checkNotNull(group);
+        final String id = group.getId().toLowerCase(Locale.ENGLISH);
+        this.registerSetId(this.map, id, group);
     }
 
     @Override
     public Optional<ItemGroup> getById(String id) {
-        if (!checkNotNull(id).contains(":")) {
-            id = "minecraft:" + id;
-        }
-        return Optional.ofNullable(this.mappings.get(id.toLowerCase(Locale.ENGLISH)));
+        return Optional.ofNullable(this.map.get(this.withDomain(id)));
     }
 
     @Override
     public Collection<ItemGroup> getAll() {
-        return Collections.unmodifiableCollection(this.mappings.values());
+        return Collections.unmodifiableCollection(this.map.values());
     }
 
     private static final class Holder {

@@ -5,23 +5,20 @@
  */
 package com.almuradev.almura.registry;
 
-import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.MapColors;
 import org.spongepowered.api.registry.CatalogRegistryModule;
 import org.spongepowered.api.registry.RegistrationPhase;
 import org.spongepowered.api.registry.util.DelayedRegistration;
 import org.spongepowered.api.registry.util.RegisterCatalog;
-import org.spongepowered.common.SpongeImplHooks;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-public class MapColorRegistryModule implements CatalogRegistryModule<MapColor> {
+public class MapColorRegistryModule implements CatalogRegistryModule<MapColor>, RegistryHelper {
 
     @RegisterCatalog(MapColors.class)
     public final Map<String, MapColor> map = new HashMap<>(52);
@@ -84,19 +81,12 @@ public class MapColorRegistryModule implements CatalogRegistryModule<MapColor> {
     }
 
     private void register(String id, final net.minecraft.block.material.MapColor color) {
-        final String name = id;
-        id = SpongeImplHooks.getModIdFromClass(color.getClass()) + ':' + id;
-        this.map.put(id, (MapColor) color);
-        ((IMixinSetCatalogTypeId) color).setId(id, name);
+        this.registerSetId(this.map, id, color);
     }
 
     @Override
     public Optional<MapColor> getById(String id) {
-        id = id.toLowerCase(Locale.ENGLISH);
-        if (!id.contains(":")) {
-            id = "minecraft:" + id;
-        }
-        return Optional.ofNullable(this.map.get(id));
+        return Optional.ofNullable(this.map.get(this.withDomain(id)));
     }
 
     @Override

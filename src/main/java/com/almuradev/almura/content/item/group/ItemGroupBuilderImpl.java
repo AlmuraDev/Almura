@@ -8,6 +8,7 @@ package com.almuradev.almura.content.item.group;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.Constants;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinCreativeTabs;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateItemGroupAttributes;
 import com.almuradev.almura.content.item.group.impl.GenericCreativeTabs;
@@ -64,11 +65,13 @@ public class ItemGroupBuilderImpl implements ItemGroup.Builder {
         checkNotNull(name);
         checkState(!name.isEmpty(), "Name cannot be empty!");
 
-        final String registryName = id.split(":")[1];
+        final String[] split = id.split(":");
+        final String domain = split[0].equals(Constants.Plugin.ID) ? Constants.Plugin.ID.concat(".") : "";
+        final String registryName = split[1].replace(":", ".").replace("/", ".");
 
         // TODO Implement getId and set it properly in MixinCreativeTabs
-        final CreativeTabs creativeTabs = new GenericCreativeTabs(registryName.replace(":", ".").replace("/", "."));
-        if (itemTypeDelegate != null) {
+        final CreativeTabs creativeTabs = new GenericCreativeTabs(registryName, domain.isEmpty() ? null : domain.concat(registryName));
+        if (this.itemTypeDelegate != null) {
             ((IMixinDelegateItemGroupAttributes) creativeTabs).setItemTypeDelegate(this.itemTypeDelegate);
         } else {
             ((IMixinCreativeTabs) creativeTabs).setIconItemStack((net.minecraft.item.ItemStack) (Object) this.itemStack);

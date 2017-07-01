@@ -11,6 +11,7 @@ import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.block.BuildableBlockType;
 import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.item.group.ItemGroup;
+import com.almuradev.almura.registry.AlmuraModelResourceLocation;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -117,9 +118,7 @@ public final class AssetLoader {
 
         for (Map.Entry<Pack, List<AssetContext>> packByAssetTypeEntry : this.registry.getPackAssetContextualsFor(AssetType.ITEM).entrySet()) {
             for (AssetContext context : packByAssetTypeEntry.getValue()) {
-                final ModelResourceLocation modelResourceLocation = new ModelResourceLocation(context.getCatalog().getId().split(":")[0] + ":" + 
-                        context
-                        .getCatalog().getId().split("/")[1], "normal");
+                final ModelResourceLocation modelResourceLocation = new AlmuraModelResourceLocation(context.getCatalog());
 
                 ModelLoader.setCustomModelResourceLocation((Item) context.getCatalog(), 0, modelResourceLocation);
 

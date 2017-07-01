@@ -5,23 +5,20 @@
  */
 package com.almuradev.almura.registry;
 
-import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.sound.BlockSoundGroups;
 import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 import org.spongepowered.api.registry.RegistrationPhase;
 import org.spongepowered.api.registry.util.DelayedRegistration;
 import org.spongepowered.api.registry.util.RegisterCatalog;
-import org.spongepowered.common.SpongeImplHooks;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-public class BlockSoundGroupRegistryModule implements AdditionalCatalogRegistryModule<BlockSoundGroup> {
+public class BlockSoundGroupRegistryModule implements AdditionalCatalogRegistryModule<BlockSoundGroup>, RegistryHelper {
 
     @RegisterCatalog(BlockSoundGroups.class)
     public final Map<String, BlockSoundGroup> map = new HashMap<>(52);
@@ -49,19 +46,12 @@ public class BlockSoundGroupRegistryModule implements AdditionalCatalogRegistryM
     }
 
     private void register(String id, final net.minecraft.block.SoundType group) {
-        final String name = id;
-        id = SpongeImplHooks.getModIdFromClass(group.getClass()) + ':' + id;
-        this.map.put(id, (BlockSoundGroup) group);
-        ((IMixinSetCatalogTypeId) group).setId(id, name);
+        this.registerSetId(this.map, id, group);
     }
 
     @Override
     public Optional<BlockSoundGroup> getById(String id) {
-        id = id.toLowerCase(Locale.ENGLISH);
-        if (!id.contains(":")) {
-            id = "minecraft:" + id;
-        }
-        return Optional.ofNullable(this.map.get(id));
+        return Optional.ofNullable(this.map.get(this.withDomain(id)));
     }
 
     @Override

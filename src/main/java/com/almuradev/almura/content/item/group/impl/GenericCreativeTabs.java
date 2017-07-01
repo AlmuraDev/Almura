@@ -8,15 +8,24 @@ package com.almuradev.almura.content.item.group.impl;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
 
 public class GenericCreativeTabs extends CreativeTabs {
 
-    public GenericCreativeTabs(String label) {
+    private final String translation;
+
+    public GenericCreativeTabs(String label, @Nullable final String translation) {
         super(label);
+        this.translation = translation;
     }
 
-    public GenericCreativeTabs(int index, String label) {
-        super(index, label);
+    @SideOnly(Side.CLIENT)
+    @Override
+    public String getTranslatedTabLabel() {
+        return this.translation != null ? "itemGroup.".concat(this.translation) : super.getTranslatedTabLabel();
     }
 
     @Override
