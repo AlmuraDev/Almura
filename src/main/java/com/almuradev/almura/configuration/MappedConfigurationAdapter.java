@@ -53,6 +53,10 @@ public final class MappedConfigurationAdapter<T extends AbstractConfiguration> {
         return this.configPath;
     }
 
+    public Path getConfigFolder() {
+        return this.configFolder;
+    }
+
     public T getConfig() {
         return this.config;
     }
@@ -65,14 +69,5 @@ public final class MappedConfigurationAdapter<T extends AbstractConfiguration> {
     public void save() throws IOException, ObjectMappingException {
         this.mapper.serialize(this.root);
         this.loader.save(this.root);
-    }
-
-    public void loadDefaultConfig() throws IOException, ObjectMappingException {
-        if (Files.notExists(this.configFolder)) {
-            Files.createDirectories(this.configFolder);
-        }
-
-        this.save();
-        this.load();
     }
 }

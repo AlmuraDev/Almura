@@ -36,6 +36,7 @@ import org.spongepowered.api.Platform;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,6 +76,11 @@ public final class ClientProxy extends CommonProxy {
                 .setHeader(Constants.Config.HEADER), Constants.FileSystem.PATH_CONFIG_ALMURA, Constants.FileSystem.CONFIG_CLIENT_NAME);
 
         try {
+            if (Files.notExists(configAdapter.getConfigFolder())) {
+                Files.createDirectories(configAdapter.getConfigFolder());
+                this.configAdapter.save();
+            }
+
             this.configAdapter.load();
         } catch (IOException | ObjectMappingException e) {
             throw new RuntimeException("Failed to save config for class [" + this.configAdapter.getConfigClass() + "] in [" + this.configAdapter
