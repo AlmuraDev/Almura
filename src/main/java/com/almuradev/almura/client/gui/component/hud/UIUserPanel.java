@@ -35,7 +35,7 @@ public class UIUserPanel extends UIHUDPanel {
         super(gui, width, height);
 
         // Avatar
-        this.userImage = new UIAvatarImage(gui, this.client.player);
+        this.userImage = new UIAvatarImage(gui, this.client.player.getPlayerInfo());
         this.userImage.setPosition(2, 2);
         this.userImage.setSize(16, 16);
 

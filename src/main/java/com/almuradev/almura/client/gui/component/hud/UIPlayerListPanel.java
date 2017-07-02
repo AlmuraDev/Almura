@@ -6,21 +6,21 @@
 package com.almuradev.almura.client.gui.component.hud;
 
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.asm.mixin.interfaces.IMixinEntityPlayer;
 import com.almuradev.almura.client.gui.UIAvatarImage;
 import com.almuradev.almura.client.gui.component.UISimpleList;
-import com.google.common.collect.Lists;
+import com.google.common.base.Strings;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.renderer.icon.provider.GuiIconProvider;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializers;
+import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.GameType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +29,23 @@ import javax.annotation.Nullable;
 
 public class UIPlayerListPanel extends UIHUDPanel {
 
+    private static final boolean DUPLICATE_ENTRIES_FOR_DEMO = true; // TODO: REMOVE!
+    private static final Ordering<NetworkPlayerInfo> ORDERING = Ordering.from((o1, o2) -> {
+        final ScorePlayerTeam t1 = o1.getPlayerTeam();
+        final ScorePlayerTeam t2 = o2.getPlayerTeam();
+        return ComparisonChain.start()
+                .compareTrueFirst(o1.getGameType() != GameType.SPECTATOR, o2.getGameType() != GameType.SPECTATOR)
+                .compare(t1 != null ? t1.getName() : "", t2 != null ? t2.getName() : "")
+                .compare(o1.getGameProfile().getName(), o2.getGameProfile().getName())
+                .result();
+    });
+    private static final int MAX_DISPLAY_NAME_LENGTH = 26;
+    private static final int DISPLAY_NAME_TRAILING_DOTS_AMOUNT = 3;
+    private static final String DISPLAY_NAME_TRAILING_DOTS = Strings.repeat(".", DISPLAY_NAME_TRAILING_DOTS_AMOUNT);
+    private static final int MAX_DISPLAY_NAME_LENGTH_SUBSTRING = MAX_DISPLAY_NAME_LENGTH - DISPLAY_NAME_TRAILING_DOTS_AMOUNT;
+    private static final TextFormatting DEFAULT_COLOR = TextFormatting.WHITE;
     private final Minecraft client = Minecraft.getMinecraft();
-    private UISimpleList playerList;
+    private final UISimpleList playerList;
 
     @SuppressWarnings("unchecked")
     public UIPlayerListPanel(MalisisGui gui, int width, int height) {
@@ -51,58 +66,34 @@ public class UIPlayerListPanel extends UIHUDPanel {
         return false;
     }
 
+    @Override
+    public float getScrollStep() {
+        return (GuiScreen.isCtrlKeyDown() ? 0.125F : 0.075F);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         super.drawBackground(renderer, mouseX, mouseY, partialTick);
 
-        final List<EntityPlayer> list = new ArrayList<>(this.client.world.playerEntities);
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-        list.add(list.get(0));
-
-        final List<PlayerListElement> elementList = Lists.newArrayList();
+        final List<NetworkPlayerInfo> entries = ORDERING.sortedCopy(this.client.player.connection.getPlayerInfoMap());
+        if (DUPLICATE_ENTRIES_FOR_DEMO) {
+            final NetworkPlayerInfo entry = entries.get(0);
+            for (int i = 0; i < 33; i++) {
+                entries.add(entry);
+            }
+        }
 
         // Get maximum column width
-        final int maxColumnWidth = getMaxColumnWidth(list);
+        final int maxColumnWidth = getMaxColumnWidth(entries);
 
-        for (int i = 0; i < list.size(); i += 2) {
-            final EntityPlayer player1 = list.get(i);
-            final EntityPlayer player2 = i + 1 < list.size() ? list.get(i + 1) : null;
+        final List<PlayerListElement> elementList = new ArrayList<>();
+        for (int i = 0; i < entries.size(); i += 2) {
+            final NetworkPlayerInfo player1 = entries.get(i);
+            final NetworkPlayerInfo player2 = i + 1 < entries.size() ? entries.get(i + 1) : null;
 
             // Add a new element tot he list
-            elementList.add(new PlayerListElement(this.getGui(), this.playerList, (AbstractClientPlayer) player1, (AbstractClientPlayer) player2,
+            elementList.add(new PlayerListElement(this.getGui(), this.playerList, player1, player2,
                     maxColumnWidth));
         }
 
@@ -114,32 +105,35 @@ public class UIPlayerListPanel extends UIHUDPanel {
         this.playerList.getScrollBar().setVisible(this.height >= 215);
 
         // Auto size our width
-        this.width = list.size() == 1 ? maxColumnWidth + 12 : (maxColumnWidth + (!this.playerList.getScrollBar().isVisible() ? 9 : 11)) * 2 + 1;
+        this.width = entries.size() == 1 ? maxColumnWidth + 12 : (maxColumnWidth + (!this.playerList.getScrollBar().isVisible() ? 9 : 11)) * 2 + 1;
 
         // Resize list
         this.playerList.setSize(this.width - (this.playerList.getScrollBar().isVisible() ? 7 : 5), this.height - 6);
     }
 
-    private int getMaxColumnWidth(List<EntityPlayer> players) {
+    private int getMaxColumnWidth(List<NetworkPlayerInfo> players) {
         int maxWidth = 0;
-        for (EntityPlayer player : players) {
-            maxWidth = Math.max(maxWidth, this.client.fontRenderer.getStringWidth(getFormattedDisplayName(player)));
+        for (NetworkPlayerInfo player : players) {
+            maxWidth = Math.max(maxWidth, this.client.fontRenderer.getStringWidth(getTrimmedDisplayName(player)));
         }
 
         return maxWidth + 11;
     }
 
-    @SuppressWarnings("deprecation")
-    private static String getFormattedDisplayName(EntityPlayer player) {
-        final IMixinEntityPlayer mixPlayer = (IMixinEntityPlayer) player;
-        final String serializedText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, mixPlayer.getPrefix(), player
-                .getName(), mixPlayer.getSuffix()));
-        return serializedText.length() >= 26 ? serializedText.substring(0, 23) + "..." : serializedText;
+    // TODO: this does not properly take colours into account
+    private static String getTrimmedDisplayName(NetworkPlayerInfo player) {
+        String name = DEFAULT_COLOR + getDisplayName(player);
+        if (player.getGameType() == GameType.SPECTATOR) {
+            name = TextFormatting.ITALIC + name;
+        }
+        return name.length() >= MAX_DISPLAY_NAME_LENGTH ? name.substring(0, MAX_DISPLAY_NAME_LENGTH_SUBSTRING) + DISPLAY_NAME_TRAILING_DOTS : name;
     }
 
-    @Override
-    public float getScrollStep() {
-        return (GuiScreen.isCtrlKeyDown() ? 0.125F : 0.075F);
+    private static String getDisplayName(final NetworkPlayerInfo player) {
+        if (player.getDisplayName() != null) {
+            return player.getDisplayName().getFormattedText();
+        }
+        return ScorePlayerTeam.formatPlayerName(player.getPlayerTeam(), player.getGameProfile().getName());
     }
 
     protected static final class PlayerListElement extends UIBackgroundContainer {
@@ -148,12 +142,12 @@ public class UIPlayerListPanel extends UIHUDPanel {
         private static final int ICON_SIZE = 12;
         private final UIAvatarImage avatarImage1;
         private final int maxColumnWidth;
-        private final AbstractClientPlayer player1;
-        @Nullable private final AbstractClientPlayer player2;
+        private final NetworkPlayerInfo player1;
+        @Nullable private final NetworkPlayerInfo player2;
         @Nullable private UIAvatarImage avatarImage2;
 
         @SuppressWarnings("deprecation")
-        private PlayerListElement(MalisisGui gui, UISimpleList parent, AbstractClientPlayer player1, @Nullable AbstractClientPlayer player2, int maxColumnWidth) {
+        private PlayerListElement(MalisisGui gui, UISimpleList parent, NetworkPlayerInfo player1, @Nullable NetworkPlayerInfo player2, int maxColumnWidth) {
             super(gui);
 
             // Set properties
@@ -170,6 +164,7 @@ public class UIPlayerListPanel extends UIHUDPanel {
                 this.avatarImage2.setPosition(x + this.maxColumnWidth + 6, 0);
                 this.add(this.avatarImage2);
             }
+
 
             // Auto size
             final int width = player2 == null ? this.maxColumnWidth + 6 : this.maxColumnWidth * 2 + 13;
@@ -199,17 +194,17 @@ public class UIPlayerListPanel extends UIHUDPanel {
                 int y = this.verticalPadding + 2;
 
                 // Text
-                renderer.drawText(UIPlayerListPanel.getFormattedDisplayName(this.player1), x + ICON_SIZE, y, this.zIndex);
+                renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player1), x + ICON_SIZE, y, this.zIndex);
 
                 // Draw player 2 if needed
                 if (this.player2 != null) {
                     x += this.maxColumnWidth + 4;
 
                     // Text
-                    renderer.drawText(UIPlayerListPanel.getFormattedDisplayName(this.player2), x + ICON_SIZE + 2, y, this.zIndex);
+                    renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player2), x + ICON_SIZE + 2, y, this.zIndex);
 
                     // Separator
-                    renderer.drawRectangle(maxColumnWidth + 5 + this.horizontalPadding, 1, this.zIndex, 1,
+                    renderer.drawRectangle(this.maxColumnWidth + 5 + this.horizontalPadding, 1, this.zIndex, 1,
                             this.height - 2, BORDER_COLOR, 75);
                 }
             }

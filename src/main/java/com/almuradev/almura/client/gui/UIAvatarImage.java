@@ -10,7 +10,7 @@ import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.renderer.icon.provider.GuiIconProvider;
-import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -23,17 +23,16 @@ public class UIAvatarImage extends UIImage {
     private static final int FACE_Y_OVERLAY = 8;
     private static final int FACE_WIDTH = 8;
     private static final int FACE_HEIGHT = 8;
-    private final AbstractClientPlayer abstractClientPlayer;
+    private final NetworkPlayerInfo player;
 
-    public UIAvatarImage(MalisisGui gui, AbstractClientPlayer abstractClientPlayer) {
+    public UIAvatarImage(MalisisGui gui, NetworkPlayerInfo player) {
         super(gui, null, null);
-
-        this.abstractClientPlayer = abstractClientPlayer;
+        this.player = player;
     }
 
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTicks) {
-        final GuiTexture texture = new GuiTexture(this.abstractClientPlayer.getLocationSkin(), 64, 64);
+        final GuiTexture texture = new GuiTexture(this.player.getLocationSkin(), 64, 64);
 
         // Draw base face
         ((GuiIconProvider) this.iconProvider).setIcon(texture.createIcon(FACE_X_BASE, FACE_Y_BASE, FACE_WIDTH, FACE_HEIGHT));
