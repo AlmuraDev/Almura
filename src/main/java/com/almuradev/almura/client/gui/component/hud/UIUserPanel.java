@@ -5,8 +5,7 @@
  */
 package com.almuradev.almura.client.gui.component.hud;
 
-import com.almuradev.almura.Constants;
-import com.almuradev.almura.client.gui.GuiRemoteTexture;
+import com.almuradev.almura.client.gui.UIAvatarImage;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.screen.ingame.hud.HUDData;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
@@ -19,7 +18,6 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.renderer.icon.Icon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -28,6 +26,7 @@ import org.spongepowered.api.text.Text;
 @SideOnly(Side.CLIENT)
 public class UIUserPanel extends UIHUDPanel {
 
+    private final Minecraft client = Minecraft.getMinecraft();
     private final UIImage currencyImage, userImage;
     private final UILabel currencyLabel, levelLabel, usernameLabel;
     private final UIPropertyBar experienceBar;
@@ -36,17 +35,13 @@ public class UIUserPanel extends UIHUDPanel {
         super(gui, width, height);
 
         // Avatar
-        this.userImage = new UIImage(gui, new GuiRemoteTexture(
-                Constants.Gui.LOCATION_AVATAR_GENERIC,
-                new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + Minecraft.getMinecraft().player.getUniqueID() + ".png"),
-                String.format(Constants.Gui.SKIN_URL_BASE, Minecraft.getMinecraft().player.getUniqueID().toString(), 16),
-                16, 16), null);
+        this.userImage = new UIAvatarImage(gui, this.client.player);
         this.userImage.setPosition(2, 2);
         this.userImage.setSize(16, 16);
 
         // Username
         // TODO Needs to pull player nickname
-        this.usernameLabel = new UILabel(gui, TextFormatting.WHITE + Minecraft.getMinecraft().player.getName());
+        this.usernameLabel = new UILabel(gui, TextFormatting.WHITE + this.client.player.getName());
         this.usernameLabel.setPosition(SimpleScreen.getPaddedX(this.userImage, 3), 2);
 
         // Level
@@ -67,7 +62,7 @@ public class UIUserPanel extends UIHUDPanel {
 
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        if (Minecraft.getMinecraft().player == null || Minecraft.getMinecraft().player.world == null) {
+        if (this.client.player == null || this.client.player.world == null) {
             return;
         }
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
@@ -87,14 +82,14 @@ public class UIUserPanel extends UIHUDPanel {
     }
 
     private void updateExperience() {
-        final int experienceCap = Minecraft.getMinecraft().player.xpBarCap();
-        final int experience = (int) (Minecraft.getMinecraft().player.experience * experienceCap);
+        final int experienceCap = this.client.player.xpBarCap();
+        final int experience = (int) (this.client.player.experience * experienceCap);
 
         this.experienceBar.setText(Text.of(experience + "/" + experienceCap));
         this.experienceBar.setAmount(MathUtil.convertToRange(experience, 0, experienceCap, 0f, 1f));
     }
 
     private void updateLevel() {
-        this.levelLabel.setText("Lv. " + Minecraft.getMinecraft().player.experienceLevel);
+        this.levelLabel.setText("Lv. " + this.client.player.experienceLevel);
     }
 }

@@ -18,6 +18,7 @@
         "creativetab.MixinDelegateItemGroupAttributes",
         "item.MixinItem",
         "item.MixinDelegateItemAttributes",
+        "entity.player.MixinEntityPlayer",
         "world.MixinBossBarColor"
     ],
     "client": [

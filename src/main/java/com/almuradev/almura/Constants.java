@@ -136,6 +136,7 @@ public class Constants {
         public static final GuiTexture SPRITE_SHEET_VANILLA_ICON;
         public static final GuiTexture SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY;
         public static final GuiIcon ICON_VANILLA_CONTAINER_INVENTORY;
+        public static final GuiIcon ICON_VANILLA_CONTAINER_INVENTORY_BLUE;
         public static final GuiIcon ICON_EMPTY;
         public static final GuiIcon ICON_VANILLA_HEART_BACKGROUND;
         public static final GuiIcon ICON_VANILLA_HEART_FOREGROUND;
@@ -183,6 +184,7 @@ public class Constants {
             ICON_VANILLA_AIR = SPRITE_SHEET_VANILLA_ICON.getIcon(16, 18, 9, 9);
             ICON_VANILLA_MOUNT = SPRITE_SHEET_VANILLA_ICON.getIcon(88, 9, 9, 9);
             ICON_VANILLA_CONTAINER_INVENTORY = SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY.getXYResizableIcon(141, 166, 24, 24, 5);
+            ICON_VANILLA_CONTAINER_INVENTORY_BLUE = SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY.getXYResizableIcon(165, 166, 24, 24, 5);
 
             ICON_ENJIN = SPRITE_SHEET_ALMURA.getIcon(0, 90, 16, 16);
 

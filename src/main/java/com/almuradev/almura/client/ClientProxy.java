@@ -149,6 +149,7 @@ public final class ClientProxy extends CommonProxy {
                     case EXPERIENCE:
                     case BOSSINFO:
                     case BOSSHEALTH:
+                    //case PLAYER_LIST:
                     case DEBUG:
                         event.setCanceled(true);
                         break;

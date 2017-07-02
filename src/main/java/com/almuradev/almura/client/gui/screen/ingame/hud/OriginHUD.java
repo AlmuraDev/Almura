@@ -10,6 +10,7 @@ import com.almuradev.almura.Constants;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinGuiBossOverlay;
 import com.almuradev.almura.client.gui.component.hud.UIBossBarPanel;
 import com.almuradev.almura.client.gui.component.hud.UIDetailsPanel;
+import com.almuradev.almura.client.gui.component.hud.UIPlayerListPanel;
 import com.almuradev.almura.client.gui.component.hud.UIStatsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIUserPanel;
 import com.almuradev.almura.client.gui.component.hud.UIWorldPanel;
@@ -20,6 +21,7 @@ import com.almuradev.almura.configuration.type.ClientConfiguration;
 import net.malisis.core.client.gui.Anchor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -28,6 +30,7 @@ public class OriginHUD extends AbstractHUD {
 
     private static final int padding = 1;
     private final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
+    private final Minecraft client = Minecraft.getMinecraft();
     private UIBossBarPanel bossBarPanel;
     private UIDebugDetailsPanel debugDetailsPanel;
     private UIDebugBlockPanel debugBlockPanel;
@@ -35,6 +38,7 @@ public class OriginHUD extends AbstractHUD {
     private UIStatsPanel statsPanel;
     private UIUserPanel userPanel;
     private UIWorldPanel worldPanel;
+    private final OriginHUDPlayerListScreen playerListScreen = new OriginHUDPlayerListScreen(this);
 
     @Override
     public void construct() {
@@ -82,16 +86,17 @@ public class OriginHUD extends AbstractHUD {
         worldPanel.setAlpha(config.client.originHudOpacity);
         detailsPanel.setAlpha(config.client.originHudOpacity);
 
+
         // Show debug panels if necessary
-        final boolean isDebugEnabled = Minecraft.getMinecraft().gameSettings.showDebugInfo;
+        final boolean isDebugEnabled = this.client.gameSettings.showDebugInfo;
         this.debugDetailsPanel.setVisible(isDebugEnabled);
         if (isDebugEnabled) {
             // Get proper position based on what potion effects are being shown
             int yOffset = SimpleScreen.getPaddedY(this.detailsPanel, padding);
-            if (Minecraft.getMinecraft().player.getActivePotionEffects().stream().anyMatch(potion -> potion.getPotion().isBeneficial())) {
+            if (this.client.player.getActivePotionEffects().stream().anyMatch(potion -> potion.getPotion().isBeneficial())) {
                 yOffset += 25; // 24 for potion icon, 2 for padding
             }
-            if (Minecraft.getMinecraft().player.getActivePotionEffects().stream().anyMatch(potion -> !potion.getPotion().isBeneficial())) {
+            if (this.client.player.getActivePotionEffects().stream().anyMatch(potion -> !potion.getPotion().isBeneficial())) {
                 yOffset += 25; // 24 for potion icon, 2 for padding
             }
             // Debug block panel
@@ -104,9 +109,15 @@ public class OriginHUD extends AbstractHUD {
         }
 
         // Show boss panel if necessary
-        final GuiIngame guiIngame = Minecraft.getMinecraft().ingameGUI;
+        final GuiIngame guiIngame = this.client.ingameGUI;
         if (guiIngame != null) {
-            this.bossBarPanel.setVisible(!((IMixinGuiBossOverlay) (Object) guiIngame.getBossOverlay()).getBossInfo().isEmpty());
+            this.bossBarPanel.setVisible(!((IMixinGuiBossOverlay) guiIngame.getBossOverlay()).getBossInfo().isEmpty());
+            this.bossBarPanel.setAlpha(config.client.originHudOpacity);
+        }
+
+        // Show player list if necessary
+        if (this.client.gameSettings.keyBindPlayerList.isPressed()) {
+            this.playerListScreen.displayOverlay();
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -120,5 +131,34 @@ public class OriginHUD extends AbstractHUD {
     @Override
     public int getPotionOffsetY() {
         return this.detailsPanel.getHeight() + padding;
+    }
+
+    private static final class OriginHUDPlayerListScreen extends SimpleScreen {
+
+        private OriginHUDPlayerListScreen(GuiScreen parent) {
+            super(parent);
+            this.construct();
+        }
+
+        @Override
+        public void construct() {
+            this.guiscreenBackground = false;
+            this.renderer.setDefaultTexture(Constants.Gui.SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY);
+
+            // Player list panel
+            final UIPlayerListPanel playerListPanel = new UIPlayerListPanel(this, 150, 16);
+            playerListPanel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
+
+            this.addToScreen(playerListPanel);
+        }
+
+        @Override
+        public void update(int mouseX, int mouseY, float partialTick) {
+            super.update(mouseX, mouseY, partialTick);
+
+            if (!Minecraft.getMinecraft().gameSettings.keyBindPlayerList.isKeyDown()) {
+                this.closeOverlay();
+            }
+        }
     }
 }
