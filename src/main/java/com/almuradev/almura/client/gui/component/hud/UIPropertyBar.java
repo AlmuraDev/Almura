@@ -78,18 +78,9 @@ public class UIPropertyBar extends UIComponent {
             barX = ICON_SIZE + 2;
         }
 
-
-        renderer.enableBlending();
-        renderer.disableTextures();
-        this.shape.resetState();
-
         final int alpha = (int) MathUtil.squash(this.getAlpha() - 75, 0, 255);
         renderer.drawRectangle(barX, 1, this.zIndex, barWidth, barHeight, 0, alpha);
         renderer.drawRectangle(barX + 1, 2, this.zIndex, this.getConvertedFill(), barHeight - 2, this.color, this.getAlpha());
-
-        renderer.next();
-        renderer.disableBlending();
-        renderer.enableTextures();
     }
 
     public Text getText() {

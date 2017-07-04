@@ -121,12 +121,11 @@ public class Constants {
         public static final String FORUM_URL = "http://www.almuramc.com";
         public static final String ISSUES_URL = "https://github.com/AlmuraDev/Almura/issues";
         public static final String MAP_URL = "http://srv1.almuramc.com:8123";
-        public static final String OPENGL_WARNING_URL = "https://help.mojang.com/customer/portal/articles/325948?ref=game";
         public static final String SHOP_URL = "http://www.almura.com"; // TODO: Proper URL
         public static final String SKIN_URL_BASE = "https://mc-heads.net/avatar/%s/%d.png";
         public static final String STATISTICS_URL = "http://srv1.almuramc.com:8080";
         public static final ResourceLocation LOCATION_SPRITE_SHEET_ALMURA_GUI;
-        public static final ResourceLocation LOCATION_SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY;
+        public static final ResourceLocation LOCATION_SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY_ADVANCEMENT;
         public static final ResourceLocation LOCATION_ALMURA_LOGO;
         public static final ResourceLocation LOCATION_ALMURA_MAN;
         public static final ResourceLocation LOCATION_SPONGEPOWERED_SPONGIE;
@@ -135,8 +134,7 @@ public class Constants {
         public static final GuiTexture SPRITE_SHEET_ALMURA;
         public static final GuiTexture SPRITE_SHEET_VANILLA_ICON;
         public static final GuiTexture SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY;
-        public static final GuiIcon ICON_VANILLA_CONTAINER_INVENTORY;
-        public static final GuiIcon ICON_VANILLA_CONTAINER_INVENTORY_BLUE;
+        public static final GuiIcon ICON_VANILLA_CONTAINER_INVENTORY_ADVANCEMENT;
         public static final GuiIcon ICON_EMPTY;
         public static final GuiIcon ICON_VANILLA_HEART_BACKGROUND;
         public static final GuiIcon ICON_VANILLA_HEART_FOREGROUND;
@@ -163,7 +161,7 @@ public class Constants {
 
         static {
             LOCATION_SPRITE_SHEET_ALMURA_GUI = new ResourceLocation(Constants.Plugin.ID, "textures/gui/gui.png");
-            LOCATION_SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY = new ResourceLocation("textures/gui/container/inventory.png");
+            LOCATION_SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY_ADVANCEMENT = new ResourceLocation("textures/gui/container/inventory.png");
             LOCATION_ALMURA_LOGO = new ResourceLocation(Constants.Plugin.ID, "textures/gui/almura_logo.png");
             LOCATION_ALMURA_MAN = new ResourceLocation(Constants.Plugin.ID, "textures/gui/almura_man.png");
             LOCATION_SPONGEPOWERED_SPONGIE = new ResourceLocation(Constants.Plugin.ID, "textures/gui/spongie.png");
@@ -171,7 +169,7 @@ public class Constants {
             LOCATION_AVATAR_GENERIC = new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/generic.png");
 
             SPRITE_SHEET_ALMURA = new GuiTexture(LOCATION_SPRITE_SHEET_ALMURA_GUI, 284, 106);
-            SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY = new GuiTexture(LOCATION_SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY, 256, 256);
+            SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY = new GuiTexture(LOCATION_SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY_ADVANCEMENT, 256, 256);
             SPRITE_SHEET_VANILLA_ICON = new GuiTexture(MalisisGui.ICONS, 256, 256);
 
             ICON_EMPTY = SPRITE_SHEET_ALMURA.getIcon(299, 141, 1, 1);
@@ -183,8 +181,7 @@ public class Constants {
             ICON_VANILLA_ARMOR = SPRITE_SHEET_VANILLA_ICON.getIcon(34, 9, 9, 9);
             ICON_VANILLA_AIR = SPRITE_SHEET_VANILLA_ICON.getIcon(16, 18, 9, 9);
             ICON_VANILLA_MOUNT = SPRITE_SHEET_VANILLA_ICON.getIcon(88, 9, 9, 9);
-            ICON_VANILLA_CONTAINER_INVENTORY = SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY.getXYResizableIcon(141, 166, 24, 24, 5);
-            ICON_VANILLA_CONTAINER_INVENTORY_BLUE = SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY.getXYResizableIcon(165, 166, 24, 24, 5);
+            ICON_VANILLA_CONTAINER_INVENTORY_ADVANCEMENT = SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY.getXYResizableIcon(141, 166, 24, 24, 5);
 
             ICON_ENJIN = SPRITE_SHEET_ALMURA.getIcon(0, 90, 16, 16);
 

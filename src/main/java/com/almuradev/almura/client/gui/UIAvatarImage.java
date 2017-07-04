@@ -14,6 +14,8 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+
 @SideOnly(Side.CLIENT)
 public class UIAvatarImage extends UIImage {
 
@@ -23,16 +25,29 @@ public class UIAvatarImage extends UIImage {
     private static final int FACE_Y_OVERLAY = 8;
     private static final int FACE_WIDTH = 8;
     private static final int FACE_HEIGHT = 8;
-    private final NetworkPlayerInfo player;
+    @Nullable private NetworkPlayerInfo playerInfo;
 
-    public UIAvatarImage(MalisisGui gui, NetworkPlayerInfo player) {
+    public UIAvatarImage(MalisisGui gui, @Nullable NetworkPlayerInfo playerInfo) {
         super(gui, null, null);
-        this.player = player;
+        this.playerInfo = playerInfo;
+    }
+
+    @Nullable
+    public NetworkPlayerInfo getPlayerInfo() {
+        return this.playerInfo;
+    }
+
+    public void setPlayerInfo(@Nullable NetworkPlayerInfo playerInfo) {
+        this.playerInfo = playerInfo;
     }
 
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTicks) {
-        final GuiTexture texture = new GuiTexture(this.player.getLocationSkin(), 64, 64);
+        if (this.playerInfo == null) {
+            return;
+        }
+
+        final GuiTexture texture = new GuiTexture(this.playerInfo.getLocationSkin(), 64, 64);
 
         // Draw base face
         ((GuiIconProvider) this.iconProvider).setIcon(texture.createIcon(FACE_X_BASE, FACE_Y_BASE, FACE_WIDTH, FACE_HEIGHT));

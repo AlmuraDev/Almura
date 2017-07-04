@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura.client.gui.component.hud;
 
-import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.UIAvatarImage;
 import com.almuradev.almura.client.gui.component.UISimpleList;
 import com.google.common.base.Strings;
@@ -14,7 +13,6 @@ import com.google.common.collect.Ordering;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.renderer.icon.provider.GuiIconProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -51,11 +49,9 @@ public class UIPlayerListPanel extends UIHUDPanel {
     public UIPlayerListPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
 
-        this.iconProvider = new GuiIconProvider(Constants.Gui.ICON_VANILLA_CONTAINER_INVENTORY_BLUE);
-
         this.playerList = new UISimpleList(gui, 0, 0);
         this.playerList.getScrollBar().setAutoHide(false);
-        this.playerList.setElementSpacing(1);
+        this.playerList.setElementSpacing(2);
         this.playerList.register(this);
         this.add(this.playerList);
     }

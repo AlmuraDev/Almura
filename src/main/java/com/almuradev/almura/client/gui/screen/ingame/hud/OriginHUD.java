@@ -11,7 +11,6 @@ import com.almuradev.almura.asm.mixin.interfaces.IMixinGuiBossOverlay;
 import com.almuradev.almura.client.gui.component.hud.UIBossBarPanel;
 import com.almuradev.almura.client.gui.component.hud.UIDetailsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIPlayerListPanel;
-import com.almuradev.almura.client.gui.component.hud.UIStatsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIUserPanel;
 import com.almuradev.almura.client.gui.component.hud.UIWorldPanel;
 import com.almuradev.almura.client.gui.component.hud.debug.UIDebugBlockPanel;
@@ -35,7 +34,6 @@ public class OriginHUD extends AbstractHUD {
     private UIDebugDetailsPanel debugDetailsPanel;
     private UIDebugBlockPanel debugBlockPanel;
     private UIDetailsPanel detailsPanel;
-    private UIStatsPanel statsPanel;
     private UIUserPanel userPanel;
     private UIWorldPanel worldPanel;
     private final OriginHUDPlayerListScreen playerListScreen = new OriginHUDPlayerListScreen(this);
@@ -50,13 +48,9 @@ public class OriginHUD extends AbstractHUD {
         this.userPanel = new UIUserPanel(this, 124, 37);
         this.userPanel.setPosition(0, 0);
 
-        // Stats panel
-        this.statsPanel = new UIStatsPanel(this, 124, 49);
-        this.statsPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, padding));
-
         // Debug block panel
         this.debugBlockPanel = new UIDebugBlockPanel(this, 124, 45);
-        this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.statsPanel, padding));
+        this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, padding));
 
         // World panel
         this.worldPanel = new UIWorldPanel(this, 124, 33);
@@ -74,18 +68,15 @@ public class OriginHUD extends AbstractHUD {
         this.bossBarPanel = new UIBossBarPanel(this, 124, 33);
         this.bossBarPanel.setPosition(0, SimpleScreen.getPaddedY(this.worldPanel, padding), Anchor.TOP | Anchor.CENTER);
 
-        addToScreen(this.userPanel, this.statsPanel, this.debugBlockPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel,
-                this.bossBarPanel);
+        addToScreen(this.userPanel, this.debugBlockPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel, this.bossBarPanel);
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         // Set current alpha value
         userPanel.setAlpha(config.client.originHudOpacity);
-        statsPanel.setAlpha(config.client.originHudOpacity);
         worldPanel.setAlpha(config.client.originHudOpacity);
         detailsPanel.setAlpha(config.client.originHudOpacity);
-
 
         // Show debug panels if necessary
         final boolean isDebugEnabled = this.client.gameSettings.showDebugInfo;
@@ -100,7 +91,7 @@ public class OriginHUD extends AbstractHUD {
                 yOffset += 25; // 24 for potion icon, 2 for padding
             }
             // Debug block panel
-            this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.statsPanel, padding));
+            this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, padding));
             this.debugBlockPanel.setAlpha(config.client.originHudOpacity);
 
             // Debug details panel
@@ -142,14 +133,20 @@ public class OriginHUD extends AbstractHUD {
 
         @Override
         public void construct() {
-            this.guiscreenBackground = false;
             this.renderer.setDefaultTexture(Constants.Gui.SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY);
 
             // Player list panel
             final UIPlayerListPanel playerListPanel = new UIPlayerListPanel(this, 150, 16);
-            playerListPanel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
+            playerListPanel.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
 
             this.addToScreen(playerListPanel);
+        }
+
+        @Override
+        public void drawScreen(int mouseX, int mouseY, float partialTick) {
+            this.drawWorldBackground(1);
+
+            super.drawScreen(mouseX, mouseY, partialTick);
         }
 
         @Override
