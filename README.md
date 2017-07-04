@@ -3,7 +3,7 @@ Almura
 
 ## Prerequisites
 * [Java] 8
-* [Gradle] 3.2+
+* [Gradle] 3.5+
 
 ## Cloning
 If you are using Git, use this command to clone the project: `git clone git@github.com:AlmuraDev/Almura.git --recursive`
@@ -30,7 +30,7 @@ __Note:__ If you do not have [Gradle] installed then use ./gradlew for Unix syst
 In order to build Almura you simply need to run the `gradle` command. You can find the compiled JAR files in `./build/libs` but in most cases you'll only need 'almura-x.x-xxxx-rx.x.jar'.
 
 ## Running (Manual Configuration)
-__Note 1:__ The following is aimed to help you setup run configurations for Eclipse and IntelliJ. If you do not want to be able to run Almura directly from your IDE then you can skip this.
+__Note 1:__ The following is aimed to help you setup run configurations for Eclipse and IntelliJ. If you do not want to be able to run Almura directly from your IDE then you can skip this.  
 __Note 2:__ For more information regarding VM options or program arguments for Mixin, visit https://github.com/SpongePowered/Mixin/wiki/Mixin-Java-System-Properties
 
 __For [Eclipse]__  
