@@ -168,7 +168,7 @@ public final class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onKeyInput(MouseEvent event) {
+    public void onMouseInput(MouseEvent event) {
         if (this.getCustomIngameHud().isPresent() && this.getCustomIngameHud().get() instanceof OriginHUD) {
             event.setCanceled(((OriginHUD) this.getCustomIngameHud().get()).handleScroll());
         }
