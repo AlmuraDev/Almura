@@ -27,7 +27,6 @@ import javax.annotation.Nullable;
 
 public class UIPlayerListPanel extends UIHUDPanel {
 
-    private static final boolean DUPLICATE_ENTRIES_FOR_DEMO = true; // TODO: REMOVE!
     private static final Ordering<NetworkPlayerInfo> ORDERING = Ordering.from((o1, o2) -> {
         final ScorePlayerTeam t1 = o1.getPlayerTeam();
         final ScorePlayerTeam t2 = o2.getPlayerTeam();
@@ -41,6 +40,7 @@ public class UIPlayerListPanel extends UIHUDPanel {
     private static final int DISPLAY_NAME_TRAILING_DOTS_AMOUNT = 3;
     private static final String DISPLAY_NAME_TRAILING_DOTS = Strings.repeat(".", DISPLAY_NAME_TRAILING_DOTS_AMOUNT);
     private static final int MAX_DISPLAY_NAME_LENGTH_SUBSTRING = MAX_DISPLAY_NAME_LENGTH - DISPLAY_NAME_TRAILING_DOTS_AMOUNT;
+    private static final int MAX_HEIGHT = 175;
     private static final TextFormatting DEFAULT_COLOR = TextFormatting.WHITE;
     private final Minecraft client = Minecraft.getMinecraft();
     private final UISimpleList playerList;
@@ -58,8 +58,8 @@ public class UIPlayerListPanel extends UIHUDPanel {
 
     @Override
     public boolean onScrollWheel(int x, int y, int delta) {
-        this.playerList.onScrollWheel(x, y, delta);
-        return false;
+        this.playerList.getScrollBar().scrollBy(-delta * this.getScrollStep());
+        return true;
     }
 
     @Override
@@ -73,12 +73,6 @@ public class UIPlayerListPanel extends UIHUDPanel {
         super.drawBackground(renderer, mouseX, mouseY, partialTick);
 
         final List<NetworkPlayerInfo> entries = ORDERING.sortedCopy(this.client.player.connection.getPlayerInfoMap());
-        if (DUPLICATE_ENTRIES_FOR_DEMO) {
-            final NetworkPlayerInfo entry = entries.get(0);
-            for (int i = 0; i < 33; i++) {
-                entries.add(entry);
-            }
-        }
 
         // Get maximum column width
         final int maxColumnWidth = getMaxColumnWidth(entries);
@@ -97,8 +91,8 @@ public class UIPlayerListPanel extends UIHUDPanel {
         this.playerList.setElements(elementList);
 
         // Auto size our height
-        this.height = Math.min(this.playerList.getContentHeight() + 5, 215);
-        this.playerList.getScrollBar().setVisible(this.height >= 215);
+        this.height = Math.min(this.playerList.getContentHeight() + 5, MAX_HEIGHT);
+        this.playerList.getScrollBar().setVisible(this.height >= MAX_HEIGHT);
 
         // Auto size our width
         this.width = entries.size() == 1 ? maxColumnWidth + 12 : (maxColumnWidth + (!this.playerList.getScrollBar().isVisible() ? 9 : 11)) * 2 + 1;

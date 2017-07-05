@@ -17,12 +17,14 @@ import com.almuradev.almura.client.gui.component.hud.debug.UIDebugBlockPanel;
 import com.almuradev.almura.client.gui.component.hud.debug.UIDebugDetailsPanel;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
+import com.almuradev.almura.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Mouse;
+
 
 @SideOnly(Side.CLIENT)
 public class OriginHUD extends AbstractHUD {
@@ -34,9 +36,9 @@ public class OriginHUD extends AbstractHUD {
     private UIDebugDetailsPanel debugDetailsPanel;
     private UIDebugBlockPanel debugBlockPanel;
     private UIDetailsPanel detailsPanel;
+    private UIPlayerListPanel playerListPanel;
     private UIUserPanel userPanel;
     private UIWorldPanel worldPanel;
-    private final OriginHUDPlayerListScreen playerListScreen = new OriginHUDPlayerListScreen(this);
 
     @Override
     public void construct() {
@@ -68,7 +70,20 @@ public class OriginHUD extends AbstractHUD {
         this.bossBarPanel = new UIBossBarPanel(this, 124, 33);
         this.bossBarPanel.setPosition(0, SimpleScreen.getPaddedY(this.worldPanel, padding), Anchor.TOP | Anchor.CENTER);
 
-        addToScreen(this.userPanel, this.debugBlockPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel, this.bossBarPanel);
+        // Player list panel
+        this.playerListPanel = new UIPlayerListPanel(this, 150, 16);
+        this.playerListPanel.setPosition(0, 40, Anchor.TOP | Anchor.CENTER);
+
+        addToScreen(this.userPanel, this.debugBlockPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel, this.bossBarPanel,
+                this.playerListPanel);
+    }
+
+    public boolean handleScroll() {
+        if (this.playerListPanel.isVisible()) {
+            this.playerListPanel.onScrollWheel(Mouse.getEventX(), Mouse.getEventY(), (int) MathUtil.squash(Mouse.getEventDWheel(), -1, 1));
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -107,9 +122,7 @@ public class OriginHUD extends AbstractHUD {
         }
 
         // Show player list if necessary
-        if (this.client.gameSettings.keyBindPlayerList.isPressed()) {
-            this.playerListScreen.displayOverlay();
-        }
+        this.playerListPanel.setVisible(this.client.gameSettings.keyBindPlayerList.isKeyDown());
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -122,40 +135,5 @@ public class OriginHUD extends AbstractHUD {
     @Override
     public int getPotionOffsetY() {
         return this.detailsPanel.getHeight() + padding;
-    }
-
-    private static final class OriginHUDPlayerListScreen extends SimpleScreen {
-
-        private OriginHUDPlayerListScreen(GuiScreen parent) {
-            super(parent);
-            this.construct();
-        }
-
-        @Override
-        public void construct() {
-            this.renderer.setDefaultTexture(Constants.Gui.SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY);
-
-            // Player list panel
-            final UIPlayerListPanel playerListPanel = new UIPlayerListPanel(this, 150, 16);
-            playerListPanel.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
-
-            this.addToScreen(playerListPanel);
-        }
-
-        @Override
-        public void drawScreen(int mouseX, int mouseY, float partialTick) {
-            this.drawWorldBackground(1);
-
-            super.drawScreen(mouseX, mouseY, partialTick);
-        }
-
-        @Override
-        public void update(int mouseX, int mouseY, float partialTick) {
-            super.update(mouseX, mouseY, partialTick);
-
-            if (!Minecraft.getMinecraft().gameSettings.keyBindPlayerList.isKeyDown()) {
-                this.closeOverlay();
-            }
-        }
     }
 }

@@ -52,4 +52,9 @@ public class UISimpleList<S extends UIContainer<S>> extends UIListContainer<UISi
     public float getScrollStep() {
         return (GuiScreen.isCtrlKeyDown() ? 0.125F : 0.075F);
     }
+
+    @Override
+    public boolean onScrollWheel(int x, int y, int delta) {
+        return this.scrollbar.onScrollWheel(x, y, delta);
+    }
 }

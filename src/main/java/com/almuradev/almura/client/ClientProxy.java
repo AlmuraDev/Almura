@@ -23,6 +23,7 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
@@ -149,7 +150,7 @@ public final class ClientProxy extends CommonProxy {
                     case EXPERIENCE:
                     case BOSSINFO:
                     case BOSSHEALTH:
-                    //case PLAYER_LIST:
+                    case PLAYER_LIST:
                     case DEBUG:
                         event.setCanceled(true);
                         break;
@@ -163,6 +164,13 @@ public final class ClientProxy extends CommonProxy {
                     this.customIngameHud = null;
                 }
                 break;
+        }
+    }
+
+    @SubscribeEvent
+    public void onKeyInput(MouseEvent event) {
+        if (this.getCustomIngameHud().isPresent() && this.getCustomIngameHud().get() instanceof OriginHUD) {
+            event.setCanceled(((OriginHUD) this.getCustomIngameHud().get()).handleScroll());
         }
     }
 
