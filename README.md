@@ -6,7 +6,10 @@ Almura
 * [Gradle] 3.5+
 
 ## Cloning
-If you are using Git, use this command to clone the project: `git clone git@github.com:AlmuraDev/Almura.git --recursive`
+The following steps will ensure your project is cloned properly.  
+1. `git clone git@github.com:AlmuraDev/Almura.git`  
+2. `cd Almura`  
+3. `cp scripts/pre-commit .git/hooks`
 
 ## Setup
 __Note:__ If you do not have [Gradle] installed then use ./gradlew for Unix systems or Git Bash and gradlew.bat for Windows systems in place of any 'gradle' command.
