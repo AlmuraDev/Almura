@@ -6,10 +6,12 @@ jdk:
   - openjdk8
   - oraclejdk8
 
-install: ./gradlew setupCIWorkspace
+git:
+  submodules: false
+before_install: scripts/travis-initialize-submodules
+
+install: ./gradlew setupDecompWorkspace
 script: ./gradlew build
-  
+
 notifications:
   email: false
-  webhooks:
-    - http://n.tkte.ch/h/4015/Imx73SAk-RAIF3nc9sZb_JWb
