@@ -16,7 +16,7 @@ import java.util.Optional;
 
 // Makes all items BuildableItemTypes (so they can be used in Almura's framework)
 @Mixin(value = Item.class, priority = 999)
-public abstract class MixinItem extends net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl<Item> implements BuildableItemType {
+public abstract class MixinItem implements BuildableItemType {
 
     @Shadow public CreativeTabs tabToDisplayOn;
 

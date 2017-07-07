@@ -22,8 +22,8 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
 
     private final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
 
-    @Inject(method = "renderTileEntityAt", at = @At("HEAD"), cancellable = true)
-    public void onRenderTileEntityAt(TileEntityChest te, double x, double y, double z, float partialTicks, int destroyStage, float val,
+    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    public void onRender(TileEntityChest te, double x, double y, double z, float partialTicks, int destroyStage, float val,
             CallbackInfo ci) {
         // 0 means perform Minecraft logic only, we do not interfere
         if (config.client.chestRenderDistance == 0) {

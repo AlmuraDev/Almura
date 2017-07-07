@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 // Makes all blocks BuildableBlockTypes (so they can be used in Almura's framework)
 @Mixin(value = Block.class, priority = 999)
-public abstract class MixinBlock extends net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl<Block> implements BuildableBlockType {
+public abstract class MixinBlock implements BuildableBlockType {
 
     @Nullable
     @Shadow public CreativeTabs displayOnCreativeTab;

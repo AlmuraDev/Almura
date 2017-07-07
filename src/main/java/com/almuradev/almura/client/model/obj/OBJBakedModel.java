@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura.client.model.obj;
 
-import com.almuradev.almura.asm.mixin.interfaces.IMixinTextureAtlasSprite;
 import com.almuradev.almura.client.model.obj.geometry.Face;
 import com.almuradev.almura.client.model.obj.geometry.Group;
 import com.almuradev.almura.client.model.obj.geometry.Vertex;
@@ -13,7 +12,6 @@ import com.almuradev.almura.client.model.obj.geometry.VertexDefinition;
 import com.almuradev.almura.client.model.obj.geometry.VertexNormal;
 import com.almuradev.almura.client.model.obj.geometry.VertexTextureCoordinate;
 import com.almuradev.almura.client.model.obj.material.MaterialDefinition;
-import com.google.common.base.Function;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -23,8 +21,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
@@ -32,12 +30,14 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector4f;
 
-public class OBJBakedModel implements IPerspectiveAwareModel {
+public class OBJBakedModel implements IBakedModel {
 
     private final OBJModel model;
     private final IModelState state;
@@ -63,7 +63,7 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
 
     @Override
     public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-        return MapWrapper.handlePerspective(this, this.state, cameraTransformType);
+        return PerspectiveMapWrapper.handlePerspective(this, this.state, cameraTransformType);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
         if (this.quads == null) {
             this.quads = new LinkedList<>();
 
-            final TRSRTransformation transformation = this.state.apply(com.google.common.base.Optional.absent()).orNull();
+            final TRSRTransformation transformation = this.state.apply(Optional.empty()).orElse(null);
 
             for (Group group : this.model.getGroups()) {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
@@ -188,11 +188,6 @@ public class OBJBakedModel implements IPerspectiveAwareModel {
     @Override
     public TextureAtlasSprite getParticleTexture() {
         return this.particleDiffuseSprite;
-    }
-
-    @Override
-    public ItemCameraTransforms getItemCameraTransforms() {
-        return ItemCameraTransforms.DEFAULT;
     }
 
     @Override

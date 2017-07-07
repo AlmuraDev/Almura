@@ -62,22 +62,22 @@ public class MapColorRegistryModule implements CatalogRegistryModule<MapColor>, 
         this.register("emerald", net.minecraft.block.material.MapColor.EMERALD);
         this.register("obsidian", net.minecraft.block.material.MapColor.OBSIDIAN);
         this.register("netherrack", net.minecraft.block.material.MapColor.NETHERRACK);
-        this.register("white_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193561_M);
-        this.register("orange_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193562_N);
-        this.register("magenta_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193563_O);
-        this.register("yellow_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193564_P);
-        this.register("lime_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193565_Q);
-        this.register("pink_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193566_R);
-        this.register("gray_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193567_S);
-        this.register("silver_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193568_T);
-        this.register("cyan_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193569_U);
-        this.register("purple_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193570_V);
-        this.register("blue_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193571_W);
-        this.register("brown_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193572_X);
-        this.register("green_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193573_Y);
-        this.register("red_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193574_Z);
-        this.register("black_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193559_aa);
-        this.register("light_blue_stained_hardened_clay", net.minecraft.block.material.MapColor.field_193560_ab);
+        this.register("white_stained_hardened_clay", net.minecraft.block.material.MapColor.WHITE_STAINED_HARDENED_CLAY);
+        this.register("orange_stained_hardened_clay", net.minecraft.block.material.MapColor.ORANGE_STAINED_HARDENED_CLAY);
+        this.register("magenta_stained_hardened_clay", net.minecraft.block.material.MapColor.MAGENTA_STAINED_HARDENED_CLAY);
+        this.register("yellow_stained_hardened_clay", net.minecraft.block.material.MapColor.YELLOW_STAINED_HARDENED_CLAY);
+        this.register("lime_stained_hardened_clay", net.minecraft.block.material.MapColor.LIME_STAINED_HARDENED_CLAY);
+        this.register("pink_stained_hardened_clay", net.minecraft.block.material.MapColor.PINK_STAINED_HARDENED_CLAY);
+        this.register("gray_stained_hardened_clay", net.minecraft.block.material.MapColor.GRAY_STAINED_HARDENED_CLAY);
+        this.register("silver_stained_hardened_clay", net.minecraft.block.material.MapColor.SILVER_STAINED_HARDENED_CLAY);
+        this.register("cyan_stained_hardened_clay", net.minecraft.block.material.MapColor.CYAN_STAINED_HARDENED_CLAY);
+        this.register("purple_stained_hardened_clay", net.minecraft.block.material.MapColor.PURPLE_STAINED_HARDENED_CLAY);
+        this.register("blue_stained_hardened_clay", net.minecraft.block.material.MapColor.BLUE_STAINED_HARDENED_CLAY);
+        this.register("brown_stained_hardened_clay", net.minecraft.block.material.MapColor.BROWN_STAINED_HARDENED_CLAY);
+        this.register("green_stained_hardened_clay", net.minecraft.block.material.MapColor.GREEN_STAINED_HARDENED_CLAY);
+        this.register("red_stained_hardened_clay", net.minecraft.block.material.MapColor.RED_STAINED_HARDENED_CLAY);
+        this.register("black_stained_hardened_clay", net.minecraft.block.material.MapColor.BLACK_STAINED_HARDENED_CLAY);
+        this.register("light_blue_stained_hardened_clay", net.minecraft.block.material.MapColor.LIGHT_BLUE_STAINED_HARDENED_CLAY);
     }
 
     private void register(String id, final net.minecraft.block.material.MapColor color) {

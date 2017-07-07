@@ -93,7 +93,9 @@ configurations.all {
 }
 
 dependencies {
-    compile "org.spongepowered:spongeforge:${project.spongeImplVersion}:dev"
+    compile ("org.spongepowered:spongeforge:${project.spongeImplVersion}:dev") {
+        exclude module: 'testplugins'
+    }
     compile 'ninja.leaping.configurate:configurate-json:3.3'
     compile project(':MalisisCore')
 }

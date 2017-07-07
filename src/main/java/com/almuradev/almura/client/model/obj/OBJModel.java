@@ -15,7 +15,6 @@ import com.almuradev.almura.client.model.obj.geometry.VertexTextureCoordinate;
 import com.almuradev.almura.client.model.obj.material.MaterialDefinition;
 import com.almuradev.almura.client.model.obj.material.MaterialLibrary;
 import com.almuradev.almura.util.ResourceLocationUtil;
-import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -23,8 +22,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.IModelCustomData;
-import net.minecraftforge.client.model.IRetexturableModel;
+
 import net.minecraftforge.common.model.IModelState;
 
 import java.util.Collection;
@@ -35,12 +33,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * While MinecraftForge does have an OBJLoader and OBJModel, this approach doesn't require changes on the modeller's part when exporting from
  * Blender, 3ds Max, etc and instead dynamically converts the model piped into a format Minecraft understands.
  */
-public class OBJModel implements IRetexturableModel, IModelCustomData {
+public class OBJModel implements IModel {
 
     private final ResourceLocation source;
     private final String name;

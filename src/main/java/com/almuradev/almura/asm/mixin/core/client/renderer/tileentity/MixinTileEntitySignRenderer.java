@@ -38,7 +38,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
      * @author Steven Downer
      */
     @Overwrite
-    public void renderTileEntityAt(TileEntitySign te, double x, double y, double z, float partialTicks, int destroyStage, float val) {
+    public void render(TileEntitySign te, double x, double y, double z, float partialTicks, int destroyStage, float val) {
         Block block = te.getBlockType();
         GlStateManager.pushMatrix();
         float f = 0.6666667F;
