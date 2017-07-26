@@ -10,5 +10,5 @@ import com.almuradev.almura.content.loader.CatalogDelegate;
 
 public interface IMixinDelegateBlockAttributes {
 
-    void setBlockSoundGroupDelegate(CatalogDelegate<BlockSoundGroup> blockSoundGroupDelegate);
+    void setSoundGroupDelegate(final CatalogDelegate<BlockSoundGroup> delegate);
 }

@@ -9,6 +9,7 @@ import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.block.BuildableBlockType;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.registry.AlmuraModelResourceLocation;
@@ -42,6 +43,16 @@ public final class AssetLoader {
 
     @SubscribeEvent
     public void onRegisterBlocks(RegistryEvent.Register<Block> event) {
+        for (Map.Entry<Pack, List<AssetContext>> entry : this.registry.getPackAssetContextualsFor(AssetType.BLOCK_SOUNDGROUP).entrySet()) {
+            final Pack pack = entry.getKey();
+            for (AssetContext context : entry.getValue()) {
+                final BlockSoundGroup.Builder builder = (BlockSoundGroup.Builder) context.getBuilder();
+                final BlockSoundGroup group = builder.build();
+                context.setCatalog(group);
+                pack.add(group);
+            }
+        }
+
         for (Map.Entry<Pack, List<AssetContext>> packByAssetTypeEntry : this.registry.getPackAssetContextualsFor(AssetType.BLOCK).entrySet()) {
             final Pack pack = packByAssetTypeEntry.getKey();
 

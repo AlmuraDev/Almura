@@ -8,17 +8,20 @@ package com.almuradev.almura.content.block.builder;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateBlockAttributes;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
 import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.block.data.blockbreak.BlockBreak;
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
+import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.block.impl.GenericBlock;
+import com.almuradev.almura.content.block.sound.BlockSoundGroup;
+import com.almuradev.almura.content.loader.CatalogDelegate;
 import com.almuradev.almura.content.material.AbstractMaterialTypeBuilder;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
 import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 
 import java.util.Collections;
@@ -42,8 +45,8 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     private OptionalDouble lightEmission = OptionalDouble.empty();
     private OptionalInt lightOpacity = OptionalInt.empty();
     private OptionalDouble resistance = OptionalDouble.empty();
-    @Nullable private BlockSoundGroup soundGroup;
     private List<BlockBreak> breaks = Collections.emptyList();
+    @Nullable private CatalogDelegate<BlockSoundGroup> soundGroup;
 
     @Override
     public final Material material() {
@@ -145,12 +148,12 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     }
 
     @Override
-    public Optional<BlockSoundGroup> soundGroup() {
+    public Optional<CatalogDelegate<BlockSoundGroup>> soundGroup() {
         return Optional.ofNullable(this.soundGroup);
     }
 
     @Override
-    public BUILDER soundGroup(BlockSoundGroup group) {
+    public BUILDER soundGroup(CatalogDelegate<BlockSoundGroup> group) {
         this.soundGroup = group;
         return (BUILDER) this;
     }
@@ -179,7 +182,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
         this.lightEmission(block.getLightValue(defaultState, null, null));
         this.lightOpacity(block.getLightOpacity(defaultState, null, null));
         this.resistance(block.blockResistance);
-        this.soundGroup((BlockSoundGroup) block.getSoundType());
+        this.soundGroup(CatalogDelegate.of((BlockSoundGroup) block.getSoundType()));
 
         return (BUILDER) this;
     }
@@ -213,7 +216,7 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
 
         ((IMixinDelegateMaterialAttributes) block).setItemGroupDelegate(this.itemGroup());
         this.slipperiness().ifPresent(slipperiness -> block.slipperiness = (float) slipperiness);
-        this.soundGroup().ifPresent(sound -> block.setSoundType((SoundType) sound));
+        this.soundGroup().ifPresent(((IMixinDelegateBlockAttributes) block)::setSoundGroupDelegate);
         this.hardness().ifPresent(hardness -> block.setHardness((float) hardness));
         this.resistance().ifPresent(resistance -> block.setResistance((float) resistance));
         this.lightEmission().ifPresent(emission -> block.setLightLevel((float) emission));
