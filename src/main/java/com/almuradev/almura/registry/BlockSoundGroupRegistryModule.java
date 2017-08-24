@@ -6,56 +6,31 @@
 package com.almuradev.almura.registry;
 
 import com.almuradev.almura.content.block.sound.BlockSoundGroup;
-import com.almuradev.almura.content.block.sound.BlockSoundGroups;
-import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
+import net.minecraft.block.SoundType;
 import org.spongepowered.api.registry.RegistrationPhase;
 import org.spongepowered.api.registry.util.DelayedRegistration;
-import org.spongepowered.api.registry.util.RegisterCatalog;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+public class BlockSoundGroupRegistryModule extends AbstractCatalogRegistryModule.Mapped<BlockSoundGroup, SoundType> implements AbstractCatalogRegistryModule.Additional<BlockSoundGroup> {
 
-public class BlockSoundGroupRegistryModule implements AdditionalCatalogRegistryModule<BlockSoundGroup>, RegistryHelper {
-
-    @RegisterCatalog(BlockSoundGroups.class)
-    public final Map<String, BlockSoundGroup> map = new HashMap<>(52);
+    public BlockSoundGroupRegistryModule() {
+        super(52);
+    }
 
     @DelayedRegistration(RegistrationPhase.PRE_INIT)
     @Override
     public void registerDefaults() {
-        this.register("wood", net.minecraft.block.SoundType.WOOD);
-        this.register("ground", net.minecraft.block.SoundType.GROUND);
-        this.register("plant", net.minecraft.block.SoundType.PLANT);
-        this.register("stone", net.minecraft.block.SoundType.STONE);
-        this.register("metal", net.minecraft.block.SoundType.METAL);
-        this.register("glass", net.minecraft.block.SoundType.GLASS);
-        this.register("cloth", net.minecraft.block.SoundType.CLOTH);
-        this.register("sand", net.minecraft.block.SoundType.SAND);
-        this.register("snow", net.minecraft.block.SoundType.SNOW);
-        this.register("ladder", net.minecraft.block.SoundType.LADDER);
-        this.register("anvil", net.minecraft.block.SoundType.ANVIL);
-        this.register("slime", net.minecraft.block.SoundType.SLIME);
+        this.register("wood", SoundType.WOOD);
+        this.register("ground", SoundType.GROUND);
+        this.register("plant", SoundType.PLANT);
+        this.register("stone", SoundType.STONE);
+        this.register("metal", SoundType.METAL);
+        this.register("glass", SoundType.GLASS);
+        this.register("cloth", SoundType.CLOTH);
+        this.register("sand", SoundType.SAND);
+        this.register("snow", SoundType.SNOW);
+        this.register("ladder", SoundType.LADDER);
+        this.register("anvil", SoundType.ANVIL);
+        this.register("slime", SoundType.SLIME);
     }
 
-    @Override
-    public void registerAdditionalCatalog(BlockSoundGroup group) {
-        this.map.put(group.getId(), group);
-    }
-
-    private void register(String id, final net.minecraft.block.SoundType group) {
-        this.registerSetId(this.map, id, group);
-    }
-
-    @Override
-    public Optional<BlockSoundGroup> getById(String id) {
-        return Optional.ofNullable(this.map.get(this.withDomain(id)));
-    }
-
-    @Override
-    public Collection<BlockSoundGroup> getAll() {
-        return Collections.unmodifiableCollection(this.map.values());
-    }
 }

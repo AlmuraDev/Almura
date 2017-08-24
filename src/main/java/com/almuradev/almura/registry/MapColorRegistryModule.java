@@ -6,22 +6,14 @@
 package com.almuradev.almura.registry;
 
 import com.almuradev.almura.content.material.MapColor;
-import com.almuradev.almura.content.material.MapColors;
-import org.spongepowered.api.registry.CatalogRegistryModule;
 import org.spongepowered.api.registry.RegistrationPhase;
 import org.spongepowered.api.registry.util.DelayedRegistration;
-import org.spongepowered.api.registry.util.RegisterCatalog;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+public class MapColorRegistryModule extends AbstractCatalogRegistryModule.Mapped<MapColor, net.minecraft.block.material.MapColor> {
 
-public class MapColorRegistryModule implements CatalogRegistryModule<MapColor>, RegistryHelper {
-
-    @RegisterCatalog(MapColors.class)
-    public final Map<String, MapColor> map = new HashMap<>(52);
+    public MapColorRegistryModule() {
+        super(52);
+    }
 
     @DelayedRegistration(RegistrationPhase.PRE_INIT)
     @Override
@@ -78,20 +70,6 @@ public class MapColorRegistryModule implements CatalogRegistryModule<MapColor>, 
         this.register("red_stained_hardened_clay", net.minecraft.block.material.MapColor.RED_STAINED_HARDENED_CLAY);
         this.register("black_stained_hardened_clay", net.minecraft.block.material.MapColor.BLACK_STAINED_HARDENED_CLAY);
         this.register("light_blue_stained_hardened_clay", net.minecraft.block.material.MapColor.LIGHT_BLUE_STAINED_HARDENED_CLAY);
-    }
-
-    private void register(String id, final net.minecraft.block.material.MapColor color) {
-        this.registerSetId(this.map, id, color);
-    }
-
-    @Override
-    public Optional<MapColor> getById(String id) {
-        return Optional.ofNullable(this.map.get(this.withDomain(id)));
-    }
-
-    @Override
-    public Collection<MapColor> getAll() {
-        return Collections.unmodifiableCollection(this.map.values());
     }
 
 }
