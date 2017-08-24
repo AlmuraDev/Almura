@@ -7,6 +7,8 @@ package com.almuradev.almura.content.block.impl;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinAlmuraBlock;
 import com.almuradev.almura.content.block.BuildableBlockType;
+import com.almuradev.almura.content.block.component.aabb.CollisionBox;
+import com.almuradev.almura.content.block.component.aabb.WireFrame;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
@@ -24,8 +26,8 @@ import javax.annotation.Nullable;
 
 public final class GenericBlock extends Block {
 
-    private final BlockAABB.Collision collisionAABB;
-    private final BlockAABB.WireFrame wireFrameAABB;
+    private final CollisionBox collisionAABB;
+    private final WireFrame wireFrameAABB;
 
     public GenericBlock(BuildableBlockType.Builder<?, ?> builder) {
         super((Material) builder.material(), (MapColor) builder.mapColor());

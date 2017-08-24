@@ -109,9 +109,9 @@ public enum BlockBreakSerializer implements ConfigurationNodeDeserializer<List<B
         final List<Drop> drops = new ArrayList<>();
         for (int i = 0; i < node.getChildrenList().size(); i++) {
             final ConfigurationNode dropsNodeEl = node.getChildrenList().get(i);
-            final VariableAmount amount = VariableAmounts.SERIALIZER.defaultedDeserialize(dropsNodeEl.getNode(Constants.Type.VariableAmount.AMOUNT), VariableAmounts.FIXED_1);
-            @Nullable final VariableAmount bonusAmount = VariableAmounts.SERIALIZER.deserialize(dropsNodeEl.getNode(Constants.Type.VariableAmount.BONUS, Constants.Type.VariableAmount.BONUS_AMOUNT)).orElse(null);
-            @Nullable final VariableAmount bonusChance = VariableAmounts.SERIALIZER.deserialize(dropsNodeEl.getNode(Constants.Type.VariableAmount.BONUS, Constants.Type.VariableAmount.BONUS_CHANCE)).orElse(null);
+            final VariableAmount amount = VariableAmounts.deserialize(dropsNodeEl.getNode(Constants.Type.VariableAmount.AMOUNT), VariableAmounts.FIXED_1);
+            @Nullable final VariableAmount bonusAmount = VariableAmounts.deserialize(dropsNodeEl.getNode(Constants.Type.VariableAmount.BONUS, Constants.Type.VariableAmount.BONUS_AMOUNT)).orElse(null);
+            @Nullable final VariableAmount bonusChance = VariableAmounts.deserialize(dropsNodeEl.getNode(Constants.Type.VariableAmount.BONUS, Constants.Type.VariableAmount.BONUS_CHANCE)).orElse(null);
             if (!dropsNodeEl.getNode(Constants.Config.Block.BlockBreak.Drop.ITEM).isVirtual()) {
                 final List<CatalogDelegate<ItemType>> items = dropsNodeEl.getNode(Constants.Config.Block.BlockBreak.Drop.ITEM).getList(Types::asString).stream()
                         .map(this::itemType)

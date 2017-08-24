@@ -80,38 +80,38 @@ public class Constants {
         public static final String SHOW_IN_CREATIVE_TAB = "show-in-creative-tab";
         public static final String ITEM_GROUP_DISPLAY = "item-group-display";
 
-        public static final class Block {
-            public static final String SLIPPERINESS = "slipperiness";
-            public static final String HARDNESS = "hardness";
-            public static final String LIGHT = "light";
-            public static final String LIGHT_EMISSION = "emission";
-            public static final String LIGHT_OPACITY = "opacity";
-            public static final String MAP_COLOR = "map-color";
-            public static final String MATERIAL = "material";
-            public static final String RESISTANCE = "resistance";
-            public static final String SOUND_GROUP = "sound-group";
-            public static final String BREAK = "break";
+        public interface Block {
+            String SLIPPERINESS = "slipperiness";
+            String HARDNESS = "hardness";
+            String LIGHT = "light";
+            String LIGHT_EMISSION = "emission";
+            String LIGHT_OPACITY = "opacity";
+            String MAP_COLOR = "map-color";
+            String MATERIAL = "material";
+            String RESISTANCE = "resistance";
+            String SOUND_GROUP = "sound-group";
+            String BREAK = "break";
 
-            public static final class AABB {
-                public static final String KEY = "aabb";
-                public static final String COLLISION = "collision";
-                public static final String WIREFRAME = "wireframe";
-                public static final String TYPE = "type";
-                public static final String BOX = "box";
+            interface AABB {
+                String KEY = "aabb";
+                String COLLISION = "collision";
+                String WIREFRAME = "wireframe";
+                String TYPE = "type";
+                String BOX = "box";
             }
 
-            public static final class SoundGroup {
-                public static final String PARENT = "parent";
-                public static final String VOLUME = "volume";
-                public static final String PITCH = "pitch";
-                public static final String BREAK_SOUND = "break-sound";
-                public static final String STEP_SOUND = "step-sound";
-                public static final String PLACE_SOUND = "place-sound";
-                public static final String HIT_SOUND = "hit-sound";
-                public static final String FALL_SOUND = "fall-sound";
+            interface SoundGroup {
+                String PARENT = "parent";
+                String VOLUME = "volume";
+                String PITCH = "pitch";
+                String BREAK_SOUND = "break-sound";
+                String STEP_SOUND = "step-sound";
+                String PLACE_SOUND = "place-sound";
+                String HIT_SOUND = "hit-sound";
+                String FALL_SOUND = "fall-sound";
             }
 
-            public interface BlockBreak {
+            interface BlockBreak {
                 String WITH = "with";
                 String APPLY = "apply";
                 String DROPS = "drops";
@@ -123,8 +123,8 @@ public class Constants {
             }
         }
 
-        public static final class ItemGroup {
-            public static final String ICON = "icon";
+        public interface ItemGroup {
+            String ICON = "icon";
         }
     }
 

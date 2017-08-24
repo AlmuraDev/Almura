@@ -8,9 +8,10 @@ package com.almuradev.almura.content.loader.task;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.block.BuildableBlockType;
+import com.almuradev.almura.content.block.component.aabb.CollisionBox;
+import com.almuradev.almura.content.block.component.aabb.WireFrame;
 import com.almuradev.almura.content.block.component.action.blockbreak.BlockBreakSerializer;
 import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
-import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.AssetContext;
 import com.almuradev.almura.content.loader.CatalogDelegate;
@@ -34,8 +35,8 @@ public class SetBlockAttributesTask implements StageTask<BuildableBlockType, Bui
         // AABB
         final ConfigurationNode aabbNode = node.getNode(Constants.Config.Block.AABB.KEY);
         if (!aabbNode.isVirtual()) {
-            BlockAABB.COLLISION.deserialize(aabbNode.getNode(Constants.Config.Block.AABB.COLLISION)).ifPresent(builder::collisionAABB);
-            BlockAABB.WIRE_FRAME.deserialize(aabbNode.getNode(Constants.Config.Block.AABB.WIREFRAME)).ifPresent(builder::wireFrameAABB);
+            CollisionBox.deserialize(aabbNode.getNode(Constants.Config.Block.AABB.COLLISION)).ifPresent(builder::collisionAABB);
+            WireFrame.deserialize(aabbNode.getNode(Constants.Config.Block.AABB.WIREFRAME)).ifPresent(builder::wireFrameAABB);
         }
 
         // General

@@ -11,9 +11,10 @@ import static com.google.common.base.Preconditions.checkState;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateBlockAttributes;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
 import com.almuradev.almura.content.block.BuildableBlockType;
+import com.almuradev.almura.content.block.component.aabb.CollisionBox;
+import com.almuradev.almura.content.block.component.aabb.WireFrame;
 import com.almuradev.almura.content.block.component.action.blockbreak.BlockBreak;
 import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
-import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.block.impl.GenericBlock;
 import com.almuradev.almura.content.loader.CatalogDelegate;
 import com.almuradev.almura.content.material.AbstractMaterialTypeBuilder;
@@ -36,8 +37,8 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
 
     @Nullable private Material material;
     @Nullable private MapColor mapColor;
-    private BlockAABB.Collision collisionAABB = BlockAABB.Collision.VANILLA;
-    private BlockAABB.WireFrame wireFrameAABB = BlockAABB.WireFrame.VANILLA;
+    private CollisionBox collisionAABB = CollisionBox.VANILLA;
+    private WireFrame wireFrameAABB = WireFrame.VANILLA;
     private OptionalDouble slipperiness = OptionalDouble.empty();
     private OptionalDouble hardness = OptionalDouble.empty();
     private OptionalDouble lightEmission = OptionalDouble.empty();
@@ -69,23 +70,23 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     }
 
     @Override
-    public final BlockAABB.Collision collisionAABB() {
+    public final CollisionBox collisionAABB() {
         return this.collisionAABB;
     }
 
     @Override
-    public final BUILDER collisionAABB(final BlockAABB.Collision bb) {
+    public final BUILDER collisionAABB(final CollisionBox bb) {
         this.collisionAABB = bb;
         return (BUILDER) this;
     }
 
     @Override
-    public final BlockAABB.WireFrame wireFrameAABB() {
+    public final WireFrame wireFrameAABB() {
         return this.wireFrameAABB;
     }
 
     @Override
-    public final BUILDER wireFrameAABB(final BlockAABB.WireFrame bb) {
+    public final BUILDER wireFrameAABB(final WireFrame bb) {
         this.wireFrameAABB = bb;
         return (BUILDER) this;
     }
@@ -191,8 +192,8 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
 
         this.material = (Material) net.minecraft.block.material.Material.GROUND;
         this.mapColor = (MapColor) net.minecraft.block.material.MapColor.DIRT;
-        this.collisionAABB = BlockAABB.Collision.VANILLA;
-        this.wireFrameAABB = BlockAABB.WireFrame.VANILLA;
+        this.collisionAABB = CollisionBox.VANILLA;
+        this.wireFrameAABB = WireFrame.VANILLA;
         this.hardness = OptionalDouble.empty();
         this.lightEmission = OptionalDouble.empty();
         this.lightOpacity = OptionalInt.empty();

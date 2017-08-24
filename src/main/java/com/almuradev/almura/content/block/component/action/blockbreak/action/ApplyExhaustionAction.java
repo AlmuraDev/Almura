@@ -21,7 +21,7 @@ import java.util.Random;
 public final class ApplyExhaustionAction implements Action {
 
     public static final ConfigurationNodeDeserializer<ApplyExhaustionAction> SERIALIZER = node ->
-            Optional.of(new ApplyExhaustionAction(VariableAmounts.SERIALIZER.defaultedDeserialize(node, VariableAmounts.FIXED_1)));
+            Optional.of(new ApplyExhaustionAction(VariableAmounts.deserialize(node, VariableAmounts.FIXED_1)));
     private final VariableAmount exhaustion;
 
     private ApplyExhaustionAction(final VariableAmount exhaustion) {

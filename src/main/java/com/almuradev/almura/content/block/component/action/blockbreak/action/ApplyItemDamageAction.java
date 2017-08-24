@@ -21,7 +21,7 @@ import java.util.Random;
 public final class ApplyItemDamageAction implements Action {
 
     public static final ConfigurationNodeDeserializer<ApplyItemDamageAction> SERIALIZER = node ->
-            Optional.of(new ApplyItemDamageAction(VariableAmounts.SERIALIZER.defaultedDeserialize(node, VariableAmounts.FIXED_1)));
+            Optional.of(new ApplyItemDamageAction(VariableAmounts.deserialize(node, VariableAmounts.FIXED_1)));
     private final VariableAmount damage;
 
     private ApplyItemDamageAction(final VariableAmount damage) {
