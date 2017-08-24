@@ -5,16 +5,11 @@
  */
 package com.almuradev.almura.content.block.component.aabb;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import com.almuradev.almura.Constants;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.AxisAlignedBB;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.Types;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -28,7 +23,7 @@ public final class CollisionBox extends BlockAABB {
     /**
      * A constant value used to indicate that no collision box should be used.
      */
-    static final Optional<CollisionBox> NONE = Optional.of(new CollisionBox(Type.NONE, Block.NULL_AABB));
+    private static final Optional<CollisionBox> NONE = Optional.of(new CollisionBox(Type.NONE, Block.NULL_AABB));
     /**
      * A collision box is only provided when it is a {@link Type#CUSTOM} or {@link Type#NONE} type.
      */
@@ -46,12 +41,7 @@ public final class CollisionBox extends BlockAABB {
         final Type type = Type.fromNode(node.getNode(Constants.Config.Block.AABB.TYPE));
         switch (type) {
             case CUSTOM:
-                final List<Double> box = node.getNode(Constants.Config.Block.AABB.BOX).getList(Types::asDouble, Collections.emptyList());
-                checkArgument(box.size() == 6, "box must have 6 components");
-                return Optional.of(new CollisionBox(Type.CUSTOM, new AxisAlignedBB(
-                        box.get(0), box.get(1), box.get(2),
-                        box.get(3), box.get(4), box.get(5)
-                )));
+                return Optional.of(new CollisionBox(Type.CUSTOM, Boxes.from(node.getNode(Constants.Config.Block.AABB.BOX))));
             case VANILLA:
                 return Optional.of(VANILLA);
             case NONE:
