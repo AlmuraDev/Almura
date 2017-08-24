@@ -3,10 +3,10 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.block.data.blockbreak.action;
+package com.almuradev.almura.content.block.component.action.blockbreak.action;
 
 import com.almuradev.almura.configuration.serializer.ConfigurationNodeDeserializer;
-import com.almuradev.almura.content.block.data.Action;
+import com.almuradev.almura.content.block.component.action.Action;
 import com.almuradev.almura.content.type.VariableAmounts;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.Block;
@@ -18,25 +18,25 @@ import org.spongepowered.api.util.weighted.VariableAmount;
 import java.util.Optional;
 import java.util.Random;
 
-public final class ApplyExhaustionAction implements Action {
+public final class ApplyItemDamageAction implements Action {
 
-    public static final ConfigurationNodeDeserializer<ApplyExhaustionAction> SERIALIZER = node ->
-            Optional.of(new ApplyExhaustionAction(VariableAmounts.SERIALIZER.defaultedDeserialize(node, VariableAmounts.FIXED_1)));
-    private final VariableAmount exhaustion;
+    public static final ConfigurationNodeDeserializer<ApplyItemDamageAction> SERIALIZER = node ->
+            Optional.of(new ApplyItemDamageAction(VariableAmounts.SERIALIZER.defaultedDeserialize(node, VariableAmounts.FIXED_1)));
+    private final VariableAmount damage;
 
-    private ApplyExhaustionAction(final VariableAmount exhaustion) {
-        this.exhaustion = exhaustion;
+    private ApplyItemDamageAction(final VariableAmount damage) {
+        this.damage = damage;
     }
 
     @Override
     public void apply(final EntityPlayer player, final Block block, final BlockPos pos, final Random random, final ItemStack stack) {
-        player.addExhaustion((float) this.exhaustion.getAmount(random));
+        stack.damageItem(this.damage.getFlooredAmount(random), player);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("exhaustion", this.exhaustion)
+                .add("damage", this.damage)
                 .toString();
     }
 }

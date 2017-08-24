@@ -5,9 +5,9 @@
  */
 package com.almuradev.almura.content.block;
 
+import com.almuradev.almura.content.block.component.action.blockbreak.BlockBreak;
+import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.impl.BlockAABB;
-import com.almuradev.almura.content.block.data.blockbreak.BlockBreak;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.loader.CatalogDelegate;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;

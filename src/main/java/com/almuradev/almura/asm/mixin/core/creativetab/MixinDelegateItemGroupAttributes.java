@@ -9,17 +9,10 @@ import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateItemGroupAttribut
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.item.group.impl.GenericCreativeTabs;
 import com.almuradev.almura.content.loader.CatalogDelegate;
-import com.almuradev.almura.registry.ItemGroupRegistryModule;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.common.SpongeImplHooks;
 
 import javax.annotation.Nullable;
 

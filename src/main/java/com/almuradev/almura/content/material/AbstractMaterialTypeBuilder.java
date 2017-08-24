@@ -10,8 +10,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.loader.CatalogDelegate;
 
-import java.util.Optional;
-
 public abstract class AbstractMaterialTypeBuilder<MATERIAL extends MaterialType, BUILDER extends AbstractMaterialTypeBuilder<MATERIAL, BUILDER>>
         implements MaterialType.Builder<MATERIAL, BUILDER> {
 

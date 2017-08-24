@@ -3,16 +3,16 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.block.data.blockbreak;
+package com.almuradev.almura.content.block.component.action.blockbreak;
 
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.configuration.serializer.ConfigurationNodeDeserializer;
-import com.almuradev.almura.content.block.data.Action;
-import com.almuradev.almura.content.block.data.blockbreak.action.ApplyExhaustionAction;
-import com.almuradev.almura.content.block.data.blockbreak.action.ApplyItemDamageAction;
-import com.almuradev.almura.content.block.data.blockbreak.drop.Drop;
-import com.almuradev.almura.content.block.data.blockbreak.drop.ExperienceDrop;
-import com.almuradev.almura.content.block.data.blockbreak.drop.ItemDrop;
+import com.almuradev.almura.content.block.component.action.Action;
+import com.almuradev.almura.content.block.component.action.blockbreak.action.ApplyExhaustionAction;
+import com.almuradev.almura.content.block.component.action.blockbreak.action.ApplyItemDamageAction;
+import com.almuradev.almura.content.block.component.action.blockbreak.drop.Drop;
+import com.almuradev.almura.content.block.component.action.blockbreak.drop.ExperienceDrop;
+import com.almuradev.almura.content.block.component.action.blockbreak.drop.ItemDrop;
 import com.almuradev.almura.content.loader.CatalogDelegate;
 import com.almuradev.almura.content.type.VariableAmounts;
 import com.google.common.collect.ImmutableMap;

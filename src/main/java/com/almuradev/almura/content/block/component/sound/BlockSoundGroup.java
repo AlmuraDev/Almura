@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.block.sound;
+package com.almuradev.almura.content.block.component.sound;
 
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.registry.BuildableCatalogType;

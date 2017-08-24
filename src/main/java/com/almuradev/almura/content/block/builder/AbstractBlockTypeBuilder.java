@@ -10,13 +10,11 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateBlockAttributes;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
-import com.almuradev.almura.content.block.impl.BlockAABB;
-import com.almuradev.almura.content.block.data.blockbreak.BlockBreak;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.BuildableBlockType;
+import com.almuradev.almura.content.block.component.action.blockbreak.BlockBreak;
+import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.block.impl.BlockAABB;
 import com.almuradev.almura.content.block.impl.GenericBlock;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
 import com.almuradev.almura.content.loader.CatalogDelegate;
 import com.almuradev.almura.content.material.AbstractMaterialTypeBuilder;
 import com.almuradev.almura.content.material.MapColor;

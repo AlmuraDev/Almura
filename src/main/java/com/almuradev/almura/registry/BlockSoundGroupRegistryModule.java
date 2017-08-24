@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.registry;
 
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
+import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
 import net.minecraft.block.SoundType;
 import org.spongepowered.api.registry.RegistrationPhase;
 import org.spongepowered.api.registry.util.DelayedRegistration;

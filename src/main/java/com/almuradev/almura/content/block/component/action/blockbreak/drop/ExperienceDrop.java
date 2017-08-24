@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.block.data.blockbreak.drop;
+package com.almuradev.almura.content.block.component.action.blockbreak.drop;
 
 import org.spongepowered.api.util.weighted.VariableAmount;
 
