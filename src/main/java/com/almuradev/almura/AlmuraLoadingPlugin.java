@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.Map;
 
-@IFMLLoadingPlugin.MCVersion("1.12")
+@IFMLLoadingPlugin.MCVersion("1.12.1")
 public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
 
     public AlmuraLoadingPlugin() {
