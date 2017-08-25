@@ -5,14 +5,14 @@
  */
 package com.almuradev.almura.content.item.builder;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
 import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.item.impl.GenericItem;
 import com.almuradev.almura.content.material.AbstractMaterialTypeBuilder;
 import net.minecraft.item.Item;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 public abstract class AbstractItemTypeBuilder<ITEM extends BuildableItemType, BUILDER extends AbstractItemTypeBuilder<ITEM, BUILDER>>
         extends AbstractMaterialTypeBuilder<ITEM, BUILDER> implements BuildableItemType.Builder<ITEM, BUILDER> {

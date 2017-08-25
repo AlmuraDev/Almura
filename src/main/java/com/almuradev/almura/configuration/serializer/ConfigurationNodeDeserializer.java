@@ -11,13 +11,9 @@ import java.util.Optional;
 
 public interface ConfigurationNodeDeserializer<T> {
 
-    default T requiredDeserialize(final ConfigurationNode node, final String string) {
-        return this.deserialize(node).orElseThrow(() -> new IllegalArgumentException(string));
-    }
+    Optional<T> deserialize(final ConfigurationNode node);
 
-    default T defaultedDeserialize(final ConfigurationNode node, final T defaultValue) {
+    default T deserialize(final ConfigurationNode node, final T defaultValue) {
         return this.deserialize(node).orElse(defaultValue);
     }
-
-    Optional<T> deserialize(final ConfigurationNode node);
 }

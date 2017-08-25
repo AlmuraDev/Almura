@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.block.sound;
+package com.almuradev.almura.content.block.component.sound;
 
 import org.spongepowered.api.util.generator.dummy.DummyObjectProvider;
 

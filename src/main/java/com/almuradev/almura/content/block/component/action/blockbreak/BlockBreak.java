@@ -3,16 +3,12 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.block.data.blockbreak;
+package com.almuradev.almura.content.block.component.action.blockbreak;
 
-import com.almuradev.almura.content.block.data.Action;
-import com.almuradev.almura.content.block.data.blockbreak.drop.Drop;
+import com.almuradev.almura.content.block.component.action.Action;
+import com.almuradev.almura.content.block.component.action.blockbreak.drop.Drop;
 import com.almuradev.almura.content.loader.CatalogDelegate;
 import com.google.common.base.MoreObjects;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 import org.spongepowered.api.item.ItemType;
 
 import java.util.Collection;

@@ -6,7 +6,7 @@
 package com.almuradev.almura.asm.mixin.core.block;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
+import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
 import net.minecraft.block.SoundType;
 import org.spongepowered.asm.mixin.Mixin;
 

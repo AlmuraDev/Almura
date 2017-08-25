@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 // TODO This works only on /run/assets/** currently. Need to have it read the jar as well
 public final class AssetRegistry {

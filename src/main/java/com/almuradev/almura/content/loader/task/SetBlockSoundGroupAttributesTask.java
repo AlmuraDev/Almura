@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.content.loader.task;
 
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
-import com.almuradev.almura.content.block.sound.BlockSoundGroupBuilder;
+import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
+import com.almuradev.almura.content.block.component.sound.BlockSoundGroupBuilder;
 import com.almuradev.almura.content.loader.AssetContext;
 import ninja.leaping.configurate.ConfigurationNode;
 

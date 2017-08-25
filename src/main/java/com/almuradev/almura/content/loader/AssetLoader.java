@@ -9,7 +9,7 @@ import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.block.BuildableBlockType;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
+import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.registry.AlmuraModelResourceLocation;

@@ -6,6 +6,7 @@
 package com.almuradev.almura.content.type;
 
 import com.almuradev.almura.configuration.serializer.ConfigurationNodeDeserializer;
+import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.util.weighted.VariableAmount;
 
 import java.util.Map;
@@ -13,9 +14,12 @@ import java.util.Optional;
 
 public final class VariableAmounts {
 
+    /**
+     * A {@link VariableAmount} with a fixed value of {@code 1}.
+     */
     public static final VariableAmount FIXED_1 = VariableAmount.fixed(1d);
 
-    public static final ConfigurationNodeDeserializer<VariableAmount> SERIALIZER = node -> {
+    private static final ConfigurationNodeDeserializer<VariableAmount> SERIALIZER = node -> {
         if (node.isVirtual()) {
             return Optional.empty();
         }
@@ -31,5 +35,13 @@ public final class VariableAmounts {
     };
 
     private VariableAmounts() {
+    }
+
+    public static Optional<VariableAmount> deserialize(final ConfigurationNode node) {
+        return SERIALIZER.deserialize(node);
+    }
+
+    public static VariableAmount deserialize(final ConfigurationNode node, final VariableAmount defaultValue) {
+        return SERIALIZER.deserialize(node, defaultValue);
     }
 }

@@ -5,9 +5,10 @@
  */
 package com.almuradev.almura.content.block;
 
-import com.almuradev.almura.content.block.impl.BlockAABB;
-import com.almuradev.almura.content.block.data.blockbreak.BlockBreak;
-import com.almuradev.almura.content.block.sound.BlockSoundGroup;
+import com.almuradev.almura.content.block.component.aabb.CollisionBox;
+import com.almuradev.almura.content.block.component.aabb.WireFrame;
+import com.almuradev.almura.content.block.component.action.blockbreak.BlockBreak;
+import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.loader.CatalogDelegate;
 import com.almuradev.almura.content.material.MapColor;
 import com.almuradev.almura.content.material.Material;
@@ -37,13 +38,13 @@ public interface BuildableBlockType extends MaterialType, BlockType {
 
         BUILDER mapColor(MapColor mapColor);
 
-        BlockAABB.Collision collisionAABB();
+        CollisionBox collisionAABB();
 
-        BUILDER collisionAABB(final BlockAABB.Collision bb);
+        BUILDER collisionAABB(final CollisionBox bb);
 
-        BlockAABB.WireFrame wireFrameAABB();
+        WireFrame wireFrameAABB();
 
-        BUILDER wireFrameAABB(final BlockAABB.WireFrame bb);
+        BUILDER wireFrameAABB(final WireFrame bb);
 
         OptionalDouble slipperiness();
 

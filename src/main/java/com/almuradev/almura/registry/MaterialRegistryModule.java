@@ -6,22 +6,14 @@
 package com.almuradev.almura.registry;
 
 import com.almuradev.almura.content.material.Material;
-import com.almuradev.almura.content.material.Materials;
-import org.spongepowered.api.registry.CatalogRegistryModule;
 import org.spongepowered.api.registry.RegistrationPhase;
 import org.spongepowered.api.registry.util.DelayedRegistration;
-import org.spongepowered.api.registry.util.RegisterCatalog;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+public class MaterialRegistryModule extends AbstractCatalogRegistryModule.Mapped<Material, net.minecraft.block.material.Material> {
 
-public class MaterialRegistryModule implements CatalogRegistryModule<Material>, RegistryHelper {
-
-    @RegisterCatalog(Materials.class)
-    public final Map<String, Material> map = new HashMap<>(36);
+    public MaterialRegistryModule() {
+        super(36);
+    }
 
     @DelayedRegistration(RegistrationPhase.PRE_INIT)
     @Override
@@ -62,20 +54,6 @@ public class MaterialRegistryModule implements CatalogRegistryModule<Material>, 
         this.register("piston", net.minecraft.block.material.Material.PISTON);
         this.register("barrier", net.minecraft.block.material.Material.BARRIER);
         this.register("structure_void", net.minecraft.block.material.Material.STRUCTURE_VOID);
-    }
-
-    private void register(String id, final net.minecraft.block.material.Material material) {
-        this.registerSetId(this.map, id, material);
-    }
-
-    @Override
-    public Optional<Material> getById(String id) {
-        return Optional.ofNullable(this.map.get(this.withDomain(id)));
-    }
-
-    @Override
-    public Collection<Material> getAll() {
-        return Collections.unmodifiableCollection(this.map.values());
     }
 
 }

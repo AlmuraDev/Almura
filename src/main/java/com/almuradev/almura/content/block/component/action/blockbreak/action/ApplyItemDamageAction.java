@@ -3,10 +3,10 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.block.data.blockbreak.action;
+package com.almuradev.almura.content.block.component.action.blockbreak.action;
 
 import com.almuradev.almura.configuration.serializer.ConfigurationNodeDeserializer;
-import com.almuradev.almura.content.block.data.Action;
+import com.almuradev.almura.content.block.component.action.Action;
 import com.almuradev.almura.content.type.VariableAmounts;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.Block;
@@ -21,7 +21,7 @@ import java.util.Random;
 public final class ApplyItemDamageAction implements Action {
 
     public static final ConfigurationNodeDeserializer<ApplyItemDamageAction> SERIALIZER = node ->
-            Optional.of(new ApplyItemDamageAction(VariableAmounts.SERIALIZER.defaultedDeserialize(node, VariableAmounts.FIXED_1)));
+            Optional.of(new ApplyItemDamageAction(VariableAmounts.deserialize(node, VariableAmounts.FIXED_1)));
     private final VariableAmount damage;
 
     private ApplyItemDamageAction(final VariableAmount damage) {
