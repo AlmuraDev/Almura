@@ -1,5 +1,7 @@
-// A definition which inherits everything except volume.
+// A definition which inherits everything except the break sound.
 {
     "parent": "minecraft:wood",
-    "volume": 0.1
+    "sounds": {
+        "break": "block.gravel.break"
+    }
 }
