@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.asm.mixin.interfaces;
 
-import com.almuradev.almura.content.item.group.ItemGroup;
-import com.almuradev.almura.content.loader.CatalogDelegate;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
+import com.almuradev.almura.registry.CatalogDelegate;
 
 public interface IMixinDelegateMaterialAttributes {
 

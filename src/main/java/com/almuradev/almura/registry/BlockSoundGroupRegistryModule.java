@@ -5,18 +5,17 @@
  */
 package com.almuradev.almura.registry;
 
-import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
+import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import net.minecraft.block.SoundType;
-import org.spongepowered.api.registry.RegistrationPhase;
-import org.spongepowered.api.registry.util.DelayedRegistration;
+import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 
-public class BlockSoundGroupRegistryModule extends AbstractCatalogRegistryModule.Mapped<BlockSoundGroup, SoundType> implements AbstractCatalogRegistryModule.Additional<BlockSoundGroup> {
+@EagerCatalogRegistration
+public class BlockSoundGroupRegistryModule extends AbstractCatalogRegistryModule.Mapped<BlockSoundGroup, SoundType> implements AdditionalCatalogRegistryModule<BlockSoundGroup> {
 
     public BlockSoundGroupRegistryModule() {
         super(52);
     }
 
-    @DelayedRegistration(RegistrationPhase.PRE_INIT)
     @Override
     public void registerDefaults() {
         this.register("wood", SoundType.WOOD);

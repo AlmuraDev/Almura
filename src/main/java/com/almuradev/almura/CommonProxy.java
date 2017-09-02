@@ -9,30 +9,31 @@ import com.almuradev.almura.asm.mixin.interfaces.IMixinAlmuraBlock;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.content.AssetType;
-import com.almuradev.almura.content.block.BuildableBlockType;
-import com.almuradev.almura.content.block.builder.AbstractBlockTypeBuilder;
-import com.almuradev.almura.content.block.builder.rotatable.HorizontalTypeBuilderImpl;
-import com.almuradev.almura.content.block.component.action.blockbreak.BlockBreak;
-import com.almuradev.almura.content.block.component.action.blockbreak.drop.Drop;
-import com.almuradev.almura.content.block.component.action.blockbreak.drop.ExperienceDrop;
-import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
-import com.almuradev.almura.content.block.component.sound.BlockSoundGroupBuilder;
-import com.almuradev.almura.content.block.rotatable.HorizontalType;
-import com.almuradev.almura.content.item.BuildableItemType;
-import com.almuradev.almura.content.item.builder.AbstractItemTypeBuilder;
-import com.almuradev.almura.content.item.group.ItemGroup;
-import com.almuradev.almura.content.item.group.ItemGroupBuilderImpl;
 import com.almuradev.almura.content.loader.AssetLoader;
 import com.almuradev.almura.content.loader.AssetPipeline;
 import com.almuradev.almura.content.loader.AssetRegistry;
 import com.almuradev.almura.content.loader.LoaderPhase;
-import com.almuradev.almura.content.loader.task.SetBlockAttributesTask;
 import com.almuradev.almura.content.loader.task.SetBlockSoundGroupAttributesTask;
 import com.almuradev.almura.content.loader.task.SetItemAttributesTask;
 import com.almuradev.almura.content.loader.task.SetItemGroupAttributesTask;
-import com.almuradev.almura.content.loader.task.SetMaterialAttributesTask;
-import com.almuradev.almura.content.material.MapColor;
-import com.almuradev.almura.content.material.Material;
+import com.almuradev.almura.content.type.block.component.action.blockbreak.BlockBreak;
+import com.almuradev.almura.content.type.block.component.action.blockbreak.drop.Drop;
+import com.almuradev.almura.content.type.block.component.action.blockbreak.drop.ExperienceDrop;
+import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
+import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroupBuilder;
+import com.almuradev.almura.content.type.block.factory.BlockItemGroupProvider;
+import com.almuradev.almura.content.type.block.factory.SetBlockAttributesTask;
+import com.almuradev.almura.content.type.block.type.AbstractBlockTypeBuilder;
+import com.almuradev.almura.content.type.block.type.BuildableBlockType;
+import com.almuradev.almura.content.type.block.type.horizontal.HorizontalType;
+import com.almuradev.almura.content.type.block.type.horizontal.HorizontalTypeBuilderImpl;
+import com.almuradev.almura.content.type.item.builder.AbstractItemTypeBuilder;
+import com.almuradev.almura.content.type.item.factory.ItemItemGroupProvider;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
+import com.almuradev.almura.content.type.item.group.ItemGroupBuilderImpl;
+import com.almuradev.almura.content.type.item.type.BuildableItemType;
+import com.almuradev.almura.content.type.material.MapColor;
+import com.almuradev.almura.content.type.material.Material;
 import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
 import com.almuradev.almura.registry.BlockSoundGroupRegistryModule;
@@ -147,18 +148,15 @@ public abstract class CommonProxy {
     }
 
     private void registerPipelineStages() {
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK_SOUNDGROUP, SetBlockSoundGroupAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetBlockSoundGroupAttributesTask.class, AssetType.BLOCK_SOUNDGROUP);
 
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEMGROUP, SetItemGroupAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetItemGroupAttributesTask.class, AssetType.ITEMGROUP);
 
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK, SetMaterialAttributesTask.class);
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.BLOCK, SetBlockAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, BlockItemGroupProvider.class, AssetType.BLOCK, AssetType.HORIZONTAL_BLOCK);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetBlockAttributesTask.class, AssetType.BLOCK, AssetType.HORIZONTAL_BLOCK);
 
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.HORIZONTAL_BLOCK, SetMaterialAttributesTask.class);
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.HORIZONTAL_BLOCK, SetBlockAttributesTask.class);
-
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEM, SetMaterialAttributesTask.class);
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, AssetType.ITEM, SetItemAttributesTask.class);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, ItemItemGroupProvider.class, AssetType.ITEM);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetItemAttributesTask.class, AssetType.ITEM);
     }
 
     protected void registerBuilders() {

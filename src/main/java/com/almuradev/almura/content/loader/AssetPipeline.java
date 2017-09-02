@@ -19,7 +19,7 @@ public final class AssetPipeline {
 
     private final Map<LoaderPhase, Map<AssetType, List<StageTask>>> stagesByAssetTypeByPhase = new HashMap<>();
 
-    public AssetPipeline registerStage(LoaderPhase phase, AssetType assetType, Class<? extends StageTask> clazz) {
+    public AssetPipeline registerStage(LoaderPhase phase, Class<? extends StageTask> clazz, AssetType... types) {
         final StageTask task;
         try {
             task = clazz.newInstance();
@@ -32,10 +32,10 @@ public final class AssetPipeline {
             throw new IllegalArgumentException("Task '" + clazz + "' requires a no-args constructor!");
         }
 
-        this.stagesByAssetTypeByPhase
-                .computeIfAbsent(phase, k -> new HashMap<>())
-                .computeIfAbsent(assetType, k -> new LinkedList<>())
-                .add(task);
+        Map<AssetType, List<StageTask>> stages = this.stagesByAssetTypeByPhase.computeIfAbsent(phase, k -> new HashMap<>());
+        for (final AssetType type : types) {
+            stages.computeIfAbsent(type, k -> new LinkedList<>()).add(task);
+        }
 
         return this;
     }

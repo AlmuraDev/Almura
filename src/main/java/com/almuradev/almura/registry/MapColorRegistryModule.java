@@ -5,17 +5,15 @@
  */
 package com.almuradev.almura.registry;
 
-import com.almuradev.almura.content.material.MapColor;
-import org.spongepowered.api.registry.RegistrationPhase;
-import org.spongepowered.api.registry.util.DelayedRegistration;
+import com.almuradev.almura.content.type.material.MapColor;
 
+@EagerCatalogRegistration
 public class MapColorRegistryModule extends AbstractCatalogRegistryModule.Mapped<MapColor, net.minecraft.block.material.MapColor> {
 
     public MapColorRegistryModule() {
         super(52);
     }
 
-    @DelayedRegistration(RegistrationPhase.PRE_INIT)
     @Override
     public void registerDefaults() {
         this.register("air", net.minecraft.block.material.MapColor.AIR);

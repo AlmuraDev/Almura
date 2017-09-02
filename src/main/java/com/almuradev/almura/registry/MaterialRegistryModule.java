@@ -5,17 +5,15 @@
  */
 package com.almuradev.almura.registry;
 
-import com.almuradev.almura.content.material.Material;
-import org.spongepowered.api.registry.RegistrationPhase;
-import org.spongepowered.api.registry.util.DelayedRegistration;
+import com.almuradev.almura.content.type.material.Material;
 
+@EagerCatalogRegistration
 public class MaterialRegistryModule extends AbstractCatalogRegistryModule.Mapped<Material, net.minecraft.block.material.Material> {
 
     public MaterialRegistryModule() {
         super(36);
     }
 
-    @DelayedRegistration(RegistrationPhase.PRE_INIT)
     @Override
     public void registerDefaults() {
         this.register("air", net.minecraft.block.material.Material.AIR);

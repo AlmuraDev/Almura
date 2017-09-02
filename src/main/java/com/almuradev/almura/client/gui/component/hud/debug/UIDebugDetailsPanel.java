@@ -27,9 +27,9 @@ public class UIDebugDetailsPanel extends AbstractDebugPanel {
     public UIDebugDetailsPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
 
-        final String title = "Minecraft " + this.minecraft.getVersion();
+        final String title = "Minecraft " + this.client.getVersion();
         this.title = Text.of(TextColors.GOLD, title);
-        this.titleWidth = this.minecraft.fontRenderer.getStringWidth(title) / 2;
+        this.titleWidth = this.client.fontRenderer.getStringWidth(title) / 2;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class UIDebugDetailsPanel extends AbstractDebugPanel {
 
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
 
-        this.minecraft.mcProfiler.startSection("debug");
+        this.client.mcProfiler.startSection("debug");
 
         this.drawText(renderer, this.title, (Math.max(this.autoWidth, this.baseWidth) / 2) - this.titleWidth - 2, 4);
         // Reset autoWidth after we've drawn the title
@@ -64,42 +64,26 @@ public class UIDebugDetailsPanel extends AbstractDebugPanel {
         this.drawProperty(renderer, "Memory", this.getMemoryDetails(), 4, this.getAutoSizeHeight());
         this.drawProperty(renderer, "FPS", String.valueOf(Minecraft.getDebugFPS()), 4, this.getAutoSizeHeight());
         // Respect reduced debug
-        final boolean reducedDebug = this.minecraft.isReducedDebug();
+        final boolean reducedDebug = this.client.isReducedDebug();
         if (reducedDebug) {
             this.drawProperty(renderer, "Chunk-relative", String.format("%d %d %d", fx & 15, fy & 15, fz & 15), 4, this.getAutoSizeHeight());
         } else {
             this.renderXYZ(renderer, x, y, z);
             final EnumFacing facing = view.getHorizontalFacing();
-            final String facingTowards;
-            switch (facing) {
-                case NORTH:
-                    facingTowards = " (-z)";
-                    break;
-                case SOUTH:
-                    facingTowards = " (+z)";
-                    break;
-                case WEST:
-                    facingTowards = " (-x)";
-                    break;
-                case EAST:
-                    facingTowards = " (+x)";
-                    break;
-                default: // invalid
-                    facingTowards = "";
-            }
+            final String facingTowards = describeFacing(facing);
             this.drawProperty(renderer, "Facing", String.format("%s%s (%.1f, %.1f)", facing.name().charAt(0), facingTowards,
                     MathHelper.wrapDegrees(view.rotationYaw), MathHelper.wrapDegrees(view.rotationPitch)), 4, this.getAutoSizeHeight());
             this.drawProperty(renderer, "Block", fx + ", " + fy + ", " + fz, 4, this.getAutoSizeHeight());
             this.drawProperty(renderer, "Chunk", String.format("%d %d %d in %d %d %d", fx & 15, fy & 15, fz & 15, fx >> 4, fy >> 4, fz >> 4), 4, this.getAutoSizeHeight());
             if (view.getEntityWorld().isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !chunk.isEmpty()) {
-                this.drawProperty(renderer, "Biome", chunk.getBiome(pos, this.minecraft.world.getBiomeProvider()).getBiomeName(),
+                this.drawProperty(renderer, "Biome", chunk.getBiome(pos, this.client.world.getBiomeProvider()).getBiomeName(),
                         4, this.getAutoSizeHeight());
-                this.drawProperty(renderer, "Light", this.getLightDetails(pos, chunk),4, this.getAutoSizeHeight());
+                this.drawProperty(renderer, "Light", this.getLightDetails(pos, chunk), 4, this.getAutoSizeHeight());
             }
         }
 
         // Draw block we're currently looking at
-        final RayTraceResult omo = this.minecraft.objectMouseOver;
+        final RayTraceResult omo = this.client.objectMouseOver;
         if (omo != null && omo.typeOfHit == RayTraceResult.Type.BLOCK && omo.getBlockPos() != null) {
             final BlockPos lookPos = omo.getBlockPos();
 
@@ -115,7 +99,7 @@ public class UIDebugDetailsPanel extends AbstractDebugPanel {
             this.autoHeight = 0;
         }
 
-        this.minecraft.mcProfiler.endSection();
+        this.client.mcProfiler.endSection();
     }
 
     private void renderXYZ(final GuiRenderer renderer, final double x, final double y, final double z) {
@@ -139,7 +123,7 @@ public class UIDebugDetailsPanel extends AbstractDebugPanel {
     }
 
     private String getJavaDetails() {
-        return String.format("%s x%d", System.getProperty("java.version"), (this.minecraft.isJava64bit() ? 64 : 86));
+        return String.format("%s x%d", System.getProperty("java.version"), (this.client.isJava64bit() ? 64 : 86));
     }
 
     private String getMemoryDetails() {
@@ -153,6 +137,21 @@ public class UIDebugDetailsPanel extends AbstractDebugPanel {
     private String getLightDetails(BlockPos viewerPos, Chunk chunk) {
         return String.valueOf(chunk.getLightSubtracted(viewerPos, 0)) +
                 " (" + chunk.getLightFor(EnumSkyBlock.SKY, viewerPos) + " sky, " + chunk.getLightFor(EnumSkyBlock.BLOCK, viewerPos) + " block)";
+    }
+
+    private static String describeFacing(final EnumFacing facing) {
+        switch (facing) {
+            case NORTH:
+                return " (-z)";
+            case SOUTH:
+                return " (+z)";
+            case WEST:
+                return " (-x)";
+            case EAST:
+                return " (+x)";
+            default: // invalid
+                return "";
+        }
     }
 
     private static long convertBytesToMegabytes(long bytes) {

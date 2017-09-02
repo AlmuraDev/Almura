@@ -18,123 +18,62 @@ import java.nio.file.Paths;
 
 public class Constants {
 
-    public static final class Plugin {
+    public interface Plugin {
 
-        public static final String ID = "almura";
-        public static final String NAME = WordUtils.capitalize(ID);
-        public static final String PROXY_CLIENT_CLASSPATH = "com.almuradev.almura.client.ClientProxy";
-        public static final String PROXY_SERVER_CLASSPATH = "com.almuradev.almura.server.ServerProxy";
-        public static final String NETWORK_CHANNEL = "AM|FOR";
-        public static final String ASSETS_VERSION = "3.0";
+        String ID = "almura";
+        String NAME = WordUtils.capitalize(ID);
+        String PROXY_CLIENT_CLASSPATH = "com.almuradev.almura.client.ClientProxy";
+        String PROXY_SERVER_CLASSPATH = "com.almuradev.almura.server.ServerProxy";
+        String NETWORK_CHANNEL = "AM|FOR";
+        String ASSETS_VERSION = "3.0";
     }
 
-    public static final class FileSystem {
+    public interface FileSystem {
 
-        public static final Path PATH_ROOT = Paths.get(".");
+        Path PATH_ROOT = Paths.get(".");
 
-        public static final Path PATH_ASSETS = PATH_ROOT.resolve("assets");
-        public static final Path PATH_ASSETS_ALMURA = PATH_ASSETS.resolve(Plugin.ID);
-        public static final Path PATH_ASSETS_ALMURA_30 = PATH_ASSETS_ALMURA.resolve(Plugin.ASSETS_VERSION);
-        public static final Path PATH_ASSETS_ALMURA_30_PACKS = PATH_ASSETS_ALMURA_30.resolve("packs");
+        Path PATH_ASSETS = PATH_ROOT.resolve("assets");
+        Path PATH_ASSETS_ALMURA = PATH_ASSETS.resolve(Plugin.ID);
+        Path PATH_ASSETS_ALMURA_30 = PATH_ASSETS_ALMURA.resolve(Plugin.ASSETS_VERSION);
+        Path PATH_ASSETS_ALMURA_30_PACKS = PATH_ASSETS_ALMURA_30.resolve("packs");
 
-        public static final Path PATH_CONFIG = PATH_ROOT.resolve("config");
-        public static final Path PATH_CONFIG_ALMURA = PATH_CONFIG.resolve(Plugin.ID);
+        Path PATH_CONFIG = PATH_ROOT.resolve("config");
+        Path PATH_CONFIG_ALMURA = PATH_CONFIG.resolve(Plugin.ID);
 
-        public static final String CONFIG_CLIENT_NAME = "client.conf";
+        String CONFIG_CLIENT_NAME = "client.conf";
     }
 
-    public static final class Model {
+    public interface Model {
 
-        public static final String COMMENT = "#";
+        String COMMENT = "#";
 
-        public static final class Obj {
+        interface Obj {
 
-            public static final String MATERIAL_LIBRARY = "mtllib";
-            public static final String USE_MATERIAL = "usemtl";
-            public static final String VERTEX = "v";
-            public static final String VERTEX_NORMAL = "vn";
-            public static final String VERTEX_TEXTURE_COORDINATE = "vt";
-            public static final String GROUP = "g";
-            public static final String FACE = "f";
-            public static final String PERSPECTIVE = "pe";
-            public static final String TRANSLATION = "tn";
-            public static final String ROTATION = "rn";
-            public static final String SCALE = "se";
+            String MATERIAL_LIBRARY = "mtllib";
+            String USE_MATERIAL = "usemtl";
+            String VERTEX = "v";
+            String VERTEX_NORMAL = "vn";
+            String VERTEX_TEXTURE_COORDINATE = "vt";
+            String GROUP = "g";
+            String FACE = "f";
+            String PERSPECTIVE = "pe";
+            String TRANSLATION = "tn";
+            String ROTATION = "rn";
+            String SCALE = "se";
         }
 
-        public static final class Material {
+        interface Material {
 
-            public static final String NEW_MATERIAL = "newmtl";
-            public static final String DIFFUSE = "map_Kd";
+            String NEW_MATERIAL = "newmtl";
+            String DIFFUSE = "map_Kd";
         }
 
     }
 
-    public static final class Config {
+    public interface Config {
 
-        public static final String HEADER = "2.0\nAlmura configuration\n\nFor further assistance, join #almura on EsperNet.";
+        String HEADER = "2.0\nAlmura configuration\n\nFor further assistance, join #almura on EsperNet.";
 
-        public static final String GENERAL = "general";
-
-        // TODO Nest Material and then Block in Material? Nesting can get absurd...
-        public static final String SHOW_IN_CREATIVE_TAB = "show-in-creative-tab";
-        public static final String ITEM_GROUP_DISPLAY = "item-group-display";
-
-        public interface Block {
-            String SLIPPERINESS = "slipperiness";
-            String HARDNESS = "hardness";
-            String LIGHT = "light";
-            String LIGHT_EMISSION = "emission";
-            String LIGHT_OPACITY = "opacity";
-            String MAP_COLOR = "map-color";
-            String MATERIAL = "material";
-            String RESISTANCE = "resistance";
-            String SOUND_GROUP = "sound-group";
-            String BREAK = "break";
-
-            interface AABB {
-                String KEY = "aabb";
-                String COLLISION = "collision";
-                String WIREFRAME = "wireframe";
-                String TYPE = "type";
-                String BOX = "box";
-            }
-
-            interface SoundGroup {
-                String PARENT = "parent";
-                String VOLUME = "volume";
-                String PITCH = "pitch";
-                String BREAK_SOUND = "break-sound";
-                String STEP_SOUND = "step-sound";
-                String PLACE_SOUND = "place-sound";
-                String HIT_SOUND = "hit-sound";
-                String FALL_SOUND = "fall-sound";
-            }
-
-            interface BlockBreak {
-                String WITH = "with";
-                String APPLY = "apply";
-                String DROPS = "drops";
-
-                interface Drop {
-                    String EXPERIENCE = "experience";
-                    String ITEM = "item";
-                }
-            }
-        }
-
-        public interface ItemGroup {
-            String ICON = "icon";
-        }
-    }
-
-    public interface Type {
-        interface VariableAmount {
-            String AMOUNT = "amount";
-            String BONUS = "bonus";
-            String BONUS_AMOUNT = "amount";
-            String BONUS_CHANCE = "chance";
-        }
     }
 
     @SideOnly(Side.CLIENT)

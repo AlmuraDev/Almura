@@ -44,4 +44,12 @@ public final class VariableAmounts {
     public static VariableAmount deserialize(final ConfigurationNode node, final VariableAmount defaultValue) {
         return SERIALIZER.deserialize(node, defaultValue);
     }
+
+    public interface Config {
+
+        String AMOUNT = "amount";
+        String BONUS = "bonus";
+        String BONUS_AMOUNT = "amount";
+        String BONUS_CHANCE = "chance";
+    }
 }

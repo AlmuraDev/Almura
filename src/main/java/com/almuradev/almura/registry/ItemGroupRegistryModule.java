@@ -5,13 +5,21 @@
  */
 package com.almuradev.almura.registry;
 
-import com.almuradev.almura.content.item.group.ItemGroup;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
+import net.minecraft.creativetab.CreativeTabs;
+import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 
-// TODO Special registration for buildingBlocks to instance to Building_Blocks.
-public final class ItemGroupRegistryModule extends AbstractCatalogRegistryModule<ItemGroup> implements AbstractCatalogRegistryModule.Additional<ItemGroup> {
+@EagerCatalogRegistration
+public final class ItemGroupRegistryModule extends AbstractCatalogRegistryModule.Mapped<ItemGroup, CreativeTabs> implements AdditionalCatalogRegistryModule<ItemGroup> {
 
     private ItemGroupRegistryModule() {
         super(16);
+    }
+
+    @Override
+    public void registerDefaults() {
+        // HACK: add manual mapping for "building_blocks" - an automatic mapping for "buildingblocks" already exists
+        this.provideCatalogMap().put("building_blocks", (ItemGroup) CreativeTabs.BUILDING_BLOCKS);
     }
 
     public static ItemGroupRegistryModule getInstance() {
