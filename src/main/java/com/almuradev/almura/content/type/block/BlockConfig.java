@@ -21,6 +21,7 @@ public interface BlockConfig {
         String ACTION_KEY = "action";
         String GENERIC_KEY = "generic";
         String SOUND_KEY = "sound";
+        String PARENT_KEY = "parent";
 
         interface AABB {
 

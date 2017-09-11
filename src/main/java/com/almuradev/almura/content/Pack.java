@@ -49,13 +49,17 @@ public class Pack implements CatalogType {
     }
 
     public Set<BlockType> getBlocks() {
-        return this.objectsById.values().stream().filter(en -> en instanceof BlockType).map(en -> (BlockType) en).collect(Collectors
-                .toSet());
+        return this.objectsById.values().stream()
+                .filter(type -> type instanceof BlockType)
+                .map(type -> (BlockType) type)
+                .collect(Collectors.toSet());
     }
 
     public Set<ItemType> getItems() {
-        return this.objectsById.values().stream().filter(en -> en instanceof ItemType).map(en -> (ItemType) en).collect(Collectors
-                .toSet());
+        return this.objectsById.values().stream()
+                .filter(type -> type instanceof ItemType)
+                .map(type -> (ItemType) type)
+                .collect(Collectors.toSet());
     }
 
     public void add(CatalogType object) {

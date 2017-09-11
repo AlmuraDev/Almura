@@ -14,23 +14,23 @@ import com.almuradev.almura.content.type.block.type.generic.GenericBlock;
 import com.almuradev.almura.content.type.material.AbstractMaterialTypeBuilder;
 import net.minecraft.block.Block;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings({"unchecked"})
 public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType, BUILDER extends AbstractBlockTypeBuilder<BLOCK, BUILDER>>
         extends AbstractMaterialTypeBuilder<BLOCK, BUILDER> implements BuildableBlockType.Builder<BLOCK, BUILDER> {
 
-    private final List<BlockStateDefinition> states = new ArrayList<>();
+    private final Map<String, BlockStateDefinition> states = new HashMap<>();
 
     @Override
-    public List<BlockStateDefinition> states() {
+    public Map<String, BlockStateDefinition> states() {
         return this.states;
     }
 
     @Override
-    public BUILDER state(final BlockStateDefinition state) {
-        this.states.add(state);
+    public BUILDER putState(final BlockStateDefinition state) {
+        this.states.put(state.id, state);
         return (BUILDER) this;
     }
 

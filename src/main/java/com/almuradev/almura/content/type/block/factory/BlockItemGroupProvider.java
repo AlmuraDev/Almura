@@ -6,7 +6,7 @@
 package com.almuradev.almura.content.type.block.factory;
 
 import com.almuradev.almura.content.loader.AssetContext;
-import com.almuradev.almura.content.loader.task.StageTask;
+import com.almuradev.almura.content.loader.StageTask;
 import com.almuradev.almura.content.type.block.BlockConfig;
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import com.almuradev.almura.content.type.item.group.ItemGroup;

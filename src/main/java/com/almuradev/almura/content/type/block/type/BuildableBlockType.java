@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.content.type.block.type;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.content.type.block.state.BlockStateDefinition;
@@ -12,7 +13,8 @@ import com.almuradev.almura.content.type.material.MaterialType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface BuildableBlockType extends MaterialType, BlockType {
 
@@ -23,15 +25,19 @@ public interface BuildableBlockType extends MaterialType, BlockType {
 
     interface Builder<BLOCK extends BuildableBlockType, BUILDER extends Builder<BLOCK, BUILDER>> extends MaterialType.Builder<BLOCK, BUILDER> {
 
+        Map<String, BlockStateDefinition> states();
+
         default BlockStateDefinition onlyState() {
             checkState(!this.states().isEmpty(), "block has no states");
             checkState(this.states().size() == 1, "block has more than one state");
-            return this.states().get(0);
+            return checkNotNull(this.states().get(BlockStateDefinition.DEFAULT), "%s state", BlockStateDefinition.DEFAULT);
         }
 
-        List<BlockStateDefinition> states();
+        default Optional<BlockStateDefinition> findState(final String id) {
+            return Optional.ofNullable(this.states().get(id));
+        }
 
-        BUILDER state(final BlockStateDefinition state);
+        BUILDER putState(final BlockStateDefinition state);
 
         @Override
         BLOCK build(String id);

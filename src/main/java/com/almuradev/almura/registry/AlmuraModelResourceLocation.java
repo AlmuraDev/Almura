@@ -17,7 +17,7 @@ public class AlmuraModelResourceLocation extends ModelResourceLocation {
     private static String[] parseString(String string) {
         final String value;
         final int index = string.indexOf('/');
-        if (index != -1) {
+        if (index != ResourceLocations.NOT_FOUND) {
             value = string.substring(index, string.length());
         } else {
             value = string;

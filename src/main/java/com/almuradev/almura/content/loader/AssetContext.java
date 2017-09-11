@@ -5,7 +5,6 @@
  */
 package com.almuradev.almura.content.loader;
 
-import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.registry.BuildableCatalogType;
 
@@ -16,8 +15,7 @@ public final class AssetContext<C extends BuildableCatalogType, B extends Builda
     private final Pack pack;
     private final Asset asset;
     private final B builder;
-    @Nullable
-    private C catalog;
+    @Nullable private C catalog;
     
     AssetContext(Pack pack, Asset asset, B builder) {
         this.pack = pack;
@@ -33,10 +31,6 @@ public final class AssetContext<C extends BuildableCatalogType, B extends Builda
         return this.asset;
     }
 
-    public AssetType getAssetType() {
-        return this.asset.getAssetType();
-    }
-
     public B getBuilder() {
         return this.builder;
     }
@@ -48,8 +42,7 @@ public final class AssetContext<C extends BuildableCatalogType, B extends Builda
 
     public void setCatalog(C catalog) {
         if (this.catalog != null) {
-            // TODO
-            throw new IllegalStateException();
+            throw new IllegalStateException("A catalog value has already been set for asset '" + this.asset.getPath() + '\'');
         }
 
         this.catalog = catalog;

@@ -9,7 +9,7 @@ import com.almuradev.almura.asm.mixin.interfaces.IMixinAlmuraBlock;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateBlockAttributes;
 import com.almuradev.almura.content.type.block.component.aabb.CollisionBox;
 import com.almuradev.almura.content.type.block.component.aabb.WireFrame;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.BlockBreak;
+import com.almuradev.almura.content.type.block.component.action.breaks.BlockBreak;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.material.MapColor;
 import com.almuradev.almura.content.type.material.Material;
@@ -24,19 +24,21 @@ import java.util.OptionalInt;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class BlockStateDefinition {
 
+    public static final String DEFAULT = "default";
+
     private final String asset;
     public final String id;
     public final Material material;
     public final MapColor mapColor;
     public final CollisionBox collisionAABB;
     public final WireFrame wireFrameAABB;
-    private final OptionalDouble slipperiness;
-    private final OptionalDouble hardness;
-    private final OptionalDouble lightEmission;
-    private final OptionalInt lightOpacity;
-    private final OptionalDouble resistance;
-    private final Optional<CatalogDelegate<BlockSoundGroup>> soundGroup;
-    private final List<BlockBreak> breaks;
+    final OptionalDouble slipperiness;
+    final OptionalDouble hardness;
+    final OptionalDouble lightEmission;
+    final OptionalInt lightOpacity;
+    final OptionalDouble resistance;
+    final Optional<CatalogDelegate<BlockSoundGroup>> soundGroup;
+    final List<BlockBreak> breaks;
 
     BlockStateDefinition(final BlockStateDefinitionBuilder<?> builder) {
         this.asset = builder.asset();

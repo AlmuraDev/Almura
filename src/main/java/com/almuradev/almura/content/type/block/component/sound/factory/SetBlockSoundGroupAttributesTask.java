@@ -3,9 +3,10 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.loader.task;
+package com.almuradev.almura.content.type.block.component.sound.factory;
 
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.content.loader.StageTask;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroupBuilder;
 import ninja.leaping.configurate.ConfigurationNode;

@@ -7,7 +7,7 @@ package com.almuradev.almura.content.type.block.state;
 
 import com.almuradev.almura.content.type.block.component.aabb.CollisionBox;
 import com.almuradev.almura.content.type.block.component.aabb.WireFrame;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.BlockBreak;
+import com.almuradev.almura.content.type.block.component.action.breaks.BlockBreak;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.material.MapColor;
 import com.almuradev.almura.content.type.material.Material;
@@ -74,6 +74,8 @@ public interface BlockStateDefinitionBuilder<B extends BlockStateDefinitionBuild
     List<BlockBreak> breaks();
 
     B breaks(final List<BlockBreak> breaks);
+
+    B from(final BlockStateDefinition definition);
 
     BlockStateDefinition build();
 }

@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.type.block.component.action.blockbreak.action;
+package com.almuradev.almura.content.type.block.component.action.breaks.action;
 
 import com.almuradev.almura.configuration.serializer.ConfigurationNodeDeserializer;
 import com.almuradev.almura.content.type.VariableAmounts;
@@ -18,6 +18,9 @@ import org.spongepowered.api.util.weighted.VariableAmount;
 import java.util.Optional;
 import java.util.Random;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public final class ApplyItemDamageAction implements Action {
 
     public static final ConfigurationNodeDeserializer<ApplyItemDamageAction> SERIALIZER = node ->

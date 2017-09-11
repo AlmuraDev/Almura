@@ -63,6 +63,12 @@ public class BlockSoundGroupBuilder implements BlockSoundGroup.Builder {
         }
     }
 
+    public static BlockSoundGroup createVirtual(final String id, final ConfigurationNode node) {
+        final BlockSoundGroup.Builder builder = BlockSoundGroup.builder();
+        fill(builder, id, node);
+        return builder.build();
+    }
+
     private static Optional<SoundType> findSound(final ConfigurationNode node) {
         return node.isVirtual() ? Optional.empty() : Registries.findCatalog(SoundType.class, node.getString().replace("_", "."));
     }

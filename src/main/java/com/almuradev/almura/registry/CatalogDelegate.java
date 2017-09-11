@@ -26,7 +26,7 @@ public final class CatalogDelegate<C extends CatalogType> implements Predicate<C
 
     public static <C extends CatalogType> CatalogDelegate<C> of(final C catalog) {
         final CatalogDelegate<C> delegate = new CatalogDelegate<C>((Class<C>) catalog.getClass(), catalog.getId());
-        delegate.set(catalog);
+        delegate.catalog = catalog;
         return delegate;
     }
 
@@ -51,10 +51,6 @@ public final class CatalogDelegate<C extends CatalogType> implements Predicate<C
         }
         this.catalog = Registries.findCatalog(this.type, this.id).orElse(null);
         return this.catalog;
-    }
-
-    private void set(C catalog) {
-        this.catalog = catalog;
     }
 
     @Override

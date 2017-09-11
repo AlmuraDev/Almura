@@ -13,7 +13,7 @@ import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 public class BlockSoundGroupRegistryModule extends AbstractCatalogRegistryModule.Mapped<BlockSoundGroup, SoundType> implements AdditionalCatalogRegistryModule<BlockSoundGroup> {
 
     public BlockSoundGroupRegistryModule() {
-        super(52);
+        super(12);
     }
 
     @Override

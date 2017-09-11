@@ -3,10 +3,11 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.loader.task;
+package com.almuradev.almura.content.type.item.group.factory;
 
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.content.loader.StageTask;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.group.ItemGroupConfig;
 import com.almuradev.almura.registry.CatalogDelegate;

@@ -8,7 +8,6 @@ package com.almuradev.almura.content.loader;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
-import com.almuradev.almura.content.loader.task.StageTask;
 
 import java.util.HashMap;
 import java.util.LinkedList;
