@@ -16,8 +16,7 @@ import javax.annotation.Nonnull;
 @SuppressWarnings("NullableProblems")
 public class MixinBossBarColor implements IMixinBossBarColor {
 
-    @Nonnull
-    private Color almuraColor;
+    @Nonnull private Color almuraColor;
 
     @Override
     public Color getAlmuraColor() {

@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.asm.mixin.core.block;
 
-import com.almuradev.almura.content.block.rotatable.HorizontalType;
+import com.almuradev.almura.content.type.block.type.horizontal.HorizontalType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.MapColor;

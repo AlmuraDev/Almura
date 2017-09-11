@@ -7,7 +7,7 @@ package com.almuradev.almura.asm.mixin.core.creativetab;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinCreativeTabs;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
-import com.almuradev.almura.content.item.group.ItemGroup;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.registry.ItemGroupRegistryModule;
 import com.google.common.base.MoreObjects;
 import net.minecraft.creativetab.CreativeTabs;
@@ -25,7 +25,6 @@ public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs
     @Shadow @Final private String tabLabel;
     @Shadow @Final private int tabIndex;
     @Shadow public ItemStack iconItemStack;
-
     private String id;
 
     @Inject(method = "<init>(ILjava/lang/String;)V", at = @At("RETURN"))
@@ -51,12 +50,12 @@ public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs
     }
 
     @Override
-    public org.spongepowered.api.item.inventory.ItemStack getTabIcon() {
+    public org.spongepowered.api.item.inventory.ItemStack getIcon() {
         return (org.spongepowered.api.item.inventory.ItemStack) (Object) this.iconItemStack;
     }
 
     @Override
-    public int getTabIndex() {
+    public int getIndex() {
         return this.tabIndex;
     }
 
@@ -68,9 +67,10 @@ public abstract class MixinCreativeTabs implements ItemGroup, IMixinCreativeTabs
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(CreativeTabs.class)
-                .add("tabIndex", this.tabIndex)
-                .add("tabLabel", this.tabLabel)
-                .add("tabIcon", this.iconItemStack)
+                .add("index", this.tabIndex)
+                .add("id", this.id)
+                .add("label", this.tabLabel)
+                .add("icon", this.iconItemStack)
                 .toString();
     }
 }

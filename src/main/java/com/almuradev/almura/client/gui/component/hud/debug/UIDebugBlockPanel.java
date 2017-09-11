@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class UIDebugBlockPanel extends AbstractDebugPanel {
 
-    private boolean isLookingAtBlock = false;
+    private boolean lookingAtBlock;
 
     public UIDebugBlockPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
@@ -41,10 +41,10 @@ public class UIDebugBlockPanel extends AbstractDebugPanel {
         }
 
         // Determine if we should draw
-        final RayTraceResult omo = this.minecraft.objectMouseOver;
-        this.isLookingAtBlock = omo != null && omo.typeOfHit == RayTraceResult.Type.BLOCK && omo.getBlockPos() != null;
+        final RayTraceResult omo = this.client.objectMouseOver;
+        this.lookingAtBlock = omo != null && omo.typeOfHit == RayTraceResult.Type.BLOCK && omo.getBlockPos() != null;
 
-        if (this.isLookingAtBlock) {
+        if (this.lookingAtBlock) {
             super.draw(renderer, mouseX, mouseY, partialTick);
         }
     }
@@ -54,15 +54,15 @@ public class UIDebugBlockPanel extends AbstractDebugPanel {
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
 
         this.baseHeight = 22;
-        this.minecraft.mcProfiler.startSection("debug");
+        this.client.mcProfiler.startSection("debug");
 
         // Draw block we're currently looking at
-        if (this.isLookingAtBlock) {
-            final BlockPos lookPos = this.minecraft.objectMouseOver.getBlockPos();
+        if (this.lookingAtBlock) {
+            final BlockPos lookPos = this.client.objectMouseOver.getBlockPos();
 
-            IBlockState lookState = this.minecraft.world.getBlockState(lookPos);
-            if (this.minecraft.world.getWorldType() != WorldType.DEBUG_ALL_BLOCK_STATES) {
-                lookState = lookState.getActualState(this.minecraft.world, lookPos);
+            IBlockState lookState = this.client.world.getBlockState(lookPos);
+            if (this.client.world.getWorldType() != WorldType.DEBUG_ALL_BLOCK_STATES) {
+                lookState = lookState.getActualState(this.client.world, lookPos);
             }
 
             this.clipContent = false;
@@ -105,7 +105,7 @@ public class UIDebugBlockPanel extends AbstractDebugPanel {
             this.autoWidth = 0;
         }
 
-        this.minecraft.mcProfiler.endSection();
+        this.client.mcProfiler.endSection();
     }
 
     private void drawBlock(GuiRenderer renderer, IBlockState blockState, int x, int y) {

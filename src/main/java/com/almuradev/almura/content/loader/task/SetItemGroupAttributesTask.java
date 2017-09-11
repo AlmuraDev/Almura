@@ -5,11 +5,11 @@
  */
 package com.almuradev.almura.content.loader.task;
 
-import com.almuradev.almura.Constants;
-import com.almuradev.almura.content.item.group.ItemGroup;
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.AssetContext;
-import com.almuradev.almura.content.loader.CatalogDelegate;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
+import com.almuradev.almura.content.type.item.group.ItemGroupConfig;
+import com.almuradev.almura.registry.CatalogDelegate;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.item.ItemType;
 
@@ -20,9 +20,9 @@ public class SetItemGroupAttributesTask implements StageTask<ItemGroup, ItemGrou
         final Asset asset = context.getAsset();
         final ConfigurationNode root = asset.getConfigurationNode();
 
-        final ConfigurationNode iconNode = root.getNode(Constants.Config.GENERAL, Constants.Config.ItemGroup.ICON);
+        final ConfigurationNode iconNode = root.getNode(ItemGroupConfig.ICON);
         if (!iconNode.isVirtual()) {
-            context.getBuilder().tabIcon(new CatalogDelegate<>(ItemType.class, iconNode.getString()));
+            context.getBuilder().icon(new CatalogDelegate<>(ItemType.class, iconNode.getString()));
         }
     }
 }

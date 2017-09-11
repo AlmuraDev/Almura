@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.content.loader.task;
 
-import com.almuradev.almura.content.item.BuildableItemType;
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.content.type.item.type.BuildableItemType;
 
 public class SetItemAttributesTask implements StageTask<BuildableItemType, BuildableItemType.Builder> {
 

@@ -14,14 +14,6 @@ public class AlmuraModelResourceLocation extends ModelResourceLocation {
         super(0, parseString(catalog.getId()));
     }
 
-    private static String getPrefix(final String string) {
-        final int index = string.indexOf(':');
-        if (index != -1) {
-            return string.substring(0, index);
-        }
-        return "minecraft";
-    }
-
     private static String[] parseString(String string) {
         final String value;
         final int index = string.indexOf('/');
@@ -30,6 +22,6 @@ public class AlmuraModelResourceLocation extends ModelResourceLocation {
         } else {
             value = string;
         }
-        return new String[]{getPrefix(string), value, "normal"};
+        return new String[]{ResourceLocations.findNamespace(string), value, "normal"};
     }
 }

@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.asm.mixin.core.item;
 
-import com.almuradev.almura.content.item.BuildableItemType;
-import com.almuradev.almura.content.item.group.ItemGroup;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
+import com.almuradev.almura.content.type.item.type.BuildableItemType;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import org.spongepowered.asm.mixin.Mixin;

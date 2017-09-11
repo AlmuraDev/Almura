@@ -8,16 +8,16 @@ package com.almuradev.almura.asm.mixin.core.block;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinAlmuraBlock;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateBlockAttributes;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
-import com.almuradev.almura.content.block.BuildableBlockType;
-import com.almuradev.almura.content.block.component.action.Action;
-import com.almuradev.almura.content.block.component.action.blockbreak.BlockBreak;
-import com.almuradev.almura.content.block.component.action.blockbreak.drop.Drop;
-import com.almuradev.almura.content.block.component.action.blockbreak.drop.ItemDrop;
-import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
-import com.almuradev.almura.content.block.impl.GenericBlock;
-import com.almuradev.almura.content.block.impl.rotatable.GenericHorizontalBlock;
-import com.almuradev.almura.content.item.group.ItemGroup;
-import com.almuradev.almura.content.loader.CatalogDelegate;
+import com.almuradev.almura.content.type.block.component.action.Action;
+import com.almuradev.almura.content.type.block.component.action.blockbreak.BlockBreak;
+import com.almuradev.almura.content.type.block.component.action.blockbreak.drop.Drop;
+import com.almuradev.almura.content.type.block.component.action.blockbreak.drop.ItemDrop;
+import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
+import com.almuradev.almura.content.type.block.type.BuildableBlockType;
+import com.almuradev.almura.content.type.block.type.generic.GenericBlock;
+import com.almuradev.almura.content.type.block.type.horizontal.GenericHorizontalBlock;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
+import com.almuradev.almura.registry.CatalogDelegate;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -63,7 +63,7 @@ public abstract class MixinAlmuraBlock extends MixinBlock implements BuildableBl
             return Optional.empty();
         }
 
-        final ItemGroup cached = this.itemGroupDelegate.getCatalog();
+        final ItemGroup cached = this.itemGroupDelegate.get();
         this.displayOnCreativeTab = (CreativeTabs) cached;
 
         return Optional.of((ItemGroup) this.displayOnCreativeTab);
@@ -81,7 +81,7 @@ public abstract class MixinAlmuraBlock extends MixinBlock implements BuildableBl
 
     @Override
     public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity) {
-        return this.soundGroupDelegate != null ? (SoundType) this.soundGroupDelegate.getCatalog() : super.getSoundType(state, world, pos, entity);
+        return this.soundGroupDelegate != null ? (SoundType) this.soundGroupDelegate.get() : super.getSoundType(state, world, pos, entity);
     }
 
     @Override

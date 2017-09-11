@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.asm.mixin.core.block;
 
-import com.almuradev.almura.content.block.BuildableBlockType;
-import com.almuradev.almura.content.item.group.ItemGroup;
+import com.almuradev.almura.content.type.block.type.BuildableBlockType;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;

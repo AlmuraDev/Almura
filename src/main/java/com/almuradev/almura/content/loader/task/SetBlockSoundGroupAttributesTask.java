@@ -5,9 +5,9 @@
  */
 package com.almuradev.almura.content.loader.task;
 
-import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
-import com.almuradev.almura.content.block.component.sound.BlockSoundGroupBuilder;
 import com.almuradev.almura.content.loader.AssetContext;
+import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
+import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroupBuilder;
 import ninja.leaping.configurate.ConfigurationNode;
 
 public class SetBlockSoundGroupAttributesTask implements StageTask<BlockSoundGroup, BlockSoundGroup.Builder> {

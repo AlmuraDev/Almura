@@ -23,67 +23,68 @@ import javax.annotation.Nullable;
 
 public abstract class AbstractDebugPanel extends UIHUDPanel {
 
-    protected static final TextTemplate KEY_VALUE_TEXT_TEMPLATE = TextTemplate.of(
+    private static final TextTemplate KEY_VALUE_TEXT_TEMPLATE = TextTemplate.of(
             TextTemplate.arg("key").color(TextColors.WHITE), ": ",
-            TextTemplate.arg("value").color(TextColors.GRAY));
-    protected final Minecraft minecraft = Minecraft.getMinecraft();
+            TextTemplate.arg("value").color(TextColors.GRAY)
+    );
+    protected final Minecraft client = Minecraft.getMinecraft();
     protected final MalisisFont font = MalisisFont.minecraftFont;
-    protected final FontOptions fontOptions = FontOptionsConstants.FRO_COLOR_WHITE;
-    protected boolean autoSize = true;
-    protected int baseWidth;
-    protected int baseHeight;
-    protected int autoWidth;
-    protected int autoHeight;
+    private final FontOptions fontOptions = FontOptionsConstants.FRO_COLOR_WHITE;
+    boolean autoSize = true;
+    int baseWidth;
+    int baseHeight;
+    int autoWidth;
+    int autoHeight;
 
-    protected AbstractDebugPanel(final MalisisGui gui, final int width, final int height) {
+    AbstractDebugPanel(final MalisisGui gui, final int width, final int height) {
         super(gui, width, height);
         this.baseWidth = width;
         this.baseHeight = height;
     }
 
+    void drawText(GuiRenderer renderer, Text text, int x, int y) {
+        this.drawText(renderer, text, x, y, true, true);
+    }
+
+    @SuppressWarnings("deprecation")
+    void drawText(GuiRenderer renderer, Text text, int x, int y, boolean adjustAutoHeight, boolean adjustAutoWidth) {
+        renderer.drawText(this.font, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), x, y, this.zIndex, this.fontOptions);
+
+        // AutoSize properties
+        if (adjustAutoHeight) {
+            this.autoHeight += (int) this.font.getStringHeight(this.fontOptions) + 4;
+        }
+        if (adjustAutoWidth) {
+            this.autoWidth = Math.max(this.client.fontRenderer.getStringWidth(TextSerializers.PLAIN.serialize(text)) + x, this.autoWidth);
+        }
+    }
+
+    void drawProperty(GuiRenderer renderer, String key, String value, int x, int y) {
+        this.drawProperty(renderer, key, value, x, y, true, true);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void drawProperty(GuiRenderer renderer, String key, String value, int x, int y, boolean adjustAutoHeight, boolean adjustAutoWidth) {
+        final Text text = KEY_VALUE_TEXT_TEMPLATE.apply(ImmutableMap.of("key", Text.of(key), "value", Text.of(value))).build();
+        renderer.drawText(this.font, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), x, y, this.zIndex, this.fontOptions);
+
+        // AutoSize properties
+        if (adjustAutoHeight) {
+            this.autoHeight += (int) this.font.getStringHeight(this.fontOptions) + 4;
+        }
+        if (adjustAutoWidth) {
+            this.autoWidth = Math.max(this.client.fontRenderer.getStringWidth(TextSerializers.PLAIN.serialize(text).trim()) + x + 2,
+                    this.autoWidth);
+        }
+    }
+
     @Nullable
     protected Entity getView() {
-        final Entity view = this.minecraft.getRenderViewEntity();
-        if (view == null || this.minecraft.player == null || this.minecraft.player.world == null || !this.minecraft.gameSettings.showDebugInfo) {
+        final Entity view = this.client.getRenderViewEntity();
+        if (view == null || this.client.player == null || this.client.player.world == null || !this.client.gameSettings.showDebugInfo) {
             return null;
         }
         return view;
-    }
-
-    protected void drawText(GuiRenderer renderer, Text text, int x, int y) {
-        drawText(renderer, text, x, y, true, true);
-    }
-
-    @SuppressWarnings("deprecation")
-    protected void drawText(GuiRenderer renderer, Text text, int x, int y, boolean adjustAutoHeight, boolean adjustAutoWidth) {
-        renderer.drawText(this.font, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), x, y, this.zIndex, this.fontOptions);
-
-        // AutoSize properties
-        if (adjustAutoHeight) {
-            this.autoHeight += (int) this.font.getStringHeight(this.fontOptions) + 4;
-        }
-        if (adjustAutoWidth) {
-            this.autoWidth = Math.max(this.minecraft.fontRenderer.getStringWidth(TextSerializers.PLAIN.serialize(text)) + x, this.autoWidth);
-        }
-    }
-
-    protected void drawProperty(GuiRenderer renderer, String key, String value, int x, int y) {
-        drawProperty(renderer, key, value, x, y, true, true);
-    }
-
-    @SuppressWarnings("deprecation")
-    protected void drawProperty(GuiRenderer renderer, String key, String value, int x, int y, boolean adjustAutoHeight, boolean adjustAutoWidth) {
-        final Text text = KEY_VALUE_TEXT_TEMPLATE.apply(ImmutableMap.of("key", Text.of(key),"value", Text.of(value))).build();
-        renderer.drawText(this.font, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), x, y, this.zIndex, this.fontOptions);
-
-        // AutoSize properties
-        if (adjustAutoHeight) {
-            this.autoHeight += (int) this.font.getStringHeight(this.fontOptions) + 4;
-        }
-        if (adjustAutoWidth) {
-            this.autoWidth = Math.max(this.minecraft.fontRenderer.getStringWidth(TextSerializers.PLAIN.serialize(text).trim()) + x + 2,
-                    this.autoWidth);
-        }
     }
 
     public boolean getAutoSize() {

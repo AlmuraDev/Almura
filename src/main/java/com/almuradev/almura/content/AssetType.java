@@ -5,11 +5,11 @@
  */
 package com.almuradev.almura.content;
 
-import com.almuradev.almura.content.block.BuildableBlockType;
-import com.almuradev.almura.content.block.component.sound.BlockSoundGroup;
-import com.almuradev.almura.content.block.rotatable.HorizontalType;
-import com.almuradev.almura.content.item.BuildableItemType;
-import com.almuradev.almura.content.item.group.ItemGroup;
+import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
+import com.almuradev.almura.content.type.block.type.BuildableBlockType;
+import com.almuradev.almura.content.type.block.type.horizontal.HorizontalType;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
+import com.almuradev.almura.content.type.item.type.BuildableItemType;
 import com.almuradev.almura.registry.BuildableCatalogType;
 
 public enum AssetType {

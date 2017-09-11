@@ -6,10 +6,10 @@
 package com.almuradev.almura.asm.mixin.core.item;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
-import com.almuradev.almura.content.item.BuildableItemType;
-import com.almuradev.almura.content.item.group.ItemGroup;
-import com.almuradev.almura.content.item.impl.GenericItem;
-import com.almuradev.almura.content.loader.CatalogDelegate;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
+import com.almuradev.almura.content.type.item.type.BuildableItemType;
+import com.almuradev.almura.content.type.item.type.generic.GenericItem;
+import com.almuradev.almura.registry.CatalogDelegate;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -35,7 +35,7 @@ public abstract class MixinAlmuraItem extends MixinItem implements BuildableItem
             return Optional.empty();
         }
 
-        final ItemGroup cached = this.itemGroupDelegate.getCatalog();
+        final ItemGroup cached = this.itemGroupDelegate.get();
         this.tabToDisplayOn = (CreativeTabs) (Object) cached;
 
         return Optional.of((ItemGroup) this.tabToDisplayOn);
