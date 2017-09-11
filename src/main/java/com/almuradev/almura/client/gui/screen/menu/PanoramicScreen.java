@@ -50,6 +50,9 @@ public abstract class PanoramicScreen extends SimpleScreen {
         final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**_0.png");
         for (Daypart daypart : Daypart.values()) {
             final Path daypartBasePath = basePath.resolve(daypart.name().toLowerCase());
+            if (!Files.exists(daypartBasePath)) {
+                continue;
+            }
             final DirectoryStream<Path> daypartPaths;
             try {
                 daypartPaths = Files.newDirectoryStream(daypartBasePath);
