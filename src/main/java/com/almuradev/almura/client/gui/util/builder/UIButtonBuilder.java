@@ -19,18 +19,21 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import javax.annotation.Nullable;
+
 @SideOnly(Side.CLIENT)
 public final class UIButtonBuilder {
 
     private final MalisisGui gui;
-    private UIContainer container;
-    private FontOptions fro, hoverFro;
+    @Nullable private UIContainer container;
+    @Nullable private FontOptions fro;
+    @Nullable private FontOptions hoverFro;
     private int width, height, x, y, z, anchor;
-    private MalisisFont font;
-    private Object object;
-    private Text text;
-    private UIImage image;
-    private UITooltip tooltip;
+    @Nullable private MalisisFont font;
+    @Nullable private Object object;
+    @Nullable private Text text;
+    @Nullable private UIImage image;
+    @Nullable private UITooltip tooltip;
     private boolean enabled = true;
 
     public UIButtonBuilder(MalisisGui gui) {

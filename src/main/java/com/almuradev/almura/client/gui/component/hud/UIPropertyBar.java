@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.component.hud;
 
-import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.gui.GuiConfig;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import com.almuradev.almura.util.MathUtil;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -35,7 +35,7 @@ public class UIPropertyBar extends UIComponent {
     private Text text = Text.EMPTY;
     private MalisisFont font = MalisisFont.minecraftFont;
     private FontOptions fontOptions = FontOptionsConstants.FRO_COLOR_WHITE;
-    private GuiTexture spritesheet = Constants.Gui.SPRITE_SHEET_VANILLA_ICON;
+    private GuiTexture spritesheet = GuiConfig.SpriteSheet.VANILLA_ICON;
 
     @Nullable private GuiIcon backgroundIcon, foregroundIcon;
 

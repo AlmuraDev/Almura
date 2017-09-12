@@ -6,8 +6,8 @@
 package com.almuradev.almura.client.gui.screen.ingame.hud;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Constants;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinGuiBossOverlay;
+import com.almuradev.almura.client.gui.GuiConfig;
 import com.almuradev.almura.client.gui.component.hud.UIBossBarPanel;
 import com.almuradev.almura.client.gui.component.hud.UIDetailsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIPlayerListPanel;
@@ -29,7 +29,7 @@ import org.lwjgl.input.Mouse;
 @SideOnly(Side.CLIENT)
 public class OriginHUD extends AbstractHUD {
 
-    private static final int padding = 1;
+    private static final int PADDING = 1;
     private final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
     private final Minecraft client = Minecraft.getMinecraft();
     private UIBossBarPanel bossBarPanel;
@@ -44,7 +44,7 @@ public class OriginHUD extends AbstractHUD {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.renderer.setDefaultTexture(Constants.Gui.SPRITE_SHEET_VANILLA_CONTAINER_INVENTORY);
+        this.renderer.setDefaultTexture(GuiConfig.SpriteSheet.VANILLA_CONTAINER_INVENTORY);
 
         // User panel
         this.userPanel = new UIUserPanel(this, 124, 37);
@@ -52,7 +52,7 @@ public class OriginHUD extends AbstractHUD {
 
         // Debug block panel
         this.debugBlockPanel = new UIDebugBlockPanel(this, 124, 45);
-        this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, padding));
+        this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
 
         // World panel
         this.worldPanel = new UIWorldPanel(this, 124, 33);
@@ -64,11 +64,11 @@ public class OriginHUD extends AbstractHUD {
 
         // Debug details panel
         this.debugDetailsPanel = new UIDebugDetailsPanel(this, 155, 64);
-        this.debugDetailsPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, padding), Anchor.TOP | Anchor.RIGHT);
+        this.debugDetailsPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, PADDING), Anchor.TOP | Anchor.RIGHT);
 
         // Boss bar panel
         this.bossBarPanel = new UIBossBarPanel(this, 124, 33);
-        this.bossBarPanel.setPosition(0, SimpleScreen.getPaddedY(this.worldPanel, padding), Anchor.TOP | Anchor.CENTER);
+        this.bossBarPanel.setPosition(0, SimpleScreen.getPaddedY(this.worldPanel, PADDING), Anchor.TOP | Anchor.CENTER);
 
         // Player list panel
         this.playerListPanel = new UIPlayerListPanel(this, 150, 16);
@@ -89,16 +89,16 @@ public class OriginHUD extends AbstractHUD {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         // Set current alpha value
-        userPanel.setAlpha(config.client.originHudOpacity);
-        worldPanel.setAlpha(config.client.originHudOpacity);
-        detailsPanel.setAlpha(config.client.originHudOpacity);
+        this.userPanel.setAlpha(this.config.client.originHudOpacity);
+        this.worldPanel.setAlpha(this.config.client.originHudOpacity);
+        this.detailsPanel.setAlpha(this.config.client.originHudOpacity);
 
         // Show debug panels if necessary
         final boolean isDebugEnabled = this.client.gameSettings.showDebugInfo;
         this.debugDetailsPanel.setVisible(isDebugEnabled);
         if (isDebugEnabled) {
             // Get proper position based on what potion effects are being shown
-            int yOffset = SimpleScreen.getPaddedY(this.detailsPanel, padding);
+            int yOffset = SimpleScreen.getPaddedY(this.detailsPanel, PADDING);
             if (this.client.player.getActivePotionEffects().stream().anyMatch(potion -> potion.getPotion().isBeneficial())) {
                 yOffset += 25; // 24 for potion icon, 2 for padding
             }
@@ -106,19 +106,19 @@ public class OriginHUD extends AbstractHUD {
                 yOffset += 25; // 24 for potion icon, 2 for padding
             }
             // Debug block panel
-            this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, padding));
-            this.debugBlockPanel.setAlpha(config.client.originHudOpacity);
+            this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
+            this.debugBlockPanel.setAlpha(this.config.client.originHudOpacity);
 
             // Debug details panel
             this.debugDetailsPanel.setPosition(0, yOffset);
-            this.debugDetailsPanel.setAlpha(config.client.originHudOpacity);
+            this.debugDetailsPanel.setAlpha(this.config.client.originHudOpacity);
         }
 
         // Show boss panel if necessary
         final GuiIngame guiIngame = this.client.ingameGUI;
         if (guiIngame != null) {
             this.bossBarPanel.setVisible(!((IMixinGuiBossOverlay) guiIngame.getBossOverlay()).getBossInfo().isEmpty());
-            this.bossBarPanel.setAlpha(config.client.originHudOpacity);
+            this.bossBarPanel.setAlpha(this.config.client.originHudOpacity);
         }
 
         // Show player list if necessary
@@ -129,11 +129,11 @@ public class OriginHUD extends AbstractHUD {
 
     @Override
     public int getTabMenuOffsetY() {
-        return this.worldPanel.getHeight() + padding;
+        return this.worldPanel.getHeight() + PADDING;
     }
 
     @Override
     public int getPotionOffsetY() {
-        return this.detailsPanel.getHeight() + padding;
+        return this.detailsPanel.getHeight() + PADDING;
     }
 }

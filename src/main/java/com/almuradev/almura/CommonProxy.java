@@ -8,7 +8,7 @@ package com.almuradev.almura;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinAlmuraBlock;
 import com.almuradev.almura.configuration.AbstractConfiguration;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
-import com.almuradev.almura.content.AssetType;
+import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.AssetLoader;
 import com.almuradev.almura.content.loader.AssetPipeline;
 import com.almuradev.almura.content.loader.AssetRegistry;
@@ -34,6 +34,7 @@ import com.almuradev.almura.content.type.item.group.factory.SetItemGroupAttribut
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
 import com.almuradev.almura.content.type.material.MapColor;
 import com.almuradev.almura.content.type.material.Material;
+import com.almuradev.almura.network.NetworkConfig;
 import com.almuradev.almura.network.play.SServerInformationMessage;
 import com.almuradev.almura.network.play.SWorldInformationMessage;
 import com.almuradev.almura.registry.BlockSoundGroupRegistryModule;
@@ -78,13 +79,13 @@ public abstract class CommonProxy {
     protected AssetLoader assetLoader;
 
     protected void onGameConstruction(GameConstructionEvent event) {
-        if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable(Constants.Plugin.NETWORK_CHANNEL)) {
-            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel [" + Constants.Plugin.NETWORK_CHANNEL + ']');
+        if (!Sponge.getGame().getChannelRegistrar().isChannelAvailable(NetworkConfig.CHANNEL)) {
+            throw new ChannelRegistrationException("Some other mod/plugin has registered Almura's networking channel [" + NetworkConfig.CHANNEL + ']');
         }
 
         this.loadConfig();
 
-        this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, "AM|FOR");
+        this.network = Sponge.getGame().getChannelRegistrar().createChannel(Almura.instance.container, NetworkConfig.CHANNEL);
         this.assetRegistry = new AssetRegistry();
         this.assetPipeline = new AssetPipeline();
         this.assetLoader = new AssetLoader(this.assetRegistry);
@@ -130,7 +131,7 @@ public abstract class CommonProxy {
     protected void loadConfig() {
     }
 
-    protected void registerFileSystem() {
+    private void registerFileSystem() {
     }
 
     protected void registerMessages() {
@@ -138,7 +139,7 @@ public abstract class CommonProxy {
         this.network.registerMessage(SServerInformationMessage.class, 1);
     }
 
-    protected void registerRegistryModules() {
+    private void registerRegistryModules() {
         final GameRegistry registry = Sponge.getRegistry();
         registry.registerModule(new BossBarColorRegistryModule());
         registry.registerModule(BlockSoundGroup.class, new BlockSoundGroupRegistryModule());
@@ -148,18 +149,18 @@ public abstract class CommonProxy {
     }
 
     private void registerPipelineStages() {
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetBlockSoundGroupAttributesTask.class, AssetType.BLOCK_SOUNDGROUP);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetBlockSoundGroupAttributesTask.class, Asset.Type.BLOCK_SOUNDGROUP);
 
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetItemGroupAttributesTask.class, AssetType.ITEMGROUP);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetItemGroupAttributesTask.class, Asset.Type.ITEMGROUP);
 
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, BlockItemGroupProvider.class, AssetType.BLOCK, AssetType.HORIZONTAL_BLOCK);
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetBlockAttributesTask.class, AssetType.BLOCK, AssetType.HORIZONTAL_BLOCK);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, BlockItemGroupProvider.class, Asset.Type.BLOCK, Asset.Type.HORIZONTAL_BLOCK);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetBlockAttributesTask.class, Asset.Type.BLOCK, Asset.Type.HORIZONTAL_BLOCK);
 
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, ItemItemGroupProvider.class, AssetType.ITEM);
-        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetItemAttributesTask.class, AssetType.ITEM);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, ItemItemGroupProvider.class, Asset.Type.ITEM);
+        this.assetPipeline.registerStage(LoaderPhase.CONSTRUCTION, SetItemAttributesTask.class, Asset.Type.ITEM);
     }
 
-    protected void registerBuilders() {
+    private void registerBuilders() {
         final GameRegistry registry = Sponge.getRegistry();
         registry.registerBuilderSupplier(BlockSoundGroup.Builder.class, BlockSoundGroupBuilder::new);
         registry.registerBuilderSupplier(ItemGroup.Builder.class, ItemGroupBuilderImpl::new);
@@ -172,7 +173,7 @@ public abstract class CommonProxy {
         registry.registerBuilderSupplier(BuildableItemType.Builder.class, AbstractItemTypeBuilder.BuilderImpl::new);
     }
 
-    protected void registerListeners() {
+    private void registerListeners() {
         Sponge.getEventManager().registerListeners(Almura.instance.container, this);
     }
 

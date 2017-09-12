@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.component.hud;
 
-import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.gui.GuiConfig;
 import com.almuradev.almura.client.gui.UIAvatarImage;
 import com.almuradev.almura.client.gui.component.UIXPOrbImage;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
@@ -73,12 +73,12 @@ public class UIUserPanel extends UIHUDPanel {
 
         // XP Orb Image
         this.xpOrbImage = new UIXPOrbImage(gui);
-        xpOrbImage.setSize(9, 9);
-        xpOrbImage.setPosition(2, SimpleScreen.getPaddedY(this.levelLabel, 2));
+        this.xpOrbImage.setSize(9, 9);
+        this.xpOrbImage.setPosition(2, SimpleScreen.getPaddedY(this.levelLabel, 2));
 
         // Experience
         this.experienceBar = new UIPropertyBar(gui, barWidth - 11, 7)
-                .setPosition(6, xpOrbImage.getY(), Anchor.TOP | Anchor.CENTER)
+                .setPosition(6, this.xpOrbImage.getY(), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
 
         // Health
@@ -86,31 +86,31 @@ public class UIUserPanel extends UIHUDPanel {
         this.healthBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.experienceBar, 3), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(187, 19, 19).getRgb())
-                .setIcons(Constants.Gui.ICON_VANILLA_HEART_BACKGROUND, Constants.Gui.ICON_VANILLA_HEART_FOREGROUND);
+                .setIcons(GuiConfig.Icon.VANILLA_HEART_BACKGROUND, GuiConfig.Icon.VANILLA_HEART_FOREGROUND);
 
         // Armor
         this.armorBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.healthBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(102, 103, 109).getRgb())
-                .setBackgroundIcon(Constants.Gui.ICON_VANILLA_ARMOR);
+                .setBackgroundIcon(GuiConfig.Icon.VANILLA_ARMOR);
 
         // Hunger
         this.hungerBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.armorBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(137, 89, 47).getRgb())
-                .setIcons(Constants.Gui.ICON_VANILLA_HUNGER_BACKGROUND, Constants.Gui.ICON_VANILLA_HUNGER_FOREGROUND);
+                .setIcons(GuiConfig.Icon.VANILLA_HUNGER_BACKGROUND, GuiConfig.Icon.VANILLA_HUNGER_FOREGROUND);
 
         // Air
         this.airBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.hungerBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
-                .setBackgroundIcon(Constants.Gui.ICON_VANILLA_AIR);
+                .setBackgroundIcon(GuiConfig.Icon.VANILLA_AIR);
 
         // Mount Health
         this.mountHealthBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.airBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(239, 126, 74).getRgb())
-                .setBackgroundIcon(Constants.Gui.ICON_VANILLA_MOUNT);
+                .setBackgroundIcon(GuiConfig.Icon.VANILLA_MOUNT);
 
         this.add(this.userAvatarImage, this.usernameLabel, this.xpOrbImage, this.levelLabel, this.experienceBar, this.currencyImage,
                 this.currencyLabel, this.healthBar, this.armorBar, this.hungerBar, this.airBar, this.mountHealthBar);

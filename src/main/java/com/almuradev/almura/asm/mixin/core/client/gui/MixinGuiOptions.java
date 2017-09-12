@@ -29,7 +29,7 @@ public abstract class MixinGuiOptions extends GuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     public void onInitGui(CallbackInfo ci) {
         final GuiButton almuraButton = new GuiButton(300, this.width / 2 - 155, this.height / 6 + 144 - 6, 150, 20, "Almura");
-        buttonList.add(almuraButton);
+        this.buttonList.add(almuraButton);
 
         /*
          * Button IDs                     Buttons
@@ -39,7 +39,7 @@ public abstract class MixinGuiOptions extends GuiScreen {
          * 200                          = Done
          */
         // Move every button that isn't any of the above listed up by 12
-        buttonList.stream()
+        this.buttonList.stream()
                 .filter(btn -> !(btn instanceof GuiOptionSlider) && btn.id != 200 && btn.id != 108 && btn.id != 109 && btn.id != GameSettings.Options.REALMS_NOTIFICATIONS.returnEnumOrdinal())
                 .forEach(btn -> btn.y = btn.y - 12);
     }

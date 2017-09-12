@@ -30,7 +30,7 @@ public abstract class MixinRenderItemFrame extends Render {
     @Inject(method = "doRender", at = @At(value = "HEAD"), cancellable = true)
     public void onDoRender(EntityItemFrame entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
         // 0 means perform Minecraft logic only, we do not interfere
-        if (config.client.itemFrameRenderDistance == 0) {
+        if (this.config.client.itemFrameRenderDistance == 0) {
             return;
         }
 
@@ -39,7 +39,7 @@ public abstract class MixinRenderItemFrame extends Render {
             viewer = Minecraft.getMinecraft().player;
         }
 
-        if (viewer != null && entity.getDistanceToEntity(viewer) > config.client.itemFrameRenderDistance) {
+        if (viewer != null && entity.getDistanceToEntity(viewer) > this.config.client.itemFrameRenderDistance) {
             ci.cancel();
         }
     }

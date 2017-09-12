@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.screen.ingame;
 
-import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.gui.GuiConfig;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
@@ -50,7 +50,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
         contentContainer.setAnchor(Anchor.MIDDLE | Anchor.CENTER);
 
         // Almura Header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(Constants.Gui.LOCATION_ALMURA_LOGO), null);
+        final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
@@ -75,8 +75,8 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton shopButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
-                .icon(Constants.Gui.ICON_FA_SHOPPING_BAG)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.FA_SHOPPING_BAG)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
                 .tooltip(Text.of(I18n.format("almura.menu.shop")))
@@ -84,8 +84,8 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton guideButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
-                .icon(Constants.Gui.ICON_FA_BOOK)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.FA_BOOK)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(shopButton, PADDING), shopButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
@@ -95,8 +95,8 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton mapButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
-                .icon(Constants.Gui.ICON_FA_MAP)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.FA_MAP)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(guideButton, PADDING), guideButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
@@ -105,8 +105,8 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton statisticsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
-                .icon(Constants.Gui.ICON_FA_PIE_CHART)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.FA_PIE_CHART)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(mapButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
@@ -115,8 +115,8 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton advancementsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
-                .icon(Constants.Gui.ICON_FA_TROPHY)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.FA_TROPHY)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(statisticsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
@@ -125,8 +125,8 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton forumsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
-                .icon(Constants.Gui.ICON_ENJIN)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.ENJIN)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(advancementsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
@@ -135,8 +135,8 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton lanButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
-                .icon(Constants.Gui.ICON_FA_SITEMAP)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.FA_SITEMAP)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(forumsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
@@ -146,8 +146,8 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton optionsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
-                .icon(Constants.Gui.ICON_FA_COG)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.FA_COG)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(lanButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
@@ -159,7 +159,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .text(Text.of(I18n.format("almura.menu.quit")))
                 .fro(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_LIGHT_RED).shadow(true).build())
                 .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
-                .size(Constants.Gui.BUTTON_WIDTH_SHORT, Constants.Gui.BUTTON_HEIGHT)
+                .size(GuiConfig.Button.WIDTH_SHORT, GuiConfig.Button.HEIGHT)
                 .position(0, SimpleScreen.getPaddedY(shortcutContainer, 25))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
@@ -177,7 +177,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 this.close();
                 break;
             case "button.shop":
-                Desktop.getDesktop().browse(new URI(Constants.Gui.SHOP_URL));
+                Desktop.getDesktop().browse(new URI(GuiConfig.Url.SHOP));
                 break;
             case "button.guide":
                 if (this.mc.player != null) {
@@ -185,10 +185,10 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 }
                 break;
             case "button.instance":
-                Desktop.getDesktop().browse(new URI(Constants.Gui.MAP_URL));
+                Desktop.getDesktop().browse(new URI(GuiConfig.Url.MAP));
                 break;
             case "button.statistics":
-                Desktop.getDesktop().browse(new URI(Constants.Gui.STATISTICS_URL));
+                Desktop.getDesktop().browse(new URI(GuiConfig.Url.STATISTICS));
                 break;
             case "button.advancements":
                 close();
@@ -197,7 +197,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 }
                 break;
             case "button.forums":
-                Desktop.getDesktop().browse(new URI(Constants.Gui.FORUM_URL));
+                Desktop.getDesktop().browse(new URI(GuiConfig.Url.FORUM));
                 break;
             case "button.lan":
                 this.mc.displayGuiScreen(new GuiShareToLan(this));

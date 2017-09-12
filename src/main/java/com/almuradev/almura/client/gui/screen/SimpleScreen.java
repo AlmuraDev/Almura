@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.screen;
 
-import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.gui.GuiConfig;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -38,7 +38,7 @@ public abstract class SimpleScreen extends MalisisGui {
      */
     public SimpleScreen(@Nullable GuiScreen parent) {
         this.parent = Optional.ofNullable(parent);
-        this.renderer.setDefaultTexture(Constants.Gui.SPRITE_SHEET_ALMURA);
+        this.renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
     }
 
     /**
@@ -109,7 +109,7 @@ public abstract class SimpleScreen extends MalisisGui {
 
         this.onClose();
 
-        this.mc.displayGuiScreen(parent.orElse(null));
+        this.mc.displayGuiScreen(this.parent.orElse(null));
         if (!this.parent.isPresent()) {
             this.mc.setIngameFocus();
         }

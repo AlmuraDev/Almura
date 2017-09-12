@@ -5,7 +5,12 @@
  */
 package com.almuradev.almura.content.loader;
 
-import com.almuradev.almura.content.AssetType;
+import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
+import com.almuradev.almura.content.type.block.type.BuildableBlockType;
+import com.almuradev.almura.content.type.block.type.horizontal.HorizontalType;
+import com.almuradev.almura.content.type.item.group.ItemGroup;
+import com.almuradev.almura.content.type.item.type.BuildableItemType;
+import com.almuradev.almura.registry.BuildableCatalogType;
 import ninja.leaping.configurate.ConfigurationNode;
 
 import java.nio.file.Path;
@@ -13,11 +18,11 @@ import java.nio.file.Path;
 public final class Asset {
 
     private final String name;
-    private final AssetType type;
+    private final Type type;
     private final Path path;
     private final ConfigurationNode node;
 
-    Asset(String name, AssetType type, Path path, ConfigurationNode node) {
+    Asset(String name, Type type, Path path, ConfigurationNode node) {
         this.name = name;
         this.type = type;
         this.path = path;
@@ -28,7 +33,7 @@ public final class Asset {
         return this.name;
     }
 
-    public AssetType getType() {
+    public Type getType() {
         return this.type;
     }
 
@@ -38,5 +43,29 @@ public final class Asset {
 
     public ConfigurationNode getConfigurationNode() {
         return this.node;
+    }
+
+    public enum Type {
+        BLOCK("block", BuildableBlockType.Builder.class),
+        HORIZONTAL_BLOCK("horizontal", HorizontalType.Builder.class),
+        BLOCK_SOUNDGROUP("soundgroup", BlockSoundGroup.Builder.class),
+        ITEM("item", BuildableItemType.Builder.class),
+        ITEMGROUP("itemgroup", ItemGroup.Builder.class);
+
+        private final String extension;
+        private final Class<? extends BuildableCatalogType.Builder> builderClass;
+
+        Type(final String extension, final Class<? extends BuildableCatalogType.Builder> builderClass) {
+            this.extension = extension;
+            this.builderClass = builderClass;
+        }
+
+        public String getExtension() {
+            return this.extension;
+        }
+
+        public Class<? extends BuildableCatalogType.Builder> getBuilderClass() {
+            return this.builderClass;
+        }
     }
 }

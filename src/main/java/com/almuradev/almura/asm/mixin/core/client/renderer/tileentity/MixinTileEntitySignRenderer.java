@@ -98,7 +98,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
         // Almura start
         if (te.signText.length > 0) {
             // 0 means perform Minecraft logic only, we do not interfere
-            if (config.client.signTextRenderDistance == 0) {
+            if (this.config.client.signTextRenderDistance == 0) {
                 renderText(te, destroyStage);
             } else {
                 EntityLivingBase viewer = (EntityLivingBase) Minecraft.getMinecraft().getRenderViewEntity();
@@ -106,7 +106,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
                     viewer = Minecraft.getMinecraft().player;
                 }
 
-                if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) < (config.client.signTextRenderDistance * 16) && te
+                if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) < (this.config.client.signTextRenderDistance * 16) && te
                         .hasWorld()) {
                     renderText(te, destroyStage);
                 }

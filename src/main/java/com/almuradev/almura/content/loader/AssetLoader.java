@@ -6,7 +6,6 @@
 package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.exception.ContentConstructionException;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
@@ -44,13 +43,13 @@ public final class AssetLoader {
 
     @SubscribeEvent
     public void onRegisterBlocks(RegistryEvent.Register<Block> event) {
-        this.with(AssetType.BLOCK_SOUNDGROUP, (Enjoyer<BlockSoundGroup, BlockSoundGroup.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.BLOCK_SOUNDGROUP, (Enjoyer<BlockSoundGroup, BlockSoundGroup.Builder>) (pack, asset, builder, context) -> {
             final BlockSoundGroup group = builder.build();
             context.setCatalog(group);
             pack.add(group);
         });
 
-        this.with(AssetType.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
             final BuildableBlockType block = builder.build(pack.getId() + '/' + asset.getName());
             event.getRegistry().register((Block) block);
             context.setCatalog(block);
@@ -61,7 +60,7 @@ public final class AssetLoader {
     @SubscribeEvent
     public void onRegisterItems(RegistryEvent.Register<Item> event) {
         // ItemBlocks
-        this.with(AssetType.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
             if (context.getCatalog() == null) {
                 // TODO Likely need to warn here, should be impossible as blocks come first
                 return;
@@ -76,7 +75,7 @@ public final class AssetLoader {
         });
 
         // Items
-        this.with(AssetType.ITEM, (Enjoyer<BuildableItemType, BuildableItemType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.ITEM, (Enjoyer<BuildableItemType, BuildableItemType.Builder>) (pack, asset, builder, context) -> {
             final BuildableItemType item = builder.build(pack.getId() + '/' + asset.getName());
             event.getRegistry().register((Item) item);
             context.setCatalog(item);
@@ -87,7 +86,7 @@ public final class AssetLoader {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onRegisterModels(ModelRegistryEvent event) {
-        this.with(AssetType.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
             final ItemType item = Registries.findCatalog(ItemType.class, context.getCatalog().getId()).orElse(null);
             if (item != null) {
                 ModelLoader.setCustomModelResourceLocation((Item) item, 0, new ModelResourceLocation(context.getCatalog().getId(),
@@ -95,20 +94,20 @@ public final class AssetLoader {
             }
         });
 
-        this.with(AssetType.ITEM, (Enjoyer<BuildableItemType, BuildableItemType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.ITEM, (Enjoyer<BuildableItemType, BuildableItemType.Builder>) (pack, asset, builder, context) -> {
             final ModelResourceLocation mrl = new AlmuraModelResourceLocation(context.getCatalog());
             ModelLoader.setCustomModelResourceLocation((Item) context.getCatalog(), 0, mrl);
         });
     }
 
     public void registerSpongeOnlyCatalogTypes() {
-        this.with(AssetType.ITEMGROUP, (Enjoyer<ItemGroup, ItemGroup.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.ITEMGROUP, (Enjoyer<ItemGroup, ItemGroup.Builder>) (pack, asset, builder, context) -> {
             final ItemGroup group = builder.build(Constants.Plugin.ID + ':' + asset.getName(), asset.getName());
             context.setCatalog(group);
         });
     }
 
-    private <C extends BuildableCatalogType, B extends BuildableCatalogType.Builder> void with(final AssetType type, final Enjoyer<C, B> enjoyer) {
+    private <C extends BuildableCatalogType, B extends BuildableCatalogType.Builder> void with(final Asset.Type type, final Enjoyer<C, B> enjoyer) {
         for (final Map.Entry<Pack, List<AssetContext>> entry : this.registry.getPackAssetContextualsFor(type).entrySet()) {
             final Pack pack = entry.getKey();
             for (final AssetContext context : entry.getValue()) {

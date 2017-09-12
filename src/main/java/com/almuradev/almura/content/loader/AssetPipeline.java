@@ -6,7 +6,6 @@
 package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 
 import java.util.HashMap;
@@ -16,9 +15,9 @@ import java.util.Map;
 
 public final class AssetPipeline {
 
-    private final Map<LoaderPhase, Map<AssetType, List<StageTask>>> stagesByAssetTypeByPhase = new HashMap<>();
+    private final Map<LoaderPhase, Map<Asset.Type, List<StageTask>>> stagesByAssetTypeByPhase = new HashMap<>();
 
-    public AssetPipeline registerStage(LoaderPhase phase, Class<? extends StageTask> clazz, AssetType... types) {
+    public AssetPipeline registerStage(LoaderPhase phase, Class<? extends StageTask> clazz, Asset.Type... types) {
         final StageTask task;
         try {
             task = clazz.newInstance();
@@ -31,8 +30,8 @@ public final class AssetPipeline {
             throw new IllegalArgumentException("Task '" + clazz + "' requires a no-args constructor!");
         }
 
-        Map<AssetType, List<StageTask>> stages = this.stagesByAssetTypeByPhase.computeIfAbsent(phase, k -> new HashMap<>());
-        for (final AssetType type : types) {
+        Map<Asset.Type, List<StageTask>> stages = this.stagesByAssetTypeByPhase.computeIfAbsent(phase, k -> new HashMap<>());
+        for (final Asset.Type type : types) {
             stages.computeIfAbsent(type, k -> new LinkedList<>()).add(task);
         }
 
@@ -41,10 +40,10 @@ public final class AssetPipeline {
 
     public AssetPipeline process(LoaderPhase phase, AssetRegistry registry) {
         // TODO Log to debugger that we're processing all files
-        final Map<AssetType, List<StageTask>> assetTypeListMap = this.stagesByAssetTypeByPhase.get(phase);
+        final Map<Asset.Type, List<StageTask>> assetTypeListMap = this.stagesByAssetTypeByPhase.get(phase);
         if (assetTypeListMap != null) {
 
-            for (Map.Entry<AssetType, Map<Pack, List<AssetContext>>> assetTypeMapEntry : registry.getAll().entrySet()) {
+            for (Map.Entry<Asset.Type, Map<Pack, List<AssetContext>>> assetTypeMapEntry : registry.getAll().entrySet()) {
 
                 final List<StageTask> stageTasks = assetTypeListMap.get(assetTypeMapEntry.getKey());
 

@@ -27,13 +27,13 @@ import javax.annotation.Nullable;
 
 public class UIPlayerListPanel extends UIHUDPanel {
 
-    private static final Ordering<NetworkPlayerInfo> ORDERING = Ordering.from((o1, o2) -> {
-        final ScorePlayerTeam t1 = o1.getPlayerTeam();
-        final ScorePlayerTeam t2 = o2.getPlayerTeam();
+    private static final Ordering<NetworkPlayerInfo> ORDERING = Ordering.from((p1, p2) -> {
+        final ScorePlayerTeam t1 = p1.getPlayerTeam();
+        final ScorePlayerTeam t2 = p2.getPlayerTeam();
         return ComparisonChain.start()
-                .compareTrueFirst(o1.getGameType() != GameType.SPECTATOR, o2.getGameType() != GameType.SPECTATOR)
+                .compareTrueFirst(p1.getGameType() != GameType.SPECTATOR, p2.getGameType() != GameType.SPECTATOR)
                 .compare(t1 != null ? t1.getName() : "", t2 != null ? t2.getName() : "")
-                .compare(o1.getGameProfile().getName(), o2.getGameProfile().getName())
+                .compare(p1.getGameProfile().getName(), p2.getGameProfile().getName())
                 .result();
     });
     private static final int MAX_DISPLAY_NAME_LENGTH = 26;
@@ -64,18 +64,18 @@ public class UIPlayerListPanel extends UIHUDPanel {
 
     @Override
     public float getScrollStep() {
-        return (GuiScreen.isCtrlKeyDown() ? 0.125F : 0.075F);
+        return GuiScreen.isCtrlKeyDown() ? 0.125f : 0.075f;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+    public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
         super.drawBackground(renderer, mouseX, mouseY, partialTick);
 
         final List<NetworkPlayerInfo> entries = ORDERING.sortedCopy(this.client.player.connection.getPlayerInfoMap());
 
         // Get maximum column width
-        final int maxColumnWidth = getMaxColumnWidth(entries);
+        final int maxColumnWidth = this.getMaxColumnWidth(entries);
 
         final List<PlayerListElement> elementList = new ArrayList<>();
         for (int i = 0; i < entries.size(); i += 2) {
@@ -101,9 +101,9 @@ public class UIPlayerListPanel extends UIHUDPanel {
         this.playerList.setSize(this.width - (this.playerList.getScrollBar().isVisible() ? 7 : 5), this.height - 6);
     }
 
-    private int getMaxColumnWidth(List<NetworkPlayerInfo> players) {
+    private int getMaxColumnWidth(final List<NetworkPlayerInfo> players) {
         int maxWidth = 0;
-        for (NetworkPlayerInfo player : players) {
+        for (final NetworkPlayerInfo player : players) {
             maxWidth = Math.max(maxWidth, this.client.fontRenderer.getStringWidth(getTrimmedDisplayName(player)));
         }
 
@@ -111,7 +111,7 @@ public class UIPlayerListPanel extends UIHUDPanel {
     }
 
     // TODO: this does not properly take colours into account
-    private static String getTrimmedDisplayName(NetworkPlayerInfo player) {
+    private static String getTrimmedDisplayName(final NetworkPlayerInfo player) {
         String name = DEFAULT_COLOR + getDisplayName(player);
         if (player.getGameType() == GameType.SPECTATOR) {
             name = TextFormatting.ITALIC + name;
@@ -139,22 +139,22 @@ public class UIPlayerListPanel extends UIHUDPanel {
         @SuppressWarnings("deprecation")
         private PlayerListElement(MalisisGui gui, UISimpleList parent, NetworkPlayerInfo player1, @Nullable NetworkPlayerInfo player2, int maxColumnWidth) {
             super(gui);
-
-            // Set properties
             this.parent = parent;
             this.maxColumnWidth = maxColumnWidth;
+
             this.player1 = player1;
             this.player2 = player2;
+
             this.avatarImage1 = new UIAvatarImage(gui, this.player1);
             this.avatarImage1.setSize(12, 12);
             this.add(this.avatarImage1);
+
             if (this.player2 != null) {
                 this.avatarImage2 = new UIAvatarImage(gui, this.player2);
                 this.avatarImage2.setSize(12, 12);
-                this.avatarImage2.setPosition(x + this.maxColumnWidth + 6, 0);
+                this.avatarImage2.setPosition(this.x + this.maxColumnWidth + 6, 0);
                 this.add(this.avatarImage2);
             }
-
 
             // Auto size
             final int width = player2 == null ? this.maxColumnWidth + 6 : this.maxColumnWidth * 2 + 13;
@@ -169,34 +169,36 @@ public class UIPlayerListPanel extends UIHUDPanel {
         }
 
         @Override
-        public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            if (this.parent instanceof UISimpleList) {
-                final UISimpleList parent = (UISimpleList) this.parent;
+        public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+            if (!(this.parent instanceof UISimpleList)) {
+                return;
+            }
 
-                // Adjust width for scrollbar
-                final int width = parent.getContentWidth() - (parent.getScrollBar().isDisabled() ? 0 : parent.getScrollBar().getRawWidth() + 1);
-                setSize(width, getHeight());
+            final UISimpleList parent = (UISimpleList) this.parent;
 
-                // Call to the super and draw
-                super.drawBackground(renderer, mouseX, mouseY, partialTick);
+            // Adjust width for scrollbar
+            final int width = parent.getContentWidth() - (parent.getScrollBar().isDisabled() ? 0 : parent.getScrollBar().getRawWidth() + 1);
+            this.setSize(width, this.getHeight());
 
-                int x = this.horizontalPadding + 2;
-                int y = this.verticalPadding + 2;
+            // Call to the super and draw
+            super.drawBackground(renderer, mouseX, mouseY, partialTick);
+
+            int x = this.horizontalPadding + 2;
+            final int y = this.verticalPadding + 2;
+
+            // Text
+            renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player1), x + ICON_SIZE, y, this.zIndex);
+
+            // Draw player 2 if needed
+            if (this.player2 != null) {
+                x += this.maxColumnWidth + 4;
 
                 // Text
-                renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player1), x + ICON_SIZE, y, this.zIndex);
+                renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player2), x + ICON_SIZE + 2, y, this.zIndex);
 
-                // Draw player 2 if needed
-                if (this.player2 != null) {
-                    x += this.maxColumnWidth + 4;
-
-                    // Text
-                    renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player2), x + ICON_SIZE + 2, y, this.zIndex);
-
-                    // Separator
-                    renderer.drawRectangle(this.maxColumnWidth + 5 + this.horizontalPadding, 1, this.zIndex, 1,
-                            this.height - 2, BORDER_COLOR, 75);
-                }
+                // Separator
+                renderer.drawRectangle(this.maxColumnWidth + 5 + this.horizontalPadding, 1, this.zIndex, 1,
+                        this.height - 2, BORDER_COLOR, 75);
             }
         }
     }

@@ -7,7 +7,6 @@ package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
-import com.almuradev.almura.content.AssetType;
 import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.registry.BuildableCatalogType;
 import ninja.leaping.configurate.json.JSONConfigurationLoader;
@@ -31,15 +30,15 @@ import java.util.Map;
 public final class AssetRegistry {
 
     private final Map<String, Pack> packsById = new LinkedHashMap<>();
-    private final Map<AssetType, Map<Pack, List<Path>>> packsFilesByAssetType = new LinkedHashMap<>();
+    private final Map<Asset.Type, Map<Pack, List<Path>>> packsFilesByAssetType = new LinkedHashMap<>();
     private final Map<Pack, List<AssetContext>> contexualsInPack = new LinkedHashMap<>();
-    private final Map<AssetType, Map<Pack, List<AssetContext>>> contextualsInPackByType = new LinkedHashMap<>();
+    private final Map<Asset.Type, Map<Pack, List<AssetContext>>> contextualsInPackByType = new LinkedHashMap<>();
 
     public void loadAssetFiles(Path sourcePath) throws IOException {
 
         this.packsFilesByAssetType.clear();
 
-        for (AssetType assetType : AssetType.values()) {
+        for (Asset.Type assetType : Asset.Type.values()) {
             Files.walkFileTree(sourcePath, new AssetFilesOnlyVisitor(sourcePath, assetType));
         }
     }
@@ -48,8 +47,8 @@ public final class AssetRegistry {
 
         this.contextualsInPackByType.clear();
 
-        for (Map.Entry<AssetType, Map<Pack, List<Path>>> assetTypeEntry : this.packsFilesByAssetType.entrySet()) {
-            final AssetType assetType = assetTypeEntry.getKey();
+        for (Map.Entry<Asset.Type, Map<Pack, List<Path>>> assetTypeEntry : this.packsFilesByAssetType.entrySet()) {
+            final Asset.Type assetType = assetTypeEntry.getKey();
 
             final Map<Pack, List<AssetContext>> assetContextualsByPack = this.contextualsInPackByType.computeIfAbsent(assetType, v -> new LinkedHashMap<>());
 
@@ -77,21 +76,21 @@ public final class AssetRegistry {
         }
     }
 
-    public Map<Pack, List<AssetContext>> getPackAssetContextualsFor(AssetType type) {
+    public Map<Pack, List<AssetContext>> getPackAssetContextualsFor(Asset.Type type) {
         return Collections.unmodifiableMap(this.contextualsInPackByType.computeIfAbsent(type, k -> new LinkedHashMap<>()));
     }
 
-    public Map<AssetType, Map<Pack, List<AssetContext>>> getAll() {
+    public Map<Asset.Type, Map<Pack, List<AssetContext>>> getAll() {
         return Collections.unmodifiableMap(this.contextualsInPackByType);
     }
 
     private final class AssetFilesOnlyVisitor implements FileVisitor<Path> {
 
         private final Path sourcePath;
-        private final AssetType assetType;
+        private final Asset.Type assetType;
         private final String assetName;
 
-        AssetFilesOnlyVisitor(Path sourcePath, AssetType assetType) {
+        AssetFilesOnlyVisitor(Path sourcePath, Asset.Type assetType) {
             this.sourcePath = sourcePath;
             this.assetType = assetType;
             this.assetName = this.assetType.name().toLowerCase(Locale.ENGLISH);

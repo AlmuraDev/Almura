@@ -28,8 +28,8 @@ public class UIXPOrbImage extends UIImage {
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         renderer.bindTexture(TEXTURE);
-        ((GuiIconProvider) iconProvider).setIcon(ICON);
-        rp.setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
-        renderer.drawShape(shape, rp);
+        ((GuiIconProvider) this.iconProvider).setIcon(ICON);
+        this.rp.setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
+        renderer.drawShape(this.shape, this.rp);
     }
 }

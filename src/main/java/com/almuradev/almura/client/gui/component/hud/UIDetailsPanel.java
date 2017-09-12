@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.component.hud;
 
-import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.gui.GuiConfig;
 import com.almuradev.almura.client.gui.component.UIExpandingLabel;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
@@ -43,7 +43,7 @@ public class UIDetailsPanel extends UIHUDPanel {
         // Player Count
         this.playerCountLabel = new UILabel(gui, "");
         this.playerCountLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
-        this.playerCountImage = new UIImage(gui, new GuiTexture(Constants.Gui.LOCATION_AVATAR_GENERIC), null);
+        this.playerCountImage = new UIImage(gui, new GuiTexture(GuiConfig.Location.GENERIC_AVATAR), null);
         this.playerCountImage.setSize(16, 16);
         this.playerCountImage.setPosition(SimpleScreen.getPaddedX(this.clockImage, 4, Anchor.RIGHT), 0, Anchor.MIDDLE | Anchor.RIGHT);
 
