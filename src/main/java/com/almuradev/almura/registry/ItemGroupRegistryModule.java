@@ -13,7 +13,7 @@ import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 public final class ItemGroupRegistryModule extends AbstractCatalogRegistryModule.Mapped<ItemGroup, CreativeTabs> implements AdditionalCatalogRegistryModule<ItemGroup> {
 
     private ItemGroupRegistryModule() {
-        super(16);
+        super(13 + 1);
     }
 
     @Override

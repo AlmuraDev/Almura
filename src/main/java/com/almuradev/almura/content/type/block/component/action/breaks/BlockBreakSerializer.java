@@ -3,17 +3,17 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.type.block.component.action.blockbreak;
+package com.almuradev.almura.content.type.block.component.action.breaks;
 
 import com.almuradev.almura.configuration.serializer.ConfigurationNodeDeserializer;
 import com.almuradev.almura.content.type.VariableAmounts;
 import com.almuradev.almura.content.type.block.BlockConfig;
 import com.almuradev.almura.content.type.block.component.action.Action;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.action.ApplyExhaustionAction;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.action.ApplyItemDamageAction;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.drop.Drop;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.drop.ExperienceDrop;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.drop.ItemDrop;
+import com.almuradev.almura.content.type.block.component.action.breaks.action.ApplyExhaustionAction;
+import com.almuradev.almura.content.type.block.component.action.breaks.action.ApplyItemDamageAction;
+import com.almuradev.almura.content.type.block.component.action.breaks.drop.Drop;
+import com.almuradev.almura.content.type.block.component.action.breaks.drop.ExperienceDrop;
+import com.almuradev.almura.content.type.block.component.action.breaks.drop.ItemDrop;
 import com.almuradev.almura.registry.CatalogDelegate;
 import com.google.common.collect.ImmutableMap;
 import ninja.leaping.configurate.ConfigurationNode;

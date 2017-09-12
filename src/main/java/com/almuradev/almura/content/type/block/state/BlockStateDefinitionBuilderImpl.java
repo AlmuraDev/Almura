@@ -10,7 +10,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.content.type.block.component.aabb.CollisionBox;
 import com.almuradev.almura.content.type.block.component.aabb.WireFrame;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.BlockBreak;
+import com.almuradev.almura.content.type.block.component.action.breaks.BlockBreak;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.material.MapColor;
 import com.almuradev.almura.content.type.material.Material;
@@ -176,6 +176,22 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     @Override
     public BlockStateDefinitionBuilderImpl breaks(final List<BlockBreak> breaks) {
         this.breaks = breaks;
+        return this;
+    }
+
+    @Override
+    public BlockStateDefinitionBuilderImpl from(final BlockStateDefinition definition) {
+        this.material = definition.material;
+        this.mapColor = definition.mapColor;
+        this.collisionAABB = definition.collisionAABB;
+        this.wireFrameAABB = definition.wireFrameAABB;
+        this.slipperiness = definition.slipperiness;
+        this.hardness = definition.hardness;
+        this.lightEmission = definition.lightEmission;
+        this.lightOpacity = definition.lightOpacity;
+        this.resistance = definition.resistance;
+        this.soundGroup = definition.soundGroup;
+        this.breaks = definition.breaks;
         return this;
     }
 

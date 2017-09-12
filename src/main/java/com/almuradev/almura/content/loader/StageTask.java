@@ -3,9 +3,8 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.loader.task;
+package com.almuradev.almura.content.loader;
 
-import com.almuradev.almura.content.loader.AssetContext;
 import com.almuradev.almura.registry.BuildableCatalogType;
 
 public interface StageTask<C extends BuildableCatalogType, B extends BuildableCatalogType.Builder> {

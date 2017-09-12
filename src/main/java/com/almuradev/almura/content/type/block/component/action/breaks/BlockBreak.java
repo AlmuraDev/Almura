@@ -3,19 +3,23 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.type.block.component.action.blockbreak;
+package com.almuradev.almura.content.type.block.component.action.breaks;
 
 import com.almuradev.almura.content.type.block.component.action.Action;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.drop.Drop;
+import com.almuradev.almura.content.type.block.component.action.breaks.drop.Drop;
 import com.almuradev.almura.registry.CatalogDelegate;
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.spongepowered.api.item.ItemType;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public final class BlockBreak {
 
     private final Set<CatalogDelegate<ItemType>> with;
@@ -23,9 +27,9 @@ public final class BlockBreak {
     private final List<Drop> drops;
 
     BlockBreak(final Set<CatalogDelegate<ItemType>> with, final List<Action> actions, final List<Drop> drops) {
-        this.with = with;
-        this.actions = actions;
-        this.drops = drops;
+        this.with = ImmutableSet.copyOf(with);
+        this.actions = ImmutableList.copyOf(actions);
+        this.drops = ImmutableList.copyOf(drops);
     }
 
     public boolean doesItemMatch(ItemType type) {
@@ -33,11 +37,11 @@ public final class BlockBreak {
     }
 
     public Collection<Action> getActions() {
-        return Collections.unmodifiableCollection(this.actions);
+        return this.actions;
     }
 
     public Collection<Drop> getDrops() {
-        return Collections.unmodifiableCollection(this.drops);
+        return this.drops;
     }
 
     @Override

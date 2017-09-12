@@ -4,4 +4,4 @@
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
 @org.spongepowered.api.util.annotation.NonnullByDefault
-package com.almuradev.almura.content.type.block.component.action.blockbreak.drop;
+package com.almuradev.almura.content.type.block.component.action.breaks.action;

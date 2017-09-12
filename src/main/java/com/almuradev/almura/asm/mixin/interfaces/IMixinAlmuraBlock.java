@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.asm.mixin.interfaces;
 
-import com.almuradev.almura.content.type.block.component.action.blockbreak.BlockBreak;
+import com.almuradev.almura.content.type.block.component.action.breaks.BlockBreak;
 
 import java.util.List;
 

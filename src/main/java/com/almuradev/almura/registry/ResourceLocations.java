@@ -11,7 +11,7 @@ public final class ResourceLocations {
 
     private static final String MINECRAFT_NAMESPACE = "minecraft";
     private static final char NAMESPACE_SEPARATOR = ':';
-    private static final int NOT_FOUND = -1;
+    static final int NOT_FOUND = -1;
 
     private ResourceLocations() {
     }

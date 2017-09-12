@@ -13,14 +13,12 @@ import com.almuradev.almura.content.loader.AssetLoader;
 import com.almuradev.almura.content.loader.AssetPipeline;
 import com.almuradev.almura.content.loader.AssetRegistry;
 import com.almuradev.almura.content.loader.LoaderPhase;
-import com.almuradev.almura.content.loader.task.SetBlockSoundGroupAttributesTask;
-import com.almuradev.almura.content.loader.task.SetItemAttributesTask;
-import com.almuradev.almura.content.loader.task.SetItemGroupAttributesTask;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.BlockBreak;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.drop.Drop;
-import com.almuradev.almura.content.type.block.component.action.blockbreak.drop.ExperienceDrop;
+import com.almuradev.almura.content.type.block.component.action.breaks.BlockBreak;
+import com.almuradev.almura.content.type.block.component.action.breaks.drop.Drop;
+import com.almuradev.almura.content.type.block.component.action.breaks.drop.ExperienceDrop;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroupBuilder;
+import com.almuradev.almura.content.type.block.component.sound.factory.SetBlockSoundGroupAttributesTask;
 import com.almuradev.almura.content.type.block.factory.BlockItemGroupProvider;
 import com.almuradev.almura.content.type.block.factory.SetBlockAttributesTask;
 import com.almuradev.almura.content.type.block.type.AbstractBlockTypeBuilder;
@@ -29,8 +27,10 @@ import com.almuradev.almura.content.type.block.type.horizontal.HorizontalType;
 import com.almuradev.almura.content.type.block.type.horizontal.HorizontalTypeBuilderImpl;
 import com.almuradev.almura.content.type.item.builder.AbstractItemTypeBuilder;
 import com.almuradev.almura.content.type.item.factory.ItemItemGroupProvider;
+import com.almuradev.almura.content.type.item.factory.SetItemAttributesTask;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.group.ItemGroupBuilderImpl;
+import com.almuradev.almura.content.type.item.group.factory.SetItemGroupAttributesTask;
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
 import com.almuradev.almura.content.type.material.MapColor;
 import com.almuradev.almura.content.type.material.Material;
@@ -230,7 +230,7 @@ public abstract class CommonProxy {
 
         if (exp == -1) {
             // if no exp for this itemstack, fallback to empty hand and check again
-            exp = this.getXpToDrop(ItemStack.empty().getItem(), (IMixinAlmuraBlock) block, event.getWorld().rand);
+            exp = this.getXpToDrop(ItemStack.empty().getType(), (IMixinAlmuraBlock) block, event.getWorld().rand);
         }
 
         if (exp != -1) {

@@ -9,6 +9,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 
 import java.util.Optional;
 
+@FunctionalInterface
 public interface ConfigurationNodeDeserializer<T> {
 
     Optional<T> deserialize(final ConfigurationNode node);

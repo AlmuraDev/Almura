@@ -3,13 +3,13 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.type.block.component.action.blockbreak.drop;
+package com.almuradev.almura.content.type.block.component.action.breaks.drop;
 
 import com.almuradev.almura.registry.CatalogDelegate;
 import com.google.common.base.MoreObjects;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.util.weighted.VariableAmount;
 
@@ -19,31 +19,31 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public final class ItemDrop extends Drop {
 
-    private final List<CatalogDelegate<ItemType>> itemDelegates;
+    private final List<CatalogDelegate<ItemType>> items;
     private final List<ItemStackSnapshot> drops = new ArrayList<>();
 
-    public ItemDrop(final VariableAmount amount, @Nullable final VariableAmount bonusAmount, @Nullable final VariableAmount bonusChance, final List<CatalogDelegate<ItemType>> itemDelegates) {
+    public ItemDrop(final VariableAmount amount, @Nullable final VariableAmount bonusAmount, @Nullable final VariableAmount bonusChance, final List<CatalogDelegate<ItemType>> items) {
         super(amount, bonusAmount, bonusChance);
-        this.itemDelegates = itemDelegates;
+        this.items = items;
     }
 
     public Collection<ItemStackSnapshot> getDrops() {
         if (this.drops.isEmpty()) {
-            for (CatalogDelegate<ItemType> itemDelegate : this.itemDelegates) {
-                this.drops.add(((org.spongepowered.api.item.inventory.ItemStack) (Object) new ItemStack((Item) itemDelegate.get()))
-                        .createSnapshot());
+            for (final CatalogDelegate<ItemType> item : this.items) {
+                this.drops.add(((ItemStack) (Object) new net.minecraft.item.ItemStack((Item) item.get())).createSnapshot());
             }
         }
-
         return Collections.unmodifiableList(this.drops);
     }
 
     @Override
     protected MoreObjects.ToStringHelper toStringHelper() {
         return super.toStringHelper()
-                .add("itemDelegates", this.itemDelegates);
+                .add("items", this.items);
     }
 }

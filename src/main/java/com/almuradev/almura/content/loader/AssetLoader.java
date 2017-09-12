@@ -119,7 +119,7 @@ public final class AssetLoader {
                     final String message = "Encountered a critical exception while constructing game content."
                         + '\n' + "Asset:"
                         + '\n' + '\t' + "Name: " + asset.getName()
-                        + '\n' + '\t' + "Type: " + asset.getAssetType()
+                        + '\n' + '\t' + "Type: " + asset.getType()
                         + '\n' + '\t' + "Path: " + asset.getPath();
                     throw new ContentConstructionException(message, e);
                 }

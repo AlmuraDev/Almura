@@ -13,13 +13,13 @@ import java.nio.file.Path;
 public final class Asset {
 
     private final String name;
-    private final AssetType assetType;
+    private final AssetType type;
     private final Path path;
     private final ConfigurationNode node;
 
-    Asset(String name, AssetType assetType, Path path, ConfigurationNode node) {
+    Asset(String name, AssetType type, Path path, ConfigurationNode node) {
         this.name = name;
-        this.assetType = assetType;
+        this.type = type;
         this.path = path;
         this.node = node;
     }
@@ -28,8 +28,8 @@ public final class Asset {
         return this.name;
     }
 
-    public AssetType getAssetType() {
-        return this.assetType;
+    public AssetType getType() {
+        return this.type;
     }
 
     public Path getPath() {
