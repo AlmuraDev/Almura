@@ -10,7 +10,7 @@ import com.almuradev.almura.content.loader.StageTask;
 import com.almuradev.almura.content.type.item.ItemConfig;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.material.MaterialType;
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 
 public class ItemItemGroupProvider implements StageTask<MaterialType, MaterialType.Builder> {
 

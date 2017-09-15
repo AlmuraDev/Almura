@@ -5,8 +5,6 @@
  */
 package com.almuradev.almura.content.type.block.factory;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.configuration.ConfigurationNodes;
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.AssetContext;
 import com.almuradev.almura.content.loader.StageTask;
@@ -21,14 +19,25 @@ import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilder
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import com.almuradev.almura.content.type.material.MapColor;
 import com.almuradev.almura.content.type.material.Material;
-import com.almuradev.almura.registry.CatalogDelegate;
-import com.almuradev.almura.registry.Registries;
+import com.almuradev.shared.config.ConfigurationNodes;
+import com.almuradev.shared.registry.Registries;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 public class SetBlockAttributesTask implements StageTask<BuildableBlockType, BuildableBlockType.Builder> {
+
+    private final Logger logger;
+
+    @Inject
+    public SetBlockAttributesTask(final Logger logger) {
+        this.logger = logger;
+    }
 
     @Override
     public void execute(final AssetContext<BuildableBlockType, BuildableBlockType.Builder> context) {
@@ -130,6 +139,6 @@ public class SetBlockAttributesTask implements StageTask<BuildableBlockType, Bui
     }
 
     private void missingData(final Asset asset, final String what) {
-        Almura.instance.logger.debug("Block '{}' at '{}' does not have a {}", asset.getName(), asset.getPath().toString(), what);
+        this.logger.debug("Block '{}' at '{}' does not have a {}", asset.getName(), asset.getPath().toString(), what);
     }
 }

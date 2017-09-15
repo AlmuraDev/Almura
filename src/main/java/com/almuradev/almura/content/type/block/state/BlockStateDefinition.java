@@ -13,7 +13,7 @@ import com.almuradev.almura.content.type.block.component.action.breaks.BlockBrea
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.material.MapColor;
 import com.almuradev.almura.content.type.material.Material;
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import net.minecraft.block.Block;
 
 import java.util.List;

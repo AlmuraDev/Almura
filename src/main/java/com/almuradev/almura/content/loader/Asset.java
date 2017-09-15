@@ -10,7 +10,7 @@ import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import com.almuradev.almura.content.type.block.type.horizontal.HorizontalType;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
-import com.almuradev.almura.registry.BuildableCatalogType;
+import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 import ninja.leaping.configurate.ConfigurationNode;
 
 import java.nio.file.Path;

@@ -77,7 +77,7 @@ repositories {
     }
     maven {
         name = 'oss-sonatype-public'
-        url = 'https://oss.sonatype.org/content/repositories/public/'
+        url = 'https://oss.sonatype.org/content/groups/public/'
     }
     maven {
         name = 'sponge'
@@ -96,6 +96,8 @@ dependencies {
     compile ("org.spongepowered:spongeforge:${project.spongeImplVersion}:dev") {
         exclude module: 'testplugins'
     }
+    compile 'net.kyori:membrane:1.0.5'
+    compile 'net.kyori:violet:1.0.0'
     compile 'ninja.leaping.configurate:configurate-json:3.3'
     compile project(':MalisisCore')
 }
@@ -169,6 +171,11 @@ shadowJar {
     exclude 'dummyThing'
     relocate 'com.typesafe.config', 'configurate.typesafe.config'
     dependencies {
+        include dependency('com.google.inject.extensions:guice-assistedinject')
+        include dependency('com.google.inject.extensions:guice-multibindings')
+        include dependency('net.kyori:lunar')
+        include dependency('net.kyori:membrane')
+        include dependency('net.kyori:violet')
         include dependency('ninja.leaping.configurate:configurate-json')
     }
     afterEvaluate {

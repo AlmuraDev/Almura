@@ -7,7 +7,7 @@ package com.almuradev.almura.content.type.block.component.action.breaks;
 
 import com.almuradev.almura.content.type.block.component.action.Action;
 import com.almuradev.almura.content.type.block.component.action.breaks.drop.Drop;
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -32,7 +32,7 @@ public final class BlockBreak {
         this.drops = ImmutableList.copyOf(drops);
     }
 
-    public boolean doesItemMatch(ItemType type) {
+    public boolean accepts(ItemType type) {
         return this.with.stream().anyMatch(input -> input.test(type));
     }
 

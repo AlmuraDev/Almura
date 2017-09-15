@@ -10,7 +10,7 @@ import com.almuradev.almura.content.loader.StageTask;
 import com.almuradev.almura.content.type.block.BlockConfig;
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 
 public class BlockItemGroupProvider implements StageTask<BuildableBlockType, BuildableBlockType.Builder> {
 

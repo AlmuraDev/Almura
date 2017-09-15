@@ -17,8 +17,8 @@ public class Constants {
 
         String ID = "almura";
         String NAME = WordUtils.capitalize(ID);
-        String PROXY_CLIENT_CLASSPATH = "com.almuradev.almura.client.ClientProxy";
-        String PROXY_SERVER_CLASSPATH = "com.almuradev.almura.server.ServerProxy";
+        String PROXY_CLIENT_CLASSPATH = "com.almuradev.almura.core.client.ClientProxy";
+        String PROXY_SERVER_CLASSPATH = "com.almuradev.almura.core.server.ServerProxy";
     }
 
     public interface FileSystem {

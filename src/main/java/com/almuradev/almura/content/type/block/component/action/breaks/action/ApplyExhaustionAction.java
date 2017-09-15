@@ -5,9 +5,9 @@
  */
 package com.almuradev.almura.content.type.block.component.action.breaks.action;
 
-import com.almuradev.almura.configuration.serializer.ConfigurationNodeDeserializer;
 import com.almuradev.almura.content.type.VariableAmounts;
 import com.almuradev.almura.content.type.block.component.action.Action;
+import com.almuradev.shared.config.ConfigurationNodeDeserializer;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;

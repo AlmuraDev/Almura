@@ -17,7 +17,7 @@ import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import com.almuradev.almura.content.type.block.type.generic.GenericBlock;
 import com.almuradev.almura.content.type.block.type.horizontal.GenericHorizontalBlock;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -167,7 +167,7 @@ public abstract class MixinAlmuraBlock extends MixinBlock implements BuildableBl
         boolean hasActions = false;
 
         for (final BlockBreak kitkat : this.breaks) {
-            if (kitkat.doesItemMatch(usedType)) {
+            if (kitkat.accepts(usedType)) {
                 for (Action action : kitkat.getActions()) {
                     hasActions = true;
                     action.apply(player, (Block) (Object) this, pos, random, stack);
@@ -182,7 +182,7 @@ public abstract class MixinAlmuraBlock extends MixinBlock implements BuildableBl
         final List<ItemStack> drops = new ArrayList<>();
 
         for (final BlockBreak kitkat : this.breaks) {
-            if (kitkat.doesItemMatch(usedType)) {
+            if (kitkat.accepts(usedType)) {
                 for (Drop drop : kitkat.getDrops()) {
                     if (drop instanceof ItemDrop) {
                         for (ItemStackSnapshot itemStackSnapshot : ((ItemDrop) drop).getDrops()) {

@@ -5,31 +5,30 @@
  */
 package com.almuradev.almura.content.loader;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.Pack;
+import com.almuradev.shared.registry.catalog.BuildableCatalogType;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public final class AssetPipeline {
 
     private final Map<LoaderPhase, Map<Asset.Type, List<StageTask>>> stagesByAssetTypeByPhase = new HashMap<>();
+    private final Logger logger;
 
-    public AssetPipeline registerStage(LoaderPhase phase, Class<? extends StageTask> clazz, Asset.Type... types) {
-        final StageTask task;
-        try {
-            task = clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalArgumentException(e);
-        }
+    @Inject
+    private AssetPipeline(final Logger logger) {
+        this.logger = logger;
+    }
 
-        if (task == null) {
-            // TODO Tasks require a no-arg constructor
-            throw new IllegalArgumentException("Task '" + clazz + "' requires a no-args constructor!");
-        }
-
+    public <C extends BuildableCatalogType, B extends BuildableCatalogType.Builder<C, B>, F extends StageTask<C, B>> AssetPipeline registerStage(LoaderPhase phase, F task, Iterable<Asset.Type> types) {
         Map<Asset.Type, List<StageTask>> stages = this.stagesByAssetTypeByPhase.computeIfAbsent(phase, k -> new HashMap<>());
         for (final Asset.Type type : types) {
             stages.computeIfAbsent(type, k -> new LinkedList<>()).add(task);
@@ -51,7 +50,7 @@ public final class AssetPipeline {
 
                     for (Map.Entry<Pack, List<AssetContext>> packListEntry : assetTypeMapEntry.getValue().entrySet()) {
 
-                        Almura.instance.logger.info("Processing assets of type [{}] in pack [{}] for phase [{}].", assetTypeMapEntry.getKey().name(),
+                        this.logger.info("Processing assets of type [{}] in pack [{}] for phase [{}].", assetTypeMapEntry.getKey().name(),
                                 packListEntry.getKey().getName(), phase.name());
 
                         int contextualCount = 0;
@@ -65,7 +64,7 @@ public final class AssetPipeline {
                             contextualCount++;
                         }
 
-                        Almura.instance.logger.info("Processed [{}] [{}] in pack [{}] for phase [{}].", contextualCount, assetTypeMapEntry.getKey
+                        this.logger.info("Processed [{}] [{}] in pack [{}] for phase [{}].", contextualCount, assetTypeMapEntry.getKey
                                         ().name(), packListEntry.getKey().getName(), phase.name());
                     }
                 }
