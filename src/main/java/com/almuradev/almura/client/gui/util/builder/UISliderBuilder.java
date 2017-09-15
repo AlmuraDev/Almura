@@ -20,15 +20,16 @@ import javax.annotation.Nullable;
 public class UISliderBuilder {
 
     private final MalisisGui gui;
-    private UIContainer container;
-    private FontOptions fro, hoverFro;
+    @Nullable private UIContainer container;
+    @Nullable private FontOptions fro;
+    private FontOptions hoverFro;
     private int width, height, x, y, z, anchor;
-    private MalisisFont font;
+    @Nullable private MalisisFont font;
     @Nullable private Object object;
     @Nullable private Text text;
     @Nullable private Object value;
-    private UITooltip tooltip;
-    private Converter converter;
+    @Nullable private UITooltip tooltip;
+    @Nullable private Converter converter;
     private float scrollStep;
     private boolean enabled = true;
 

@@ -8,6 +8,7 @@ package com.almuradev.almura.client.gui.screen.menu;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.ClientProxy;
+import com.almuradev.almura.client.gui.GuiConfig;
 import com.almuradev.almura.client.gui.GuiRemoteTexture;
 import com.almuradev.almura.client.gui.component.UISimpleList;
 import com.almuradev.almura.client.gui.screen.SimpleContainerScreen;
@@ -134,7 +135,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         elementList.add(new AboutListElement(
                 this,
                 this.list,
-                new UIImage(this, new GuiTexture(Constants.Gui.LOCATION_ALMURA_MAN), null), 23, 32, 5, 0, 8,
+                new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_MAN), null), 23, 32, 5, 0, 8,
                 Text.of(TextColors.WHITE, "Almura"),
                 Text.of(TextColors.WHITE, "Almura was created and is maintained by the AlmuraDev Team (https://www.github.com/AlmuraDev/)",
                         Text.NEW_LINE, Text.NEW_LINE,
@@ -165,9 +166,9 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                     this,
                     this.list,
                     new UIImage(this, new GuiRemoteTexture(
-                            Constants.Gui.LOCATION_AVATAR_GENERIC,
+                            GuiConfig.Location.GENERIC_AVATAR,
                             new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + entry.uniqueId + ".png"),
-                            String.format(Constants.Gui.SKIN_URL_BASE, UUID.fromString(entry.uniqueId), 32),
+                            String.format(GuiConfig.Url.SKINS, UUID.fromString(entry.uniqueId), 32),
                             32, 32), null),
                     Text.of(entry.color, I18n.format(entry.name)),
                     Text.of(TextColors.WHITE, I18n.format(entry.description),

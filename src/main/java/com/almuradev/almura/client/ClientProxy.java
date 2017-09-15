@@ -9,6 +9,7 @@ import com.almuradev.almura.CommonProxy;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.client.gui.screen.ingame.SimpleIngameMenu;
 import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
+import com.almuradev.almura.client.gui.screen.ingame.hud.HUDConfig;
 import com.almuradev.almura.client.gui.screen.ingame.hud.OriginHUD;
 import com.almuradev.almura.client.gui.screen.menu.PanoramicMainMenu;
 import com.almuradev.almura.client.model.obj.OBJModelLoader;
@@ -21,6 +22,7 @@ import com.almuradev.almura.network.play.SWorldInformationMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.MouseEvent;
@@ -77,8 +79,8 @@ public final class ClientProxy extends CommonProxy {
                 .setHeader(Constants.Config.HEADER), Constants.FileSystem.PATH_CONFIG_ALMURA, Constants.FileSystem.CONFIG_CLIENT_NAME);
 
         try {
-            if (Files.notExists(configAdapter.getConfigFolder())) {
-                Files.createDirectories(configAdapter.getConfigFolder());
+            if (Files.notExists(this.configAdapter.getConfigFolder())) {
+                Files.createDirectories(this.configAdapter.getConfigFolder());
                 this.configAdapter.save();
             }
 
@@ -117,11 +119,12 @@ public final class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onGuiScreen(GuiOpenEvent event) {
-        if (event.getGui() != null) {
-            if (event.getGui().getClass().equals(GuiMainMenu.class)) {
+        final GuiScreen screen = event.getGui();
+        if (screen != null) {
+            if (screen.getClass().equals(GuiMainMenu.class)) {
                 event.setCanceled(true);
                 new PanoramicMainMenu(null).display();
-            } else if (event.getGui().getClass().equals(GuiIngameMenu.class)) {
+            } else if (screen.getClass().equals(GuiIngameMenu.class)) {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();
             }
@@ -133,7 +136,7 @@ public final class ClientProxy extends CommonProxy {
         final ClientCategory clientCategory = this.configAdapter.getConfig().client;
 
         switch (clientCategory.hud.toLowerCase()) {
-            case "origin":
+            case HUDConfig.Type.ORIGIN:
                 if (!(this.customIngameHud instanceof OriginHUD)) {
                     if (this.customIngameHud != null) {
                         this.customIngameHud.closeOverlay();
@@ -157,7 +160,7 @@ public final class ClientProxy extends CommonProxy {
                     default:
                 }
                 break;
-            case "vanilla":
+            case HUDConfig.Type.VANILLA:
             default:
                 if (this.customIngameHud != null) {
                     this.customIngameHud.closeOverlay();

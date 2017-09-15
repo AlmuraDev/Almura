@@ -47,7 +47,7 @@ public class CustomFolderResourcePack extends FolderResourcePack {
 
     @SuppressWarnings("unchecked")
     @Override
-    public IMetadataSection getPackMetadata(MetadataSerializer par1MetadataSerializer, String par2Str) throws IOException {
+    public IMetadataSection getPackMetadata(MetadataSerializer serializer, String section) throws IOException {
         return null;
     }
 

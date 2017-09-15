@@ -7,6 +7,7 @@ package com.almuradev.almura.client.model.obj;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.model.ModelConfig;
 import com.almuradev.almura.client.model.obj.geometry.Face;
 import com.almuradev.almura.client.model.obj.geometry.Group;
 import com.almuradev.almura.client.model.obj.geometry.MalformedGeometryException;
@@ -59,7 +60,7 @@ public class OBJModelParser {
                 final String line = lines.get(i);
 
                 // Skip comments and newlines
-                if (line.startsWith(Constants.Model.COMMENT) || line.isEmpty()) {
+                if (line.startsWith(ModelConfig.COMMENT) || line.isEmpty()) {
                     continue;
                 }
 
@@ -68,12 +69,12 @@ public class OBJModelParser {
                 final String[] lineContents = Arrays.copyOfRange(combinedLineContents, 1, combinedLineContents.length);
 
                 switch (lineHeader) {
-                    case Constants.Model.Obj.MATERIAL_LIBRARY:
+                    case ModelConfig.OBJ.MATERIAL_LIBRARY:
                         final ResourceLocation parent = ResourceLocationUtil.getParent(this.source).orElse(null);
                         objBuilder.materialLibrary(this.parseMaterialLibrary(ResourceLocationUtil.resourceLocationFrom(lineContents[0],
                                 Constants.Plugin.ID, parent.getResourcePath())));
                         break;
-                    case Constants.Model.Obj.VERTEX:
+                    case ModelConfig.OBJ.VERTEX:
                         try {
                             final float x = Float.parseFloat(lineContents[0]);
                             final float y = Float.parseFloat(lineContents[1]);
@@ -92,7 +93,7 @@ public class OBJModelParser {
                         }
 
                         break;
-                    case Constants.Model.Obj.VERTEX_NORMAL:
+                    case ModelConfig.OBJ.VERTEX_NORMAL:
                         try {
                             final float x = Float.parseFloat(lineContents[0]);
                             final float y = Float.parseFloat(lineContents[1]);
@@ -105,7 +106,7 @@ public class OBJModelParser {
                         }
 
                         break;
-                    case Constants.Model.Obj.VERTEX_TEXTURE_COORDINATE:
+                    case ModelConfig.OBJ.VERTEX_TEXTURE_COORDINATE:
                         try {
                             final float u = Float.parseFloat(lineContents[0]);
                             final float v = Float.parseFloat(lineContents[1]);
@@ -135,7 +136,7 @@ public class OBJModelParser {
                         }
 
                         break;
-                    case Constants.Model.Obj.GROUP:
+                    case ModelConfig.OBJ.GROUP:
                         if (groupBuilder != null) {
                             objBuilder.group(groupBuilder.build(currentGroupName));
                         }
@@ -143,7 +144,7 @@ public class OBJModelParser {
                         groupBuilder = Group.builder();
                         currentGroupName = lineContents[0];
                         break;
-                    case Constants.Model.Obj.USE_MATERIAL:
+                    case ModelConfig.OBJ.USE_MATERIAL:
                         if (groupBuilder == null) {
                             groupBuilder = Group.builder();
                             currentGroupName = "default";
@@ -170,7 +171,7 @@ public class OBJModelParser {
 
                         groupBuilder.materialDefinition(materialDefinition);
                         break;
-                    case Constants.Model.Obj.FACE:
+                    case ModelConfig.OBJ.FACE:
                         if (groupBuilder == null) {
                             groupBuilder = Group.builder();
                             currentGroupName = "default";
@@ -299,7 +300,7 @@ public class OBJModelParser {
                 final String line = lines.get(i);
 
                 // Skip comments and newlines
-                if (line.startsWith(Constants.Model.COMMENT) || line.isEmpty()) {
+                if (line.startsWith(ModelConfig.COMMENT) || line.isEmpty()) {
                     continue;
                 }
 
@@ -308,7 +309,7 @@ public class OBJModelParser {
                 final String[] lineContents = Arrays.copyOfRange(combinedLineContents, 1, combinedLineContents.length);
 
                 switch (lineHeader) {
-                    case Constants.Model.Material.NEW_MATERIAL:
+                    case ModelConfig.OBJ.Material.NEW_MATERIAL:
                         if (mtlBuilder != null) {
                             mtllibBuilder.materialDefinition(mtlBuilder.build(currentMaterial));
                         }
@@ -316,7 +317,7 @@ public class OBJModelParser {
                         mtlBuilder = MaterialDefinition.builder();
                         currentMaterial = lineContents[0];
                         break;
-                    case Constants.Model.Material.DIFFUSE:
+                    case ModelConfig.OBJ.Material.DIFFUSE:
                         if (mtlBuilder == null) {
                             throw new MalformedMaterialLibraryException("Material attribute cannot occur before defining new material "
                                     + "definition! Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents));

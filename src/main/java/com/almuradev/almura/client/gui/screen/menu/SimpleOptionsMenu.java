@@ -7,6 +7,7 @@ package com.almuradev.almura.client.gui.screen.menu;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
+import com.almuradev.almura.client.gui.screen.ingame.hud.HUDConfig;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
 import com.almuradev.almura.client.gui.util.builder.UISliderBuilder;
@@ -53,30 +54,30 @@ public class SimpleOptionsMenu extends SimpleScreen {
 
         this.addToScreen(titleLabel);
 
-        buttonHudType = new UIButtonBuilder(this)
-                .text("HUD: " + config.client.hud.substring(0, 1).toUpperCase() + config.client.hud.substring(1))
+        this.buttonHudType = new UIButtonBuilder(this)
+                .text("HUD: " + this.config.client.hud.substring(0, 1).toUpperCase() + this.config.client.hud.substring(1))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .position(-(CONTROL_WIDTH / 2 + CONTROL_PADDING), getPaddedY(titleLabel, CONTROL_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build("button.hudType");
 
-        final boolean isOrigin = config.client.hud.equalsIgnoreCase("origin");
-        sliderOriginHudOpacity = new UISliderBuilder(this, Converter.<Float, Integer>from(f -> (int) (f * 255), i -> (float) i / 255))
+        final boolean isOrigin = this.config.client.hud.equalsIgnoreCase(HUDConfig.Type.ORIGIN);
+        this.sliderOriginHudOpacity = new UISliderBuilder(this, Converter.<Float, Integer>from(f -> (int) (f * 255), i -> (float) i / 255))
                 .text("HUD Opacity: %d")
-                .value(config.client.originHudOpacity)
+                .value(this.config.client.originHudOpacity)
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
-                .position(-(CONTROL_WIDTH / 2 + CONTROL_PADDING),  getPaddedY(buttonHudType, CONTROL_PADDING))
+                .position(-(CONTROL_WIDTH / 2 + CONTROL_PADDING),  getPaddedY(this.buttonHudType, CONTROL_PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .enabled(isOrigin)
                 .build("slider.originHudOpacity");
-        sliderOriginHudOpacity.setAlpha(isOrigin ? 255 : 128);
+        this.sliderOriginHudOpacity.setAlpha(isOrigin ? 255 : 128);
 
         final UISlider<OptionsConverter.Options> sliderChestDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
                 .text("Chest Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == config.client.chestRenderDistance)
+                        .filter(o -> o.value == this.config.client.chestRenderDistance)
                         .findFirst()
                         .orElse(OptionsConverter.Options.DEFAULT))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -88,7 +89,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         final UISlider<OptionsConverter.Options> sliderSignTextDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
                 .text("Sign Text Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == config.client.signTextRenderDistance)
+                        .filter(o -> o.value == this.config.client.signTextRenderDistance)
                         .findFirst()
                         .orElse(OptionsConverter.Options.DEFAULT))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -100,7 +101,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         final UISlider<OptionsConverter.Options> sliderItemFrameDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
                 .text("Item Frame Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == config.client.itemFrameRenderDistance)
+                        .filter(o -> o.value == this.config.client.itemFrameRenderDistance)
                         .findFirst()
                         .orElse(OptionsConverter.Options.DEFAULT))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -117,7 +118,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 .listener(this)
                 .build("button.done");
 
-        addToScreen(buttonHudType, sliderOriginHudOpacity, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, buttonDone);
+        addToScreen(this.buttonHudType, this.sliderOriginHudOpacity, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, buttonDone);
     }
 
     @Override
@@ -144,19 +145,19 @@ public class SimpleOptionsMenu extends SimpleScreen {
         switch (event.getComponent().getName()) {
             case "button.hudType":
                 // Check if the current HUD is the Origin HUD
-                boolean isOrigin = config.client.hud.equalsIgnoreCase("origin");
-                config.client.hud = isOrigin ? "vanilla" : "origin";
+                boolean isOrigin = this.config.client.hud.equalsIgnoreCase(HUDConfig.Type.ORIGIN);
+                this.config.client.hud = isOrigin ? HUDConfig.Type.VANILLA : HUDConfig.Type.ORIGIN;
                 // Flip the boolean since we're now on the vanilla HUD
                 isOrigin = !isOrigin;
 
-                buttonHudType.setText("HUD: " + (isOrigin ? "Origin" : "Vanilla"));
-                sliderOriginHudOpacity.setAlpha(isOrigin ? 255 : 128);
-                sliderOriginHudOpacity.setDisabled(!isOrigin);
+                this.buttonHudType.setText("HUD: " + (isOrigin ? "Origin" : "Vanilla"));
+                this.sliderOriginHudOpacity.setAlpha(isOrigin ? 255 : 128);
+                this.sliderOriginHudOpacity.setDisabled(!isOrigin);
 
                 if (isOrigin) {
-                    sliderOriginHudOpacity.setTooltip((UITooltip) null);
+                    this.sliderOriginHudOpacity.setTooltip((UITooltip) null);
                 } else {
-                    sliderOriginHudOpacity.setTooltip("Only available when Origin HUD is in use.");
+                    this.sliderOriginHudOpacity.setTooltip("Only available when Origin HUD is in use.");
                 }
 
                 break;
@@ -172,16 +173,16 @@ public class SimpleOptionsMenu extends SimpleScreen {
     public void onValueChange(ComponentEvent.ValueChange event) {
         switch (event.getComponent().getName()) {
             case "slider.originHudOpacity":
-                config.client.originHudOpacity = (int) event.getNewValue();
+                this.config.client.originHudOpacity = (int) event.getNewValue();
                 break;
             case "slider.chestRenderDistance" :
-                config.client.chestRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                this.config.client.chestRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "slider.signTextRenderDistance" :
-                config.client.signTextRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                this.config.client.signTextRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "slider.itemFrameRenderDistance" :
-                config.client.itemFrameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                this.config.client.itemFrameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
         }
 

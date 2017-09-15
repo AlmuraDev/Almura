@@ -26,12 +26,12 @@ public class Pack implements CatalogType {
 
     private final String id;
     private final String name;
-    private final Map<String, CatalogType> objectsById;
+    private final Map<String, CatalogType> catalogs;
 
-    Pack(String id, String name, Map<String, CatalogType> objectsById) {
+    Pack(String id, String name, Map<String, CatalogType> catalogs) {
         this.id = id;
         this.name = name;
-        this.objectsById = objectsById;
+        this.catalogs = catalogs;
     }
 
     public static Builder builder() {
@@ -49,14 +49,14 @@ public class Pack implements CatalogType {
     }
 
     public Set<BlockType> getBlocks() {
-        return this.objectsById.values().stream()
+        return this.catalogs.values().stream()
                 .filter(type -> type instanceof BlockType)
                 .map(type -> (BlockType) type)
                 .collect(Collectors.toSet());
     }
 
     public Set<ItemType> getItems() {
-        return this.objectsById.values().stream()
+        return this.catalogs.values().stream()
                 .filter(type -> type instanceof ItemType)
                 .map(type -> (ItemType) type)
                 .collect(Collectors.toSet());
@@ -64,22 +64,22 @@ public class Pack implements CatalogType {
 
     public void add(CatalogType object) {
         checkNotNull(object);
-        checkArgument(!this.objectsById.containsValue(object), "Attempt to double add catalog type to pack!");
+        checkArgument(!this.catalogs.containsValue(object), "Attempt to double add catalog type to pack!");
     }
 
     public Set<CatalogType> getChildren() {
-        return this.objectsById.values().stream().collect(Collectors.toSet());
+        return this.catalogs.values().stream().collect(Collectors.toSet());
     }
 
     public static final class Builder implements ResettableBuilder<Pack, Builder> {
 
-        private final Map<String, CatalogType> objectsById = new LinkedHashMap<>();
+        private final Map<String, CatalogType> catalogs = new LinkedHashMap<>();
 
         public Builder object(CatalogType object) {
             checkNotNull(object);
-            checkArgument(!this.objectsById.containsValue(object), "Attempt to double add catalog type to builder!");
+            checkArgument(!this.catalogs.containsValue(object), "Attempt to double add catalog type to builder!");
 
-            this.objectsById.put(object.getId(), object);
+            this.catalogs.put(object.getId(), object);
             return this;
         }
 
@@ -90,17 +90,17 @@ public class Pack implements CatalogType {
 
         @Override
         public Builder reset() {
-            this.objectsById.clear();
+            this.catalogs.clear();
             return this;
         }
 
         public Pack build(String id, String name) {
-            checkNotNull(id);
+            checkNotNull(id, "id");
             checkState(!id.isEmpty(), "Id cannot be empty!");
-            checkNotNull(name);
+            checkNotNull(name, "name");
             checkState(!name.isEmpty(), "Name cannot be empty!");
 
-            return new Pack(id, name, this.objectsById);
+            return new Pack(id, name, this.catalogs);
         }
     }
 }

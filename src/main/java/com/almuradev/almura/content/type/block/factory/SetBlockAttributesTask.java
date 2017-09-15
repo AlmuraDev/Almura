@@ -37,7 +37,7 @@ public class SetBlockAttributesTask implements StageTask<BuildableBlockType, Bui
 
         final BuildableBlockType.Builder builder = context.getBuilder();
         for (final Map.Entry<Object, ? extends ConfigurationNode> entry : node.getNode(BlockConfig.STATES).getChildrenMap().entrySet()) {
-            final BlockStateDefinition definition = this.buildStateDefinition(asset, builder, String.valueOf(entry), entry.getValue());
+            final BlockStateDefinition definition = this.buildStateDefinition(asset, builder, String.valueOf(entry.getKey()), entry.getValue());
             builder.putState(definition);
         }
     }

@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.screen.menu;
 
-import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.gui.GuiConfig;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.util.FontOptionsConstants;
 import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
@@ -59,14 +59,14 @@ public class PanoramicMainMenu extends PanoramicScreen {
         final UIBackgroundContainer container = new UIBackgroundContainer(this);
         container.setBackgroundAlpha(0);
         container.setPosition(0, -10, Anchor.MIDDLE | Anchor.CENTER);
-        container.setSize(Constants.Gui.BUTTON_WIDTH_LONG, 205);
+        container.setSize(GuiConfig.Button.WIDTH_LONG, 205);
 
         // Almura header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(Constants.Gui.LOCATION_ALMURA_LOGO), null);
+        final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
-        this.buttonContainer = new UIBackgroundContainer(this, Constants.Gui.BUTTON_WIDTH_LONG + PADDING, (Constants.Gui.BUTTON_HEIGHT * 4) +
+        this.buttonContainer = new UIBackgroundContainer(this, GuiConfig.Button.WIDTH_LONG + PADDING, (GuiConfig.Button.HEIGHT * 4) +
                 (PADDING * 3));
         this.buttonContainer.setPosition(0, SimpleScreen.getPaddedY(almuraHeader, 10), Anchor.TOP | Anchor.CENTER);
         this.buttonContainer.setBackgroundAlpha(0);
@@ -74,7 +74,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
         final UIButton singleplayerButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .text(Text.of(I18n.format("menu.singleplayer")))
-                .size(Constants.Gui.BUTTON_WIDTH_LONG, Constants.Gui.BUTTON_HEIGHT)
+                .size(GuiConfig.Button.WIDTH_LONG, GuiConfig.Button.HEIGHT)
                 .position(0, 0)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
@@ -83,7 +83,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
         final UIButton multiplayerButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .text(Text.of(I18n.format("menu.multiplayer")))
-                .size(Constants.Gui.BUTTON_WIDTH_LONG, Constants.Gui.BUTTON_HEIGHT)
+                .size(GuiConfig.Button.WIDTH_LONG, GuiConfig.Button.HEIGHT)
                 .position(0, SimpleScreen.getPaddedY(singleplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
@@ -92,7 +92,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
         final UIButton optionsButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .text(Text.of(I18n.format("options.title")))
-                .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
+                .size(GuiConfig.Button.WIDTH_TINY, GuiConfig.Button.HEIGHT)
                 .position(-68, SimpleScreen.getPaddedY(multiplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
@@ -101,7 +101,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
         final UIButton modsButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .text(Text.of(I18n.format("almura.menu.mods")))
-                .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
+                .size(GuiConfig.Button.WIDTH_TINY, GuiConfig.Button.HEIGHT)
                 .position(SimpleScreen.getPaddedX(optionsButton, PADDING), SimpleScreen.getPaddedY(multiplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
@@ -110,7 +110,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
         final UIButton aboutButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .text(Text.of(I18n.format("almura.menu.about")))
-                .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
+                .size(GuiConfig.Button.WIDTH_TINY, GuiConfig.Button.HEIGHT)
                 .position(SimpleScreen.getPaddedX(modsButton, PADDING), SimpleScreen.getPaddedY(multiplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
@@ -121,7 +121,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .text(Text.of(I18n.format("almura.menu.quit")))
                 .fro(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_LIGHT_RED).shadow(true).build())
                 .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
-                .size(Constants.Gui.BUTTON_WIDTH_LONG, Constants.Gui.BUTTON_HEIGHT)
+                .size(GuiConfig.Button.WIDTH_LONG, GuiConfig.Button.HEIGHT)
                 .position(singleplayerButton.getX(), SimpleScreen.getPaddedY(optionsButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
@@ -129,8 +129,8 @@ public class PanoramicMainMenu extends PanoramicScreen {
 
         final UIButton forumsButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .icon(Constants.Gui.ICON_ENJIN)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.ENJIN)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .position(-PADDING, -PADDING)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
@@ -139,8 +139,8 @@ public class PanoramicMainMenu extends PanoramicScreen {
 
         final UIButton issuesButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .icon(Constants.Gui.ICON_FA_GITHUB)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.FA_GITHUB)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(forumsButton, PADDING, Anchor.RIGHT), forumsButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
@@ -149,8 +149,8 @@ public class PanoramicMainMenu extends PanoramicScreen {
 
         final UIButton shopButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .icon(Constants.Gui.ICON_FA_SHOPPING_BAG)
-                .size(Constants.Gui.BUTTON_WIDTH_ICON, Constants.Gui.BUTTON_HEIGHT_ICON)
+                .icon(GuiConfig.Icon.FA_SHOPPING_BAG)
+                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .position(SimpleScreen.getPaddedX(issuesButton, PADDING, Anchor.RIGHT), issuesButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
@@ -219,13 +219,13 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 this.close();
                 break;
             case "button.shop":
-                Desktop.getDesktop().browse(new URI(Constants.Gui.SHOP_URL));
+                Desktop.getDesktop().browse(new URI(GuiConfig.Url.SHOP));
                 break;
             case "button.forums":
-                Desktop.getDesktop().browse(new URI(Constants.Gui.FORUM_URL));
+                Desktop.getDesktop().browse(new URI(GuiConfig.Url.FORUM));
                 break;
             case "button.issues":
-                Desktop.getDesktop().browse(new URI(Constants.Gui.ISSUES_URL));
+                Desktop.getDesktop().browse(new URI(GuiConfig.Url.ISSUES));
                 break;
         }
     }

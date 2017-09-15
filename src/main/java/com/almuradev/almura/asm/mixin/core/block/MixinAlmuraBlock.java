@@ -199,7 +199,7 @@ public abstract class MixinAlmuraBlock extends MixinBlock implements BuildableBl
             return false;
         }
 
-        chance = net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, fortune, chance, false, harvesters.get());
+        chance = net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, fortune, chance, false, this.harvesters.get());
 
         for (ItemStack drop : drops) {
             if (world.rand.nextFloat() <= chance) {

@@ -26,7 +26,7 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
     public void onRender(TileEntityChest te, double x, double y, double z, float partialTicks, int destroyStage, float val,
             CallbackInfo ci) {
         // 0 means perform Minecraft logic only, we do not interfere
-        if (config.client.chestRenderDistance == 0) {
+        if (this.config.client.chestRenderDistance == 0) {
             return;
         }
 
@@ -35,7 +35,7 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
             viewer = Minecraft.getMinecraft().player;
         }
 
-        if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) > (config.client.chestRenderDistance * 16) && te.hasWorld()) {
+        if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) > (this.config.client.chestRenderDistance * 16) && te.hasWorld()) {
             ci.cancel();
         }
     }

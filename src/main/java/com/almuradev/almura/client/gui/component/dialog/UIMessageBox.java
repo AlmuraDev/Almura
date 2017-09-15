@@ -6,7 +6,7 @@
 package com.almuradev.almura.client.gui.component.dialog;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.Constants;
+import com.almuradev.almura.client.gui.GuiConfig;
 import com.almuradev.almura.client.gui.component.UIExpandingLabel;
 import com.almuradev.almura.client.gui.component.UIForm;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
@@ -90,7 +90,7 @@ public class UIMessageBox extends UIForm {
         }
 
         width += buttonPadding * (buttons.size() - 1);
-        buttonContainer.setSize(width, Constants.Gui.BUTTON_HEIGHT);
+        buttonContainer.setSize(width, GuiConfig.Button.HEIGHT);
         buttonContainer.setPosition(0, 25, Anchor.BOTTOM | Anchor.CENTER);
         buttonContainer.setBackgroundAlpha(0);
         add(buttonContainer);
@@ -144,31 +144,31 @@ public class UIMessageBox extends UIForm {
             case "button.cancel":
                 return new UIButtonBuilder(gui)
                         .text(Text.of(I18n.format("gui.cancel")))
-                        .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
+                        .size(GuiConfig.Button.WIDTH_TINY, GuiConfig.Button.HEIGHT)
                         .listener(this)
                         .build("button.cancel");
             case "button.close":
                 return new UIButtonBuilder(gui)
                         .text(Text.of(I18n.format("almura.menu.close")))
-                        .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
+                        .size(GuiConfig.Button.WIDTH_TINY, GuiConfig.Button.HEIGHT)
                         .listener(this)
                         .build("button.close");
             case "button.no":
                 return new UIButtonBuilder(gui)
                         .text(Text.of(I18n.format("gui.no")))
-                        .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
+                        .size(GuiConfig.Button.WIDTH_TINY, GuiConfig.Button.HEIGHT)
                         .listener(this)
                         .build("button.no");
             case "button.yes":
                 return new UIButtonBuilder(gui)
                         .text(Text.of(I18n.format("gui.yes")))
-                        .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
+                        .size(GuiConfig.Button.WIDTH_TINY, GuiConfig.Button.HEIGHT)
                         .listener(this)
                         .build("button.yes");
             default:
                 return new UIButtonBuilder(gui)
                         .text(Text.of(I18n.format("almura.menu.ok")))
-                        .size(Constants.Gui.BUTTON_WIDTH_TINY, Constants.Gui.BUTTON_HEIGHT)
+                        .size(GuiConfig.Button.WIDTH_TINY, GuiConfig.Button.HEIGHT)
                         .listener(this)
                         .build("button.ok");
         }
