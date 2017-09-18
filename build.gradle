@@ -151,7 +151,13 @@ jar {
                 'Implementation-Title': project.name,
                 'Implementation-Version': version,
                 'Implementation-Vendor': url,
-                'FMLAT': "${project.name.toLowerCase()}_at.cfg"
+                'FMLAT': "${project.name.toLowerCase()}_at.cfg",
+                'FMLCorePlugin': 'com.almuradev.almura.AlmuraLoadingPlugin',
+                'FMLCorePluginContainsFMLMod': true,
+                'ForceLoadAsMod': true,
+                'MixinConfigs': 'mixins.almura.core.json',
+                'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'TweakOrder': 0
         )
     }
 }
