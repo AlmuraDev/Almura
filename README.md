@@ -77,3 +77,6 @@ __Server__
 [Gradle]: http://www.gradle.org/
 [IntelliJ]: http://www.jetbrains.com/idea/
 [Java]: http://java.oracle.com/
+
+Disable Stupid Gradle Daemon:  [run this in cmd.exe]
+(if not exist "%USERPROFILE%/.gradle" mkdir "%USERPROFILE%/.gradle") && (echo. >> "%USERPROFILE%/.gradle/gradle.properties" && echo org.gradle.daemon=false >> "%USERPROFILE%/.gradle/gradle.properties")
