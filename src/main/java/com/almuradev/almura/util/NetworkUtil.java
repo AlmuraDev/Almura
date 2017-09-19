@@ -23,6 +23,24 @@ public class NetworkUtil {
             case "DIM1":
                 clientWorldName = "The End";
                 break;
+            case "world":
+                clientWorldName = "Dakara";
+                break;
+            case "cemaria":
+                clientWorldName = "Cemaria";
+                break;
+            case "asgard":
+                clientWorldName = "Asgard";
+                break;
+            case "atlantis":
+                clientWorldName = "Atlantis";
+                break;
+            case "othala":
+                clientWorldName = "Othala";
+                break;
+            case "keystone":
+                clientWorldName = "Keystone";
+                break;
         }
         Almura.proxy.getNetwork().sendTo(player, new SWorldInformationMessage(clientWorldName));
     }
