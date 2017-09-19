@@ -167,6 +167,7 @@ shadowJar {
     dependsOn reobfJar
     classifier ''
     exclude 'dummyThing'
+    relocate 'com.typesafe.config', 'configurate.typesafe.config'
     dependencies {
         include dependency('ninja.leaping.configurate:configurate-json')
     }
