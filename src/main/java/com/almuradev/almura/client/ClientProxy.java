@@ -29,7 +29,6 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -61,8 +60,7 @@ public final class ClientProxy extends CommonProxy {
         super.onGamePreInitialization(event);
 
         // Must be a better way to go about this...
-        final List<IResourcePack> resourcePacks = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(),
-                "defaultResourcePacks");
+        final List<IResourcePack> resourcePacks = Minecraft.getMinecraft().defaultResourcePacks;
         resourcePacks.add(new CustomFolderResourcePack("CustomFolderResourcePack: " + Constants.Plugin.NAME, Constants.FileSystem
                 .PATH_ASSETS_ALMURA_30, Constants.Plugin.ID));
         Minecraft.getMinecraft().refreshResources();
