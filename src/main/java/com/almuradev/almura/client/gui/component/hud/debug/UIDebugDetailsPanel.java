@@ -66,7 +66,7 @@ public class UIDebugDetailsPanel extends AbstractDebugPanel {
         // Respect reduced debug
         final boolean reducedDebug = this.client.isReducedDebug();
         if (reducedDebug) {
-            this.drawProperty(renderer, "Chunk-relative", String.format("%d %d %d", fx & 15, fy & 15, fz & 15), 4, this.getAutoSizeHeight());
+            this.drawProperty(renderer, "Chunk-relative", String.format("%d %d %d", fx & 0xf, fy & 0xf, fz & 0xf), 4, this.getAutoSizeHeight());
         } else {
             this.renderXYZ(renderer, x, y, z);
             final EnumFacing facing = view.getHorizontalFacing();
@@ -74,7 +74,7 @@ public class UIDebugDetailsPanel extends AbstractDebugPanel {
             this.drawProperty(renderer, "Facing", String.format("%s%s (%.1f, %.1f)", facing.name().charAt(0), facingTowards,
                     MathHelper.wrapDegrees(view.rotationYaw), MathHelper.wrapDegrees(view.rotationPitch)), 4, this.getAutoSizeHeight());
             this.drawProperty(renderer, "Block", fx + ", " + fy + ", " + fz, 4, this.getAutoSizeHeight());
-            this.drawProperty(renderer, "Chunk", String.format("%d %d %d in %d %d %d", fx & 15, fy & 15, fz & 15, fx >> 4, fy >> 4, fz >> 4), 4, this.getAutoSizeHeight());
+            this.drawProperty(renderer, "Chunk", String.format("%d, %d, %d in %d, %d, %d", fx & 0xf, fy & 0xf, fz & 0xf, fx >> 4, fy >> 4, fz >> 4), 4, this.getAutoSizeHeight());
             if (view.getEntityWorld().isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !chunk.isEmpty()) {
                 this.drawProperty(renderer, "Biome", chunk.getBiome(pos, this.client.world.getBiomeProvider()).getBiomeName(),
                         4, this.getAutoSizeHeight());
