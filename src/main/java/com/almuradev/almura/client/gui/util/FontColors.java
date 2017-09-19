@@ -11,24 +11,21 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.util.Color;
 
 @SideOnly(Side.CLIENT)
-public final class FontOptionsConstants {
+public interface FontColors {
 
-    public static final FontOptions FRO_COLOR_GRAY = FontOptions.builder()
+    FontOptions FRO_GRAY = FontOptions.builder()
             .color(Color.ofRgb(128, 128, 128).getRgb())
             .build();
-    public static final FontOptions FRO_COLOR_ORANGE = FontOptions.builder()
+    FontOptions FRO_ORANGE = FontOptions.builder()
             .color(Color.ofRgb(255, 165, 0).getRgb())
             .build();
-    public static final FontOptions FRO_COLOR_RED = FontOptions.builder()
+    FontOptions FRO_RED = FontOptions.builder()
             .color(Color.ofRgb(255, 0, 0).getRgb())
             .build();
-    public static final FontOptions FRO_COLOR_LIGHT_RED = FontOptions.builder()
+    FontOptions FRO_LIGHT_RED = FontOptions.builder()
             .color(Color.ofRgb(255, 51, 51).getRgb())
             .build();
-    public static final FontOptions FRO_COLOR_WHITE = FontOptions.builder()
+    FontOptions FRO_WHITE = FontOptions.builder()
             .color(Color.WHITE.getRgb())
             .build();
-
-    private FontOptionsConstants() {
-    }
 }

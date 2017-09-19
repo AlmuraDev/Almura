@@ -8,7 +8,7 @@ package com.almuradev.almura.client.gui.screen.menu;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.screen.ingame.hud.HUDConfig;
-import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.FontColors;
 import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
 import com.almuradev.almura.client.gui.util.builder.UISliderBuilder;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
@@ -49,7 +49,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         this.saveAndLoad();
 
         final UILabel titleLabel = new UILabel(this, I18n.format("almura.menu.options"));
-        titleLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
+        titleLabel.setFontOptions(FontColors.FRO_WHITE);
         titleLabel.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
 
         this.addToScreen(titleLabel);

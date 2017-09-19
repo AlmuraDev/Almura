@@ -10,7 +10,7 @@ import com.almuradev.almura.client.gui.UIAvatarImage;
 import com.almuradev.almura.client.gui.component.UIXPOrbImage;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.client.gui.screen.ingame.hud.HUDData;
-import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.FontColors;
 import com.almuradev.almura.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -60,7 +60,7 @@ public class UIUserPanel extends UIHUDPanel {
         // Level
         this.levelLabel = new UILabel(gui, "");
         this.levelLabel.setPosition(SimpleScreen.getPaddedX(this.userAvatarImage, 3), SimpleScreen.getPaddedY(this.usernameLabel, 0));
-        this.levelLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
+        this.levelLabel.setFontOptions(FontColors.FRO_WHITE);
 
         // Currency
         this.currencyImage = new UIImage(gui, MalisisGui.BLOCK_TEXTURE, Icon.from(Items.EMERALD));

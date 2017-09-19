@@ -13,8 +13,8 @@ import com.almuradev.almura.client.gui.component.hud.UIDetailsPanel;
 import com.almuradev.almura.client.gui.component.hud.UIPlayerListPanel;
 import com.almuradev.almura.client.gui.component.hud.UIUserPanel;
 import com.almuradev.almura.client.gui.component.hud.UIWorldPanel;
-import com.almuradev.almura.client.gui.component.hud.debug.UIDebugBlockPanel;
-import com.almuradev.almura.client.gui.component.hud.debug.UIDebugDetailsPanel;
+import com.almuradev.almura.client.gui.component.hud.debug.BlockDebugPanel;
+import com.almuradev.almura.client.gui.component.hud.debug.InformationDebugPanel;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
 import com.almuradev.almura.configuration.type.ClientConfiguration;
 import com.almuradev.almura.util.MathUtil;
@@ -33,8 +33,8 @@ public class OriginHUD extends AbstractHUD {
     private final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
     private final Minecraft client = Minecraft.getMinecraft();
     private UIBossBarPanel bossBarPanel;
-    private UIDebugDetailsPanel debugDetailsPanel;
-    private UIDebugBlockPanel debugBlockPanel;
+    private InformationDebugPanel debugDetailsPanel;
+    private BlockDebugPanel debugBlockPanel;
     private UIDetailsPanel detailsPanel;
     private UIPlayerListPanel playerListPanel;
     private UIUserPanel userPanel;
@@ -51,7 +51,7 @@ public class OriginHUD extends AbstractHUD {
         this.userPanel.setPosition(0, 0);
 
         // Debug block panel
-        this.debugBlockPanel = new UIDebugBlockPanel(this, 124, 45);
+        this.debugBlockPanel = new BlockDebugPanel(this, 124, 45);
         this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
 
         // World panel
@@ -63,7 +63,7 @@ public class OriginHUD extends AbstractHUD {
         this.detailsPanel.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
 
         // Debug details panel
-        this.debugDetailsPanel = new UIDebugDetailsPanel(this, 155, 64);
+        this.debugDetailsPanel = new InformationDebugPanel(this, 155, 64);
         this.debugDetailsPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, PADDING), Anchor.TOP | Anchor.RIGHT);
 
         // Boss bar panel

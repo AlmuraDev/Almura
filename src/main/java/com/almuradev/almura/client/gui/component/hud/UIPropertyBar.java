@@ -6,7 +6,8 @@
 package com.almuradev.almura.client.gui.component.hud;
 
 import com.almuradev.almura.client.gui.GuiConfig;
-import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.FontColors;
+import com.almuradev.almura.client.gui.util.Fonts;
 import com.almuradev.almura.util.MathUtil;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
@@ -15,7 +16,6 @@ import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.element.GuiShape;
 import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.renderer.font.FontOptions;
-import net.malisis.core.renderer.font.MalisisFont;
 import net.malisis.core.renderer.icon.GuiIcon;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -33,8 +33,7 @@ public class UIPropertyBar extends UIComponent {
     private int color;
     private float amount = 1.0f;
     private Text text = Text.EMPTY;
-    private MalisisFont font = MalisisFont.minecraftFont;
-    private FontOptions fontOptions = FontOptionsConstants.FRO_COLOR_WHITE;
+    private FontOptions fontOptions = FontColors.FRO_WHITE;
     private GuiTexture spritesheet = GuiConfig.SpriteSheet.VANILLA_ICON;
 
     @Nullable private GuiIcon backgroundIcon, foregroundIcon;
@@ -96,8 +95,8 @@ public class UIPropertyBar extends UIComponent {
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         if (this.text != Text.EMPTY) {
             final String rawText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.text);
-            int textWidth = (int) this.font.getStringWidth(rawText, this.fontOptions);
-            int textHeight = (int) this.font.getStringHeight(this.fontOptions);
+            int textWidth = (int) Fonts.MINECRAFT.getStringWidth(rawText, this.fontOptions);
+            int textHeight = (int) Fonts.MINECRAFT.getStringHeight(this.fontOptions);
 
             int x = (((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE + 4 + this.width : this.width) - textWidth) / 2;
 
@@ -109,7 +108,7 @@ public class UIPropertyBar extends UIComponent {
             if (y == 0) {
                 y = 1;
             }
-            renderer.drawText(this.font, rawText, x, y, this.zIndex, this.fontOptions);
+            renderer.drawText(Fonts.MINECRAFT, rawText, x, y, this.zIndex, this.fontOptions);
         }
     }
 
