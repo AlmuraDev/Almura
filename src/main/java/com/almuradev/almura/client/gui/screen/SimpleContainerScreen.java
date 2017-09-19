@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.screen;
 
-import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.FontColors;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
@@ -34,7 +34,7 @@ public class SimpleContainerScreen extends SimpleScreen {
     public void construct() {
         if (this.title != Text.EMPTY) {
             final UILabel titleLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.title));
-            titleLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
+            titleLabel.setFontOptions(FontColors.FRO_WHITE);
             titleLabel.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
 
             this.addToScreen(titleLabel);

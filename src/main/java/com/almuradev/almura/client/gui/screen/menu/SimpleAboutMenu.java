@@ -13,7 +13,7 @@ import com.almuradev.almura.client.gui.GuiRemoteTexture;
 import com.almuradev.almura.client.gui.component.UISimpleList;
 import com.almuradev.almura.client.gui.screen.SimpleContainerScreen;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
-import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.FontColors;
 import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
 import com.almuradev.almura.configuration.MappedConfigurationAdapter;
 import com.almuradev.almura.configuration.category.gui.about.AboutCategory;
@@ -188,7 +188,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         this.textField = new UITextField(this, "", true);
         this.textField.setPosition(SimpleScreen.getPaddedX(this.list, 4), 0);
         this.textField.setEditable(false);
-        this.textField.setFontOptions(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_WHITE).shadow(false).build());
+        this.textField.setFontOptions(FontOptions.builder().from(FontColors.FRO_WHITE).shadow(false).build());
 
         this.list.setElements(elementList);
         this.list.register(this);

@@ -41,7 +41,7 @@ public class UIBossBarPanel extends UIHUDPanel {
         final int segmentHeight = this.client.fontRenderer.FONT_HEIGHT + 9;
         int startY = 6;
         for (BossInfoClient bar : bars) {
-            this.drawBossSegment(renderer, (BossBar) bar, startY);
+            this.drawBossSegment((BossBar) bar, startY);
             startY += segmentHeight;
             contentHeight += segmentHeight;
         }
@@ -50,48 +50,48 @@ public class UIBossBarPanel extends UIHUDPanel {
     }
 
     @SuppressWarnings("deprecation")
-    private void drawBossSegment(GuiRenderer renderer, BossBar bossBar, int startY) {
+    private void drawBossSegment(final BossBar bar, int startY) {
         // Get the width of the bar we will fill with color
-        final int contentWidth = (int) MathUtil.convertToRange(bossBar.getPercent(), 0f, 1f, 0, this.width - 14);
+        final int contentWidth = (int) MathUtil.convertToRange(bar.getPercent(), 0f, 1f, 0, this.width - 14);
 
         // Draw the text
-        final String text = TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, bossBar.getName()));
+        final String text = TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, bar.getName()));
         final int textX = (this.width - this.client.fontRenderer.getStringWidth(text)) / 2;
-        renderer.drawText(text, textX, startY, this.zIndex);
+        this.renderer.drawText(text, textX, startY, this.zIndex);
 
         // Increase the starting Y position
         startY += this.client.fontRenderer.FONT_HEIGHT + 1;
 
         // Figure out how we're drawing it
-        final BossBarOverlay overlay = bossBar.getOverlay();
+        final BossBarOverlay overlay = bar.getOverlay();
         if (overlay == BossBarOverlays.NOTCHED_6) {
-            this.drawNotched(renderer, bossBar, startY, contentWidth, 6);
+            this.drawNotched(bar, startY, contentWidth, 6);
         } else if (overlay == BossBarOverlays.NOTCHED_10) {
-            this.drawNotched(renderer, bossBar, startY, contentWidth, 10);
+            this.drawNotched(bar, startY, contentWidth, 10);
         } else if (overlay == BossBarOverlays.NOTCHED_12) {
-            this.drawNotched(renderer, bossBar, startY, contentWidth, 12);
+            this.drawNotched(bar, startY, contentWidth, 12);
         } else if (overlay == BossBarOverlays.NOTCHED_20) {
-            this.drawNotched(renderer, bossBar, startY, contentWidth, 20);
+            this.drawNotched(bar, startY, contentWidth, 20);
         } else if (overlay == BossBarOverlays.PROGRESS) {
-            this.drawProgress(renderer, bossBar, startY, contentWidth);
+            this.drawProgress(bar, startY, contentWidth);
         }
     }
 
-    private void drawProgress(GuiRenderer renderer, BossBar bossBar, int startY, int contentWidth) {
-        renderer.drawRectangle(6, startY, this.zIndex, this.width - 12, BAR_HEIGHT, 0, 255);
-        final int rgb = ((IMixinBossBarColor) bossBar.getColor()).getAlmuraColor().getRgb();
-        renderer.drawRectangle(7, startY + 1, this.zIndex, contentWidth, BAR_HEIGHT - 2, rgb, 255);
+    private void drawProgress(final BossBar bar, final int startY, final int contentWidth) {
+        this.renderer.drawRectangle(6, startY, this.zIndex, this.width - 12, BAR_HEIGHT, 0, 255);
+        final int rgb = ((IMixinBossBarColor) bar.getColor()).getAlmuraColor().getRgb();
+        this.renderer.drawRectangle(7, startY + 1, this.zIndex, contentWidth, BAR_HEIGHT - 2, rgb, 255);
     }
 
-    private void drawNotched(GuiRenderer renderer, BossBar bossBar, int startY, int contentWidth, int notches) {
-        this.drawProgress(renderer, bossBar, startY, contentWidth);
+    private void drawNotched(final BossBar bar, final int startY, final int contentWidth,final  int notches) {
+        this.drawProgress(bar, startY, contentWidth);
 
         int notchX = 6;
         final int notchWidth = (this.width - 14) / notches;
         for (int i = 0; i < notches; i++) {
             notchX += notchWidth;
             if (notchX - 6 < contentWidth) {
-                renderer.drawRectangle(notchX, startY + 1, this.zIndex, 1, 3, 0, 100);
+                this.renderer.drawRectangle(notchX, startY + 1, this.zIndex, 1, 3, 0, 100);
             }
         }
     }

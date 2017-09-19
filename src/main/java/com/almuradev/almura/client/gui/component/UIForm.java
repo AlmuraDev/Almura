@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.client.gui.component;
 
-import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.FontColors;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -158,7 +158,7 @@ public class UIForm extends UIWindow {
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
         this.closeButton.setFontOptions(this.closeButton.isInsideBounds(mouseX, mouseY) ?
-                FontOptionsConstants.FRO_COLOR_WHITE : FontOptionsConstants.FRO_COLOR_GRAY);
+                FontColors.FRO_WHITE : FontColors.FRO_GRAY);
     }
 
     @Override

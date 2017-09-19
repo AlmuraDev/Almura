@@ -7,7 +7,7 @@ package com.almuradev.almura.client.gui.screen.ingame;
 
 import com.almuradev.almura.client.gui.GuiConfig;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
-import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.FontColors;
 import com.almuradev.almura.client.gui.util.builder.UIButtonBuilder;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
@@ -157,7 +157,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
         final UIButton quitButton = new UIButtonBuilder(this)
                 .container(contentContainer)
                 .text(Text.of(I18n.format("almura.menu.quit")))
-                .fro(FontOptions.builder().from(FontOptionsConstants.FRO_COLOR_LIGHT_RED).shadow(true).build())
+                .fro(FontOptions.builder().from(FontColors.FRO_LIGHT_RED).shadow(true).build())
                 .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(GuiConfig.Button.WIDTH_SHORT, GuiConfig.Button.HEIGHT)
                 .position(0, SimpleScreen.getPaddedY(shortcutContainer, 25))

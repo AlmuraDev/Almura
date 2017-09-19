@@ -8,7 +8,7 @@ package com.almuradev.almura.client.gui.component.hud;
 import com.almuradev.almura.client.gui.GuiConfig;
 import com.almuradev.almura.client.gui.component.UIExpandingLabel;
 import com.almuradev.almura.client.gui.screen.SimpleScreen;
-import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.FontColors;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
@@ -42,7 +42,7 @@ public class UIDetailsPanel extends UIHUDPanel {
 
         // Player Count
         this.playerCountLabel = new UILabel(gui, "");
-        this.playerCountLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
+        this.playerCountLabel.setFontOptions(FontColors.FRO_WHITE);
         this.playerCountImage = new UIImage(gui, new GuiTexture(GuiConfig.Location.GENERIC_AVATAR), null);
         this.playerCountImage.setSize(16, 16);
         this.playerCountImage.setPosition(SimpleScreen.getPaddedX(this.clockImage, 4, Anchor.RIGHT), 0, Anchor.MIDDLE | Anchor.RIGHT);
@@ -50,7 +50,7 @@ public class UIDetailsPanel extends UIHUDPanel {
         // Coordinates
         this.coordsLabel = new UIExpandingLabel(gui, "", true);
         this.coordsLabel.setPosition(2, 2);
-        this.coordsLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
+        this.coordsLabel.setFontOptions(FontColors.FRO_WHITE);
 
         this.add(this.clockImage, this.playerCountLabel, this.playerCountImage, this.coordsLabel);
     }

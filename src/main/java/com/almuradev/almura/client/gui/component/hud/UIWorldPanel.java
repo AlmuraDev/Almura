@@ -6,7 +6,7 @@
 package com.almuradev.almura.client.gui.component.hud;
 
 import com.almuradev.almura.client.gui.screen.ingame.hud.HUDData;
-import com.almuradev.almura.client.gui.util.FontOptionsConstants;
+import com.almuradev.almura.client.gui.util.FontColors;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
@@ -29,7 +29,7 @@ public class UIWorldPanel extends UIHUDPanel {
 
         this.worldLabel = new UILabel(gui, "");
         this.worldLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
-        this.worldLabel.setFontOptions(FontOptionsConstants.FRO_COLOR_WHITE);
+        this.worldLabel.setFontOptions(FontColors.FRO_WHITE);
 
         this.add(this.compassLabel, this.worldLabel);
     }
@@ -44,7 +44,8 @@ public class UIWorldPanel extends UIHUDPanel {
         this.updateWorld();
     }
 
-    @SuppressWarnings("deprecation") private void updateCompass() {
+    @SuppressWarnings("deprecation")
+    private void updateCompass() {
         this.compassLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(HUDData.getCompass()));
         this.compassLabel.setPosition(0, -1, Anchor.BOTTOM | Anchor.CENTER);
     }
