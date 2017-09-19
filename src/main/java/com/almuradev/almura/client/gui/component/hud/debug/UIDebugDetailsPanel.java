@@ -118,7 +118,7 @@ public class UIDebugDetailsPanel extends AbstractDebugPanel {
             this.drawProperty(renderer, "Look Y", String.format("%d", y), 4, this.getAutoSizeHeight());
             this.drawProperty(renderer, "Look Z", String.format("%d", z), 4, this.getAutoSizeHeight());
         } else {
-            this.drawProperty(renderer, "Look", String.format("%d %d %d", x, y, z), 4, this.getAutoSizeHeight());
+            this.drawProperty(renderer, "Look", String.format("%d, %d, %d", x, y, z), 4, this.getAutoSizeHeight());
         }
     }
 
