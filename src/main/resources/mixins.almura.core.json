@@ -16,8 +16,10 @@
         "block.material.MixinMaterial",
         "creativetab.MixinCreativeTabs",
         "creativetab.MixinDelegateItemGroupAttributes",
+        "entity.MixinEntityList",
         "item.MixinAlmuraItem",
         "item.MixinItem",
+        "tileentity.MixinTileEntity",
         "world.MixinBossBarColor",
         "MixinSetCatalogTypeId"
     ],
