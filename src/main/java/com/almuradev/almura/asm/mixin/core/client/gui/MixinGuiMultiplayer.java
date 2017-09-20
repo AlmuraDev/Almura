@@ -26,8 +26,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiMultiplayer.class)
 public abstract class MixinGuiMultiplayer extends GuiScreen {
 
-    private static final ServerData PUBLIC_SERVER_DATA = new ServerData(I18n.format("almura.menu.liveServer"), "srv1.almuramc.com", false);
-    private static final ServerData DEV_SERVER_DATA = new ServerData(I18n.format("almura.menu.devServer"), "dev.almuramc.com", false);
+    private static final ServerData PUBLIC_SERVER_DATA = new ServerData(I18n.format("almura.menu.liveServer"), "srv1.almuramc.com:25566", false);
+    private static final ServerData DEV_SERVER_DATA = new ServerData(I18n.format("almura.menu.devServer"), "dev.almuramc.com:25566", false);
     @Shadow private ServerSelectionList serverListSelector;
     @Shadow private GuiButton btnDeleteServer;
     @Shadow private GuiButton btnEditServer;
