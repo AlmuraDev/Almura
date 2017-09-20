@@ -145,7 +145,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                         " our lead developer for AlmuraDev finally put his foot down and said enough is enough which began our six ",
                         "month journey to migrate the features we had relied on in Spoutcraft to our new client.", Text.NEW_LINE,
                         Text.NEW_LINE,
-                        "Almura Rediscovered was initially conceived on September 4th, 2014.", Text.NEW_LINE,
+                        "Almura 2.0 - Rediscovered was initially conceived on September 4th, 2014.", Text.NEW_LINE,
                         Text.NEW_LINE,
                         "Almura has a number of changes from a typical Minecraft setup that gives it an extremely unique and customizable "
                                 + "experience.",
@@ -155,7 +155,17 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                         "  • Client/Server security system.", Text.NEW_LINE,
                         "  • Customized GUI for a more unique experience.", Text.NEW_LINE,
                         "  • Information guide system displayed in-game.", Text.NEW_LINE,
-                        "  • Player accessory system for hats, wings, capes, earrings and more.")));
+                        "  • Player accessory system for hats, wings, capes, earrings and more.", Text.NEW_LINE,
+                        Text.NEW_LINE,
+                        "Almura 2.5 - Origins was introduced in October of 2016", Text.NEW_LINE,
+                        "  • Removed some server conflicting mods and started a world cleanup.", Text.NEW_LINE,
+                        "  • Added SGcraft and CustomFurniture Mods", Text.NEW_LINE,
+                        "  • Introduced a custom cache system. ", Text.NEW_LINE,
+                        Text.NEW_LINE,
+                        "Almura 3.0 Resurrected had its first alpha build on 9/19/2017. ", Text.NEW_LINE,
+                        "  • Brand new server concept running on SpongeForge w/Minecraft 1.12.1 and above. ", Text.NEW_LINE,
+                        "  • New Plugins, new player HUD, new everything! ", Text.NEW_LINE,
+                        " ")));
 
         aboutCategory.entries.forEach(entry -> {
             Text titles = Text.EMPTY;
