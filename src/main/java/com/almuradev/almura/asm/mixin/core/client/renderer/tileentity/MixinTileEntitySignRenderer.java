@@ -29,8 +29,6 @@ import java.util.List;
 @Mixin(TileEntitySignRenderer.class)
 public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRenderer {
 
-    private final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
-
     @Shadow private static ResourceLocation SIGN_TEXTURE;
     @Shadow private ModelSign model;
 
@@ -39,6 +37,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
      */
     @Overwrite
     public void render(TileEntitySign te, double x, double y, double z, float partialTicks, int destroyStage, float val) {
+        final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
         Block block = te.getBlockType();
         GlStateManager.pushMatrix();
         float f = 0.6666667F;
@@ -98,7 +97,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
         // Almura start
         if (te.signText.length > 0) {
             // 0 means perform Minecraft logic only, we do not interfere
-            if (this.config.client.signTextRenderDistance == 0) {
+            if (config.client.signTextRenderDistance == 0) {
                 renderText(te, destroyStage);
             } else {
                 EntityLivingBase viewer = (EntityLivingBase) Minecraft.getMinecraft().getRenderViewEntity();
@@ -106,7 +105,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
                     viewer = Minecraft.getMinecraft().player;
                 }
 
-                if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) < (this.config.client.signTextRenderDistance * 16) && te
+                if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) < (config.client.signTextRenderDistance * 16) && te
                         .hasWorld()) {
                     renderText(te, destroyStage);
                 }
