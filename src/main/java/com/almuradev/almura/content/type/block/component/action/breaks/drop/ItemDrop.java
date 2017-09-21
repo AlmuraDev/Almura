@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.content.type.block.component.action.breaks.drop;
 
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import com.google.common.base.MoreObjects;
 import net.minecraft.item.Item;
 import org.spongepowered.api.item.ItemType;

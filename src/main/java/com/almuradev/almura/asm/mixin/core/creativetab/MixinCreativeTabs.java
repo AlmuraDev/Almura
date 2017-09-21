@@ -8,7 +8,7 @@ package com.almuradev.almura.asm.mixin.core.creativetab;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinCreativeTabs;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
-import com.almuradev.almura.registry.ItemGroupRegistryModule;
+import com.almuradev.almura.content.type.item.registry.ItemGroupRegistryModule;
 import com.google.common.base.MoreObjects;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;

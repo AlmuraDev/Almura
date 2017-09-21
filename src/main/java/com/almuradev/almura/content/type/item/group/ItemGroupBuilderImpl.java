@@ -12,7 +12,7 @@ import com.almuradev.almura.Constants;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinCreativeTabs;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateItemGroupAttributes;
 import com.almuradev.almura.content.type.item.group.type.GenericItemGroup;
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import net.minecraft.creativetab.CreativeTabs;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;

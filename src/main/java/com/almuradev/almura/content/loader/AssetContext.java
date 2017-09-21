@@ -6,7 +6,7 @@
 package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.content.Pack;
-import com.almuradev.almura.registry.BuildableCatalogType;
+import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 
 import javax.annotation.Nullable;
 

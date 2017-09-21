@@ -6,7 +6,7 @@
 package com.almuradev.almura.asm.mixin.interfaces;
 
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 
 public interface IMixinDelegateBlockAttributes {
 

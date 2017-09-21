@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.asm.mixin.core.client.renderer.tileentity;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.configuration.type.ClientConfiguration;
+import com.almuradev.almura.asm.StaticAccess;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderItemFrame;
@@ -28,7 +28,7 @@ public abstract class MixinRenderItemFrame extends Render {
     @Inject(method = "doRender", at = @At(value = "HEAD"), cancellable = true)
     public void onDoRender(EntityItemFrame entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
         // 0 means perform Minecraft logic only, we do not interfere
-        final ClientConfiguration config = (ClientConfiguration) Almura.proxy.getPlatformConfigAdapter().getConfig();
+        final ClientConfiguration config = StaticAccess.config.getConfig();
 
         if (config.client.itemFrameRenderDistance == 0) {
             return;

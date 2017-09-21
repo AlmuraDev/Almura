@@ -12,16 +12,16 @@ import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
-import com.almuradev.almura.registry.AlmuraModelResourceLocation;
-import com.almuradev.almura.registry.BuildableCatalogType;
-import com.almuradev.almura.registry.Registries;
+import com.almuradev.shared.client.model.ModelResourceLocations;
+import com.almuradev.shared.event.Witness;
+import com.almuradev.shared.registry.Registries;
+import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,14 +31,17 @@ import org.spongepowered.api.item.ItemType;
 import java.util.List;
 import java.util.Map;
 
-public final class AssetLoader {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
+public final class AssetLoader implements Witness {
 
     private final AssetRegistry registry;
 
-    public AssetLoader(AssetRegistry registry) {
+    @Inject
+    public AssetLoader(final AssetRegistry registry) {
         this.registry = registry;
-
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent
@@ -95,7 +98,7 @@ public final class AssetLoader {
         });
 
         this.with(Asset.Type.ITEM, (Enjoyer<BuildableItemType, BuildableItemType.Builder>) (pack, asset, builder, context) -> {
-            final ModelResourceLocation mrl = new AlmuraModelResourceLocation(context.getCatalog());
+            final ModelResourceLocation mrl = ModelResourceLocations.fromCatalog(context.getCatalog());
             ModelLoader.setCustomModelResourceLocation((Item) context.getCatalog(), 0, mrl);
         });
     }

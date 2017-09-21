@@ -6,8 +6,8 @@
 package com.almuradev.almura.content.type.material;
 
 import com.almuradev.almura.content.type.item.group.ItemGroup;
-import com.almuradev.almura.registry.BuildableCatalogType;
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.BuildableCatalogType;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 
 import java.util.Optional;
 

@@ -5,12 +5,12 @@
  */
 package com.almuradev.almura.content.loader;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.Pack;
-import com.almuradev.almura.registry.BuildableCatalogType;
+import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 import ninja.leaping.configurate.json.JSONConfigurationLoader;
 import org.apache.commons.lang3.text.WordUtils;
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 
 import java.io.IOException;
@@ -26,13 +26,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 // TODO This works only on /run/assets/** currently. Need to have it read the jar as well
+@Singleton
 public final class AssetRegistry {
 
     private final Map<String, Pack> packsById = new LinkedHashMap<>();
     private final Map<Asset.Type, Map<Pack, List<Path>>> packsFilesByAssetType = new LinkedHashMap<>();
     private final Map<Pack, List<AssetContext>> contexualsInPack = new LinkedHashMap<>();
     private final Map<Asset.Type, Map<Pack, List<AssetContext>>> contextualsInPackByType = new LinkedHashMap<>();
+    private final Logger logger;
+
+    @Inject
+    private AssetRegistry(final Logger logger) {
+        this.logger = logger;
+    }
 
     public void loadAssetFiles(Path sourcePath) throws IOException {
 
@@ -101,7 +111,7 @@ public final class AssetRegistry {
             // Ignore the root of the packs folder
             final Path packSourcePath = dir.getParent();
             if (!packSourcePath.equals(this.sourcePath)) {
-                Almura.instance.logger.debug("Scanning pack [{}] for files matching asset type [{}].", dir, this.assetName);
+                AssetRegistry.this.logger.debug("Scanning pack [{}] for files matching asset type [{}].", dir, this.assetName);
                 return FileVisitResult.CONTINUE;
             }
             return FileVisitResult.CONTINUE;
@@ -126,7 +136,7 @@ public final class AssetRegistry {
             final Pack pack = AssetRegistry.this.packsById.computeIfAbsent(packName, v -> Pack.builder().build(Constants.Plugin.ID + ":" + packName,
                     WordUtils.capitalize(packName)));
 
-            Almura.instance.logger.debug("Evaluating [{}] as a potential asset.", file);
+            AssetRegistry.this.logger.debug("Evaluating [{}] as a potential asset.", file);
 
             AssetRegistry.this.packsFilesByAssetType.computeIfAbsent(this.assetType, k -> new LinkedHashMap<>()).computeIfAbsent(pack, k -> new
                     LinkedList<>()).add(file);
@@ -136,7 +146,7 @@ public final class AssetRegistry {
 
         @Override
         public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-            Almura.instance.logger.debug("[{}] does not match asset type [{}]. Skipping...", file, this.assetName, exc);
+            AssetRegistry.this.logger.debug("[{}] does not match asset type [{}]. Skipping...", file, this.assetName, exc);
 
             return FileVisitResult.CONTINUE;
         }
@@ -144,7 +154,7 @@ public final class AssetRegistry {
         @Override
         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
             if (exc != null) {
-                Almura.instance.logger.error("Failed to visit [{}]! Skipping...", dir, exc);
+                AssetRegistry.this.logger.error("Failed to visit [{}]! Skipping...", dir, exc);
             }
 
             return FileVisitResult.CONTINUE;

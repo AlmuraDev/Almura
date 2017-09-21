@@ -1,0 +1,41 @@
+/*
+ * This file is part of Almura, All Rights Reserved.
+ *
+ * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
+ */
+package com.almuradev.almura.core.client.config;
+
+import com.almuradev.almura.feature.hud.HUDType;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+
+@SideOnly(Side.CLIENT)
+@ConfigSerializable
+public final class ClientCategory {
+
+    @Setting(value = "first-launch", comment = "Instructs Almura if this is our first launch. Internal use only")
+    public boolean firstLaunch = true;
+
+    @Setting(comment = "The hud type to use. Valid options are '" + HUDType.ORIGIN + "' and '" + HUDType.VANILLA + "'")
+    public String hud = HUDType.ORIGIN;
+
+    @Setting(value = "enhanced-debug", comment = "Toggles Almura's unique custom debug screen")
+    public boolean enhancedDebug = true;
+
+    @Setting(value = "display-animal-heat-status", comment = "Toggles the showing of an Animal's heat status above their head")
+    public boolean displayAnimalHeatStatus = true;
+
+    @Setting(value = "chest-render-distance", comment = "Controls a chest's render distance. Valid options are 0|16|32|64|128 (blocks)")
+    public int chestRenderDistance = 16;
+
+    @Setting(value = "item-frame-render-distance", comment = "Controls an item frame's render distance. Valid options are 0|16|32|64|128 (blocks)")
+    public int itemFrameRenderDistance = 16;
+
+    @Setting(value = "sign-text-render-distance", comment = "Controls a sign text's render distance. Valid options are 0|16|32|64|128 (blocks)")
+    public int signTextRenderDistance = 16;
+
+    @Setting(value = "origin-hud-opacity", comment = "Determines the opacity used for the Origin HUD. Default: 255; Range: 0-255")
+    public int originHudOpacity = 255;
+}

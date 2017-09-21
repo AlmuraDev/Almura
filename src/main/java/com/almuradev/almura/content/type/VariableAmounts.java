@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.content.type;
 
-import com.almuradev.almura.configuration.serializer.ConfigurationNodeDeserializer;
+import com.almuradev.shared.config.ConfigurationNodeDeserializer;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.util.weighted.VariableAmount;
 

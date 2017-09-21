@@ -8,7 +8,7 @@ package com.almuradev.almura.asm.mixin.core.creativetab;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateItemGroupAttributes;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.group.type.GenericItemGroup;
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import net.minecraft.item.Item;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;

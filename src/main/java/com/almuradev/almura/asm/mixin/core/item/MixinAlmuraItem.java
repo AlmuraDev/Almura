@@ -9,7 +9,7 @@ import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttribute
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
 import com.almuradev.almura.content.type.item.type.generic.GenericItem;
-import com.almuradev.almura.registry.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

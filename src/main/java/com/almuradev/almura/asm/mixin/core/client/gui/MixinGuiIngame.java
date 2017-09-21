@@ -5,9 +5,8 @@
  */
 package com.almuradev.almura.asm.mixin.core.client.gui;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.client.ClientProxy;
-import com.almuradev.almura.client.gui.screen.ingame.hud.AbstractHUD;
+import com.almuradev.almura.feature.hud.ClientHeadUpDisplay;
+import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.google.common.collect.Ordering;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -25,9 +24,12 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Collection;
 
+import javax.inject.Inject;
+
 @Mixin(GuiIngame.class)
 public abstract class MixinGuiIngame extends Gui {
 
+    @Inject private static ClientHeadUpDisplay hud;
     @Shadow @Final protected Minecraft mc;
 
     /**
@@ -56,7 +58,7 @@ public abstract class MixinGuiIngame extends Gui {
                 {
                     int k = resolution.getScaledWidth();
                     // Almura start
-                    int l = ((ClientProxy) Almura.proxy).getCustomIngameHud().map(AbstractHUD::getPotionOffsetY).orElse(1);
+                    int l = hud.getHUD().map(AbstractHUD::getPotionOffsetY).orElse(1);
                     // Almura end
 
                     if (this.mc.isDemo())

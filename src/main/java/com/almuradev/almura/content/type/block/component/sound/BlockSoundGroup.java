@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.content.type.block.component.sound;
 
-import com.almuradev.almura.registry.BuildableCatalogType;
+import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.util.annotation.CatalogedBy;

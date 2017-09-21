@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.asm.mixin.core.client.gui;
 
-import com.almuradev.almura.client.gui.screen.menu.SimpleOptionsMenu;
+import com.almuradev.almura.feature.menu.SimpleOptionsMenu;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionSlider;
 import net.minecraft.client.gui.GuiOptions;

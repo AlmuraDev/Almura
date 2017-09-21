@@ -11,7 +11,7 @@ import static com.google.common.base.Preconditions.checkState;
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinSetCatalogTypeId;
 import com.almuradev.almura.content.type.block.BlockConfig;
-import com.almuradev.almura.registry.Registries;
+import com.almuradev.shared.registry.Registries;
 import net.minecraft.util.SoundEvent;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.effect.sound.SoundType;
