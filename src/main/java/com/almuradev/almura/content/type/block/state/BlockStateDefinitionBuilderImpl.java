@@ -180,7 +180,11 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl from(final BlockStateDefinition definition) {
+    public BlockStateDefinitionBuilderImpl from(final BlockStateDefinitionBuilder<?> definition) {
+        return this.from((BlockStateDefinitionBuilderImpl) definition);
+    }
+
+    private BlockStateDefinitionBuilderImpl from(final BlockStateDefinitionBuilderImpl definition) {
         this.material = definition.material;
         this.mapColor = definition.mapColor;
         this.collisionAABB = definition.collisionAABB;

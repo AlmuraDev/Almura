@@ -6,9 +6,9 @@
 package com.almuradev.shared.asset;
 
 import com.almuradev.almura.content.loader.Asset;
+import com.almuradev.almura.content.loader.AssetFactory;
 import com.almuradev.almura.content.loader.AssetPipeline;
 import com.almuradev.almura.content.loader.LoaderPhase;
-import com.almuradev.almura.content.loader.StageTask;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
@@ -24,14 +24,14 @@ import java.util.function.Consumer;
  */
 public class AssetFactoryBinder {
 
-    private final Multibinder<Entry<? extends StageTask<?, ?>>> binder;
+    private final Multibinder<Entry<? extends AssetFactory<?, ?>>> binder;
 
     public static AssetFactoryBinder create(final Binder binder) {
         return new AssetFactoryBinder(binder);
     }
 
     private AssetFactoryBinder(final Binder binder) {
-        this.binder = Multibinder.newSetBinder(binder, new TypeLiteral<Entry<? extends StageTask<?, ?>>>() {});
+        this.binder = Multibinder.newSetBinder(binder, new TypeLiteral<Entry<? extends AssetFactory<?, ?>>>() {});
     }
 
     /**
@@ -42,7 +42,7 @@ public class AssetFactoryBinder {
      * @param <F> the factory type
      * @return this binder
      */
-    public <F extends StageTask<?, ?>> AssetFactoryBinder provider(final Class<F> provider, final Consumer<Entry<F>> consumer) {
+    public <F extends AssetFactory<?, ?>> AssetFactoryBinder provider(final Class<F> provider, final Consumer<Entry<F>> consumer) {
         final Entry<F> entry = new Entry<>(provider);
         consumer.accept(entry);
         this.binder.addBinding().toInstance(entry);
@@ -54,7 +54,7 @@ public class AssetFactoryBinder {
      *
      * @param <F> the factory type
      */
-    public static class Entry<F extends StageTask> {
+    public static class Entry<F extends AssetFactory> {
 
         private final Class<F> provider;
         private LoaderPhase phase;
@@ -84,7 +84,7 @@ public class AssetFactoryBinder {
 
         @SuppressWarnings("unchecked")
         void install(final AssetPipeline pipeline, final Injector injector) {
-            pipeline.registerStage(this.phase, injector.getInstance(this.provider), this.types);
+            pipeline.registerFactory(this.phase, injector.getInstance(this.provider), this.types);
         }
     }
 }

@@ -5,25 +5,22 @@
  */
 package com.almuradev.almura.content.type.item.group.factory;
 
+import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.loader.Asset;
-import com.almuradev.almura.content.loader.AssetContext;
-import com.almuradev.almura.content.loader.StageTask;
+import com.almuradev.almura.content.loader.AssetFactory;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.group.ItemGroupConfig;
 import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.item.ItemType;
 
-public class SetItemGroupAttributesTask implements StageTask<ItemGroup, ItemGroup.Builder> {
+public class ItemGroupFactory implements AssetFactory<ItemGroup, ItemGroup.Builder> {
 
     @Override
-    public void execute(AssetContext<ItemGroup, ItemGroup.Builder> context) {
-        final Asset asset = context.getAsset();
-        final ConfigurationNode root = asset.getConfigurationNode();
-
-        final ConfigurationNode iconNode = root.getNode(ItemGroupConfig.ICON);
+    public void configure(Pack pack, Asset asset, ConfigurationNode config, ItemGroup.Builder builder) {
+        final ConfigurationNode iconNode = config.getNode(ItemGroupConfig.ICON);
         if (!iconNode.isVirtual()) {
-            context.getBuilder().icon(new CatalogDelegate<>(ItemType.class, iconNode.getString()));
+            builder.icon(new CatalogDelegate<>(ItemType.class, iconNode.getString()));
         }
     }
 }

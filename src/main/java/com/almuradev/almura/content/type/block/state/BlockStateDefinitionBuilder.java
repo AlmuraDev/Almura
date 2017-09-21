@@ -75,7 +75,7 @@ public interface BlockStateDefinitionBuilder<B extends BlockStateDefinitionBuild
 
     B breaks(final List<BlockBreak> breaks);
 
-    B from(final BlockStateDefinition definition);
+    B from(final BlockStateDefinitionBuilder<?> definition);
 
     BlockStateDefinition build();
 }

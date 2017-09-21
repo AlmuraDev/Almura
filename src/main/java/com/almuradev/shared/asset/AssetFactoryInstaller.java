@@ -5,8 +5,8 @@
  */
 package com.almuradev.shared.asset;
 
+import com.almuradev.almura.content.loader.AssetFactory;
 import com.almuradev.almura.content.loader.AssetPipeline;
-import com.almuradev.almura.content.loader.StageTask;
 import com.google.inject.Injector;
 import net.kyori.membrane.facet.Enableable;
 
@@ -21,10 +21,10 @@ public final class AssetFactoryInstaller implements Enableable {
 
     private final Injector injector;
     private final AssetPipeline pipeline;
-    private final Set<AssetFactoryBinder.Entry<? extends StageTask<?, ?>>> builders;
+    private final Set<AssetFactoryBinder.Entry<? extends AssetFactory<?, ?>>> builders;
 
     @Inject
-    public AssetFactoryInstaller(final Injector injector, final AssetPipeline pipeline, final Set<AssetFactoryBinder.Entry<? extends StageTask<?, ?>>> builders) {
+    public AssetFactoryInstaller(final Injector injector, final AssetPipeline pipeline, final Set<AssetFactoryBinder.Entry<? extends AssetFactory<?, ?>>> builders) {
         this.injector = injector;
         this.pipeline = pipeline;
         this.builders = builders;

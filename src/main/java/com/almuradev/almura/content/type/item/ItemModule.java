@@ -12,7 +12,7 @@ import com.almuradev.almura.content.type.item.factory.ItemItemGroupProvider;
 import com.almuradev.almura.content.type.item.factory.SetItemAttributesTask;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.group.ItemGroupBuilderImpl;
-import com.almuradev.almura.content.type.item.group.factory.SetItemGroupAttributesTask;
+import com.almuradev.almura.content.type.item.group.factory.ItemGroupFactory;
 import com.almuradev.almura.content.type.item.registry.ItemGroupRegistryModule;
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
 import com.almuradev.shared.inject.CommonBinder;
@@ -27,7 +27,7 @@ public class ItemModule extends AbstractModule implements CommonBinder {
                 .module(ItemGroup.class, ItemGroupRegistryModule.getInstance())
                 .builder(BuildableItemType.Builder.class, AbstractItemTypeBuilder.BuilderImpl::new);
         this.asset()
-                .provider(SetItemGroupAttributesTask.class, binder -> {
+                .provider(ItemGroupFactory.class, binder -> {
                     binder.phase(LoaderPhase.CONSTRUCTION);
                     binder.type(Asset.Type.ITEMGROUP);
                 })

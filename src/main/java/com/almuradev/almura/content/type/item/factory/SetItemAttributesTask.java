@@ -5,14 +5,15 @@
  */
 package com.almuradev.almura.content.type.item.factory;
 
-import com.almuradev.almura.content.loader.AssetContext;
-import com.almuradev.almura.content.loader.StageTask;
+import com.almuradev.almura.content.Pack;
+import com.almuradev.almura.content.loader.Asset;
+import com.almuradev.almura.content.loader.AssetFactory;
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
+import ninja.leaping.configurate.ConfigurationNode;
 
-public class SetItemAttributesTask implements StageTask<BuildableItemType, BuildableItemType.Builder> {
+public class SetItemAttributesTask implements AssetFactory<BuildableItemType, BuildableItemType.Builder<?, ?>> {
 
     @Override
-    public void execute(AssetContext<BuildableItemType, BuildableItemType.Builder> context) {
-        // TODO
+    public void configure(final Pack pack, final Asset asset, final ConfigurationNode config, final BuildableItemType.Builder<?, ?> builder) {
     }
 }

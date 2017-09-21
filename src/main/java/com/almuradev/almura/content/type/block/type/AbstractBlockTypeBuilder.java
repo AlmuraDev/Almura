@@ -9,7 +9,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
-import com.almuradev.almura.content.type.block.state.BlockStateDefinition;
+import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilder;
 import com.almuradev.almura.content.type.block.type.generic.GenericBlock;
 import com.almuradev.almura.content.type.material.AbstractMaterialTypeBuilder;
 import net.minecraft.block.Block;
@@ -21,16 +21,16 @@ import java.util.Map;
 public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType, BUILDER extends AbstractBlockTypeBuilder<BLOCK, BUILDER>>
         extends AbstractMaterialTypeBuilder<BLOCK, BUILDER> implements BuildableBlockType.Builder<BLOCK, BUILDER> {
 
-    private final Map<String, BlockStateDefinition> states = new HashMap<>();
+    private final Map<String, BlockStateDefinitionBuilder<?>> states = new HashMap<>();
 
     @Override
-    public Map<String, BlockStateDefinition> states() {
+    public Map<String, BlockStateDefinitionBuilder<?>> states() {
         return this.states;
     }
 
     @Override
-    public BUILDER putState(final BlockStateDefinition state) {
-        this.states.put(state.id, state);
+    public BUILDER putState(final BlockStateDefinitionBuilder<?> builder) {
+        this.states.put(builder.id(), builder);
         return (BUILDER) this;
     }
 
