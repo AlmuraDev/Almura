@@ -162,7 +162,7 @@ public class UIUserPanel extends UIHUDPanel {
         final int experienceCap = this.client.player.xpBarCap();
         final int experience = (int) (this.client.player.experience * experienceCap);
 
-        this.experienceBar.setText(Text.of(experience + "/" + experienceCap));
+        //this.experienceBar.setText(Text.of(experience + "/" + experienceCap));
         this.experienceBar.setAmount(MathUtil.convertToRange(experience, 0, experienceCap, 0f, 1f));
     }
 
@@ -170,7 +170,7 @@ public class UIUserPanel extends UIHUDPanel {
         final float health = Minecraft.getMinecraft().player.getHealth();
         final float maxHealth = Minecraft.getMinecraft().player.getMaxHealth();
         this.healthBar.setAmount(MathUtil.convertToRange(health,0f, maxHealth, 0f, 1f));
-        this.healthBar.setText(Text.of(String.format("%.2f/%.2f", health, maxHealth)));
+        //this.healthBar.setText(Text.of(String.format("%.2f/%.2f", health, maxHealth)));
         this.height += 10;
     }
 
@@ -188,14 +188,14 @@ public class UIUserPanel extends UIHUDPanel {
             }
         }
         final int currentArmor = maxArmor - currentDamage;
-        this.armorBar.setText(Text.of(String.format("%.2f/%.2f", (float) currentArmor, (float) maxArmor)));
+        //this.armorBar.setText(Text.of(String.format("%.2f/%.2f", (float) currentArmor, (float) maxArmor)));
         this.armorBar.setAmount(MathUtil.convertToRange(currentArmor, 0, maxArmor, 0f, 1f));
         this.height += 10;
     }
 
     private void updateHunger() {
         final float foodLevel = Minecraft.getMinecraft().player.getFoodStats().getFoodLevel();
-        this.hungerBar.setText(Text.of(String.format("%.2f/%.2f", foodLevel, 20f)));
+        //this.hungerBar.setText(Text.of(String.format("%.2f/%.2f", foodLevel, 20f)));
         this.hungerBar.setAmount(MathUtil.convertToRange(foodLevel, 0, 20, 0f, 1f));
         this.height += 10;
     }

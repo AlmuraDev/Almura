@@ -55,7 +55,7 @@ public class OriginHUD extends AbstractHUD {
         this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
 
         // World panel
-        this.worldPanel = new UIWorldPanel(this, 124, 33);
+        this.worldPanel = new UIWorldPanel(this, 124, 25);
         this.worldPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         // Details panel

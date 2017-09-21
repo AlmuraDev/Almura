@@ -25,10 +25,10 @@ public class UIWorldPanel extends UIHUDPanel {
         super(gui, width, height);
 
         this.compassLabel = new UILabel(gui, "");
-        this.compassLabel.setPosition(0, -1, Anchor.BOTTOM | Anchor.CENTER);
+        this.compassLabel.setPosition(0, 1, Anchor.BOTTOM | Anchor.CENTER);
 
         this.worldLabel = new UILabel(gui, "");
-        this.worldLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
+        this.worldLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
         this.worldLabel.setFontOptions(FontColors.FRO_WHITE);
 
         this.add(this.compassLabel, this.worldLabel);
@@ -47,11 +47,16 @@ public class UIWorldPanel extends UIHUDPanel {
     @SuppressWarnings("deprecation")
     private void updateCompass() {
         this.compassLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(HUDData.getCompass()));
-        this.compassLabel.setPosition(0, -1, Anchor.BOTTOM | Anchor.CENTER);
+        this.compassLabel.setPosition(0, 1, Anchor.BOTTOM | Anchor.CENTER);
     }
 
     private void updateWorld() {
         this.worldLabel.setText(HUDData.WORLD_NAME);
-        this.worldLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
+        this.worldLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
+        if (worldLabel.getWidth()+15 <= compassLabel.getWidth()+10) {
+            this.width = compassLabel.getWidth()+10;
+            } else {
+            this.width = worldLabel.getWidth()+15;
+        }
     }
 }
