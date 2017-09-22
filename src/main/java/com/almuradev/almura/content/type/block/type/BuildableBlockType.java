@@ -34,8 +34,8 @@ public interface BuildableBlockType extends MaterialType, BlockType {
             return checkNotNull(this.states().get(BlockStateDefinition.DEFAULT), "%s state", BlockStateDefinition.DEFAULT).build();
         }
 
-        default Optional<BlockStateDefinitionBuilder<?>> findState(final String id) {
-            return Optional.ofNullable(this.states().get(id));
+        default <B extends BlockStateDefinitionBuilder<?>> Optional<B> findState(final String id) {
+            return Optional.ofNullable((B) this.states().get(id));
         }
 
         BUILDER putState(final BlockStateDefinitionBuilder<?> builder);

@@ -9,7 +9,7 @@ import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.type.block.BlockConfig;
 import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilder;
-import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilderFactory;
+import com.almuradev.almura.content.type.block.state.factory.BlockStateDefinitionBuilderFactory;
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import com.almuradev.almura.content.type.material.MapColor;
 import com.almuradev.almura.content.type.material.Material;

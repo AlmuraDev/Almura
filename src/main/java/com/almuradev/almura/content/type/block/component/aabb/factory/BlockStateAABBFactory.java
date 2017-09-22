@@ -11,7 +11,7 @@ import com.almuradev.almura.content.type.block.BlockConfig;
 import com.almuradev.almura.content.type.block.component.aabb.CollisionBox;
 import com.almuradev.almura.content.type.block.component.aabb.WireFrame;
 import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilder;
-import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilderFactory;
+import com.almuradev.almura.content.type.block.state.factory.BlockStateDefinitionBuilderFactory;
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import ninja.leaping.configurate.ConfigurationNode;
 
