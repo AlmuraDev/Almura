@@ -3,7 +3,7 @@
  *
  * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
  */
-package com.almuradev.almura.content.type.block.type.generic;
+package com.almuradev.almura.content.type.block.type.normal;
 
 import com.almuradev.almura.content.type.block.component.aabb.CollisionBox;
 import com.almuradev.almura.content.type.block.component.aabb.WireFrame;
@@ -24,16 +24,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
-public final class GenericBlock extends Block {
+public final class NormalBlock extends Block {
 
     private final CollisionBox collisionAABB;
     private final WireFrame wireFrameAABB;
 
-    public GenericBlock(final BuildableBlockType.Builder<?, ?> builder) {
+    NormalBlock(final BuildableBlockType.Builder<?, ?> builder) {
         this(builder.onlyState());
     }
 
-    private GenericBlock(final BlockStateDefinition definition) {
+    private NormalBlock(final BlockStateDefinition definition) {
         super((Material) definition.material, (MapColor) definition.mapColor);
         this.collisionAABB = definition.collisionAABB;
         this.wireFrameAABB = definition.wireFrameAABB;

@@ -9,17 +9,18 @@ import com.almuradev.almura.content.Pack;
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.type.block.BlockConfig;
 import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilder;
-import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilderFactory;
+import com.almuradev.almura.content.type.block.state.factory.GenericBlockStateDefinitionBuilderFactory;
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import com.almuradev.almura.content.type.material.MapColor;
 import com.almuradev.almura.content.type.material.Material;
+import com.almuradev.shared.config.ConfigPath;
 import com.almuradev.shared.registry.Registries;
 import ninja.leaping.configurate.ConfigurationNode;
 
-public class BlockStateGenericFactory extends BlockStateDefinitionBuilderFactory {
+public class BlockStateGenericFactory extends GenericBlockStateDefinitionBuilderFactory {
 
     @Override
-    protected String key() {
+    protected ConfigPath key() {
         return BlockConfig.State.GENERIC_KEY;
     }
 

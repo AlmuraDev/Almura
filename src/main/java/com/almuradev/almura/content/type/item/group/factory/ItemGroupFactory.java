@@ -17,7 +17,7 @@ import org.spongepowered.api.item.ItemType;
 public class ItemGroupFactory implements AssetFactory<ItemGroup, ItemGroup.Builder> {
 
     @Override
-    public void configure(Pack pack, Asset asset, ConfigurationNode config, ItemGroup.Builder builder) {
+    public void configure(final Pack pack, final Asset asset, final ConfigurationNode config, final ItemGroup.Builder builder) {
         final ConfigurationNode iconNode = config.getNode(ItemGroupConfig.ICON);
         if (!iconNode.isVirtual()) {
             builder.icon(new CatalogDelegate<>(ItemType.class, iconNode.getString()));

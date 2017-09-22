@@ -14,6 +14,7 @@ import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
 import com.almuradev.shared.client.model.ModelResourceLocations;
 import com.almuradev.shared.event.Witness;
+import com.almuradev.shared.registry.AbstractBuilder;
 import com.almuradev.shared.registry.Registries;
 import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 import net.minecraft.block.Block;
@@ -52,7 +53,7 @@ public final class AssetLoader implements Witness {
             pack.add(group);
         });
 
-        this.with(Asset.Type.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.NORMAL_BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
             final BuildableBlockType block = builder.build(pack.getId() + '/' + asset.getName());
             event.getRegistry().register((Block) block);
             context.setCatalog(block);
@@ -63,7 +64,7 @@ public final class AssetLoader implements Witness {
     @SubscribeEvent
     public void onRegisterItems(RegistryEvent.Register<Item> event) {
         // ItemBlocks
-        this.with(Asset.Type.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.NORMAL_BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
             if (context.getCatalog() == null) {
                 // TODO Likely need to warn here, should be impossible as blocks come first
                 return;
@@ -89,7 +90,7 @@ public final class AssetLoader implements Witness {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onRegisterModels(ModelRegistryEvent event) {
-        this.with(Asset.Type.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.NORMAL_BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
             final ItemType item = Registries.findCatalog(ItemType.class, context.getCatalog().getId()).orElse(null);
             if (item != null) {
                 ModelLoader.setCustomModelResourceLocation((Item) item, 0, new ModelResourceLocation(context.getCatalog().getId(),
@@ -110,7 +111,7 @@ public final class AssetLoader implements Witness {
         });
     }
 
-    private <C extends BuildableCatalogType, B extends BuildableCatalogType.Builder> void with(final Asset.Type type, final Enjoyer<C, B> enjoyer) {
+    private <C extends BuildableCatalogType, B extends AbstractBuilder> void with(final Asset.Type type, final Enjoyer<C, B> enjoyer) {
         for (final Map.Entry<Pack, List<AssetContext>> entry : this.registry.getPackAssetContextualsFor(type).entrySet()) {
             final Pack pack = entry.getKey();
             for (final AssetContext context : entry.getValue()) {
@@ -129,7 +130,7 @@ public final class AssetLoader implements Witness {
         }
     }
 
-    private interface Enjoyer<C extends BuildableCatalogType, B extends BuildableCatalogType.Builder> {
+    private interface Enjoyer<C extends BuildableCatalogType, B extends AbstractBuilder> {
 
         void accept(final Pack pack, final Asset asset, final B builder, final AssetContext<C, B> context);
     }

@@ -10,10 +10,10 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
 import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilder;
-import com.almuradev.almura.content.type.block.type.generic.GenericBlock;
 import com.almuradev.almura.content.type.material.AbstractMaterialTypeBuilder;
 import net.minecraft.block.Block;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,10 +21,14 @@ import java.util.Map;
 public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType, BUILDER extends AbstractBlockTypeBuilder<BLOCK, BUILDER>>
         extends AbstractMaterialTypeBuilder<BLOCK, BUILDER> implements BuildableBlockType.Builder<BLOCK, BUILDER> {
 
-    private final Map<String, BlockStateDefinitionBuilder<?>> states = new HashMap<>();
+    protected final Map<String, BlockStateDefinitionBuilder<?>> states = new HashMap<>();
+
+    protected <X extends BlockStateDefinitionBuilder<?>> Collection<X> castedStates() {
+        return (Collection<X>) this.states.values();
+    }
 
     @Override
-    public Map<String, BlockStateDefinitionBuilder<?>> states() {
+    public Map<String, BlockStateDefinitionBuilder<?>> identifiedStates() {
         return this.states;
     }
 
@@ -49,12 +53,4 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     }
 
     protected abstract Block createBlock(BUILDER builder);
-
-    public static final class BuilderImpl extends AbstractBlockTypeBuilder<BuildableBlockType, BuilderImpl> {
-
-        @Override
-        protected Block createBlock(BuilderImpl builder) {
-            return new GenericBlock(builder);
-        }
-    }
 }

@@ -5,7 +5,7 @@
  */
 package com.almuradev.almura.asm.mixin.core.block;
 
-import com.almuradev.almura.content.type.block.type.horizontal.HorizontalType;
+import com.almuradev.almura.content.type.block.type.horizontal.HorizontalBlockType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.MapColor;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 // Makes all horizontals RotableBlockTypes (so they can be used in Almura's framework)
 @Mixin(value = BlockHorizontal.class, priority = 999)
-@Implements(value = @Interface(iface = HorizontalType.class, prefix = "rotatable$"))
+@Implements(value = @Interface(iface = HorizontalBlockType.class, prefix = "rotatable$"))
 public abstract class MixinBlockHorizontal extends Block {
 
     // ignore

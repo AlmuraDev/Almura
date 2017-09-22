@@ -7,7 +7,7 @@ package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.Constants;
 import com.almuradev.almura.content.Pack;
-import com.almuradev.shared.registry.catalog.BuildableCatalogType;
+import com.almuradev.shared.registry.AbstractBuilder;
 import ninja.leaping.configurate.json.JSONConfigurationLoader;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public final class AssetRegistry {
                 final List<AssetContext> assetContexts = assetContextualsByPack.computeIfAbsent(pack, v -> new LinkedList<>());
 
                 for (Path file : packFiles) {
-                    final BuildableCatalogType.Builder builder = Sponge.getRegistry().createBuilder(assetType.getBuilderClass());
+                    final AbstractBuilder builder = Sponge.getRegistry().createBuilder(assetType.getBuilderClass());
 
                     final String assetName = file.getFileName().toString().split("\\.")[0];
 

@@ -12,9 +12,9 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.api.CatalogType;
 
-public class GenericSlabBlock extends BlockSlab {
+public class SlabBlock extends BlockSlab {
 
-    public GenericSlabBlock(Material material) {
+    public SlabBlock(final Material material) {
         super(material);
     }
 

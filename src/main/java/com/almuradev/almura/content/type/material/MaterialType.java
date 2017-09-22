@@ -6,6 +6,7 @@
 package com.almuradev.almura.content.type.material;
 
 import com.almuradev.almura.content.type.item.group.ItemGroup;
+import com.almuradev.shared.registry.AbstractBuilder;
 import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 import com.almuradev.shared.registry.catalog.CatalogDelegate;
 
@@ -15,21 +16,14 @@ public interface MaterialType extends BuildableCatalogType {
 
     Optional<ItemGroup> getItemGroup();
 
-    interface Builder<MATERIAL extends MaterialType, BUILDER extends Builder<MATERIAL, BUILDER>>
-            extends BuildableCatalogType.Builder<MATERIAL, BUILDER> {
+    interface Builder<T extends MaterialType, B extends Builder<T, B>> extends AbstractBuilder<T, B> {
 
         CatalogDelegate<ItemGroup> itemGroup();
 
-        BUILDER itemGroup(CatalogDelegate<ItemGroup> itemGroupDelegate);
+        B itemGroup(CatalogDelegate<ItemGroup> itemGroupDelegate);
 
-        BUILDER itemGroup(ItemGroup itemGroup);
+        B itemGroup(ItemGroup itemGroup);
 
-        @Override
-        default MATERIAL build(String id, String name) {
-            return this.build(id);
-        }
-
-        MATERIAL build(String id);
+        T build(String id);
     }
-
 }

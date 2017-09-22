@@ -14,7 +14,7 @@ import com.almuradev.almura.content.type.material.MaterialType;
 import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import ninja.leaping.configurate.ConfigurationNode;
 
-public class ItemItemGroupProvider implements AssetFactory<MaterialType, MaterialType.Builder> {
+public class ItemItemGroupProvider implements AssetFactory<MaterialType, MaterialType.Builder<?, ?>> {
 
     @Override
     public void configure(final Pack pack, final Asset asset, final ConfigurationNode config, final MaterialType.Builder builder) {

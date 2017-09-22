@@ -8,13 +8,13 @@ package com.almuradev.almura.content.type.block.type.crop;
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import org.spongepowered.api.Sponge;
 
-public interface CropType extends BuildableBlockType {
+public interface CropBlockType extends BuildableBlockType {
 
     static Builder builder() {
         return Sponge.getRegistry().createBuilder(Builder.class);
     }
 
-    interface Builder extends BuildableBlockType.Builder<CropType, Builder> {
+    interface Builder<T extends CropBlockType, B extends Builder<T, B>> extends BuildableBlockType.Builder<T, B> {
 
     }
 }

@@ -26,16 +26,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
-public final class GenericHorizontalBlock extends BlockHorizontal {
+public final class HorizontalBlock extends BlockHorizontal {
 
     private final CollisionBox collisionAABB;
     private final WireFrame wireFrameAABB;
 
-    public GenericHorizontalBlock(final HorizontalTypeBuilderImpl builder) {
+    HorizontalBlock(final HorizontalBlockTypeBuilder builder) {
         this(builder.onlyState());
     }
 
-    private GenericHorizontalBlock(final BlockStateDefinition definition) {
+    private HorizontalBlock(final BlockStateDefinition definition) {
         super((Material) definition.material, (MapColor) definition.mapColor);
         this.collisionAABB = definition.collisionAABB;
         this.wireFrameAABB = definition.wireFrameAABB;
@@ -99,9 +99,9 @@ public final class GenericHorizontalBlock extends BlockHorizontal {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("id", ((HorizontalType) (Object) this).getId())
+                .add("id", ((HorizontalBlockType) (Object) this).getId())
                 .add("unlocalizedName", this.getUnlocalizedName())
-                .add("itemGroup", ((HorizontalType) (Object) this).getItemGroup().orElse(null))
+                .add("itemGroup", ((HorizontalBlockType) (Object) this).getItemGroup().orElse(null))
                 .add("material", this.blockMaterial)
                 .add("mapColor", this.blockMapColor)
                 .add("hardness", this.blockHardness)

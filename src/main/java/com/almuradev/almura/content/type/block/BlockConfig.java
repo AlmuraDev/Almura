@@ -5,10 +5,21 @@
  */
 package com.almuradev.almura.content.type.block;
 
+import com.almuradev.almura.content.type.block.component.aabb.CollisionBox;
+import com.almuradev.almura.content.type.block.component.aabb.WireFrame;
+import com.almuradev.almura.content.type.block.component.action.breaks.drop.ExperienceDrop;
+import com.almuradev.almura.content.type.block.component.action.breaks.drop.ItemDrop;
+import com.almuradev.almura.content.type.block.component.action.fertilize.FertilizeAction;
+import com.almuradev.shared.config.ConfigPath;
+
 public interface BlockConfig {
 
     String ATTRIBUTES = "attributes";
     String STATES = "states";
+    /**
+     * @see BlockType
+     */
+    String TYPE = "type";
 
     interface Attribute {
 
@@ -17,15 +28,21 @@ public interface BlockConfig {
 
     interface State {
 
-        String AABB_KEY = "aabb";
-        String ACTION_KEY = "action";
-        String GENERIC_KEY = "generic";
-        String SOUND_KEY = "sound";
+        ConfigPath AABB_KEY = new ConfigPath("aabb");
+        ConfigPath ACTION_KEY = new ConfigPath("action");
+        ConfigPath GENERIC_KEY = new ConfigPath("generic");
+        ConfigPath SOUND_KEY = new ConfigPath("sound");
         String PARENT_KEY = "parent";
 
         interface AABB {
 
+            /**
+             * @see CollisionBox
+             */
             String COLLISION = "collision";
+            /**
+             * @see WireFrame
+             */
             String WIREFRAME = "wireframe";
             String TYPE = "type";
             String BOX = "box";
@@ -33,7 +50,8 @@ public interface BlockConfig {
 
         interface Action {
 
-            String BREAK = "break";
+            ConfigPath BREAK = ACTION_KEY.and("break");
+            ConfigPath FERTILIZE = ACTION_KEY.and("fertilize");
 
             interface Break {
 
@@ -43,9 +61,23 @@ public interface BlockConfig {
 
                 interface Drop {
 
+                    /**
+                     * @see ExperienceDrop
+                     */
                     String EXPERIENCE = "experience";
+                    /**
+                     * @see ItemDrop
+                     */
                     String ITEM = "item";
                 }
+            }
+
+            /**
+             * @see FertilizeAction
+             */
+            interface Fertilize {
+
+                String WITH = "with";
             }
         }
 

@@ -193,12 +193,6 @@ public class BlockSoundGroupBuilder implements BlockSoundGroup.Builder {
     @Override
     public BlockSoundGroup build() {
         checkState(this.id != null, "id must be set");
-        return this.build(Constants.Plugin.ID + ':' + this.id, this.id);
-    }
-
-    @Override
-    public BlockSoundGroup build(final String id, final String name) {
-        checkState(this.id != null, "id must be set");
         checkState(this.volume != null, "volume must be set");
         checkState(this.pitch != null, "pitch must be set");
         checkState(this.breakSound != null, "break sound must be set");
@@ -207,7 +201,7 @@ public class BlockSoundGroupBuilder implements BlockSoundGroup.Builder {
         checkState(this.hitSound != null, "hit sound must be set");
         checkState(this.fallSound != null, "fall sound must be set");
         final BlockSoundGroup group = (BlockSoundGroup) new net.minecraft.block.SoundType(this.volume.floatValue(), this.pitch.floatValue(), (SoundEvent) this.breakSound, (SoundEvent) this.stepSound, (SoundEvent) this.placeSound, (SoundEvent) this.hitSound, (SoundEvent) this.fallSound);
-        ((IMixinSetCatalogTypeId) group).setId(id, name);
+        ((IMixinSetCatalogTypeId) group).setId(Constants.Plugin.ID + ':' + id, this.id);
         return group;
     }
 }

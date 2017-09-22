@@ -1,0 +1,9 @@
+{
+    "with": [
+        {
+            "item": "minecraft:dye",
+            "data": 15,
+            "quantity": 5
+        }
+    ]
+}
