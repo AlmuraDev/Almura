@@ -15,17 +15,16 @@ import com.almuradev.almura.content.type.block.component.action.breaks.drop.Expe
 import com.almuradev.almura.content.type.block.component.action.breaks.drop.ItemDrop;
 import com.almuradev.shared.config.ConfigurationNodeDeserializer;
 import com.almuradev.shared.registry.catalog.CatalogDelegate;
+import com.almuradev.shared.registry.catalog.CatalogDelegates;
 import com.google.common.collect.ImmutableMap;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.Types;
 import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.weighted.VariableAmount;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,20 +57,10 @@ public enum BlockBreakSerializer implements ConfigurationNodeDeserializer<List<B
     }
 
     private Optional<BlockBreak> deserializeSingle(final ConfigurationNode node) {
-        final Set<CatalogDelegate<ItemType>> with = this.deserializeWith(node.getNode(BlockConfig.State.Action.Break.WITH));
+        final Set<CatalogDelegate<ItemType>> with = CatalogDelegates.items(node.getNode(BlockConfig.State.Action.Break.WITH));
         final List<Action> apply = this.deserializeApply(node.getNode(BlockConfig.State.Action.Break.APPLY));
         final List<Drop> drops = this.deserializeDrops(node.getNode(BlockConfig.State.Action.Break.DROPS));
         return Optional.of(new BlockBreak(with, apply, drops));
-    }
-
-    private Set<CatalogDelegate<ItemType>> deserializeWith(final ConfigurationNode node) {
-        if (node.getValue() instanceof List) {
-            return node.getList(Types::asString).stream()
-                    .map(this::itemType)
-                    .collect(Collectors.toSet());
-        } else {
-            return Collections.singleton(this.itemType(node.getString()));
-        }
     }
 
     private List<Action> deserializeApply(final ConfigurationNode node) {
@@ -114,7 +103,7 @@ public enum BlockBreakSerializer implements ConfigurationNodeDeserializer<List<B
             @Nullable final VariableAmount bonusChance = VariableAmounts.deserialize(dropsNodeEl.getNode(VariableAmounts.Config.BONUS, VariableAmounts.Config.BONUS_CHANCE)).orElse(null);
             if (!dropsNodeEl.getNode(BlockConfig.State.Action.Break.Drop.ITEM).isVirtual()) {
                 final List<CatalogDelegate<ItemType>> items = dropsNodeEl.getNode(BlockConfig.State.Action.Break.Drop.ITEM).getList(Types::asString).stream()
-                        .map(this::itemType)
+                        .map(CatalogDelegates::item)
                         .collect(Collectors.toList());
                 drops.add(new ItemDrop(amount, bonusAmount, bonusChance, items));
             }
@@ -123,12 +112,5 @@ public enum BlockBreakSerializer implements ConfigurationNodeDeserializer<List<B
             }
         }
         return drops;
-    }
-
-    private CatalogDelegate<ItemType> itemType(String id) {
-        if (id == null) {
-            id = ItemStack.empty().getItem().getId();
-        }
-        return new CatalogDelegate<>(ItemType.class, id);
     }
 }

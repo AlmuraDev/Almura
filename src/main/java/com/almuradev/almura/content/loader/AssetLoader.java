@@ -52,7 +52,7 @@ public final class AssetLoader implements Witness {
             pack.add(group);
         });
 
-        this.with(Asset.Type.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.NORMAL_BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
             final BuildableBlockType block = builder.build(pack.getId() + '/' + asset.getName());
             event.getRegistry().register((Block) block);
             context.setCatalog(block);
@@ -63,7 +63,7 @@ public final class AssetLoader implements Witness {
     @SubscribeEvent
     public void onRegisterItems(RegistryEvent.Register<Item> event) {
         // ItemBlocks
-        this.with(Asset.Type.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.NORMAL_BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
             if (context.getCatalog() == null) {
                 // TODO Likely need to warn here, should be impossible as blocks come first
                 return;
@@ -89,7 +89,7 @@ public final class AssetLoader implements Witness {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onRegisterModels(ModelRegistryEvent event) {
-        this.with(Asset.Type.BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
+        this.with(Asset.Type.NORMAL_BLOCK, (Enjoyer<BuildableBlockType, BuildableBlockType.Builder>) (pack, asset, builder, context) -> {
             final ItemType item = Registries.findCatalog(ItemType.class, context.getCatalog().getId()).orElse(null);
             if (item != null) {
                 ModelLoader.setCustomModelResourceLocation((Item) item, 0, new ModelResourceLocation(context.getCatalog().getId(),

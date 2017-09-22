@@ -48,8 +48,8 @@ public final class Asset {
     }
 
     public enum Type {
-        BLOCK("block", NormalBlockType.Builder.class),
-        BLOCK_CROP("crop", CropBlockType.Builder.class),
+        NORMAL_BLOCK("block", NormalBlockType.Builder.class),
+        CROP_BLOCK("crop", CropBlockType.Builder.class),
         HORIZONTAL_BLOCK("horizontal", HorizontalBlockType.Builder.class),
         BLOCK_SOUNDGROUP("soundgroup", BlockSoundGroup.Builder.class),
         ITEM("item", BuildableItemType.Builder.class),

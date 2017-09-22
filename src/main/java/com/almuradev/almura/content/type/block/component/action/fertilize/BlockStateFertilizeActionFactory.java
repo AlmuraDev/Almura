@@ -13,7 +13,7 @@ import com.almuradev.almura.content.type.block.type.crop.state.CropBlockStateDef
 import com.almuradev.shared.config.ConfigPath;
 import ninja.leaping.configurate.ConfigurationNode;
 
-public class BlockStateFertilizeActionFactory extends CropBlockStateDefinitionBuilder.Factory {
+public final class BlockStateFertilizeActionFactory extends CropBlockStateDefinitionBuilder.Factory {
 
     @Override
     protected ConfigPath key() {
@@ -22,6 +22,5 @@ public class BlockStateFertilizeActionFactory extends CropBlockStateDefinitionBu
 
     @Override
     protected void configure(final Pack pack, final Asset asset, final ConfigurationNode config, final BuildableBlockType.Builder<?, ?> builder, final CropBlockStateDefinitionBuilder definition) {
-
     }
 }

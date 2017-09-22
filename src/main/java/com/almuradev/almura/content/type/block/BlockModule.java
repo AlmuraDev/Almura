@@ -9,6 +9,7 @@ import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.LoaderPhase;
 import com.almuradev.almura.content.type.block.component.aabb.factory.BlockStateAABBFactory;
 import com.almuradev.almura.content.type.block.component.action.breaks.BlockStateBreakActionFactory;
+import com.almuradev.almura.content.type.block.component.action.fertilize.BlockStateFertilizeActionFactory;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroupBuilder;
 import com.almuradev.almura.content.type.block.component.sound.factory.BlockSoundGroupFactory;
@@ -30,9 +31,13 @@ import java.util.function.Consumer;
 
 public class BlockModule extends AbstractModule implements CommonBinder {
 
-    private final Consumer<AssetFactoryBinder.Entry> block = binder -> {
+    private final Consumer<AssetFactoryBinder.Entry> generic = binder -> {
         binder.phase(LoaderPhase.CONSTRUCTION);
-        binder.type(Asset.Type.BLOCK, Asset.Type.HORIZONTAL_BLOCK);
+        binder.type(Asset.Type.NORMAL_BLOCK, Asset.Type.CROP_BLOCK, Asset.Type.HORIZONTAL_BLOCK);
+    };
+    private final Consumer<AssetFactoryBinder.Entry> crop = binder -> {
+        binder.phase(LoaderPhase.CONSTRUCTION);
+        binder.type(Asset.Type.CROP_BLOCK);
     };
 
     @Override
@@ -50,10 +55,11 @@ public class BlockModule extends AbstractModule implements CommonBinder {
                     binder.phase(LoaderPhase.CONSTRUCTION);
                     binder.type(Asset.Type.BLOCK_SOUNDGROUP);
                 })
-                .provider(BlockItemGroupProvider.class, this.block::accept)
-                .provider(BlockStateAABBFactory.class, this.block::accept)
-                .provider(BlockStateBreakActionFactory.class, this.block::accept)
-                .provider(BlockStateGenericFactory.class, this.block::accept)
-                .provider(BlockStateSoundGroupFactory.class, this.block::accept);
+                .provider(BlockItemGroupProvider.class, this.generic::accept)
+                .provider(BlockStateAABBFactory.class, this.generic::accept)
+                .provider(BlockStateBreakActionFactory.class, this.generic::accept)
+                .provider(BlockStateFertilizeActionFactory.class, this.crop::accept)
+                .provider(BlockStateGenericFactory.class, this.generic::accept)
+                .provider(BlockStateSoundGroupFactory.class, this.generic::accept);
     }
 }

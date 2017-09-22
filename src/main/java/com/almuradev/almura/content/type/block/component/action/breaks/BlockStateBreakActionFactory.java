@@ -23,9 +23,8 @@ public class BlockStateBreakActionFactory extends GenericBlockStateDefinitionBui
 
     @Override
     protected void configure(final Pack pack, final Asset asset, ConfigurationNode config, final BuildableBlockType.Builder<?, ?> builder, final BlockStateDefinitionBuilder<?> definition) {
-        final ConfigurationNode breaks = config.getNode(BlockConfig.State.Action.BREAK);
-        if (!breaks.isVirtual()) {
-            BlockBreakSerializer.INSTANCE.deserialize(breaks).ifPresent(definition::breaks);
+        if (!config.isVirtual()) {
+            BlockBreakSerializer.INSTANCE.deserialize(config).ifPresent(definition::breaks);
         }
     }
 }

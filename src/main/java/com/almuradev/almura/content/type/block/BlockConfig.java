@@ -9,6 +9,7 @@ import com.almuradev.almura.content.type.block.component.aabb.CollisionBox;
 import com.almuradev.almura.content.type.block.component.aabb.WireFrame;
 import com.almuradev.almura.content.type.block.component.action.breaks.drop.ExperienceDrop;
 import com.almuradev.almura.content.type.block.component.action.breaks.drop.ItemDrop;
+import com.almuradev.almura.content.type.block.component.action.fertilize.FertilizeAction;
 import com.almuradev.shared.config.ConfigPath;
 
 public interface BlockConfig {
@@ -71,9 +72,12 @@ public interface BlockConfig {
                 }
             }
 
+            /**
+             * @see FertilizeAction
+             */
             interface Fertilize {
 
-                String SOURCES = "sources";
+                String WITH = "with";
             }
         }
 
