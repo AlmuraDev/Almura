@@ -12,6 +12,6 @@ public final class HorizontalBlockTypeBuilder extends AbstractBlockTypeBuilder<H
 
     @Override
     protected Block createBlock(final HorizontalBlockTypeBuilder builder) {
-        return new GenericHorizontalBlock(builder);
+        return new HorizontalBlock(builder);
     }
 }

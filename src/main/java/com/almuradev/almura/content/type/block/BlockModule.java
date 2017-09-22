@@ -8,6 +8,7 @@ package com.almuradev.almura.content.type.block;
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.LoaderPhase;
 import com.almuradev.almura.content.type.block.component.aabb.factory.BlockStateAABBFactory;
+import com.almuradev.almura.content.type.block.component.action.BlockActionModule;
 import com.almuradev.almura.content.type.block.component.action.breaks.BlockStateBreakActionFactory;
 import com.almuradev.almura.content.type.block.component.action.fertilize.BlockStateFertilizeActionFactory;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
@@ -61,5 +62,6 @@ public class BlockModule extends AbstractModule implements CommonBinder {
                 .provider(BlockStateFertilizeActionFactory.class, this.crop::accept)
                 .provider(BlockStateGenericFactory.class, this.generic::accept)
                 .provider(BlockStateSoundGroupFactory.class, this.generic::accept);
+        this.install(new BlockActionModule());
     }
 }

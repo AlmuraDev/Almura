@@ -29,7 +29,7 @@ public final class NormalBlock extends Block {
     private final CollisionBox collisionAABB;
     private final WireFrame wireFrameAABB;
 
-    public NormalBlock(final BuildableBlockType.Builder<?, ?> builder) {
+    NormalBlock(final BuildableBlockType.Builder<?, ?> builder) {
         this(builder.onlyState());
     }
 

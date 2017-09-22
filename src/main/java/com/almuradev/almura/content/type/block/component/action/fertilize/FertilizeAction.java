@@ -5,18 +5,23 @@
  */
 package com.almuradev.almura.content.type.block.component.action.fertilize;
 
-import com.almuradev.almura.content.type.block.component.action.Action;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
+import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import org.spongepowered.api.item.ItemType;
 
-import java.util.Random;
+import java.util.Set;
+import java.util.function.Predicate;
 
-public class FertilizeAction implements Action {
+public class FertilizeAction implements Predicate<ItemStack> {
+
+    private final Set<CatalogDelegate<ItemType>> with;
+
+    public FertilizeAction(final Set<CatalogDelegate<ItemType>> with) {
+        this.with = with;
+    }
 
     @Override
-    public void apply(final EntityPlayer player, final Block block, final BlockPos pos, final Random random, final ItemStack stack) {
-
+    public boolean test(final ItemStack stack) {
+        return this.with.stream().anyMatch(input -> input.test((ItemType) stack.getItem()));
     }
 }
