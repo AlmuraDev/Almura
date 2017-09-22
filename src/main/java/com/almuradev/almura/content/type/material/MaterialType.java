@@ -24,10 +24,6 @@ public interface MaterialType extends BuildableCatalogType {
 
         B itemGroup(ItemGroup itemGroup);
 
-        default T build(String id, String name) {
-            return this.build(id);
-        }
-
         T build(String id);
     }
 }

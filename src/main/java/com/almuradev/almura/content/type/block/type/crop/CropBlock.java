@@ -12,6 +12,7 @@ import org.spongepowered.api.CatalogType;
 public final class CropBlock extends BlockCrops implements FertilizableBlock {
 
     CropBlock(final CropBlockTypeBuilder builder) {
+
     }
 
     @Override

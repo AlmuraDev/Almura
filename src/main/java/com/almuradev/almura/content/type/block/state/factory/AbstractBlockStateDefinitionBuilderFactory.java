@@ -43,6 +43,10 @@ public abstract class AbstractBlockStateDefinitionBuilderFactory<S extends Block
         }
     }
 
+    protected void preConfigure(final BuildableBlockType.Builder<?, ?> builder, final S definition) {
+        // NOOP
+    }
+
     protected abstract ConfigPath key();
 
     protected abstract void configure(final Pack pack, final Asset asset, final ConfigurationNode config, final BuildableBlockType.Builder<?, ?> builder, final S definition);

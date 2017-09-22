@@ -7,8 +7,12 @@ package com.almuradev.almura.content.type.block.type.crop.state;
 
 import com.almuradev.almura.content.type.block.state.AbstractBlockStateDefinitionBuilder;
 import com.almuradev.almura.content.type.block.state.factory.AbstractBlockStateDefinitionBuilderFactory;
+import com.almuradev.almura.content.type.block.type.BuildableBlockType;
+import com.almuradev.almura.content.type.block.type.crop.CropBlockTypeBuilder;
 
 public final class CropBlockStateDefinitionBuilder extends AbstractBlockStateDefinitionBuilder<CropBlockStateDefinitionBuilder> {
+
+    public int id;
 
     public CropBlockStateDefinitionBuilder() {
     }
@@ -19,5 +23,10 @@ public final class CropBlockStateDefinitionBuilder extends AbstractBlockStateDef
     }
 
     public static abstract class Factory extends AbstractBlockStateDefinitionBuilderFactory<CropBlockStateDefinitionBuilder> {
+
+        @Override
+        protected void preConfigure(final BuildableBlockType.Builder<?, ?> builder, final CropBlockStateDefinitionBuilder definition) {
+            definition.id = ((CropBlockTypeBuilder) builder).allocateId();
+        }
     }
 }

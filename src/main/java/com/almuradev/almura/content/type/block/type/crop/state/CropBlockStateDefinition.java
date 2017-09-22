@@ -7,7 +7,7 @@ package com.almuradev.almura.content.type.block.type.crop.state;
 
 import com.almuradev.almura.content.type.block.state.BlockStateDefinition;
 
-final class CropBlockStateDefinition extends BlockStateDefinition {
+public final class CropBlockStateDefinition extends BlockStateDefinition {
 
     CropBlockStateDefinition(final CropBlockStateDefinitionBuilder builder) {
         super(builder);
