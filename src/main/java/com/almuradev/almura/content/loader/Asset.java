@@ -7,7 +7,9 @@ package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
-import com.almuradev.almura.content.type.block.type.horizontal.HorizontalType;
+import com.almuradev.almura.content.type.block.type.crop.CropBlockType;
+import com.almuradev.almura.content.type.block.type.horizontal.HorizontalBlockType;
+import com.almuradev.almura.content.type.block.type.normal.NormalBlockType;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
 import com.almuradev.shared.registry.catalog.BuildableCatalogType;
@@ -46,8 +48,9 @@ public final class Asset {
     }
 
     public enum Type {
-        BLOCK("block", BuildableBlockType.Builder.class),
-        HORIZONTAL_BLOCK("horizontal", HorizontalType.Builder.class),
+        BLOCK("block", NormalBlockType.Builder.class),
+        BLOCK_CROP("crop", CropBlockType.Builder.class),
+        HORIZONTAL_BLOCK("horizontal", HorizontalBlockType.Builder.class),
         BLOCK_SOUNDGROUP("soundgroup", BlockSoundGroup.Builder.class),
         ITEM("item", BuildableItemType.Builder.class),
         ITEMGROUP("itemgroup", ItemGroup.Builder.class);

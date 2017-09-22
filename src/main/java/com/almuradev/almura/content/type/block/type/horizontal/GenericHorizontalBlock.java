@@ -31,7 +31,7 @@ public final class GenericHorizontalBlock extends BlockHorizontal {
     private final CollisionBox collisionAABB;
     private final WireFrame wireFrameAABB;
 
-    public GenericHorizontalBlock(final HorizontalTypeBuilderImpl builder) {
+    public GenericHorizontalBlock(final HorizontalBlockTypeBuilder builder) {
         this(builder.onlyState());
     }
 
@@ -99,9 +99,9 @@ public final class GenericHorizontalBlock extends BlockHorizontal {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("id", ((HorizontalType) (Object) this).getId())
+                .add("id", ((HorizontalBlockType) (Object) this).getId())
                 .add("unlocalizedName", this.getUnlocalizedName())
-                .add("itemGroup", ((HorizontalType) (Object) this).getItemGroup().orElse(null))
+                .add("itemGroup", ((HorizontalBlockType) (Object) this).getItemGroup().orElse(null))
                 .add("material", this.blockMaterial)
                 .add("mapColor", this.blockMapColor)
                 .add("hardness", this.blockHardness)

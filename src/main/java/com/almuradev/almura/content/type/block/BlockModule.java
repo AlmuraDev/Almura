@@ -8,7 +8,7 @@ package com.almuradev.almura.content.type.block;
 import com.almuradev.almura.content.loader.Asset;
 import com.almuradev.almura.content.loader.LoaderPhase;
 import com.almuradev.almura.content.type.block.component.aabb.factory.BlockStateAABBFactory;
-import com.almuradev.almura.content.type.block.component.action.factory.BlockStateActionFactory;
+import com.almuradev.almura.content.type.block.component.action.breaks.BlockStateBreakActionFactory;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroupBuilder;
 import com.almuradev.almura.content.type.block.component.sound.factory.BlockSoundGroupFactory;
@@ -16,10 +16,12 @@ import com.almuradev.almura.content.type.block.component.sound.factory.BlockStat
 import com.almuradev.almura.content.type.block.factory.BlockItemGroupProvider;
 import com.almuradev.almura.content.type.block.factory.BlockStateGenericFactory;
 import com.almuradev.almura.content.type.block.registry.BlockSoundGroupRegistryModule;
-import com.almuradev.almura.content.type.block.type.AbstractBlockTypeBuilder;
-import com.almuradev.almura.content.type.block.type.BuildableBlockType;
-import com.almuradev.almura.content.type.block.type.horizontal.HorizontalType;
-import com.almuradev.almura.content.type.block.type.horizontal.HorizontalTypeBuilderImpl;
+import com.almuradev.almura.content.type.block.type.crop.CropBlockType;
+import com.almuradev.almura.content.type.block.type.crop.CropBlockTypeBuilder;
+import com.almuradev.almura.content.type.block.type.horizontal.HorizontalBlockType;
+import com.almuradev.almura.content.type.block.type.horizontal.HorizontalBlockTypeBuilder;
+import com.almuradev.almura.content.type.block.type.normal.NormalBlockType;
+import com.almuradev.almura.content.type.block.type.normal.NormalBlockTypeBuilder;
 import com.almuradev.shared.asset.AssetFactoryBinder;
 import com.almuradev.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -40,8 +42,9 @@ public class BlockModule extends AbstractModule implements CommonBinder {
         this.registry()
                 .module(BlockSoundGroup.class, BlockSoundGroupRegistryModule.class)
                 .builder(BlockSoundGroup.Builder.class, BlockSoundGroupBuilder::new)
-                .builder(BuildableBlockType.Builder.class, AbstractBlockTypeBuilder.BuilderImpl::new)
-                .builder(HorizontalType.Builder.class, HorizontalTypeBuilderImpl::new);
+                .builder(CropBlockType.Builder.class, CropBlockTypeBuilder::new)
+                .builder(NormalBlockType.Builder.class, NormalBlockTypeBuilder::new)
+                .builder(HorizontalBlockType.Builder.class, HorizontalBlockTypeBuilder::new);
         this.asset()
                 .provider(BlockSoundGroupFactory.class, binder -> {
                     binder.phase(LoaderPhase.CONSTRUCTION);
@@ -49,7 +52,7 @@ public class BlockModule extends AbstractModule implements CommonBinder {
                 })
                 .provider(BlockItemGroupProvider.class, this.block::accept)
                 .provider(BlockStateAABBFactory.class, this.block::accept)
-                .provider(BlockStateActionFactory.class, this.block::accept)
+                .provider(BlockStateBreakActionFactory.class, this.block::accept)
                 .provider(BlockStateGenericFactory.class, this.block::accept)
                 .provider(BlockStateSoundGroupFactory.class, this.block::accept);
     }

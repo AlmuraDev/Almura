@@ -10,7 +10,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinDelegateMaterialAttributes;
 import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilder;
-import com.almuradev.almura.content.type.block.type.normal.NormalBlock;
 import com.almuradev.almura.content.type.material.AbstractMaterialTypeBuilder;
 import net.minecraft.block.Block;
 
@@ -49,12 +48,4 @@ public abstract class AbstractBlockTypeBuilder<BLOCK extends BuildableBlockType,
     }
 
     protected abstract Block createBlock(BUILDER builder);
-
-    public static final class BuilderImpl extends AbstractBlockTypeBuilder<BuildableBlockType, BuilderImpl> {
-
-        @Override
-        protected Block createBlock(BuilderImpl builder) {
-            return new NormalBlock(builder);
-        }
-    }
 }

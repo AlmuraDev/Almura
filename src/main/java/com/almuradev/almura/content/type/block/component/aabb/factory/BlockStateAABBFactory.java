@@ -11,14 +11,15 @@ import com.almuradev.almura.content.type.block.BlockConfig;
 import com.almuradev.almura.content.type.block.component.aabb.CollisionBox;
 import com.almuradev.almura.content.type.block.component.aabb.WireFrame;
 import com.almuradev.almura.content.type.block.state.BlockStateDefinitionBuilder;
-import com.almuradev.almura.content.type.block.state.factory.BlockStateDefinitionBuilderFactory;
+import com.almuradev.almura.content.type.block.state.factory.GenericBlockStateDefinitionBuilderFactory;
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
+import com.almuradev.shared.config.ConfigPath;
 import ninja.leaping.configurate.ConfigurationNode;
 
-public class BlockStateAABBFactory extends BlockStateDefinitionBuilderFactory {
+public class BlockStateAABBFactory extends GenericBlockStateDefinitionBuilderFactory {
 
     @Override
-    public String key() {
+    public ConfigPath key() {
         return BlockConfig.State.AABB_KEY;
     }
 

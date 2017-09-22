@@ -6,6 +6,7 @@
 package com.almuradev.almura.content.type.block.type.crop.state;
 
 import com.almuradev.almura.content.type.block.state.AbstractBlockStateDefinitionBuilder;
+import com.almuradev.almura.content.type.block.state.factory.AbstractBlockStateDefinitionBuilderFactory;
 
 public final class CropBlockStateDefinitionBuilder extends AbstractBlockStateDefinitionBuilder<CropBlockStateDefinitionBuilder> {
 
@@ -15,5 +16,8 @@ public final class CropBlockStateDefinitionBuilder extends AbstractBlockStateDef
     @Override
     public CropBlockStateDefinition build() {
         return new CropBlockStateDefinition(this);
+    }
+
+    public static abstract class Factory extends AbstractBlockStateDefinitionBuilderFactory<CropBlockStateDefinitionBuilder> {
     }
 }

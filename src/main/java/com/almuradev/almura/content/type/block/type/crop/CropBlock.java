@@ -11,6 +11,9 @@ import org.spongepowered.api.CatalogType;
 
 public final class CropBlock extends BlockCrops {
 
+    CropBlock(final CropBlockTypeBuilder builder) {
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

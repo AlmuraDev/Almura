@@ -5,8 +5,8 @@
  */
 package com.almuradev.almura.content.type.block.type.stair;
 
-import com.almuradev.almura.content.type.block.type.horizontal.HorizontalType;
+import com.almuradev.almura.content.type.block.type.horizontal.HorizontalBlockType;
 
-public interface StairType extends HorizontalType {
+public interface StairType extends HorizontalBlockType {
 
 }
