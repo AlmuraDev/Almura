@@ -49,6 +49,16 @@ public interface BlockConfig {
             }
         }
 
+        interface Crop {
+
+            String FERTILIZER_KEY = "fertilizer";
+
+            interface Fertilizer {
+
+                String SOURCES = "sources";
+            }
+        }
+
         interface Generic {
 
             String MAP_COLOR = "map-color";

@@ -40,7 +40,7 @@ public class BlockStateDefinition {
     final Optional<CatalogDelegate<BlockSoundGroup>> soundGroup;
     final List<BlockBreak> breaks;
 
-    BlockStateDefinition(final BlockStateDefinitionBuilder<?> builder) {
+    protected BlockStateDefinition(final BlockStateDefinitionBuilder<?> builder) {
         this.asset = builder.asset();
         this.id = builder.id();
         this.material = builder.material();

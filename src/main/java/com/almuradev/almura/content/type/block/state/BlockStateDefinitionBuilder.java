@@ -9,6 +9,8 @@ import com.almuradev.almura.content.type.block.component.aabb.CollisionBox;
 import com.almuradev.almura.content.type.block.component.aabb.WireFrame;
 import com.almuradev.almura.content.type.block.component.action.breaks.BlockBreak;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
+import com.almuradev.almura.content.type.block.type.crop.state.CropBlockStateDefinitionBuilder;
+import com.almuradev.almura.content.type.block.type.normal.state.NormalBlockStateDefinitionBuilder;
 import com.almuradev.almura.content.type.material.MapColor;
 import com.almuradev.almura.content.type.material.Material;
 import com.almuradev.shared.registry.catalog.CatalogDelegate;
@@ -21,8 +23,12 @@ import java.util.OptionalInt;
 @SuppressWarnings("UnusedReturnValue")
 public interface BlockStateDefinitionBuilder<B extends BlockStateDefinitionBuilder<B>> {
 
-    static BlockStateDefinitionBuilder<?> create() {
-        return new BlockStateDefinitionBuilderImpl();
+    static CropBlockStateDefinitionBuilder crop() {
+        return new CropBlockStateDefinitionBuilder();
+    }
+
+    static NormalBlockStateDefinitionBuilder normal() {
+        return new NormalBlockStateDefinitionBuilder();
     }
 
     String asset();

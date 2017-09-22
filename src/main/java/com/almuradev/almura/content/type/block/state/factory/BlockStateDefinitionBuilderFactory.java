@@ -11,6 +11,6 @@ public abstract class BlockStateDefinitionBuilderFactory extends AbstractBlockSt
 
     @Override
     protected BlockStateDefinitionBuilder<?> createDefinitionBuilder() {
-        return BlockStateDefinitionBuilder.create();
+        return BlockStateDefinitionBuilder.normal();
     }
 }

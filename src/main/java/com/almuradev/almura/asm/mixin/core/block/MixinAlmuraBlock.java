@@ -14,8 +14,8 @@ import com.almuradev.almura.content.type.block.component.action.breaks.drop.Drop
 import com.almuradev.almura.content.type.block.component.action.breaks.drop.ItemDrop;
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
 import com.almuradev.almura.content.type.block.type.BuildableBlockType;
-import com.almuradev.almura.content.type.block.type.generic.GenericBlock;
 import com.almuradev.almura.content.type.block.type.horizontal.GenericHorizontalBlock;
+import com.almuradev.almura.content.type.block.type.normal.NormalBlock;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import net.minecraft.block.Block;
@@ -44,7 +44,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-@Mixin(value = {GenericBlock.class, GenericHorizontalBlock.class})
+@Mixin(value = {NormalBlock.class, GenericHorizontalBlock.class})
 public abstract class MixinAlmuraBlock extends MixinBlock implements BuildableBlockType, IMixinDelegateMaterialAttributes,
         IMixinDelegateBlockAttributes, IMixinAlmuraBlock {
 

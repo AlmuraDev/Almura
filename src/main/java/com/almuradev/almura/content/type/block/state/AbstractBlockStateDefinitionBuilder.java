@@ -6,7 +6,6 @@
 package com.almuradev.almura.content.type.block.state;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.content.type.block.component.aabb.CollisionBox;
 import com.almuradev.almura.content.type.block.component.aabb.WireFrame;
@@ -25,21 +24,21 @@ import java.util.OptionalInt;
 import javax.annotation.Nullable;
 
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
-final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuilder<BlockStateDefinitionBuilderImpl> {
+public abstract class AbstractBlockStateDefinitionBuilder<B extends AbstractBlockStateDefinitionBuilder<B>> implements BlockStateDefinitionBuilder<B> {
 
-    @Nullable private Material material;
-    @Nullable private MapColor mapColor;
-    @Nullable private String asset;
-    @Nullable private String id;
-    private CollisionBox collisionAABB = CollisionBox.VANILLA;
-    private WireFrame wireFrameAABB = WireFrame.VANILLA;
-    private OptionalDouble slipperiness = OptionalDouble.empty();
-    private OptionalDouble hardness = OptionalDouble.empty();
-    private OptionalDouble lightEmission = OptionalDouble.empty();
-    private OptionalInt lightOpacity = OptionalInt.empty();
-    private OptionalDouble resistance = OptionalDouble.empty();
-    private Optional<CatalogDelegate<BlockSoundGroup>> soundGroup = Optional.empty();
-    private List<BlockBreak> breaks = Collections.emptyList();
+    @Nullable protected Material material;
+    @Nullable protected MapColor mapColor;
+    @Nullable protected String asset;
+    @Nullable protected String id;
+    protected CollisionBox collisionAABB = CollisionBox.VANILLA;
+    protected WireFrame wireFrameAABB = WireFrame.VANILLA;
+    protected OptionalDouble slipperiness = OptionalDouble.empty();
+    protected OptionalDouble hardness = OptionalDouble.empty();
+    protected OptionalDouble lightEmission = OptionalDouble.empty();
+    protected OptionalInt lightOpacity = OptionalInt.empty();
+    protected OptionalDouble resistance = OptionalDouble.empty();
+    protected Optional<CatalogDelegate<BlockSoundGroup>> soundGroup = Optional.empty();
+    protected List<BlockBreak> breaks = Collections.emptyList();
 
     @Override
     public String asset() {
@@ -52,10 +51,10 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl id(final String asset, final String id) {
+    public B id(final String asset, final String id) {
         this.asset = asset;
         this.id = id;
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -64,9 +63,9 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl material(final Material material) {
+    public B material(final Material material) {
         this.material = material;
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -75,9 +74,9 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl mapColor(final MapColor color) {
+    public B mapColor(final MapColor color) {
         this.mapColor = color;
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -86,9 +85,9 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl collisionAABB(final CollisionBox bb) {
+    public B collisionAABB(final CollisionBox bb) {
         this.collisionAABB = bb;
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -97,9 +96,9 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl wireFrameAABB(final WireFrame bb) {
+    public B wireFrameAABB(final WireFrame bb) {
         this.wireFrameAABB = bb;
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -108,9 +107,9 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl slipperiness(final double slipperiness) {
+    public B slipperiness(final double slipperiness) {
         this.slipperiness = OptionalDouble.of(slipperiness);
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -119,9 +118,9 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl hardness(final float hardness) {
+    public B hardness(final float hardness) {
         this.hardness = OptionalDouble.of(hardness);
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -130,9 +129,9 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl lightEmission(final float emission) {
+    public B lightEmission(final float emission) {
         this.lightEmission = OptionalDouble.of(emission);
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -141,9 +140,9 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl lightOpacity(final int opacity) {
+    public B lightOpacity(final int opacity) {
         this.lightOpacity = OptionalInt.of(opacity);
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -152,9 +151,9 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl resistance(final float resistance) {
+    public B resistance(final float resistance) {
         this.resistance = OptionalDouble.of(resistance);
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -163,9 +162,9 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl soundGroup(final CatalogDelegate<BlockSoundGroup> group) {
+    public B soundGroup(final CatalogDelegate<BlockSoundGroup> group) {
         this.soundGroup = Optional.of(group);
-        return this;
+        return (B) this;
     }
 
     @Override
@@ -174,17 +173,17 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl breaks(final List<BlockBreak> breaks) {
+    public B breaks(final List<BlockBreak> breaks) {
         this.breaks = breaks;
-        return this;
+        return (B) this;
     }
 
     @Override
-    public BlockStateDefinitionBuilderImpl from(final BlockStateDefinitionBuilder<?> definition) {
-        return this.from((BlockStateDefinitionBuilderImpl) definition);
+    public B from(final BlockStateDefinitionBuilder<?> definition) {
+        return this.from((AbstractBlockStateDefinitionBuilder<B>) definition);
     }
 
-    private BlockStateDefinitionBuilderImpl from(final BlockStateDefinitionBuilderImpl definition) {
+    private B from(final AbstractBlockStateDefinitionBuilder<B> definition) {
         this.material = definition.material;
         this.mapColor = definition.mapColor;
         this.collisionAABB = definition.collisionAABB;
@@ -196,13 +195,7 @@ final class BlockStateDefinitionBuilderImpl implements BlockStateDefinitionBuild
         this.resistance = definition.resistance;
         this.soundGroup = definition.soundGroup;
         this.breaks = definition.breaks;
-        return this;
+        return (B) this;
     }
 
-    @Override
-    public BlockStateDefinition build() {
-        checkState(this.material != null, "material not set");
-        checkState(this.mapColor != null, "map color not set");
-        return new BlockStateDefinition(this);
-    }
 }
