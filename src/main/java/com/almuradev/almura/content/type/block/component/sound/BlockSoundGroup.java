@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.content.type.block.component.sound;
 
+import com.almuradev.shared.registry.AbstractBuilder;
 import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
@@ -18,7 +19,7 @@ public interface BlockSoundGroup extends org.spongepowered.api.block.BlockSoundG
         return Sponge.getRegistry().createBuilder(Builder.class);
     }
 
-    interface Builder extends BuildableCatalogType.Builder<BlockSoundGroup, Builder> {
+    interface Builder extends AbstractBuilder<BlockSoundGroup, Builder> {
 
         String id();
 
@@ -43,13 +44,6 @@ public interface BlockSoundGroup extends org.spongepowered.api.block.BlockSoundG
         Builder softFrom(final BlockSoundGroup group);
 
         BlockSoundGroup build();
-
-        /**
-         * @deprecated use {@link #build()}, these parameters are ignored
-         */
-        @Deprecated
-        @Override
-        BlockSoundGroup build(String id, String name);
 
         enum PopulationCheckType {
             VOLUME_PITCH,

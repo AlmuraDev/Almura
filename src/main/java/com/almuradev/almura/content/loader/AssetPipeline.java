@@ -6,6 +6,7 @@
 package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.content.Pack;
+import com.almuradev.shared.registry.AbstractBuilder;
 import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public final class AssetPipeline {
         this.logger = logger;
     }
 
-    public <C extends BuildableCatalogType, B extends BuildableCatalogType.Builder<C, B>, F extends AssetFactory<C, B>> AssetPipeline registerFactory(LoaderPhase phase, F factory, Iterable<Asset.Type> types) {
+    public <C extends BuildableCatalogType, B extends AbstractBuilder<C, B>, F extends AssetFactory<C, B>> AssetPipeline registerFactory(LoaderPhase phase, F factory, Iterable<Asset.Type> types) {
         Map<Asset.Type, List<AssetFactory>> factories = this.stagesByAssetTypeByPhase.computeIfAbsent(phase, k -> new HashMap<>());
         for (final Asset.Type type : types) {
             factories.computeIfAbsent(type, k -> new LinkedList<>()).add(factory);
@@ -60,7 +61,7 @@ public final class AssetPipeline {
                         final Pack pack = context.getPack();
                         final Asset asset = context.getAsset();
                         final ConfigurationNode config = asset.getConfigurationNode();
-                        final BuildableCatalogType.Builder builder = context.getBuilder();
+                        final AbstractBuilder builder = context.getBuilder();
 
                         for (final AssetFactory factory : factories) {
                             factory.configure(pack, asset, config, builder);

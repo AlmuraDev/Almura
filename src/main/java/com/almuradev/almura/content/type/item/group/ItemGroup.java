@@ -5,6 +5,7 @@
  */
 package com.almuradev.almura.content.type.item.group;
 
+import com.almuradev.shared.registry.AbstractBuilder;
 import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 import com.almuradev.shared.registry.catalog.CatalogDelegate;
 import org.spongepowered.api.Sponge;
@@ -23,10 +24,12 @@ public interface ItemGroup extends BuildableCatalogType {
 
     int getIndex();
 
-    interface Builder extends BuildableCatalogType.Builder<ItemGroup, Builder> {
+    interface Builder extends AbstractBuilder<ItemGroup, Builder> {
 
         Builder icon(CatalogDelegate<ItemType> item);
 
         Builder icon(ItemStack item);
+
+        ItemGroup build(String id, String name);
     }
 }

@@ -14,6 +14,7 @@ import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
 import com.almuradev.shared.client.model.ModelResourceLocations;
 import com.almuradev.shared.event.Witness;
+import com.almuradev.shared.registry.AbstractBuilder;
 import com.almuradev.shared.registry.Registries;
 import com.almuradev.shared.registry.catalog.BuildableCatalogType;
 import net.minecraft.block.Block;
@@ -110,7 +111,7 @@ public final class AssetLoader implements Witness {
         });
     }
 
-    private <C extends BuildableCatalogType, B extends BuildableCatalogType.Builder> void with(final Asset.Type type, final Enjoyer<C, B> enjoyer) {
+    private <C extends BuildableCatalogType, B extends AbstractBuilder> void with(final Asset.Type type, final Enjoyer<C, B> enjoyer) {
         for (final Map.Entry<Pack, List<AssetContext>> entry : this.registry.getPackAssetContextualsFor(type).entrySet()) {
             final Pack pack = entry.getKey();
             for (final AssetContext context : entry.getValue()) {
@@ -129,7 +130,7 @@ public final class AssetLoader implements Witness {
         }
     }
 
-    private interface Enjoyer<C extends BuildableCatalogType, B extends BuildableCatalogType.Builder> {
+    private interface Enjoyer<C extends BuildableCatalogType, B extends AbstractBuilder> {
 
         void accept(final Pack pack, final Asset asset, final B builder, final AssetContext<C, B> context);
     }

@@ -6,13 +6,12 @@
 package com.almuradev.almura.content.loader;
 
 import com.almuradev.almura.content.type.block.component.sound.BlockSoundGroup;
-import com.almuradev.almura.content.type.block.type.BuildableBlockType;
 import com.almuradev.almura.content.type.block.type.crop.CropBlockType;
 import com.almuradev.almura.content.type.block.type.horizontal.HorizontalBlockType;
 import com.almuradev.almura.content.type.block.type.normal.NormalBlockType;
 import com.almuradev.almura.content.type.item.group.ItemGroup;
 import com.almuradev.almura.content.type.item.type.BuildableItemType;
-import com.almuradev.shared.registry.catalog.BuildableCatalogType;
+import com.almuradev.shared.registry.AbstractBuilder;
 import ninja.leaping.configurate.ConfigurationNode;
 
 import java.nio.file.Path;
@@ -56,9 +55,9 @@ public final class Asset {
         ITEMGROUP("itemgroup", ItemGroup.Builder.class);
 
         private final String extension;
-        private final Class<? extends BuildableCatalogType.Builder> builderClass;
+        private final Class<? extends AbstractBuilder> builderClass;
 
-        Type(final String extension, final Class<? extends BuildableCatalogType.Builder> builderClass) {
+        Type(final String extension, final Class<? extends AbstractBuilder> builderClass) {
             this.extension = extension;
             this.builderClass = builderClass;
         }
@@ -67,7 +66,7 @@ public final class Asset {
             return this.extension;
         }
 
-        public Class<? extends BuildableCatalogType.Builder> getBuilderClass() {
+        public Class<? extends AbstractBuilder> getBuilderClass() {
             return this.builderClass;
         }
     }
