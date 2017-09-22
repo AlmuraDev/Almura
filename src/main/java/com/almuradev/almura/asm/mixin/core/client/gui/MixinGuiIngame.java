@@ -30,7 +30,6 @@ import javax.inject.Inject;
 public abstract class MixinGuiIngame extends Gui {
 
     @Inject private static ClientHeadUpDisplay hud;
-    @Shadow @Final protected Minecraft mc;
 
     /**
      * @author Steven Downer (Grinch)
@@ -38,11 +37,12 @@ public abstract class MixinGuiIngame extends Gui {
     @Overwrite
     protected void renderPotionEffects(ScaledResolution resolution)
     {
-        Collection<PotionEffect> collection = this.mc.player.getActivePotionEffects();
+        Minecraft mc = Minecraft.getMinecraft();
+        Collection<PotionEffect> collection = mc.player.getActivePotionEffects();
 
         if (!collection.isEmpty())
         {
-            this.mc.getTextureManager().bindTexture(GuiContainer.INVENTORY_BACKGROUND);
+            mc.getTextureManager().bindTexture(GuiContainer.INVENTORY_BACKGROUND);
             GlStateManager.enableBlend();
             int i = 0;
             int j = 0;
@@ -53,7 +53,7 @@ public abstract class MixinGuiIngame extends Gui {
 
                 if (!potion.shouldRenderHUD(potioneffect)) continue;
                 // Rebind in case previous renderHUDEffect changed texture
-                this.mc.getTextureManager().bindTexture(GuiContainer.INVENTORY_BACKGROUND);
+                mc.getTextureManager().bindTexture(GuiContainer.INVENTORY_BACKGROUND);
                 if (potioneffect.doesShowParticles())
                 {
                     int k = resolution.getScaledWidth();
@@ -61,7 +61,7 @@ public abstract class MixinGuiIngame extends Gui {
                     int l = hud.getHUD().map(AbstractHUD::getPotionOffsetY).orElse(1);
                     // Almura end
 
-                    if (this.mc.isDemo())
+                    if (mc.isDemo())
                     {
                         l += 15;
                     }
@@ -103,7 +103,7 @@ public abstract class MixinGuiIngame extends Gui {
                     // FORGE - Move status icon check down from above so renderHUDEffect will still be called without a status icon
                     if (potion.hasStatusIcon())
                     this.drawTexturedModalRect(k + 3, l + 3, i1 % 8 * 18, 198 + i1 / 8 * 18, 18, 18);
-                    potion.renderHUDEffect(k, l, potioneffect, this.mc, f);
+                    potion.renderHUDEffect(k, l, potioneffect, mc, f);
                 }
             }
         }
