@@ -9,7 +9,7 @@ import com.google.common.base.MoreObjects;
 import net.minecraft.block.BlockCrops;
 import org.spongepowered.api.CatalogType;
 
-public final class GenericCropBlock extends BlockCrops {
+public final class CropBlock extends BlockCrops {
 
     @Override
     public String toString() {
