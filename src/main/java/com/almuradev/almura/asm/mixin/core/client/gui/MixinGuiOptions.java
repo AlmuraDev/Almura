@@ -40,7 +40,8 @@ public abstract class MixinGuiOptions extends GuiScreen {
          */
         // Move every button that isn't any of the above listed up by 12
         this.buttonList.stream()
-                .filter(btn -> !(btn instanceof GuiOptionSlider) && btn.id != 200 && btn.id != 108 && btn.id != 109 && btn.id != GameSettings.Options.REALMS_NOTIFICATIONS.returnEnumOrdinal())
+                .filter(btn -> !(btn instanceof GuiOptionSlider) && btn.id != 200 && btn.id != 108 && btn.id != 109 && btn.id != GameSettings
+                        .Options.REALMS_NOTIFICATIONS.getOrdinal())
                 .forEach(btn -> btn.y = btn.y - 12);
     }
 
