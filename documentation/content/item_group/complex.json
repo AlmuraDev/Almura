@@ -1,0 +1,8 @@
+{
+    // see documentation/definition/item/complex.json
+    // see documentation/definition/item/simple.json
+    "icon": {
+        "item": "minecraft:diamond_sword",
+        "meta": 0
+    }
+}

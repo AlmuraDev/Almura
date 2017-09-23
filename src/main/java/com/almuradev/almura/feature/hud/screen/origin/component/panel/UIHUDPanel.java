@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
-import com.almuradev.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.GuiConfig;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.UIPanel;
 import net.malisis.core.renderer.icon.provider.GuiIconProvider;

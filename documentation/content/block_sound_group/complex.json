@@ -1,0 +1,12 @@
+// A full definition of a block sound group.
+{
+    "volume": 0.1,
+    "pitch": 0.1,
+    "sound": {
+        "break": "minecraft:block.gravel.break",
+        "step": "minecraft:block.ladder.step",
+        "place": "minecraft:block.cloth.place",
+        "hit": "minecraft:block.glass.hit",
+        "fall": "minecraft:block.anvil.fall"
+    }
+}

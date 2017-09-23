@@ -1,11 +1,17 @@
+/*
+ * This file is part of Almura.
+ *
+ * Copyright (c) AlmuraDev <https://github.com/AlmuraDev/>
+ *
+ * All Rights Reserved.
+ */
 package com.almuradev.almura.feature.menu.multiplayer;
 
-import com.almuradev.shared.client.GuiConfig;
-import com.almuradev.shared.client.ui.component.UIForm;
-import com.almuradev.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.shared.client.ui.screen.PanoramicScreen;
-import com.almuradev.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.shared.util.Query;
+import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.util.Query;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -28,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)

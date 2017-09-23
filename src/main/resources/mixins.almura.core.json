@@ -6,23 +6,11 @@
     "target": "@env(DEFAULT)",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
-        "block.MixinAlmuraBlock",
-        "block.MixinBlock",
-        "block.MixinBlockCrops",
         "block.MixinBlockFarmland",
-        "block.MixinBlockHorizontal",
         "block.MixinBlockVine",
-        "block.MixinSoundType",
-        "block.material.MixinMapColor",
-        "block.material.MixinMaterial",
-        "creativetab.MixinCreativeTabs",
-        "creativetab.MixinDelegateItemGroupAttributes",
         "entity.MixinEntityList",
-        "item.MixinAlmuraItem",
-        "item.MixinItem",
         "tileentity.MixinTileEntity",
-        "world.MixinBossBarColor",
-        "MixinSetCatalogTypeId"
+        "world.MixinBossBarColor"
     ],
     "client": [
         "client.gui.MixinGuiBossOverlay",

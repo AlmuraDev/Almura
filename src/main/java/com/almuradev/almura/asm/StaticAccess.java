@@ -7,10 +7,11 @@
  */
 package com.almuradev.almura.asm;
 
-import com.almuradev.almura.core.client.config.ClientConfiguration;
-import com.almuradev.shared.config.ConfigurationAdapter;
+import com.almuradev.almura.core.client.ClientConfiguration;
+import com.almuradev.toolbox.config.map.MappedConfiguration;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.slf4j.Logger;
 
 import javax.inject.Inject;
 
@@ -27,5 +28,6 @@ public final class StaticAccess {
      *
      * really, don't.
      */
-    @Inject public static ConfigurationAdapter<ClientConfiguration> config;
+    @Inject public static MappedConfiguration<ClientConfiguration> config;
+    @Inject public static Logger logger;
 }

@@ -9,7 +9,7 @@ package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinBossBarColor;
 import com.almuradev.almura.asm.mixin.interfaces.IMixinGuiBossOverlay;
-import com.almuradev.shared.util.MathUtil;
+import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.client.Minecraft;

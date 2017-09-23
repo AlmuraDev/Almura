@@ -7,10 +7,12 @@
  */
 package com.almuradev.almura.feature.hud;
 
+import com.almuradev.almura.core.server.ServerConfiguration;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
-import com.almuradev.shared.event.Witness;
-import com.almuradev.shared.network.NetworkConfig;
+import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.toolbox.config.map.MappedConfiguration;
 import net.kyori.membrane.facet.Activatable;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
@@ -33,11 +35,13 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
 
     private final Game game;
     private final ChannelBinding.IndexedMessageChannel network;
+    private final MappedConfiguration<ServerConfiguration> config;
 
     @Inject
-    private ServerHeadUpDisplay(final Game game, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
+    private ServerHeadUpDisplay(final Game game, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final MappedConfiguration<ServerConfiguration> config) {
         this.game = game;
         this.network = network;
+        this.config = config;
     }
 
     @Override
@@ -54,7 +58,7 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
     public void clientJoin(final ClientConnectionEvent.Join event) {
         final Player player = event.getTargetEntity();
 
-        this.network.sendTo(player, createWorldNamePacket(player.getTransform()));
+        this.network.sendTo(player, this.createWorldNamePacket(player.getTransform()));
 
         final ClientboundPlayerCountPacket packet = this.createPlayerCountPacket(false);
 
@@ -69,7 +73,7 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
     public void clientDisconnect(final ClientConnectionEvent.Disconnect event) {
         final Player player = event.getTargetEntity();
 
-        this.network.sendTo(player, createWorldNamePacket(player.getTransform()));
+        this.network.sendTo(player, this.createWorldNamePacket(player.getTransform()));
 
         final ClientboundPlayerCountPacket packet = this.createPlayerCountPacket(true);
         for (final Player viewer : this.game.getServer().getOnlinePlayers()) {
@@ -83,14 +87,14 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
     @Listener(order = Order.LAST)
     public void playerMove(final MoveEntityEvent.Teleport event, @Getter("getTargetEntity") final Player player) {
         if (differentExtent(event.getFromTransform(), event.getToTransform())) {
-            this.network.sendTo(player, createWorldNamePacket(event.getToTransform()));
+            this.network.sendTo(player, this.createWorldNamePacket(event.getToTransform()));
         }
     }
 
     @Listener(order = Order.LAST)
     public void respawnPlayer(final RespawnPlayerEvent event) {
         if (differentExtent(event.getFromTransform(), event.getToTransform())) {
-            this.network.sendTo(event.getTargetEntity(), createWorldNamePacket(event.getToTransform()));
+            this.network.sendTo(event.getTargetEntity(), this.createWorldNamePacket(event.getToTransform()));
         }
     }
 
@@ -103,19 +107,13 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
         return new ClientboundPlayerCountPacket(online, server.getMaxPlayers());
     }
 
-    private static ClientboundWorldNamePacket createWorldNamePacket(final Transform<World> transform) {
-        return new ClientboundWorldNamePacket(getWorldName(transform));
+    private ClientboundWorldNamePacket createWorldNamePacket(final Transform<World> transform) {
+        return new ClientboundWorldNamePacket(this.getWorldName(transform));
     }
 
-    private static String getWorldName(final Transform<World> transform) {
+    private String getWorldName(final Transform<World> transform) {
         final String name = transform.getExtent().getName();
-        switch (name) {
-            case "DIM-1":
-                return"The Nether";
-            case "DIM1":
-                return"The End";
-        }
-        return name;
+        return this.config.get().world.friendlyNames.getOrDefault(name, name);
     }
 
     private static boolean differentExtent(final Transform<World> from, final Transform<World> to) {

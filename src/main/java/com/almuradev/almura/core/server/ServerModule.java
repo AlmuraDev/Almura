@@ -18,5 +18,6 @@ public final class ServerModule extends AbstractModule {
     @Override
     protected void configure() {
         this.install(new CommonModule());
+        // ServerConfiguration is installed in CommonModule
     }
 }

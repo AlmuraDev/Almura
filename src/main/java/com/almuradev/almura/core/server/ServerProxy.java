@@ -11,7 +11,7 @@ import com.almuradev.almura.CommonProxy;
 import com.google.inject.Injector;
 
 /**
- * The dedicated server platform of Almura. All code meant to only run when this isn't on the client at all should go here.
+ * The server bootstrap.
  */
 public final class ServerProxy extends CommonProxy {
 

@@ -9,7 +9,7 @@ package com.almuradev.almura.feature.menu;
 
 import com.almuradev.almura.feature.menu.game.SimpleIngameMenu;
 import com.almuradev.almura.feature.menu.main.PanoramicMainMenu;
-import com.almuradev.shared.event.Witness;
+import com.almuradev.almura.shared.event.Witness;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;

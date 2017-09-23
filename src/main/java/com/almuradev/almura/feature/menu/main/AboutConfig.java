@@ -13,8 +13,11 @@ import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public interface AboutConfig {
 
@@ -52,86 +55,41 @@ public interface AboutConfig {
             " ");
     List<Entry> ENTRIES = ImmutableList.of(
             // NinjaZidane
-            new Entry(
-                    TextColors.BLUE,
-                    "almura.menu.about.zidane.name",
-                    "almura.menu.about.zidane.description",
-                    "85271de5-8380-4db5-9f05-ada3b4aa785c",
-                    "almura.menu.about.zidane.titles.1",
-                    "almura.menu.about.zidane.titles.2",
-                    "almura.menu.about.zidane.titles.3"
-            ),
+            new Entry("zidane", UUID.fromString("85271de5-8380-4db5-9f05-ada3b4aa785c"), TextColors.BLUE,3),
             // mcsnetworks
-            new Entry(
-                    TextColors.GOLD,
-                    "almura.menu.about.dockter.name",
-                    "almura.menu.about.dockter.description",
-                    "bcbce24c-20fc-4914-8f49-5aaed0cd3696",
-                    "almura.menu.about.dockter.titles.1",
-                    "almura.menu.about.dockter.titles.2",
-                    "almura.menu.about.dockter.titles.3"
-            ),
+            new Entry("dockter", UUID.fromString("bcbce24c-20fc-4914-8f49-5aaed0cd3696"), TextColors.GOLD, 3),
             // NinjaGrinch
-            new Entry(
-                    TextColors.DARK_GREEN,
-                    "almura.menu.about.grinch.name",
-                    "almura.menu.about.grinch.description",
-                    "7c104888-df99-4224-a8ba-2c4e15dbc777",
-                    "almura.menu.about.grinch.titles.1",
-                    "almura.menu.about.grinch.titles.2",
-                    "almura.menu.about.grinch.titles.3"
-            ),
+            new Entry("grinch", UUID.fromString("7c104888-df99-4224-a8ba-2c4e15dbc777"), TextColors.DARK_GREEN, 3),
             // Wifee
-            new Entry(
-                    TextColors.LIGHT_PURPLE,
-                    "almura.menu.about.wifee.name",
-                    "almura.menu.about.wifee.description",
-                    "5f757396-8bc7-4dff-8b1f-37fd454a86b7",
-                    "almura.menu.about.wifee.titles.1"
-            ),
+            new Entry("wifee", UUID.fromString("5f757396-8bc7-4dff-8b1f-37fd454a86b7"), TextColors.LIGHT_PURPLE, 1),
             // Wolfeyeamd0
-            new Entry(
-                    TextColors.RED,
-                    "almura.menu.about.wolfeye.name",
-                    "almura.menu.about.wolfeye.description",
-                    "33f9598e-9890-4f76-90ff-12cd73ca1e3c",
-                    "almura.menu.about.wolfeye.titles.1",
-                    "almura.menu.about.wolfeye.titles.2"
-            ),
+            new Entry("wolfeye", UUID.fromString("33f9598e-9890-4f76-90ff-12cd73ca1e3c"), TextColors.RED, 2),
             // Mumfrey
-            new Entry(
-                    TextColors.GRAY,
-                    "almura.menu.about.mumfrey.name",
-                    "almura.menu.about.mumfrey.description",
-                    "e8e0361e-9b3b-481a-b06a-5c314a6c1ef0",
-                    "almura.menu.about.mumfrey.titles.1",
-                    "almura.menu.about.mumfrey.titles.2"
-            ),
+            new Entry("mumfrey", UUID.fromString("e8e0361e-9b3b-481a-b06a-5c314a6c1ef0"), TextColors.GRAY, 2),
             // KratosKnox
-            new Entry(
-                    TextColors.DARK_RED,
-                    "almura.menu.about.blood.name",
-                    "almura.menu.about.blood.description",
-                    "87caf570-b1fc-4100-bd95-3e7f1fa2e153",
-                    "almura.menu.about.blood.titles.1",
-                    "almura.menu.about.blood.titles.2"
-            )
+            new Entry("blood", UUID.fromString("87caf570-b1fc-4100-bd95-3e7f1fa2e153"), TextColors.DARK_RED, 2)
     );
 
     class Entry {
 
-        public final TextColor color;
         public final String name;
+        final UUID uniqueId;
         public final String description;
-        final String uniqueId;
+        public final TextColor color;
         final List<String> titles;
 
-        Entry(TextColor color, String name, String description, String uniqueId, String... titles) {
-            this.name = name;
-            this.description = description;
+        Entry(final String id, final UUID uniqueId, final TextColor color, final int titles) {
+            this.name = String.format("almura.menu.about.person.%s.name", id);
             this.uniqueId = uniqueId;
-            this.titles = Arrays.asList(titles);
+            this.description = String.format("almura.menu.about.person.%s.description", id);
             this.color = color;
+            if (titles > 0) {
+                this.titles = IntStream.range(0, titles)
+                        .mapToObj(value -> String.format("almura.menu.about.person.%s.titles.%d", id, value))
+                        .collect(Collectors.toList());
+            } else {
+                this.titles = Collections.emptyList();
+            }
         }
     }
 }

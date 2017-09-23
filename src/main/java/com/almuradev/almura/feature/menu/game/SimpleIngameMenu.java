@@ -7,10 +7,10 @@
  */
 package com.almuradev.almura.feature.menu.game;
 
-import com.almuradev.shared.client.GuiConfig;
-import com.almuradev.shared.client.ui.FontColors;
-import com.almuradev.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -81,7 +81,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu.shop")))
+                .tooltip(Text.of(I18n.format("almura.menu_button.shop")))
                 .build("button.shop");
 
         final UIButton guideButton = new UIButtonBuilder(this)
@@ -91,7 +91,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(shopButton, PADDING), shopButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu.guide")))
+                .tooltip(Text.of(I18n.format("almura.menu_button.guide")))
                 .enabled(guideAvailable)
                 .build("button.guide");
 
@@ -132,7 +132,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(advancementsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu.forums")))
+                .tooltip(Text.of(I18n.format("almura.menu_button.forums")))
                 .build("button.forums");
 
         final UIButton lanButton = new UIButtonBuilder(this)
@@ -158,7 +158,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton quitButton = new UIButtonBuilder(this)
                 .container(contentContainer)
-                .text(Text.of(I18n.format("almura.menu.quit")))
+                .text(Text.of(I18n.format("almura.menu_button.quit")))
                 .fro(FontOptions.builder().from(FontColors.FRO_LIGHT_RED).shadow(true).build())
                 .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(GuiConfig.Button.WIDTH_SHORT, GuiConfig.Button.HEIGHT)

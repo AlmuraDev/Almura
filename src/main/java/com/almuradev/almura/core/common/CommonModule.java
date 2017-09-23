@@ -7,16 +7,19 @@
  */
 package com.almuradev.almura.core.common;
 
-import com.almuradev.almura.content.ContentModule;
-import com.almuradev.almura.content.loader.AssetLoader;
+import com.almuradev.almura.core.server.ServerConfiguration;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
 import com.almuradev.almura.registry.BossBarColorRegistryModule;
-import com.almuradev.shared.asset.AssetFactoryInstaller;
-import com.almuradev.shared.event.WitnessModule;
-import com.almuradev.shared.inject.CommonBinder;
-import com.almuradev.shared.network.NetworkModule;
-import com.almuradev.shared.registry.binder.RegistryInstaller;
+import com.almuradev.almura.shared.event.WitnessModule;
+import com.almuradev.almura.shared.inject.CommonBinder;
+import com.almuradev.almura.shared.network.NetworkModule;
+import com.almuradev.almura.shared.registry.binder.RegistryInstaller;
+import com.almuradev.content.ContentModule;
+import com.google.inject.name.Names;
 import net.kyori.violet.AbstractModule;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * A common module shared between the client and server.
@@ -25,14 +28,16 @@ public final class CommonModule extends AbstractModule implements CommonBinder {
 
     @Override
     protected void configure() {
+        this.bind(Path.class).annotatedWith(Names.named("assets")).toInstance(Paths.get("assets"));
         this.facet()
-                .add(RegistryInstaller.class)
-                .add(AssetFactoryInstaller.class)
-                .add(AssetLoader.class);
+                .add(RegistryInstaller.class);
         this.registry().module(BossBarColorRegistryModule.class);
         this.install(new NetworkModule());
         this.install(new WitnessModule());
         this.install(new HeadUpDisplayModule());
         this.install(new ContentModule());
+        this.facet()
+                .add(ContentLoader.class);
+        this.install(new ServerConfiguration.Module());
     }
 }

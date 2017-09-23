@@ -1,5 +1,0 @@
-// A definition which inherits everything except volume.
-{
-    "parent": "minecraft:wood",
-    "volume": 0.1
-}
