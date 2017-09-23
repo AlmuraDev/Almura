@@ -1,3 +1,5 @@
-This file is part of ${name}, All Rights Reserved.
+This file is part of ${name}.
 
 Copyright (c) ${organization} <${url}/>
+
+All Rights Reserved.

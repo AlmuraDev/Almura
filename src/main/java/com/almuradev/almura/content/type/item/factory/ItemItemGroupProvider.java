@@ -1,7 +1,9 @@
 /*
- * This file is part of Almura, All Rights Reserved.
+ * This file is part of Almura.
  *
- * Copyright (c) AlmuraDev <http://github.com/AlmuraDev/>
+ * Copyright (c) AlmuraDev <https://github.com/AlmuraDev/>
+ *
+ * All Rights Reserved.
  */
 package com.almuradev.almura.content.type.item.factory;
 
