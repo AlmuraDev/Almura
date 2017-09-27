@@ -48,8 +48,8 @@ public final class ConfigurationAdapter<T extends Configuration> {
         } catch (final ObjectMappingException e) {
             throw new RuntimeException("Failed to construct mapper for config class [" + type + "]!", e);
         }
-        this.init();
         this.root = SimpleCommentedConfigurationNode.root(options);
+        this.init();
     }
 
     private void init() {
