@@ -11,6 +11,7 @@ import com.almuradev.shared.client.GuiConfig;
 import com.almuradev.shared.client.ui.FontColors;
 import com.almuradev.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.shared.client.ui.screen.SimpleScreen;
+import com.google.common.base.MoreObjects;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
@@ -18,19 +19,15 @@ import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 @SideOnly(Side.CLIENT)
 public class UIDetailsPanel extends UIHUDPanel {
-
-    private static final NumberFormat NUMBER_FORMAT = NumberFormat.getNumberInstance(Locale.getDefault());
 
     private final UIImage clockImage, playerCountImage;
     private final UILabel coordsLabel, playerCountLabel;
@@ -69,14 +66,13 @@ public class UIDetailsPanel extends UIHUDPanel {
     }
 
     private void updateCoordinates() {
+        final Minecraft client = Minecraft.getMinecraft();
+        final Entity view = MoreObjects.firstNonNull(client.getRenderViewEntity(), client.player);
         this.coordsLabel.setText(
-                TextFormatting.GOLD + "X: " + TextFormatting.RESET + NUMBER_FORMAT.format(Minecraft.getMinecraft().player.getPosition().getX()) +
-                        "\n" +
-                        TextFormatting.GOLD + "Y: " + TextFormatting.RESET + NUMBER_FORMAT
-                        .format(Minecraft.getMinecraft().player.getPosition().getY()) +
-                        "\n" +
-                        TextFormatting.GOLD + "Z: " + TextFormatting.RESET + NUMBER_FORMAT
-                        .format(Minecraft.getMinecraft().player.getPosition().getZ()));
+                         TextFormatting.GOLD + "X: " + TextFormatting.RESET + String.format("%.3f", view.posX)
+                + "\n" + TextFormatting.GOLD + "Y: " + TextFormatting.RESET + String.format("%.3f", view.posY)
+                + "\n" + TextFormatting.GOLD + "Z: " + TextFormatting.RESET + String.format("%.3f", view.posZ)
+        );
     }
 
     private void updatePlayerCount() {
