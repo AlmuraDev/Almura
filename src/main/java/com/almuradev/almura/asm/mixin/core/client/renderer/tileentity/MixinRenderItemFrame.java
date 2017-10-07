@@ -41,7 +41,7 @@ public abstract class MixinRenderItemFrame extends Render {
             viewer = Minecraft.getMinecraft().player;
         }
 
-        if (viewer != null && entity.getDistanceToEntity(viewer) > config.client.itemFrameRenderDistance) {
+        if (viewer != null && entity.getDistance(viewer) > config.client.itemFrameRenderDistance) {
             ci.cancel();
         }
     }
