@@ -76,10 +76,10 @@ public interface GuiConfig {
     @SideOnly(Side.CLIENT)
     interface Url {
 
-        String FORUM = "http://www.almuramc.com";
+        String FORUM = "https://almura.enjin.com/forum";
         String ISSUES = "https://github.com/AlmuraDev/Almura/issues";
         String MAP = "http://srv1.almuramc.com:8123";
-        String SHOP = "http://www.almura.com"; // TODO: Proper URL
+        String SHOP = "http://almuramc.com"; // TODO: Proper URL
         String SKINS = "https://mc-heads.net/avatar/%s/%d.png";
         String STATISTICS = "http://srv1.almuramc.com:8080";
     }

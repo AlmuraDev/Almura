@@ -157,7 +157,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .position(SimpleScreen.getPaddedX(issuesButton, PADDING, Anchor.RIGHT), issuesButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu.about")))
+                .tooltip(Text.of(I18n.format("almura.menu.shop")))
                 .build("button.shop");
 
         final UILabel trademarkLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.trademark"));
