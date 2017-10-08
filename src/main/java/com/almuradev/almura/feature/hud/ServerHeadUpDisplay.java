@@ -56,7 +56,7 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
 
         this.network.sendTo(player, createWorldNamePacket(player.getTransform()));
 
-        final ClientboundPlayerCountPacket packet = this.createPlayerCountPacket();
+        final ClientboundPlayerCountPacket packet = this.createPlayerCountPacket(false);
 
         for (final Player viewer : this.game.getServer().getOnlinePlayers()) {
             this.network.sendTo(viewer, packet);
@@ -71,7 +71,7 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
 
         this.network.sendTo(player, createWorldNamePacket(player.getTransform()));
 
-        final ClientboundPlayerCountPacket packet = this.createPlayerCountPacket();
+        final ClientboundPlayerCountPacket packet = this.createPlayerCountPacket(true);
         for (final Player viewer : this.game.getServer().getOnlinePlayers()) {
             if (viewer == player) {
                 continue;
@@ -94,9 +94,13 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
         }
     }
 
-    private ClientboundPlayerCountPacket createPlayerCountPacket() {
+    private ClientboundPlayerCountPacket createPlayerCountPacket(final boolean disconnect) {
         final Server server = this.game.getServer();
-        return new ClientboundPlayerCountPacket(server.getOnlinePlayers().size(), server.getMaxPlayers());
+        // Subtract one from the online player count when a player is disconnecting
+        // due to the player not being removed from the online players list until
+        // after the disconnect event has been posted.
+        final int online = server.getOnlinePlayers().size() - (disconnect ? 1 : 0);
+        return new ClientboundPlayerCountPacket(online, server.getMaxPlayers());
     }
 
     private static ClientboundWorldNamePacket createWorldNamePacket(final Transform<World> transform) {
