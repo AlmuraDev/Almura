@@ -126,6 +126,8 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
                 return"Othala";
             case "keystone":
                 return"Keystone";
+            case "orilla":
+                return"Orilla";
         }
         return name;
     }
