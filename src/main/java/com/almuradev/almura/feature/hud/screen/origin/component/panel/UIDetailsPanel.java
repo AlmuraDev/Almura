@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
+import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.shared.client.GuiConfig;
 import com.almuradev.shared.client.ui.FontColors;
 import com.almuradev.shared.client.ui.component.UIExpandingLabel;
@@ -26,9 +27,13 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.inject.Inject;
+
 @SideOnly(Side.CLIENT)
 public class UIDetailsPanel extends UIHUDPanel {
 
+    @Inject private static HeadUpDisplay config;
+    private final Minecraft client = Minecraft.getMinecraft();
     private final UIImage clockImage, playerCountImage;
     private final UILabel coordsLabel, playerCountLabel;
 
@@ -66,8 +71,7 @@ public class UIDetailsPanel extends UIHUDPanel {
     }
 
     private void updateCoordinates() {
-        final Minecraft client = Minecraft.getMinecraft();
-        final Entity view = MoreObjects.firstNonNull(client.getRenderViewEntity(), client.player);
+        final Entity view = MoreObjects.firstNonNull(this.client.getRenderViewEntity(), this.client.player);
         this.coordsLabel.setText(
                          TextFormatting.GOLD + "X: " + TextFormatting.RESET + String.format("%.3f", view.posX)
                 + "\n" + TextFormatting.GOLD + "Y: " + TextFormatting.RESET + String.format("%.3f", view.posY)
@@ -76,10 +80,9 @@ public class UIDetailsPanel extends UIHUDPanel {
     }
 
     private void updatePlayerCount() {
-        final boolean isOnline = !Minecraft.getMinecraft().isSingleplayer() || (Minecraft.getMinecraft().isSingleplayer() && Minecraft.getMinecraft()
-                .getIntegratedServer().getPublic());
+        final boolean isOnline = !this.client.isSingleplayer() || (this.client.isSingleplayer() && this.client.getIntegratedServer().getPublic());
         if (isOnline) {
-            this.playerCountLabel.setText(TextFormatting.WHITE.toString() + 1 + "/" + 50);
+            this.playerCountLabel.setText(TextFormatting.WHITE.toString() + config.onlinePlayerCount + "/" + config.maxPlayerCount);
             this.playerCountLabel.setPosition(SimpleScreen.getPaddedX(this.playerCountImage, 2, Anchor.RIGHT), 3, Anchor.MIDDLE | Anchor.RIGHT);
         }
         this.playerCountImage.setVisible(isOnline);
