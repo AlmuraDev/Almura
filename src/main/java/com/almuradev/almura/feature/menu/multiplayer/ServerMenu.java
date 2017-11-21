@@ -1,24 +1,40 @@
 package com.almuradev.almura.feature.menu.multiplayer;
 
-import static com.almuradev.shared.client.ui.screen.SimpleScreen.getPaddedY;
-
+import com.almuradev.shared.client.GuiConfig;
 import com.almuradev.shared.client.ui.component.UIForm;
+import com.almuradev.shared.client.ui.screen.SimpleContainerScreen;
+import com.almuradev.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.shared.util.Query;
+import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.minecraft.client.gui.GuiMultiplayer;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.text.Text;
 
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GuiMultiplayer {
-    private static final ServerData DATA_LIVE_SERVER = new ServerData("Almura", "srv1.almuramc.com");
-    private static final ServerData DATA_DEV_SERVER = new ServerData("Almura (Dev)", "dev.almuramc.com");
-    private static final Query QUERY_LIVE_SERVER = new Query(DATA_LIVE_SERVER, 25565), QUERY_DEV_SERVER = new Query(DATA_DEV_SERVER, 25565);
+import javax.annotation.Nullable;
+
+@SideOnly(Side.CLIENT)
+public class ServerMenu extends SimpleContainerScreen {
+    private static final ServerData DATA_LIVE_SERVER = new ServerData("Almura", "srv1.almuramc.com", false);
+    private static final ServerData DATA_DEV_SERVER = new ServerData("Almura (Dev)", "dev.almuramc.com", false);
+    private static final Query QUERY_LIVE_SERVER = new Query(DATA_LIVE_SERVER, 25566), QUERY_DEV_SERVER = new Query(DATA_DEV_SERVER, 25566);
     private UIButton almuraLiveButton;
     private UIButton almuraDevButton;
     private UILabel liveServerOnline;
@@ -26,8 +42,12 @@ public class GuiMultiplayer {
     Timer timer = null;
     boolean isRunning = false;
 
-    public DynamicServerMenu(SimpleGui parent) {
-        super(parent);
+    private static final int padding = 4;
+
+    private UIBackgroundContainer buttonContainer;
+
+    public ServerMenu(@Nullable SimpleScreen parent) {
+        super(parent, Text.of(I18n.format("almura.menu.about")));
     }
 
     @Override
@@ -38,35 +58,33 @@ public class GuiMultiplayer {
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the logo
-        final UIImage logoImage = new UIImage(this, new GuiTexture(DynamicMainMenu.ALMURA_LOGO_LOCATION), null);
+        final UIImage logoImage = new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
         logoImage.setSize(55, 85);
 
-        final int padding = 4;
-
         // Create the live Almura button
         almuraLiveButton = new UIButton(this, "Join ");
-        almuraLiveButton.setPosition(-15, getPaddedY(logoImage, padding) + 3, Anchor.RIGHT | Anchor.TOP);
+        almuraLiveButton.setPosition(-5, getPaddedY(logoImage, padding) + 3, Anchor.RIGHT | Anchor.TOP);
         almuraLiveButton.setSize(40, 16);
         almuraLiveButton.setName("button.server.almura.live");
         almuraLiveButton.setDisabled(true);
         almuraLiveButton.register(this);
 
-        UILabel liveServerTitle = new UILabel(this, Colors.WHITE + "Public Server : ");
+        UILabel liveServerTitle = new UILabel(this, TextFormatting.WHITE + "Public Server : ");
         liveServerTitle.setPosition(20, getPaddedY(logoImage, padding) + 7, Anchor.LEFT | Anchor.TOP);
 
-        liveServerOnline = new UILabel(this, Colors.YELLOW + "Updating...");
+        liveServerOnline = new UILabel(this, TextFormatting.YELLOW + "Updating...");
         liveServerOnline.setPosition(85, liveServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
 
-        UILabel devServerTitle = new UILabel(this, Colors.WHITE + "Dev Server : ");
+        UILabel devServerTitle = new UILabel(this, TextFormatting.WHITE + "Dev Server : ");
         devServerTitle.setPosition(26, getPaddedY(almuraLiveButton, padding) + 4, Anchor.LEFT | Anchor.TOP);
 
-        devServerOnline = new UILabel(this, Colors.YELLOW + "Updating...");
+        devServerOnline = new UILabel(this, TextFormatting.YELLOW + "Updating...");
         devServerOnline.setPosition(85, devServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
 
         // Create the beta Almura button
         almuraDevButton = new UIButton(this, "Join ");
-        almuraDevButton.setPosition(-15, getPaddedY(almuraLiveButton, padding) + 2, Anchor.RIGHT | Anchor.TOP);
+        almuraDevButton.setPosition(-5, getPaddedY(almuraLiveButton, padding) + 2, Anchor.RIGHT | Anchor.TOP);
         almuraDevButton.setSize(40, 16);
         almuraDevButton.setName("button.server.almura.dev");
         almuraDevButton.setDisabled(true);
@@ -88,22 +106,21 @@ public class GuiMultiplayer {
 
         // Create the website button
         UIButton webButton = new UIButton(this, "Visit our Website for Updates");
-        webButton.setPosition(0, getPaddedY(anotherButton, padding) + 4, Anchor.CENTER | Anchor.TOP);
+        webButton.setPosition(0, getPaddedY(anotherButton, padding) + 0, Anchor.CENTER | Anchor.TOP);
         webButton.setSize(150, 16);
         webButton.setName("button.server.web");
         webButton.register(this);
 
         // Create the back button
         UIButton backButton = new UIButton(this, "Back");
-        backButton.setPosition(0, -10, Anchor.CENTER | Anchor.BOTTOM);
+        backButton.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
         backButton.setSize(50, 16);
         backButton.setName("button.back");
         backButton.register(this);
 
-        form.getContentContainer().add(logoImage, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle,
+        form.add(logoImage, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle,
                 devServerOnline, almuraDevButton, anotherButton, mapButton, webButton, backButton);
 
-        addToScreen(new UIAnimatedBackground(this));
         addToScreen(form);
     }
 
@@ -155,15 +172,15 @@ public class GuiMultiplayer {
             if (QUERY_LIVE_SERVER.pingServer()) {
                 QUERY_LIVE_SERVER.sendQuery();
                 if (QUERY_LIVE_SERVER.getPlayers() == null || QUERY_LIVE_SERVER.getMaxPlayers() == null) {
-                    liveServerOnline.setText(Colors.YELLOW + "Restarting...");
+                    liveServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
                 } else {
                     liveServerOnline
-                            .setText(Colors.GREEN + "Online " + Colors.BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER
+                            .setText(TextFormatting.GREEN + "Online " + TextFormatting.BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER
                                     .getMaxPlayers() + ")");
                 }
                 almuraLiveButton.setDisabled(false);
             } else {
-                liveServerOnline.setText(Colors.RED + "Offline");
+                liveServerOnline.setText(TextFormatting.RED + "Offline");
                 almuraLiveButton.setDisabled(true);
             }
 
@@ -171,15 +188,15 @@ public class GuiMultiplayer {
             if (QUERY_DEV_SERVER.pingServer()) {
                 QUERY_DEV_SERVER.sendQuery();
                 if (QUERY_DEV_SERVER.getPlayers() == null || QUERY_DEV_SERVER.getMaxPlayers() == null) {
-                    devServerOnline.setText(Colors.YELLOW + "Restarting...");
+                    devServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
                 } else {
                     devServerOnline
-                            .setText(Colors.GREEN + "Online " + Colors.BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER
+                            .setText(TextFormatting.GREEN + "Online " + TextFormatting.BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER
                                     .getMaxPlayers() + ")");
                 }
                 almuraDevButton.setDisabled(false);
             } else {
-                devServerOnline.setText(Colors.RED + "Offline");
+                devServerOnline.setText(TextFormatting.RED + "Offline");
                 almuraDevButton.setDisabled(true);
             }
 

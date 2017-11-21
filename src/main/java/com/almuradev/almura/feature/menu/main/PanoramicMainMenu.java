@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.main;
 
+import com.almuradev.almura.feature.menu.multiplayer.ServerMenu;
 import com.almuradev.shared.client.GuiConfig;
 import com.almuradev.shared.client.ui.FontColors;
 import com.almuradev.shared.client.ui.component.button.UIButtonBuilder;
@@ -207,7 +208,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 this.mc.displayGuiScreen(new GuiWorldSelection(this));
                 break;
             case "button.multiplayer":
-                this.mc.displayGuiScreen(new GuiMultiplayer(this));
+                new ServerMenu(this).display();
                 break;
             case "button.options":
                 this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
