@@ -3,7 +3,7 @@
         "modid": "almura",
         "name": "Almura",
         "description": "The official plugin of the Almura Client and Server.",
-        "version": "1.12.2-b4",
+        "version": "1.12.2-b6",
         "credits": "Copyright (C) AlmuraDev and contributors",
         "logoFile": "/assets/almura/textures/gui/almura_logo.png",
         "mcversion": "1.11",
