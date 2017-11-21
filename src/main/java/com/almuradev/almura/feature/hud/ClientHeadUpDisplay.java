@@ -16,6 +16,8 @@ import com.google.inject.Injector;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Optional;
 
@@ -24,6 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
+@SideOnly(Side.CLIENT)
 public class ClientHeadUpDisplay implements Witness {
 
     private final Injector injector;
