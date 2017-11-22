@@ -32,9 +32,11 @@ import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
 public class ServerMenu extends PanoramicScreen {
-    private static final ServerData DATA_LIVE_SERVER = new ServerData("Almura", "srv1.almuramc.com", false);
-    private static final ServerData DATA_DEV_SERVER = new ServerData("Almura (Dev)", "dev.almuramc.com", false);
-    private static final Query QUERY_LIVE_SERVER = new Query(DATA_LIVE_SERVER, 25566), QUERY_DEV_SERVER = new Query(DATA_DEV_SERVER, 25566);
+    private static final ServerData DATA_LIVE_SERVER_PING = new ServerData("Almura", "srv1.almuramc.com", false);
+    private static final ServerData DATA_DEV_SERVER_PING = new ServerData("Almura (Dev)", "dev.almuramc.com", false);
+    private static final ServerData DATA_LIVE_SERVER_CONNECT = new ServerData("Almura", "srv1.almuramc.com:25566", false);
+    private static final ServerData DATA_DEV_SERVER_CONNECT = new ServerData("Almura (Dev)", "dev.almuramc.com:25566", false);
+    private static final Query QUERY_LIVE_SERVER = new Query(DATA_LIVE_SERVER_PING, 25566), QUERY_DEV_SERVER = new Query(DATA_DEV_SERVER_PING, 25566);
     private UIButton almuraLiveButton;
     private UIButton almuraDevButton;
     private UILabel liveServerOnline;
@@ -55,7 +57,7 @@ public class ServerMenu extends PanoramicScreen {
     public void construct() {
 
         // Create the form
-        final UIBackgroundContainer form = new UIBackgroundContainer(this, "", 200, 225);
+        final UIBackgroundContainer form = new UIBackgroundContainer(this, "", 250, 225);
         //form.setTitle(TextFormatting.WHITE + "Multiplayer");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
@@ -65,7 +67,7 @@ public class ServerMenu extends PanoramicScreen {
         logoImage.setSize(55, 85);
 
         UILabel liveServerTitle = new UILabel(this, TextFormatting.WHITE + "Public Server : ");
-        liveServerTitle.setPosition(20, getPaddedY(logoImage, padding) + 7, Anchor.LEFT | Anchor.TOP);
+        liveServerTitle.setPosition(26, getPaddedY(logoImage, padding) + 7, Anchor.LEFT | Anchor.TOP);
 
         liveServerOnline = new UILabel(this, TextFormatting.YELLOW + "Updating...");
         liveServerOnline.setPosition(liveServerTitle.getX() + liveServerTitle.getWidth() + 5, liveServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
@@ -172,11 +174,11 @@ public class ServerMenu extends PanoramicScreen {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.server.almura.live":
                 FMLClientHandler.instance().setupServerList();
-                FMLClientHandler.instance().connectToServer(this, DATA_LIVE_SERVER);
+                FMLClientHandler.instance().connectToServer(this, DATA_LIVE_SERVER_CONNECT);
                 break;
             case "button.server.almura.dev":
                 FMLClientHandler.instance().setupServerList();
-                FMLClientHandler.instance().connectToServer(this, DATA_DEV_SERVER);
+                FMLClientHandler.instance().connectToServer(this, DATA_DEV_SERVER_CONNECT);
                 break;
             case "button.server.another":
                 mc.displayGuiScreen(new GuiMultiplayer(this));
