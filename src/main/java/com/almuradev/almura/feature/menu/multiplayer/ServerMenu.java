@@ -142,8 +142,7 @@ public class ServerMenu extends PanoramicScreen {
         trademarkLabel.setPosition(padding, -padding, Anchor.BOTTOM | Anchor.LEFT);
 
         final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.copyright"));
-        copyrightLabel
-                .setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, padding, Anchor.BOTTOM), trademarkLabel.getAnchor());
+        copyrightLabel.setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, padding, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
         form.add(logoImage, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle,
                 devServerOnline, almuraDevButton, anotherButton, backButton);
@@ -203,10 +202,10 @@ public class ServerMenu extends PanoramicScreen {
                 QUERY_LIVE_SERVER.sendQuery();
                 if (QUERY_LIVE_SERVER.getPlayers() == null || QUERY_LIVE_SERVER.getMaxPlayers() == null) {
                     liveServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
+                    almuraDevButton.setDisabled(true);
+                    almuraDevButton.setVisible(false);
                 } else {
-                    liveServerOnline
-                            .setText(TextFormatting.GREEN + "Online " + TextFormatting.DARK_BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER
-                                    .getMaxPlayers() + ")");
+                    liveServerOnline.setText(TextFormatting.GREEN + "Online " + TextFormatting.DARK_BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER.getMaxPlayers() + ")");
                 }
                 almuraLiveButton.setDisabled(false);
                 almuraLiveButton.setVisible(true);
@@ -221,13 +220,13 @@ public class ServerMenu extends PanoramicScreen {
                 QUERY_DEV_SERVER.sendQuery();
                 if (QUERY_DEV_SERVER.getPlayers() == null || QUERY_DEV_SERVER.getMaxPlayers() == null) {
                     devServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
+                    almuraDevButton.setDisabled(true);
+                    almuraDevButton.setVisible(false);
                 } else {
-                    devServerOnline
-                            .setText(TextFormatting.GREEN + "Online " + TextFormatting.DARK_BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER
-                                    .getMaxPlayers() + ")");
+                    devServerOnline.setText(TextFormatting.GREEN + "Online " + TextFormatting.DARK_BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER.getMaxPlayers() + ")");
+                    almuraDevButton.setDisabled(false);
+                    almuraDevButton.setVisible(true);
                 }
-                almuraDevButton.setDisabled(false);
-                almuraDevButton.setVisible(true);
             } else {
                 devServerOnline.setText(TextFormatting.RED + "Offline");
                 almuraDevButton.setDisabled(true);
