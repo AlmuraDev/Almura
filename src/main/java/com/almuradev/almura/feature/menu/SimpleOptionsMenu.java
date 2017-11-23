@@ -20,10 +20,12 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UISlider;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.Arrays;
 
@@ -35,6 +37,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
     private static final int CONTROL_PADDING = 5;
 
     private UIButton buttonHudType;
+    private UICheckBox checkboxWorldCompassWidget, checkboxLocationWidget;
     private UISlider<Integer> sliderOriginHudOpacity;
 
     public SimpleOptionsMenu(GuiOptions parentOptions) {
@@ -116,8 +119,30 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
                 .listener(this)
                 .build("button.done");
+        /**
+         * TODO:
+         * These need a builder
+         */
 
-        addToScreen(this.buttonHudType, this.sliderOriginHudOpacity, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, buttonDone);
+        final boolean displayWorldCompassWidget = config.displayWorldCompassWidget;
+        final UICheckBox checkboxWorldCompassWidget = new UICheckBox(this);
+        checkboxWorldCompassWidget.setText(TextFormatting.WHITE + "Display World Compass Widget");
+        checkboxWorldCompassWidget.setAnchor(Anchor.TOP | Anchor.CENTER);
+        checkboxWorldCompassWidget.setPosition(this.buttonHudType.getX(),  getPaddedY(sliderItemFrameDistance, 10));
+        checkboxWorldCompassWidget.setChecked(displayWorldCompassWidget);
+        checkboxWorldCompassWidget.setName("checkbox.world_compass_widget");
+        checkboxWorldCompassWidget.register(this);
+
+        final boolean displayLocationWidget = config.displayLocationWidget;
+        final UICheckBox checkboxLocationWidget = new UICheckBox(this);
+        checkboxLocationWidget.setText(TextFormatting.WHITE + "Display Location Widget");
+        checkboxLocationWidget.setAnchor(Anchor.TOP | Anchor.CENTER);
+        checkboxLocationWidget.setPosition(this.buttonHudType.getX(),  getPaddedY(checkboxWorldCompassWidget, CONTROL_PADDING));
+        checkboxLocationWidget.setChecked(displayLocationWidget);
+        checkboxLocationWidget.setName("checkbox.location_widget");
+        checkboxLocationWidget.register(this);
+
+        addToScreen(this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, buttonDone);
     }
 
     @Override
@@ -173,6 +198,12 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 break;
             case "slider.itemFrameRenderDistance" :
                 StaticAccess.config.getConfig().client.itemFrameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                break;
+            case "checkbox.world_compass_widget" :
+                StaticAccess.config.getConfig().client.displayWorldCompassWidget = (boolean) event.getNewValue();
+                break;
+            case "checkbox.location_widget" :
+                StaticAccess.config.getConfig().client.displayLocationWidget = (boolean) event.getNewValue();
                 break;
         }
 

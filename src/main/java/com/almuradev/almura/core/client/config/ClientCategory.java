@@ -40,4 +40,10 @@ public final class ClientCategory {
 
     @Setting(value = "origin-hud-opacity", comment = "Determines the opacity used for the Origin HUD. Default: 255; Range: 0-255")
     public int originHudOpacity = 255;
+
+    @Setting(value = "display-world-compass-widget", comment = "Toggles the center world / compass widget of the Origin HUD")
+    public boolean displayWorldCompassWidget = true;
+
+    @Setting(value = "display-location-widget", comment = "Toggles the right-side location widget of the Origin HUD")
+    public boolean displayLocationWidget = true;
 }

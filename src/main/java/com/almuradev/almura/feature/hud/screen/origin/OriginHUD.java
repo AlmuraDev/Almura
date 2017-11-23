@@ -102,7 +102,11 @@ public class OriginHUD extends AbstractHUD {
         final ClientCategory category = this.config.getConfig().client;
         // Set current alpha value
         this.userPanel.setAlpha(category.originHudOpacity);
+
+        this.worldPanel.setVisible(config.getConfig().client.displayWorldCompassWidget);
         this.worldPanel.setAlpha(category.originHudOpacity);
+
+        this.detailsPanel.setVisible(config.getConfig().client.displayLocationWidget);
         this.detailsPanel.setAlpha(category.originHudOpacity);
 
         // Show debug panels if necessary
