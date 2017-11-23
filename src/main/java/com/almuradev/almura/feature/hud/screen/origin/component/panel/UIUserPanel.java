@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
+import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.feature.hud.HUDData;
 import com.almuradev.almura.feature.hud.screen.origin.UIAvatarImage;
 import com.almuradev.almura.feature.hud.screen.origin.component.UIXPOrbImage;
@@ -164,7 +165,11 @@ public class UIUserPanel extends UIHUDPanel {
         final int experienceCap = this.client.player.xpBarCap();
         final int experience = (int) (this.client.player.experience * experienceCap);
 
-        //this.experienceBar.setText(Text.of(experience + "/" + experienceCap));
+        if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
+            this.experienceBar.setText(Text.of(experience + "/" + experienceCap));
+        } else {
+            this.experienceBar.setText(Text.of(""));
+        }
         this.experienceBar.setAmount(MathUtil.convertToRange(experience, 0, experienceCap, 0f, 1f));
     }
 
@@ -172,7 +177,11 @@ public class UIUserPanel extends UIHUDPanel {
         final float health = Minecraft.getMinecraft().player.getHealth();
         final float maxHealth = Minecraft.getMinecraft().player.getMaxHealth();
         this.healthBar.setAmount(MathUtil.convertToRange(health,0f, maxHealth, 0f, 1f));
-        //this.healthBar.setText(Text.of(String.format("%.2f/%.2f", health, maxHealth)));
+        if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
+            this.healthBar.setText(Text.of(String.format("%.2f/%.2f", health, maxHealth)));
+        } else {
+            this.healthBar.setText(Text.of(""));
+        }
         this.height += 10;
     }
 
@@ -190,14 +199,22 @@ public class UIUserPanel extends UIHUDPanel {
             }
         }
         final int currentArmor = maxArmor - currentDamage;
-        //this.armorBar.setText(Text.of(String.format("%.2f/%.2f", (float) currentArmor, (float) maxArmor)));
+        if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
+            this.armorBar.setText(Text.of(String.format("%.2f/%.2f", (float) currentArmor, (float) maxArmor)));
+        } else {
+            this.armorBar.setText(Text.of(""));
+        }
         this.armorBar.setAmount(MathUtil.convertToRange(currentArmor, 0, maxArmor, 0f, 1f));
         this.height += 10;
     }
 
     private void updateHunger() {
         final float foodLevel = Minecraft.getMinecraft().player.getFoodStats().getFoodLevel();
-        //this.hungerBar.setText(Text.of(String.format("%.2f/%.2f", foodLevel, 20f)));
+        if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
+            this.hungerBar.setText(Text.of(String.format("%.2f/%.2f", foodLevel, 20f)));
+        } else {
+            this.hungerBar.setText(Text.of(""));
+        }
         this.hungerBar.setAmount(MathUtil.convertToRange(foodLevel, 0, 20, 0f, 1f));
         this.height += 10;
     }
@@ -208,7 +225,11 @@ public class UIUserPanel extends UIHUDPanel {
         // TODO Hardcoded to not care above 300, if we can do this better in the future then we should do so
         if (this.airBar.isVisible()) {
             final int air = Math.max(Minecraft.getMinecraft().player.getAir(), 0);
-            this.airBar.setText(Text.of(String.format("%.2f/%.2f", (float) air, (float) 300)));
+            if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
+                this.airBar.setText(Text.of(String.format("%.2f/%.2f", (float) air, (float) 300)));
+            } else {
+                this.airBar.setText(Text.of(""));
+            }
             this.airBar.setAmount(MathUtil.convertToRange(air, 0, 300, 0f, 1f));
             this.height += 10;
         }
@@ -222,7 +243,11 @@ public class UIUserPanel extends UIHUDPanel {
             final EntityLivingBase ridingEntityLivingBase = (EntityLivingBase) entity;
             final float health = ridingEntityLivingBase.getHealth();
             final float maxHealth = ridingEntityLivingBase.getMaxHealth();
-            this.mountHealthBar.setText(Text.of(String.format("%.0f/%.0f", health, maxHealth)));
+            if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
+                this.mountHealthBar.setText(Text.of(String.format("%.0f/%.0f", health, maxHealth)));
+            } else {
+                this.mountHealthBar.setText(Text.of(""));
+            }
             this.mountHealthBar.setAmount(MathUtil.convertToRange(health, 0, maxHealth, 0f, 1f));
             this.mountHealthBar.setPosition(0, SimpleScreen.getPaddedY(this.airBar.isVisible() ? this.airBar : this.hungerBar, 1));
             this.height += 10;

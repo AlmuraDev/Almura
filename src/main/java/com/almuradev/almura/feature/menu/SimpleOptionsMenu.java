@@ -142,7 +142,16 @@ public class SimpleOptionsMenu extends SimpleScreen {
         checkboxLocationWidget.setName("checkbox.location_widget");
         checkboxLocationWidget.register(this);
 
-        addToScreen(this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, buttonDone);
+        final boolean displayNumericHUDValues = config.displayNumericHUDValues;
+        final UICheckBox checkboxNumericHUDValues = new UICheckBox(this);
+        checkboxNumericHUDValues.setText(TextFormatting.WHITE + "Display Numeric HUD Values");
+        checkboxNumericHUDValues.setAnchor(Anchor.TOP | Anchor.CENTER);
+        checkboxNumericHUDValues.setPosition(this.buttonHudType.getX(),  getPaddedY(checkboxLocationWidget, CONTROL_PADDING));
+        checkboxNumericHUDValues.setChecked(displayNumericHUDValues);
+        checkboxNumericHUDValues.setName("checkbox.numeric_hud_values");
+        checkboxNumericHUDValues.register(this);
+
+        addToScreen(this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget, checkboxNumericHUDValues, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, buttonDone);
     }
 
     @Override
@@ -204,6 +213,9 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 break;
             case "checkbox.location_widget" :
                 StaticAccess.config.getConfig().client.displayLocationWidget = (boolean) event.getNewValue();
+                break;
+            case "checkbox.numeric_hud_values" :
+                StaticAccess.config.getConfig().client.displayNumericHUDValues = (boolean) event.getNewValue();
                 break;
         }
 

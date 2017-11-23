@@ -46,4 +46,7 @@ public final class ClientCategory {
 
     @Setting(value = "display-location-widget", comment = "Toggles the right-side location widget of the Origin HUD")
     public boolean displayLocationWidget = true;
+
+    @Setting(value = "display-numeric-hud-values", comment = "Toggles the display of numeric values in the Origin HUD")
+    public boolean displayNumericHUDValues = true;
 }
