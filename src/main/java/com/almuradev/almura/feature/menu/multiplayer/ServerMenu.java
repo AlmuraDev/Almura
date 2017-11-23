@@ -37,11 +37,10 @@ public class ServerMenu extends PanoramicScreen {
     private static final ServerData DATA_LIVE_SERVER_CONNECT = new ServerData("Almura", "srv1.almuramc.com:25566", false);
     private static final ServerData DATA_DEV_SERVER_CONNECT = new ServerData("Almura (Dev)", "dev.almuramc.com:25566", false);
     private static final Query QUERY_LIVE_SERVER = new Query(DATA_LIVE_SERVER_PING, 25566), QUERY_DEV_SERVER = new Query(DATA_DEV_SERVER_PING, 25566);
-    private UIButton almuraLiveButton;
-    private UIButton almuraDevButton;
-    private UILabel liveServerOnline;
-    private UILabel devServerOnline;
+    private UIButton almuraLiveButton, almuraDevButton;
+    private UILabel devServerOnline, devPlayersOnline, liveServerOnline, livePlayersOnline, devServerTitle, liveServerTitle;
     private UIImage logoImage;
+
     Timer timer = null;
     boolean isRunning = false;
 
@@ -57,7 +56,7 @@ public class ServerMenu extends PanoramicScreen {
     public void construct() {
 
         // Create the form
-        final UIBackgroundContainer form = new UIBackgroundContainer(this, "", 250, 225);
+        final UIBackgroundContainer form = new UIBackgroundContainer(this, "", 225, 225);
         //form.setTitle(TextFormatting.WHITE + "Multiplayer");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
@@ -66,35 +65,43 @@ public class ServerMenu extends PanoramicScreen {
         logoImage.setAnchor(Anchor.CENTER | Anchor.TOP);
         logoImage.setSize(55, 85);
 
-        UILabel liveServerTitle = new UILabel(this, TextFormatting.WHITE + "Public Server : ");
-        liveServerTitle.setPosition(26, getPaddedY(logoImage, padding) + 7, Anchor.LEFT | Anchor.TOP);
-
         liveServerOnline = new UILabel(this, TextFormatting.YELLOW + "Updating...");
-        liveServerOnline.setPosition(liveServerTitle.getX() + liveServerTitle.getWidth() + 5, liveServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
+        liveServerOnline.setPosition(0, getPaddedY(logoImage, padding) + 7, Anchor.CENTER | Anchor.TOP);
+
+        liveServerTitle = new UILabel(this, TextFormatting.WHITE + "Public Server : ");
+        liveServerTitle.setPosition(-liveServerTitle.getWidth()/2 + padding, liveServerOnline.getY(), Anchor.CENTER | Anchor.TOP);
 
         // Create the live Almura button
         almuraLiveButton = new UIButton(this, "Join ");
-        almuraLiveButton.setPosition(liveServerOnline.getX() + liveServerOnline.getWidth() + 5, getPaddedY(logoImage, padding) + 3, Anchor.LEFT | Anchor.TOP);
         almuraLiveButton.setSize(40, 16);
         almuraLiveButton.setName("button.server.almura.live");
-        almuraLiveButton.setDisabled(true);
+        almuraLiveButton.setPosition(liveServerTitle.getWidth()/2 + padding, getPaddedY(logoImage, padding) + 3, Anchor.CENTER | Anchor.TOP);
         almuraLiveButton.setVisible(false);
         almuraLiveButton.register(this);
 
-        UILabel devServerTitle = new UILabel(this, TextFormatting.WHITE + "Dev Server : ");
-        devServerTitle.setPosition(26, getPaddedY(almuraLiveButton, padding) + 8, Anchor.LEFT | Anchor.TOP);
+        livePlayersOnline = new UILabel(this, TextFormatting.DARK_BLUE + "(0/50)");
+        livePlayersOnline.setPosition(0, liveServerOnline.getY(), Anchor.CENTER | Anchor.TOP);
+        livePlayersOnline.setVisible(false);
 
         devServerOnline = new UILabel(this, TextFormatting.YELLOW + "Updating...");
-        devServerOnline.setPosition(devServerTitle.getX() + devServerTitle.getWidth() + 5, devServerTitle.getY(), Anchor.LEFT | Anchor.TOP);
+        devServerOnline.setPosition(0, getPaddedY(almuraLiveButton, padding) + 8, Anchor.CENTER | Anchor.TOP);
+
+        devServerTitle = new UILabel(this, TextFormatting.WHITE + "Dev Server : ");
+        devServerTitle.setPosition(26, devServerTitle.getY(), Anchor.CENTER| Anchor.TOP);
 
         // Create the beta Almura button
         almuraDevButton = new UIButton(this, "Join ");
-        almuraDevButton.setPosition(devServerOnline.getX() + devServerOnline.getWidth() + 5, getPaddedY(almuraLiveButton, padding) + 3, Anchor.LEFT | Anchor.TOP);
         almuraDevButton.setSize(40, 16);
         almuraDevButton.setName("button.server.almura.dev");
-        almuraDevButton.setDisabled(true);
+        almuraDevButton.setPosition(devServerOnline.getX() + devServerOnline.getWidth() + 5, getPaddedY(almuraLiveButton, padding) + 3, Anchor.LEFT | Anchor.TOP);
         almuraDevButton.setVisible(false);
         almuraDevButton.register(this);
+
+        devPlayersOnline = new UILabel(this, TextFormatting.DARK_BLUE + "(0/50)");
+        devPlayersOnline.setPosition(0, getPaddedY(almuraLiveButton, padding) + 8, Anchor.CENTER | Anchor.TOP);
+        devPlayersOnline.setVisible(false);
+
+        centerAlign();
 
         // Create the join another server button
         UIButton anotherButton = new UIButton(this, "Other Multiplayer");
@@ -147,12 +154,24 @@ public class ServerMenu extends PanoramicScreen {
         copyrightLabel.setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, padding, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
         form.add(logoImage, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle,
-                devServerOnline, almuraDevButton, anotherButton, backButton);
+                devServerOnline, almuraDevButton, devPlayersOnline, livePlayersOnline, anotherButton, backButton);
 
         form.setColor(Integer.MIN_VALUE);
         form.setBackgroundAlpha(0);
 
         addToScreen(form, forumsButton, issuesButton, shopButton, trademarkLabel, copyrightLabel);
+    }
+
+    private void centerAlign() {
+        liveServerOnline.setPosition(0, getPaddedY(logoImage, padding) + 7, Anchor.CENTER | Anchor.TOP);
+        liveServerTitle.setPosition(-((liveServerTitle.getWidth()/2) + (liveServerOnline.getWidth()/2) + padding), liveServerOnline.getY(), Anchor.CENTER | Anchor.TOP);
+        almuraLiveButton.setPosition((liveServerOnline.getWidth()/2) + (almuraLiveButton.getWidth()/2) + padding * 2, getPaddedY(logoImage, padding) + 3, Anchor.CENTER | Anchor.TOP);
+        livePlayersOnline.setPosition((liveServerOnline.getWidth()/2) + (almuraLiveButton.getWidth()) + (livePlayersOnline.getWidth()-4), liveServerOnline.getY(), Anchor.CENTER | Anchor.TOP);
+
+        devServerOnline.setPosition(0, getPaddedY(almuraLiveButton, padding) + 8, Anchor.CENTER | Anchor.TOP);
+        devServerTitle.setPosition(-((devServerTitle.getWidth()/2) + (devServerOnline.getWidth()/2) + padding), devServerOnline.getY(), Anchor.CENTER| Anchor.TOP);
+        almuraDevButton.setPosition((devServerOnline.getWidth()/2) + (almuraDevButton.getWidth()/2) + padding * 2, getPaddedY(almuraLiveButton, padding) + 3, Anchor.CENTER | Anchor.TOP);
+        devPlayersOnline.setPosition((devServerOnline.getWidth()/2) + (almuraDevButton.getWidth()) + (devPlayersOnline.getWidth()-4), devServerOnline.getY(), Anchor.CENTER | Anchor.TOP);
     }
 
     @Override
@@ -197,6 +216,12 @@ public class ServerMenu extends PanoramicScreen {
         startTimer();
     }
 
+    /**
+     * You must enable query ability within server.properties in order for this method to function.
+     * query.port=25566
+     * enable-query=true
+     */
+
     public void queryServers() {
         try {
             // Live Server
@@ -204,17 +229,18 @@ public class ServerMenu extends PanoramicScreen {
                 QUERY_LIVE_SERVER.sendQuery();
                 if (QUERY_LIVE_SERVER.getPlayers() == null || QUERY_LIVE_SERVER.getMaxPlayers() == null) {
                     liveServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
-                    almuraDevButton.setDisabled(true);
                     almuraDevButton.setVisible(false);
+                    livePlayersOnline.setVisible(false);
                 } else {
-                    liveServerOnline.setText(TextFormatting.GREEN + "Online " + TextFormatting.DARK_BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER.getMaxPlayers() + ")");
+                    liveServerOnline.setText(TextFormatting.GREEN + "Online");
+                    livePlayersOnline.setText(TextFormatting.DARK_BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER.getMaxPlayers() + ")");
                 }
-                almuraLiveButton.setDisabled(false);
                 almuraLiveButton.setVisible(true);
+                livePlayersOnline.setVisible(true);
             } else {
                 liveServerOnline.setText(TextFormatting.RED + "Offline");
-                almuraLiveButton.setDisabled(true);
                 almuraLiveButton.setVisible(false);
+                livePlayersOnline.setVisible(false);
             }
 
             // Dev Server
@@ -222,21 +248,21 @@ public class ServerMenu extends PanoramicScreen {
                 QUERY_DEV_SERVER.sendQuery();
                 if (QUERY_DEV_SERVER.getPlayers() == null || QUERY_DEV_SERVER.getMaxPlayers() == null) {
                     devServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
-                    almuraDevButton.setDisabled(true);
                     almuraDevButton.setVisible(false);
+                    devPlayersOnline.setVisible(false);
                 } else {
-                    devServerOnline.setText(TextFormatting.GREEN + "Online " + TextFormatting.DARK_BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER.getMaxPlayers() + ")");
-                    almuraDevButton.setDisabled(false);
+                    devServerOnline.setText(TextFormatting.GREEN + "Online");
+                    devPlayersOnline.setText(TextFormatting.DARK_BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER.getMaxPlayers() + ")");
                     almuraDevButton.setVisible(true);
+                    devPlayersOnline.setVisible(true);
                 }
             } else {
                 devServerOnline.setText(TextFormatting.RED + "Offline");
-                almuraDevButton.setDisabled(true);
                 almuraDevButton.setVisible(false);
+                devPlayersOnline.setVisible(false);
             }
 
-            almuraLiveButton.setPosition(liveServerOnline.getX() + liveServerOnline.getWidth() + 5, getPaddedY(logoImage, padding) + 3, Anchor.LEFT | Anchor.TOP);
-            almuraDevButton.setPosition(devServerOnline.getX() + devServerOnline.getWidth() + 5, getPaddedY(almuraLiveButton, padding) + 2, Anchor.LEFT | Anchor.TOP);
+            centerAlign();
 
         } catch (Exception ignored) {
         }
