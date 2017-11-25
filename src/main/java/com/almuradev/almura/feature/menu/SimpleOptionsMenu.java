@@ -176,7 +176,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
 
                 this.buttonHudType.setText("HUD: " + (isOrigin ? "Origin" : "Vanilla"));
                 this.sliderOriginHudOpacity.setAlpha(isOrigin ? 255 : 128);
-                this.sliderOriginHudOpacity.setDisabled(!isOrigin);
+                this.sliderOriginHudOpacity.setEnabled(isOrigin);
 
                 if (isOrigin) {
                     this.sliderOriginHudOpacity.setTooltip((UITooltip) null);

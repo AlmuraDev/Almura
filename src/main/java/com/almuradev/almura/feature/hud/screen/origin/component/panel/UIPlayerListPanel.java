@@ -179,14 +179,14 @@ public class UIPlayerListPanel extends UIHUDPanel {
             final UISimpleList parent = (UISimpleList) this.parent;
 
             // Adjust width for scrollbar
-            final int width = parent.getContentWidth() - (parent.getScrollBar().isDisabled() ? 0 : parent.getScrollBar().getRawWidth() + 1);
+            final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
             this.setSize(width, this.getHeight());
 
             // Call to the super and draw
             super.drawBackground(renderer, mouseX, mouseY, partialTick);
 
-            int x = this.horizontalPadding + 2;
-            final int y = this.verticalPadding + 2;
+            int x = this.getLeftPadding() + 2;
+            final int y = this.getTopPadding() + 2;
 
             // Text
             renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player1), x + ICON_SIZE, y, this.zIndex);
@@ -199,7 +199,7 @@ public class UIPlayerListPanel extends UIHUDPanel {
                 renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player2), x + ICON_SIZE + 2, y, this.zIndex);
 
                 // Separator
-                renderer.drawRectangle(this.maxColumnWidth + 5 + this.horizontalPadding, 1, this.zIndex, 1,
+                renderer.drawRectangle(this.maxColumnWidth + 5 + this.getLeftPadding(), 1, this.zIndex, 1,
                         this.height - 2, BORDER_COLOR, 75);
             }
         }

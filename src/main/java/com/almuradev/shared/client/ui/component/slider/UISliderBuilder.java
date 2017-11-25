@@ -182,7 +182,7 @@ public class UISliderBuilder {
         if (this.scrollStep != 0) {
             slider.setScrollStep(this.scrollStep);
         }
-        slider.setDisabled(!this.enabled);
+        slider.setEnabled(this.enabled);
         slider.setZIndex(this.z);
 
         return slider;

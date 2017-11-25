@@ -191,7 +191,7 @@ public final class UIButtonBuilder {
         if (this.container != null) {
             this.container.add(button);
         }
-        button.setDisabled(!this.enabled);
+        button.setEnabled(this.enabled);
         button.setZIndex(this.z);
 
         return button;

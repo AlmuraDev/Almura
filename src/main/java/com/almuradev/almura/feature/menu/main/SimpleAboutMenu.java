@@ -215,7 +215,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
             if (this.parent instanceof UISimpleList) {
                 final UISimpleList parent = (UISimpleList) this.parent;
 
-                final int width = parent.getContentWidth() - (parent.getScrollBar().isDisabled() ? 0 : parent.getScrollBar().getRawWidth() + 1);
+                final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
 
                 setSize(width, getHeight());
 
