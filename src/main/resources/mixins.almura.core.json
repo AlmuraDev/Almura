@@ -11,6 +11,7 @@
         "block.MixinBlockCrops",
         "block.MixinBlockFarmland",
         "block.MixinBlockHorizontal",
+        "block.MixinBlockVine",
         "block.MixinSoundType",
         "block.material.MixinMapColor",
         "block.material.MixinMaterial",
