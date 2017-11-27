@@ -231,16 +231,20 @@ public class ServerMenu extends PanoramicScreen {
                     liveServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
                     almuraDevButton.setVisible(false);
                     livePlayersOnline.setVisible(false);
+                    centerAlign();
                 } else {
                     liveServerOnline.setText(TextFormatting.GREEN + "Online");
                     livePlayersOnline.setText(TextFormatting.DARK_BLUE + "(" + QUERY_LIVE_SERVER.getPlayers() + "/" + QUERY_LIVE_SERVER.getMaxPlayers() + ")");
+                    centerAlign();
                 }
                 almuraLiveButton.setVisible(true);
                 livePlayersOnline.setVisible(true);
+                centerAlign();
             } else {
                 liveServerOnline.setText(TextFormatting.RED + "Offline");
                 almuraLiveButton.setVisible(false);
                 livePlayersOnline.setVisible(false);
+                centerAlign();
             }
 
             // Dev Server
@@ -250,19 +254,22 @@ public class ServerMenu extends PanoramicScreen {
                     devServerOnline.setText(TextFormatting.YELLOW + "Restarting...");
                     almuraDevButton.setVisible(false);
                     devPlayersOnline.setVisible(false);
+                    centerAlign();
                 } else {
                     devServerOnline.setText(TextFormatting.GREEN + "Online");
                     devPlayersOnline.setText(TextFormatting.DARK_BLUE + "(" + QUERY_DEV_SERVER.getPlayers() + "/" + QUERY_DEV_SERVER.getMaxPlayers() + ")");
                     almuraDevButton.setVisible(true);
                     devPlayersOnline.setVisible(true);
+                    centerAlign();
                 }
             } else {
                 devServerOnline.setText(TextFormatting.RED + "Offline");
                 almuraDevButton.setVisible(false);
                 devPlayersOnline.setVisible(false);
+                centerAlign();
             }
 
-            centerAlign();
+
 
         } catch (Exception ignored) {
         }
