@@ -34,6 +34,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
 
+import java.text.DecimalFormat;
+
 @SideOnly(Side.CLIENT)
 public class UIUserPanel extends UIHUDPanel {
 
@@ -44,6 +46,7 @@ public class UIUserPanel extends UIHUDPanel {
     private final UIXPOrbImage xpOrbImage;
     private final UILabel currencyLabel, levelLabel, usernameLabel;
     private final UIPropertyBar airBar, armorBar, experienceBar, healthBar, hungerBar, mountHealthBar;
+    private final DecimalFormat df = new DecimalFormat("0.##");
 
     public UIUserPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
@@ -166,9 +169,9 @@ public class UIUserPanel extends UIHUDPanel {
         final int experience = (int) (this.client.player.experience * experienceCap);
 
         if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-            this.experienceBar.setText(Text.of(experience + "/" + experienceCap));
+            this.experienceBar.setText(Text.of(df.format(experience) + "/" + df.format(experienceCap)));
         } else {
-            this.experienceBar.setText(Text.of(""));
+            this.experienceBar.setText(Text.EMPTY);
         }
         this.experienceBar.setAmount(MathUtil.convertToRange(experience, 0, experienceCap, 0f, 1f));
     }
@@ -178,9 +181,9 @@ public class UIUserPanel extends UIHUDPanel {
         final float maxHealth = Minecraft.getMinecraft().player.getMaxHealth();
         this.healthBar.setAmount(MathUtil.convertToRange(health,0f, maxHealth, 0f, 1f));
         if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-            this.healthBar.setText(Text.of(String.format("%.2f/%.2f", health, maxHealth)));
+            this.healthBar.setText(Text.of(df.format(health) + "/" + df.format(maxHealth)));
         } else {
-            this.healthBar.setText(Text.of(""));
+            this.healthBar.setText(Text.EMPTY);
         }
         this.height += 10;
     }
@@ -200,9 +203,9 @@ public class UIUserPanel extends UIHUDPanel {
         }
         final int currentArmor = maxArmor - currentDamage;
         if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-            this.armorBar.setText(Text.of(String.format("%.2f/%.2f", (float) currentArmor, (float) maxArmor)));
+            this.armorBar.setText(Text.of(df.format((float) currentArmor) + "/" + df.format((float) maxArmor)));
         } else {
-            this.armorBar.setText(Text.of(""));
+            this.armorBar.setText(Text.EMPTY);
         }
         this.armorBar.setAmount(MathUtil.convertToRange(currentArmor, 0, maxArmor, 0f, 1f));
         this.height += 10;
@@ -211,9 +214,9 @@ public class UIUserPanel extends UIHUDPanel {
     private void updateHunger() {
         final float foodLevel = Minecraft.getMinecraft().player.getFoodStats().getFoodLevel();
         if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-            this.hungerBar.setText(Text.of(String.format("%.2f/%.2f", foodLevel, 20f)));
+            this.hungerBar.setText(Text.of(df.format(foodLevel) + "/" + df.format(20f)));
         } else {
-            this.hungerBar.setText(Text.of(""));
+            this.hungerBar.setText(Text.EMPTY);
         }
         this.hungerBar.setAmount(MathUtil.convertToRange(foodLevel, 0, 20, 0f, 1f));
         this.height += 10;
@@ -226,9 +229,9 @@ public class UIUserPanel extends UIHUDPanel {
         if (this.airBar.isVisible()) {
             final int air = Math.max(Minecraft.getMinecraft().player.getAir(), 0);
             if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-                this.airBar.setText(Text.of(String.format("%.2f/%.2f", (float) air, (float) 300)));
+                this.airBar.setText(Text.of(df.format((float) air) + "/" + df.format((float) 300)));
             } else {
-                this.airBar.setText(Text.of(""));
+                this.airBar.setText(Text.EMPTY);
             }
             this.airBar.setAmount(MathUtil.convertToRange(air, 0, 300, 0f, 1f));
             this.height += 10;
@@ -244,9 +247,9 @@ public class UIUserPanel extends UIHUDPanel {
             final float health = ridingEntityLivingBase.getHealth();
             final float maxHealth = ridingEntityLivingBase.getMaxHealth();
             if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-                this.mountHealthBar.setText(Text.of(String.format("%.0f/%.0f", health, maxHealth)));
+                this.mountHealthBar.setText(Text.of(df.format(health) + "/" + df.format(maxHealth)));
             } else {
-                this.mountHealthBar.setText(Text.of(""));
+                this.mountHealthBar.setText(Text.EMPTY);
             }
             this.mountHealthBar.setAmount(MathUtil.convertToRange(health, 0, maxHealth, 0f, 1f));
             this.mountHealthBar.setPosition(0, SimpleScreen.getPaddedY(this.airBar.isVisible() ? this.airBar : this.hungerBar, 1));
