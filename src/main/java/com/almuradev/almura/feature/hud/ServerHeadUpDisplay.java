@@ -114,20 +114,6 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
                 return"The Nether";
             case "DIM1":
                 return"The End";
-            case "world":
-                return"Dakara";
-            case "cemaria":
-                return"Cemaria";
-            case "asgard":
-                return"Asgard";
-            case "atlantis":
-                return"Atlantis";
-            case "othala":
-                return"Othala";
-            case "keystone":
-                return"Keystone";
-            case "orilla":
-                return"Orilla";
         }
         return name;
     }
