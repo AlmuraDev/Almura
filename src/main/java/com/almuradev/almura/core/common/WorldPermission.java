@@ -39,7 +39,7 @@ public class WorldPermission extends Witness.Impl implements Activatable, Witnes
             //System.out.println("From: " + event.getFromTransform().getExtent().getName() + " To: " + event.getToTransform().getExtent().getName());
             if (!player.hasPermission("almura.world." + event.getToTransform().getExtent().getName())) {
                 //System.out.println("Almura Teleport Denied");
-                event.setCancelled(true);
+                //event.setCancelled(true);
             } else {
                 //System.out.println("Almura Teleport Granted");
             }
