@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.feature.hud;
 
-import com.almuradev.almura.core.common.WorldPermission;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacketHandler;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
@@ -30,7 +29,6 @@ public class HeadUpDisplayModule extends AbstractModule implements CommonBinder 
                     binder.handler(ClientboundPlayerCountPacketHandler.class, Platform.Type.CLIENT);
                 });
         this.facet()
-                .add(ServerHeadUpDisplay.class)
-                .add(WorldPermission.class);
+                .add(ServerHeadUpDisplay.class);
     }
 }
