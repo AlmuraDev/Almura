@@ -27,6 +27,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.text.DecimalFormat;
+
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
@@ -36,6 +38,7 @@ public class UIDetailsPanel extends UIHUDPanel {
     private final Minecraft client = Minecraft.getMinecraft();
     private final UIImage clockImage, playerCountImage;
     private final UILabel coordsLabel, playerCountLabel;
+    private final DecimalFormat df = new DecimalFormat("0.##");
 
     public UIDetailsPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
@@ -73,9 +76,9 @@ public class UIDetailsPanel extends UIHUDPanel {
     private void updateCoordinates() {
         final Entity view = MoreObjects.firstNonNull(this.client.getRenderViewEntity(), this.client.player);
         this.coordsLabel.setText(
-                         TextFormatting.GOLD + "X: " + TextFormatting.RESET + String.format("%.3f", view.posX)
-                + "\n" + TextFormatting.GOLD + "Y: " + TextFormatting.RESET + String.format("%.3f", view.posY)
-                + "\n" + TextFormatting.GOLD + "Z: " + TextFormatting.RESET + String.format("%.3f", view.posZ)
+                         TextFormatting.GOLD + "X: " + TextFormatting.RESET + df.format(view.posX) + " "
+                + "\n" + TextFormatting.GOLD + "Y: " + TextFormatting.RESET + df.format(view.posY) + " "
+                + "\n" + TextFormatting.GOLD + "Z: " + TextFormatting.RESET + df.format(view.posZ)
         );
     }
 
