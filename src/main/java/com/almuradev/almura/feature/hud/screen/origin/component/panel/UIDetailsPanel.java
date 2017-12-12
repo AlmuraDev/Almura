@@ -86,7 +86,7 @@ public class UIDetailsPanel extends UIHUDPanel {
         final boolean isOnline = !this.client.isSingleplayer() || (this.client.isSingleplayer() && this.client.getIntegratedServer().getPublic());
         if (isOnline) {
             this.playerCountLabel.setText(TextFormatting.WHITE.toString() + config.onlinePlayerCount + "/" + config.maxPlayerCount);
-            this.playerCountLabel.setPosition(SimpleScreen.getPaddedX(this.playerCountImage, 2, Anchor.RIGHT), 3, Anchor.MIDDLE | Anchor.RIGHT);
+            this.playerCountLabel.setPosition(SimpleScreen.getPaddedX(this.playerCountImage, 2, Anchor.RIGHT), 1, Anchor.MIDDLE | Anchor.RIGHT);
         }
         this.playerCountImage.setVisible(isOnline);
         this.playerCountLabel.setVisible(isOnline);
