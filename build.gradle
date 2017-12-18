@@ -97,6 +97,7 @@ dependencies {
     }
     compile 'ninja.leaping.configurate:configurate-json:3.3'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
+    compile 'io.github.nucleuspowered:nucleus-api:1.2.0-PR5-S7.0'
 }
 
 idea {
@@ -147,7 +148,7 @@ jar {
                 'FMLCorePlugin': 'com.almuradev.almura.AlmuraLoadingPlugin',
                 'FMLCorePluginContainsFMLMod': true,
                 'ForceLoadAsMod': true,
-                'MixinConfigs': "mixins.almura.core.json,mixins.almura.content.json",
+                'MixinConfigs': "mixins.almura.core.json,mixins.almura.content.json,mixins.almura.title.json",
                 'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0
         )
@@ -165,11 +166,13 @@ shadowJar {
         include dependency('com.fasterxml.jackson.core:jackson-core')
         include dependency('com.google.inject.extensions:guice-assistedinject')
         include dependency('com.google.inject.extensions:guice-multibindings')
+        include dependency('io.github.nucleuspowered:nucleus-api')
         include dependency('net.kyori:indigo')
         include dependency('net.kyori:lunar')
         include dependency('net.kyori:membrane')
         include dependency('net.kyori:violet')
         include dependency('ninja.leaping.configurate:configurate-json')
+
     }
     afterEvaluate {
         from zipTree(reobfJar.jar)

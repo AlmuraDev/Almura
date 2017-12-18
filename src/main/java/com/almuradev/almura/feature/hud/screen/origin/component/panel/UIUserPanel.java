@@ -63,7 +63,7 @@ public class UIUserPanel extends UIHUDPanel {
 
         // Username
         // TODO Needs to pull player nickname
-        this.usernameLabel = new UILabel(gui, TextFormatting.WHITE + this.client.player.getName());
+        this.usernameLabel = new UILabel(gui, this.client.player.getDisplayName().getFormattedText());
         this.usernameLabel.setPosition(SimpleScreen.getPaddedX(this.userAvatarImage, 3), 2);
 
         // Level

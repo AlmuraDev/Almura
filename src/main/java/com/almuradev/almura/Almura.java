@@ -12,15 +12,21 @@ import net.minecraftforge.fml.common.SidedProxy;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 
 import javax.inject.Inject;
 
-@Plugin(id = Almura.ID)
-public final class Almura {
+@Plugin(id = Almura.ID, dependencies = {
+        @Dependency(id = "nucleus", optional = true)
+})
+public class Almura {
+
+    public static Almura instance;
 
     public static final String ID = "almura";
     public static final String NAME = "Almura";
+
     @SidedProxy(
             modId = Almura.ID,
             clientSide = "com.almuradev.almura.core.client.ClientProxy",
