@@ -18,6 +18,10 @@ public final class ClientboundNucleusNameMappingsPacket implements Message {
     public ClientboundNucleusNameMappingsPacket() {
     }
 
+    public ClientboundNucleusNameMappingsPacket(Map<UUID, Text> nicknames) {
+        this.nicknames.putAll(nicknames);
+    }
+
     @Override
     public void readFrom(ChannelBuf buf) {
         final int count = buf.readInteger();

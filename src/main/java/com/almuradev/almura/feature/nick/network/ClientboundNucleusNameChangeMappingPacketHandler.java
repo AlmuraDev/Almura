@@ -11,7 +11,11 @@ import org.spongepowered.api.text.Text;
 
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 public final class ClientboundNucleusNameChangeMappingPacketHandler implements MessageHandler<ClientboundNucleusNameChangeMappingPacket> {
+
+    @Inject static NickManager nickManager;
 
     @Override
     public void handleMessage(ClientboundNucleusNameChangeMappingPacket message, RemoteConnection connection, Platform.Type side) {
@@ -23,7 +27,7 @@ public final class ClientboundNucleusNameChangeMappingPacketHandler implements M
             final World world = Minecraft.getMinecraft().world;
             final EntityPlayer entity = world.getPlayerEntityByUUID(entityUniqueId);
 
-            NickManager.instance.put(entityUniqueId, nickname);
+            nickManager.put(entityUniqueId, nickname);
 
             // Triggers Forge event, mod compat
             entity.refreshDisplayName();

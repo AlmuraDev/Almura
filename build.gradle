@@ -72,6 +72,10 @@ repositories {
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
     maven {
+        name 'drnaylor-minecraft'
+        url 'http://repo.drnaylor.co.uk/artifactory/list/minecraft'
+    }
+    maven {
         name = 'sponge'
         url = 'http://repo.spongepowered.org/maven'
     }
@@ -96,8 +100,13 @@ dependencies {
         transitive = false
     }
     compile 'ninja.leaping.configurate:configurate-json:3.3'
+<<<<<<< HEAD
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
     compile 'io.github.nucleuspowered:nucleus-api:1.2.0-PR5-S7.0'
+=======
+    compile 'io.github.nucleuspowered:nucleus-api:1.2.0-PR5-S7.0'
+    compile project(':MalisisCore')
+>>>>>>> Don't use boson, only nucleus-api.
 }
 
 idea {

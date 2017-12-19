@@ -17,6 +17,11 @@ public final class ClientboundNucleusNameChangeMappingPacket implements Message 
     public ClientboundNucleusNameChangeMappingPacket() {
     }
 
+    public ClientboundNucleusNameChangeMappingPacket(UUID uuid, Text text) {
+        this.uuid = uuid;
+        this.text = text;
+    }
+
     @Override
     public void readFrom(ChannelBuf buf) {
         this.uuid = buf.readUniqueId();

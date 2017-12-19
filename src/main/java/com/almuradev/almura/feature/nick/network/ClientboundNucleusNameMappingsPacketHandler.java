@@ -12,13 +12,17 @@ import org.spongepowered.api.text.Text;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 public class ClientboundNucleusNameMappingsPacketHandler implements MessageHandler<ClientboundNucleusNameMappingsPacket> {
+
+    @Inject static NickManager nickManager;
 
     @Override
     public void handleMessage(ClientboundNucleusNameMappingsPacket message, RemoteConnection connection, Platform.Type side) {
         final Map<UUID, Text> nicknames = message.nicknames;
 
-        NickManager.instance.putAll(nicknames);
+        nickManager.putAll(nicknames);
 
         final World world = Minecraft.getMinecraft().world;
 

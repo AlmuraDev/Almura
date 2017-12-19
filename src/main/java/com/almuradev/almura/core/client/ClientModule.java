@@ -35,7 +35,11 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
     @Override
     protected void configure() {
         this.install(new CommonModule());
+<<<<<<< HEAD
         this.install(new NickModule());
+=======
+        this.install(new ClientConfigModule());
+>>>>>>> Don't use boson, only nucleus-api.
         this.facet()
                 .add(ModelBinder.Installer.class)
                 .add(MainMenuFeature.class)
