@@ -170,6 +170,7 @@ shadowJar {
         include dependency('com.almuradev:toolbox')
         include dependency('com.google.inject.extensions:guice-assistedinject')
         include dependency('com.google.inject.extensions:guice-multibindings')
+        include dependency('net.kyori:indigo')
         include dependency('net.kyori:lunar')
         include dependency('net.kyori:membrane')
         include dependency('net.kyori:violet')
