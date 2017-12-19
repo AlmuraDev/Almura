@@ -83,7 +83,7 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
                 ((EntityPlayerMP) event.getTargetEntity()).refreshDisplayName();
             });
 
-            Task.builder().async().execute(t -> {
+            Task.builder().async().delayTicks(40).execute(t -> {
                 // Send everyone's nicknames to the joining player
                 this.network.sendTo(event.getTargetEntity(), getMappingMessage(service, event.getTargetEntity()));
             }).submit(Almura.instance.container);
@@ -96,7 +96,7 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
 
         if (Sponge.getPlatform().getExecutionType().isServer()) {
             Sponge.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> service.getNickname((User) (Object) player)
-                    .ifPresent((nick) -> event.setDisplayname(SpongeTexts.toLegacy(nick))));
+                    .ifPresent((nick) -> event.setDisplayname(TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick))));
         } else {
             // Set the client nick for the event based on what the server synchronized
             final Text nick = this.clientNicks.get(player.getUniqueID());
@@ -109,7 +109,6 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPlayerNameFormatPost(PlayerEvent.NameFormat event) {
-
         final EntityPlayer player = event.getEntityPlayer();
 
         if (this.game.getPlatform().getExecutionType().isServer()) {
@@ -126,12 +125,11 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
                     }
                 } else {
                     // Schedule client update
-                    Task.builder().async().delayTicks(20).execute(t -> this.network.sendToAll(getMappingMessage((Player) player, newNick)))
+                    Task.builder().async().delayTicks(40).execute(t -> this.network.sendToAll(getMappingMessage((Player) player, newNick)))
                             .submit(Almura.instance.container);
                 }
             });
         } else {
-
             this.updateClientInformation(player.getUniqueID(), Text.of(event.getDisplayname()));
         }
     }

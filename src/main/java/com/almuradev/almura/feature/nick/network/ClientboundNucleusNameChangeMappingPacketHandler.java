@@ -29,8 +29,10 @@ public final class ClientboundNucleusNameChangeMappingPacketHandler implements M
 
             nickManager.put(entityUniqueId, nickname);
 
-            // Triggers Forge event, mod compat
-            entity.refreshDisplayName();
+            if (entity != null) {
+                // Triggers Forge event, mod compat
+                entity.refreshDisplayName();
+            }
         }
     }
 }
