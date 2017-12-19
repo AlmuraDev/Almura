@@ -19,10 +19,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MainMenuFeature implements Witness {
+public class MainMenuManager implements Witness {
 
     @SubscribeEvent
-    public void guiOpen(final GuiOpenEvent event) {
+    public void onGuiOpen(final GuiOpenEvent event) {
         final GuiScreen screen = event.getGui();
         if (screen != null) {
             if (screen.getClass().equals(GuiMainMenu.class)) {

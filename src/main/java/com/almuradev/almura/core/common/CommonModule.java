@@ -9,11 +9,8 @@ package com.almuradev.almura.core.common;
 
 import com.almuradev.almura.core.server.ServerConfiguration;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
-<<<<<<< HEAD
 import com.almuradev.almura.feature.title.TitleModule;
-=======
 import com.almuradev.almura.feature.nick.NickModule;
->>>>>>> Don't use boson, only nucleus-api.
 import com.almuradev.almura.registry.BossBarColorRegistryModule;
 import com.almuradev.almura.shared.command.binder.CommandInstaller;
 import com.almuradev.almura.shared.event.WitnessModule;
@@ -40,11 +37,11 @@ public final class CommonModule extends AbstractModule implements CommonBinder {
                 .add(CommandInstaller.class);
         this.registry().module(BossBarColorRegistryModule.class);
         this.install(new NetworkModule());
-        this.install(new NickModule());
         this.install(new WitnessModule());
         this.install(new HeadUpDisplayModule());
         this.install(new ContentModule());
         this.install(new TitleModule());
+        this.install(new NickModule());
         this.facet()
                 .add(ContentLoader.class);
         this.install(new ServerConfiguration.Module());

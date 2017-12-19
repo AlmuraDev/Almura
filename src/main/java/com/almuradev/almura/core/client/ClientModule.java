@@ -14,7 +14,7 @@ import com.almuradev.almura.feature.hud.ClientHeadUpDisplay;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
-import com.almuradev.almura.feature.menu.MainMenuFeature;
+import com.almuradev.almura.feature.menu.MainMenuManager;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.speed.FirstLaunchClientOptimization;
 import com.almuradev.almura.shared.client.model.ModelBinder;
@@ -35,14 +35,10 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
     @Override
     protected void configure() {
         this.install(new CommonModule());
-<<<<<<< HEAD
         this.install(new NickModule());
-=======
-        this.install(new ClientConfigModule());
->>>>>>> Don't use boson, only nucleus-api.
         this.facet()
                 .add(ModelBinder.Installer.class)
-                .add(MainMenuFeature.class)
+                .add(MainMenuManager.class)
                 .add(ClientHeadUpDisplay.class)
                 .add(FirstLaunchClientOptimization.class);
         this.install(new ClientConfiguration.Module());

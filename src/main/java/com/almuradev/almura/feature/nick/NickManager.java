@@ -2,13 +2,15 @@ package com.almuradev.almura.feature.nick;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-<<<<<<< HEAD
 import com.almuradev.almura.shared.event.Witness;
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameChangeMappingPacket;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameMappingsPacket;
+import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import io.github.nucleuspowered.nucleus.api.events.NucleusChangeNicknameEvent;
+import io.github.nucleuspowered.nucleus.api.exceptions.NicknameException;
+import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
 import net.kyori.membrane.facet.Activatable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -23,7 +25,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
@@ -32,6 +33,7 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -46,6 +48,7 @@ import java.util.stream.Collectors;
 @Singleton
 public final class NickManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
 
+    private final PluginContainer container;
     private final Game game;
     private final ChannelBinding.IndexedMessageChannel network;
 
@@ -53,7 +56,8 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
     private final Map<UUID, Text> clientNicks = new HashMap<>();
 
     @Inject
-    private NickManager(final Game game, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
+    private NickManager(final PluginContainer container, final Game game, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
+        this.container = container;
         this.game = game;
         this.network = network;
     }
@@ -70,14 +74,14 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
 
     // Fires only on client
     @SubscribeEvent
-    public void onClientConnectToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+    public void onClientConnectToServer(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.clientNicks.clear();
     }
 
     // Fires only on server
     @Listener
-    public void onClientConnectionEventJoin(ClientConnectionEvent.Join event) {
-        Sponge.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> {
+    public void onClientConnectionEventJoin(final ClientConnectionEvent.Join event) {
+        this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> {
             service.getNickname(event.getTargetEntity()).ifPresent((nick) -> {
                 // Trigger Forge event so mod's know of the nickname
                 ((EntityPlayerMP) event.getTargetEntity()).refreshDisplayName();
@@ -85,17 +89,17 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
 
             Task.builder().async().delayTicks(40).execute(t -> {
                 // Send everyone's nicknames to the joining player
-                this.network.sendTo(event.getTargetEntity(), getMappingMessage(service, event.getTargetEntity()));
-            }).submit(Almura.instance.container);
+                this.network.sendTo(event.getTargetEntity(), this.getMappingMessage(service, event.getTargetEntity()));
+            }).submit(this.container);
         });
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPlayerNameFormat(PlayerEvent.NameFormat event) {
+    public void onPlayerNameFormat(final PlayerEvent.NameFormat event) {
         final EntityPlayer player = event.getEntityPlayer();
 
-        if (Sponge.getPlatform().getExecutionType().isServer()) {
-            Sponge.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> service.getNickname((User) (Object) player)
+        if (this.game.getPlatform().getExecutionType().isServer()) {
+            this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> service.getNickname((User) (Object) player)
                     .ifPresent((nick) -> event.setDisplayname(TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick))));
         } else {
             // Set the client nick for the event based on what the server synchronized
@@ -108,11 +112,11 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onPlayerNameFormatPost(PlayerEvent.NameFormat event) {
+    public void onPlayerNameFormatPost(final PlayerEvent.NameFormat event) {
         final EntityPlayer player = event.getEntityPlayer();
 
         if (this.game.getPlatform().getExecutionType().isServer()) {
-            Sponge.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> {
+            this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> {
                 final Text oldNick = service.getNickname((Player) event.getEntityPlayer()).orElse(Text.of(player.getName()));
                 final Text newNick = TextSerializers.LEGACY_FORMATTING_CODE.deserialize(event.getDisplayname());
 
@@ -120,13 +124,13 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
                 if (!oldNick.equals(newNick)) {
                     try {
                         service.setNickname((User) player, newNick);
-                    } catch (NicknameException e) {
+                    } catch (final NicknameException e) {
                         e.printStackTrace();
                     }
                 } else {
                     // Schedule client update
-                    Task.builder().async().delayTicks(40).execute(t -> this.network.sendToAll(getMappingMessage((Player) player, newNick)))
-                            .submit(Almura.instance.container);
+                    Task.builder().async().delayTicks(40).execute(t -> this.network.sendToAll(this.getMappingMessage((Player) player, newNick)))
+                            .submit(this.container);
                 }
             });
         } else {
@@ -136,18 +140,18 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
 
     // Fires only on server
     @Listener(order = Order.POST)
-    public void onPlayerChangeNickname(NucleusChangeNicknameEvent event, @Getter("getTargetUser") Player player) {
+    public void onPlayerChangeNickname(final NucleusChangeNicknameEvent event, @Getter("getTargetUser") final Player player) {
         final EntityPlayerMP mcPlayer = (EntityPlayerMP) player;
         final ITextComponent mcOldText = mcPlayer.getDisplayName();
         final ITextComponent mcNewText = SpongeTexts.toComponent(event.getNewNickname());
 
         if (!mcOldText.equals(mcNewText)) {
-            Task.builder().delayTicks(1).execute(((EntityPlayerMP) player)::refreshDisplayName).submit(Almura.instance.container);
+            Task.builder().delayTicks(1).execute(((EntityPlayerMP) player)::refreshDisplayName).submit(this.container);
         }
     }
 
     @SideOnly(Side.CLIENT)
-    private void updateClientInformation(UUID uniqueId, Text nick) {
+    private void updateClientInformation(final UUID uniqueId, final Text nick) {
         // Update Player List
         for (final NetworkPlayerInfo networkPlayerInfo : Minecraft.getMinecraft().player.connection.getPlayerInfoMap()) {
             if (networkPlayerInfo.getGameProfile().getId().equals(uniqueId)) {
@@ -157,27 +161,27 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
     }
 
     @SideOnly(Side.CLIENT)
-    public void putAll(Map<UUID, Text> nicksById) {
+    public void putAll(final Map<UUID, Text> nicksById) {
         checkNotNull(nicksById);
 
         this.clientNicks.putAll(nicksById);
     }
 
     @SideOnly(Side.CLIENT)
-    public void put(UUID uniqueId, Text nick) {
+    public void put(final UUID uniqueId, final Text nick) {
         checkNotNull(uniqueId);
         checkNotNull(nick);
 
         this.clientNicks.put(uniqueId, nick);
     }
 
-    private ClientboundNucleusNameChangeMappingPacket getMappingMessage(Player player, Text nick) {
+    private ClientboundNucleusNameChangeMappingPacket getMappingMessage(final Player player, final Text nick) {
         return new ClientboundNucleusNameChangeMappingPacket(player.getUniqueId(), nick);
     }
 
-    private ClientboundNucleusNameMappingsPacket getMappingMessage(NucleusNicknameService service, Player toIgnore) {
+    private ClientboundNucleusNameMappingsPacket getMappingMessage(final NucleusNicknameService service, final Player toIgnore) {
         return new ClientboundNucleusNameMappingsPacket(
-                Sponge.getServer().getOnlinePlayers().stream().filter((player) -> !player.getUniqueId().equals(toIgnore.getUniqueId())).collect
+                this.game.getServer().getOnlinePlayers().stream().filter((player) -> !player.getUniqueId().equals(toIgnore.getUniqueId())).collect
                         (Collectors.toMap(Identifiable::getUniqueId, v -> service.getNickname(v).orElseGet(() -> Text.of(v.getName()))
                 ))
         );

@@ -1,3 +1,10 @@
+/*
+ * This file is part of Almura.
+ *
+ * Copyright (c) AlmuraDev <https://github.com/AlmuraDev/>
+ *
+ * All Rights Reserved.
+ */
 package com.almuradev.almura.feature.nick.network;
 
 import com.almuradev.almura.feature.nick.NickManager;
@@ -16,21 +23,23 @@ import javax.inject.Inject;
 
 public class ClientboundNucleusNameMappingsPacketHandler implements MessageHandler<ClientboundNucleusNameMappingsPacket> {
 
-    @Inject static NickManager nickManager;
+    private final NickManager nickManager;
+
+    @Inject
+    private ClientboundNucleusNameMappingsPacketHandler(final NickManager nickManager) {
+        this.nickManager = nickManager;
+    }
 
     @Override
-    public void handleMessage(ClientboundNucleusNameMappingsPacket message, RemoteConnection connection, Platform.Type side) {
-
+    public void handleMessage(final ClientboundNucleusNameMappingsPacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient()) {
             final Map<UUID, Text> nicknames = message.nicknames;
 
-            nickManager.putAll(nicknames);
+            this.nickManager.putAll(nicknames);
 
             final World world = Minecraft.getMinecraft().world;
-
             if (world != null) {
-                for (EntityPlayer player : world.playerEntities) {
-
+                for (final EntityPlayer player : world.playerEntities) {
                     // Triggers Forge event, mod compat
                     player.refreshDisplayName();
                 }

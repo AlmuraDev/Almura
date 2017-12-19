@@ -18,12 +18,12 @@ public final class ClientboundNucleusNameMappingsPacket implements Message {
     public ClientboundNucleusNameMappingsPacket() {
     }
 
-    public ClientboundNucleusNameMappingsPacket(Map<UUID, Text> nicknames) {
+    public ClientboundNucleusNameMappingsPacket(final Map<UUID, Text> nicknames) {
         this.nicknames.putAll(nicknames);
     }
 
     @Override
-    public void readFrom(ChannelBuf buf) {
+    public void readFrom(final ChannelBuf buf) {
         final int count = buf.readInteger();
         this.nicknames.clear();
 
@@ -33,7 +33,7 @@ public final class ClientboundNucleusNameMappingsPacket implements Message {
     }
 
     @Override
-    public void writeTo(ChannelBuf buf) {
+    public void writeTo(final ChannelBuf buf) {
         buf.writeInteger(this.nicknames.size());
 
         this.nicknames.forEach((uuid, text) -> {
