@@ -9,6 +9,8 @@ package com.almuradev.almura.feature.hud;
 
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacketHandler;
+import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
+import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacketHandler;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacketHandler;
 import com.almuradev.almura.shared.inject.CommonBinder;
@@ -27,6 +29,10 @@ public class HeadUpDisplayModule extends AbstractModule implements CommonBinder 
                 .bind(ClientboundPlayerCountPacket.class, binder -> {
                     binder.channel(1);
                     binder.handler(ClientboundPlayerCountPacketHandler.class, Platform.Type.CLIENT);
+                })
+                .bind(ClientboundPlayerCurrencyPacket.class, binder -> {
+                    binder.channel(2);
+                    binder.handler(ClientboundPlayerCurrencyPacketHandler.class, Platform.Type.CLIENT);
                 });
         this.facet()
                 .add(ServerHeadUpDisplay.class);
