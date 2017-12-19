@@ -168,6 +168,7 @@ shadowJar {
     relocate 'com.typesafe.config', 'configurate.typesafe.config'
     dependencies {
         include dependency('com.almuradev:toolbox')
+        include dependency('com.fasterxml.jackson.core:jackson-core')
         include dependency('com.google.inject.extensions:guice-assistedinject')
         include dependency('com.google.inject.extensions:guice-multibindings')
         include dependency('net.kyori:indigo')
