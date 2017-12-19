@@ -20,17 +20,20 @@ public class ClientboundNucleusNameMappingsPacketHandler implements MessageHandl
 
     @Override
     public void handleMessage(ClientboundNucleusNameMappingsPacket message, RemoteConnection connection, Platform.Type side) {
-        final Map<UUID, Text> nicknames = message.nicknames;
 
-        nickManager.putAll(nicknames);
+        if (side.isClient()) {
+            final Map<UUID, Text> nicknames = message.nicknames;
 
-        final World world = Minecraft.getMinecraft().world;
+            nickManager.putAll(nicknames);
 
-        if (world != null) {
-            for (EntityPlayer player : world.playerEntities) {
+            final World world = Minecraft.getMinecraft().world;
 
-                // Triggers Forge event, mod compat
-                player.refreshDisplayName();
+            if (world != null) {
+                for (EntityPlayer player : world.playerEntities) {
+
+                    // Triggers Forge event, mod compat
+                    player.refreshDisplayName();
+                }
             }
         }
     }

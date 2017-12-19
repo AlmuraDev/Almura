@@ -28,6 +28,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -62,8 +63,7 @@ public class UIUserPanel extends UIHUDPanel {
         this.userAvatarImage.setSize(16, 16);
 
         // Username
-        // TODO Needs to pull player nickname
-        this.usernameLabel = new UILabel(gui, this.client.player.getDisplayName().getFormattedText());
+        this.usernameLabel = new UILabel(gui, TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
         this.usernameLabel.setPosition(SimpleScreen.getPaddedX(this.userAvatarImage, 3), 2);
 
         // Level
@@ -139,6 +139,7 @@ public class UIUserPanel extends UIHUDPanel {
 
         // Update
         this.updateUserImage();
+        this.updateDisplayName();
         this.updateCurrency();
         this.updateExperience();
         this.updateLevel();
@@ -147,6 +148,15 @@ public class UIUserPanel extends UIHUDPanel {
         this.updateHunger();
         this.updateAir();
         this.updateMountHealth();
+    }
+
+    private void updateDisplayName() {
+        if (this.client.player != null) {
+            final ITextComponent displayName = this.client.player.getDisplayName();
+            if (displayName != null) {
+                this.usernameLabel.setText(TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
+            }
+        }
     }
 
     private void updateUserImage() {
