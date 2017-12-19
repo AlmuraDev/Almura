@@ -8,8 +8,8 @@
 package com.almuradev.almura.feature.hud.screen.origin;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinGuiBossOverlay;
+import com.almuradev.almura.core.client.ClientConfiguration;
 import com.almuradev.almura.core.client.config.ClientCategory;
-import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIBossBarPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
@@ -18,10 +18,10 @@ import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPane
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.BlockDebugPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.InformationDebugPanel;
-import com.almuradev.shared.client.GuiConfig;
-import com.almuradev.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.shared.config.ConfigurationAdapter;
-import com.almuradev.shared.util.MathUtil;
+import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.util.MathUtil;
+import com.almuradev.toolbox.config.map.MappedConfiguration;
 import net.malisis.core.client.gui.Anchor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
@@ -36,7 +36,7 @@ import javax.inject.Inject;
 public class OriginHUD extends AbstractHUD {
 
     private static final int PADDING = 1;
-    private final ConfigurationAdapter<ClientConfiguration> config;
+    private final MappedConfiguration<ClientConfiguration> config;
     private final Minecraft client = Minecraft.getMinecraft();
     private UIBossBarPanel bossBarPanel;
     private InformationDebugPanel debugDetailsPanel;
@@ -47,7 +47,7 @@ public class OriginHUD extends AbstractHUD {
     private UIWorldPanel worldPanel;
 
     @Inject
-    public OriginHUD(final ConfigurationAdapter<ClientConfiguration> config) {
+    public OriginHUD(final MappedConfiguration<ClientConfiguration> config) {
         this.config = config;
     }
 
@@ -99,14 +99,14 @@ public class OriginHUD extends AbstractHUD {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        final ClientCategory category = this.config.getConfig().client;
+        final ClientCategory category = this.config.get().client;
         // Set current alpha value
         this.userPanel.setAlpha(category.originHudOpacity);
 
-        this.worldPanel.setVisible(config.getConfig().client.displayWorldCompassWidget);
+        this.worldPanel.setVisible(this.config.get().client.displayWorldCompassWidget);
         this.worldPanel.setAlpha(category.originHudOpacity);
 
-        this.detailsPanel.setVisible(config.getConfig().client.displayLocationWidget);
+        this.detailsPanel.setVisible(this.config.get().client.displayLocationWidget);
         this.detailsPanel.setAlpha(category.originHudOpacity);
 
         // Show debug panels if necessary

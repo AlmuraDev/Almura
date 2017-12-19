@@ -8,7 +8,7 @@
 package com.almuradev.almura.asm.mixin.core.client.renderer.tileentity;
 
 import com.almuradev.almura.asm.StaticAccess;
-import com.almuradev.almura.core.client.config.ClientConfiguration;
+import com.almuradev.almura.core.client.ClientConfiguration;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -39,7 +39,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
      */
     @Overwrite
     public void render(TileEntitySign te, double x, double y, double z, float partialTicks, int destroyStage, float val) {
-        final ClientConfiguration config = StaticAccess.config.getConfig();
+        final ClientConfiguration config = StaticAccess.config.get();
         Block block = te.getBlockType();
         GlStateManager.pushMatrix();
         float f = 0.6666667F;

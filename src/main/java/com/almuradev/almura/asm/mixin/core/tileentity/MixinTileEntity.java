@@ -15,8 +15,17 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(TileEntity.class)
 public class MixinTileEntity {
-    @Redirect(method = "create", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;Ljava/lang/Object;)V"))
-    private static void silenceTileEntityNotFound(Logger logger, String message, Object p0) {
-        // Silence server console spam.
+
+    /**
+     * Be less noisy when a block entity cannot be created because a type mapping cannot be found.
+     */
+    @Redirect(
+            method = "create",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;Ljava/lang/Object;)V"
+            )
+    )
+    private static void silentNotFound(final Logger logger, final String message, final Object arg) {
     }
 }

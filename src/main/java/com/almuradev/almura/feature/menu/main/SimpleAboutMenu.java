@@ -7,14 +7,14 @@
  */
 package com.almuradev.almura.feature.menu.main;
 
-import com.almuradev.almura.Constants;
-import com.almuradev.shared.client.GuiConfig;
-import com.almuradev.shared.client.texture.GuiRemoteTexture;
-import com.almuradev.shared.client.ui.FontColors;
-import com.almuradev.shared.client.ui.component.UISimpleList;
-import com.almuradev.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.shared.client.ui.screen.SimpleContainerScreen;
-import com.almuradev.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.Almura;
+import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.texture.GuiRemoteTexture;
+import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.UISimpleList;
+import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.screen.SimpleContainerScreen;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
@@ -43,7 +43,6 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -54,7 +53,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
     private UITextField textField;
 
     public SimpleAboutMenu(@Nullable SimpleScreen parent) {
-        super(parent, Text.of(I18n.format("almura.menu.about")));
+        super(parent, Text.of(I18n.format("almura.menu_button.about")));
     }
 
     @SuppressWarnings({"unchecked"})
@@ -86,8 +85,8 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                     this.list,
                     new UIImage(this, new GuiRemoteTexture(
                             GuiConfig.Location.GENERIC_AVATAR,
-                            new ResourceLocation(Constants.Plugin.ID, "textures/gui/skins/avatars/" + entry.uniqueId + ".png"),
-                            String.format(GuiConfig.Url.SKINS, UUID.fromString(entry.uniqueId), 32),
+                            new ResourceLocation(Almura.ID, "textures/gui/skins/avatars/" + entry.uniqueId + ".png"),
+                            String.format(GuiConfig.Url.SKINS, entry.uniqueId, 32),
                             32, 32), null),
                     Text.of(entry.color, I18n.format(entry.name)),
                     Text.of(TextColors.WHITE, I18n.format(entry.description),

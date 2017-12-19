@@ -11,7 +11,7 @@ import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacketHandler;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacketHandler;
-import com.almuradev.shared.inject.CommonBinder;
+import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import org.spongepowered.api.Platform;
 

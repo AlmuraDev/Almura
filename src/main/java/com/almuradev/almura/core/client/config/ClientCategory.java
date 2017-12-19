@@ -13,8 +13,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
-@SideOnly(Side.CLIENT)
 @ConfigSerializable
+@SideOnly(Side.CLIENT)
 public final class ClientCategory {
 
     @Setting(value = "first-launch", comment = "Instructs Almura if this is our first launch. Internal use only")

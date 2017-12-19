@@ -1,0 +1,11 @@
+{
+    "icon": {
+        // The item id.
+        "item": "minecraft:diamond_sword",
+        // The quantity.
+        "quantity": 1,
+        // The meta.
+        // This will not exist in future versions of the game.
+        "meta": 0
+    }
+}

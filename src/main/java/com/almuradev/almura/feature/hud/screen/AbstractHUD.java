@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.hud.screen;
 
-import com.almuradev.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

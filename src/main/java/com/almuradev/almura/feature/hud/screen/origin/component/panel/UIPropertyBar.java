@@ -7,10 +7,10 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
-import com.almuradev.shared.client.GuiConfig;
-import com.almuradev.shared.client.ui.FontColors;
-import com.almuradev.shared.client.ui.Fonts;
-import com.almuradev.shared.util.MathUtil;
+import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.Fonts;
+import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;

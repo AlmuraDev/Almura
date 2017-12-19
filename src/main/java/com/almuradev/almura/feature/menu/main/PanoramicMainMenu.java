@@ -8,11 +8,11 @@
 package com.almuradev.almura.feature.menu.main;
 
 import com.almuradev.almura.feature.menu.multiplayer.ServerMenu;
-import com.almuradev.shared.client.GuiConfig;
-import com.almuradev.shared.client.ui.FontColors;
-import com.almuradev.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.shared.client.ui.screen.PanoramicScreen;
-import com.almuradev.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
@@ -103,7 +103,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
 
         final UIButton modsButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .text(Text.of(I18n.format("almura.menu.mods")))
+                .text(Text.of(I18n.format("almura.menu_button.mods")))
                 .size(GuiConfig.Button.WIDTH_TINY, GuiConfig.Button.HEIGHT)
                 .position(SimpleScreen.getPaddedX(optionsButton, PADDING), SimpleScreen.getPaddedY(multiplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -112,7 +112,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
 
         final UIButton aboutButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .text(Text.of(I18n.format("almura.menu.about")))
+                .text(Text.of(I18n.format("almura.menu_button.about")))
                 .size(GuiConfig.Button.WIDTH_TINY, GuiConfig.Button.HEIGHT)
                 .position(SimpleScreen.getPaddedX(modsButton, PADDING), SimpleScreen.getPaddedY(multiplayerButton, PADDING))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -121,7 +121,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
 
         final UIButton quitButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .text(Text.of(I18n.format("almura.menu.quit")))
+                .text(Text.of(I18n.format("almura.menu_button.quit")))
                 .fro(FontOptions.builder().from(FontColors.FRO_LIGHT_RED).shadow(true).build())
                 .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(GuiConfig.Button.WIDTH_LONG, GuiConfig.Button.HEIGHT)
@@ -137,7 +137,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .position(-PADDING, -PADDING)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu.forums")))
+                .tooltip(Text.of(I18n.format("almura.menu_button.forums")))
                 .build("button.forums");
 
         final UIButton issuesButton = new UIButtonBuilder(this)
@@ -147,7 +147,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .position(SimpleScreen.getPaddedX(forumsButton, PADDING, Anchor.RIGHT), forumsButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format(I18n.format("almura.menu.issues"))))
+                .tooltip(Text.of(I18n.format(I18n.format("almura.menu_button.issues"))))
                 .build("button.issues");
 
         final UIButton shopButton = new UIButtonBuilder(this)
@@ -157,13 +157,13 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .position(SimpleScreen.getPaddedX(issuesButton, PADDING, Anchor.RIGHT), issuesButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu.shop")))
+                .tooltip(Text.of(I18n.format("almura.menu_button.shop")))
                 .build("button.shop");
 
-        final UILabel trademarkLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.trademark"));
+        final UILabel trademarkLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.main.trademark"));
         trademarkLabel.setPosition(PADDING, -PADDING, Anchor.BOTTOM | Anchor.LEFT);
 
-        final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.copyright"));
+        final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.main.copyright"));
         copyrightLabel
                 .setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, PADDING, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
@@ -183,11 +183,11 @@ public class PanoramicMainMenu extends PanoramicScreen {
         // OpenGL Warning
         if (!GLContext.getCapabilities().OpenGL20 && !OpenGlHelper.areShadersSupported()) {
             final UILabel glWarning1 = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextStyles.BOLD,
-                    TextColors.DARK_RED, I18n.format("almura.menu.opengl1"))));
+                    TextColors.DARK_RED, I18n.format("almura.menu.main.opengl.0"))));
             glWarning1.setPosition(2, 2, Anchor.TOP | Anchor.LEFT);
 
             final UILabel glWarning2 = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextStyles.BOLD,
-                    TextColors.DARK_RED, I18n.format("almura.menu.opengl2"))));
+                    TextColors.DARK_RED, I18n.format("almura.menu.main.opengl.1"))));
             glWarning2.setPosition(2, SimpleScreen.getPaddedY(glWarning1, 2), Anchor.TOP | Anchor.LEFT);
 
             addToScreen(glWarning1);

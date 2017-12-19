@@ -7,11 +7,11 @@
  */
 package com.almuradev.almura.feature.hud;
 
-import com.almuradev.almura.core.client.config.ClientConfiguration;
+import com.almuradev.almura.core.client.ClientConfiguration;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
-import com.almuradev.shared.config.ConfigurationAdapter;
-import com.almuradev.shared.event.Witness;
+import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.inject.Injector;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -25,23 +25,23 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
 @SideOnly(Side.CLIENT)
+@Singleton
 public class ClientHeadUpDisplay implements Witness {
 
     private final Injector injector;
-    private final ConfigurationAdapter<ClientConfiguration> config;
+    private final MappedConfiguration<ClientConfiguration> config;
     @Nullable private AbstractHUD hud;
 
     @Inject
-    public ClientHeadUpDisplay(final Injector injector, final ConfigurationAdapter<ClientConfiguration> config) {
+    public ClientHeadUpDisplay(final Injector injector, final MappedConfiguration<ClientConfiguration> config) {
         this.injector = injector;
         this.config = config;
     }
 
     @SubscribeEvent
     public void gameOverlayRender(final RenderGameOverlayEvent.Pre event) {
-        switch (this.config.getConfig().client.hud.toLowerCase()) {
+        switch (this.config.get().client.hud.toLowerCase()) {
             case HUDType.ORIGIN:
                 if (!(this.hud instanceof OriginHUD)) {
                     if (this.hud != null) {

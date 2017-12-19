@@ -8,8 +8,8 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel.debug;
 
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIHUDPanel;
-import com.almuradev.shared.client.ui.FontColors;
-import com.almuradev.shared.client.ui.Fonts;
+import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.Fonts;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;

@@ -1,0 +1,5 @@
+{
+    "item_group": "almura:some_group",
+    "crop": "almura:path/to/some_crop",
+    "soil": "minecraft:farmland"
+}

@@ -10,10 +10,10 @@ package com.almuradev.almura.feature.menu;
 import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.core.client.config.ClientCategory;
 import com.almuradev.almura.feature.hud.HUDType;
-import com.almuradev.shared.client.ui.FontColors;
-import com.almuradev.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.shared.client.ui.component.slider.UISliderBuilder;
-import com.almuradev.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.slider.UISliderBuilder;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.base.Converter;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
@@ -47,10 +47,10 @@ public class SimpleOptionsMenu extends SimpleScreen {
     @SuppressWarnings({"unchecked"})
     @Override
     public void construct() {
-        final ClientCategory config = StaticAccess.config.getConfig().client;
+        final ClientCategory config = StaticAccess.config.get().client;
         this.saveAndLoad();
 
-        final UILabel titleLabel = new UILabel(this, I18n.format("almura.menu.options"));
+        final UILabel titleLabel = new UILabel(this, I18n.format("almura.menu_button.options"));
         titleLabel.setFontOptions(FontColors.FRO_WHITE);
         titleLabel.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
 
@@ -169,8 +169,8 @@ public class SimpleOptionsMenu extends SimpleScreen {
         switch (event.getComponent().getName()) {
             case "button.hudType":
                 // Check if the current HUD is the Origin HUD
-                boolean isOrigin = StaticAccess.config.getConfig().client.hud.equalsIgnoreCase(HUDType.ORIGIN);
-                StaticAccess.config.getConfig().client.hud = isOrigin ? HUDType.VANILLA : HUDType.ORIGIN;
+                boolean isOrigin = StaticAccess.config.get().client.hud.equalsIgnoreCase(HUDType.ORIGIN);
+                StaticAccess.config.get().client.hud = isOrigin ? HUDType.VANILLA : HUDType.ORIGIN;
                 // Flip the boolean since we're now on the vanilla HUD
                 isOrigin = !isOrigin;
 
@@ -197,25 +197,25 @@ public class SimpleOptionsMenu extends SimpleScreen {
     public void onValueChange(ComponentEvent.ValueChange event) {
         switch (event.getComponent().getName()) {
             case "slider.originHudOpacity":
-                StaticAccess.config.getConfig().client.originHudOpacity = (int) event.getNewValue();
+                StaticAccess.config.get().client.originHudOpacity = (int) event.getNewValue();
                 break;
             case "slider.chestRenderDistance" :
-                StaticAccess.config.getConfig().client.chestRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                StaticAccess.config.get().client.chestRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "slider.signTextRenderDistance" :
-                StaticAccess.config.getConfig().client.signTextRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                StaticAccess.config.get().client.signTextRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "slider.itemFrameRenderDistance" :
-                StaticAccess.config.getConfig().client.itemFrameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                StaticAccess.config.get().client.itemFrameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "checkbox.world_compass_widget" :
-                StaticAccess.config.getConfig().client.displayWorldCompassWidget = (boolean) event.getNewValue();
+                StaticAccess.config.get().client.displayWorldCompassWidget = (boolean) event.getNewValue();
                 break;
             case "checkbox.location_widget" :
-                StaticAccess.config.getConfig().client.displayLocationWidget = (boolean) event.getNewValue();
+                StaticAccess.config.get().client.displayLocationWidget = (boolean) event.getNewValue();
                 break;
             case "checkbox.numeric_hud_values" :
-                StaticAccess.config.getConfig().client.displayNumericHUDValues = (boolean) event.getNewValue();
+                StaticAccess.config.get().client.displayNumericHUDValues = (boolean) event.getNewValue();
                 break;
         }
 

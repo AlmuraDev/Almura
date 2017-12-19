@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.shared.util.Environment;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
@@ -18,7 +19,10 @@ public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
 
     public AlmuraLoadingPlugin() {
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.almura.core.json");
+        Mixins.addConfigurations(
+                "mixins.almura.core.json",
+                "mixins.almura.content.json"
+        );
     }
 
     @Override
@@ -38,7 +42,7 @@ public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data) {
-
+        Environment.environment = ((Boolean) data.get("runtimeDeobfuscationEnabled")) ? Environment.DEVELOPMENT : Environment.PRODUCTION;
     }
 
     @Override

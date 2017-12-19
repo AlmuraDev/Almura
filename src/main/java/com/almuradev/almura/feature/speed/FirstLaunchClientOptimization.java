@@ -7,14 +7,17 @@
  */
 package com.almuradev.almura.feature.speed;
 
+import com.almuradev.almura.core.client.ClientConfiguration;
 import com.almuradev.almura.core.client.config.ClientCategory;
-import com.almuradev.almura.core.client.config.ClientConfiguration;
-import com.almuradev.shared.config.ConfigLoadEvent;
-import com.almuradev.shared.event.Witness;
+import com.almuradev.almura.shared.config.ConfigLoadEvent;
+import com.almuradev.almura.shared.event.Witness;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class FirstLaunchClientOptimization implements Witness {
 
     @SubscribeEvent

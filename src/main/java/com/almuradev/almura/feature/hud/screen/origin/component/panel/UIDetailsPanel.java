@@ -8,10 +8,10 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
-import com.almuradev.shared.client.GuiConfig;
-import com.almuradev.shared.client.ui.FontColors;
-import com.almuradev.shared.client.ui.component.UIExpandingLabel;
-import com.almuradev.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.base.MoreObjects;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;

@@ -9,7 +9,7 @@ package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.feature.hud.HUDData;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
-import com.almuradev.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.FontColors;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;

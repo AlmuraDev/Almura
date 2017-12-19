@@ -11,10 +11,10 @@ import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.feature.hud.HUDData;
 import com.almuradev.almura.feature.hud.screen.origin.UIAvatarImage;
 import com.almuradev.almura.feature.hud.screen.origin.component.UIXPOrbImage;
-import com.almuradev.shared.client.GuiConfig;
-import com.almuradev.shared.client.ui.FontColors;
-import com.almuradev.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.shared.util.MathUtil;
+import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
@@ -168,8 +168,8 @@ public class UIUserPanel extends UIHUDPanel {
         final int experienceCap = this.client.player.xpBarCap();
         final int experience = (int) (this.client.player.experience * experienceCap);
 
-        if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-            this.experienceBar.setText(Text.of(df.format(experience) + "/" + df.format(experienceCap)));
+        if (StaticAccess.config.get().client.displayNumericHUDValues) {
+            this.experienceBar.setText(Text.of(this.df.format(experience) + "/" + this.df.format(experienceCap)));
         } else {
             this.experienceBar.setText(Text.EMPTY);
         }
@@ -180,8 +180,8 @@ public class UIUserPanel extends UIHUDPanel {
         final float health = Minecraft.getMinecraft().player.getHealth();
         final float maxHealth = Minecraft.getMinecraft().player.getMaxHealth();
         this.healthBar.setAmount(MathUtil.convertToRange(health,0f, maxHealth, 0f, 1f));
-        if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-            this.healthBar.setText(Text.of(df.format(health) + "/" + df.format(maxHealth)));
+        if (StaticAccess.config.get().client.displayNumericHUDValues) {
+            this.healthBar.setText(Text.of(this.df.format(health) + "/" + this.df.format(maxHealth)));
         } else {
             this.healthBar.setText(Text.EMPTY);
         }
@@ -202,8 +202,8 @@ public class UIUserPanel extends UIHUDPanel {
             }
         }
         final int currentArmor = maxArmor - currentDamage;
-        if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-            this.armorBar.setText(Text.of(df.format((float) currentArmor) + "/" + df.format((float) maxArmor)));
+        if (StaticAccess.config.get().client.displayNumericHUDValues) {
+            this.armorBar.setText(Text.of(this.df.format((float) currentArmor) + "/" + this.df.format((float) maxArmor)));
         } else {
             this.armorBar.setText(Text.EMPTY);
         }
@@ -213,8 +213,8 @@ public class UIUserPanel extends UIHUDPanel {
 
     private void updateHunger() {
         final float foodLevel = Minecraft.getMinecraft().player.getFoodStats().getFoodLevel();
-        if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-            this.hungerBar.setText(Text.of(df.format(foodLevel) + "/" + df.format(20f)));
+        if (StaticAccess.config.get().client.displayNumericHUDValues) {
+            this.hungerBar.setText(Text.of(this.df.format(foodLevel) + "/" + this.df.format(20f)));
         } else {
             this.hungerBar.setText(Text.EMPTY);
         }
@@ -228,8 +228,8 @@ public class UIUserPanel extends UIHUDPanel {
         // TODO Hardcoded to not care above 300, if we can do this better in the future then we should do so
         if (this.airBar.isVisible()) {
             final int air = Math.max(Minecraft.getMinecraft().player.getAir(), 0);
-            if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-                this.airBar.setText(Text.of(df.format((float) air) + "/" + df.format((float) 300)));
+            if (StaticAccess.config.get().client.displayNumericHUDValues) {
+                this.airBar.setText(Text.of(this.df.format((float) air) + "/" + this.df.format((float) 300)));
             } else {
                 this.airBar.setText(Text.EMPTY);
             }
@@ -246,8 +246,8 @@ public class UIUserPanel extends UIHUDPanel {
             final EntityLivingBase ridingEntityLivingBase = (EntityLivingBase) entity;
             final float health = ridingEntityLivingBase.getHealth();
             final float maxHealth = ridingEntityLivingBase.getMaxHealth();
-            if (StaticAccess.config.getConfig().client.displayNumericHUDValues) {
-                this.mountHealthBar.setText(Text.of(df.format(health) + "/" + df.format(maxHealth)));
+            if (StaticAccess.config.get().client.displayNumericHUDValues) {
+                this.mountHealthBar.setText(Text.of(this.df.format(health) + "/" + this.df.format(maxHealth)));
             } else {
                 this.mountHealthBar.setText(Text.EMPTY);
             }

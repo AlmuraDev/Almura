@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.feature.hud.screen.origin.UIAvatarImage;
-import com.almuradev.shared.client.ui.component.UISimpleList;
+import com.almuradev.almura.shared.client.ui.component.UISimpleList;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
