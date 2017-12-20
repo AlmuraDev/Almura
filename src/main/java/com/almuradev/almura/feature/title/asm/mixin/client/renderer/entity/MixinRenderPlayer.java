@@ -47,7 +47,7 @@ public abstract class MixinRenderPlayer extends Render {
             final String title = manager.getTitleForRender(entityIn.getUniqueID());
             if (title != null) {
                 // TODO Could make this configurable
-                this.renderLivingLabel(entityIn, title, x, y, z, 96);
+                this.renderLivingLabel(entityIn, title, x, y, z, 128);
                 y += (double) ((float) this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * 0.025F);
             }
         }
