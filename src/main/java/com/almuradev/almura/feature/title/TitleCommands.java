@@ -44,7 +44,7 @@ public final class TitleCommands {
                     if (titles.isEmpty()) {
                         message = Text.builder(prefix + " no titles available.");
                     } else {
-                        message = Text.builder(prefix + " the following titles:");
+                        message = Text.builder(prefix + " the following titles available:");
                         for (Text title : titles) {
                             message
                                     .append(Text.NEW_LINE)
@@ -82,7 +82,7 @@ public final class TitleCommands {
                 .permission("almura.command.title.refresh")
                 .description(Text.of("Triggers a refresh of all titles"))
                 .executor((source, arguments) -> {
-                    manager.refreshTitles();
+                    manager.refreshSelectedTitles();
                     source.sendMessage(Text.of("Refreshed all titles"));
                     return CommandResult.success();
                 })

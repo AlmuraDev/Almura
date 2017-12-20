@@ -29,6 +29,7 @@ import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
+import org.spongepowered.api.network.Message;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
@@ -90,7 +91,6 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
-        // TODO Root Almura command should not be registered here
         this.game.getCommandManager().register(this.container, TitleCommands.generateRootCommand(), "almura");
     }
 
@@ -180,10 +180,19 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
         return Optional.ofNullable(this.serverTitles.get(player.getUniqueId()));
     }
 
-    public void refreshTitles() {
+    public void refreshSelectedTitles() {
         this.createPlayerSelectedTitlesPacket()
                 .ifPresent(packet -> this.game.getServer().getOnlinePlayers().forEach((player) -> this.network.sendTo(player, packet)));
+    }
 
+    public void refreshSelectedTitleFor(Player player, boolean add) {
+        final Message message;
+        if (add) {
+            message = this.createAddPlayerSelectedTitlePacket(player.getUniqueId(), this.serverTitles.get(player.getUniqueId()));
+        } else {
+            message = this.createRemovePlayerSelectedTitlePacket(player.getUniqueId());
+        }
+        this.network.sendToAll(message);
     }
 
     public boolean loadTitles() throws IOException {

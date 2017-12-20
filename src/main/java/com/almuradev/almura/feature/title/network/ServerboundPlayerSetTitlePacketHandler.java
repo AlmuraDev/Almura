@@ -26,7 +26,13 @@ public final class ServerboundPlayerSetTitlePacketHandler implements MessageHand
                 final Player player = ((PlayerConnection) connection).getPlayer();
 
                 // TODO Perms/etc checking
-                manager.putSelectedTitle(player.getUniqueId(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(message.title));
+                if (message.add) {
+                    manager.putSelectedTitle(player.getUniqueId(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(message.title));
+                } else {
+                    manager.removeSelectedTitle(player.getUniqueId());
+                }
+
+                manager.refreshSelectedTitleFor(player, message.add);
             }
         }
     }
