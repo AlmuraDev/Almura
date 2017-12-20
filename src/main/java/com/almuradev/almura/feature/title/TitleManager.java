@@ -117,7 +117,9 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
         Text selectedTitle = this.getSelectedTitleFor(player).orElse(null);
         if (selectedTitle == null) {
             selectedTitle = this.getTitlesFor(player).stream().findFirst().orElse(null);
-            this.putSelectedTitle(player.getUniqueId(), selectedTitle);
+            if (selectedTitle != null) {
+                this.putSelectedTitle(player.getUniqueId(), selectedTitle);
+            }
         }
 
         Task.builder()
@@ -128,10 +130,12 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
                     this.network.sendTo(player, packet);
                 })).submit(this.container);
 
-        // Java, just why
-        final Text found = selectedTitle;
-        this.game.getServer().getOnlinePlayers().stream().filter((p) -> !p.getUniqueId().equals(player.getUniqueId())).forEach((p) ->
-                this.network.sendTo(p, this.createAddPlayerSelectedTitlePacket(player.getUniqueId(), found)));
+        if (selectedTitle != null) {
+            // Java, just why
+            final Text found = selectedTitle;
+            this.game.getServer().getOnlinePlayers().stream().filter((p) -> !p.getUniqueId().equals(player.getUniqueId())).forEach((p) ->
+                    this.network.sendTo(p, this.createAddPlayerSelectedTitlePacket(player.getUniqueId(), found)));
+        }
     }
 
     @Listener
