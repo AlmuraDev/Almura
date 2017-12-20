@@ -1,6 +1,6 @@
 {
     "required": true,
-    "minVersion": "0.6.10",
+    "minVersion": "0.7.4",
     "package": "com.almuradev.almura.asm.mixin.core",
     "refmap": "mixins.almura.refmap.json",
     "target": "@env(DEFAULT)",

@@ -45,12 +45,6 @@ targetCompatibility = '1.8'
 archivesBaseName = project.name.toLowerCase()
 version = "${project.minecraftVersion}-${project.forgeBuild}-r${project.spongeAPIVersion.split("-")[0]}"
 
-sourceSets {
-    main {
-        ext.refMap = "mixins.${project.name.toLowerCase()}.refmap.json"
-    }
-}
-
 minecraft {
     version = "${project.forgeVersion}"
     mappings = project.mcpMappings
@@ -63,6 +57,10 @@ minecraft {
 
     // We don't use the obfuscated dev jar currently
     makeObfSourceJar = false
+}
+
+mixin {
+    add sourceSets.main, "mixins.${project.name.toLowerCase()}.refmap.json"
 }
 
 deobfMcMCP { failOnAtError = false }
@@ -100,7 +98,9 @@ dependencies {
     compile 'net.kyori:lunar:1.0.3'
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
-    compile 'net.malisis:malisiscore:1.12.2-6.3.1-SNAPSHOT'
+    compile ('net.malisis:malisiscore:1.12.2-6.3.1-SNAPSHOT') {
+        transitive = false
+    }
     compile 'ninja.leaping.configurate:configurate-json:3.3'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
 }

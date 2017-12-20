@@ -2,7 +2,7 @@
     "required": true,
     "minVersion": "0.7.4",
     "package": "com.almuradev.content.asm.mixin",
-    "refmap": "mixin.almura.content.refmap.json",
+    "refmap": "mixins.almura.refmap.json",
     "target": "@env(DEFAULT)",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
