@@ -90,6 +90,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
+        // TODO Root Almura command should not be registered here
         this.game.getCommandManager().register(this.container, TitleCommands.generateRootCommand(), "almura");
     }
 
@@ -180,11 +181,8 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     }
 
     public void refreshTitles() {
-        final ClientboundPlayerSelectedTitlesPacket packet = this.createPlayerSelectedTitlesPacket().orElse(null);
-
-        if (packet != null) {
-            this.game.getServer().getOnlinePlayers().forEach((player) -> this.network.sendTo(player, packet));
-        }
+        this.createPlayerSelectedTitlesPacket()
+                .ifPresent(packet -> this.game.getServer().getOnlinePlayers().forEach((player) -> this.network.sendTo(player, packet)));
 
     }
 
