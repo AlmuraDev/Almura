@@ -9,6 +9,7 @@ package com.almuradev.almura.core.common;
 
 import com.almuradev.almura.core.server.ServerConfiguration;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
+import com.almuradev.almura.feature.title.TitleModule;
 import com.almuradev.almura.registry.BossBarColorRegistryModule;
 import com.almuradev.almura.shared.event.WitnessModule;
 import com.almuradev.almura.shared.inject.CommonBinder;
@@ -36,6 +37,7 @@ public final class CommonModule extends AbstractModule implements CommonBinder {
         this.install(new WitnessModule());
         this.install(new HeadUpDisplayModule());
         this.install(new ContentModule());
+        this.install(new TitleModule());
         this.facet()
                 .add(ContentLoader.class);
         this.install(new ServerConfiguration.Module());
