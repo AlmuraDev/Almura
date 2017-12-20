@@ -100,9 +100,9 @@ dependencies {
     compile 'net.kyori:lunar:1.0.3'
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
+    compile 'net.malisis:malisiscore:1.12.2-6.3.1-SNAPSHOT'
     compile 'ninja.leaping.configurate:configurate-json:3.3'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
-    compile project(':MalisisCore')
 }
 
 idea {
