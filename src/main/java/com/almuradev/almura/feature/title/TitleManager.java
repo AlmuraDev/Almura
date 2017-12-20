@@ -145,7 +145,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
         this.network.sendToAll(this.createRemovePlayerSelectedTitlePacket(player.getUniqueId()));
     }
 
-    public Map<String, Text> getTitles() {
+    public Map<String, Text> getAllTitles() {
         return Collections.unmodifiableMap(this.titles);
     }
 
@@ -197,6 +197,8 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
     public boolean loadTitles() throws IOException {
 
+        // Reload titles by permission
+
         this.titles.clear();
 
         final Path titlePath = this.configRoot.resolve(CONFIG_NAME);
@@ -215,6 +217,29 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
                 final String title = node.getString("");
                 if (!title.isEmpty()) {
                     this.titles.put(permission.toString(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(title));
+                }
+            });
+        }
+
+        // Re-set selected titles (they may have a title they no longer have permission for)
+
+        this.serverTitles.clear();
+
+        if (!this.titles.isEmpty()) {
+            this.game.getServer().getOnlinePlayers().forEach((player) -> {
+                Text selectedTitle = this.getSelectedTitleFor(player).orElse(null);
+                final Set<Text> availableTitles = this.getTitlesFor(player);
+
+                if (selectedTitle == null) {
+                    selectedTitle = availableTitles.stream().findFirst().orElse(null);
+                } else {
+                    if (!availableTitles.contains(selectedTitle)) {
+                        selectedTitle = null;
+                    }
+                }
+
+                if (selectedTitle != null) {
+                    this.serverTitles.put(player.getUniqueId(), selectedTitle);
                 }
             });
         }

@@ -5,7 +5,8 @@ import org.spongepowered.api.network.Message;
 
 public final class ServerboundPlayerTitlesRequestPacket implements Message {
 
-    public ServerboundPlayerTitlesRequestPacket() {}
+    public ServerboundPlayerTitlesRequestPacket() {
+    }
 
     @Override
     public void readFrom(ChannelBuf buf) {

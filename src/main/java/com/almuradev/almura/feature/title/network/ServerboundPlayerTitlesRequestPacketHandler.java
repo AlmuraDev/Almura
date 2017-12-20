@@ -37,7 +37,23 @@ public final class ServerboundPlayerTitlesRequestPacketHandler implements Messag
                 if (titles.isEmpty()) {
                     // TODO Tell the client they have no titles :'(
                 } else {
-                    this.network.sendTo(player, new ClientboundPlayerTitlesResponsePacket(titles));
+
+                    final Text selectedTitle = this.manager.getSelectedTitleFor(player).orElse(null);
+
+                    int selectedIndex = 0;
+                    if (selectedTitle != null) {
+                        for (Text title : titles) {
+                            if (title.equals(selectedTitle)) {
+                                break;
+                            }
+
+                            selectedIndex++;
+                        }
+                    } else {
+                        selectedIndex = -1;
+                    }
+
+                    this.network.sendTo(player, new ClientboundPlayerTitlesResponsePacket(selectedIndex, titles));
                 }
             }
         }

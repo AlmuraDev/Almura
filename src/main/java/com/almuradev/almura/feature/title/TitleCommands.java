@@ -67,7 +67,7 @@ public final class TitleCommands {
                     try {
                         manager.loadTitles();
 
-                        source.sendMessage(Text.of(manager.getTitles().size() + " title(s) loaded."));
+                        source.sendMessage(Text.of(manager.getAllTitles().size() + " title(s) loaded."));
                     } catch (IOException e) {
                         throw new CommandException(Text.of("Failed to reload title configuration!", e));
                     }

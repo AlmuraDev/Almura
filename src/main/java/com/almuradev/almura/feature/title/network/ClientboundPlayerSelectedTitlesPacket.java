@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public final class ClientboundPlayerSelectedTitlesPacket implements Message {
 
-    public Map<UUID, Text> titles =  new HashMap<>();
+    public Map<UUID, Text> titles;
 
     public ClientboundPlayerSelectedTitlesPacket() {
     }
@@ -22,6 +22,8 @@ public final class ClientboundPlayerSelectedTitlesPacket implements Message {
 
     @Override
     public void readFrom(ChannelBuf buf) {
+        this.titles = new HashMap<>();
+
         final int count = buf.readInteger();
 
         for (int i = 0; i < count; i++) {

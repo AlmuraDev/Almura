@@ -14,13 +14,14 @@ public final class ClientboundPlayerTitlesResponsePacketHandler implements Messa
     @Override
     public void handleMessage(ClientboundPlayerTitlesResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
+            final int selectedIndex = message.selectedIndex;
             final Set<Text> titles = message.titles;
             final Set<String> guiTitleDisplay = new HashSet<>();
             for (Text title : titles) {
                 guiTitleDisplay.add(TextSerializers.LEGACY_FORMATTING_CODE.serialize(title));
             }
 
-            // TODO Dockter, open the GUI for titles here (using guiTitleDisplay)
+            // TODO Dockter, open the GUI for titles here (using guiTitleDisplay and the selectedTitleIndex)
         }
     }
 }
