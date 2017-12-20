@@ -26,7 +26,7 @@ import java.util.Map;
 public class MixinBlockStateMapper {
 
     @Inject(
-            method = "getVariants",
+            method = "getVariants(Lnet/minecraft/block/Block;)Ljava/util/Map;",
             at = @At("HEAD"),
             cancellable = true
     )
