@@ -7,22 +7,22 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.UUID;
 
-public final class ClientboundPlayerTitlePacket implements Message {
+public final class ClientboundPlayerSelectedTitlePacket implements Message {
 
     public UUID uniqueId;
     public boolean add;
     public Text title;
 
-    public ClientboundPlayerTitlePacket() {
+    public ClientboundPlayerSelectedTitlePacket() {
     }
 
-    public ClientboundPlayerTitlePacket(UUID uniqueId) {
+    public ClientboundPlayerSelectedTitlePacket(UUID uniqueId) {
         this.uniqueId = uniqueId;
         this.add = false;
         this.title = null;
     }
 
-    public ClientboundPlayerTitlePacket(UUID uniqueId, Text title) {
+    public ClientboundPlayerSelectedTitlePacket(UUID uniqueId, Text title) {
         this.uniqueId = uniqueId;
         this.add = true;
         this.title = title;

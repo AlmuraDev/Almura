@@ -13,25 +13,28 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-public final class ClientboundPlayerTitlesPacketHandler implements MessageHandler<ClientboundPlayerTitlesPacket> {
+public final class ClientboundPlayerSelectedTitlesPacketHandler implements MessageHandler<ClientboundPlayerSelectedTitlesPacket> {
 
     private final TitleManager manager;
 
     @Inject
-    public ClientboundPlayerTitlesPacketHandler(final TitleManager manager) {
+    public ClientboundPlayerSelectedTitlesPacketHandler(final TitleManager manager) {
         this.manager = manager;
     }
 
     @Override
-    public void handleMessage(ClientboundPlayerTitlesPacket message, RemoteConnection connection, Platform.Type side) {
+    public void handleMessage(ClientboundPlayerSelectedTitlesPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
+            this.manager.putSelectedTitles(message.titles);
+
             final Map<UUID, String> selectedTitles = new HashMap<>();
 
             for (Map.Entry<UUID, Text> titleEntry : message.titles.entrySet()) {
                 selectedTitles.put(titleEntry.getKey(), TextSerializers.LEGACY_FORMATTING_CODE.serialize(titleEntry.getValue()));
             }
 
-            this.manager.putSelectedTitles(selectedTitles);
+            // Cache serialized forms
+            this.manager.putClientSelectedTitles(selectedTitles);
         }
     }
 }

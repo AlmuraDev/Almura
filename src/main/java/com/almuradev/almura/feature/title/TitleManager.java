@@ -2,8 +2,8 @@ package com.almuradev.almura.feature.title;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.feature.title.network.ClientboundPlayerTitlePacket;
-import com.almuradev.almura.feature.title.network.ClientboundPlayerTitlesPacket;
+import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlePacket;
+import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlesPacket;
 import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.typesafe.config.ConfigRenderOptions;
@@ -63,7 +63,10 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     private final Path configRoot;
     private final Map<String, Text> titles = new LinkedHashMap<>();
 
-    private final Map<UUID, String> selectedTitles = new HashMap<>();
+    private final Map<UUID, Text> serverTitles = new HashMap<>();
+
+    @SideOnly(Side.CLIENT)
+    private final Map<UUID, String> clientTitles = new HashMap<>();
 
     @Inject
     public TitleManager(final Game game, final PluginContainer container, Logger logger, @ChannelId(NetworkConfig.CHANNEL) final
@@ -105,29 +108,36 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onClientConnectedToServerEvent(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        this.selectedTitles.clear();
+        this.clientTitles.clear();
     }
 
     @Listener
     public void onClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
+        // Send joining player's title to everyone
+        Text selectedTitle = this.getSelectedTitleFor(player).orElse(null);
+        if (selectedTitle == null) {
+            selectedTitle = this.getTitlesFor(player).stream().findFirst().orElse(null);
+            this.putSelectedTitle(player.getUniqueId(), selectedTitle);
+        }
+
         Task.builder()
                 .async()
                 .delayTicks(40)
-                .execute(() -> this.createPlayerTitlesPacket().ifPresent((packet) -> {
+                .execute(() -> this.createPlayerSelectedTitlesPacket().ifPresent((packet) -> {
                     // Send joining player everyone's title (including itself)
                     this.network.sendTo(player, packet);
                 })).submit(this.container);
 
-        // TODO Selected Title concept and allowing clients to choose title to display
-        // Send joining player's title to everyone
-        this.getTitlesFor(player).stream().findFirst().ifPresent((title) ->
-                this.game.getServer().getOnlinePlayers().stream().filter((p) -> !p.getUniqueId().equals(player.getUniqueId())).forEach((p) ->
-                        this.network.sendTo(p, this.createAddPlayerTitlePacket(player.getUniqueId(), title))));
+        // Java, just why
+        final Text found = selectedTitle;
+        this.game.getServer().getOnlinePlayers().stream().filter((p) -> !p.getUniqueId().equals(player.getUniqueId())).forEach((p) ->
+                this.network.sendTo(p, this.createAddPlayerSelectedTitlePacket(player.getUniqueId(), found)));
     }
 
     @Listener
     public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
-        this.network.sendToAll(this.createRemovePlayerTitlePacket(player.getUniqueId()));
+        this.removeSelectedTitle(player.getUniqueId());
+        this.network.sendToAll(this.createRemovePlayerSelectedTitlePacket(player.getUniqueId()));
     }
 
     public Map<String, Text> getTitles() {
@@ -139,7 +149,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     public String getTitleForRender(UUID uniqueId) {
         checkNotNull(uniqueId);
 
-        final String title = this.selectedTitles.get(uniqueId);
+        final String title = this.clientTitles.get(uniqueId);
         if (title == null) {
             return null;
         }
@@ -161,8 +171,12 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
         return playerTitles;
     }
 
+    public Optional<Text> getSelectedTitleFor(Player player) {
+        return Optional.ofNullable(this.serverTitles.get(player.getUniqueId()));
+    }
+
     public void refreshTitles() {
-        final ClientboundPlayerTitlesPacket packet = this.createPlayerTitlesPacket().orElse(null);
+        final ClientboundPlayerSelectedTitlesPacket packet = this.createPlayerSelectedTitlesPacket().orElse(null);
 
         if (packet != null) {
             this.game.getServer().getOnlinePlayers().forEach((player) -> this.network.sendTo(player, packet));
@@ -225,60 +239,69 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
                 .build();
     }
 
-    private Optional<ClientboundPlayerTitlesPacket> createPlayerTitlesPacket() {
-        if (this.titles.isEmpty()) {
+    private Optional<ClientboundPlayerSelectedTitlesPacket> createPlayerSelectedTitlesPacket() {
+        if (this.serverTitles.isEmpty()) {
             return Optional.empty();
         }
 
-        final Map<UUID, Text> playerTitles = new HashMap<>();
-
-        this.game.getServer().getOnlinePlayers().forEach((player -> {
-            for (Map.Entry<String, Text> titleEntry : this.titles.entrySet()) {
-                final String permission = titleEntry.getKey();
-                final Text title = titleEntry.getValue();
-
-                if (player.hasPermission(permission)) {
-                    playerTitles.put(player.getUniqueId(), title);
-                    break;
-                }
-            }
-        }));
-
-        return Optional.of(new ClientboundPlayerTitlesPacket(Collections.unmodifiableMap(playerTitles)));
+        return Optional.of(new ClientboundPlayerSelectedTitlesPacket(Collections.unmodifiableMap(this.serverTitles)));
     }
 
-    private ClientboundPlayerTitlePacket createAddPlayerTitlePacket(UUID uniqueId, Text title) {
+    private ClientboundPlayerSelectedTitlePacket createAddPlayerSelectedTitlePacket(UUID uniqueId, Text title) {
         checkNotNull(uniqueId);
         checkNotNull(title);
 
-        return new ClientboundPlayerTitlePacket(uniqueId, title);
+        return new ClientboundPlayerSelectedTitlePacket(uniqueId, title);
     }
 
-    private ClientboundPlayerTitlePacket createRemovePlayerTitlePacket(UUID uniqueId) {
+    private ClientboundPlayerSelectedTitlePacket createRemovePlayerSelectedTitlePacket(UUID uniqueId) {
         checkNotNull(uniqueId);
 
-        return new ClientboundPlayerTitlePacket(uniqueId);
+        return new ClientboundPlayerSelectedTitlePacket(uniqueId);
     }
 
-    @SideOnly(Side.CLIENT)
-    public void putSelectedTitles(Map<UUID, String> titles) {
-        this.selectedTitles.clear();
+    public void putSelectedTitles(Map<UUID, Text> titles) {
+        checkNotNull(titles);
 
-        this.selectedTitles.putAll(titles);
+        this.serverTitles.clear();
+
+        this.serverTitles.putAll(titles);
     }
 
-    @SideOnly(Side.CLIENT)
-    public void putSelectedTitle(UUID uniqueId, String title) {
+    public void putSelectedTitle(UUID uniqueId, Text title) {
         checkNotNull(uniqueId);
         checkNotNull(title);
 
-        this.selectedTitles.put(uniqueId, title);
+        this.serverTitles.put(uniqueId, title);
     }
 
-    @SideOnly(Side.CLIENT)
     public void removeSelectedTitle(UUID uniqueId) {
         checkNotNull(uniqueId);
 
-        this.selectedTitles.remove(uniqueId);
+        this.serverTitles.remove(uniqueId);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void putClientSelectedTitles(Map<UUID, String> titles) {
+        checkNotNull(titles);
+
+        this.clientTitles.clear();
+
+        this.clientTitles.putAll(titles);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void putClientSelectedTitle(UUID uniqueId, String title) {
+        checkNotNull(uniqueId);
+        checkNotNull(title);
+
+        this.clientTitles.put(uniqueId, title);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void removeClientSelectedTitle(UUID uniqueId) {
+        checkNotNull(uniqueId);
+
+        this.clientTitles.remove(uniqueId);
     }
 }

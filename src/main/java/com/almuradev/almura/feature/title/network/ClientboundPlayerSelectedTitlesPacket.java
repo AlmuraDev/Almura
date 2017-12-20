@@ -9,14 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public final class ClientboundPlayerTitlesPacket implements Message {
+public final class ClientboundPlayerSelectedTitlesPacket implements Message {
 
     public Map<UUID, Text> titles =  new HashMap<>();
 
-    public ClientboundPlayerTitlesPacket() {
+    public ClientboundPlayerSelectedTitlesPacket() {
     }
 
-    public ClientboundPlayerTitlesPacket(Map<UUID, Text> titles) {
+    public ClientboundPlayerSelectedTitlesPacket(Map<UUID, Text> titles) {
         this.titles = titles;
     }
 
