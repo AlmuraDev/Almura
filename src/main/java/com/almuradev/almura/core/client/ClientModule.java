@@ -10,6 +10,7 @@ package com.almuradev.almura.core.client;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.core.common.CommonModule;
+import com.almuradev.almura.feature.accessory.AccessoryFeature;
 import com.almuradev.almura.feature.hud.ClientHeadUpDisplay;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
@@ -36,7 +37,8 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
                 .add(ModelBinder.Installer.class)
                 .add(MainMenuFeature.class)
                 .add(ClientHeadUpDisplay.class)
-                .add(FirstLaunchClientOptimization.class);
+                .add(FirstLaunchClientOptimization.class)
+                .add(AccessoryFeature.class);
         this.install(new ClientConfiguration.Module());
         this.model()
                 .loader(OBJModelLoader.class, binder -> {
