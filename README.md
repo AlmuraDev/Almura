@@ -72,7 +72,6 @@ __Server__
 | Working directory | ./run (Included in project)                                                                                        |
 | Module classpath  | Almura (IntelliJ Only)                                                                                             |
 
-
 [Eclipse]: http://www.eclipse.org/
 [Gradle]: http://www.gradle.org/
 [IntelliJ]: http://www.jetbrains.com/idea/
