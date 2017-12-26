@@ -9,6 +9,7 @@
         "block.MixinBlockFarmland",
         "block.MixinBlockVine",
         "entity.MixinEntityList",
+        "util.MixinFoodStats",
         "tileentity.MixinTileEntity",
         "world.MixinBossBarColor"
     ],
