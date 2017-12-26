@@ -23,6 +23,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.Color;
 
 import javax.annotation.Nullable;
 
@@ -187,5 +188,10 @@ public class UIPropertyBar extends UIComponent {
     private int getConvertedFill() {
         final int shapeWidth = ((this.backgroundIcon == null && this.foregroundIcon == null) ? this.width : this.width - 2 - ICON_SIZE) - 2;
         return (int) ((this.amount) * shapeWidth / 1.0f);
+    }
+
+    public UIPropertyBar setFontOptions(FontOptions fro) {
+        this.fontOptions = fro;
+        return this;
     }
 }

@@ -15,6 +15,8 @@ import org.spongepowered.api.util.Color;
 @SideOnly(Side.CLIENT)
 public interface FontColors {
 
+    // Be advised using this interface will remove all other options created prior.
+
     FontOptions FRO_GRAY = FontOptions.builder()
             .color(Color.ofRgb(128, 128, 128).getRgb())
             .build();

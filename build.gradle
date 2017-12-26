@@ -22,13 +22,10 @@ buildscript {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
         classpath "net.minecraftforge.gradle:ForgeGradle:${project.forgeGradleVersion}"
         classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT+'
+        classpath 'org.spongepowered:mixingradle:0.6+'
         classpath 'org.spongepowered:spongegradle:0.5.+'
     }
 }
-
-// Load MalisisCore Gradle project first
-evaluationDependsOn ':MalisisCore'
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -50,9 +47,6 @@ minecraft {
     mappings = project.mcpMappings
     runDir = 'run'
     useDepAts = true
-
-    atSource project(':MalisisCore').sourceSets.main
-
     coreMod = project.coreMod
 
     // We don't use the obfuscated dev jar currently
@@ -98,7 +92,7 @@ dependencies {
     compile 'net.kyori:lunar:1.0.3'
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
-    compile ('net.malisis:malisiscore:1.12.2-6.3.1-SNAPSHOT') {
+    deobfCompile ('net.malisis:malisiscore:1.12.2-6.3.1-SNAPSHOT') {
         transitive = false
     }
     compile 'ninja.leaping.configurate:configurate-json:3.3'
@@ -153,7 +147,7 @@ jar {
                 'FMLCorePlugin': 'com.almuradev.almura.AlmuraLoadingPlugin',
                 'FMLCorePluginContainsFMLMod': true,
                 'ForceLoadAsMod': true,
-                'MixinConfigs': 'mixins.almura.core.json',
+                'MixinConfigs': "mixins.almura.core.json,mixins.almura.content.json",
                 'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0
         )

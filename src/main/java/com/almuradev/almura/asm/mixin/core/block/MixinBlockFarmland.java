@@ -43,7 +43,8 @@ public abstract class MixinBlockFarmland extends Block {
             if (soilMoisture > 0) {
                 worldIn.setBlockState(pos, state.withProperty(MOISTURE, Integer.valueOf(soilMoisture - 1)), 2);
             } else if (!this.hasCrops(worldIn, pos)) {
-                turnToDirt(worldIn, pos);
+                // ToDo:  We need a hook into GP for a Soil Flag like we did with Res-Protect.
+                //turnToDirt(worldIn, pos);
             }
         } else if (soilMoisture < 7) {
             worldIn.setBlockState(pos, state.withProperty(MOISTURE, Integer.valueOf(7)), 2);
