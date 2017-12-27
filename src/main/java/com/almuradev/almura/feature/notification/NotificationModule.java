@@ -10,12 +10,13 @@ public final class NotificationModule extends AbstractModule implements CommonBi
 
     @Override
     protected void configure() {
+        this.command().child(NotificationCommands.generateNotificationCommand(), "notify");
         this.packet()
                 .bind(ClientboundPlayerNotificationPacket.class, binder -> {
-                    binder.channel(7); // TODO Not final discriminator
+                    binder.channel(7);
                     binder.handler(ClientboundPlayerNotificationPacketHandler.class, Platform.Type.CLIENT);
                 });
-
+        this.requestStaticInjection(NotificationCommands.class);
         this.facet().add(ServerNotificationManager.class);
     }
 }

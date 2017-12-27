@@ -54,16 +54,19 @@ public final class ClientNickManager implements Witness {
     public void onPlayerNameFormatPost(final PlayerEvent.NameFormat event) {
         final EntityPlayer player = event.getEntityPlayer();
 
-        this.updateClientInformation(player.getUniqueID(), Text.of(event.getDisplayname()));
+        if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.connection != null) {
+            // Update Player List
+            for (final NetworkPlayerInfo networkPlayerInfo : Minecraft.getMinecraft().player.connection.getPlayerInfoMap()) {
+                if (networkPlayerInfo.getGameProfile().getId().equals(player.getUniqueID())) {
+                    networkPlayerInfo
+                            .setDisplayName(SpongeTexts.toComponent(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(event.getDisplayname())));
+                }
+            }
+        }
     }
 
     private void updateClientInformation(final UUID uniqueId, final Text nick) {
-        // Update Player List
-        for (final NetworkPlayerInfo networkPlayerInfo : Minecraft.getMinecraft().player.connection.getPlayerInfoMap()) {
-            if (networkPlayerInfo.getGameProfile().getId().equals(uniqueId)) {
-                networkPlayerInfo.setDisplayName(SpongeTexts.toComponent(nick));
-            }
-        }
+
     }
 
     public void putAll(final Map<UUID, Text> nicksById) {

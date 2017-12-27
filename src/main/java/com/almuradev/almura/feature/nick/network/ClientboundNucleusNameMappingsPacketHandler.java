@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.nick.network;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.nick.ServerNickManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -18,6 +19,7 @@ import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.common.text.SpongeTexts;
 
 import java.util.Map;
 import java.util.UUID;
@@ -41,10 +43,29 @@ public class ClientboundNucleusNameMappingsPacketHandler implements MessageHandl
         this.nickManager.putAll(nicknames);
 
         final World world = Minecraft.getMinecraft().world;
+        boolean updateTabList = false;
         if (world != null) {
-            for (final EntityPlayer player : world.playerEntities) {
-                // Triggers Forge event, mod compat
-                player.refreshDisplayName();
+            nicknames.forEach((key, value) -> {
+                final EntityPlayer player = world.getPlayerEntityByUUID(key);
+                if (player != null) {
+                    player.refreshDisplayName();
+                }
+            });
+        } else {
+            updateTabList = true;
+        }
+
+        if (updateTabList) {
+            // If the world isn't here then it likely means we logged in too fast. The resolution of the NameFormat event
+            // results in a refresh of the tab-list but that event won't be fired if the client has no world. We still have to fix
+            // the tab list
+            if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.connection != null) {
+                nicknames.forEach((key, value) -> {
+                    final NetworkPlayerInfo info = Minecraft.getMinecraft().player.connection.getPlayerInfo(key);
+                    if (info != null) {
+                        info.setDisplayName(SpongeTexts.toComponent(value));
+                    }
+                });
             }
         }
     }

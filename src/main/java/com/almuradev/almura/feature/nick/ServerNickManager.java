@@ -85,31 +85,35 @@ public final class ServerNickManager extends Witness.Impl implements Activatable
     public void onPlayerNameFormat(final PlayerEvent.NameFormat event) {
         final EntityPlayer player = event.getEntityPlayer();
 
-        this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> service.getNickname((User) (Object) player)
-                .ifPresent((nick) -> event.setDisplayname(TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick))));
+        if (!player.getEntityWorld().isRemote) {
+            this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> service.getNickname((User) (Object) player)
+                    .ifPresent((nick) -> event.setDisplayname(TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick))));
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPlayerNameFormatPost(final PlayerEvent.NameFormat event) {
         final EntityPlayer player = event.getEntityPlayer();
 
-        this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> {
-            final Text oldNick = service.getNickname((Player) event.getEntityPlayer()).orElse(Text.of(player.getName()));
-            final Text newNick = TextSerializers.LEGACY_FORMATTING_CODE.deserialize(event.getDisplayname());
+        if (!player.getEntityWorld().isRemote) {
+            this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> {
+                final Text oldNick = service.getNickname((Player) event.getEntityPlayer()).orElse(Text.of(player.getName()));
+                final Text newNick = TextSerializers.LEGACY_FORMATTING_CODE.deserialize(event.getDisplayname());
 
-            // Update Nucleus
-            if (!oldNick.equals(newNick)) {
-                try {
-                    service.setNickname((User) player, newNick);
-                } catch (final NicknameException e) {
-                    e.printStackTrace();
+                // Update Nucleus
+                if (!oldNick.equals(newNick)) {
+                    try {
+                        service.setNickname((User) player, newNick);
+                    } catch (final NicknameException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    // Schedule client update
+                    Task.builder().async().delayTicks(40).execute(t -> this.network.sendToAll(this.getMappingMessage((Player) player, newNick)))
+                            .submit(this.container);
                 }
-            } else {
-                // Schedule client update
-                Task.builder().async().delayTicks(40).execute(t -> this.network.sendToAll(this.getMappingMessage((Player) player, newNick)))
-                        .submit(this.container);
-            }
-        });
+            });
+        }
     }
 
     @Listener(order = Order.POST)

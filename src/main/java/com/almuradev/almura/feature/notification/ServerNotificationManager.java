@@ -4,23 +4,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.feature.notification.network.ClientboundPlayerNotificationPacket;
-import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import net.kyori.membrane.facet.Activatable;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
-
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

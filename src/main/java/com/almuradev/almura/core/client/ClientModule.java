@@ -16,6 +16,7 @@ import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPane
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
 import com.almuradev.almura.feature.menu.MainMenuManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
+import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.speed.FirstLaunchClientOptimization;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.almuradev.almura.shared.client.model.ModelBinder;
@@ -42,7 +43,8 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
                 .add(MainMenuManager.class)
                 .add(ClientHeadUpDisplayManager.class)
                 .add(ClientNickManager.class)
-                .add(ClientTitleManager.class);
+                .add(ClientTitleManager.class)
+                .add(ClientNotificationManager.class);
         this.install(new ClientConfiguration.Module());
         this.model()
                 .loader(OBJModelLoader.class, binder -> {

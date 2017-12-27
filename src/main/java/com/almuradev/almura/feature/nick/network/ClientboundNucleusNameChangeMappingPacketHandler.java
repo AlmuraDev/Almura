@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.nick.network;
 
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -17,6 +18,7 @@ import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.common.text.SpongeTexts;
 
 import java.util.UUID;
 
@@ -40,10 +42,31 @@ public final class ClientboundNucleusNameChangeMappingPacketHandler implements M
         this.nickManager.put(entityUniqueId, nickname);
 
         final World world = Minecraft.getMinecraft().world;
-        final EntityPlayer entity = world.getPlayerEntityByUUID(entityUniqueId);
-        if (entity != null) {
-            // Triggers Forge event, mod compat
-            entity.refreshDisplayName();
+        boolean updateTabList = false;
+        if (world != null) {
+            final EntityPlayer entity = world.getPlayerEntityByUUID(entityUniqueId);
+            if (entity != null) {
+                // Triggers Forge event, mod compat
+                entity.refreshDisplayName();
+            } else {
+                updateTabList = true;
+
+            }
+        } else {
+            updateTabList = true;
+        }
+
+        if (updateTabList) {
+            // If the entity isn't here then it likely means they are in another world and nick changed. The resolution of the NameFormat event
+            // results in a refresh of the tab-list but that event won't be fired if their entity doesn't exist on our client. We still have to fix
+            // the tab list
+            if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.connection != null) {
+                for (final NetworkPlayerInfo networkPlayerInfo : Minecraft.getMinecraft().player.connection.getPlayerInfoMap()) {
+                    if (networkPlayerInfo.getGameProfile().getId().equals(entityUniqueId)) {
+                        networkPlayerInfo.setDisplayName(SpongeTexts.toComponent(nickname));
+                    }
+                }
+            }
         }
     }
 }
