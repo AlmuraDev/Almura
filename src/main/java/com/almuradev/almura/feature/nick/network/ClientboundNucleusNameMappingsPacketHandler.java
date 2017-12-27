@@ -43,14 +43,16 @@ public class ClientboundNucleusNameMappingsPacketHandler implements MessageHandl
         this.nickManager.putAll(nicknames);
 
         final World world = Minecraft.getMinecraft().world;
-        boolean updateTabList = false;
+        boolean updateTabList = nicknames.isEmpty();
         if (world != null) {
-            nicknames.forEach((key, value) -> {
-                final EntityPlayer player = world.getPlayerEntityByUUID(key);
+            for (Map.Entry<UUID, Text> entry : nicknames.entrySet()) {
+                final EntityPlayer player = world.getPlayerEntityByUUID(entry.getKey());
                 if (player != null) {
                     player.refreshDisplayName();
+                } else {
+                    updateTabList = true;
                 }
-            });
+            }
         } else {
             updateTabList = true;
         }

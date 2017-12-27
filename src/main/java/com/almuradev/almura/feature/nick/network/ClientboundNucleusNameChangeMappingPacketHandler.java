@@ -61,10 +61,9 @@ public final class ClientboundNucleusNameChangeMappingPacketHandler implements M
             // results in a refresh of the tab-list but that event won't be fired if their entity doesn't exist on our client. We still have to fix
             // the tab list
             if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.connection != null) {
-                for (final NetworkPlayerInfo networkPlayerInfo : Minecraft.getMinecraft().player.connection.getPlayerInfoMap()) {
-                    if (networkPlayerInfo.getGameProfile().getId().equals(entityUniqueId)) {
-                        networkPlayerInfo.setDisplayName(SpongeTexts.toComponent(nickname));
-                    }
+                final NetworkPlayerInfo info = Minecraft.getMinecraft().player.connection.getPlayerInfo(entityUniqueId);
+                if (info != null) {
+                    info.setDisplayName(SpongeTexts.toComponent(nickname));
                 }
             }
         }
