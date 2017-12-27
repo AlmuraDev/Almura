@@ -12,6 +12,7 @@ import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.core.common.CommonModule;
 import com.almuradev.almura.feature.hud.ClientHeadUpDisplay;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
+import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
 import com.almuradev.almura.feature.menu.MainMenuFeature;
 import com.almuradev.almura.feature.speed.FirstLaunchClientOptimization;
@@ -46,6 +47,7 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
         this.requestStaticInjection(StaticAccess.class);
         this.requestStaticInjection(UIDetailsPanel.class);
         this.requestStaticInjection(UIWorldPanel.class);
+        this.requestStaticInjection(UIUserPanel.class);
         this.requestMixinInjection();
         this.installFactory(OBJModelParser.Factory.class);
     }

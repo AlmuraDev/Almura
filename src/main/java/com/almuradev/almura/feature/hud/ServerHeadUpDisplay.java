@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.feature.hud;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.core.server.ServerConfiguration;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
@@ -56,8 +55,7 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
 
     @Inject
     private ServerHeadUpDisplay(final Game game, final PluginContainer container, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
-            .IndexedMessageChannel network, final
-    MappedConfiguration<ServerConfiguration> config) {
+            .IndexedMessageChannel network, final MappedConfiguration<ServerConfiguration> config) {
         this.game = game;
         this.container = container;
         this.network = network;
@@ -92,12 +90,6 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
         if (currPacket != null) {
             this.network.sendTo(player, currPacket);
         }
-    }
-
-    @SubscribeEvent
-    public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        HUDData.IS_ECONOMY_PRESENT = false;
-        HUDData.PLAYER_CURRENCY = "";
     }
 
     @Listener(order = Order.LAST)

@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
-import com.almuradev.almura.feature.hud.HUDData;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import net.malisis.core.client.gui.Anchor;
@@ -24,7 +23,8 @@ import javax.inject.Inject;
 @SideOnly(Side.CLIENT)
 public class UIWorldPanel extends UIHUDPanel {
 
-    @Inject public static HeadUpDisplay config;
+    @Inject private static HeadUpDisplay hudData;
+
     private final UILabel compassLabel, worldLabel;
 
     public UIWorldPanel(MalisisGui gui, int width, int height) {
@@ -52,12 +52,12 @@ public class UIWorldPanel extends UIHUDPanel {
 
     @SuppressWarnings("deprecation")
     private void updateCompass() {
-        this.compassLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(HUDData.getCompass()));
+        this.compassLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(hudData.getCompass()));
         this.compassLabel.setPosition(0, 1, Anchor.BOTTOM | Anchor.CENTER);
     }
 
     private void updateWorld() {
-        this.worldLabel.setText(config.worldName);
+        this.worldLabel.setText(hudData.worldName);
         this.worldLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
         if (this.worldLabel.getWidth() + 15 <= this.compassLabel.getWidth() + 10) {
             this.width = this.compassLabel.getWidth() + 10;

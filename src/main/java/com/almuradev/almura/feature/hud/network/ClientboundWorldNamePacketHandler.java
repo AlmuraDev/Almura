@@ -16,17 +16,17 @@ import javax.inject.Inject;
 
 public final class ClientboundWorldNamePacketHandler implements MessageHandler<ClientboundWorldNamePacket> {
 
-    private final HeadUpDisplay config;
+    private final HeadUpDisplay hudData;
 
     @Inject
-    private ClientboundWorldNamePacketHandler(final HeadUpDisplay config) {
-        this.config = config;
+    private ClientboundWorldNamePacketHandler(final HeadUpDisplay hudData) {
+        this.hudData = hudData;
     }
 
     @Override
     public void handleMessage(ClientboundWorldNamePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
-            this.config.worldName = message.name;
+            this.hudData.worldName = message.name;
         }
     }
 }

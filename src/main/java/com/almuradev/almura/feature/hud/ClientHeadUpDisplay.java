@@ -16,6 +16,7 @@ import com.google.inject.Injector;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,16 +32,19 @@ public class ClientHeadUpDisplay implements Witness {
 
     private final Injector injector;
     private final MappedConfiguration<ClientConfiguration> config;
+    private final HeadUpDisplay hudData;
+
     @Nullable private AbstractHUD hud;
 
     @Inject
-    public ClientHeadUpDisplay(final Injector injector, final MappedConfiguration<ClientConfiguration> config) {
+    public ClientHeadUpDisplay(final Injector injector, final MappedConfiguration<ClientConfiguration> config, final HeadUpDisplay hudData) {
         this.injector = injector;
         this.config = config;
+        this.hudData = hudData;
     }
 
     @SubscribeEvent
-    public void gameOverlayRender(final RenderGameOverlayEvent.Pre event) {
+    public void onRenderGameOverlayPre(final RenderGameOverlayEvent.Pre event) {
         switch (this.config.get().client.hud.toLowerCase()) {
             case HUDType.ORIGIN:
                 if (!(this.hud instanceof OriginHUD)) {
@@ -77,10 +81,16 @@ public class ClientHeadUpDisplay implements Witness {
     }
 
     @SubscribeEvent
-    public void mouse(final MouseEvent event) {
+    public void onMouse(final MouseEvent event) {
         if (this.hud != null && this.hud instanceof OriginHUD) {
             event.setCanceled(((OriginHUD) this.hud).handleScroll());
         }
+    }
+
+    @SubscribeEvent
+    public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+        this.hudData.isEconomyPresent = false;
+        this.hudData.economyAmount = "";
     }
 
     public Optional<AbstractHUD> getHUD() {

@@ -16,18 +16,18 @@ import javax.inject.Inject;
 
 public final class ClientboundPlayerCountPacketHandler implements MessageHandler<ClientboundPlayerCountPacket> {
 
-    private final HeadUpDisplay config;
+    private final HeadUpDisplay hudData;
 
     @Inject
-    private ClientboundPlayerCountPacketHandler(final HeadUpDisplay config) {
-        this.config = config;
+    private ClientboundPlayerCountPacketHandler(final HeadUpDisplay hudData) {
+        this.hudData = hudData;
     }
 
     @Override
     public void handleMessage(ClientboundPlayerCountPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
-            this.config.onlinePlayerCount = message.online;
-            this.config.maxPlayerCount = message.max;
+            this.hudData.onlinePlayerCount = message.online;
+            this.hudData.maxPlayerCount = message.max;
         }
     }
 }

@@ -8,12 +8,10 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.asm.StaticAccess;
-import com.almuradev.almura.feature.hud.HUDData;
+import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.feature.hud.screen.origin.UIAvatarImage;
 import com.almuradev.almura.feature.hud.screen.origin.component.UIXPOrbImage;
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.FontSizes;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
@@ -21,7 +19,6 @@ import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.renderer.icon.Icon;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -38,8 +35,12 @@ import org.spongepowered.api.text.Text;
 
 import java.text.DecimalFormat;
 
+import javax.inject.Inject;
+
 @SideOnly(Side.CLIENT)
 public class UIUserPanel extends UIHUDPanel {
+
+    @Inject private static HeadUpDisplay hudData;
 
     private final Minecraft client = Minecraft.getMinecraft();
     private final int baseHeight;
@@ -153,11 +154,11 @@ public class UIUserPanel extends UIHUDPanel {
     }
 
     private void updateCurrency() {
-        this.currencyImage.setVisible(HUDData.IS_ECONOMY_PRESENT);
-        this.currencyLabel.setVisible(HUDData.IS_ECONOMY_PRESENT);
-        if (HUDData.IS_ECONOMY_PRESENT) {
+        this.currencyImage.setVisible(hudData.isEconomyPresent);
+        this.currencyLabel.setVisible(hudData.isEconomyPresent);
+        if (hudData.isEconomyPresent) {
             this.currencyImage.setPosition(SimpleScreen.getPaddedX(this.levelLabel, 2), SimpleScreen.getPaddedY(this.usernameLabel, 0));
-            this.currencyLabel.setText(TextFormatting.WHITE + HUDData.PLAYER_CURRENCY);
+            this.currencyLabel.setText(TextFormatting.WHITE + hudData.economyAmount);
             this.currencyLabel.setPosition(SimpleScreen.getPaddedX(this.currencyImage, 2), SimpleScreen.getPaddedY(this.usernameLabel, 1));
         }
     }
