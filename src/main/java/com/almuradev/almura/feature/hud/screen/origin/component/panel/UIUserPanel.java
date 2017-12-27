@@ -75,6 +75,8 @@ public class UIUserPanel extends UIHUDPanel {
         this.currencyImage = new UIImage(gui, MalisisGui.BLOCK_TEXTURE, Icon.from(Items.EMERALD));
         this.currencyImage.setSize(8, 8);
         this.currencyLabel = new UILabel(gui, "");
+        this.currencyLabel.setVisible(false);
+        this.currencyImage.setVisible(false);
 
         // Bars
         final int barWidth = this.width - 10;
@@ -154,12 +156,13 @@ public class UIUserPanel extends UIHUDPanel {
     }
 
     private void updateCurrency() {
-        this.currencyImage.setVisible(hudData.isEconomyPresent);
-        this.currencyLabel.setVisible(hudData.isEconomyPresent);
         if (hudData.isEconomyPresent) {
-            this.currencyImage.setPosition(SimpleScreen.getPaddedX(this.levelLabel, 2), SimpleScreen.getPaddedY(this.usernameLabel, 0));
-            this.currencyLabel.setText(TextFormatting.WHITE + hudData.economyAmount);
-            this.currencyLabel.setPosition(SimpleScreen.getPaddedX(this.currencyImage, 2), SimpleScreen.getPaddedY(this.usernameLabel, 1));
+            this.currencyImage.setVisible(true);
+            this.currencyLabel.setVisible(true);
+            this.currencyLabel.setText(hudData.economyAmount);
+            this.currencyLabel.setFontOptions(this.setFontColorandSize(orange, 0.7F));
+            this.currencyLabel.setPosition(-3, SimpleScreen.getPaddedY(this.usernameLabel, 1),Anchor.TOP | Anchor.RIGHT);
+            this.currencyImage.setPosition(-(this.currencyLabel.getWidth() + 5), SimpleScreen.getPaddedY(this.usernameLabel, -1), Anchor.TOP | Anchor.RIGHT);
         }
     }
 
