@@ -8,6 +8,7 @@
 package com.almuradev.almura.core.common;
 
 import com.almuradev.almura.core.server.ServerConfiguration;
+import com.almuradev.almura.feature.animal.AnimalModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
 import com.almuradev.almura.feature.title.TitleModule;
 import com.almuradev.almura.feature.nick.NickModule;
@@ -44,6 +45,7 @@ public final class CommonModule extends AbstractModule implements CommonBinder {
         this.install(new NickModule());
         this.install(new TitleModule());
         this.install(new NotificationModule());
+        this.install(new AnimalModule());
         this.facet()
                 .add(ContentLoader.class);
         this.install(new ServerConfiguration.Module());

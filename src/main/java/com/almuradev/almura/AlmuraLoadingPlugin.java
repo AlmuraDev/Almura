@@ -22,7 +22,8 @@ public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
         Mixins.addConfigurations(
                 "mixins.almura.core.json",
                 "mixins.almura.content.json",
-                "mixins.almura.title.json"
+                "mixins.almura.title.json",
+                "mixins.almura.animal.json"
         );
     }
 
