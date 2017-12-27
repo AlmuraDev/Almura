@@ -7,10 +7,12 @@
  */
 package com.almuradev.almura.feature.nick.network;
 
-import com.almuradev.almura.feature.nick.NickManager;
+import com.almuradev.almura.feature.nick.ClientNickManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
@@ -22,13 +24,14 @@ import javax.inject.Inject;
 
 public final class ClientboundNucleusNameChangeMappingPacketHandler implements MessageHandler<ClientboundNucleusNameChangeMappingPacket> {
 
-    private final NickManager nickManager;
+    private final ClientNickManager nickManager;
 
     @Inject
-    private ClientboundNucleusNameChangeMappingPacketHandler(final NickManager nickManager) {
+    private ClientboundNucleusNameChangeMappingPacketHandler(final ClientNickManager nickManager) {
         this.nickManager = nickManager;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(final ClientboundNucleusNameChangeMappingPacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient()) {

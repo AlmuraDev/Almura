@@ -30,6 +30,6 @@ public final class NickModule extends AbstractModule implements CommonBinder {
                 });
 
         this.facet()
-                .add(NickManager.class);
+                .add(ServerNickManager.class);
     }
 }
