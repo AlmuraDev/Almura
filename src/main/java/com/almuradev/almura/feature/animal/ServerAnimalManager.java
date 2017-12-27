@@ -56,7 +56,7 @@ public final class ServerAnimalManager extends Witness.Impl implements Activatab
         if (event.getTargetEntity() instanceof EntityAnimal) {
             final EntityAnimal animal = (EntityAnimal) event.getTargetEntity();
 
-            if (!animal.isChild() && animal.isInLove()) {
+            if (!animal.isChild() && animal.isInLove() && !animal.hasCustomName()) {
                 animal.setCustomNameTag(TextFormatting.DARK_AQUA + animal.getName());
             }
         }
