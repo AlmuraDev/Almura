@@ -54,12 +54,11 @@ public final class ServerAnimalManager extends Witness.Impl implements Activatab
     @Listener(order = Order.LAST)
     public void onInteractEntity(InteractEntityEvent.Secondary.MainHand event) {
         if (event.getTargetEntity() instanceof EntityAnimal) {
-            Task.builder().delayTicks(1).execute(() -> {
-                final EntityAnimal animal = (EntityAnimal) event.getTargetEntity();
-                if (!animal.isChild() && animal.isInLove() && !animal.hasCustomName()) {
-                    animal.setCustomNameTag(TextFormatting.DARK_AQUA + animal.getName());
-                }
-            }).submit(this.container);
+            final EntityAnimal animal = (EntityAnimal) event.getTargetEntity();
+
+            if (!animal.isChild() && animal.isInLove()) {
+                animal.setCustomNameTag(TextFormatting.DARK_AQUA + animal.getName());
+            }
         }
     }
 }
