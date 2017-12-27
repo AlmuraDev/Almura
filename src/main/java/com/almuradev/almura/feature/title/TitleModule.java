@@ -35,7 +35,7 @@ public final class TitleModule extends AbstractModule implements CommonBinder {
                     binder.handler(ClientboundPlayerSelectedTitlesPacketHandler.class, Platform.Type.CLIENT);
                 });
         this.facet()
-                .add(TitleManager.class);
+                .add(ServerTitleManager.class);
         this.requestStaticInjection(TitleCommands.class);
         if (Sponge.getPlatform().getType().isClient()) {
             this.requestMixinInjection();

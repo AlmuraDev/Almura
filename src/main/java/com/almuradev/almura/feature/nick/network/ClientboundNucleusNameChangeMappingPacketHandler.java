@@ -34,18 +34,16 @@ public final class ClientboundNucleusNameChangeMappingPacketHandler implements M
     @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(final ClientboundNucleusNameChangeMappingPacket message, final RemoteConnection connection, final Platform.Type side) {
-        if (side.isClient()) {
-            final UUID entityUniqueId = message.uuid;
-            final Text nickname = message.text;
+        final UUID entityUniqueId = message.uuid;
+        final Text nickname = message.text;
 
-            this.nickManager.put(entityUniqueId, nickname);
+        this.nickManager.put(entityUniqueId, nickname);
 
-            final World world = Minecraft.getMinecraft().world;
-            final EntityPlayer entity = world.getPlayerEntityByUUID(entityUniqueId);
-            if (entity != null) {
-                // Triggers Forge event, mod compat
-                entity.refreshDisplayName();
-            }
+        final World world = Minecraft.getMinecraft().world;
+        final EntityPlayer entity = world.getPlayerEntityByUUID(entityUniqueId);
+        if (entity != null) {
+            // Triggers Forge event, mod compat
+            entity.refreshDisplayName();
         }
     }
 }

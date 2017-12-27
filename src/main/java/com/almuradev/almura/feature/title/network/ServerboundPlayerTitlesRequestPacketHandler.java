@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.title.network;
 
-import com.almuradev.almura.feature.title.TitleManager;
+import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.entity.living.player.Player;
@@ -24,11 +24,11 @@ import javax.inject.Inject;
 
 public final class ServerboundPlayerTitlesRequestPacketHandler implements MessageHandler<ServerboundPlayerTitlesRequestPacket> {
 
-    private final TitleManager manager;
+    private final ServerTitleManager manager;
     private final ChannelBinding.IndexedMessageChannel network;
 
     @Inject
-    public ServerboundPlayerTitlesRequestPacketHandler(final TitleManager manager, @ChannelId(NetworkConfig.CHANNEL)
+    public ServerboundPlayerTitlesRequestPacketHandler(final ServerTitleManager manager, @ChannelId(NetworkConfig.CHANNEL)
             ChannelBinding.IndexedMessageChannel network) {
         this.manager = manager;
         this.network = network;
@@ -36,32 +36,30 @@ public final class ServerboundPlayerTitlesRequestPacketHandler implements Messag
 
     @Override
     public void handleMessage(ServerboundPlayerTitlesRequestPacket message, RemoteConnection connection, Platform.Type side) {
-        if (side.isServer()) {
-            if (connection instanceof PlayerConnection) {
-                final Player player = ((PlayerConnection) connection).getPlayer();
-                final Set<Text> titles = this.manager.getTitlesFor(player);
+        if (side.isServer() && connection instanceof PlayerConnection) {
+            final Player player = ((PlayerConnection) connection).getPlayer();
+            final Set<Text> titles = this.manager.getTitlesFor(player);
 
-                if (titles.isEmpty()) {
-                    // TODO Tell the client they have no titles :'(
-                } else {
+            if (titles.isEmpty()) {
+                // TODO Tell the client they have no titles :'(
+            } else {
 
-                    final Text selectedTitle = this.manager.getSelectedTitleFor(player).orElse(null);
+                final Text selectedTitle = this.manager.getSelectedTitleFor(player).orElse(null);
 
-                    int selectedIndex = 0;
-                    if (selectedTitle != null) {
-                        for (Text title : titles) {
-                            if (title.equals(selectedTitle)) {
-                                break;
-                            }
-
-                            selectedIndex++;
+                int selectedIndex = 0;
+                if (selectedTitle != null) {
+                    for (Text title : titles) {
+                        if (title.equals(selectedTitle)) {
+                            break;
                         }
-                    } else {
-                        selectedIndex = -1;
-                    }
 
-                    this.network.sendTo(player, new ClientboundPlayerTitlesResponsePacket(selectedIndex, titles));
+                        selectedIndex++;
+                    }
+                } else {
+                    selectedIndex = -1;
                 }
+
+                this.network.sendTo(player, new ClientboundPlayerTitlesResponsePacket(selectedIndex, titles));
             }
         }
     }

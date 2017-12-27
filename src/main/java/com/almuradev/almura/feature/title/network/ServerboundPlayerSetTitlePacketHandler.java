@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.title.network;
 
-import com.almuradev.almura.feature.title.TitleManager;
+import com.almuradev.almura.feature.title.ServerTitleManager;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.MessageHandler;
@@ -19,10 +19,10 @@ import javax.inject.Inject;
 
 public final class ServerboundPlayerSetTitlePacketHandler implements MessageHandler<ServerboundPlayerSetTitlePacket> {
 
-    private final TitleManager manager;
+    private final ServerTitleManager manager;
 
     @Inject
-    public ServerboundPlayerSetTitlePacketHandler(final TitleManager manager) {
+    public ServerboundPlayerSetTitlePacketHandler(final ServerTitleManager manager) {
         this.manager = manager;
     }
 

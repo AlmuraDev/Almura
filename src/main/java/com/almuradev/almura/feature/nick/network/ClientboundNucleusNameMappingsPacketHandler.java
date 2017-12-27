@@ -36,17 +36,15 @@ public class ClientboundNucleusNameMappingsPacketHandler implements MessageHandl
     @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(final ClientboundNucleusNameMappingsPacket message, final RemoteConnection connection, final Platform.Type side) {
-        if (side.isClient()) {
-            final Map<UUID, Text> nicknames = message.nicknames;
+        final Map<UUID, Text> nicknames = message.nicknames;
 
-            this.nickManager.putAll(nicknames);
+        this.nickManager.putAll(nicknames);
 
-            final World world = Minecraft.getMinecraft().world;
-            if (world != null) {
-                for (final EntityPlayer player : world.playerEntities) {
-                    // Triggers Forge event, mod compat
-                    player.refreshDisplayName();
-                }
+        final World world = Minecraft.getMinecraft().world;
+        if (world != null) {
+            for (final EntityPlayer player : world.playerEntities) {
+                // Triggers Forge event, mod compat
+                player.refreshDisplayName();
             }
         }
     }

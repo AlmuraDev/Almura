@@ -7,7 +7,10 @@
  */
 package com.almuradev.almura.feature.title.network;
 
-import com.almuradev.almura.feature.title.TitleManager;
+import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.almuradev.almura.feature.title.ServerTitleManager;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
@@ -17,24 +20,20 @@ import javax.inject.Inject;
 
 public final class ClientboundPlayerSelectedTitlePacketHandler implements MessageHandler<ClientboundPlayerSelectedTitlePacket> {
 
-    private final TitleManager manager;
+    private final ClientTitleManager manager;
 
     @Inject
-    public ClientboundPlayerSelectedTitlePacketHandler(final TitleManager manager) {
+    public ClientboundPlayerSelectedTitlePacketHandler(final ClientTitleManager manager) {
         this.manager = manager;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(ClientboundPlayerSelectedTitlePacket message, RemoteConnection connection, Platform.Type side) {
-        if (side.isClient()) {
-            if (message.add) {
-                this.manager.putSelectedTitle(message.uniqueId, message.title);
-                // Cache serialized forms
-                this.manager.putClientSelectedTitle(message.uniqueId, TextSerializers.LEGACY_FORMATTING_CODE.serialize(message.title));
-            } else {
-                this.manager.removeSelectedTitle(message.uniqueId);
-                this.manager.removeClientSelectedTitle(message.uniqueId);
-            }
+        if (message.add) {
+            this.manager.putSelectedTitle(message.uniqueId, TextSerializers.LEGACY_FORMATTING_CODE.serialize(message.title));
+        } else {
+            this.manager.removeSelectedTitle(message.uniqueId);
         }
     }
 }

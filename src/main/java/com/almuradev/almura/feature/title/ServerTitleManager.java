@@ -15,8 +15,6 @@ import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.typesafe.config.ConfigRenderOptions;
 import net.kyori.membrane.facet.Activatable;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -31,7 +29,6 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
@@ -59,7 +56,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class TitleManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
+public final class ServerTitleManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
 
     private final Game game;
     private final PluginContainer container;
@@ -68,11 +65,10 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     private final Path configRoot;
     private final Map<String, Text> titlesByPermission = new LinkedHashMap<>();
 
-    private final Map<UUID, Text> titlesById = new HashMap<>();
-    private final Map<UUID, String> serializedTitlesById = new HashMap<>();
+    private final Map<UUID, Text> selectedTitlesById = new HashMap<>();
 
     @Inject
-    public TitleManager(final Game game, final PluginContainer container, Logger logger, @ChannelId(NetworkConfig.CHANNEL) final
+    public ServerTitleManager(final Game game, final PluginContainer container, Logger logger, @ChannelId(NetworkConfig.CHANNEL) final
     ChannelBinding.IndexedMessageChannel network, @ConfigDir(sharedRoot = false) final Path configRoot) {
         this.game = game;
         this.container = container;
@@ -83,12 +79,12 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
     @Override
     public boolean active() {
-        return this.game.isServerAvailable() || this.game.getPlatform().getType().isClient();
+        return this.game.isServerAvailable();
     }
 
     @Override
     public boolean lifecycleSubscribable(final GameState state) {
-        return state == GameState.SERVER_STARTING || (this.game.getPlatform().getType().isClient() && state == GameState.PRE_INITIALIZATION);
+        return state == GameState.SERVER_STARTING;
     }
 
     @Listener
@@ -101,12 +97,6 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public void onClientConnectedToServerEvent(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        this.serializedTitlesById.clear();
     }
 
     @Listener
@@ -146,19 +136,6 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
         return Collections.unmodifiableMap(this.titlesByPermission);
     }
 
-    @SideOnly(Side.CLIENT)
-    @Nullable
-    public String getTitleForRender(UUID uniqueId) {
-        checkNotNull(uniqueId);
-
-        final String title = this.serializedTitlesById.get(uniqueId);
-        if (title == null) {
-            return null;
-        }
-
-        return title;
-    }
-
     public Set<Text> getTitlesFor(Player player) {
         checkNotNull(player);
 
@@ -174,7 +151,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     }
 
     public Optional<Text> getSelectedTitleFor(Player player) {
-        return Optional.ofNullable(this.titlesById.get(player.getUniqueId()));
+        return Optional.ofNullable(this.selectedTitlesById.get(player.getUniqueId()));
     }
 
     public void refreshSelectedTitles() {
@@ -185,7 +162,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     public void refreshSelectedTitleFor(Player player, boolean add) {
         final Message message;
         if (add) {
-            message = this.createAddPlayerSelectedTitlePacket(player.getUniqueId(), this.titlesById.get(player.getUniqueId()));
+            message = this.createAddPlayerSelectedTitlePacket(player.getUniqueId(), this.selectedTitlesById.get(player.getUniqueId()));
         } else {
             message = this.createRemovePlayerSelectedTitlePacket(player.getUniqueId());
         }
@@ -220,7 +197,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
         // Re-set selected titlesByPermission (they may have a title they no longer have permission for)
 
-        this.titlesById.clear();
+        this.selectedTitlesById.clear();
 
         if (!this.titlesByPermission.isEmpty()) {
             this.game.getServer().getOnlinePlayers().forEach((player) -> {
@@ -236,7 +213,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
                 }
 
                 if (selectedTitle != null) {
-                    this.titlesById.put(player.getUniqueId(), selectedTitle);
+                    this.selectedTitlesById.put(player.getUniqueId(), selectedTitle);
                 }
             });
         }
@@ -273,11 +250,11 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     }
 
     private Optional<ClientboundPlayerSelectedTitlesPacket> createPlayerSelectedTitlesPacket() {
-        if (this.titlesById.isEmpty()) {
+        if (this.selectedTitlesById.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.of(new ClientboundPlayerSelectedTitlesPacket(Collections.unmodifiableMap(this.titlesById)));
+        return Optional.of(new ClientboundPlayerSelectedTitlesPacket(Collections.unmodifiableMap(this.selectedTitlesById)));
     }
 
     private ClientboundPlayerSelectedTitlePacket createAddPlayerSelectedTitlePacket(UUID uniqueId, Text title) {
@@ -293,48 +270,16 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
         return new ClientboundPlayerSelectedTitlePacket(uniqueId);
     }
 
-    public void putSelectedTitles(Map<UUID, Text> titles) {
-        checkNotNull(titles);
-
-        this.titlesById.clear();
-
-        this.titlesById.putAll(titles);
-    }
-
     public void putSelectedTitle(UUID uniqueId, Text title) {
         checkNotNull(uniqueId);
         checkNotNull(title);
 
-        this.titlesById.put(uniqueId, title);
+        this.selectedTitlesById.put(uniqueId, title);
     }
 
     public void removeSelectedTitle(UUID uniqueId) {
         checkNotNull(uniqueId);
 
-        this.titlesById.remove(uniqueId);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void putClientSelectedTitles(Map<UUID, String> titles) {
-        checkNotNull(titles);
-
-        this.serializedTitlesById.clear();
-
-        this.serializedTitlesById.putAll(titles);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void putClientSelectedTitle(UUID uniqueId, String title) {
-        checkNotNull(uniqueId);
-        checkNotNull(title);
-
-        this.serializedTitlesById.put(uniqueId, title);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void removeClientSelectedTitle(UUID uniqueId) {
-        checkNotNull(uniqueId);
-
-        this.serializedTitlesById.remove(uniqueId);
+        this.selectedTitlesById.remove(uniqueId);
     }
 }

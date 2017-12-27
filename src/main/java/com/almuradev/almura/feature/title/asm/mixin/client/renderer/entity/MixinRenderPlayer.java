@@ -7,7 +7,8 @@
  */
 package com.almuradev.almura.feature.title.asm.mixin.client.renderer.entity;
 
-import com.almuradev.almura.feature.title.TitleManager;
+import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.almuradev.almura.feature.title.ServerTitleManager;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -23,7 +24,7 @@ import javax.inject.Inject;
 @Mixin(RenderPlayer.class)
 public abstract class MixinRenderPlayer extends Render {
 
-    @Inject private static TitleManager manager;
+    @Inject private static ClientTitleManager manager;
 
     protected MixinRenderPlayer(RenderManager renderManager) {
         super(renderManager);
@@ -51,7 +52,7 @@ public abstract class MixinRenderPlayer extends Render {
             // Nickname
             // Title
             // Scoreboard
-            final String title = manager.getTitleForRender(entityIn.getUniqueID());
+            final String title = manager.getTitle(entityIn.getUniqueID());
             if (title != null) {
                 // TODO Could make this configurable
                 this.renderLivingLabel(entityIn, title, x, y, z, 128);

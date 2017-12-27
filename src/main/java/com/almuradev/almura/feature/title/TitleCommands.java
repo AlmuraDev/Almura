@@ -22,7 +22,7 @@ import javax.inject.Inject;
 public final class TitleCommands {
 
     @Inject
-    private static TitleManager manager;
+    private static ServerTitleManager manager;
 
     public static CommandSpec generateTitleCommand() {
         return CommandSpec.builder()
