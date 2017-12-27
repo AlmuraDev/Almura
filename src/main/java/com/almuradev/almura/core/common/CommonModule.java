@@ -11,6 +11,7 @@ import com.almuradev.almura.core.server.ServerConfiguration;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
 import com.almuradev.almura.feature.title.TitleModule;
 import com.almuradev.almura.registry.BossBarColorRegistryModule;
+import com.almuradev.almura.shared.command.binder.CommandInstaller;
 import com.almuradev.almura.shared.event.WitnessModule;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.almura.shared.network.NetworkModule;
@@ -31,7 +32,8 @@ public final class CommonModule extends AbstractModule implements CommonBinder {
     protected void configure() {
         this.bind(Path.class).annotatedWith(Names.named("assets")).toInstance(Paths.get("assets"));
         this.facet()
-                .add(RegistryInstaller.class);
+                .add(RegistryInstaller.class)
+                .add(CommandInstaller.class);
         this.registry().module(BossBarColorRegistryModule.class);
         this.install(new NetworkModule());
         this.install(new WitnessModule());

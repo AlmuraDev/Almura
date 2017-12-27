@@ -16,6 +16,8 @@ public final class TitleModule extends AbstractModule implements CommonBinder {
 
     @Override
     protected void configure() {
+        this.command()
+                .child(TitleCommands.generateTitleCommand(), "title");
         this.packet()
                 .bind(ClientboundPlayerSelectedTitlePacket.class, binder -> {
                     binder.channel(5);

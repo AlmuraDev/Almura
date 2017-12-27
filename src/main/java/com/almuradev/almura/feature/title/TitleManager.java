@@ -56,18 +56,18 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
     private static final String CONFIG_NAME = "title.conf";
     private static final String CONFIG_HEADER = "Almura title configuration\n\nFor further assistance, join #almura on EsperNet.";
-    private static final String TITLES = "titles";
+    private static final String TITLES = "titlesByPermission";
     private final Game game;
     private final PluginContainer container;
     private final Logger logger;
     private final ChannelBinding.IndexedMessageChannel network;
     private final Path configRoot;
-    private final Map<String, Text> titles = new LinkedHashMap<>();
+    private final Map<String, Text> titlesByPermission = new LinkedHashMap<>();
 
-    private final Map<UUID, Text> serverTitles = new HashMap<>();
+    private final Map<UUID, Text> titlesById = new HashMap<>();
 
     @SideOnly(Side.CLIENT)
-    private final Map<UUID, String> clientTitles = new HashMap<>();
+    private final Map<UUID, String> serializedTitlesById = new HashMap<>();
 
     @Inject
     public TitleManager(final Game game, final PluginContainer container, Logger logger, @ChannelId(NetworkConfig.CHANNEL) final
@@ -90,17 +90,12 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     }
 
     @Listener
-    public void onGamePreInitialization(GamePreInitializationEvent event) {
-        this.game.getCommandManager().register(this.container, TitleCommands.generateRootCommand(), "almura");
-    }
-
-    @Listener
     public void onServerStarting(GameStartingServerEvent event) {
-        this.titles.clear();
+        this.titlesByPermission.clear();
 
         try {
             this.loadTitles();
-            this.logger.info("Loaded {} title(s)", this.titles.size());
+            this.logger.info("Loaded {} title(s)", this.titlesByPermission.size());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -109,7 +104,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onClientConnectedToServerEvent(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        this.clientTitles.clear();
+        this.serializedTitlesById.clear();
     }
 
     @Listener
@@ -146,7 +141,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     }
 
     public Map<String, Text> getAllTitles() {
-        return Collections.unmodifiableMap(this.titles);
+        return Collections.unmodifiableMap(this.titlesByPermission);
     }
 
     @SideOnly(Side.CLIENT)
@@ -154,7 +149,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     public String getTitleForRender(UUID uniqueId) {
         checkNotNull(uniqueId);
 
-        final String title = this.clientTitles.get(uniqueId);
+        final String title = this.serializedTitlesById.get(uniqueId);
         if (title == null) {
             return null;
         }
@@ -167,7 +162,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
         final Set<Text> playerTitles = new LinkedHashSet<>();
 
-        this.titles.forEach((permission, title) -> {
+        this.titlesByPermission.forEach((permission, title) -> {
             if (player.hasPermission(permission)) {
                 playerTitles.add(title);
             }
@@ -177,7 +172,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     }
 
     public Optional<Text> getSelectedTitleFor(Player player) {
-        return Optional.ofNullable(this.serverTitles.get(player.getUniqueId()));
+        return Optional.ofNullable(this.titlesById.get(player.getUniqueId()));
     }
 
     public void refreshSelectedTitles() {
@@ -188,7 +183,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     public void refreshSelectedTitleFor(Player player, boolean add) {
         final Message message;
         if (add) {
-            message = this.createAddPlayerSelectedTitlePacket(player.getUniqueId(), this.serverTitles.get(player.getUniqueId()));
+            message = this.createAddPlayerSelectedTitlePacket(player.getUniqueId(), this.titlesById.get(player.getUniqueId()));
         } else {
             message = this.createRemovePlayerSelectedTitlePacket(player.getUniqueId());
         }
@@ -197,9 +192,9 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
     public boolean loadTitles() throws IOException {
 
-        // Reload titles by permission
+        // Reload titlesByPermission by permission
 
-        this.titles.clear();
+        this.titlesByPermission.clear();
 
         final Path titlePath = this.configRoot.resolve(CONFIG_NAME);
         boolean exists = this.createConfigIfNeeded(titlePath);
@@ -216,16 +211,16 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
             titleNode.getChildrenMap().forEach((permission, node) -> {
                 final String title = node.getString("");
                 if (!title.isEmpty()) {
-                    this.titles.put(permission.toString(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(title));
+                    this.titlesByPermission.put(permission.toString(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(title));
                 }
             });
         }
 
-        // Re-set selected titles (they may have a title they no longer have permission for)
+        // Re-set selected titlesByPermission (they may have a title they no longer have permission for)
 
-        this.serverTitles.clear();
+        this.titlesById.clear();
 
-        if (!this.titles.isEmpty()) {
+        if (!this.titlesByPermission.isEmpty()) {
             this.game.getServer().getOnlinePlayers().forEach((player) -> {
                 Text selectedTitle = this.getSelectedTitleFor(player).orElse(null);
                 final Set<Text> availableTitles = this.getTitlesFor(player);
@@ -239,12 +234,12 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
                 }
 
                 if (selectedTitle != null) {
-                    this.serverTitles.put(player.getUniqueId(), selectedTitle);
+                    this.titlesById.put(player.getUniqueId(), selectedTitle);
                 }
             });
         }
 
-        return !this.titles.isEmpty();
+        return !this.titlesByPermission.isEmpty();
     }
 
     private boolean createConfigIfNeeded(Path path) throws IOException {
@@ -276,11 +271,11 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     }
 
     private Optional<ClientboundPlayerSelectedTitlesPacket> createPlayerSelectedTitlesPacket() {
-        if (this.serverTitles.isEmpty()) {
+        if (this.titlesById.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.of(new ClientboundPlayerSelectedTitlesPacket(Collections.unmodifiableMap(this.serverTitles)));
+        return Optional.of(new ClientboundPlayerSelectedTitlesPacket(Collections.unmodifiableMap(this.titlesById)));
     }
 
     private ClientboundPlayerSelectedTitlePacket createAddPlayerSelectedTitlePacket(UUID uniqueId, Text title) {
@@ -299,31 +294,31 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     public void putSelectedTitles(Map<UUID, Text> titles) {
         checkNotNull(titles);
 
-        this.serverTitles.clear();
+        this.titlesById.clear();
 
-        this.serverTitles.putAll(titles);
+        this.titlesById.putAll(titles);
     }
 
     public void putSelectedTitle(UUID uniqueId, Text title) {
         checkNotNull(uniqueId);
         checkNotNull(title);
 
-        this.serverTitles.put(uniqueId, title);
+        this.titlesById.put(uniqueId, title);
     }
 
     public void removeSelectedTitle(UUID uniqueId) {
         checkNotNull(uniqueId);
 
-        this.serverTitles.remove(uniqueId);
+        this.titlesById.remove(uniqueId);
     }
 
     @SideOnly(Side.CLIENT)
     public void putClientSelectedTitles(Map<UUID, String> titles) {
         checkNotNull(titles);
 
-        this.clientTitles.clear();
+        this.serializedTitlesById.clear();
 
-        this.clientTitles.putAll(titles);
+        this.serializedTitlesById.putAll(titles);
     }
 
     @SideOnly(Side.CLIENT)
@@ -331,13 +326,13 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
         checkNotNull(uniqueId);
         checkNotNull(title);
 
-        this.clientTitles.put(uniqueId, title);
+        this.serializedTitlesById.put(uniqueId, title);
     }
 
     @SideOnly(Side.CLIENT)
     public void removeClientSelectedTitle(UUID uniqueId) {
         checkNotNull(uniqueId);
 
-        this.clientTitles.remove(uniqueId);
+        this.serializedTitlesById.remove(uniqueId);
     }
 }

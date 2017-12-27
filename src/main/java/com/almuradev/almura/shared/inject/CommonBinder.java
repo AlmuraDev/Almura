@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.shared.inject;
 
+import com.almuradev.almura.shared.command.binder.CommandBinder;
 import com.almuradev.almura.shared.network.PacketBinder;
 import com.almuradev.almura.shared.registry.binder.RegistryBinder;
 import net.kyori.membrane.facet.Facet;
@@ -44,5 +45,14 @@ public interface CommonBinder extends ForwardingBinder {
      */
     default RegistryBinder registry() {
         return RegistryBinder.create(this.binder());
+    }
+
+    /**
+     * Creates a child binder.
+     *
+     * @return a child binder
+     */
+    default CommandBinder command() {
+        return CommandBinder.create(this.binder());
     }
 }

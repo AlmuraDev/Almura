@@ -17,13 +17,7 @@ public final class TitleCommands {
     @Inject
     private static TitleManager manager;
 
-    public static CommandSpec generateRootCommand() {
-        return CommandSpec.builder()
-                .child(generateTitleCommand(), "title")
-                .build();
-    }
-
-    private static CommandSpec generateTitleCommand() {
+    public static CommandSpec generateTitleCommand() {
         return CommandSpec.builder()
                 .permission("almura.command.title")
                 .description(Text.of("Title Management"))
