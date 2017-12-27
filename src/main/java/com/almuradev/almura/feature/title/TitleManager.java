@@ -54,9 +54,6 @@ import javax.inject.Singleton;
 @Singleton
 public final class TitleManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
 
-    private static final String CONFIG_NAME = "title.conf";
-    private static final String CONFIG_HEADER = "Almura title configuration\n\nFor further assistance, join #almura on EsperNet.";
-    private static final String TITLES = "titlesByPermission";
     private final Game game;
     private final PluginContainer container;
     private final Logger logger;
@@ -192,21 +189,21 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
     public boolean loadTitles() throws IOException {
 
-        // Reload titlesByPermission by permission
-
         this.titlesByPermission.clear();
 
-        final Path titlePath = this.configRoot.resolve(CONFIG_NAME);
+        final Path titlePath = this.configRoot.resolve(TitleConfig.CONFIG_NAME);
         boolean exists = this.createConfigIfNeeded(titlePath);
 
         final ConfigurationLoader<CommentedConfigurationNode> loader = this.createLoader(titlePath);
         if (!exists) {
-            loader.save(loader.createEmptyNode());
+            final ConfigurationNode defaultNode = loader.createEmptyNode();
+            defaultNode.getNode(TitleConfig.TITLES).setValue(Collections.emptyMap());
+            loader.save(defaultNode);
         }
 
         final ConfigurationNode root = loader.load();
 
-        final ConfigurationNode titleNode = root.getNode(TITLES);
+        final ConfigurationNode titleNode = root.getNode(TitleConfig.TITLES);
         if (!titleNode.isVirtual()) {
             titleNode.getChildrenMap().forEach((permission, node) -> {
                 final String title = node.getString("");
@@ -260,7 +257,7 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
         return HoconConfigurationLoader.builder()
                 .setPath(path)
-                .setDefaultOptions(ConfigurationOptions.defaults().setHeader(CONFIG_HEADER))
+                .setDefaultOptions(ConfigurationOptions.defaults().setHeader(TitleConfig.CONFIG_HEADER))
                 .setRenderOptions(
                         ConfigRenderOptions.defaults()
                                 .setFormatted(true)
