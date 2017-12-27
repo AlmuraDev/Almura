@@ -1,3 +1,10 @@
+/*
+ * This file is part of Almura.
+ *
+ * Copyright (c) AlmuraDev <https://github.com/AlmuraDev/>
+ *
+ * All Rights Reserved.
+ */
 package com.almuradev.almura.feature.title;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -62,8 +69,6 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
     private final Map<String, Text> titlesByPermission = new LinkedHashMap<>();
 
     private final Map<UUID, Text> titlesById = new HashMap<>();
-
-    @SideOnly(Side.CLIENT)
     private final Map<UUID, String> serializedTitlesById = new HashMap<>();
 
     @Inject
