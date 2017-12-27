@@ -38,10 +38,10 @@ public final class CommonModule extends AbstractModule implements CommonBinder {
         this.registry().module(BossBarColorRegistryModule.class);
         this.install(new NetworkModule());
         this.install(new WitnessModule());
-        this.install(new HeadUpDisplayModule());
         this.install(new ContentModule());
-        this.install(new TitleModule());
+        this.install(new HeadUpDisplayModule());
         this.install(new NickModule());
+        this.install(new TitleModule());
         this.facet()
                 .add(ContentLoader.class);
         this.install(new ServerConfiguration.Module());

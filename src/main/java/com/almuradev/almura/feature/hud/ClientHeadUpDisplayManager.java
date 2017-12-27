@@ -28,7 +28,7 @@ import javax.inject.Singleton;
 
 @SideOnly(Side.CLIENT)
 @Singleton
-public class ClientHeadUpDisplay implements Witness {
+public class ClientHeadUpDisplayManager implements Witness {
 
     private final Injector injector;
     private final MappedConfiguration<ClientConfiguration> config;
@@ -37,7 +37,7 @@ public class ClientHeadUpDisplay implements Witness {
     @Nullable private AbstractHUD hud;
 
     @Inject
-    public ClientHeadUpDisplay(final Injector injector, final MappedConfiguration<ClientConfiguration> config, final HeadUpDisplay hudData) {
+    public ClientHeadUpDisplayManager(final Injector injector, final MappedConfiguration<ClientConfiguration> config, final HeadUpDisplay hudData) {
         this.injector = injector;
         this.config = config;
         this.hudData = hudData;

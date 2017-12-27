@@ -11,11 +11,11 @@ import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameChangeMap
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameChangeMappingPacketHandler;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameMappingsPacket;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameMappingsPacketHandler;
-import com.almuradev.almura.shared.inject.ClientBinder;
+import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import org.spongepowered.api.Platform;
 
-public final class NickModule extends AbstractModule implements ClientBinder {
+public final class NickModule extends AbstractModule implements CommonBinder {
 
     @Override
     protected void configure() {

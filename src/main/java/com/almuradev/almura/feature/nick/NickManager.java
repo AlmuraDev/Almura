@@ -1,3 +1,10 @@
+/*
+ * This file is part of Almura.
+ *
+ * Copyright (c) AlmuraDev <https://github.com/AlmuraDev/>
+ *
+ * All Rights Reserved.
+ */
 package com.almuradev.almura.feature.nick;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -64,12 +71,12 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
 
     @Override
     public boolean active() {
-        return this.game.isServerAvailable();
+        return this.game.isServerAvailable() || this.game.getPlatform().getType().isClient();
     }
 
     @Override
     public boolean lifecycleSubscribable(final GameState state) {
-        return state == GameState.SERVER_STARTING;
+        return state == GameState.SERVER_STARTING || (this.game.getPlatform().getType().isClient() && state == GameState.PRE_INITIALIZATION);
     }
 
     // Fires only on client
@@ -110,7 +117,6 @@ public final class NickManager extends Witness.Impl implements Activatable, Witn
         }
     }
 
-    @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPlayerNameFormatPost(final PlayerEvent.NameFormat event) {
         final EntityPlayer player = event.getEntityPlayer();

@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.asm.mixin.core.client.gui;
 
-import com.almuradev.almura.feature.hud.ClientHeadUpDisplay;
+import com.almuradev.almura.feature.hud.ClientHeadUpDisplayManager;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.google.common.collect.Ordering;
 import net.minecraft.client.Minecraft;
@@ -29,7 +29,7 @@ import javax.inject.Inject;
 @Mixin(GuiIngame.class)
 public abstract class MixinGuiIngame extends Gui {
 
-    @Inject private static ClientHeadUpDisplay hud;
+    @Inject private static ClientHeadUpDisplayManager hud;
 
     /**
      * @author Steven Downer (Grinch)

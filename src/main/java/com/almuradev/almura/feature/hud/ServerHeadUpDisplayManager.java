@@ -46,7 +46,7 @@ import java.math.BigDecimal;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Witness.Lifecycle {
+public class ServerHeadUpDisplayManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
 
     private final Game game;
     private final PluginContainer container;
@@ -54,7 +54,7 @@ public class ServerHeadUpDisplay extends Witness.Impl implements Activatable, Wi
     private final MappedConfiguration<ServerConfiguration> config;
 
     @Inject
-    private ServerHeadUpDisplay(final Game game, final PluginContainer container, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
+    private ServerHeadUpDisplayManager(final Game game, final PluginContainer container, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
             .IndexedMessageChannel network, final MappedConfiguration<ServerConfiguration> config) {
         this.game = game;
         this.container = container;

@@ -35,6 +35,6 @@ public class HeadUpDisplayModule extends AbstractModule implements CommonBinder 
                     binder.handler(ClientboundPlayerCurrencyPacketHandler.class, Platform.Type.CLIENT);
                 });
         this.facet()
-                .add(ServerHeadUpDisplay.class);
+                .add(ServerHeadUpDisplayManager.class);
     }
 }

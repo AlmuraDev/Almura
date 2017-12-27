@@ -10,12 +10,11 @@ package com.almuradev.almura.core.client;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.core.common.CommonModule;
-import com.almuradev.almura.feature.hud.ClientHeadUpDisplay;
+import com.almuradev.almura.feature.hud.ClientHeadUpDisplayManager;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
 import com.almuradev.almura.feature.menu.MainMenuManager;
-import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.speed.FirstLaunchClientOptimization;
 import com.almuradev.almura.shared.client.model.ModelBinder;
 import com.almuradev.almura.shared.client.model.obj.OBJModelLoader;
@@ -35,18 +34,16 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
     @Override
     protected void configure() {
         this.install(new CommonModule());
-        this.install(new NickModule());
         this.facet()
                 .add(ModelBinder.Installer.class)
                 .add(MainMenuManager.class)
-                .add(ClientHeadUpDisplay.class)
+                .add(ClientHeadUpDisplayManager.class)
                 .add(FirstLaunchClientOptimization.class);
         this.install(new ClientConfiguration.Module());
         this.model()
                 .loader(OBJModelLoader.class, binder -> {
                     binder.domains(Almura.ID);
                 });
-        this.install(new CommonModule());
         this.requestStaticInjection(StaticAccess.class);
         this.requestStaticInjection(UIDetailsPanel.class);
         this.requestStaticInjection(UIWorldPanel.class);

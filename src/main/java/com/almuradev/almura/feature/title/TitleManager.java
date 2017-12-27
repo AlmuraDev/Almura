@@ -83,12 +83,12 @@ public final class TitleManager extends Witness.Impl implements Activatable, Wit
 
     @Override
     public boolean active() {
-        return this.game.isServerAvailable();
+        return this.game.isServerAvailable() || this.game.getPlatform().getType().isClient();
     }
 
     @Override
-    public boolean lifecycleSubscribable(GameState state) {
-        return state == GameState.SERVER_STARTING;
+    public boolean lifecycleSubscribable(final GameState state) {
+        return state == GameState.SERVER_STARTING || (this.game.getPlatform().getType().isClient() && state == GameState.PRE_INITIALIZATION);
     }
 
     @Listener
