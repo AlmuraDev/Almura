@@ -7,28 +7,21 @@
  */
 package com.almuradev.almura.feature.nick;
 
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameChangeMappingPacket;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameMappingsPacket;
+import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.nucleuspowered.nucleus.api.events.NucleusChangeNicknameEvent;
 import io.github.nucleuspowered.nucleus.api.exceptions.NicknameException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
-import net.kyori.membrane.facet.Activatable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.Getter;
@@ -40,13 +33,12 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Identifiable;
-import org.spongepowered.common.text.SpongeTexts;
 
 import java.lang.reflect.Field;
 import java.util.stream.Collectors;
 
 @Singleton
-public final class ServerNickManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
+public final class ServerNickManager extends Witness.Impl implements Witness.Lifecycle {
 
     private final PluginContainer container;
     private final Game game;
@@ -68,11 +60,6 @@ public final class ServerNickManager extends Witness.Impl implements Activatable
         this.container = container;
         this.game = game;
         this.network = network;
-    }
-
-    @Override
-    public boolean active() {
-        return this.game.isServerAvailable();
     }
 
     @Override

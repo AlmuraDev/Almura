@@ -13,7 +13,6 @@ import static com.google.common.base.Preconditions.checkState;
 import com.almuradev.almura.feature.notification.network.ClientboundPlayerNotificationPacket;
 import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
-import net.kyori.membrane.facet.Activatable;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.entity.living.player.Player;
@@ -25,7 +24,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ServerNotificationManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
+public final class ServerNotificationManager extends Witness.Impl implements Witness.Lifecycle {
 
     private final Game game;
     private final ChannelBinding.IndexedMessageChannel network;
@@ -39,11 +38,6 @@ public final class ServerNotificationManager extends Witness.Impl implements Act
     @Override
     public boolean lifecycleSubscribable(GameState state) {
         return state == GameState.SERVER_STARTING;
-    }
-
-    @Override
-    public boolean active() {
-        return this.game.isServerAvailable();
     }
 
     public void sendPopupNotification(Player player, Text message, int secondsToLive) {
