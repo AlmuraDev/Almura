@@ -26,14 +26,8 @@ public final class TitleModule extends AbstractModule implements CommonBinder {
         this.command()
                 .child(TitleCommands.generateTitleCommand(), "title");
         this.packet()
-                .bind(ClientboundPlayerSelectedTitlePacket.class, binder -> {
-                    binder.channel(5);
-                    binder.handler(ClientboundPlayerSelectedTitlePacketHandler.class, Platform.Type.CLIENT);
-                })
-                .bind(ClientboundPlayerSelectedTitlesPacket.class, binder -> {
-                    binder.channel(6);
-                    binder.handler(ClientboundPlayerSelectedTitlesPacketHandler.class, Platform.Type.CLIENT);
-                });
+                .bind(ClientboundPlayerSelectedTitlePacket.class, binder -> binder.handler(ClientboundPlayerSelectedTitlePacketHandler.class, Platform.Type.CLIENT))
+                .bind(ClientboundPlayerSelectedTitlesPacket.class, binder -> binder.handler(ClientboundPlayerSelectedTitlesPacketHandler.class, Platform.Type.CLIENT));
         this.facet()
                 .add(ServerTitleManager.class);
         this.requestStaticInjection(TitleCommands.class);

@@ -22,18 +22,9 @@ public class HeadUpDisplayModule extends AbstractModule implements CommonBinder 
     @Override
     protected void configure() {
         this.packet()
-                .bind(ClientboundWorldNamePacket.class, binder -> {
-                    binder.channel(0);
-                    binder.handler(ClientboundWorldNamePacketHandler.class, Platform.Type.CLIENT);
-                })
-                .bind(ClientboundPlayerCountPacket.class, binder -> {
-                    binder.channel(1);
-                    binder.handler(ClientboundPlayerCountPacketHandler.class, Platform.Type.CLIENT);
-                })
-                .bind(ClientboundPlayerCurrencyPacket.class, binder -> {
-                    binder.channel(2);
-                    binder.handler(ClientboundPlayerCurrencyPacketHandler.class, Platform.Type.CLIENT);
-                });
+                .bind(ClientboundWorldNamePacket.class, binder -> binder.handler(ClientboundWorldNamePacketHandler.class, Platform.Type.CLIENT))
+                .bind(ClientboundPlayerCountPacket.class, binder -> binder.handler(ClientboundPlayerCountPacketHandler.class, Platform.Type.CLIENT))
+                .bind(ClientboundPlayerCurrencyPacket.class, binder -> binder.handler(ClientboundPlayerCurrencyPacketHandler.class, Platform.Type.CLIENT));
         this.facet()
                 .add(ServerHeadUpDisplayManager.class);
     }
