@@ -14,9 +14,6 @@ import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitle
 import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.typesafe.config.ConfigRenderOptions;
-import net.kyori.membrane.facet.Activatable;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -51,12 +48,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ServerTitleManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
+public final class ServerTitleManager extends Witness.Impl implements Witness.Lifecycle {
 
     private final Game game;
     private final PluginContainer container;
@@ -75,11 +71,6 @@ public final class ServerTitleManager extends Witness.Impl implements Activatabl
         this.logger = logger;
         this.network = network;
         this.configRoot = configRoot;
-    }
-
-    @Override
-    public boolean active() {
-        return this.game.isServerAvailable();
     }
 
     @Override
