@@ -9,16 +9,20 @@ package com.almuradev.almura.feature.nick.network;
 
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.nick.ServerNickManager;
+import com.flowpowered.noise.module.combiner.Min;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.common.text.SpongeTexts;
 
 import java.util.Map;
@@ -43,32 +47,37 @@ public class ClientboundNucleusNameMappingsPacketHandler implements MessageHandl
         this.nickManager.putAll(nicknames);
 
         final World world = Minecraft.getMinecraft().world;
-        boolean updateTabList = nicknames.isEmpty();
+
         if (world != null) {
-            for (Map.Entry<UUID, Text> entry : nicknames.entrySet()) {
-                final EntityPlayer player = world.getPlayerEntityByUUID(entry.getKey());
+
+            message.nicknames.forEach((uniqueId, nickname) -> {
+                final EntityPlayer player = world.getPlayerEntityByUUID(uniqueId);
+
                 if (player != null) {
-                    player.refreshDisplayName();
-                } else {
-                    updateTabList = true;
+                    final String newNick = ForgeEventFactory.getPlayerDisplayName(player, TextSerializers.LEGACY_FORMATTING_CODE.serialize(nickname));
+
+                    this.nickManager.put(player.getUniqueID(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(newNick));
+
+                    try {
+                        this.nickManager.adjustPlayerNickname(player, newNick);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        } else {
-            updateTabList = true;
+            });
         }
 
-        if (updateTabList) {
-            // If the world isn't here then it likely means we logged in too fast. The resolution of the NameFormat event
-            // results in a refresh of the tab-list but that event won't be fired if the client has no world. We still have to fix
-            // the tab list
-            if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.connection != null) {
-                nicknames.forEach((key, value) -> {
-                    final NetworkPlayerInfo info = Minecraft.getMinecraft().player.connection.getPlayerInfo(key);
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            final EntityPlayerSP player = Minecraft.getMinecraft().player;
+            if (player != null && player.connection != null) {
+
+                message.nicknames.forEach((uniqueId, nickname) -> {
+                    final NetworkPlayerInfo info = player.connection.getPlayerInfo(uniqueId);
                     if (info != null) {
-                        info.setDisplayName(SpongeTexts.toComponent(value));
+                        info.setDisplayName(SpongeTexts.toComponent(nickname));
                     }
                 });
             }
-        }
+        });
     }
 }

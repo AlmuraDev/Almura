@@ -9,15 +9,20 @@ package com.almuradev.almura.feature.nick.network;
 
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.common.SpongeImpl;
 import org.spongepowered.common.text.SpongeTexts;
 
 import java.util.UUID;
@@ -42,30 +47,33 @@ public final class ClientboundNucleusNameChangeMappingPacketHandler implements M
         this.nickManager.put(entityUniqueId, nickname);
 
         final World world = Minecraft.getMinecraft().world;
-        boolean updateTabList = false;
-        if (world != null) {
-            final EntityPlayer entity = world.getPlayerEntityByUUID(entityUniqueId);
-            if (entity != null) {
-                // Triggers Forge event, mod compat
-                entity.refreshDisplayName();
-            } else {
-                updateTabList = true;
 
+        if (world != null) {
+            final EntityPlayer player = world.getPlayerEntityByUUID(entityUniqueId);
+
+            if (player != null) {
+                final String newNick = ForgeEventFactory.getPlayerDisplayName(player, TextSerializers.LEGACY_FORMATTING_CODE.serialize(nickname));
+
+                this.nickManager.put(entityUniqueId, TextSerializers.LEGACY_FORMATTING_CODE.deserialize(newNick));
+
+                try {
+                    this.nickManager.adjustPlayerNickname(player, newNick);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
-        } else {
-            updateTabList = true;
         }
 
-        if (updateTabList) {
-            // If the entity isn't here then it likely means they are in another world and nick changed. The resolution of the NameFormat event
-            // results in a refresh of the tab-list but that event won't be fired if their entity doesn't exist on our client. We still have to fix
-            // the tab list
-            if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.connection != null) {
-                final NetworkPlayerInfo info = Minecraft.getMinecraft().player.connection.getPlayerInfo(entityUniqueId);
+        // queue an update of the tab list display names (Vanilla may change the displayname in the PlayerListPacket)
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            final EntityPlayerSP player = Minecraft.getMinecraft().player;
+            if (player != null && player.connection != null) {
+
+                final NetworkPlayerInfo info = player.connection.getPlayerInfo(entityUniqueId);
                 if (info != null) {
                     info.setDisplayName(SpongeTexts.toComponent(nickname));
                 }
             }
-        }
+        });
     }
 }

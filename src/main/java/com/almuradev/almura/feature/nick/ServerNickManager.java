@@ -20,6 +20,8 @@ import net.kyori.membrane.facet.Activatable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -40,6 +42,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Identifiable;
 import org.spongepowered.common.text.SpongeTexts;
 
+import java.lang.reflect.Field;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -48,6 +51,17 @@ public final class ServerNickManager extends Witness.Impl implements Activatable
     private final PluginContainer container;
     private final Game game;
     private final ChannelBinding.IndexedMessageChannel network;
+
+    private static Field displayNameField;
+
+    static {
+        try {
+            displayNameField = EntityPlayer.class.getDeclaredField("displayname");
+            displayNameField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Inject
     private ServerNickManager(final PluginContainer container, final Game game, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
@@ -70,60 +84,72 @@ public final class ServerNickManager extends Witness.Impl implements Activatable
     public void onClientConnectionEventJoin(final ClientConnectionEvent.Join event) {
         this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> {
             service.getNickname(event.getTargetEntity()).ifPresent((nick) -> {
-                // Trigger Forge event so mod's know of the nickname
-                ((EntityPlayerMP) event.getTargetEntity()).refreshDisplayName();
+                final String oldNick = TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick);
+
+                // Tell the Forge mods
+                final String newNick = ForgeEventFactory.getPlayerDisplayName((EntityPlayer) event.getTargetEntity(), TextSerializers
+                        .LEGACY_FORMATTING_CODE.serialize(nick));
+
+                if (!oldNick.equals(newNick)) {
+                    try {
+                        service.setNickname(event.getTargetEntity(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(newNick));
+                    } catch (NicknameException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    displayNameField.set(event.getTargetEntity(), newNick);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             });
 
-            Task.builder().async().delayTicks(40).execute(t -> {
-                // Send everyone's nicknames to the joining player
-                this.network.sendTo(event.getTargetEntity(), this.getMappingMessage(service, event.getTargetEntity()));
-            }).submit(this.container);
+            // Send the joining player's nickname to others
+            final ClientboundNucleusNameChangeMappingPacket joiningPlayerPacket =
+                    this.getMappingMessage(event.getTargetEntity(), service.getNickname(event.getTargetEntity()).orElse(Text.of(event
+                            .getTargetEntity().getName())));
+
+            this.game.getServer().getOnlinePlayers().stream().filter((player) -> !player.getUniqueId().equals(event.getTargetEntity().getUniqueId()))
+                    .forEach((player) -> this.network.sendTo(player, joiningPlayerPacket));
+
+            Task.builder()
+                    .delayTicks(40)
+                    .execute(t -> {
+                        // Send everyone's nicknames to the joining player
+                        this.network.sendTo(event.getTargetEntity(), this.getMappingMessage(service));
+                    })
+                    .submit(this.container);
         });
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPlayerNameFormat(final PlayerEvent.NameFormat event) {
-        final EntityPlayer player = event.getEntityPlayer();
+    @Listener(order = Order.POST)
+    public void onChangeNickname(final NucleusChangeNicknameEvent event, @Getter("getTargetUser") final Player player) throws IllegalAccessException {
+        final EntityPlayerMP mcPlayer = (EntityPlayerMP) player;
+        final String oldNick = mcPlayer.getDisplayNameString();
+        final String newNick = TextSerializers.LEGACY_FORMATTING_CODE.serialize(event.getNewNickname());
 
-        if (!player.getEntityWorld().isRemote) {
-            this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> service.getNickname((User) (Object) player)
-                    .ifPresent((nick) -> event.setDisplayname(TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick))));
-        }
-    }
+        if (!oldNick.equals(newNick)) {
+            // Tell the Forge mods
+            final String modNick = ForgeEventFactory.getPlayerDisplayName(mcPlayer, newNick);
+            final Text finalNick = TextSerializers.LEGACY_FORMATTING_CODE.deserialize(modNick);
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onPlayerNameFormatPost(final PlayerEvent.NameFormat event) {
-        final EntityPlayer player = event.getEntityPlayer();
+            if (!newNick.equals(modNick)) {
 
-        if (!player.getEntityWorld().isRemote) {
-            this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> {
-                final Text oldNick = service.getNickname((Player) event.getEntityPlayer()).orElse(Text.of(player.getName()));
-                final Text newNick = TextSerializers.LEGACY_FORMATTING_CODE.deserialize(event.getDisplayname());
-
-                // Update Nucleus
-                if (!oldNick.equals(newNick)) {
+                // Mod says our nick needs to be something else
+                this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> {
                     try {
-                        service.setNickname((User) player, newNick);
-                    } catch (final NicknameException e) {
+                        service.setNickname(player, finalNick);
+                    } catch (NicknameException e) {
                         e.printStackTrace();
                     }
-                } else {
-                    // Schedule client update
-                    Task.builder().async().delayTicks(40).execute(t -> this.network.sendToAll(this.getMappingMessage((Player) player, newNick)))
-                            .submit(this.container);
-                }
-            });
-        }
-    }
+                });
+            }
 
-    @Listener(order = Order.POST)
-    public void onPlayerChangeNickname(final NucleusChangeNicknameEvent event, @Getter("getTargetUser") final Player player) {
-        final EntityPlayerMP mcPlayer = (EntityPlayerMP) player;
-        final ITextComponent mcOldText = mcPlayer.getDisplayName();
-        final ITextComponent mcNewText = SpongeTexts.toComponent(event.getNewNickname());
+            displayNameField.set(mcPlayer, modNick);
 
-        if (!mcOldText.equals(mcNewText)) {
-            Task.builder().delayTicks(1).execute(((EntityPlayerMP) player)::refreshDisplayName).submit(this.container);
+            // Tell everyone about the new nick
+            this.network.sendToAll(this.getMappingMessage(player, finalNick));
         }
     }
 
@@ -131,10 +157,10 @@ public final class ServerNickManager extends Witness.Impl implements Activatable
         return new ClientboundNucleusNameChangeMappingPacket(player.getUniqueId(), nick);
     }
 
-    private ClientboundNucleusNameMappingsPacket getMappingMessage(final NucleusNicknameService service, final Player toIgnore) {
+    private ClientboundNucleusNameMappingsPacket getMappingMessage(final NucleusNicknameService service) {
         return new ClientboundNucleusNameMappingsPacket(
-                this.game.getServer().getOnlinePlayers().stream().filter((player) -> !player.getUniqueId().equals(toIgnore.getUniqueId())).collect
-                        (Collectors.toMap(Identifiable::getUniqueId, v -> service.getNickname(v).orElseGet(() -> Text.of(v.getName()))
+                this.game.getServer().getOnlinePlayers().stream().collect(Collectors.toMap(Identifiable::getUniqueId, v -> service.getNickname(v)
+                        .orElseGet(() -> Text.of(v.getName()))
                 ))
         );
     }

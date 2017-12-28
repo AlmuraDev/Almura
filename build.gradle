@@ -152,7 +152,7 @@ jar {
                 'FMLCorePlugin': 'com.almuradev.almura.AlmuraLoadingPlugin',
                 'FMLCorePluginContainsFMLMod': true,
                 'ForceLoadAsMod': true,
-                'MixinConfigs': "mixins.almura.core.json,mixins.almura.content.json,mixins.almura.title.json",
+                'MixinConfigs': "mixins.almura.core.json,mixins.almura.content.json,mixins.almura.title.json,mixins.almura.nick.json",
                 'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0
         )

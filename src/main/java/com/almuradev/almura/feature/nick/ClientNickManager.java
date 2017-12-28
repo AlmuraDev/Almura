@@ -23,10 +23,12 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.common.text.SpongeTexts;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 @SideOnly(Side.CLIENT)
@@ -35,31 +37,20 @@ public final class ClientNickManager implements Witness {
 
     private final Map<UUID, Text> nicks = new HashMap<>();
 
+    private static Field displayNameField;
+
+    static {
+        try {
+            displayNameField = EntityPlayer.class.getDeclaredField("displayname");
+            displayNameField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
+
     @SubscribeEvent
     public void onClientConnectToServer(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.nicks.clear();
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPlayerNameFormat(final PlayerEvent.NameFormat event) {
-        final EntityPlayer player = event.getEntityPlayer();
-
-        final Text nick = this.nicks.get(player.getUniqueID());
-        if (nick != null) {
-            event.setDisplayname(TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick));
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onPlayerNameFormatPost(final PlayerEvent.NameFormat event) {
-        final EntityPlayer player = event.getEntityPlayer();
-
-        if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.connection != null) {
-            final NetworkPlayerInfo info = Minecraft.getMinecraft().player.connection.getPlayerInfo(player.getUniqueID());
-            if (info != null) {
-                info.setDisplayName(SpongeTexts.toComponent(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(event.getDisplayname())));
-            }
-        }
     }
 
     public void putAll(final Map<UUID, Text> nicksById) {
@@ -73,5 +64,14 @@ public final class ClientNickManager implements Witness {
         checkNotNull(nick);
 
         this.nicks.put(uniqueId, nick);
+    }
+
+    public void adjustPlayerNickname(EntityPlayer player, String nickname) throws IllegalAccessException {
+        displayNameField.set(player, nickname);
+    }
+
+    @Nullable
+    public Text getNicknameFor(UUID uniqueId) {
+        return this.nicks.get(uniqueId);
     }
 }

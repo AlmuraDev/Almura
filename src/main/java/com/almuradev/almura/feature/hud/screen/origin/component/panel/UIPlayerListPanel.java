@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.feature.hud.screen.origin.UIAvatarImage;
+import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.shared.client.ui.component.UISimpleList;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
@@ -21,13 +22,18 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.GameType;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.common.text.SpongeTexts;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 public class UIPlayerListPanel extends UIHUDPanel {
+
+    @Inject private static ClientNickManager manager;
 
     private static final Ordering<NetworkPlayerInfo> ORDERING = Ordering.from((p1, p2) -> {
         final ScorePlayerTeam t1 = p1.getPlayerTeam();
@@ -112,7 +118,6 @@ public class UIPlayerListPanel extends UIHUDPanel {
         return maxWidth + 11;
     }
 
-    // TODO: this does not properly take colours into account
     private static String getTrimmedDisplayName(final NetworkPlayerInfo player) {
         String name = DEFAULT_COLOR + getDisplayName(player);
         if (player.getGameType() == GameType.SPECTATOR) {
@@ -122,9 +127,27 @@ public class UIPlayerListPanel extends UIHUDPanel {
     }
 
     private static String getDisplayName(final NetworkPlayerInfo player) {
+
+        if (player.getDisplayName() != null) {
+            // TODO This is a bruteforce hack to fix race conditions where our tab list won't have the right info or gets wiped out by Vanilla
+            // Basically username = displayname, lookup their nick in the manager
+            if (player.getGameProfile().getName().equals(player.getDisplayName().getUnformattedText())) {
+                final Text nick = manager.getNicknameFor(player.getGameProfile().getId());
+                if (nick != null) {
+                    player.setDisplayName(SpongeTexts.toComponent(nick));
+                }
+            }
+        } else {
+            final Text nick = manager.getNicknameFor(player.getGameProfile().getId());
+            if (nick != null) {
+                player.setDisplayName(SpongeTexts.toComponent(nick));
+            }
+        }
+
         if (player.getDisplayName() != null) {
             return player.getDisplayName().getFormattedText();
         }
+
         return ScorePlayerTeam.formatPlayerName(player.getPlayerTeam(), player.getGameProfile().getName());
     }
 
