@@ -75,7 +75,18 @@ public class PacketBinder {
          * @param handler the handler
          * @param side the side
          */
-        void handler(final Class<? extends MessageHandler<M>> handler, final Platform.Type side);
+        default void handler(final Class<? extends MessageHandler<M>> handler, final Platform.Type side) {
+            this.handler(handler, side, false);
+        }
+
+        /**
+         * Sets the packet handler.
+         *
+         * @param handler the handler
+         * @param side the side
+         * @param strictSide if the side is strict
+         */
+        void handler(final Class<? extends MessageHandler<M>> handler, final Platform.Type side, final boolean strictSide);
     }
 
     public static final class EntryImpl<M extends Message> implements Entry<M> {
@@ -83,6 +94,7 @@ public class PacketBinder {
         private final Class<M> packet;
         @Nullable private Integer channel;
         @Nullable private Platform.Type side;
+        private boolean strictSide;
         @Nullable private Class<? extends MessageHandler<M>> handler;
 
         EntryImpl(final Class<M> packet) {
@@ -96,9 +108,13 @@ public class PacketBinder {
 
             checkState(this.side != null, "side not provided");
             checkState(this.handler != null, "handler not provided");
-            if (this.side == side) {
+            if (this.compatibleWith(side)) {
                 channel.addHandler(this.packet, this.side, injector.getInstance(this.handler));
             }
+        }
+
+        private boolean compatibleWith(final Platform.Type side) {
+            return this.side == side || (!this.strictSide && side == Platform.Type.CLIENT);
         }
 
         @Override
@@ -107,9 +123,10 @@ public class PacketBinder {
         }
 
         @Override
-        public void handler(final Class<? extends MessageHandler<M>> handler, final Platform.Type side) {
+        public void handler(final Class<? extends MessageHandler<M>> handler, final Platform.Type side, final boolean strictSide) {
             this.handler = handler;
             this.side = side;
+            this.strictSide = strictSide;
         }
     }
 }
