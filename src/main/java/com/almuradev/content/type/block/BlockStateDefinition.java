@@ -23,6 +23,8 @@ public interface BlockStateDefinition {
 
     interface Builder<D extends BlockStateDefinition> {
 
+        void parent(@Nullable final Builder<D> that);
+
         void box(@Nullable final BlockAABB.Box box);
 
         void collisionBox(@Nullable final BlockAABB.Collision collisionBox);
@@ -41,12 +43,12 @@ public interface BlockStateDefinition {
 
         void destroyAction(final Delegate<BlockDestroyAction> destroyAction);
 
-        void inherit(final BlockStateDefinition.Builder<D> builder);
-
         D build();
 
         @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-        abstract class Impl<D extends BlockStateDefinition> implements Builder<D> {
+        abstract class Impl<D extends BlockStateDefinition, B extends Impl<D, B>> implements Builder<D> {
+
+            @Nullable B parent;
 
             @Nullable protected BlockAABB.Box box;
             @Nullable protected BlockAABB.Collision collisionBox;
@@ -57,6 +59,11 @@ public interface BlockStateDefinition {
             protected OptionalDouble resistance = OptionalDouble.empty();
             @Nullable protected Delegate<BlockSoundGroup> sound;
             @Nullable protected Delegate<BlockDestroyAction> destroyAction;
+
+            @Override
+            public void parent(@Nullable final Builder<D> that) {
+                this.parent = (B) that;
+            }
 
             @Override
             public void box(@Nullable final BlockAABB.Box box) {
@@ -111,39 +118,34 @@ public interface BlockStateDefinition {
             }
 
             @Override
-            public void inherit(final Builder<D> builder) {
-                this.inherit((Impl<D>) builder);
+            public final D build() {
+                this.inherit();
+                return this.build0();
             }
 
-            private void inherit(final Impl<D> builder) {
-                if (this.box == null) {
-                    this.box = BlockAABB.shares(builder.box, 1);
+            private void inherit() {
+                this.inherit((B) this);
+            }
+
+            protected void inherit(final B that) {
+                if (this.parent != null) {
+                    this.parent.inherit((B) this);
                 }
-                if (this.collisionBox == null) {
-                    this.collisionBox = BlockAABB.shares(builder.collisionBox, 1);
-                }
-                if (this.wireFrame == null) {
-                    this.wireFrame = BlockAABB.shares(builder.wireFrame, 1);
-                }
-                if (!this.hardness.isPresent()) {
-                    this.hardness = builder.hardness;
-                }
-                if (!this.lightEmission.isPresent()) {
-                    this.lightEmission = builder.lightEmission;
-                }
-                if (!this.lightOpacity.isPresent()) {
-                    this.lightOpacity = builder.lightOpacity;
-                }
-                if (!this.resistance.isPresent()) {
-                    this.resistance = builder.resistance;
-                }
-                if (this.sound == null) {
-                    this.sound = builder.sound;
-                }
-                if (this.destroyAction == null) {
-                    this.destroyAction = builder.destroyAction;
+
+                if (this != that) {
+                    if (this.box != null) that.box = BlockAABB.shares(this.box, 1);
+                    if (this.collisionBox != null) that.collisionBox = BlockAABB.shares(this.collisionBox, 1);
+                    if (this.wireFrame != null) that.wireFrame = BlockAABB.shares(this.wireFrame, 1);
+                    if (this.hardness.isPresent()) that.hardness = this.hardness;
+                    if (this.lightEmission.isPresent()) that.lightEmission = this.lightEmission;
+                    if (this.lightOpacity.isPresent())  that.lightOpacity = this.lightOpacity;
+                    if (this.resistance.isPresent()) that.resistance = this.resistance;
+                    if (this.sound != null) that.sound = this.sound;
+                    if (this.destroyAction != null) that.destroyAction = this.destroyAction;
                 }
             }
+
+            protected abstract D build0();
         }
     }
 
@@ -160,7 +162,7 @@ public interface BlockStateDefinition {
         public final Delegate<BlockSoundGroup> sound;
         @Nullable public final Delegate<BlockDestroyAction> destroyAction;
 
-        protected Impl(final Builder.Impl<? extends BlockStateDefinition> builder) {
+        protected Impl(final Builder.Impl<? extends BlockStateDefinition, ? extends Builder.Impl> builder) {
             this.box = (B) builder.box;
             this.collisionBox = (C) builder.collisionBox;
             this.wireFrame = (W) builder.wireFrame;
@@ -174,7 +176,7 @@ public interface BlockStateDefinition {
 
         public static class Single<B extends BlockAABB.Box, C extends BlockAABB.Collision, W extends BlockAABB.WireFrame> extends Impl<B, C, W> {
 
-            protected Single(final Builder.Impl<? extends BlockStateDefinition> builder) {
+            protected Single(final Builder.Impl<? extends BlockStateDefinition, ? extends Builder.Impl> builder) {
                 super(builder);
             }
 

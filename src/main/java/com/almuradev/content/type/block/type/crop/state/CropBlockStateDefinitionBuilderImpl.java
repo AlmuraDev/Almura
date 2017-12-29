@@ -14,7 +14,7 @@ import com.almuradev.content.type.block.type.crop.processor.hydration.Hydration;
 
 import javax.annotation.Nullable;
 
-public final class CropBlockStateDefinitionBuilderImpl extends BlockStateDefinition.Builder.Impl<CropBlockStateDefinition> implements CropBlockStateDefinitionBuilder {
+public final class CropBlockStateDefinitionBuilderImpl extends BlockStateDefinition.Builder.Impl<CropBlockStateDefinition, CropBlockStateDefinitionBuilderImpl> implements CropBlockStateDefinitionBuilder {
 
     final int age;
     boolean canRollback;
@@ -47,28 +47,16 @@ public final class CropBlockStateDefinitionBuilderImpl extends BlockStateDefinit
     }
 
     @Override
-    public CropBlockStateDefinition build() {
+    public CropBlockStateDefinition build0() {
         return new CropBlockStateDefinition(this);
     }
 
     @Override
-    public void inherit(BlockStateDefinition.Builder<CropBlockStateDefinition> builder) {
-        super.inherit(builder);
-
-        final CropBlockStateDefinitionBuilderImpl cropBuilder = (CropBlockStateDefinitionBuilderImpl) builder;
-
-        // TODO CanRollback needs to be a tri-state to see if it has been actually "set"
-
-        if (this.fertilizer == null) {
-            this.fertilizer = cropBuilder.fertilizer;
-        }
-
-        if (this.growth == null) {
-            this.growth = cropBuilder.growth;
-        }
-
-        if (this.hydration == null) {
-            this.hydration = cropBuilder.hydration;
-        }
+    protected void inherit(final CropBlockStateDefinitionBuilderImpl that) {
+        super.inherit(that);
+        that.canRollback = this.canRollback;
+        if (this.fertilizer != null) that.fertilizer = this.fertilizer;
+        if (this.growth != null) that.growth = this.growth;
+        if (this.hydration != null) that.hydration = this.hydration;
     }
 }

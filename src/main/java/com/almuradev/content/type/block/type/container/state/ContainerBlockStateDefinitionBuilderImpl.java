@@ -9,10 +9,10 @@ package com.almuradev.content.type.block.type.container.state;
 
 import com.almuradev.content.type.block.BlockStateDefinition;
 
-public final class ContainerBlockStateDefinitionBuilderImpl extends BlockStateDefinition.Builder.Impl<ContainerBlockStateDefinition> implements ContainerBlockStateDefinitionBuilder {
+public final class ContainerBlockStateDefinitionBuilderImpl extends BlockStateDefinition.Builder.Impl<ContainerBlockStateDefinition, ContainerBlockStateDefinitionBuilderImpl> implements ContainerBlockStateDefinitionBuilder {
 
     @Override
-    public ContainerBlockStateDefinition build() {
+    public ContainerBlockStateDefinition build0() {
         return new ContainerBlockStateDefinition(this);
     }
 }
