@@ -11,5 +11,5 @@ public interface HydrationConfig {
 
     String MAX_RADIUS = "max_radius";
 
-    String STATE = "state";
+    String BLOCKSTATE = "blockstate";
 }

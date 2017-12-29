@@ -87,6 +87,11 @@ public class LazyBlockState implements Supplier<IBlockState> {
 
     public boolean partialTest(final IBlockState state) {
         final IBlockState a = this.get();
+        // Check state for matching first
+        if (!a.getBlock().equals(state.getBlock())) {
+            return false;
+        }
+        // Check to see if specified properties match now
         for (final IProperty<? extends Comparable<?>> property : this.properties) {
             if (!a.getValue(property).equals(state.getValue(property))) {
                 return false;

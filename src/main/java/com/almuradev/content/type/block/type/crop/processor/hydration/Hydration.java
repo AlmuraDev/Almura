@@ -35,39 +35,39 @@ public final class Hydration {
 
         final int maxRadius = maxRadiusNode.getInt();
 
-        final ConfigurationNode stateNode = config.getNode(HydrationConfig.STATE);
-        if (stateNode.isVirtual()) {
+        final ConfigurationNode blockStateNode = config.getNode(HydrationConfig.BLOCKSTATE);
+        if (blockStateNode.isVirtual()) {
             return Optional.empty();
         }
 
-        final Set<LazyBlockState> states = new HashSet<>();
+        final Set<LazyBlockState> blockStates = new HashSet<>();
 
-        if (stateNode.getValue() instanceof List) {
-            for (final ConfigurationNode stateEntryNode : stateNode.getChildrenList()) {
-                if (stateEntryNode.getValue() instanceof Map) {
-                    for (final Map.Entry<Object, ? extends ConfigurationNode> blockStateEntryNodeValueEntry : stateEntryNode.getChildrenMap().entrySet()) {
-                        states.add(LazyBlockState.parse(CatalogDelegate.create(BlockType.class, String.valueOf(blockStateEntryNodeValueEntry.getKey())), blockStateEntryNodeValueEntry.getValue()));
+        if (blockStateNode.getValue() instanceof List) {
+            for (final ConfigurationNode blockStateEntryNode : blockStateNode.getChildrenList()) {
+                if (blockStateEntryNode.getValue() instanceof Map) {
+                    for (final Map.Entry<Object, ? extends ConfigurationNode> blockStateEntryNodeValueEntry : blockStateEntryNode.getChildrenMap().entrySet()) {
+                        blockStates.add(LazyBlockState.parse(CatalogDelegate.create(BlockType.class, String.valueOf(blockStateEntryNodeValueEntry.getKey())), blockStateEntryNodeValueEntry.getValue()));
                     }
                 } else {
-                    states.add(LazyBlockState.parse(CatalogDelegate.create(BlockType.class, stateEntryNode.getString()), stateEntryNode));
+                    blockStates.add(LazyBlockState.parse(CatalogDelegate.create(BlockType.class, blockStateEntryNode.getString()), blockStateEntryNode));
                 }
             }
-        } else if (stateNode.getValue() instanceof Map) {
-            for (final Map.Entry<Object, ? extends ConfigurationNode> stateEntryNode : stateNode.getChildrenMap().entrySet()) {
-                states.add(LazyBlockState.parse(CatalogDelegate.create(BlockType.class, String.valueOf(stateEntryNode.getKey())), stateEntryNode.getValue()));
+        } else if (blockStateNode.getValue() instanceof Map) {
+            for (final Map.Entry<Object, ? extends ConfigurationNode> blockStateEntryNode : blockStateNode.getChildrenMap().entrySet()) {
+                blockStates.add(LazyBlockState.parse(CatalogDelegate.create(BlockType.class, String.valueOf(blockStateEntryNode.getKey())), blockStateEntryNode.getValue()));
             }
         } else {
-            states.add(LazyBlockState.parse(CatalogDelegate.create(BlockType.class, stateNode.getString()), stateNode));
+            blockStates.add(LazyBlockState.parse(CatalogDelegate.create(BlockType.class, blockStateNode.getString()), blockStateNode));
         }
 
-        return Optional.of(new Hydration(states, maxRadius));
+        return Optional.of(new Hydration(blockStates, maxRadius));
     };
 
-    private final Set<LazyBlockState> states;
+    private final Set<LazyBlockState> blockStates;
     private final int maxRadius;
 
-    private Hydration(final Set<LazyBlockState> states, final int maxRadius) {
-        this.states = states;
+    private Hydration(final Set<LazyBlockState> blockStates, final int maxRadius) {
+        this.blockStates = blockStates;
         this.maxRadius = maxRadius;
     }
 
@@ -75,9 +75,9 @@ public final class Hydration {
         return this.maxRadius;
     }
 
-    public boolean doesStateMatch(final IBlockState state) {
-        for (final LazyBlockState lazy : this.states) {
-            if (lazy.partialTest(state)) {
+    public boolean doesStateMatch(final IBlockState blockState) {
+        for (final LazyBlockState lazy : this.blockStates) {
+            if (lazy.partialTest(blockState)) {
                 return true;
             }
         }
@@ -88,7 +88,7 @@ public final class Hydration {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("states", this.states)
+                .add("blockStates", this.blockStates)
                 .add("maxRadius", this.maxRadius)
                 .toString();
     }
