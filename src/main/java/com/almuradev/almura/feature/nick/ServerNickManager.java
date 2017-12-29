@@ -35,6 +35,9 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Identifiable;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -93,9 +96,15 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
             });
 
             // Send the joining player's nickname to others
+            Text nickname = service.getNickname(event.getTargetEntity()).orElse(null);
+            if (nickname == null) {
+                nickname = Text.of(event.getTargetEntity().getName());
+            } else {
+                nickname = Text.of("~" + nickname.toPlain());
+            }
+
             final ClientboundNucleusNameChangeMappingPacket joiningPlayerPacket =
-                    this.getMappingMessage(event.getTargetEntity(), service.getNickname(event.getTargetEntity()).orElse(Text.of(event
-                            .getTargetEntity().getName())));
+                    this.getMappingMessage(event.getTargetEntity(), nickname);
 
             this.game.getServer().getOnlinePlayers().stream().filter((player) -> !player.getUniqueId().equals(event.getTargetEntity().getUniqueId()))
                     .forEach((player) -> this.network.sendTo(player, joiningPlayerPacket));
@@ -136,7 +145,7 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
             displayNameField.set(mcPlayer, modNick);
 
             // Tell everyone about the new nick
-            this.network.sendToAll(this.getMappingMessage(player, finalNick));
+            this.network.sendToAll(this.getMappingMessage(player, Text.of("~" + finalNick.toPlain())));
         }
     }
 
@@ -145,10 +154,18 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
     }
 
     private ClientboundNucleusNameMappingsPacket getMappingMessage(final NucleusNicknameService service) {
-        return new ClientboundNucleusNameMappingsPacket(
-                this.game.getServer().getOnlinePlayers().stream().collect(Collectors.toMap(Identifiable::getUniqueId, v -> service.getNickname(v)
-                        .orElseGet(() -> Text.of(v.getName()))
-                ))
-        );
+        final Map<UUID, Text> nicknames = new HashMap<>();
+        this.game.getServer().getOnlinePlayers().forEach((player) -> {
+            Text nickname = service.getNickname(player).orElse(null);
+            if (nickname == null) {
+                nickname = Text.of(player.getName());
+            } else {
+                nickname = Text.of("~" + nickname.toPlain());
+            }
+
+            nicknames.put(player.getUniqueId(), nickname);
+        });
+
+        return new ClientboundNucleusNameMappingsPacket(nicknames);
     }
 }
