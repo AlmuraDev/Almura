@@ -106,7 +106,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         this.textField = new UITextField(this, "", true);
         this.textField.setPosition(SimpleScreen.getPaddedX(this.list, 4), 0);
         this.textField.setEditable(false);
-        this.textField.setFontOptions(FontOptions.builder().from(FontColors.FRO_WHITE).shadow(false).build());
+        this.textField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         this.list.setElements(elementList);
         this.list.register(this);

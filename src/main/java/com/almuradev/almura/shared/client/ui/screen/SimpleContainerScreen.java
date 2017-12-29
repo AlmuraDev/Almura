@@ -36,7 +36,7 @@ public class SimpleContainerScreen extends SimpleScreen {
     public void construct() {
         if (this.title != Text.EMPTY) {
             final UILabel titleLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.title));
-            titleLabel.setFontOptions(FontColors.FRO_WHITE);
+            titleLabel.setFontOptions(FontColors.WHITE_FO);
             titleLabel.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
 
             this.addToScreen(titleLabel);

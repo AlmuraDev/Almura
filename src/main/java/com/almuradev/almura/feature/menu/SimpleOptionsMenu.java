@@ -51,7 +51,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         this.saveAndLoad();
 
         final UILabel titleLabel = new UILabel(this, I18n.format("almura.menu_button.options"));
-        titleLabel.setFontOptions(FontColors.FRO_WHITE);
+        titleLabel.setFontOptions(FontColors.WHITE_FO);
         titleLabel.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
 
         this.addToScreen(titleLabel);

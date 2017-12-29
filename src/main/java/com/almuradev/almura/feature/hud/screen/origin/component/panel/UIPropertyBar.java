@@ -23,7 +23,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.util.Color;
 
 import javax.annotation.Nullable;
 
@@ -36,7 +35,7 @@ public class UIPropertyBar extends UIComponent {
     private int color;
     private float amount = 1.0f;
     private Text text = Text.EMPTY;
-    private FontOptions fontOptions = FontColors.FRO_WHITE;
+    private FontOptions fontOptions = FontColors.WHITE_FO;
     private GuiTexture spritesheet = GuiConfig.SpriteSheet.VANILLA_ICON;
 
     @Nullable private GuiIcon backgroundIcon, foregroundIcon;

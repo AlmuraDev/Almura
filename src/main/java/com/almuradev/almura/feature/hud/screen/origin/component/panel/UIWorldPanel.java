@@ -35,7 +35,7 @@ public class UIWorldPanel extends UIHUDPanel {
 
         this.worldLabel = new UILabel(gui, "");
         this.worldLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
-        this.worldLabel.setFontOptions(FontColors.FRO_WHITE);
+        this.worldLabel.setFontOptions(FontColors.WHITE_FO);
 
         this.add(this.compassLabel, this.worldLabel);
     }

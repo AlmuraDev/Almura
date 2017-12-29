@@ -50,7 +50,7 @@ public class UIDetailsPanel extends UIHUDPanel {
 
         // Player Count
         this.playerCountLabel = new UILabel(gui, "");
-        this.playerCountLabel.setFontOptions(FontColors.FRO_WHITE);
+        this.playerCountLabel.setFontOptions(FontColors.WHITE_FO);
         this.playerCountImage = new UIImage(gui, new GuiTexture(GuiConfig.Location.GENERIC_AVATAR), null);
         this.playerCountImage.setSize(16, 16);
         this.playerCountImage.setPosition(SimpleScreen.getPaddedX(this.clockImage, 4, Anchor.RIGHT), 0, Anchor.MIDDLE | Anchor.RIGHT);
@@ -58,7 +58,7 @@ public class UIDetailsPanel extends UIHUDPanel {
         // Coordinates
         this.coordsLabel = new UIExpandingLabel(gui, "", true);
         this.coordsLabel.setPosition(2, 2);
-        this.coordsLabel.setFontOptions(FontColors.FRO_WHITE);
+        this.coordsLabel.setFontOptions(FontColors.WHITE_FO);
 
         this.add(this.clockImage, this.playerCountLabel, this.playerCountImage, this.coordsLabel);
     }

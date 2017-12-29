@@ -17,19 +17,28 @@ public interface FontColors {
 
     // Be advised using this interface will remove all other options created prior.
 
-    FontOptions FRO_GRAY = FontOptions.builder()
-            .color(Color.ofRgb(128, 128, 128).getRgb())
+    int GRAY = Color.ofRgb(128, 128, 128).getRgb();
+    FontOptions GRAY_FO = FontOptions.builder()
+            .color(GRAY)
             .build();
-    FontOptions FRO_ORANGE = FontOptions.builder()
-            .color(Color.ofRgb(255, 165, 0).getRgb())
+
+    int ORANGE = org.spongepowered.api.util.Color.ofRgb(255, 165, 0).getRgb();
+    FontOptions ORANGE_FO = FontOptions.builder()
+            .color(ORANGE)
             .build();
-    FontOptions FRO_RED = FontOptions.builder()
-            .color(Color.ofRgb(255, 0, 0).getRgb())
+
+    int RED = org.spongepowered.api.util.Color.ofRgb(255, 0, 0).getRgb();
+    FontOptions RED_FO = FontOptions.builder()
+            .color(RED)
             .build();
-    FontOptions FRO_LIGHT_RED = FontOptions.builder()
-            .color(Color.ofRgb(255, 51, 51).getRgb())
+
+    int LIGHT_RED = org.spongepowered.api.util.Color.ofRgb(255, 51, 51).getRgb();
+    FontOptions LIGHT_RED_FO = FontOptions.builder()
+            .color(LIGHT_RED)
             .build();
-    FontOptions FRO_WHITE = FontOptions.builder()
-            .color(Color.WHITE.getRgb())
+
+    int WHITE = org.spongepowered.api.util.Color.WHITE.getRgb();
+    FontOptions WHITE_FO = FontOptions.builder()
+            .color(WHITE)
             .build();
 }

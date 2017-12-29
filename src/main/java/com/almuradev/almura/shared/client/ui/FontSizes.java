@@ -16,19 +16,19 @@ public interface FontSizes {
 
     // Be advised using this interface will remove all other options created prior.
 
-    FontOptions NORMAL = FontOptions.builder()
-            .scale(1.0F)
+    FontOptions TINY = FontOptions.builder()
+            .scale(0.6f)
             .build();
-    FontOptions SMALL = FontOptions.builder()
-            .scale(0.9F)
+    FontOptions VERY_SMALL = FontOptions.builder()
+            .scale(0.7f)
             .build();
     FontOptions SMALLER = FontOptions.builder()
-            .scale(0.8F)
+            .scale(0.8f)
             .build();
-    FontOptions VERYSMALL = FontOptions.builder()
-            .scale(0.7F)
+    FontOptions SMALL = FontOptions.builder()
+            .scale(0.9f)
             .build();
-    FontOptions TINY = FontOptions.builder()
-            .scale(0.6F)
+    FontOptions NORMAL = FontOptions.builder()
+            .scale(1.0f)
             .build();
 }

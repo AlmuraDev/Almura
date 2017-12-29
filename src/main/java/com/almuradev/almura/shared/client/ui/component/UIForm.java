@@ -161,7 +161,7 @@ public class UIForm extends UIWindow {
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
         this.closeButton.setFontOptions(this.closeButton.isInsideBounds(mouseX, mouseY) ?
-                FontColors.FRO_WHITE : FontColors.FRO_GRAY);
+                FontColors.WHITE_FO : FontColors.GRAY_FO);
     }
 
     @Override

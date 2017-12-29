@@ -12,6 +12,8 @@ import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.feature.hud.screen.origin.UIAvatarImage;
 import com.almuradev.almura.feature.hud.screen.origin.component.UIXPOrbImage;
 import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.Fonts;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
@@ -69,7 +71,7 @@ public class UIUserPanel extends UIHUDPanel {
         // Level
         this.levelLabel = new UILabel(gui, "");
         this.levelLabel.setPosition(SimpleScreen.getPaddedX(this.userAvatarImage, 3), SimpleScreen.getPaddedY(this.usernameLabel, 0));
-        this.levelLabel.setFontOptions(this.setFontColorandSize(this.white, 0.7F));
+        this.levelLabel.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.7F));
 
         // Currency
         this.currencyImage = new UIImage(gui, MalisisGui.BLOCK_TEXTURE, Icon.from(Items.EMERALD));
@@ -170,7 +172,7 @@ public class UIUserPanel extends UIHUDPanel {
             this.currencyImage.setVisible(true);
             this.currencyLabel.setVisible(true);
             this.currencyLabel.setText(hudData.economyAmount);
-            this.currencyLabel.setFontOptions(this.setFontColorandSize(orange, 0.7F));
+            this.currencyLabel.setFontOptions(Fonts.colorAndScale(FontColors.ORANGE, 0.7F));
             this.currencyLabel.setPosition(-3, SimpleScreen.getPaddedY(this.usernameLabel, 1),Anchor.TOP | Anchor.RIGHT);
             this.currencyImage.setPosition(-(this.currencyLabel.getWidth() + 5), SimpleScreen.getPaddedY(this.usernameLabel, -1), Anchor.TOP | Anchor.RIGHT);
         }
@@ -186,7 +188,7 @@ public class UIUserPanel extends UIHUDPanel {
 
         if (StaticAccess.config.get().client.displayNumericHUDValues) {
             this.experienceBar.setText(Text.of(this.df.format(experience) + "/" + this.df.format(experienceCap)));
-            this.experienceBar.setFontOptions(this.setFontColorandSize(white, 0.8F));
+            this.experienceBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
         } else {
             this.experienceBar.setText(Text.EMPTY);
         }
@@ -199,7 +201,7 @@ public class UIUserPanel extends UIHUDPanel {
         this.healthBar.setAmount(MathUtil.convertToRange(health,0f, maxHealth, 0f, 1f));
         if (StaticAccess.config.get().client.displayNumericHUDValues) {
             this.healthBar.setText(Text.of(this.df.format(health) + "/" + this.df.format(maxHealth)));
-            this.healthBar.setFontOptions(this.setFontColorandSize(white, 0.8F));
+            this.healthBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
         } else {
             this.healthBar.setText(Text.EMPTY);
         }
@@ -222,7 +224,7 @@ public class UIUserPanel extends UIHUDPanel {
         final int currentArmor = maxArmor - currentDamage;
         if (StaticAccess.config.get().client.displayNumericHUDValues) {
             this.armorBar.setText(Text.of(this.df.format((float) currentArmor) + "/" + this.df.format((float) maxArmor)));
-            this.armorBar.setFontOptions(this.setFontColorandSize(white, 0.8F));
+            this.armorBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
         } else {
             this.armorBar.setText(Text.EMPTY);
         }
@@ -234,7 +236,7 @@ public class UIUserPanel extends UIHUDPanel {
         final float foodLevel = Minecraft.getMinecraft().player.getFoodStats().getFoodLevel();
         if (StaticAccess.config.get().client.displayNumericHUDValues) {
             this.hungerBar.setText(Text.of(this.df.format(foodLevel) + "/" + this.df.format(20f)));
-            this.hungerBar.setFontOptions(this.setFontColorandSize(white, 0.8F));
+            this.hungerBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
         } else {
             this.hungerBar.setText(Text.EMPTY);
         }
@@ -250,7 +252,7 @@ public class UIUserPanel extends UIHUDPanel {
             final int air = Math.max(Minecraft.getMinecraft().player.getAir(), 0);
             if (StaticAccess.config.get().client.displayNumericHUDValues) {
                 this.airBar.setText(Text.of(this.df.format((float) air) + "/" + this.df.format((float) 300)));
-                this.airBar.setFontOptions(this.setFontColorandSize(white, 0.8F));
+                this.airBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
             } else {
                 this.airBar.setText(Text.EMPTY);
             }

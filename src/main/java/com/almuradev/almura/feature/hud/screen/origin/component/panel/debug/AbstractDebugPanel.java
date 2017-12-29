@@ -49,10 +49,10 @@ public abstract class AbstractDebugPanel extends UIHUDPanel {
 
     @SuppressWarnings("deprecation")
     private void drawText0(final Text text, final int x, final int y, final boolean aah, final boolean aaw, final int offset) {
-        this.renderer.drawText(Fonts.MINECRAFT, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), x, y, this.zIndex, FontColors.FRO_WHITE);
+        this.renderer.drawText(Fonts.MINECRAFT, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), x, y, this.zIndex, FontColors.WHITE_FO);
 
         if (aah) {
-            this.autoHeight += (int) Fonts.MINECRAFT.getStringHeight(FontColors.FRO_WHITE) + 4;
+            this.autoHeight += (int) Fonts.MINECRAFT.getStringHeight(FontColors.WHITE_FO) + 4;
         }
 
         if (aaw) {
