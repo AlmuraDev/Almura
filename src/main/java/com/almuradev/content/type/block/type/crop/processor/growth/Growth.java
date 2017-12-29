@@ -102,8 +102,8 @@ public final class Growth {
             final ConfigurationNode biomeLightNode = lightNode.getNode(GrowthConfig.BIOME);
             if (!biomeLightNode.isVirtual()) {
                 BIOME_FILTER_BY_REGISTRY_NAME.deserialize(biomeLightNode)
-                        .ifPresent(biomePredicate -> DoubleRange.PARSER.deserialize(biomeLightNode)
-                                .ifPresent(lightRange -> biomeLightPredicates.put(biomePredicate, lightRange)));
+                        .ifPresent(biomePredicate -> DoubleRange.PARSER.deserialize(lightNode).ifPresent(lightRange -> biomeLightPredicates.put
+                                (biomePredicate, lightRange)));
                 return Optional.empty();
             } else {
                 return DoubleRange.PARSER.deserialize(biomeLightNode);
