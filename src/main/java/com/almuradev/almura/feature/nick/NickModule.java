@@ -27,14 +27,12 @@ public final class NickModule extends AbstractModule implements CommonBinder {
         this.facet().add(ServerNickManager.class);
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {
-
                 @Override
                 protected void configure() {
                     this.facet().add(ClientNickManager.class);
                     this.requestStaticInjection(UIPlayerListPanel.class);
                 }
             }
-
             this.install(new ClientModule());
         });
     }

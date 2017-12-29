@@ -24,13 +24,11 @@ public final class NotificationModule extends AbstractModule implements CommonBi
         this.facet().add(ServerNotificationManager.class);
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {
-
                 @Override
                 protected void configure() {
                     this.facet().add(ClientNotificationManager.class);
                 }
             }
-
             this.install(new ClientModule());
         });
     }

@@ -36,26 +36,17 @@ public final class HeadUpDisplayModule extends AbstractModule implements CommonB
 
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {
-
-                @SideOnly(Side.CLIENT)
                 @Override
+                @SideOnly(Side.CLIENT)
+                @SuppressWarnings("UnnecessaryStaticInjection") // HACK: inject into required mixin target classes
                 protected void configure() {
                     this.facet().add(ClientHeadUpDisplayManager.class);
-
-                    this.requestMixinInjection();
-
                     this.requestStaticInjection(UIDetailsPanel.class);
                     this.requestStaticInjection(UIWorldPanel.class);
                     this.requestStaticInjection(UIUserPanel.class);
-                }
-
-
-                @SuppressWarnings("UnnecessaryStaticInjection") // HACK: inject into required mixin target classes
-                private void requestMixinInjection() {
                     this.requestStaticInjection(GuiIngame.class);
                 }
             }
-
             this.install(new ClientModule());
         });
     }

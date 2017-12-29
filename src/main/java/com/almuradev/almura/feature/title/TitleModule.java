@@ -14,7 +14,6 @@ import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitle
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import org.spongepowered.api.Platform;
 
@@ -31,19 +30,13 @@ public final class TitleModule extends AbstractModule implements CommonBinder {
         this.requestStaticInjection(TitleCommands.class);
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {
-
                 @Override
+                @SuppressWarnings("UnnecessaryStaticInjection") // HACK: inject into required mixin target classes
                 protected void configure() {
                     this.facet().add(ClientTitleManager.class);
-                    this.requestMixinInjection();
-                }
-
-                @SuppressWarnings("UnnecessaryStaticInjection") // HACK: inject into required mixin target classes
-                private void requestMixinInjection() {
                     this.requestStaticInjection(RenderPlayer.class);
                 }
             }
-
             this.install(new ClientModule());
         });
     }

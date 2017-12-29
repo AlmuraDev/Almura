@@ -7,13 +7,13 @@
  */
 package com.almuradev.almura.feature.menu;
 
-import com.almuradev.almura.shared.inject.ClientBinder;
+import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public final class MainMenuModule extends AbstractModule implements ClientBinder {
+public final class MainMenuModule extends AbstractModule implements CommonBinder {
 
     @Override
     protected void configure() {

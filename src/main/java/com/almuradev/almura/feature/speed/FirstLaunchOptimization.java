@@ -18,7 +18,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ClientOptimizationManager implements Witness {
+final class FirstLaunchOptimization implements Witness {
 
     @SubscribeEvent
     public void configLoad(final ConfigLoadEvent<ClientConfiguration> event) {
