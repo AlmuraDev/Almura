@@ -14,13 +14,11 @@ import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitle
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
-import org.spongepowered.api.Sponge;
 
 public final class TitleModule extends AbstractModule implements CommonBinder {
 
+    @SuppressWarnings("UnnecessaryStaticInjection") // HACK: inject into required mixin target classes
     @Override
     protected void configure() {
         this.command()
@@ -31,15 +29,6 @@ public final class TitleModule extends AbstractModule implements CommonBinder {
         this.facet()
                 .add(ServerTitleManager.class);
         this.requestStaticInjection(TitleCommands.class);
-        if (Sponge.getPlatform().getType().isClient()) {
-            this.requestMixinInjection();
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    // HACK: inject into required mixin target classes
-    @SuppressWarnings("UnnecessaryStaticInjection")
-    private void requestMixinInjection() {
-        this.requestStaticInjection(RenderPlayer.class);
+        this.on(Platform.Type.CLIENT, () -> this.requestStaticInjection(RenderPlayer.class));
     }
 }

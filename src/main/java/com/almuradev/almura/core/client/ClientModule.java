@@ -58,8 +58,7 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
         this.installFactory(OBJModelParser.Factory.class);
     }
 
-    // HACK: inject into required mixin target classes
-    @SuppressWarnings("UnnecessaryStaticInjection")
+    @SuppressWarnings("UnnecessaryStaticInjection") // HACK: inject into required mixin target classes
     private void requestMixinInjection() {
         this.requestStaticInjection(GuiIngame.class);
     }

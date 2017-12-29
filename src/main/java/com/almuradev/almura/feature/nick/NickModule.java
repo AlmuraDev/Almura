@@ -15,7 +15,6 @@ import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameMappingsP
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import org.spongepowered.api.Platform;
-import org.spongepowered.api.Sponge;
 
 public final class NickModule extends AbstractModule implements CommonBinder {
 
@@ -24,12 +23,8 @@ public final class NickModule extends AbstractModule implements CommonBinder {
         this.packet()
                 .bind(ClientboundNucleusNameChangeMappingPacket.class, binder -> binder.handler(ClientboundNucleusNameChangeMappingPacketHandler.class, Platform.Type.CLIENT))
                 .bind(ClientboundNucleusNameMappingsPacket.class, binder -> binder.handler(ClientboundNucleusNameMappingsPacketHandler.class, Platform.Type.CLIENT));
-
         this.facet()
                 .add(ServerNickManager.class);
-
-        if (Sponge.getPlatform().getType().isClient()) {
-            this.requestStaticInjection(UIPlayerListPanel.class);
-        }
+        this.on(Platform.Type.CLIENT, () -> this.requestStaticInjection(UIPlayerListPanel.class));
     }
 }
