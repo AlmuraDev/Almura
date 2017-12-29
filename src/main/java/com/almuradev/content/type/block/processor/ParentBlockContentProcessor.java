@@ -30,6 +30,6 @@ public final class ParentBlockContentProcessor implements BlockContentProcessor.
 
     @Override
     public void postProcessState(final ConfigurationNode config, final ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> builder, final BlockStateDefinition.Builder<BlockStateDefinition> definition) {
-        builder.optionalStateBuilder(config.getString()).ifPresent(definition::inherit);
+        builder.optionalStateBuilder(config.getString()).ifPresent(definition::parent);
     }
 }

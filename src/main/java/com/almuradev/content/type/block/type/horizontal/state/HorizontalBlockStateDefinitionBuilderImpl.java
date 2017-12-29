@@ -10,7 +10,7 @@ package com.almuradev.content.type.block.type.horizontal.state;
 import com.almuradev.content.type.block.BlockStateDefinition;
 import net.minecraft.util.EnumFacing;
 
-public final class HorizontalBlockStateDefinitionBuilderImpl extends BlockStateDefinition.Builder.Impl<HorizontalBlockStateDefinition> implements HorizontalBlockStateDefinitionBuilder {
+public final class HorizontalBlockStateDefinitionBuilderImpl extends BlockStateDefinition.Builder.Impl<HorizontalBlockStateDefinition, HorizontalBlockStateDefinitionBuilderImpl> implements HorizontalBlockStateDefinitionBuilder {
 
     public final EnumFacing facing;
 
@@ -19,7 +19,7 @@ public final class HorizontalBlockStateDefinitionBuilderImpl extends BlockStateD
     }
 
     @Override
-    public HorizontalBlockStateDefinition build() {
+    public HorizontalBlockStateDefinition build0() {
         return new HorizontalBlockStateDefinition(this);
     }
 }
