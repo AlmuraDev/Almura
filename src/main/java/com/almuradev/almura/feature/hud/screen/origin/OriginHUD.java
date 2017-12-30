@@ -71,7 +71,7 @@ public class OriginHUD extends AbstractHUD {
         this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
 
         // Notifications panel
-        this.notificationPanel = new UINotificationPanel(this, 124, 25, manager);
+        this.notificationPanel = new UINotificationPanel(this, 124, 26, manager);
         this.notificationPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         // World panel
@@ -99,7 +99,7 @@ public class OriginHUD extends AbstractHUD {
     }
 
     public boolean handleScroll() {
-        if (this.playerListPanel.isVisible()) {
+        if (this.playerListPanel != null && this.playerListPanel.isVisible()) {
             this.playerListPanel.onScrollWheel(Mouse.getEventX(), Mouse.getEventY(), (int) MathUtil.squash(Mouse.getEventDWheel(), -1, 1));
             return true;
         }
@@ -117,6 +117,20 @@ public class OriginHUD extends AbstractHUD {
 
         this.detailsPanel.setVisible(this.config.get().client.displayLocationWidget);
         this.detailsPanel.setAlpha(category.originHudOpacity);
+
+        this.notificationPanel.setVisible(manager.getCurrent() != null);
+        //this.worldPanel.setVisible(manager.getCurrent() == null);
+
+        if (manager.getCurrent() == null) {
+            this.worldPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
+        } else {
+            this.worldPanel.setPosition(0, 30, Anchor.TOP | Anchor.CENTER);
+            if ((this.notificationPanel.notificationTitle.getWidth() + 10) < (this.notificationPanel.notificationLabel.getWidth() + 10)) {
+                this.notificationPanel.setSize(this.notificationPanel.notificationLabel.getContentWidth() + 10, this.notificationPanel.getHeight());
+            } else {
+                this.notificationPanel.setSize(this.notificationPanel.notificationTitle.getContentWidth() + 10, this.notificationPanel.getHeight());
+            }
+        }
 
         // Show debug panels if necessary
         final boolean isDebugEnabled = this.client.gameSettings.showDebugInfo;
