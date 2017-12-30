@@ -16,10 +16,6 @@ import com.almuradev.toolbox.config.tag.ConfigTag;
 
 public interface CropBlockContentProcessor extends BlockContentProcessor<CropBlock, CropBlock.Builder, CropBlockStateDefinition, CropBlockStateDefinitionBuilder> {
 
-    interface Tagged extends CropBlockContentProcessor, TaggedConfigProcessor<CropBlock.Builder, ConfigTag> {
-
-    }
-
     interface State extends BlockContentProcessor.State<CropBlock, CropBlock.Builder, CropBlockStateDefinition, CropBlockStateDefinitionBuilder> {
 
     }

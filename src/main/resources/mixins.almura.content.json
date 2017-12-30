@@ -10,6 +10,7 @@
         "block.material.MixinMaterial",
         "block.MixinBlock",
         "block.MixinBlockHorizontal",
+        "block.MixinBlockTallGrass",
         "block.MixinContentBlock",
         "block.MixinSoundType",
         "item.MixinContentItem",

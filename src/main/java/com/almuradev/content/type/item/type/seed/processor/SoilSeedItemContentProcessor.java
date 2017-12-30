@@ -11,12 +11,11 @@ import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.registry.delegate.CatalogDelegate;
 import com.almuradev.content.type.item.type.seed.SeedItem;
 import com.almuradev.content.type.item.type.seed.SeedItemConfig;
-import com.almuradev.toolbox.config.processor.TaggedConfigProcessor;
 import com.almuradev.toolbox.config.tag.ConfigTag;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.block.BlockType;
 
-public final class SoilItemContentProcessor implements TaggedConfigProcessor<SeedItem.Builder, ConfigTag> {
+public final class SoilSeedItemContentProcessor implements SeedItemContentProcessor.AnyTagged {
 
     private static final ConfigTag TAG = ConfigTag.create(SeedItemConfig.SOIL);
 

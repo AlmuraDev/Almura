@@ -13,10 +13,6 @@ import com.almuradev.toolbox.config.tag.ConfigTag;
 
 public interface ItemContentProcessor<C extends ContentItemType, B extends ContentItemType.Builder<C>> extends ConfigProcessor<B> {
 
-    interface Any extends ItemContentProcessor<ContentItemType, ContentItemType.Builder<ContentItemType>> {
-
-    }
-
     interface AnyTagged extends ItemContentProcessor<ContentItemType, ContentItemType.Builder<ContentItemType>>, TaggedConfigProcessor<ContentItemType.Builder<ContentItemType>, ConfigTag> {
 
     }
