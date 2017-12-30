@@ -31,11 +31,12 @@ public abstract class MixinBlock implements ContentBlockType {
 
     @Nullable @Shadow public CreativeTabs displayOnCreativeTab;
     @Shadow protected SoundType blockSoundType;
-    @Shadow protected ThreadLocal<EntityPlayer> harvesters;
+    @Shadow(remap = false) protected ThreadLocal<EntityPlayer> harvesters;
     @Shadow public abstract void harvestBlock(final World world, final EntityPlayer player, final BlockPos pos, final IBlockState state, @Nullable final TileEntity te, final ItemStack stack);
     @Shadow public void dropBlockAsItem(final World world, final BlockPos pos, final IBlockState state, final int fortune) { }
     @Shadow public abstract void dropBlockAsItemWithChance(final World world, final BlockPos pos, final IBlockState state, final float chance, final int fortune);
-    @Shadow public SoundType getSoundType(final IBlockState state, final World world, final BlockPos pos, @Nullable final Entity entity) { return null; }
+    @Shadow(remap = false) public SoundType getSoundType(final IBlockState state, final World world, final BlockPos pos, @Nullable final Entity
+            entity) { return null; }
 
     @Override
     public Optional<ItemGroup> itemGroup() {

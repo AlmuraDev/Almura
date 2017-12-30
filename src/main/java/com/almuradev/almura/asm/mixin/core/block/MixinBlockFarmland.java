@@ -35,6 +35,10 @@ public abstract class MixinBlockFarmland extends Block {
         super(material);
     }
 
+    /**
+     * @author Dockter
+     * @reason Prevent farmland "decay" into dirt based on property
+     */
     @Override
     @Overwrite
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {

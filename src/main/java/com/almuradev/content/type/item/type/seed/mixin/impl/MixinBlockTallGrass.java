@@ -38,7 +38,7 @@ public abstract class MixinBlockTallGrass extends MixinBlock {
      * @author Zidane
      * @reason Add in content seeds to drop list for Tall Grass
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 
         final Random random = ((World) world).rand;

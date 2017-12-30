@@ -22,6 +22,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,11 +32,12 @@ import java.util.List;
 @Mixin(TileEntitySignRenderer.class)
 public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRenderer {
 
-    @Shadow private static ResourceLocation SIGN_TEXTURE;
-    @Shadow private ModelSign model;
+    @Shadow @Final private static ResourceLocation SIGN_TEXTURE;
+    @Shadow @Final private ModelSign model;
 
     /**
-     * @author Steven Downer
+     * @author Grinch - Steven Downer
+     * @reason Do not render signposts past a configurable length. Fairly decent client optimization.
      */
     @Overwrite
     public void render(TileEntitySign te, double x, double y, double z, float partialTicks, int destroyStage, float val) {
@@ -96,40 +98,6 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
         GlStateManager.scale(0.6666667F, -0.6666667F, -0.6666667F);
         this.model.renderSign();
         GlStateManager.popMatrix();
-        // Almura start
-        if (te.signText.length > 0) {
-            // 0 means perform Minecraft logic only, we do not interfere
-            if (config.client.signTextRenderDistance == 0) {
-                renderText(te, destroyStage);
-            } else {
-                EntityLivingBase viewer = (EntityLivingBase) Minecraft.getMinecraft().getRenderViewEntity();
-                if (viewer == null) {
-                    viewer = Minecraft.getMinecraft().player;
-                }
-
-                if (viewer != null && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) < (config.client.signTextRenderDistance * 16) && te
-                        .hasWorld()) {
-                    renderText(te, destroyStage);
-                }
-            }
-        }
-        // Almura end
-        GlStateManager.popMatrix();
-
-        if (destroyStage >= 0)
-        {
-            GlStateManager.matrixMode(5890);
-            GlStateManager.popMatrix();
-            GlStateManager.matrixMode(5888);
-        }
-    }
-
-    /**
-     * Renders text on a sign. Entirely vanilla logic based on Minecraft 1.12.
-     * @param te The tile entity
-     * @param destroyStage The destroy stage
-     */
-    private void renderText(TileEntitySign te, int destroyStage) {
         FontRenderer fontrenderer = this.getFontRenderer();
         float f3 = 0.010416667F;
         GlStateManager.translate(0.0F, 0.33333334F, 0.046666667F);
@@ -138,23 +106,36 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
         GlStateManager.depthMask(false);
         int i = 0;
 
-        if (destroyStage < 0)
-        {
-            for (int j = 0; j < te.signText.length; ++j)
-            {
-                if (te.signText[j] != null)
-                {
+        // Almura start
+        boolean renderText = te.signText.length > 0;
+
+        if (renderText) {
+            // Greater than 0 means the client has selected a non-Vanilla render distance
+            if (config.client.signTextRenderDistance > 0) {
+                EntityLivingBase viewer = (EntityLivingBase) Minecraft.getMinecraft().getRenderViewEntity();
+                if (viewer == null) {
+                    viewer = Minecraft.getMinecraft().player;
+                }
+
+                if (viewer == null || !te.hasWorld() || te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) > (config.client
+                        .signTextRenderDistance * 16)) {
+                    renderText = false;
+                }
+            }
+        }
+
+        if (renderText && destroyStage < 0) {
+            // Almura End
+            for (int j = 0; j < te.signText.length; ++j) {
+                if (te.signText[j] != null) {
                     ITextComponent itextcomponent = te.signText[j];
                     List<ITextComponent> list = GuiUtilRenderComponents.splitText(itextcomponent, 90, fontrenderer, false, true);
-                    String s = list != null && !list.isEmpty() ? ((ITextComponent)list.get(0)).getFormattedText() : "";
+                    String s = list != null && !list.isEmpty() ? ((ITextComponent) list.get(0)).getFormattedText() : "";
 
-                    if (j == te.lineBeingEdited)
-                    {
+                    if (j == te.lineBeingEdited) {
                         s = "> " + s + " <";
                         fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, j * 10 - te.signText.length * 5, 0);
-                    }
-                    else
-                    {
+                    } else {
                         fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, j * 10 - te.signText.length * 5, 0);
                     }
                 }
@@ -163,5 +144,13 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
 
         GlStateManager.depthMask(true);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.popMatrix();
+
+        if (destroyStage >= 0)
+        {
+            GlStateManager.matrixMode(5890);
+            GlStateManager.popMatrix();
+            GlStateManager.matrixMode(5888);
+        }
     }
 }
