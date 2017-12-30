@@ -15,8 +15,6 @@ import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import net.kyori.membrane.facet.Activatable;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Server;

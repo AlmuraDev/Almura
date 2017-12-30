@@ -10,7 +10,7 @@ package com.almuradev.content.type.blocksoundgroup;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.content.asm.iface.IMixinSetCatalogTypeId;
+import com.almuradev.content.mixin.iface.IMixinSetCatalogTypeId;
 import com.almuradev.content.registry.ContentBuilder;
 import net.minecraft.util.SoundEvent;
 import org.spongepowered.api.effect.sound.SoundType;

@@ -18,8 +18,8 @@ public final class ItemGroupModule extends AbstractModule implements CommonBinde
 
     @Override
     protected void configure() {
-        this.bind(ItemGroup.Builder.class).to(ItemGroupBuilder.class);
         this.facet().add(ItemGroupContentTypeLoader.class);
+        this.bind(ItemGroup.Builder.class).to(ItemGroupBuilder.class);
         this.registry().module(ItemGroup.class, ItemGroupRegistryModule.get());
         this.processors()
                 .add(IconItemGroupContentProcessor.class);

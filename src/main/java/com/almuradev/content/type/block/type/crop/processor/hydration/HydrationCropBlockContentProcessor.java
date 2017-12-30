@@ -24,7 +24,7 @@ public final class HydrationCropBlockContentProcessor implements CropBlockConten
     }
 
     @Override
-    public void processState(ConfigurationNode config, CropBlock.Builder builder, CropBlockStateDefinitionBuilder definition) {
+    public void processState(final ConfigurationNode config, final CropBlock.Builder builder, final CropBlockStateDefinitionBuilder definition) {
         Hydration.PARSER.deserialize(config).ifPresent(definition::hydration);
     }
 }

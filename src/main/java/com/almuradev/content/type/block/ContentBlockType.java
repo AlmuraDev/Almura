@@ -7,12 +7,12 @@
  */
 package com.almuradev.content.type.block;
 
-import com.almuradev.content.asm.iface.IMixinLazyItemGroup;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import com.almuradev.content.type.itemgroup.ItemGrouped;
+import com.almuradev.content.type.itemgroup.mixin.iface.IMixinLazyItemGroup;
 import com.almuradev.content.type.mapcolor.MapColor;
 import com.almuradev.content.type.material.Material;
 import com.google.common.base.Preconditions;

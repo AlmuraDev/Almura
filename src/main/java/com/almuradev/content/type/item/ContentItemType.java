@@ -7,12 +7,12 @@
  */
 package com.almuradev.content.type.item;
 
-import com.almuradev.content.asm.iface.IMixinLazyItemGroup;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import com.almuradev.content.type.itemgroup.ItemGrouped;
+import com.almuradev.content.type.itemgroup.mixin.iface.IMixinLazyItemGroup;
 import net.minecraft.item.Item;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.spongepowered.api.util.PEBKACException;

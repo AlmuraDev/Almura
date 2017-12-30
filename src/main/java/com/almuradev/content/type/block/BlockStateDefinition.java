@@ -7,10 +7,10 @@
  */
 package com.almuradev.content.type.block;
 
-import com.almuradev.content.asm.iface.IMixinAlmuraBlock;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.component.aabb.BlockAABB;
+import com.almuradev.content.type.block.mixin.iface.IMixinAlmuraBlock;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
 import net.minecraft.block.Block;
 

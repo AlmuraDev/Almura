@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.notification.network;
 
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
-import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

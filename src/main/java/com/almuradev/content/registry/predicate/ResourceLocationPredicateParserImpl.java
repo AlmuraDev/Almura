@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 
 final class ResourceLocationPredicateParserImpl<T> extends AbstractFunctionPredicateParser<T, ResourceLocation> implements ResourceLocationPredicateParser<T> {
 
-    ResourceLocationPredicateParserImpl(Function<T, ResourceLocation> function) {
+    ResourceLocationPredicateParserImpl(final Function<T, ResourceLocation> function) {
         super(function);
     }
 

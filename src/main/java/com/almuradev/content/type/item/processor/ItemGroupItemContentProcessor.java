@@ -13,7 +13,6 @@ import com.almuradev.content.type.item.ContentItemType;
 import com.almuradev.content.type.item.ItemConfig;
 import com.almuradev.content.type.item.ItemContentProcessor;
 import com.almuradev.content.type.itemgroup.ItemGroup;
-import com.almuradev.toolbox.config.processor.TaggedConfigProcessor;
 import com.almuradev.toolbox.config.tag.ConfigTag;
 import ninja.leaping.configurate.ConfigurationNode;
 

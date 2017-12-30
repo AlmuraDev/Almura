@@ -10,14 +10,11 @@ package com.almuradev.almura.shared.inject;
 import com.almuradev.almura.shared.command.binder.CommandBinder;
 import com.almuradev.almura.shared.network.PacketBinder;
 import com.almuradev.almura.shared.registry.binder.RegistryBinder;
-import com.google.inject.Module;
 import net.kyori.membrane.facet.Facet;
 import net.kyori.membrane.facet.FacetBinder;
 import net.kyori.violet.ForwardingBinder;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
-
-import java.util.function.Supplier;
 
 /**
  * Common binders.

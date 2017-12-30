@@ -8,8 +8,6 @@
 package com.almuradev.almura.feature.nick.network;
 
 import com.almuradev.almura.feature.nick.ClientNickManager;
-import com.almuradev.almura.feature.nick.ServerNickManager;
-import com.flowpowered.noise.module.combiner.Min;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetworkPlayerInfo;

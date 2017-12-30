@@ -8,10 +8,10 @@
 package com.almuradev.content.type.block.facet;
 
 import com.almuradev.almura.shared.event.Witness;
-import com.almuradev.content.asm.iface.IMixinAlmuraBlock;
 import com.almuradev.content.type.action.component.drop.Drop;
 import com.almuradev.content.type.action.component.drop.ExperienceDrop;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
+import com.almuradev.content.type.block.mixin.iface.IMixinAlmuraBlock;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent;

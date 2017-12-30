@@ -32,13 +32,11 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.util.Identifiable;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Singleton
 public final class ServerNickManager extends Witness.Impl implements Witness.Lifecycle {

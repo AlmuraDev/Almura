@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.title.network;
 
 import com.almuradev.almura.feature.title.ClientTitleManager;
-import com.almuradev.almura.feature.title.ServerTitleManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;

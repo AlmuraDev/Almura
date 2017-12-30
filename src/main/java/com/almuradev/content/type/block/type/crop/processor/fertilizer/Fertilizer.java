@@ -25,7 +25,7 @@ public final class Fertilizer {
 
     public static final ConfigurationNodeDeserializer<Fertilizer> PARSER = new ConfigurationNodeDeserializer<Fertilizer>() {
         @Override
-        public Optional<Fertilizer> deserialize(ConfigurationNode config) {
+        public Optional<Fertilizer> deserialize(final ConfigurationNode config) {
             if (config.isVirtual()) {
                 return Optional.empty();
             }

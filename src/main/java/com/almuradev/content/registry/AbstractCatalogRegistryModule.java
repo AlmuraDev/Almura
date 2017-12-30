@@ -8,7 +8,7 @@
 package com.almuradev.content.registry;
 
 import com.almuradev.almura.shared.registry.ResourceLocations;
-import com.almuradev.content.asm.iface.IMixinSetCatalogTypeId;
+import com.almuradev.content.mixin.iface.IMixinSetCatalogTypeId;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.registry.AlternateCatalogRegistryModule;
 import org.spongepowered.api.registry.RegistrationPhase;

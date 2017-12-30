@@ -24,7 +24,7 @@ public class CanRollbackCropBlockContentProcessor implements CropBlockContentPro
     }
 
     @Override
-    public void processState(ConfigurationNode config, CropBlock.Builder builder, CropBlockStateDefinitionBuilder definition) {
+    public void processState(final ConfigurationNode config, final CropBlock.Builder builder, final CropBlockStateDefinitionBuilder definition) {
         definition.canRollback(config.getBoolean(DEFAULT_VALUE));
     }
 }

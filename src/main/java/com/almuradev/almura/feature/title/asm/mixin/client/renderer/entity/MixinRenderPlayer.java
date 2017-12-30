@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.title.asm.mixin.client.renderer.entity;
 
 import com.almuradev.almura.feature.title.ClientTitleManager;
-import com.almuradev.almura.feature.title.ServerTitleManager;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;

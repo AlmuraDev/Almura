@@ -10,18 +10,12 @@ package com.almuradev.almura.feature.nick;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.shared.event.Witness;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.common.text.SpongeTexts;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

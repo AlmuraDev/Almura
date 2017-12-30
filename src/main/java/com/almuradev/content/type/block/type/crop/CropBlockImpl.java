@@ -193,7 +193,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     }
 
     @Override
-    public boolean isFertile(World world, BlockPos pos) {
+    public boolean isFertile(final World world, final BlockPos pos) {
         final CropBlockStateDefinition definition = this.state(world.getBlockState(pos.up()));
 
         final IBlockState soilState = world.getBlockState(pos);
@@ -216,7 +216,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                     pos.add(-maxRadius, 0, -maxRadius),
                     pos.add(maxRadius, 0, maxRadius)
             )) {
-                IBlockState inRangeState;
+                final IBlockState inRangeState;
 
                 // Skip soil state lookup and use it to perform the check. Now you may ask how the soil could be the hydration but our system
                 // lets you do stone soil and "hydrated" by stone

@@ -9,7 +9,6 @@ package com.almuradev.almura.feature.notification;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.event.Witness;
 import net.minecraft.client.Minecraft;

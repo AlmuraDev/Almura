@@ -23,10 +23,10 @@ public final class BlockSoundGroupModule extends AbstractModule implements Commo
 
     @Override
     protected void configure() {
+        this.facet().add(BlockSoundGroupContentTypeLoader.class);
         this.bind(new TypeLiteral<ContentFinder<BlockSoundGroup, BlockSoundGroup.Builder>>() {}).to(BlockSoundGroupContentTypeLoader.class);
         this.bind(new TypeLiteral<SingleTypeExternalContentProcessor<BlockSoundGroup, BlockSoundGroup.Builder>>() {}).to(BlockSoundGroupContentTypeLoader.class);
         this.bind(BlockSoundGroup.Builder.class).to(BlockSoundGroupBuilder.class);
-        this.facet().add(BlockSoundGroupContentTypeLoader.class);
         this.registry().module(BlockSoundGroup.class, BlockSoundGroupRegistryModule.class);
         this.processors()
                 .add(ParentBlockSoundGroupContentPostProcessor.class)

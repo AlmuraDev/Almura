@@ -32,7 +32,7 @@ public final class Growth {
 
     public static final ConfigurationNodeDeserializer<Growth> PARSER = new ConfigurationNodeDeserializer<Growth>() {
         @Override
-        public Optional<Growth> deserialize(ConfigurationNode config) {
+        public Optional<Growth> deserialize(final ConfigurationNode config) {
             if (config.isVirtual()) {
                 return Optional.empty();
             }
@@ -151,7 +151,7 @@ public final class Growth {
     }
 
     @Nullable
-    public DoubleRange getOrLoadChanceRangeForBiome(Biome biome) {
+    public DoubleRange getOrLoadChanceRangeForBiome(final Biome biome) {
         @Nullable DoubleRange found = this.biomeChanceRanges.get(biome);
         if (found == null) {
             for (final Map.Entry<FunctionPredicate<Biome, ResourceLocation>, DoubleRange> entry : this.biomeChancePredicates.entrySet()) {
@@ -174,7 +174,7 @@ public final class Growth {
     }
 
     @Nullable
-    public DoubleRange getOrLoadTemperatureRequiredRangeForBiome(Biome biome) {
+    public DoubleRange getOrLoadTemperatureRequiredRangeForBiome(final Biome biome) {
         @Nullable DoubleRange found = this.biomeTemperatureRequiredRanges.get(biome);
         if (found == null) {
             for (final Map.Entry<FunctionPredicate<Biome, ResourceLocation>, DoubleRange> entry : this.biomeTemperatureRequiredPredicates.entrySet()) {
@@ -197,10 +197,10 @@ public final class Growth {
     }
 
     @Nullable
-    public DoubleRange getOrLoadLightRangeForBiome(Biome biome) {
+    public DoubleRange getOrLoadLightRangeForBiome(final Biome biome) {
         @Nullable DoubleRange found = this.biomeLightRanges.get(biome);
         if (found == null) {
-            for (Map.Entry<FunctionPredicate<Biome, ResourceLocation>, DoubleRange> entry : this.biomeLightPredicates.entrySet()) {
+            for (final Map.Entry<FunctionPredicate<Biome, ResourceLocation>, DoubleRange> entry : this.biomeLightPredicates.entrySet()) {
                 final FunctionPredicate<Biome, ResourceLocation> predicate = entry.getKey();
                 if (predicate.test(biome)) {
                     final DoubleRange range = entry.getValue();
