@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.notification;
 
+import com.almuradev.almura.feature.hud.screen.origin.component.panel.UINotificationPanel;
 import com.almuradev.almura.feature.notification.network.ClientboundPlayerNotificationPacket;
 import com.almuradev.almura.feature.notification.network.ClientboundPlayerNotificationPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
@@ -27,6 +28,7 @@ public final class NotificationModule extends AbstractModule implements CommonBi
                 @Override
                 protected void configure() {
                     this.facet().add(ClientNotificationManager.class);
+                    this.requestStaticInjection(UINotificationPanel.class);
                 }
             }
             this.install(new ClientModule());

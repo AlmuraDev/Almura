@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.notification;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.event.Witness;
 import net.minecraft.client.Minecraft;
@@ -31,7 +32,7 @@ public final class ClientNotificationManager implements Witness {
     private PopupNotification current = null;
     private long nextPoll = 0L;
     private long tickCounter = 0L;
-    private long fadeout = 0L;
+    public long fadeout = 0L;
 
     @SubscribeEvent
     public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {

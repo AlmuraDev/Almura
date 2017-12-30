@@ -13,6 +13,7 @@ import com.almuradev.almura.core.client.config.ClientCategory;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIBossBarPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
+import com.almuradev.almura.feature.hud.screen.origin.component.panel.UINotificationPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPlayerListPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
@@ -45,6 +46,8 @@ public class OriginHUD extends AbstractHUD {
     private UIPlayerListPanel playerListPanel;
     private UIUserPanel userPanel;
     private UIWorldPanel worldPanel;
+    public UINotificationPanel notificationPanel;
+
 
     @Inject
     public OriginHUD(final MappedConfiguration<ClientConfiguration> config) {
@@ -64,6 +67,10 @@ public class OriginHUD extends AbstractHUD {
         // Debug block panel
         this.debugBlockPanel = new BlockDebugPanel(this, 124, 45);
         this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
+
+        // Notifications panel
+        this.notificationPanel = new UINotificationPanel(this, 124, 25);
+        this.notificationPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         // World panel
         this.worldPanel = new UIWorldPanel(this, 124, 25);
@@ -85,7 +92,7 @@ public class OriginHUD extends AbstractHUD {
         this.playerListPanel = new UIPlayerListPanel(this, 150, 16);
         this.playerListPanel.setPosition(0, 40, Anchor.TOP | Anchor.CENTER);
 
-        addToScreen(this.userPanel, this.debugBlockPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel, this.bossBarPanel,
+        addToScreen(this.userPanel, this.debugBlockPanel, this.notificationPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel, this.bossBarPanel,
                 this.playerListPanel);
     }
 
