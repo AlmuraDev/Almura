@@ -208,8 +208,8 @@ public class UIPlayerListPanel extends UIHUDPanel {
             // Call to the super and draw
             super.drawBackground(renderer, mouseX, mouseY, partialTick);
 
-            int x = this.getLeftPadding() + 2;
-            final int y = this.getTopPadding() + 2;
+            int x = getLeftPadding() + 2;
+            final int y = getTopPadding() + 2;
 
             // Text
             renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player1), x + ICON_SIZE, y, this.zIndex);
@@ -222,8 +222,8 @@ public class UIPlayerListPanel extends UIHUDPanel {
                 renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player2), x + ICON_SIZE + 2, y, this.zIndex);
 
                 // Separator
-                renderer.drawRectangle(this.maxColumnWidth + 5 + this.getLeftPadding(), 1, this.zIndex, 1,
-                        this.height - 2, BORDER_COLOR, 75);
+                renderer.drawRectangle(this.maxColumnWidth + 5 + this.getLeftPadding(), 1, this.zIndex, 1, this.height - 2,
+                        BORDER_COLOR, 75);
             }
         }
     }

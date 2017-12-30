@@ -7,6 +7,8 @@
  */
 package com.almuradev.almura.shared.client.ui.component.button;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.UIContainer;
@@ -37,6 +39,7 @@ public final class UIButtonBuilder {
     @Nullable private UIImage image;
     @Nullable private UITooltip tooltip;
     private boolean enabled = true;
+    private boolean visible = true;
 
     public UIButtonBuilder(MalisisGui gui) {
         this.gui = gui;
@@ -110,6 +113,11 @@ public final class UIButtonBuilder {
         return this;
     }
 
+    public UIButtonBuilder visible(boolean visible) {
+        this.visible = visible;
+        return this;
+    }
+
     public UIButtonBuilder position(int x, int y) {
         return this.position(x, y, 0);
     }
@@ -153,11 +161,12 @@ public final class UIButtonBuilder {
 
     @SuppressWarnings({"deprecation", "unchecked"})
     public UIButton build(String id) {
+        checkNotNull(id);
+
         final UIButton button = new UIButton(this.gui);
         button.setPosition(this.x, this.y);
-        if (id != null) {
-            button.setName(id);
-        }
+        button.setName(id);
+
         if (this.text != null) {
             button.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.text));
         }
@@ -192,6 +201,7 @@ public final class UIButtonBuilder {
             this.container.add(button);
         }
         button.setEnabled(this.enabled);
+        button.setVisible(this.visible);
         button.setZIndex(this.z);
 
         return button;

@@ -37,10 +37,10 @@ public class UIMessageBox extends UIForm {
     private static final int buttonPadding = 4;
     private static final int topPadding = 20;
     private static final int bottomPadding = 30;
-    private final MessageBoxConsumer consumer;
     private final MessageBoxButtons messageBoxButtons;
     private final String message;
-    private MessageBoxResult result;
+    @Nullable private final MessageBoxConsumer consumer;
+    @Nullable private MessageBoxResult result;
 
     private UIMessageBox(MalisisGui gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer consumer) {
         super(gui, 0, 0, title);

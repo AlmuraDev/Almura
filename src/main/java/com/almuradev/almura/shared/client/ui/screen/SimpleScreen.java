@@ -11,6 +11,7 @@ import com.almuradev.almura.shared.client.GuiConfig;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.control.IScrollable;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -98,6 +99,24 @@ public abstract class SimpleScreen extends MalisisGui {
     }
 
     /**
+     * Gets the width of a component with padding removed
+     * @param component The component to get width from
+     * @return The width of a component with padding removed
+     */
+    public static int getPaddedWidth(UIComponent<? extends IScrollable> component) {
+        return component.getWidth() - component.self().getLeftPadding() - component.self().getRightPadding();
+    }
+
+    /**
+     * Gets the height of a component with padding removed
+     * @param component The component to get height from
+     * @return The height of a component with padding removed
+     */
+    public static int getPaddedHeight(UIComponent<? extends IScrollable> component) {
+        return component.getHeight() - component.self().getTopPadding() - component.self().getBottomPadding();
+    }
+
+    /**
      * Closes this {@link SimpleScreen} and displays the parent, if present.
      */
     @Override
@@ -124,4 +143,3 @@ public abstract class SimpleScreen extends MalisisGui {
     protected void onClose() {
     }
 }
-
