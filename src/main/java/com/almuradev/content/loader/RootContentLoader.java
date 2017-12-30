@@ -119,8 +119,6 @@ public final class RootContentLoader implements Witness {
     }
 
     private void resolve() {
-        this.state.write(this.logger, this.assets);
-
         final List<JarSearchEntry> jars = this.entries(JarSearchEntry.class);
         if (!jars.isEmpty()) {
             this.resolveJars(jars, this.assets.resolve(MANAGED_ASSETS));
@@ -138,6 +136,8 @@ public final class RootContentLoader implements Witness {
                 entry.process(this.injector, this.logger, type);
             }
         }
+
+        this.state.write(this.logger, this.assets);
     }
 
     private void resolveJars(final List<JarSearchEntry> jars, final Path target) {
