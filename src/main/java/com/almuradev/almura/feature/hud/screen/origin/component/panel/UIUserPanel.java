@@ -117,7 +117,8 @@ public class UIUserPanel extends UIHUDPanel {
         this.staminaBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.hungerBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
-                .setBackgroundIcon(GuiConfig.Icon.STAMINA);
+                .setBackgroundIcon(GuiConfig.Icon.STAMINA)
+                .setSpritesheet(GuiConfig.SpriteSheet.ALMURA); // You must call this if you are loading icon within the TexturePack when in-game.
 
         // Air
         this.airBar = new UIPropertyBar(gui, barWidth, barHeight)
