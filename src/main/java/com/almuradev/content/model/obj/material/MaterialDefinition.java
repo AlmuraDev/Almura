@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj.material;
+package com.almuradev.content.model.obj.material;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -19,7 +19,7 @@ public class MaterialDefinition {
     private final String name;
     private final ResourceLocation diffuseTexture;
 
-    private MaterialDefinition(String name, ResourceLocation diffuseTexture) {
+    private MaterialDefinition(final String name, final ResourceLocation diffuseTexture) {
         this.name = name;
         this.diffuseTexture = diffuseTexture;
     }
@@ -37,7 +37,7 @@ public class MaterialDefinition {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!(obj instanceof MaterialDefinition)) {
             return false;
         }
@@ -58,17 +58,17 @@ public class MaterialDefinition {
 
         private ResourceLocation diffuseTexture;
 
-        public Builder diffuseTexture(ResourceLocation location) {
+        public Builder diffuseTexture(final ResourceLocation location) {
             this.diffuseTexture = location;
             return this;
         }
 
-        public Builder from(MaterialDefinition materialDefinition) {
+        public Builder from(final MaterialDefinition materialDefinition) {
             this.diffuseTexture = materialDefinition.diffuseTexture;
             return this;
         }
 
-        public MaterialDefinition build(String name) {
+        public MaterialDefinition build(final String name) {
             checkState(name != null, "Name cannot be null!");
             checkState(!name.isEmpty(), "Name cannot be empty!");
 

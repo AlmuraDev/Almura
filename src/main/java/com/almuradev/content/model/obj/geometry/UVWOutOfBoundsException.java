@@ -5,15 +5,15 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj.geometry;
+package com.almuradev.content.model.obj.geometry;
 
 public class UVWOutOfBoundsException extends MalformedGeometryException {
 
-    public UVWOutOfBoundsException(String message) {
+    public UVWOutOfBoundsException(final String message) {
         super(message);
     }
 
-    public UVWOutOfBoundsException(String message, Throwable cause) {
+    public UVWOutOfBoundsException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

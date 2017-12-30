@@ -5,24 +5,24 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj.geometry;
+package com.almuradev.content.model.obj.geometry;
 
 import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.MoreObjects;
 
-public class VertexTextureCoordinate extends Vector3f {
+public class VertexNormal extends Vector3f {
 
     private int index;
 
-    public VertexTextureCoordinate(float u, float v, float w) {
-        super(u, v, w);
+    public VertexNormal(final float x, final float y, final float z) {
+        super(x, y, z);
     }
 
     public int getIndex() {
         return this.index;
     }
 
-    public void setIndex(int index) {
+    public void setIndex(final int index) {
         if (this.index > 0) {
             throw new IllegalStateException("Cannot re-set index!");
         }
@@ -30,25 +30,13 @@ public class VertexTextureCoordinate extends Vector3f {
         this.index = index;
     }
 
-    public float getU() {
-        return this.getX();
-    }
-
-    public float getV() {
-        return this.getY();
-    }
-
-    public float getW() {
-        return this.getZ();
-    }
-
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("index", this.index)
-                .add("u", this.getX())
-                .add("v", this.getY())
-                .add("w", this.getZ())
+                .add("x", this.getX())
+                .add("y", this.getY())
+                .add("z", this.getZ())
                 .toString();
     }
 }

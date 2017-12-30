@@ -6,4 +6,4 @@
  * All Rights Reserved.
  */
 @org.spongepowered.api.util.annotation.NonnullByDefault
-package com.almuradev.almura.shared.client.model.obj.material;
+package com.almuradev.content.model.obj.material;

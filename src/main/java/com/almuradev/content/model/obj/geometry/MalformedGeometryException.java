@@ -5,17 +5,17 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj.geometry;
+package com.almuradev.content.model.obj.geometry;
 
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 
 public class MalformedGeometryException extends ModelLoaderRegistry.LoaderException {
 
-    public MalformedGeometryException(String message) {
+    public MalformedGeometryException(final String message) {
         super(message);
     }
 
-    public MalformedGeometryException(String message, Throwable cause) {
+    public MalformedGeometryException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

@@ -39,12 +39,12 @@ public abstract class MixinBlockTallGrass extends MixinBlock {
      * @reason Add in content seeds to drop list for Tall Grass
      */
     @Overwrite(remap = false)
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public void getDrops(final NonNullList<ItemStack> drops, final IBlockAccess world, final BlockPos pos, final IBlockState state, final int fortune) {
 
         final Random random = ((World) world).rand;
 
         // Forge Start - Lookup seed each time and then do random check. Almura handles its own chance code
-        ItemStack modSeed = net.minecraftforge.common.ForgeHooks.getGrassSeed(random, fortune);
+        final ItemStack modSeed = net.minecraftforge.common.ForgeHooks.getGrassSeed(random, fortune);
         if (!modSeed.isEmpty() && random.nextInt(8) == 0) {
             drops.add(modSeed);
         }

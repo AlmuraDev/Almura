@@ -23,7 +23,7 @@ public final class GrassSeedItemContentProcessor implements SeedItemContentProce
     }
 
     @Override
-    public void processTagged(ConfigurationNode config, SeedItem.Builder context) {
+    public void processTagged(final ConfigurationNode config, final SeedItem.Builder context) {
         Grass.PARSER.deserialize(config).ifPresent(context::grass);
     }
 }

@@ -11,7 +11,7 @@ import net.minecraft.item.ItemFood;
 
 public final class FoodItemImpl extends ItemFood implements FoodItem {
 
-    public FoodItemImpl(int amount, float saturation, boolean isWolfFood) {
+    public FoodItemImpl(final int amount, final float saturation, final boolean isWolfFood) {
         super(amount, saturation, isWolfFood);
         }
 }

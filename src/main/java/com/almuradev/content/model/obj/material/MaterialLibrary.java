@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj.material;
+package com.almuradev.content.model.obj.material;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -22,7 +22,7 @@ public class MaterialLibrary {
     private final String name;
     private final Set<MaterialDefinition> materialDefinitions;
 
-    private MaterialLibrary(ResourceLocation source, String name, Set<MaterialDefinition> materialDefinitions) {
+    private MaterialLibrary(final ResourceLocation source, final String name, final Set<MaterialDefinition> materialDefinitions) {
         this.source = source;
         this.name = name;
         this.materialDefinitions = materialDefinitions;
@@ -45,7 +45,7 @@ public class MaterialLibrary {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!(obj instanceof MaterialLibrary)) {
             return false;
         }
@@ -67,7 +67,7 @@ public class MaterialLibrary {
 
         private Set<MaterialDefinition> materialDefinitions = new HashSet<>();
 
-        public Builder materialDefinition(MaterialDefinition materialDefinition) {
+        public Builder materialDefinition(final MaterialDefinition materialDefinition) {
             this.materialDefinitions.add(materialDefinition);
             return this;
         }
@@ -76,10 +76,10 @@ public class MaterialLibrary {
             return this.materialDefinitions;
         }
 
-        public Builder from(MaterialLibrary materialLibrary) {
+        public Builder from(final MaterialLibrary materialLibrary) {
             checkNotNull(materialLibrary);
 
-            for (MaterialDefinition definition : materialLibrary.getMaterialDefinitions()) {
+            for (final MaterialDefinition definition : materialLibrary.getMaterialDefinitions()) {
                 this.materialDefinitions.add(MaterialDefinition.builder()
                         .from(definition)
                         .build(definition.getName())
@@ -89,7 +89,7 @@ public class MaterialLibrary {
             return this;
         }
 
-        public MaterialLibrary build(ResourceLocation source, String name) {
+        public MaterialLibrary build(final ResourceLocation source, final String name) {
             checkState(source != null, "Source cannot be null!");
             checkState(name != null, "Name cannot be null!");
             checkState(!name.isEmpty(), "Name cannot be empty!");

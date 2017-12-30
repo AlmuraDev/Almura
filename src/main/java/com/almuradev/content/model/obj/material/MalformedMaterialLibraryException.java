@@ -5,17 +5,17 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj.material;
+package com.almuradev.content.model.obj.material;
 
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 
 public class MalformedMaterialLibraryException extends ModelLoaderRegistry.LoaderException {
 
-    public MalformedMaterialLibraryException(String message) {
+    public MalformedMaterialLibraryException(final String message) {
         super(message);
     }
 
-    public MalformedMaterialLibraryException(String message, Throwable cause) {
+    public MalformedMaterialLibraryException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

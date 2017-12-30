@@ -13,6 +13,8 @@ import com.almuradev.content.loader.ClientTranslationInjector;
 import com.almuradev.content.loader.RootContentLoader;
 import com.almuradev.content.loader.ServerTranslationInjector;
 import com.almuradev.content.loader.TranslationInjector;
+import com.almuradev.content.model.ModelBinder;
+import com.almuradev.content.model.obj.OBJModelParser;
 import com.almuradev.content.type.TypeModule;
 import net.kyori.violet.AbstractModule;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -23,9 +25,22 @@ public final class ContentModule extends AbstractModule implements CommonBinder 
     @Override
     protected void configure() {
         this.facet().add(RootContentLoader.class);
+
+        this.install(new ModelModule());
+        this.install(new TranslationModule());
+
         this.install(new ComponentModule());
         this.install(new TypeModule());
-        this.install(new TranslationModule());
+    }
+
+    private static final class ModelModule extends AbstractModule implements CommonBinder {
+        @Override
+        protected void configure() {
+            this.on(Platform.Type.CLIENT, () -> {
+                this.facet().add(ModelBinder.Installer.class);
+                this.installFactory(OBJModelParser.Factory.class);
+            });
+        }
     }
 
     private static final class TranslationModule extends AbstractModule implements CommonBinder {

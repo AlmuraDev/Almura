@@ -5,18 +5,17 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj;
+package com.almuradev.content.model.obj;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.shared.client.model.obj.geometry.Group;
-import com.almuradev.almura.shared.client.model.obj.geometry.Vertex;
-import com.almuradev.almura.shared.client.model.obj.geometry.VertexNormal;
-import com.almuradev.almura.shared.client.model.obj.geometry.VertexTextureCoordinate;
-import com.almuradev.almura.shared.client.model.obj.material.MaterialDefinition;
-import com.almuradev.almura.shared.client.model.obj.material.MaterialLibrary;
 import com.almuradev.almura.shared.registry.ResourceLocations;
+import com.almuradev.content.model.obj.geometry.Group;
+import com.almuradev.content.model.obj.geometry.Vertex;
+import com.almuradev.content.model.obj.geometry.VertexNormal;
+import com.almuradev.content.model.obj.geometry.VertexTextureCoordinate;
+import com.almuradev.content.model.obj.material.MaterialDefinition;
+import com.almuradev.content.model.obj.material.MaterialLibrary;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -51,14 +50,14 @@ public class OBJModel implements IModel {
     private final Set<Group> groups;
     private final Set<ResourceLocation> textures;
 
-    private OBJModel(ResourceLocation source, String name, MaterialLibrary materialLibrary, Set<Group> groups) {
+    private OBJModel(final ResourceLocation source, final String name, final MaterialLibrary materialLibrary, final Set<Group> groups) {
         this.source = source;
         this.name = name;
         this.materialLibrary = materialLibrary;
         this.groups = groups;
         this.textures = new HashSet<>();
 
-        for (MaterialDefinition materialDefinition : materialLibrary.getMaterialDefinitions()) {
+        for (final MaterialDefinition materialDefinition : materialLibrary.getMaterialDefinitions()) {
 
             final ResourceLocation diffuseLocation = materialDefinition.getDiffuseTexture().orElse(null);
 
@@ -80,15 +79,15 @@ public class OBJModel implements IModel {
     }
 
     @Override
-    public IModel process(ImmutableMap<String, String> customData) {
+    public IModel process(final ImmutableMap<String, String> customData) {
         return new OBJModel(this.source, this.name, this.materialLibrary, this.groups);
     }
 
     @Override
-    public IModel retexture(ImmutableMap<String, String> textures) {
+    public IModel retexture(final ImmutableMap<String, String> textures) {
         final MaterialLibrary.Builder matLibBuilder = MaterialLibrary.builder().from(this.materialLibrary);
 
-        for (Map.Entry<String, String> textureEntry : textures.entrySet()) {
+        for (final Map.Entry<String, String> textureEntry : textures.entrySet()) {
             final String rawMaterialDefinition = textureEntry.getKey();
             final String rawResourceLocation = textureEntry.getValue();
 
@@ -116,8 +115,7 @@ public class OBJModel implements IModel {
                 }
 
                 // TODO Need to figure out if we have a parent
-                matDefBuilder.diffuseTexture(ResourceLocations.buildResourceLocationPath(rawResourceLocation, Almura
-                        .ID, null));
+                matDefBuilder.diffuseTexture(ResourceLocations.buildResourceLocationPath(rawResourceLocation, null));
 
                 matLibBuilder.materialDefinition(matDefBuilder.build(materialDefinition));
             }
@@ -137,7 +135,7 @@ public class OBJModel implements IModel {
     }
 
     @Override
-    public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+    public IBakedModel bake(final IModelState state, final VertexFormat format, final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
         return new OBJBakedModel(this, state, format, bakedTextureGetter);
     }
 
@@ -179,7 +177,7 @@ public class OBJModel implements IModel {
         private LinkedHashMap<VertexTextureCoordinate, Integer> textureCoordinates = new LinkedHashMap<>();
         private Set<Group> groups = new LinkedHashSet<>();
 
-        public Builder materialLibrary(MaterialLibrary materialLibrary) {
+        public Builder materialLibrary(final MaterialLibrary materialLibrary) {
             this.materialLibrary = materialLibrary;
             return this;
         }
@@ -188,7 +186,7 @@ public class OBJModel implements IModel {
             return this.materialLibrary;
         }
 
-        public Builder vertex(Vertex vertex) {
+        public Builder vertex(final Vertex vertex) {
             final int index = this.vertices.size() + 1;
             this.vertices.put(vertex, index);
             vertex.setIndex(index);
@@ -199,7 +197,7 @@ public class OBJModel implements IModel {
             return this.vertices;
         }
 
-        public Builder normal(VertexNormal normal) {
+        public Builder normal(final VertexNormal normal) {
             final int index = this.normals.size() + 1;
             this.normals.put(normal, index);
             normal.setIndex(index);
@@ -210,7 +208,7 @@ public class OBJModel implements IModel {
             return this.normals;
         }
 
-        public Builder textureCoordinate(VertexTextureCoordinate textureCoordinate) {
+        public Builder textureCoordinate(final VertexTextureCoordinate textureCoordinate) {
             final int index = this.textureCoordinates.size() + 1;
             this.textureCoordinates.put(textureCoordinate, index);
             textureCoordinate.setIndex(index);
@@ -221,12 +219,12 @@ public class OBJModel implements IModel {
             return this.textureCoordinates;
         }
 
-        public Builder group(Group group) {
+        public Builder group(final Group group) {
             this.groups.add(group);
             return this;
         }
 
-        public OBJModel build(ResourceLocation source, String name) {
+        public OBJModel build(final ResourceLocation source, final String name) {
             checkState(source != null, "Source cannot be null!");
             checkState(name != null, "Name cannot be null!");
             checkState(!name.isEmpty(), "Name cannot be empty!");

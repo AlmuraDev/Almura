@@ -5,9 +5,9 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj;
+package com.almuradev.content.model.obj;
 
-import com.almuradev.almura.shared.client.model.OnDemandModelLoader;
+import com.almuradev.content.model.OnDemandModelLoader;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
@@ -45,13 +45,13 @@ public class OBJModelLoader implements ICustomModelLoader, OnDemandModelLoader {
     }
 
     @Override
-    public boolean accepts(ResourceLocation modelLocation) {
+    public boolean accepts(final ResourceLocation modelLocation) {
         return this.domains.contains(modelLocation.getResourceDomain()) && modelLocation.getResourcePath().endsWith(".obj");
     }
 
     @Nullable
     @Override
-    public IModel loadModel(ResourceLocation modelLocation) throws Exception {
+    public IModel loadModel(final ResourceLocation modelLocation) throws Exception {
         // Suppress the first model loading exception (like Forge does in their loader)
         final Exception exception = this.errors.get(modelLocation);
 
@@ -68,7 +68,7 @@ public class OBJModelLoader implements ICustomModelLoader, OnDemandModelLoader {
 
             try {
                 cached = parser.parse();
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 this.errors.put(modelLocation, ex);
             } finally {
                 this.cache.put(modelLocation, cached);
@@ -79,7 +79,7 @@ public class OBJModelLoader implements ICustomModelLoader, OnDemandModelLoader {
     }
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
+    public void onResourceManagerReload(final IResourceManager resourceManager) {
         this.logger.debug("Reloading OBJ model store.");
         this.resourceManager = resourceManager;
         this.cache.clear();

@@ -33,7 +33,7 @@ public final class Grass {
 
     public static final ConfigurationNodeDeserializer<Grass> PARSER = new ConfigurationNodeDeserializer<Grass>() {
         @Override
-        public Optional<Grass> deserialize(ConfigurationNode rootNode) {
+        public Optional<Grass> deserialize(final ConfigurationNode rootNode) {
             if (rootNode.isVirtual()) {
                 return Optional.empty();
             }
@@ -119,7 +119,7 @@ public final class Grass {
     }
 
     @Nullable
-    public DoubleRange getOrLoadChanceRangeForBiome(Biome biome) {
+    public DoubleRange getOrLoadChanceRangeForBiome(final Biome biome) {
         @Nullable DoubleRange found = this.biomeChanceRanges.get(biome);
         if (found == null) {
             for (final Map.Entry<FunctionPredicate<Biome, ResourceLocation>, DoubleRange> entry : this.biomeChancePredicates.entrySet()) {
@@ -142,7 +142,7 @@ public final class Grass {
     }
 
     @Nullable
-    public IntRange getOrLoadAmountRequiredRangeForBiome(Biome biome) {
+    public IntRange getOrLoadAmountRequiredRangeForBiome(final Biome biome) {
         @Nullable IntRange found = this.biomeAmountRanges.get(biome);
         if (found == null) {
             for (final Map.Entry<FunctionPredicate<Biome, ResourceLocation>, IntRange> entry : this.biomeAmountPredicates.entrySet()) {

@@ -46,6 +46,14 @@ public final class ResourceLocations {
         return string.substring(0, index);
     }
 
+    public static String requireNamespace(final String string) {
+        final int index = string.indexOf(NAMESPACE_SEPARATOR);
+        if (index == NOT_FOUND) {
+            throw new IllegalArgumentException("Expected a namespaced string");
+        }
+        return string.substring(0, index);
+    }
+
     public static String findValue(final String string) {
         final int index = string.indexOf(NAMESPACE_SEPARATOR);
         if (index == NOT_FOUND) {
@@ -54,8 +62,8 @@ public final class ResourceLocations {
         return string.substring(index + 1, string.length());
     }
 
-    public static ResourceLocation buildResourceLocationPath(final String string, final String defaultNamespace, @Nullable final String parent) {
-        final String namespace = findNamespace(string, defaultNamespace);
+    public static ResourceLocation buildResourceLocationPath(final String string, @Nullable final String parent) {
+        final String namespace = requireNamespace(string);
         String value = findValue(string);
         if (value.indexOf('/') == -1 && parent != null) {
             value = parent + '/' + value;

@@ -5,22 +5,20 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj;
+package com.almuradev.content.model.obj;
 
-import com.almuradev.almura.Almura;
-import com.almuradev.almura.shared.client.model.ModelConfig;
-import com.almuradev.almura.shared.client.model.obj.geometry.Face;
-import com.almuradev.almura.shared.client.model.obj.geometry.Group;
-import com.almuradev.almura.shared.client.model.obj.geometry.MalformedGeometryException;
-import com.almuradev.almura.shared.client.model.obj.geometry.UVWOutOfBoundsException;
-import com.almuradev.almura.shared.client.model.obj.geometry.Vertex;
-import com.almuradev.almura.shared.client.model.obj.geometry.VertexDefinition;
-import com.almuradev.almura.shared.client.model.obj.geometry.VertexNormal;
-import com.almuradev.almura.shared.client.model.obj.geometry.VertexTextureCoordinate;
-import com.almuradev.almura.shared.client.model.obj.material.MalformedMaterialLibraryException;
-import com.almuradev.almura.shared.client.model.obj.material.MaterialDefinition;
-import com.almuradev.almura.shared.client.model.obj.material.MaterialLibrary;
 import com.almuradev.almura.shared.registry.ResourceLocations;
+import com.almuradev.content.model.obj.geometry.Face;
+import com.almuradev.content.model.obj.geometry.Group;
+import com.almuradev.content.model.obj.geometry.MalformedGeometryException;
+import com.almuradev.content.model.obj.geometry.UVWOutOfBoundsException;
+import com.almuradev.content.model.obj.geometry.Vertex;
+import com.almuradev.content.model.obj.geometry.VertexDefinition;
+import com.almuradev.content.model.obj.geometry.VertexNormal;
+import com.almuradev.content.model.obj.geometry.VertexTextureCoordinate;
+import com.almuradev.content.model.obj.material.MalformedMaterialLibraryException;
+import com.almuradev.content.model.obj.material.MaterialDefinition;
+import com.almuradev.content.model.obj.material.MaterialLibrary;
 import com.google.inject.assistedinject.Assisted;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
@@ -73,7 +71,7 @@ public class OBJModelParser {
                 final String line = lines.get(i);
 
                 // Skip comments and newlines
-                if (line.startsWith(ModelConfig.COMMENT) || line.isEmpty()) {
+                if (line.startsWith(OBJModelConfig.COMMENT) || line.isEmpty()) {
                     continue;
                 }
 
@@ -82,12 +80,12 @@ public class OBJModelParser {
                 final String[] lineContents = Arrays.copyOfRange(combinedLineContents, 1, combinedLineContents.length);
 
                 switch (lineHeader) {
-                    case ModelConfig.OBJ.MATERIAL_LIBRARY:
+                    case OBJModelConfig.MATERIAL_LIBRARY:
                         @Nullable final ResourceLocation parent = getParent(this.source);
                         objBuilder.materialLibrary(this.parseMaterialLibrary(ResourceLocations.buildResourceLocationPath(lineContents[0],
-                                Almura.ID, parent.getResourcePath())));
+                                parent.getResourcePath())));
                         break;
-                    case ModelConfig.OBJ.VERTEX:
+                    case OBJModelConfig.VERTEX:
                         try {
                             final float x = Float.parseFloat(lineContents[0]);
                             final float y = Float.parseFloat(lineContents[1]);
@@ -100,26 +98,26 @@ public class OBJModelParser {
                             }
 
                             objBuilder.vertex(new Vertex(x, y, z, w));
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             throw new MalformedGeometryException("Illegal vertex encountered! Vertices must have at least three float values. "
                                     + "Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents), e);
                         }
 
                         break;
-                    case ModelConfig.OBJ.VERTEX_NORMAL:
+                    case OBJModelConfig.VERTEX_NORMAL:
                         try {
                             final float x = Float.parseFloat(lineContents[0]);
                             final float y = Float.parseFloat(lineContents[1]);
                             final float z = Float.parseFloat(lineContents[2]);
 
                             objBuilder.normal(new VertexNormal(x, y, z));
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             throw new MalformedGeometryException("Illegal vertex normal encountered! Vertex normals must have at least three float "
                                     + "values. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents), e);
                         }
 
                         break;
-                    case ModelConfig.OBJ.VERTEX_TEXTURE_COORDINATE:
+                    case OBJModelConfig.VERTEX_TEXTURE_COORDINATE:
                         try {
                             final float u = Float.parseFloat(lineContents[0]);
                             final float v = Float.parseFloat(lineContents[1]);
@@ -138,7 +136,7 @@ public class OBJModelParser {
                             }
 
                             objBuilder.textureCoordinate(new VertexTextureCoordinate(u, v, w));
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             if (e instanceof UVWOutOfBoundsException) {
                                 throw e;
                             }
@@ -149,7 +147,7 @@ public class OBJModelParser {
                         }
 
                         break;
-                    case ModelConfig.OBJ.GROUP:
+                    case OBJModelConfig.GROUP:
                         if (groupBuilder != null) {
                             objBuilder.group(groupBuilder.build(currentGroupName));
                         }
@@ -157,7 +155,7 @@ public class OBJModelParser {
                         groupBuilder = Group.builder();
                         currentGroupName = lineContents[0];
                         break;
-                    case ModelConfig.OBJ.USE_MATERIAL:
+                    case OBJModelConfig.USE_MATERIAL:
                         if (groupBuilder == null) {
                             groupBuilder = Group.builder();
                             currentGroupName = "default";
@@ -171,7 +169,7 @@ public class OBJModelParser {
 
                         MaterialDefinition materialDefinition = null;
 
-                        for (MaterialDefinition material : materialLibrary.getMaterialDefinitions()) {
+                        for (final MaterialDefinition material : materialLibrary.getMaterialDefinitions()) {
                             if (material.getName().equals(lineContents[0])) {
                                 materialDefinition = material;
                             }
@@ -184,7 +182,7 @@ public class OBJModelParser {
 
                         groupBuilder.materialDefinition(materialDefinition);
                         break;
-                    case ModelConfig.OBJ.FACE:
+                    case OBJModelConfig.FACE:
                         if (groupBuilder == null) {
                             groupBuilder = Group.builder();
                             currentGroupName = "default";
@@ -200,7 +198,7 @@ public class OBJModelParser {
                                 final int vertexIndex = Integer.parseInt(indices[0]);
                                 Vertex vertex = null;
 
-                                for (Map.Entry<Vertex, Integer> entry : objBuilder.vertices().entrySet()) {
+                                for (final Map.Entry<Vertex, Integer> entry : objBuilder.vertices().entrySet()) {
                                     if (entry.getValue() == vertexIndex) {
                                         vertex = entry.getKey();
                                         break;
@@ -238,7 +236,7 @@ public class OBJModelParser {
                                 if (textureCoordinateIndex != -1) {
                                     VertexTextureCoordinate textureCoordinate = null;
 
-                                    for (Map.Entry<VertexTextureCoordinate, Integer> entry : objBuilder.textureCoordinates().entrySet()) {
+                                    for (final Map.Entry<VertexTextureCoordinate, Integer> entry : objBuilder.textureCoordinates().entrySet()) {
                                         if (entry.getValue() == textureCoordinateIndex) {
                                             textureCoordinate = entry.getKey();
                                             break;
@@ -257,7 +255,7 @@ public class OBJModelParser {
                                 if (normalIndex != -1) {
                                     VertexNormal normal = null;
 
-                                    for (Map.Entry<VertexNormal, Integer> entry : objBuilder.normals().entrySet()) {
+                                    for (final Map.Entry<VertexNormal, Integer> entry : objBuilder.normals().entrySet()) {
                                         if (entry.getValue() == normalIndex) {
                                             normal = entry.getKey();
                                             break;
@@ -271,7 +269,7 @@ public class OBJModelParser {
 
                                     vertexDefBuilder.normal(normal);
                                 }
-                            } catch (Exception e) {
+                            } catch (final Exception e) {
                                 if (e instanceof MalformedGeometryException) {
                                     throw e;
                                 }
@@ -299,7 +297,7 @@ public class OBJModelParser {
         return objBuilder.build(this.source, getFileName(this.source).split("\\.")[0]);
     }
 
-    private MaterialLibrary parseMaterialLibrary(ResourceLocation source) throws Exception {
+    private MaterialLibrary parseMaterialLibrary(final ResourceLocation source) throws Exception {
         final MaterialLibrary.Builder mtllibBuilder = MaterialLibrary.builder();
 
         final IResource resource = this.resourceManager.getResource(source);
@@ -313,7 +311,7 @@ public class OBJModelParser {
                 final String line = lines.get(i);
 
                 // Skip comments and newlines
-                if (line.startsWith(ModelConfig.COMMENT) || line.isEmpty()) {
+                if (line.startsWith(OBJModelConfig.COMMENT) || line.isEmpty()) {
                     continue;
                 }
 
@@ -322,7 +320,7 @@ public class OBJModelParser {
                 final String[] lineContents = Arrays.copyOfRange(combinedLineContents, 1, combinedLineContents.length);
 
                 switch (lineHeader) {
-                    case ModelConfig.OBJ.Material.NEW_MATERIAL:
+                    case OBJModelConfig.Material.NEW_MATERIAL:
                         if (mtlBuilder != null) {
                             mtllibBuilder.materialDefinition(mtlBuilder.build(currentMaterial));
                         }
@@ -330,7 +328,7 @@ public class OBJModelParser {
                         mtlBuilder = MaterialDefinition.builder();
                         currentMaterial = lineContents[0];
                         break;
-                    case ModelConfig.OBJ.Material.DIFFUSE:
+                    case OBJModelConfig.Material.DIFFUSE:
                         if (mtlBuilder == null) {
                             throw new MalformedMaterialLibraryException("Material attribute cannot occur before defining new material "
                                     + "definition! Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents));
@@ -349,7 +347,7 @@ public class OBJModelParser {
                             }
                         }
 
-                        mtlBuilder.diffuseTexture(ResourceLocations.buildResourceLocationPath(lineContents[0], Almura.ID, parentPath));
+                        mtlBuilder.diffuseTexture(ResourceLocations.buildResourceLocationPath(lineContents[0], parentPath));
                         break;
                     default:
                         this.logger.debug("Encountered unsupported element [{}] while parsing material library! Source -> "
@@ -373,7 +371,7 @@ public class OBJModelParser {
      * @return The parent
      */
     @Nullable
-    public static ResourceLocation getParent(ResourceLocation location) {
+    public static ResourceLocation getParent(final ResourceLocation location) {
         final String path = location.getResourcePath();
 
         final int lastSlashIndex = path.lastIndexOf('/');

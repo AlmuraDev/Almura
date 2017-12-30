@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj.geometry;
+package com.almuradev.content.model.obj.geometry;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -27,7 +27,7 @@ public class VertexDefinition {
     private final VertexNormal normal;
     private int index;
 
-    private VertexDefinition(Vertex vertex, VertexTextureCoordinate textureCoordinate, VertexNormal normal) {
+    private VertexDefinition(final Vertex vertex, final VertexTextureCoordinate textureCoordinate, final VertexNormal normal) {
         this.vertex = vertex;
         this.textureCoordinate = textureCoordinate;
         this.normal = normal;
@@ -41,7 +41,7 @@ public class VertexDefinition {
         return this.index;
     }
 
-    public void setIndex(int index) {
+    public void setIndex(final int index) {
         if (this.index > 0) {
             throw new IllegalStateException("Cannot re-set index!");
         }
@@ -62,7 +62,7 @@ public class VertexDefinition {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!(obj instanceof VertexDefinition)) {
             return false;
         }
@@ -88,17 +88,17 @@ public class VertexDefinition {
         private VertexTextureCoordinate textureCoordinate;
         private VertexNormal normal;
 
-        public Builder vertex(Vertex vertex) {
+        public Builder vertex(final Vertex vertex) {
             this.vertex = vertex;
             return this;
         }
 
-        public Builder textureCoordinate(VertexTextureCoordinate textureCoordinate) {
+        public Builder textureCoordinate(final VertexTextureCoordinate textureCoordinate) {
             this.textureCoordinate = textureCoordinate;
             return this;
         }
 
-        public Builder normal(VertexNormal normal) {
+        public Builder normal(final VertexNormal normal) {
             this.normal = normal;
             return this;
         }

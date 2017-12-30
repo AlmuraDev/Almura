@@ -37,7 +37,7 @@ public interface ContentType {
         private final String id;
         private final Class<? extends ContentLoader> loader;
 
-        public Impl(String id, Class<? extends ContentLoader> loader) {
+        public Impl(final String id, final Class<? extends ContentLoader> loader) {
             this.id = id;
             this.loader = loader;
         }

@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model;
+package com.almuradev.content.model;
 
 import com.google.inject.Binder;
 import com.google.inject.Injector;

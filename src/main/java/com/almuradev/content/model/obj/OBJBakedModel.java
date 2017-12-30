@@ -5,15 +5,15 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj;
+package com.almuradev.content.model.obj;
 
-import com.almuradev.almura.shared.client.model.obj.geometry.Face;
-import com.almuradev.almura.shared.client.model.obj.geometry.Group;
-import com.almuradev.almura.shared.client.model.obj.geometry.Vertex;
-import com.almuradev.almura.shared.client.model.obj.geometry.VertexDefinition;
-import com.almuradev.almura.shared.client.model.obj.geometry.VertexNormal;
-import com.almuradev.almura.shared.client.model.obj.geometry.VertexTextureCoordinate;
-import com.almuradev.almura.shared.client.model.obj.material.MaterialDefinition;
+import com.almuradev.content.model.obj.geometry.Face;
+import com.almuradev.content.model.obj.geometry.Group;
+import com.almuradev.content.model.obj.geometry.Vertex;
+import com.almuradev.content.model.obj.geometry.VertexDefinition;
+import com.almuradev.content.model.obj.geometry.VertexNormal;
+import com.almuradev.content.model.obj.geometry.VertexTextureCoordinate;
+import com.almuradev.content.model.obj.material.MaterialDefinition;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -57,7 +57,7 @@ public class OBJBakedModel implements IBakedModel {
     @Nullable
     private Face particleFace;
 
-    OBJBakedModel(OBJModel model, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+    OBJBakedModel(final OBJModel model, final IModelState state, final VertexFormat format, final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
         this.model = model;
         this.state = state;
         this.format = format;
@@ -67,19 +67,19 @@ public class OBJBakedModel implements IBakedModel {
     }
 
     @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
+    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(final ItemCameraTransforms.TransformType cameraTransformType) {
         return PerspectiveMapWrapper.handlePerspective(this, this.state, cameraTransformType);
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+    public List<BakedQuad> getQuads(@Nullable final IBlockState state, @Nullable final EnumFacing side, final long rand) {
 
         if (this.quads == null) {
             this.quads = new LinkedList<>();
 
             final TRSRTransformation transformation = this.state.apply(Optional.empty()).orElse(null);
 
-            for (Group group : this.model.getGroups()) {
+            for (final Group group : this.model.getGroups()) {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
 
                 TextureAtlasSprite diffuseSprite = null;
@@ -104,7 +104,7 @@ public class OBJBakedModel implements IBakedModel {
                     diffuseSprite = ModelLoader.White.INSTANCE;
                 }
 
-                for (Face face : group.getFaces()) {
+                for (final Face face : group.getFaces()) {
                     if (this.particleFace == null) {
                         this.particleFace = face;
                         this.particleDiffuseSprite = diffuseSprite;
@@ -114,7 +114,7 @@ public class OBJBakedModel implements IBakedModel {
                     quadBuilder.setTexture(diffuseSprite);
                     VertexNormal normal = null;
 
-                    for (VertexDefinition vertexDef : face.getVertices()) {
+                    for (final VertexDefinition vertexDef : face.getVertices()) {
                         if (normal == null) {
                             normal = vertexDef.getNormal().orElse(null);
                         }
@@ -137,7 +137,8 @@ public class OBJBakedModel implements IBakedModel {
                                 case UV:
                                     final VertexTextureCoordinate textureCoordinate = vertexDef.getTextureCoordinate().orElse(null);
 
-                                    float u, v;
+                                    final float u;
+                                    final float v;
 
                                     if (textureCoordinate != null) {
                                         u = textureCoordinate.getU();

@@ -33,7 +33,7 @@ public final class SeedItemBuilder extends ContentItemType.Builder.Impl<SeedItem
     }
 
     @Override
-    public void grass(Grass grass) {
+    public void grass(final Grass grass) {
         this.grass = grass;
     }
 

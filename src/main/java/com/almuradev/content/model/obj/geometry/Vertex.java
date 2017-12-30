@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj.geometry;
+package com.almuradev.content.model.obj.geometry;
 
 import com.flowpowered.math.vector.Vector4f;
 import com.google.common.base.MoreObjects;
@@ -14,7 +14,7 @@ public class Vertex extends Vector4f {
 
     private int index;
 
-    public Vertex(float x, float y, float z, float w) {
+    public Vertex(final float x, final float y, final float z, final float w) {
         super(x, y, z, w);
     }
 
@@ -22,7 +22,7 @@ public class Vertex extends Vector4f {
         return this.index;
     }
 
-    public void setIndex(int index) {
+    public void setIndex(final int index) {
         if (this.index > 0) {
             throw new IllegalStateException("Cannot re-set index!");
         }

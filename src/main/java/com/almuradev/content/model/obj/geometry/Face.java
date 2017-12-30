@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj.geometry;
+package com.almuradev.content.model.obj.geometry;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -18,7 +18,7 @@ public class Face {
     private final LinkedHashSet<VertexDefinition> vertices;
     private int index;
 
-    private Face(LinkedHashSet<VertexDefinition> vertices) {
+    private Face(final LinkedHashSet<VertexDefinition> vertices) {
         this.vertices = vertices;
     }
 
@@ -30,7 +30,7 @@ public class Face {
         return this.index;
     }
 
-    public void setIndex(int index) {
+    public void setIndex(final int index) {
         if (this.index > 0) {
             throw new IllegalStateException("Cannot re-set index!");
         }
@@ -43,7 +43,7 @@ public class Face {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!(obj instanceof Face)) {
             return false;
         }
@@ -64,7 +64,7 @@ public class Face {
 
         private LinkedHashSet<VertexDefinition> vertices = new LinkedHashSet<>();
 
-        public Builder vertex(VertexDefinition vertex) {
+        public Builder vertex(final VertexDefinition vertex) {
             this.vertices.add(vertex);
             vertex.setIndex(this.vertices.size());
             return this;

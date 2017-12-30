@@ -5,11 +5,11 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model.obj.geometry;
+package com.almuradev.content.model.obj.geometry;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.shared.client.model.obj.material.MaterialDefinition;
+import com.almuradev.content.model.obj.material.MaterialDefinition;
 import com.google.common.base.MoreObjects;
 
 import java.util.LinkedHashSet;
@@ -21,7 +21,7 @@ public class Group {
     private final MaterialDefinition materialDefinition;
     private final LinkedHashSet<Face> faces;
 
-    private Group(String name, MaterialDefinition materialDefinition, LinkedHashSet<Face> faces) {
+    private Group(final String name, final MaterialDefinition materialDefinition, final LinkedHashSet<Face> faces) {
         this.name = name;
         this.materialDefinition = materialDefinition;
         this.faces = faces;
@@ -44,7 +44,7 @@ public class Group {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!(obj instanceof Group)) {
             return false;
         }
@@ -67,18 +67,18 @@ public class Group {
         private MaterialDefinition materialDefinition;
         private LinkedHashSet<Face> faces = new LinkedHashSet<>();
 
-        public Builder materialDefinition(MaterialDefinition materialDefinition) {
+        public Builder materialDefinition(final MaterialDefinition materialDefinition) {
             this.materialDefinition = materialDefinition;
             return this;
         }
 
-        public Builder face(Face face) {
+        public Builder face(final Face face) {
             this.faces.add(face);
             face.setIndex(this.faces.size());
             return this;
         }
 
-        public Group build(String name) {
+        public Group build(final String name) {
             checkState(name != null, "Name cannot be null!");
             checkState(!name.isEmpty(), "Name cannot be empty!");
             checkState(!this.faces.isEmpty(), "Faces cannot be empty!");

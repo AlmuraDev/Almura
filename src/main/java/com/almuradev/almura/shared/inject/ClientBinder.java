@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.shared.inject;
 
-import com.almuradev.almura.shared.client.model.ModelBinder;
+import com.almuradev.content.model.ModelBinder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

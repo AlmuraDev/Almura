@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.client.model;
+package com.almuradev.content.model;
 
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.fml.relauncher.Side;

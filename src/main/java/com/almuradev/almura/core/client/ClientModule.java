@@ -12,10 +12,8 @@ import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.core.common.CommonModule;
 import com.almuradev.almura.feature.menu.MainMenuModule;
 import com.almuradev.almura.feature.speed.ClientOptimizationModule;
-import com.almuradev.almura.shared.client.model.ModelBinder;
-import com.almuradev.almura.shared.client.model.obj.OBJModelLoader;
-import com.almuradev.almura.shared.client.model.obj.OBJModelParser;
 import com.almuradev.almura.shared.inject.ClientBinder;
+import com.almuradev.content.model.obj.OBJModelLoader;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import net.kyori.violet.AbstractModule;
@@ -41,11 +39,9 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
         this.install(new VanillaModule());
         this.install(new MainMenuModule());
         this.install(new ClientOptimizationModule());
-        this.facet().add(ModelBinder.Installer.class);
         this.install(new ClientConfiguration.Module());
         this.model().loader(OBJModelLoader.class, binder -> binder.domains(Almura.ID));
         this.requestStaticInjection(StaticAccess.class);
-        this.installFactory(OBJModelParser.Factory.class);
     }
 
     private static class VanillaModule extends AbstractModule {
