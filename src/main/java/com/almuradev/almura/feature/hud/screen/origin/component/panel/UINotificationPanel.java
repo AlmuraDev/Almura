@@ -31,7 +31,7 @@ public final class UINotificationPanel extends UIHUDPanel {
 
         this.manager = manager;
 
-        this.notificationTitle = new UILabel(gui, "System Alert");
+        this.notificationTitle = new UILabel(gui, "");
         this.notificationTitle.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
         this.notificationTitle.setFontOptions(FontColors.RED_FO);
 
@@ -53,6 +53,7 @@ public final class UINotificationPanel extends UIHUDPanel {
     public void displayPopup() {
         final PopupNotification notification = manager.getCurrent();
         if (notification != null) {
+            this.notificationTitle.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.manager.getCurrent().getTitle()));
             this.notificationLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.manager.getCurrent().getMessage()));
         }
     }

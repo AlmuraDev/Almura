@@ -23,7 +23,7 @@ public abstract class Notification {
     }
 
     public Text getTitle() {
-        return this.message;
+        return this.title;
     }
 
     public Text getMessage() {
