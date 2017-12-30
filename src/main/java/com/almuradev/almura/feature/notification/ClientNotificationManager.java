@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -72,11 +73,17 @@ public final class ClientNotificationManager implements Witness {
                     this.tickCounter = 0L;
                     this.nextPoll = this.current.getSecondsToLive() * 20L; // Best guess, we don't care about extreme accuracy.
 
-                    originHUD.notificationPanel.displayPopup();
+                    if (originHUD == null) {
+                        Minecraft.getMinecraft().player.sendChatMessage(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.current.getMessage()));
+                    } else {
+                        originHUD.notificationPanel.displayPopup();
+                    }
                 }
             } else if (this.nextPoll == ++this.tickCounter) {
 
-                originHUD.notificationPanel.destroyPopup();
+                if (originHUD != null) {
+                    originHUD.notificationPanel.destroyPopup();
+                }
 
                 this.current = null;
                 this.fadeout = 10L; // 10 ticks fadeout

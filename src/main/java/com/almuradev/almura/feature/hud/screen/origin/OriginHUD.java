@@ -126,7 +126,6 @@ public class OriginHUD extends AbstractHUD {
                     this.worldPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
                 }
             }
-
         } else {
             this.notificationPanel.setVisible(true);
             if (this.notificationPanel.getAlpha() < 255) {
