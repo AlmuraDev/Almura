@@ -8,6 +8,7 @@
 package com.almuradev.content.type.block;
 
 import com.almuradev.almura.shared.inject.CommonBinder;
+import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
 import com.almuradev.content.type.block.facet.BlockExperience;
 import com.almuradev.content.type.block.processor.AABBBlockContentProcessor;
@@ -31,6 +32,7 @@ public final class BlockModule extends AbstractModule implements CommonBinder {
 
     @Override
     protected void configure() {
+        this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("block", BlockContentTypeLoader.class));
         this.facet().add(BlockContentTypeLoader.class);
         this.install(new ContainerBlockModule());
         this.install(new CropBlockModule());

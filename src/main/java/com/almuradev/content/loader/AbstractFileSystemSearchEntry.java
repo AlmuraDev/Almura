@@ -8,6 +8,7 @@
 package com.almuradev.content.loader;
 
 import com.almuradev.content.ContentConfig;
+import com.almuradev.content.ContentType;
 import com.google.inject.Injector;
 import org.slf4j.Logger;
 
@@ -31,7 +32,7 @@ abstract class AbstractFileSystemSearchEntry extends SearchableSearchEntry {
     }
 
     @Override
-    void search(final Injector injector, final Logger logger) {
+    void search(final Injector injector, final Logger logger, final Set<ContentType> types) {
         try {
             try(final DirectoryStream<Path> stream = Files.newDirectoryStream(this.path)) {
                 for (final Path path : stream) {
@@ -44,7 +45,7 @@ abstract class AbstractFileSystemSearchEntry extends SearchableSearchEntry {
 
         for (final String namespace : this.namespaces) {
             final Path path = this.path.resolve(namespace).resolve(ContentConfig.CONTENT_DIRECTORY);
-            this.searchFileSystem0(injector, logger, namespace, path);
+            this.searchFileSystem0(injector, logger, types, namespace, path);
         }
     }
 
@@ -52,11 +53,11 @@ abstract class AbstractFileSystemSearchEntry extends SearchableSearchEntry {
         return this.namespaces;
     }
 
-    private void searchFileSystem0(final Injector injector, final Logger logger, final String namespace, final Path path) {
+    private void searchFileSystem0(final Injector injector, final Logger logger, final Set<ContentType> types, final String namespace, final Path path) {
         if (!exists(logger, path)) {
             return;
         }
         logger.debug("Searching file system path '{}' for content...", path.toAbsolutePath());
-        this.search(injector, logger, namespace, path);
+        this.search(injector, logger, types, namespace, path);
     }
 }

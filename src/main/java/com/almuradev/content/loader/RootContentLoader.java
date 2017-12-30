@@ -27,6 +27,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,15 +42,17 @@ public final class RootContentLoader implements Witness {
     private final Path assets;
     private final Injector injector;
     private final Logger logger;
+    private final Set<ContentType> types;
     private final AssetState state;
     private final List<SearchEntry> entries = new ArrayList<>();
     private final MutableGraph<JarSearchEntry> graph = GraphBuilder.directed().build();
 
     @Inject
-    public RootContentLoader(@Named("assets") final Path assets, final Injector injector, final Logger logger) {
+    public RootContentLoader(@Named("assets") final Path assets, final Injector injector, final Logger logger, final Set<ContentType> types) {
         this.assets = assets;
         this.injector = injector;
         this.logger = logger;
+        this.types = types;
         this.state = AssetState.resolve(logger, assets);
     }
 
@@ -126,12 +129,12 @@ public final class RootContentLoader implements Witness {
 
         final List<SearchableSearchEntry> searchable = this.entries(SearchableSearchEntry.class);
         for (final SearchableSearchEntry entry : searchable) {
-            entry.search(this.injector, this.logger);
+            entry.search(this.injector, this.logger, this.types);
         }
 
         this.logger.debug("Processing queued content...");
-        for (final ContentType type : ContentType.values()) {
-            this.logger.debug("    Processing queued '{}' content...", type.id);
+        for (final ContentType type : this.types) {
+            this.logger.debug("    Processing queued '{}' content...", type.id());
             for (final SearchableSearchEntry entry : searchable) {
                 entry.process(this.injector, this.logger, type);
             }
@@ -185,13 +188,13 @@ public final class RootContentLoader implements Witness {
         this.resolve();
 
         this.logger.debug("Loading content...");
-        for (final ContentType type : ContentType.values()) {
-            this.logger.debug("    Loading '{}' content...", type.id);
+        for (final ContentType type : this.types) {
+            this.logger.debug("    Loading '{}' content...", type.id());
             try {
-                final int loaded = this.injector.getInstance(type.loader).load();
+                final int loaded = this.injector.getInstance(type.loader()).load();
                 this.logger.debug("        Loaded '{}' asset{}", loaded, loaded == 1 ? "" : "s");
             } catch (final IOException e) {
-                this.logger.error("Encountered an exception while searching for '{}' content", type.id);
+                this.logger.error("Encountered an exception while searching for '{}' content", type.id());
             } catch (final DetailedReportedException e) {
                 this.logger.error("{}:\n {}", e.getMessage(), e.report().toString());
             }

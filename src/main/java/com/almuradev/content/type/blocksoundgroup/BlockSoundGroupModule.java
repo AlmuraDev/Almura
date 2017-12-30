@@ -8,6 +8,7 @@
 package com.almuradev.content.type.blocksoundgroup;
 
 import com.almuradev.almura.shared.inject.CommonBinder;
+import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.ContentFinder;
 import com.almuradev.content.loader.SingleTypeExternalContentProcessor;
 import com.almuradev.content.loader.SingleTypeProcessorBinder;
@@ -23,6 +24,7 @@ public final class BlockSoundGroupModule extends AbstractModule implements Commo
 
     @Override
     protected void configure() {
+        this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("block_sound_group", BlockSoundGroupContentTypeLoader.class));
         this.facet().add(BlockSoundGroupContentTypeLoader.class);
         this.bind(new TypeLiteral<ContentFinder<BlockSoundGroup, BlockSoundGroup.Builder>>() {}).to(BlockSoundGroupContentTypeLoader.class);
         this.bind(new TypeLiteral<SingleTypeExternalContentProcessor<BlockSoundGroup, BlockSoundGroup.Builder>>() {}).to(BlockSoundGroupContentTypeLoader.class);

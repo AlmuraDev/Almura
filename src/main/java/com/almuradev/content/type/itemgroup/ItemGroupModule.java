@@ -8,6 +8,7 @@
 package com.almuradev.content.type.itemgroup;
 
 import com.almuradev.almura.shared.inject.CommonBinder;
+import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.SingleTypeProcessorBinder;
 import com.almuradev.content.type.itemgroup.processor.IconItemGroupContentProcessor;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
@@ -18,6 +19,7 @@ public final class ItemGroupModule extends AbstractModule implements CommonBinde
 
     @Override
     protected void configure() {
+        this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("item_group", ItemGroupContentTypeLoader.class));
         this.facet().add(ItemGroupContentTypeLoader.class);
         this.bind(ItemGroup.Builder.class).to(ItemGroupBuilder.class);
         this.registry().module(ItemGroup.class, ItemGroupRegistryModule.get());

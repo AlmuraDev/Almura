@@ -8,6 +8,7 @@
 package com.almuradev.content.type.material;
 
 import com.almuradev.almura.shared.inject.CommonBinder;
+import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.SingleTypeProcessorBinder;
 import com.almuradev.content.type.material.processor.MaterialProcessor;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
@@ -18,6 +19,7 @@ public final class MaterialModule extends AbstractModule implements CommonBinder
 
     @Override
     protected void configure() {
+        this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("material", MaterialContentTypeLoader.class));
         this.bind(Material.Builder.class).to(MaterialBuilder.class);
         this.registry().module(Material.class, MaterialRegistryModule.class);
         this.processors()

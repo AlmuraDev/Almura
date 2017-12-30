@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.action;
 
+import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeExternalContentProcessor;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
 import com.almuradev.content.type.action.component.drop.DropParser;
@@ -19,6 +20,7 @@ public final class ActionModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("action", ActionContentTypeLoader.class));
         this.bind(new TypeLiteral<MultiTypeExternalContentProcessor<ActionGenre, ActionContentType, ActionContentType.Builder<ActionContentType>>>() {}).to(ActionContentTypeLoader.class);
         this.bind(DropParser.class).to(DropParserImpl.class);
         this.install(new BlockDestroyActionModule());
