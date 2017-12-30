@@ -58,7 +58,7 @@ public class InformationDebugPanel extends AbstractDebugPanel {
         }
 
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
-        int debug = this.autoHeight;
+
         this.client.mcProfiler.startSection("debug");
         this.drawText(this.gameVersion, 4, this.autoHeight);
         this.drawText(this.forgeVersion, 4, this.autoHeight);
