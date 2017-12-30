@@ -113,25 +113,43 @@ public class OriginHUD extends AbstractHUD {
         this.userPanel.setAlpha(category.originHudOpacity);
 
         this.worldPanel.setVisible(this.config.get().client.displayWorldCompassWidget);
-        this.worldPanel.setAlpha(category.originHudOpacity);
 
         this.detailsPanel.setVisible(this.config.get().client.displayLocationWidget);
         this.detailsPanel.setAlpha(category.originHudOpacity);
 
         if (manager.getCurrent() == null) {
             if (this.notificationPanel.getAlpha() > 0) {
-                this.notificationPanel.setAlpha(this.notificationPanel.getAlpha()-3);
+
+                this.notificationPanel.setAlpha(this.notificationPanel.getAlpha()-2);
+                if (this.notificationPanel.getAlpha() < 0) {
+                    this.notificationPanel.setAlpha(0);
+                }
+
+                if (this.worldPanel.getAlpha() < 255) {
+                    this.worldPanel.setAlpha(this.worldPanel.getAlpha() + 2);
+                    if (this.worldPanel.getAlpha() > 255) {
+                        this.worldPanel.setAlpha(255);
+                    }
+                }
                 if (this.notificationPanel.getAlpha() == 0) {
                     this.notificationPanel.setVisible(false);
-                    this.worldPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
                 }
             }
         } else {
-            this.notificationPanel.setVisible(true);
+
             if (this.notificationPanel.getAlpha() < 255) {
                 this.notificationPanel.setAlpha(this.notificationPanel.getAlpha()+5);
+                if (this.notificationPanel.getAlpha() > 255) {
+                    this.notificationPanel.setAlpha(255);
+                }
+                if (this.worldPanel.getAlpha() > 0) {
+                    this.worldPanel.setAlpha(this.worldPanel.getAlpha() - 10);
+                    if (this.worldPanel.getAlpha() < 0) {
+                        this.worldPanel.setAlpha(0);
+                    }
+                }
             }
-            this.worldPanel.setPosition(0, 30, Anchor.TOP | Anchor.CENTER);
+
             if ((this.notificationPanel.notificationTitle.getWidth() + 10) < (this.notificationPanel.notificationLabel.getWidth() + 10)) {
                 this.notificationPanel.setSize(this.notificationPanel.notificationLabel.getContentWidth() + 10, this.notificationPanel.getHeight());
             } else {
