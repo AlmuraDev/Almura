@@ -32,7 +32,7 @@ public abstract class MixinGuiIngame extends Gui {
     @Inject private static ClientHeadUpDisplayManager hud;
 
     /**
-     * @author Grinch
+     * @author Grinch - Steven Downer
      * @reason Move down where PotionEffects render to not conflict with the far right element of the OriginHUD
      */
     @Overwrite

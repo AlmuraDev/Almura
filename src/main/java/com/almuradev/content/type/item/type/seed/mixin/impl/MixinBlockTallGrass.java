@@ -35,7 +35,7 @@ public abstract class MixinBlockTallGrass extends MixinBlock {
     @javax.inject.Inject private static GameRegistry registry;
 
     /**
-     * @author Zidane
+     * @author Zidane - Chris Sanders
      * @reason Add in content seeds to drop list for Tall Grass
      */
     @Overwrite(remap = false)

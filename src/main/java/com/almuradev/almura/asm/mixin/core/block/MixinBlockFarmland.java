@@ -36,7 +36,7 @@ public abstract class MixinBlockFarmland extends Block {
     }
 
     /**
-     * @author Dockter
+     * @author Dockter - Mike Howe
      * @reason Prevent farmland "decay" into dirt based on property
      */
     @Override
