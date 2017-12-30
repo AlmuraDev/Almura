@@ -131,12 +131,8 @@ public class OriginHUD extends AbstractHUD {
                         this.worldPanel.setAlpha(255);
                     }
                 }
-                if (this.notificationPanel.getAlpha() == 0) {
-                    this.notificationPanel.setVisible(false);
-                }
             }
         } else {
-
             if (this.notificationPanel.getAlpha() < 255) {
                 this.notificationPanel.setAlpha(this.notificationPanel.getAlpha()+5);
                 if (this.notificationPanel.getAlpha() > 255) {
