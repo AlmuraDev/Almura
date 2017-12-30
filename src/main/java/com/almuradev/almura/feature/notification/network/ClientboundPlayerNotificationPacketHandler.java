@@ -32,7 +32,7 @@ public class ClientboundPlayerNotificationPacketHandler implements MessageHandle
         if (message.inWindow) {
             // TODO Dockter, show the damn window
         } else {
-            this.manager.queuePopup(new PopupNotification(message.message, message.timeToLive));
+            this.manager.queuePopup(new PopupNotification(message.title, message.message, message.timeToLive));
         }
     }
 }

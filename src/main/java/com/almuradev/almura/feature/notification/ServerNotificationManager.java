@@ -40,18 +40,20 @@ public final class ServerNotificationManager extends Witness.Impl implements Wit
         return state == GameState.SERVER_STARTING;
     }
 
-    public void sendPopupNotification(Player player, Text message, int secondsToLive) {
+    public void sendPopupNotification(Player player, Text title, Text message, int secondsToLive) {
         checkNotNull(player);
+        checkNotNull(title);
         checkNotNull(message);
         checkState(secondsToLive > 0);
 
-        this.network.sendTo(player, new ClientboundPlayerNotificationPacket(message, secondsToLive));
+        this.network.sendTo(player, new ClientboundPlayerNotificationPacket(title, message, secondsToLive));
     }
 
-    public void sendWindowMessage(Player player, Text message) {
+    public void sendWindowMessage(Player player, Text title, Text message) {
         checkNotNull(player);
+        checkNotNull(title);
         checkNotNull(message);
 
-        this.network.sendTo(player, new ClientboundPlayerNotificationPacket(message));
+        this.network.sendTo(player, new ClientboundPlayerNotificationPacket(title, message));
     }
 }

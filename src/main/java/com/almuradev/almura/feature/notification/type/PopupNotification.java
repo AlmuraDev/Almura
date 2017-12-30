@@ -17,8 +17,8 @@ public final class PopupNotification extends Notification {
 
     private final int secondsToLive;
 
-    public PopupNotification(Text text, int secondsToLive) {
-        super(text);
+    public PopupNotification(Text title, Text message, int secondsToLive) {
+        super(title, message);
 
         this.secondsToLive = secondsToLive;
     }
@@ -30,7 +30,8 @@ public final class PopupNotification extends Notification {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("message", this.text)
+                .add("title", this.title)
+                .add("message", this.message)
                 .add("seconds_to_live", this.secondsToLive)
                 .toString();
     }

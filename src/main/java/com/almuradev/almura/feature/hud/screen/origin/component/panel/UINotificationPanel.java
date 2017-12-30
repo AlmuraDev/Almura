@@ -53,7 +53,7 @@ public final class UINotificationPanel extends UIHUDPanel {
     public void displayPopup() {
         final PopupNotification notification = manager.getCurrent();
         if (notification != null) {
-            this.notificationLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.manager.getCurrent().getText()));
+            this.notificationLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.manager.getCurrent().getMessage()));
         }
     }
 
