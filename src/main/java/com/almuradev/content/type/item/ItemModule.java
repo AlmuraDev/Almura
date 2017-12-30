@@ -14,11 +14,9 @@ import com.almuradev.content.type.item.type.normal.NormalItemModule;
 import com.almuradev.content.type.item.type.seed.SeedItemModule;
 import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
-import net.minecraft.block.BlockTallGrass;
 
 public final class ItemModule extends AbstractModule implements CommonBinder {
 
-    @SuppressWarnings("UnnecessaryStaticInjection") // HACK: inject into required mixin target classes
     @Override
     protected void configure() {
         this.facet().add(ItemContentTypeLoader.class);
@@ -31,7 +29,6 @@ public final class ItemModule extends AbstractModule implements CommonBinder {
                         .all(ItemGroupItemContentProcessor.class);
             }
         });
-        this.requestStaticInjection(BlockTallGrass.class);
     }
 
     public static abstract class Module extends AbstractModule implements CommonBinder {

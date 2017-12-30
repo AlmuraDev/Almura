@@ -13,13 +13,11 @@ import com.almuradev.content.type.block.BlockConfig;
  * @see BlockConfig
  */
 public interface CropBlockConfig {
+
     interface State {
         String CAN_ROLLBACK = "can_rollback";
-
         String FERTILIZER = "fertilizer";
-
         String GROWTH = "growth";
-
         String HYDRATION = "hydration";
     }
 }

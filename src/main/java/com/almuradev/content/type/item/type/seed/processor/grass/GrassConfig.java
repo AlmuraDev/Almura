@@ -9,9 +9,7 @@ package com.almuradev.content.type.item.type.seed.processor.grass;
 
 public interface GrassConfig {
 
-    String CHANCE = "chance";
-
     String AMOUNT = "amount";
-
     String BIOME = "biome";
+    String CHANCE = "chance";
 }
