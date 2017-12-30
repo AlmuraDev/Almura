@@ -51,7 +51,7 @@ public class UIUserPanel extends UIHUDPanel {
     private final UIAvatarImage userAvatarImage;
     private final UIXPOrbImage xpOrbImage;
     private final UILabel currencyLabel, levelLabel, usernameLabel;
-    private final UIPropertyBar airBar, armorBar, experienceBar, healthBar, hungerBar, mountHealthBar;
+    private final UIPropertyBar airBar, armorBar, experienceBar, healthBar, hungerBar, mountHealthBar, staminaBar;
     private final DecimalFormat df = new DecimalFormat("0.##");
 
     public UIUserPanel(MalisisGui gui, int width, int height) {
@@ -113,9 +113,15 @@ public class UIUserPanel extends UIHUDPanel {
                 .setColor(org.spongepowered.api.util.Color.ofRgb(137, 89, 47).getRgb())
                 .setIcons(GuiConfig.Icon.VANILLA_HUNGER_BACKGROUND, GuiConfig.Icon.VANILLA_HUNGER_FOREGROUND);
 
+        // Stamina
+        this.staminaBar = new UIPropertyBar(gui, barWidth, barHeight)
+                .setPosition(0, SimpleScreen.getPaddedY(this.hungerBar, 1), Anchor.TOP | Anchor.CENTER)
+                .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
+                .setBackgroundIcon(GuiConfig.Icon.STAMINA);
+
         // Air
         this.airBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setPosition(0, SimpleScreen.getPaddedY(this.hungerBar, 1), Anchor.TOP | Anchor.CENTER)
+                .setPosition(0, SimpleScreen.getPaddedY(this.staminaBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_AIR);
 
@@ -126,7 +132,7 @@ public class UIUserPanel extends UIHUDPanel {
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_MOUNT);
 
         this.add(this.userAvatarImage, this.usernameLabel, this.xpOrbImage, this.levelLabel, this.experienceBar, this.currencyImage,
-                this.currencyLabel, this.healthBar, this.armorBar, this.hungerBar, this.airBar, this.mountHealthBar);
+                this.currencyLabel, this.healthBar, this.armorBar, this.hungerBar, this.staminaBar, this.airBar, this.mountHealthBar);
     }
 
     @Override
@@ -148,6 +154,7 @@ public class UIUserPanel extends UIHUDPanel {
         this.updateHealth();
         this.updateArmor();
         this.updateHunger();
+        this.updateStatmina();
         this.updateAir();
         this.updateMountHealth();
     }
@@ -242,6 +249,21 @@ public class UIUserPanel extends UIHUDPanel {
         }
         this.hungerBar.setAmount(MathUtil.convertToRange(foodLevel, 0, 20, 0f, 1f));
         this.height += 10;
+    }
+
+    private void updateStatmina() {
+        this.staminaBar.setVisible(Minecraft.getMinecraft().player.getFoodStats().getSaturationLevel()>0);
+        final float staminaLevel = Minecraft.getMinecraft().player.getFoodStats().getSaturationLevel();
+        if (this.staminaBar.isVisible()) {
+            if (StaticAccess.config.get().client.displayNumericHUDValues) {
+                this.staminaBar.setText(Text.of(this.df.format(staminaLevel) + "/" + this.df.format(20f)));
+                this.staminaBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
+            } else {
+                this.staminaBar.setText(Text.EMPTY);
+            }
+            this.staminaBar.setAmount(MathUtil.convertToRange(staminaLevel, 0, 20, 0f, 1f));
+            this.height += 10;
+        }
     }
 
     private void updateAir() {

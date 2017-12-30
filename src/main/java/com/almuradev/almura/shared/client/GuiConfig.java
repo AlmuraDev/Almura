@@ -51,6 +51,7 @@ public interface GuiConfig {
         GuiIcon FA_TROPHY = SpriteSheet.ALMURA.getIcon(96, 90, 16, 14);
         GuiIcon FA_BOOK = SpriteSheet.ALMURA.getIcon(112, 90, 16, 14);
         GuiIcon FA_SHOPPING_BAG = SpriteSheet.ALMURA.getIcon(128, 90, 14, 14);
+        GuiIcon STAMINA = SpriteSheet.ALMURA.getIcon(132, 65, 9, 9);
     }
 
     @SideOnly(Side.CLIENT)
