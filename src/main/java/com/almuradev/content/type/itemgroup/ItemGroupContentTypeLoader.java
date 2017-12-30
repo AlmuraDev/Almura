@@ -16,12 +16,17 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ItemGroupContentTypeLoader extends SingleTypeContentLoader<ItemGroup, ItemGroup.Builder> implements Witness {
+public final class ItemGroupContentTypeLoader extends SingleTypeContentLoader<ItemGroup, ItemGroup.Builder> implements Witness, SingleTypeContentLoader.Translated {
 
     @SubscribeEvent
     public void construction(final RegistryEvent.Register<Block> event) {
         this.build();
 
         // Registration is not necessary here - automatically done in constructor via mixin
+    }
+
+    @Override
+    public String buildTranslationKey(final String namespace, final Iterable<String> components, final String key) {
+        return "itemGroup." + namespace + '.' + key;
     }
 }

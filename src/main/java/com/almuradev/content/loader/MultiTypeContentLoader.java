@@ -117,6 +117,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
     }
 
     private void walk(final String namespace, final T type, final Path path) throws IOException {
+        final boolean translations = this instanceof Translated<?>;
         Files.walkFileTree(path, new ContentVisitor(this.logger) {
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
@@ -128,7 +129,23 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
                 }
                 return FileVisitResult.CONTINUE;
             }
+
+            @Override
+            public FileVisitResult preVisitDirectory(final Path directory, final BasicFileAttributes attributes) throws IOException {
+                if (translations) {
+                    if (directory.getFileName().toString().equals(TranslationManager.DIRECTORY)) {
+                        final Iterable<String> components = SLASH_SPLITTER.split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
+                        MultiTypeContentLoader.this.translationManager.pushSource(directory, key -> ((Translated<T>) MultiTypeContentLoader.this).buildTranslationKey(namespace, type, components, key));
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
         });
+    }
+
+    public interface Translated<T extends Enum<T> & ContentType.MultiType> {
+        String buildTranslationKey(final String namespace, final T type, final Iterable<String> components, final String key);
     }
 
     public static class Entry<T extends Enum<T> & ContentType.MultiType, C extends CatalogedContent, B extends ContentBuilder<C>> extends ContentLoaderImpl.Entry<C, B> {

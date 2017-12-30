@@ -29,7 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGenre, ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockContentProcessor<ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> implements Witness {
+public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGenre, ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockContentProcessor<ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> implements Witness, MultiTypeContentLoader.Translated<BlockGenre> {
 
     private final GameRegistry gr;
 
@@ -78,5 +78,10 @@ public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGe
                 ModelLoader.setCustomModelResourceLocation((Item) item, 0, new ModelResourceLocation(path, "inventory"));
             }
         });
+    }
+
+    @Override
+    public String buildTranslationKey(final String namespace, final BlockGenre type, final Iterable<String> components,final String key) {
+        return "tile." + namespace + '.' + type.id() + '.' + DOT_JOINER.join(components) + '.' + key;
     }
 }

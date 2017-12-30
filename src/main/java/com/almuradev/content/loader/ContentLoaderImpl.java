@@ -10,6 +10,7 @@ package com.almuradev.content.loader;
 import com.almuradev.content.ContentConfig;
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
+import com.google.common.base.Splitter;
 import com.google.inject.Injector;
 import net.kyori.indigo.DetailedReport;
 import net.kyori.indigo.DetailedReportCategory;
@@ -35,8 +36,10 @@ import javax.inject.Inject;
 abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBuilder<C>, E extends ContentLoaderImpl.Entry<C, B>> implements ContentFinder<C, B>, ContentLoader {
 
     private static final PathMatcher JSON_MATCHER = FileSystems.getDefault().getPathMatcher("glob:**.json");
+    static final Splitter SLASH_SPLITTER = Splitter.on('/');
     @Inject Injector injector;
     @Inject protected Logger logger;
+    @Inject TranslationManager translationManager;
     private final Set<String> names = new HashSet<>();
     protected final Map<String, E> entries = new HashMap<>();
     protected Stage stage = Stage.SEARCH;

@@ -38,6 +38,7 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
     @Override
     public final void search(final String namespace, final Path path) throws IOException {
         checkState(this.stage == Stage.SEARCH, "loader is not searching");
+        final boolean translations = this instanceof Translated;
         Files.walkFileTree(path, new ContentVisitor(this.logger) {
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
@@ -45,6 +46,18 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
                     final Entry<C, B> entry = SingleTypeContentLoader.this.entry(namespace, file);
                     if (entry != null) {
                         SingleTypeContentLoader.this.queue.add(entry);
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult preVisitDirectory(final Path directory, final BasicFileAttributes attributes) throws IOException {
+                if (translations) {
+                    if (directory.getFileName().toString().equals(TranslationManager.DIRECTORY)) {
+                        final Iterable<String> components = SLASH_SPLITTER.split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
+                        SingleTypeContentLoader.this.translationManager.pushSource(directory, key -> ((Translated) SingleTypeContentLoader.this).buildTranslationKey(namespace, components, key));
+                        return FileVisitResult.SKIP_SUBTREE;
                     }
                 }
                 return FileVisitResult.CONTINUE;
@@ -108,5 +121,9 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
         for (final ConfigProcessor<? extends B> processor : this.processors) {
             ((ConfigProcessor<B>) processor).postProcess(config, builder);
         }
+    }
+
+    public interface Translated {
+        String buildTranslationKey(final String namespace, final Iterable<String> components, final String key);
     }
 }

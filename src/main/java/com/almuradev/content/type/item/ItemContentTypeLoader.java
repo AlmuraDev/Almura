@@ -24,7 +24,7 @@ import org.spongepowered.api.CatalogType;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ItemContentTypeLoader extends MultiTypeContentLoader<ItemGenre, ContentItemType, ContentItemType.Builder<ContentItemType>, ItemContentProcessor<ContentItemType, ContentItemType.Builder<ContentItemType>>> implements Witness {
+public final class ItemContentTypeLoader extends MultiTypeContentLoader<ItemGenre, ContentItemType, ContentItemType.Builder<ContentItemType>, ItemContentProcessor<ContentItemType, ContentItemType.Builder<ContentItemType>>> implements MultiTypeContentLoader.Translated<ItemGenre>, Witness {
 
     private static final String NORMAL = "normal";
 
@@ -56,5 +56,10 @@ public final class ItemContentTypeLoader extends MultiTypeContentLoader<ItemGenr
                 ResourceLocations.findValue(string),
                 NORMAL
         );
+    }
+
+    @Override
+    public String buildTranslationKey(final String namespace, final ItemGenre type, final Iterable<String> components, final String key) {
+        return "item." + namespace + '.' + type.id() + '.' + DOT_JOINER.join(components) + '.' + key;
     }
 }
