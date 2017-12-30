@@ -57,9 +57,7 @@ public final class ClientNotificationManager implements Witness {
         final AbstractHUD hud = manager.getHUDDirect();
 
         // TODO Null screen means in-game but unsure if we want the notifications to pop up in the background
-        if (event.phase == TickEvent.Phase.START && Minecraft.getMinecraft().ingameGUI != null && hud != null && hud instanceof OriginHUD) {
-
-            final OriginHUD originHUD = (OriginHUD) hud;
+        if (event.phase == TickEvent.Phase.START && Minecraft.getMinecraft().ingameGUI != null) {
 
             if (this.fadeout >= 0) {
                 this.fadeout--;
@@ -73,15 +71,17 @@ public final class ClientNotificationManager implements Witness {
                     this.tickCounter = 0L;
                     this.nextPoll = this.current.getSecondsToLive() * 20L; // Best guess, we don't care about extreme accuracy.
 
-                    if (originHUD == null) {
+                    if (hud == null) {
                         Minecraft.getMinecraft().player.sendChatMessage(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.current.getMessage()));
                     } else {
+                        final OriginHUD originHUD = (OriginHUD) hud;
                         originHUD.notificationPanel.displayPopup();
                     }
                 }
             } else if (this.nextPoll == ++this.tickCounter) {
 
-                if (originHUD != null) {
+                if (hud != null) {
+                    final OriginHUD originHUD = (OriginHUD) hud;
                     originHUD.notificationPanel.destroyPopup();
                 }
 
