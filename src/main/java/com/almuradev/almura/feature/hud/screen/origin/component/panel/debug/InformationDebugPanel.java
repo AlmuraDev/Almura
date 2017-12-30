@@ -15,25 +15,39 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import org.spongepowered.api.MinecraftVersion;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.util.Optional;
+
 public class InformationDebugPanel extends AbstractDebugPanel {
 
-    private static final String GAME_NAME = "Minecraft";
     private static final double XYZ_SINGLE_LINE_MAX = 100000d;
-    private final Text title;
-    private final int titleWidth;
+    private final Text gameVersion, forgeVersion, fullSpongeVersion, fullAlmuraVersion, spongeBuild, almuraBuild;
 
     public InformationDebugPanel(final MalisisGui gui, final int width, final int height) {
         super(gui, width, height);
 
-        final String title = GAME_NAME + ' ' + this.client.getVersion();
-        this.title = Text.of(TextColors.GOLD, title);
-        this.titleWidth = this.client.fontRenderer.getStringWidth(title) / 2;
+        final Optional<PluginContainer> optAlmura = Sponge.getPluginManager().getPlugin("almura");
+        final Optional<PluginContainer> optForge = Sponge.getPluginManager().getPlugin("Forge");
+
+        this.gameVersion = Text.of(TextFormatting.WHITE + "Minecraft: " + TextFormatting.GOLD + Minecraft.getMinecraft().getVersion());
+        this.forgeVersion = Text.of(TextFormatting.WHITE + "Forge: " + TextFormatting.GOLD + optForge.get().getVersion().orElse("dev"));
+
+        this.fullSpongeVersion = Text.of(((Optional<String>) Sponge.getPlatform().asMap().get("ImplementationVersion")).orElse("dev"));
+        final String[] spongeVersionContents = fullSpongeVersion.toPlain().split("-");
+        this.spongeBuild = Text.of(TextFormatting.WHITE + "Sponge Build: " + TextFormatting.GOLD + spongeVersionContents[4].trim());
+
+        this.fullAlmuraVersion = Text.of(optAlmura.get().getVersion().orElse("dev"));
+        final String[] almuraVersionContents = fullAlmuraVersion.toPlain().split("-");
+        this.almuraBuild = Text.of(TextFormatting.WHITE + "Almura Build: " + TextFormatting.GOLD + almuraVersionContents[1]);
     }
 
     @Override
@@ -44,10 +58,13 @@ public class InformationDebugPanel extends AbstractDebugPanel {
         }
 
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
-
+        int debug = this.autoHeight;
         this.client.mcProfiler.startSection("debug");
+        this.drawText(this.gameVersion, 4, this.autoHeight);
+        this.drawText(this.forgeVersion, 4, this.autoHeight);
+        this.drawText(this.spongeBuild, 4, this.autoHeight);
+        this.drawText(this.almuraBuild, 4, this.autoHeight);
 
-        this.drawText(this.title, (Math.max(this.autoWidth, this.baseWidth) / 2) - this.titleWidth - 2, 4);
         // Reset autoWidth after we've drawn the title
         if (this.autoSize) {
             this.autoWidth = 0;
