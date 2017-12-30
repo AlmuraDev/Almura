@@ -118,12 +118,20 @@ public class OriginHUD extends AbstractHUD {
         this.detailsPanel.setVisible(this.config.get().client.displayLocationWidget);
         this.detailsPanel.setAlpha(category.originHudOpacity);
 
-        this.notificationPanel.setVisible(manager.getCurrent() != null);
-        //this.worldPanel.setVisible(manager.getCurrent() == null);
-
         if (manager.getCurrent() == null) {
-            this.worldPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
+            if (this.notificationPanel.getAlpha() > 0) {
+                this.notificationPanel.setAlpha(this.notificationPanel.getAlpha()-3);
+                if (this.notificationPanel.getAlpha() == 0) {
+                    this.notificationPanel.setVisible(false);
+                    this.worldPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
+                }
+            }
+
         } else {
+            this.notificationPanel.setVisible(true);
+            if (this.notificationPanel.getAlpha() < 255) {
+                this.notificationPanel.setAlpha(this.notificationPanel.getAlpha()+5);
+            }
             this.worldPanel.setPosition(0, 30, Anchor.TOP | Anchor.CENTER);
             if ((this.notificationPanel.notificationTitle.getWidth() + 10) < (this.notificationPanel.notificationLabel.getWidth() + 10)) {
                 this.notificationPanel.setSize(this.notificationPanel.notificationLabel.getContentWidth() + 10, this.notificationPanel.getHeight());
