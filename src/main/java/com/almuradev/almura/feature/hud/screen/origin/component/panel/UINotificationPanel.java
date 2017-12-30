@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
+import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -17,19 +18,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.inject.Inject;
-
 @SideOnly(Side.CLIENT)
-public class UINotificationPanel extends UIHUDPanel {
+public final class UINotificationPanel extends UIHUDPanel {
 
-    @Inject private static ClientNotificationManager manager;
-
+    private final ClientNotificationManager manager;
     public  UILabel notificationLabel;
     public int timer;
 
-    public UINotificationPanel(MalisisGui gui, int width, int height) {
+    public UINotificationPanel(MalisisGui gui, int width, int height, ClientNotificationManager manager) {
         super(gui, width, height);
 
+        this.manager = manager;
         this.notificationLabel = new UILabel(gui, "");
         this.notificationLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
         this.notificationLabel.setFontOptions(FontColors.WHITE_FO);
@@ -49,5 +48,17 @@ public class UINotificationPanel extends UIHUDPanel {
 
     private void updateNotifications() {
         this.notificationLabel.setText("Notifications Here");
+    }
+
+    public void displayPopup() {
+        final PopupNotification notification = manager.getCurrent();
+        if (notification != null) {
+
+            // DO SOMETHING
+        }
+    }
+
+    public void destroyPopup() {
+        // DO SOMETHING
     }
 }

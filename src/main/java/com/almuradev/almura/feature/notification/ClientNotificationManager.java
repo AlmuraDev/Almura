@@ -9,6 +9,9 @@ package com.almuradev.almura.feature.notification;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.almuradev.almura.feature.hud.ClientHeadUpDisplayManager;
+import com.almuradev.almura.feature.hud.screen.AbstractHUD;
+import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.event.Witness;
 import net.minecraft.client.Minecraft;
@@ -21,6 +24,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @SideOnly(Side.CLIENT)
@@ -31,7 +36,14 @@ public final class ClientNotificationManager implements Witness {
     private PopupNotification current = null;
     private long nextPoll = 0L;
     private long tickCounter = 0L;
-    public long fadeout = 0L;
+    private long fadeout = 0L;
+
+    private final ClientHeadUpDisplayManager manager;
+
+    @Inject
+    public ClientNotificationManager(final ClientHeadUpDisplayManager manager) {
+        this.manager = manager;
+    }
 
     @SubscribeEvent
     public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
@@ -41,8 +53,12 @@ public final class ClientNotificationManager implements Witness {
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
 
+        final AbstractHUD hud = manager.getHUDDirect();
+
         // TODO Null screen means in-game but unsure if we want the notifications to pop up in the background
-        if (event.phase == TickEvent.Phase.START && Minecraft.getMinecraft().currentScreen == null && Minecraft.getMinecraft().ingameGUI != null) {
+        if (event.phase == TickEvent.Phase.START && Minecraft.getMinecraft().ingameGUI != null && hud != null && hud instanceof OriginHUD) {
+
+            final OriginHUD originHUD = (OriginHUD) hud;
 
             if (this.fadeout >= 0) {
                 this.fadeout--;
@@ -56,17 +72,11 @@ public final class ClientNotificationManager implements Witness {
                     this.tickCounter = 0L;
                     this.nextPoll = this.current.getSecondsToLive() * 20L; // Best guess, we don't care about extreme accuracy.
 
-                    // TODO Test Code!
-                    System.err.println("Displaying: " + this.current);
-
-                    // TODO Dockter, show the popup here
-
+                    originHUD.notificationPanel.displayPopup();
                 }
             } else if (this.nextPoll == ++this.tickCounter) {
 
-                // TODO Dockter, destroy the popup here
-
-                System.err.println("Destroying: " + this.current);
+                originHUD.notificationPanel.destroyPopup();
 
                 this.current = null;
                 this.fadeout = 10L; // 10 ticks fadeout
@@ -78,5 +88,10 @@ public final class ClientNotificationManager implements Witness {
         checkNotNull(notification);
 
         this.popupNotifications.offer(notification);
+    }
+
+    @Nullable
+    public PopupNotification getCurrent() {
+        return this.current;
     }
 }

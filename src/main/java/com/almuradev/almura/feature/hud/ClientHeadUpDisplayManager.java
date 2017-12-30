@@ -93,6 +93,11 @@ public class ClientHeadUpDisplayManager implements Witness {
         this.hudData.economyAmount = "";
     }
 
+    @Nullable
+    public AbstractHUD getHUDDirect() {
+        return this.hud;
+    }
+
     public Optional<AbstractHUD> getHUD() {
         return Optional.ofNullable(this.hud);
     }

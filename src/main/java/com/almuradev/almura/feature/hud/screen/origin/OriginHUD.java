@@ -19,6 +19,7 @@ import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPane
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.BlockDebugPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.InformationDebugPanel;
+import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
@@ -31,7 +32,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
 import javax.inject.Inject;
-
 
 @SideOnly(Side.CLIENT)
 public class OriginHUD extends AbstractHUD {
@@ -48,10 +48,12 @@ public class OriginHUD extends AbstractHUD {
     private UIWorldPanel worldPanel;
     public UINotificationPanel notificationPanel;
 
+    private final ClientNotificationManager manager;
 
     @Inject
-    public OriginHUD(final MappedConfiguration<ClientConfiguration> config) {
+    public OriginHUD(final MappedConfiguration<ClientConfiguration> config, final ClientNotificationManager manager) {
         this.config = config;
+        this.manager = manager;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class OriginHUD extends AbstractHUD {
         this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
 
         // Notifications panel
-        this.notificationPanel = new UINotificationPanel(this, 124, 25);
+        this.notificationPanel = new UINotificationPanel(this, 124, 25, manager);
         this.notificationPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         // World panel
