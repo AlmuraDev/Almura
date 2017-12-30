@@ -139,11 +139,6 @@ public class OBJModel implements IModel {
         return new OBJBakedModel(this, state, format, bakedTextureGetter);
     }
 
-    @Override
-    public IModelState getDefaultState() {
-        return null;
-    }
-
     public String getName() {
         return this.name;
     }
