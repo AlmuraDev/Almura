@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.common.text.SpongeTexts;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -54,7 +54,7 @@ public final class ClientNotificationManager implements Witness {
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
 
-        final AbstractHUD hud = manager.getHUDDirect();
+        final AbstractHUD hud = this.manager.getHUDDirect();
 
         // TODO Null screen means in-game but unsure if we want the notifications to pop up in the background
         if (event.phase == TickEvent.Phase.START && Minecraft.getMinecraft().ingameGUI != null) {
@@ -72,7 +72,7 @@ public final class ClientNotificationManager implements Witness {
                     this.nextPoll = this.current.getSecondsToLive() * 20L; // Best guess, we don't care about extreme accuracy.
 
                     if (hud == null) {
-                        Minecraft.getMinecraft().player.sendChatMessage(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.current.getMessage()));
+                        Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(SpongeTexts.toComponent(this.current.getMessage()));
                     } else {
                         final OriginHUD originHUD = (OriginHUD) hud;
                         originHUD.notificationPanel.displayPopup();
