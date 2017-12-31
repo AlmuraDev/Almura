@@ -19,5 +19,7 @@ public interface ItemGroup extends CatalogedContent {
     interface Builder extends ContentBuilder<ItemGroup> {
 
         void icon(final ItemDefinition icon);
+
+        void sort(final boolean sort);
     }
 }

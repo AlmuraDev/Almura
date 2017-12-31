@@ -13,6 +13,7 @@ import com.almuradev.content.type.item.definition.ItemDefinition;
 final class ItemGroupBuilder extends ContentBuilder.Impl<ItemGroup> implements ItemGroup.Builder {
 
     private ItemDefinition icon;
+    private boolean sort = true;
 
     @Override
     public void icon(final ItemDefinition icon) {
@@ -20,7 +21,12 @@ final class ItemGroupBuilder extends ContentBuilder.Impl<ItemGroup> implements I
     }
 
     @Override
+    public void sort(final boolean sort) {
+        this.sort = sort;
+    }
+
+    @Override
     public ItemGroup build() {
-        return (ItemGroup) (Object) new ItemGroupImpl(this.id, this.id.replace(':', '.'), this.icon);
+        return (ItemGroup) (Object) new ItemGroupImpl(this.id, this.id.replace(':', '.'), this.icon, this.sort);
     }
 }
