@@ -13,7 +13,6 @@ import net.kyori.violet.AbstractModule;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.common.SpongeImpl;
 
 import javax.inject.Singleton;
 
@@ -27,10 +26,8 @@ public final class ReadOnlyBiomeModule extends AbstractModule {
     @Singleton
     ReadOnlyBiomeSource readOnlyBiomeSource(final Injector injector) {
         if (Loader.isModLoaded("terraincontrol")) {
-            SpongeImpl.getLogger().warn("SpTcl: terraincontrol biome source used");
             return injector.getInstance(TerrainControlReadOnlyBiomeSource.class);
         }
-        SpongeImpl.getLogger().warn("SpTcl: terraincontrol not loaded? " + Loader.instance().getIndexedModList().keySet());
         return new VanillaReadOnlyBiomeSource();
     }
 }

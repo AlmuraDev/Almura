@@ -17,7 +17,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.common.SpongeImpl;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -47,8 +46,6 @@ public final class TerrainControlReadOnlyBiomeSource extends ReadOnlyBiomeSource
                     return biome.getTemperatureAt(pos.getX(), pos.getY(), pos.getZ());
                 }
             };
-        } else {
-            SpongeImpl.getLogger().warn("SpTcl: world " + world + " is not a LocalWorld?!");
         }
         return super.getBiome(world, pos);
     }
