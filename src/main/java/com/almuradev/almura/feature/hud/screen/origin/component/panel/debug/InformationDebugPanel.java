@@ -38,7 +38,7 @@ public class InformationDebugPanel extends AbstractDebugPanel {
         final Optional<PluginContainer> optAlmura = Sponge.getPluginManager().getPlugin("almura");
         final Optional<PluginContainer> optForge = Sponge.getPluginManager().getPlugin("Forge");
 
-        this.gameVersion = Text.of(TextFormatting.WHITE + "Minecraft: " + TextFormatting.GOLD + Minecraft.getMinecraft().getVersion());
+        this.gameVersion = Text.of(TextFormatting.WHITE + "Minecraft: " + TextFormatting.GOLD + "1.12.2");
         this.forgeVersion = Text.of(TextFormatting.WHITE + "Forge: " + TextFormatting.GOLD + optForge.get().getVersion().orElse("dev"));
 
         this.fullSpongeVersion = Text.of(((Optional<String>) Sponge.getPlatform().asMap().get("ImplementationVersion")).orElse("dev"));

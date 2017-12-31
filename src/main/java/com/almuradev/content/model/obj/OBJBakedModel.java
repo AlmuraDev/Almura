@@ -110,7 +110,7 @@ public class OBJBakedModel implements IBakedModel {
                         this.particleDiffuseSprite = diffuseSprite;
                     }
                     final UnpackedBakedQuad.Builder quadBuilder = new UnpackedBakedQuad.Builder(this.format);
-                    quadBuilder.setContractUVs(true);
+                    //quadBuilder.setContractUVs(true);  // This causes extreme model errors with Optifine.
                     quadBuilder.setTexture(diffuseSprite);
                     VertexNormal normal = null;
 
