@@ -21,7 +21,7 @@ import java.util.Random;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public final class ApplyExhaustion implements Apply {
+public final class ApplyExhaustion implements Apply<EntityPlayer> {
 
     public static final ConfigurationNodeDeserializer<ApplyExhaustion> PARSER = config -> VariableAmounts.deserialize(config).map(ApplyExhaustion::new);
     private final VariableAmount exhaustion;

@@ -22,7 +22,7 @@ import java.util.Random;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public final class ReduceDurability implements Apply {
+public final class ReduceDurability implements Apply<EntityPlayer> {
 
     public static final ConfigurationNodeDeserializer<ReduceDurability> PARSER = config -> VariableAmounts.deserialize(config).map(ReduceDurability::new);
     private final VariableAmount reduction;
