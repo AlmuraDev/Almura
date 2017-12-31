@@ -25,27 +25,35 @@ import org.spongepowered.api.Platform;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.text.serializer.TextSerializers;
+
+import javax.annotation.Nullable;
 
 public class InformationDebugPanel extends AbstractDebugPanel {
 
     private static final double XYZ_SINGLE_LINE_MAX = 100000d;
     private static final String DEFAULT_VERSION = "dev";
-    private final Text minecraftVersion;
-    private final Text forgeVersion;
-    private final Text spongeVersion;
-    private final Text almuraVersion;
+    private final Text title;
+    private final int titleWidth;
 
     public InformationDebugPanel(final MalisisGui gui, final int width, final int height, final Game game) {
         super(gui, width, height);
-        this.minecraftVersion = Text.of(TextColors.WHITE, "Minecraft: ", TextColors.GOLD, game.getPlatform().getMinecraftVersion().getName());
-        this.forgeVersion = Text.of(TextColors.WHITE, "Forge: ", TextColors.GOLD, pluginVersion(game, "forge"));
-        this.spongeVersion = Text.of(TextColors.WHITE, "Sponge Build: ", TextColors.GOLD, StringUtils.substringAfterLast(platformContainerVersion(game, Platform.Component.IMPLEMENTATION), "-"));
-        this.almuraVersion = Text.of(TextColors.WHITE, "Almura Build: ", TextColors.GOLD, StringUtils.substringAfterLast(pluginVersion(game, Almura.ID), "-"));
+        this.title = Text.of(
+                Text.of(TextStyles.UNDERLINE, TextColors.GREEN, 'm' + game.getPlatform().getMinecraftVersion().getName()),
+                TextStyles.NONE, " ",
+                Text.of(TextStyles.UNDERLINE, TextColors.RED, 'f' + StringUtils.substringAfterLast(pluginVersion(game, "forge"), ".")),
+                TextStyles.NONE, " ",
+                Text.of(TextStyles.UNDERLINE, TextColors.GOLD, 's' + StringUtils.substringAfterLast(platformContainerVersion(game, Platform.Component.IMPLEMENTATION), "-")),
+                TextStyles.NONE, " ",
+                Text.of(TextStyles.UNDERLINE, TextColors.DARK_AQUA, 'b' + StringUtils.substringAfterLast(pluginVersion(game, "almura"), "-b"))
+        );
+        this.titleWidth = this.client.fontRenderer.getStringWidth(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.title)) / 2;
     }
 
     @Override
     public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-        final Entity view = this.getView();
+        @Nullable final Entity view = this.getView();
         if (view == null) {
             return;
         }
@@ -54,16 +62,7 @@ public class InformationDebugPanel extends AbstractDebugPanel {
 
         this.client.mcProfiler.startSection("debug");
 
-        // Draw version information
-        this.drawText(this.minecraftVersion, 4, this.autoHeight);
-        this.drawText(this.forgeVersion, 4, this.autoHeight);
-        this.drawText(this.spongeVersion, 4, this.autoHeight);
-        this.drawText(this.almuraVersion, 4, this.autoHeight);
-
-        // Reset autoWidth after we've drawn the title
-        if (this.autoSize) {
-            this.autoWidth = 0;
-        }
+        this.renderTitle();
 
         // Position
         final double x = view.posX;
@@ -112,6 +111,13 @@ public class InformationDebugPanel extends AbstractDebugPanel {
         }
 
         this.client.mcProfiler.endSection();
+    }
+
+    private void renderTitle() {
+        this.drawText(this.title, (Math.max(this.autoWidth, this.baseWidth) / 2) - this.titleWidth, this.autoHeight);
+        if (this.autoSize) {
+            this.autoWidth = 0;
+        }
     }
 
     private void renderGame() {

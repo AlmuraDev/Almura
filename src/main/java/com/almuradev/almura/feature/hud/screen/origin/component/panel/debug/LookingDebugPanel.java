@@ -72,54 +72,9 @@ public class LookingDebugPanel extends AbstractDebugPanel {
 
         // Draw block we're currently looking at
         if (this.lookingAtBlock) {
-            final BlockPos pos = this.client.objectMouseOver.getBlockPos();
-            final IBlockState state = getState(this.client.world, pos);
-
-            this.clipContent = false;
-
-            if (state.getBlock() != Blocks.AIR) {
-                this.drawBlock(state, 4, this.autoHeight + 4);
-                this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24, this.autoHeight - 14, false, true);
-
-                final Map<IProperty<?>, Comparable<?>> properties = state.getProperties();
-                final boolean hasProperties = !properties.isEmpty();
-
-                if (hasProperties) {
-                    this.autoHeight -= 2;
-                }
-
-                for (final Map.Entry<IProperty<?>, Comparable<?>> entry : properties.entrySet()) {
-                    final IProperty<?> property = entry.getKey();
-                    final String name = property.getName();
-                    final Comparable<?> value = entry.getValue();
-                    final String describedValue = getName(property, value);
-                    if (value instanceof Boolean) {
-                        this.drawText(Text.of(TextColors.WHITE, name, ": ", ((Boolean) value) ? TextColors.GREEN : TextColors.RED, describedValue),24, this.autoHeight);
-                    } else {
-                        this.drawProperty(name, describedValue, 24, this.autoHeight);
-                    }
-                }
-
-                if (hasProperties) {
-                    this.autoHeight -= 4;
-                }
-            }
+            this.renderBlock(getState(this.client.world, this.client.objectMouseOver.getBlockPos()));
         } else if (this.lookingAtEntity) {
-            final Entity entity = this.client.objectMouseOver.entityHit;
-            final ResourceLocation id = requireNonNull(EntityList.getKey(entity));
-
-            // Draw egg, if available
-            if (EntityList.ENTITY_EGGS.containsKey(id)) {
-                final ItemStack item = new ItemStack(Items.SPAWN_EGG);
-                ItemMonsterPlacer.applyEntityIdToItemStack(item, id);
-                this.drawItem(item, 4, this.autoHeight + 4);
-            } else {
-                this.drawBlock(Blocks.AIR.getDefaultState(), 4, this.autoHeight + 4);
-            }
-
-            this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
-            this.autoHeight -= 2;
-            this.renderEntity(entity);
+            this.renderEntity(this.client.objectMouseOver.entityHit);
         }
 
         this.autoHeight += 4; // Extra padding
@@ -132,7 +87,52 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         this.client.mcProfiler.endSection();
     }
 
+    private void renderBlock(final IBlockState state) {
+        this.clipContent = false;
+
+        if (state.getBlock() != Blocks.AIR) {
+            this.drawBlock(state, 4, this.autoHeight + 4);
+            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24, this.autoHeight - 14, false, true);
+
+            final Map<IProperty<?>, Comparable<?>> properties = state.getProperties();
+            final boolean hasProperties = !properties.isEmpty();
+
+            if (hasProperties) {
+                this.autoHeight -= 2;
+            }
+
+            for (final Map.Entry<IProperty<?>, Comparable<?>> entry : properties.entrySet()) {
+                final IProperty<?> property = entry.getKey();
+                final String name = property.getName();
+                final Comparable<?> value = entry.getValue();
+                final String describedValue = getName(property, value);
+                if (value instanceof Boolean) {
+                    this.drawText(Text.of(TextColors.WHITE, name, ": ", ((Boolean) value) ? TextColors.GREEN : TextColors.RED, describedValue),24, this.autoHeight);
+                } else {
+                    this.drawProperty(name, describedValue, 24, this.autoHeight);
+                }
+            }
+
+            if (hasProperties) {
+                this.autoHeight -= 4;
+            }
+        }
+    }
+
     private void renderEntity(final Entity entity) {
+        final ResourceLocation id = requireNonNull(EntityList.getKey(entity));
+
+        // Draw egg, if available
+        if (EntityList.ENTITY_EGGS.containsKey(id)) {
+            final ItemStack item = new ItemStack(Items.SPAWN_EGG);
+            ItemMonsterPlacer.applyEntityIdToItemStack(item, id);
+            this.drawItem(item, 4, this.autoHeight + 4);
+        } else {
+            this.drawBlock(Blocks.AIR.getDefaultState(), 4, this.autoHeight + 4);
+        }
+
+        this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
+        this.autoHeight -= 2;
         this.drawProperty("name", entity.getName(), 24, this.autoHeight);
     }
 
