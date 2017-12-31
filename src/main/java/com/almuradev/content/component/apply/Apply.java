@@ -7,18 +7,20 @@
  */
 package com.almuradev.content.component.apply;
 
-import net.minecraft.block.Block;
+import com.almuradev.content.component.apply.context.ApplyContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.Random;
 
 /**
  * Something that be can be applied.
  */
-@FunctionalInterface
-public interface Apply<E extends Entity> {
+public interface Apply<E extends Entity, C extends ApplyContext> {
+    boolean accepts(final Entity entity);
 
-    void apply(final E player, final Block block, final BlockPos pos, final Random random, final ItemStack stack);
+    default void apply(final Entity entity, final C context) {
+        if (this.accepts(entity)) {
+            this.apply0((E) entity, context);
+        }
+    }
+
+    void apply0(final E entity, final C context);
 }

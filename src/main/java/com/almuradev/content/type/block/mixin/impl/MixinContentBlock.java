@@ -8,6 +8,8 @@
 package com.almuradev.content.type.block.mixin.impl;
 
 import com.almuradev.content.component.apply.Apply;
+import com.almuradev.content.component.apply.context.ApplyContext;
+import com.almuradev.content.component.apply.context.EverythingApplyContext;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.action.component.drop.Drop;
 import com.almuradev.content.type.action.component.drop.ItemDrop;
@@ -148,9 +150,9 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
         harvesters.set(player);
 
         // Almura Start - Run through the kitkats and break!
-        if (!this.fireBreakActions((ItemType) stack.getItem(), player, pos, world.rand, stack)) {
+        if (!this.fireBreakActions((ItemType) stack.getItem(), state, player, pos, world.rand, stack)) {
             // Fallback to empty action block if nothing overrides it
-            this.fireBreakActions(org.spongepowered.api.item.inventory.ItemStack.empty().getItem(), player, pos, world.rand, stack);
+            this.fireBreakActions(org.spongepowered.api.item.inventory.ItemStack.empty().getItem(), state, player, pos, world.rand, stack);
         }
 
         // TODO Expose fortune to config and see if admin wants to let it use it
@@ -176,14 +178,15 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
         }
     }
 
-    private boolean fireBreakActions(final ItemType usedType, final EntityPlayer player, final BlockPos pos, final Random random, final ItemStack stack) {
+    private boolean fireBreakActions(final ItemType usedType, final IBlockState state, final EntityPlayer player, final BlockPos pos, final Random random, final ItemStack stack) {
         boolean hasActions = false;
 
+        final ApplyContext context = new EverythingApplyContext(random, pos, state, stack);
         for (final BlockDestroyAction.Entry entry : this.destroyAction.entries()) {
             if (entry.test(usedType)) {
                 for (final Apply action : entry.apply()) {
                     hasActions = true;
-                    action.apply(player, (Block) (Object) this, pos, random, stack);
+                    action.apply(player, context);
                 }
             }
         }
