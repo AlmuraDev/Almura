@@ -8,7 +8,6 @@
 package com.almuradev.almura.core.common;
 
 import com.almuradev.almura.core.server.ServerConfiguration;
-import com.almuradev.almura.feature.biome.ReadOnlyBiomeModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
@@ -41,7 +40,6 @@ public final class CommonModule extends AbstractModule implements CommonBinder {
         this.install(new NetworkModule());
         this.install(new WitnessModule());
         this.install(new ContentModule());
-        this.install(new ReadOnlyBiomeModule());
         this.install(new HeadUpDisplayModule());
         this.install(new NickModule());
         this.install(new TitleModule());
