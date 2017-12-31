@@ -9,7 +9,6 @@ package com.almuradev.almura.core.client;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.asm.StaticAccess;
-import com.almuradev.almura.feature.biome.ReadOnlyBiomeModule;
 import com.almuradev.almura.core.common.CommonModule;
 import com.almuradev.almura.feature.menu.MainMenuModule;
 import com.almuradev.almura.feature.speed.ClientOptimizationModule;
@@ -41,7 +40,6 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
         this.install(new MainMenuModule());
         this.install(new ClientOptimizationModule());
         this.install(new ClientConfiguration.Module());
-        this.install(new ReadOnlyBiomeModule());
         this.model().loader(OBJModelLoader.class, binder -> binder.domains(Almura.ID));
         this.requestStaticInjection(StaticAccess.class);
     }

@@ -15,13 +15,10 @@ import com.khorn.terraincontrol.TerrainControl;
 import com.khorn.terraincontrol.forge.util.WorldHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-@SideOnly(Side.CLIENT)
 public final class TerrainControlReadOnlyBiomeSource extends ReadOnlyBiomeSource {
     private final HeadUpDisplay hud;
 
