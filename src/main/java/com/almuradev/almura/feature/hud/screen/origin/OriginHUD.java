@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.hud.screen.origin;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinGuiBossOverlay;
 import com.almuradev.almura.core.client.ClientConfiguration;
+import com.almuradev.almura.feature.biome.ReadOnlyBiomeSource;
 import com.almuradev.almura.core.client.config.ClientCategory;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIBossBarPanel;
@@ -40,6 +41,7 @@ public class OriginHUD extends AbstractHUD {
     private static final int PADDING = 1;
     private final Minecraft client = Minecraft.getMinecraft();
     private final Game game;
+    private final ReadOnlyBiomeSource roBiomeSource;
     private final MappedConfiguration<ClientConfiguration> config;
     private final ClientNotificationManager manager;
     private UIBossBarPanel bossBarPanel;
@@ -52,8 +54,9 @@ public class OriginHUD extends AbstractHUD {
     public UINotificationPanel notificationPanel;
 
     @Inject
-    private OriginHUD(final Game game, final MappedConfiguration<ClientConfiguration> config, final ClientNotificationManager manager) {
+    private OriginHUD(final Game game, final ReadOnlyBiomeSource roBiomeSource, final MappedConfiguration<ClientConfiguration> config, final ClientNotificationManager manager) {
         this.game = game;
+        this.roBiomeSource = roBiomeSource;
         this.config = config;
         this.manager = manager;
     }
@@ -85,7 +88,7 @@ public class OriginHUD extends AbstractHUD {
         this.detailsPanel.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
 
         // Debug details panel
-        this.debugDetailsPanel = new InformationDebugPanel(this, 155, 64, this.game);
+        this.debugDetailsPanel = new InformationDebugPanel(this, 155, 64, this.game, this.roBiomeSource);
         this.debugDetailsPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, PADDING), Anchor.TOP | Anchor.RIGHT);
 
         // Boss bar panel

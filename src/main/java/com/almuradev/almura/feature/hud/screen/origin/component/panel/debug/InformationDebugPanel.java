@@ -7,7 +7,8 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel.debug;
 
-import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.biome.ReadOnlyBiome;
+import com.almuradev.almura.feature.biome.ReadOnlyBiomeSource;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.client.Minecraft;
@@ -17,7 +18,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumSkyBlock;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.api.Game;
@@ -34,11 +34,13 @@ public class InformationDebugPanel extends AbstractDebugPanel {
 
     private static final double XYZ_SINGLE_LINE_MAX = 100000d;
     private static final String DEFAULT_VERSION = "dev";
+    private final ReadOnlyBiomeSource roBiomeSource;
     private final Text title;
     private final int titleWidth;
 
-    public InformationDebugPanel(final MalisisGui gui, final int width, final int height, final Game game) {
+    public InformationDebugPanel(final MalisisGui gui, final int width, final int height, final Game game, final ReadOnlyBiomeSource roBiomeSource) {
         super(gui, width, height);
+        this.roBiomeSource = roBiomeSource;
         this.title = Text.of(
                 Text.of(TextStyles.UNDERLINE, TextColors.GREEN, 'm' + game.getPlatform().getMinecraftVersion().getName()),
                 TextStyles.NONE, " ",
@@ -88,8 +90,9 @@ public class InformationDebugPanel extends AbstractDebugPanel {
             this.drawProperty("Block", fx + ", " + fy + ", " + fz, 4, this.autoHeight);
             this.drawProperty("Chunk", String.format("%d, %d, %d in %d, %d, %d", fx & 0xf, fy & 0xf, fz & 0xf, fx >> 4, fy >> 4, fz >> 4), 4, this.autoHeight);
             if (view.getEntityWorld().isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !chunk.isEmpty()) {
-                final Biome biome = chunk.getBiome(pos, this.client.world.getBiomeProvider());
-                this.drawProperty("Biome", biome.getBiomeName(), 4, this.autoHeight);
+                final ReadOnlyBiome biome = this.roBiomeSource.getBiome(this.client.world, pos);
+                this.drawProperty("Biome", biome.name(), 4, this.autoHeight);
+                this.drawProperty("Temperature", String.valueOf(biome.temperature(pos)), 4, this.autoHeight);
                 this.drawProperty("Light", getLightDetails(pos, chunk), 4, this.autoHeight);
             }
         }
