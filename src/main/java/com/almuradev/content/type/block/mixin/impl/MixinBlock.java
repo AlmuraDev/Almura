@@ -30,6 +30,8 @@ import javax.annotation.Nullable;
 public abstract class MixinBlock implements ContentBlockType {
 
     @Nullable @Shadow public CreativeTabs displayOnCreativeTab;
+    @Shadow public abstract CreativeTabs getCreativeTabToDisplayOn();
+
     @Shadow protected SoundType blockSoundType;
     @Shadow(remap = false) protected ThreadLocal<EntityPlayer> harvesters;
     @Shadow public abstract void harvestBlock(final World world, final EntityPlayer player, final BlockPos pos, final IBlockState state, @Nullable final TileEntity te, final ItemStack stack);

@@ -86,6 +86,7 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
         this.lazyItemGroup = group;
     }
 
+    @Override
     public CreativeTabs getCreativeTabToDisplayOn() {
         return (CreativeTabs) this.itemGroup().orElse(null);
     }
