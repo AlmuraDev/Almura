@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 
 public abstract class AbstractDebugPanel extends UIHUDPanel {
 
+    private static final int INITIAL_TEXT_Y_OFFSET = 5;
     protected final Minecraft client = Minecraft.getMinecraft();
     boolean autoSize = true;
     int baseWidth;
@@ -49,9 +50,10 @@ public abstract class AbstractDebugPanel extends UIHUDPanel {
 
     @SuppressWarnings("deprecation")
     private void drawText0(final Text text, final int x, int y, final boolean aah, final boolean aaw, final int offset) {
-        if (y == 0) {  // Pre-set start value.
-            y+= +5; // Specify the first starting spot within the panel
-            this.autoHeight = y; //Set this value for proceeding checks again autoHeight.
+        // Adjust the value of y if it is 0.
+        if (y == 0) {
+            y += INITIAL_TEXT_Y_OFFSET;
+            this.autoHeight = y;
         }
 
         this.renderer.drawText(Fonts.MINECRAFT, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), x, y, this.zIndex, FontColors.WHITE_FO);

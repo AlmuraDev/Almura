@@ -30,6 +30,7 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
+import org.spongepowered.api.Game;
 
 import javax.inject.Inject;
 
@@ -37,8 +38,10 @@ import javax.inject.Inject;
 public class OriginHUD extends AbstractHUD {
 
     private static final int PADDING = 1;
-    private final MappedConfiguration<ClientConfiguration> config;
     private final Minecraft client = Minecraft.getMinecraft();
+    private final Game game;
+    private final MappedConfiguration<ClientConfiguration> config;
+    private final ClientNotificationManager manager;
     private UIBossBarPanel bossBarPanel;
     private InformationDebugPanel debugDetailsPanel;
     private BlockDebugPanel debugBlockPanel;
@@ -48,10 +51,9 @@ public class OriginHUD extends AbstractHUD {
     private UIWorldPanel worldPanel;
     public UINotificationPanel notificationPanel;
 
-    private final ClientNotificationManager manager;
-
     @Inject
-    public OriginHUD(final MappedConfiguration<ClientConfiguration> config, final ClientNotificationManager manager) {
+    private OriginHUD(final Game game, final MappedConfiguration<ClientConfiguration> config, final ClientNotificationManager manager) {
+        this.game = game;
         this.config = config;
         this.manager = manager;
     }
@@ -71,7 +73,7 @@ public class OriginHUD extends AbstractHUD {
         this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
 
         // Notifications panel
-        this.notificationPanel = new UINotificationPanel(this, 124, 26, manager);
+        this.notificationPanel = new UINotificationPanel(this, 124, 26, this.manager);
         this.notificationPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         // World panel
@@ -83,7 +85,7 @@ public class OriginHUD extends AbstractHUD {
         this.detailsPanel.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
 
         // Debug details panel
-        this.debugDetailsPanel = new InformationDebugPanel(this, 155, 64);
+        this.debugDetailsPanel = new InformationDebugPanel(this, 155, 64, this.game);
         this.debugDetailsPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, PADDING), Anchor.TOP | Anchor.RIGHT);
 
         // Boss bar panel

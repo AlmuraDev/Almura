@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel.debug;
 
+import com.almuradev.almura.Almura;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.client.Minecraft;
@@ -15,37 +16,31 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import org.spongepowered.api.Sponge;
+import org.apache.commons.lang3.StringUtils;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.Platform;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
-
-import java.util.Optional;
+import org.spongepowered.api.text.format.TextColors;
 
 public class InformationDebugPanel extends AbstractDebugPanel {
 
     private static final double XYZ_SINGLE_LINE_MAX = 100000d;
-    private final Text gameVersion, forgeVersion, fullSpongeVersion, fullAlmuraVersion, spongeBuild, almuraBuild;
+    private static final String DEFAULT_VERSION = "dev";
+    private final Text minecraftVersion;
+    private final Text forgeVersion;
+    private final Text spongeVersion;
+    private final Text almuraVersion;
 
-    public InformationDebugPanel(final MalisisGui gui, final int width, final int height) {
+    public InformationDebugPanel(final MalisisGui gui, final int width, final int height, final Game game) {
         super(gui, width, height);
-
-        final Optional<PluginContainer> optAlmura = Sponge.getPluginManager().getPlugin("almura");
-        final Optional<PluginContainer> optForge = Sponge.getPluginManager().getPlugin("Forge");
-
-        this.fullAlmuraVersion = Text.of(optAlmura.get().getVersion().orElse("dev"));
-        final String[] almuraVersionContents = fullAlmuraVersion.toPlain().split("-");
-
-        this.fullSpongeVersion = Text.of(((Optional<String>) Sponge.getPlatform().asMap().get("ImplementationVersion")).orElse("dev"));
-        final String[] spongeVersionContents = fullSpongeVersion.toPlain().split("-");
-
-        this.gameVersion = Text.of(TextFormatting.WHITE + "Minecraft: " + TextFormatting.GOLD + almuraVersionContents[0]);
-        this.forgeVersion = Text.of(TextFormatting.WHITE + "Forge: " + TextFormatting.GOLD + optForge.get().getVersion().orElse("dev"));
-        this.spongeBuild = Text.of(TextFormatting.WHITE + "Sponge Build: " + TextFormatting.GOLD + spongeVersionContents[4].trim());
-        this.almuraBuild = Text.of(TextFormatting.WHITE + "Almura Build: " + TextFormatting.GOLD + almuraVersionContents[1]);
+        this.minecraftVersion = Text.of(TextColors.WHITE, "Minecraft: ", TextColors.GOLD, game.getPlatform().getMinecraftVersion().getName());
+        this.forgeVersion = Text.of(TextColors.WHITE, "Forge: ", TextColors.GOLD, pluginVersion(game, "forge"));
+        this.spongeVersion = Text.of(TextColors.WHITE, "Sponge Build: ", TextColors.GOLD, StringUtils.substringAfterLast(platformContainerVersion(game, Platform.Component.IMPLEMENTATION), "-"));
+        this.almuraVersion = Text.of(TextColors.WHITE, "Almura Build: ", TextColors.GOLD, StringUtils.substringAfterLast(pluginVersion(game, Almura.ID), "-"));
     }
 
     @Override
@@ -58,10 +53,12 @@ public class InformationDebugPanel extends AbstractDebugPanel {
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
 
         this.client.mcProfiler.startSection("debug");
-        this.drawText(this.gameVersion, 4, this.autoHeight);
+
+        // Draw version information
+        this.drawText(this.minecraftVersion, 4, this.autoHeight);
         this.drawText(this.forgeVersion, 4, this.autoHeight);
-        this.drawText(this.spongeBuild, 4, this.autoHeight);
-        this.drawText(this.almuraBuild, 4, this.autoHeight);
+        this.drawText(this.spongeVersion, 4, this.autoHeight);
+        this.drawText(this.almuraVersion, 4, this.autoHeight);
 
         // Reset autoWidth after we've drawn the title
         if (this.autoSize) {
@@ -184,5 +181,13 @@ public class InformationDebugPanel extends AbstractDebugPanel {
 
     private static long convertBytesToMegabytes(final long bytes) {
         return bytes / 1024L / 1024L;
+    }
+
+    private static String pluginVersion(final Game game, final String id) {
+        return game.getPluginManager().getPlugin(id).flatMap(PluginContainer::getVersion).orElse(DEFAULT_VERSION);
+    }
+
+    private static String platformContainerVersion(final Game game, final Platform.Component component) {
+        return game.getPlatform().getContainer(component).getVersion().orElse(DEFAULT_VERSION);
     }
 }
