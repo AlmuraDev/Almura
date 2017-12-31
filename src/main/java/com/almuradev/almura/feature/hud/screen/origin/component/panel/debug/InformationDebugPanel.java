@@ -19,11 +19,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import org.spongepowered.api.MinecraftVersion;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 
@@ -41,11 +39,11 @@ public class InformationDebugPanel extends AbstractDebugPanel {
         this.fullAlmuraVersion = Text.of(optAlmura.get().getVersion().orElse("dev"));
         final String[] almuraVersionContents = fullAlmuraVersion.toPlain().split("-");
 
-        this.gameVersion = Text.of(TextFormatting.WHITE + "Minecraft: " + TextFormatting.GOLD + almuraVersionContents[0]);
-        this.forgeVersion = Text.of(TextFormatting.WHITE + "Forge: " + TextFormatting.GOLD + optForge.get().getVersion().orElse("dev"));
-
         this.fullSpongeVersion = Text.of(((Optional<String>) Sponge.getPlatform().asMap().get("ImplementationVersion")).orElse("dev"));
         final String[] spongeVersionContents = fullSpongeVersion.toPlain().split("-");
+
+        this.gameVersion = Text.of(TextFormatting.WHITE + "Minecraft: " + TextFormatting.GOLD + almuraVersionContents[0]);
+        this.forgeVersion = Text.of(TextFormatting.WHITE + "Forge: " + TextFormatting.GOLD + optForge.get().getVersion().orElse("dev"));
         this.spongeBuild = Text.of(TextFormatting.WHITE + "Sponge Build: " + TextFormatting.GOLD + spongeVersionContents[4].trim());
         this.almuraBuild = Text.of(TextFormatting.WHITE + "Almura Build: " + TextFormatting.GOLD + almuraVersionContents[1]);
     }
