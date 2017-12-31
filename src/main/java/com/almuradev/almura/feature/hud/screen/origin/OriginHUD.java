@@ -17,8 +17,8 @@ import com.almuradev.almura.feature.hud.screen.origin.component.panel.UINotifica
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPlayerListPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
-import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.BlockDebugPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.InformationDebugPanel;
+import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.LookingDebugPanel;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
@@ -44,7 +44,7 @@ public class OriginHUD extends AbstractHUD {
     private final ClientNotificationManager manager;
     private UIBossBarPanel bossBarPanel;
     private InformationDebugPanel debugDetailsPanel;
-    private BlockDebugPanel debugBlockPanel;
+    private LookingDebugPanel debugBlockPanel;
     private UIDetailsPanel detailsPanel;
     private UIPlayerListPanel playerListPanel;
     private UIUserPanel userPanel;
@@ -69,7 +69,7 @@ public class OriginHUD extends AbstractHUD {
         this.userPanel.setPosition(0, 0);
 
         // Debug block panel
-        this.debugBlockPanel = new BlockDebugPanel(this, 124, 45);
+        this.debugBlockPanel = new LookingDebugPanel(this, 124, 45);
         this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
 
         // Notifications panel

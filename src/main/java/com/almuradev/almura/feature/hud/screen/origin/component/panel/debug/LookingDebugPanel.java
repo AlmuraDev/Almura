@@ -7,14 +7,20 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel.debug;
 
+import static java.util.Objects.requireNonNull;
+
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -26,11 +32,12 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class BlockDebugPanel extends AbstractDebugPanel {
+public class LookingDebugPanel extends AbstractDebugPanel {
 
     private boolean lookingAtBlock;
+    private boolean lookingAtEntity;
 
-    public BlockDebugPanel(final MalisisGui gui, final int width, final int height) {
+    public LookingDebugPanel(final MalisisGui gui, final int width, final int height) {
         super(gui, width, height);
     }
 
@@ -48,8 +55,9 @@ public class BlockDebugPanel extends AbstractDebugPanel {
         // Determine if we should draw
         final RayTraceResult omo = this.client.objectMouseOver;
         this.lookingAtBlock = omo != null && omo.typeOfHit == RayTraceResult.Type.BLOCK && omo.getBlockPos() != null;
+        this.lookingAtEntity = omo != null && omo.typeOfHit == RayTraceResult.Type.ENTITY && omo.entityHit != null;
 
-        if (this.lookingAtBlock) {
+        if (this.lookingAtBlock || this.lookingAtEntity) {
             super.draw(renderer, mouseX, mouseY, partialTick);
         }
     }
@@ -70,8 +78,7 @@ public class BlockDebugPanel extends AbstractDebugPanel {
 
             if (state.getBlock() != Blocks.AIR) {
                 this.drawBlock(state, 4, this.autoHeight + 4);
-                this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24,
-                        this.autoHeight - 14, false, true);
+                this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24, this.autoHeight - 14, false, true);
 
                 final Map<IProperty<?>, Comparable<?>> properties = state.getProperties();
                 final boolean hasProperties = !properties.isEmpty();
@@ -96,6 +103,22 @@ public class BlockDebugPanel extends AbstractDebugPanel {
                     this.autoHeight -= 4;
                 }
             }
+        } else if (this.lookingAtEntity) {
+            final Entity entity = this.client.objectMouseOver.entityHit;
+            final ResourceLocation id = requireNonNull(EntityList.getKey(entity));
+
+            // Draw egg, if available
+            if (EntityList.ENTITY_EGGS.containsKey(id)) {
+                final ItemStack item = new ItemStack(Items.SPAWN_EGG);
+                ItemMonsterPlacer.applyEntityIdToItemStack(item, id);
+                this.drawItem(item, 4, this.autoHeight + 4);
+            } else {
+                this.drawBlock(Blocks.AIR.getDefaultState(), 4, this.autoHeight + 4);
+            }
+
+            this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
+            this.autoHeight -= 2;
+            this.renderEntity(entity);
         }
 
         this.autoHeight += 4; // Extra padding
@@ -108,9 +131,17 @@ public class BlockDebugPanel extends AbstractDebugPanel {
         this.client.mcProfiler.endSection();
     }
 
+    private void renderEntity(final Entity entity) {
+        this.drawProperty("name", entity.getName(), 24, this.autoHeight);
+    }
+
     private void drawBlock(final IBlockState state, final int x, final int y) {
+        this.drawItem(new ItemStack(state.getBlock()), x, y);
+    }
+
+    private void drawItem(final ItemStack item, final int x, final int y) {
         this.renderer.bindTexture(MalisisGui.BLOCK_TEXTURE);
-        this.renderer.drawItemStack(new ItemStack(state.getBlock()), x, y);
+        this.renderer.drawItemStack(item, x, y);
 
         this.autoWidth = Math.max(16, this.autoWidth);
         this.autoHeight += 20;
