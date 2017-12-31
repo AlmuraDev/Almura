@@ -14,6 +14,7 @@ import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.init.Blocks;
@@ -142,6 +143,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
     private void drawItem(final ItemStack item, final int x, final int y) {
         this.renderer.bindTexture(MalisisGui.BLOCK_TEXTURE);
         this.renderer.drawItemStack(item, x, y);
+        RenderHelper.disableStandardItemLighting();
 
         this.autoWidth = Math.max(16, this.autoWidth);
         this.autoHeight += 20;
