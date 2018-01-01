@@ -25,6 +25,7 @@ public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
                 "mixins.almura.content.block.json",
                 "mixins.almura.content.block.horizontal.json",
                 "mixins.almura.content.blocksoundgroup.json",
+                "mixins.almura.content.item.food.json",
                 "mixins.almura.content.item.json",
                 "mixins.almura.content.item.seed.json",
                 "mixins.almura.content.itemgroup.json",

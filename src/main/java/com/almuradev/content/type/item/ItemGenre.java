@@ -8,6 +8,7 @@
 package com.almuradev.content.type.item;
 
 import com.almuradev.content.ContentType;
+import com.almuradev.content.type.item.type.food.FoodItem;
 import com.almuradev.content.type.item.type.normal.NormalItem;
 import com.almuradev.content.type.item.type.seed.SeedItem;
 
@@ -20,6 +21,10 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
      * An item type representing a normal item.
      */
     NORMAL("normal", NormalItem.Builder.class),
+    /**
+     * An item type representing a piece of food.
+     */
+    FOOD("food", FoodItem.Builder.class),
     /**
      * An item type representing a seed.
      */

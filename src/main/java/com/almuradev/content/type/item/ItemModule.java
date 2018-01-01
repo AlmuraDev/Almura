@@ -11,6 +11,7 @@ import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
 import com.almuradev.content.type.item.processor.ItemGroupItemContentProcessor;
+import com.almuradev.content.type.item.type.food.FoodItemModule;
 import com.almuradev.content.type.item.type.normal.NormalItemModule;
 import com.almuradev.content.type.item.type.seed.SeedItemModule;
 import com.google.inject.TypeLiteral;
@@ -24,6 +25,7 @@ public final class ItemModule extends AbstractModule implements CommonBinder {
         this.facet().add(ItemContentTypeLoader.class);
         this.install(new NormalItemModule());
         this.install(new SeedItemModule());
+        this.install(new FoodItemModule());
         this.install(new Module() {
             @Override
             protected void configure() {
