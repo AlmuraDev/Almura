@@ -23,7 +23,6 @@ import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.renderer.icon.Icon;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
@@ -41,11 +40,10 @@ import java.text.DecimalFormat;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class UIUserPanel extends UIHUDPanel {
+public class UIUserPanel extends AbstractPanel {
 
     @Inject private static HeadUpDisplay hudData;
 
-    private final Minecraft client = Minecraft.getMinecraft();
     private final int baseHeight;
     private final UIImage currencyImage;
     private final UIAvatarImage userAvatarImage;
@@ -204,8 +202,8 @@ public class UIUserPanel extends UIHUDPanel {
     }
 
     private void updateHealth() {
-        final float health = Minecraft.getMinecraft().player.getHealth();
-        final float maxHealth = Minecraft.getMinecraft().player.getMaxHealth();
+        final float health = this.client.player.getHealth();
+        final float maxHealth = this.client.player.getMaxHealth();
         this.healthBar.setAmount(MathUtil.convertToRange(health,0f, maxHealth, 0f, 1f));
         if (StaticAccess.config.get().client.displayNumericHUDValues) {
             this.healthBar.setText(Text.of(this.df.format(health) + "/" + this.df.format(maxHealth)));
@@ -223,7 +221,7 @@ public class UIUserPanel extends UIHUDPanel {
             if (slot == EntityEquipmentSlot.MAINHAND || slot == EntityEquipmentSlot.OFFHAND) {
                 continue;
             }
-            final ItemStack stack = Minecraft.getMinecraft().player.getItemStackFromSlot(slot);
+            final ItemStack stack = this.client.player.getItemStackFromSlot(slot);
             if (stack.getItem() instanceof ItemArmor) {
                 maxArmor += ((ItemArmor) stack.getItem()).getArmorMaterial().getDurability(slot);
                 currentDamage += stack.getItem().getDamage(stack);
@@ -241,7 +239,7 @@ public class UIUserPanel extends UIHUDPanel {
     }
 
     private void updateHunger() {
-        final float foodLevel = Minecraft.getMinecraft().player.getFoodStats().getFoodLevel();
+        final float foodLevel = this.client.player.getFoodStats().getFoodLevel();
         if (StaticAccess.config.get().client.displayNumericHUDValues) {
             this.hungerBar.setText(Text.of(this.df.format(foodLevel) + "/" + this.df.format(20f)));
             this.hungerBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
@@ -253,8 +251,8 @@ public class UIUserPanel extends UIHUDPanel {
     }
 
     private void updateStatmina() {
-        this.staminaBar.setVisible(Minecraft.getMinecraft().player.getFoodStats().getSaturationLevel()>0);
-        final float staminaLevel = Minecraft.getMinecraft().player.getFoodStats().getSaturationLevel();
+        this.staminaBar.setVisible(this.client.player.getFoodStats().getSaturationLevel()>0);
+        final float staminaLevel = this.client.player.getFoodStats().getSaturationLevel();
         if (this.staminaBar.isVisible()) {
             if (StaticAccess.config.get().client.displayNumericHUDValues) {
                 this.staminaBar.setText(Text.of(this.df.format(staminaLevel) + "/" + this.df.format(20f)));
@@ -268,11 +266,11 @@ public class UIUserPanel extends UIHUDPanel {
     }
 
     private void updateAir() {
-        this.airBar.setVisible(Minecraft.getMinecraft().player.isInsideOfMaterial(Material.WATER));
+        this.airBar.setVisible(this.client.player.isInsideOfMaterial(Material.WATER));
 
         // TODO Hardcoded to not care above 300, if we can do this better in the future then we should do so
         if (this.airBar.isVisible()) {
-            final int air = Math.max(Minecraft.getMinecraft().player.getAir(), 0);
+            final int air = Math.max(this.client.player.getAir(), 0);
             if (StaticAccess.config.get().client.displayNumericHUDValues) {
                 this.airBar.setText(Text.of(this.df.format((float) air) + "/" + this.df.format((float) 300)));
                 this.airBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
@@ -285,7 +283,7 @@ public class UIUserPanel extends UIHUDPanel {
     }
 
     private void updateMountHealth() {
-        final Entity entity = Minecraft.getMinecraft().player.getRidingEntity();
+        final Entity entity = this.client.player.getRidingEntity();
         final boolean entityIsLiving = entity != null && entity instanceof EntityLivingBase;
         this.mountHealthBar.setVisible(entityIsLiving);
         if (entityIsLiving) {

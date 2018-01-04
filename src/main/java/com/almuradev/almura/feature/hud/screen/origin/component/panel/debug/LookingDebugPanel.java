@@ -78,11 +78,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         }
 
         this.autoHeight += 4; // Extra padding
-        if (this.autoSize) {
-            this.setSize(Math.max(this.autoSizeWidth(), this.baseWidth), Math.max(this.autoHeight, this.baseHeight));
-            this.autoHeight = 0;
-            this.autoWidth = 0;
-        }
+        this.autoSize();
 
         this.client.mcProfiler.endSection();
     }

@@ -20,7 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 @SideOnly(Side.CLIENT)
-public final class UINotificationPanel extends UIHUDPanel {
+public final class UINotificationPanel extends AbstractPanel {
 
     private final ClientNotificationManager manager;
     public  UILabel notificationLabel, notificationTitle;

@@ -105,10 +105,7 @@ public class InformationDebugPanel extends AbstractDebugPanel {
             }
         }
 
-        if (this.autoSize) {
-            this.setSize(Math.max(this.autoSizeWidth(), this.baseWidth), Math.max(this.autoHeight, this.baseHeight));
-            this.autoHeight = 0;
-        }
+        this.autoSize();
 
         this.client.mcProfiler.endSection();
     }

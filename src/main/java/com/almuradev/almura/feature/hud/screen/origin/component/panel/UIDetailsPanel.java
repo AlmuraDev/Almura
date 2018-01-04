@@ -19,7 +19,6 @@ import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -32,11 +31,10 @@ import java.text.DecimalFormat;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class UIDetailsPanel extends UIHUDPanel {
+public class UIDetailsPanel extends AbstractPanel {
 
     @Inject private static HeadUpDisplay hudData;
 
-    private final Minecraft client = Minecraft.getMinecraft();
     private final UIImage clockImage, playerCountImage;
     private final UILabel coordsLabel, playerCountLabel;
     private final DecimalFormat df = new DecimalFormat("0.##");
@@ -65,7 +63,7 @@ public class UIDetailsPanel extends UIHUDPanel {
 
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        if (Minecraft.getMinecraft().player == null || Minecraft.getMinecraft().player.world == null) {
+        if (this.client.player == null || this.client.player.world == null) {
             return;
         }
 

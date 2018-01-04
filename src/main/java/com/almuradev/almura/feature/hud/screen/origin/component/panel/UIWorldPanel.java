@@ -13,7 +13,6 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -21,7 +20,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class UIWorldPanel extends UIHUDPanel {
+public class UIWorldPanel extends AbstractPanel {
 
     @Inject private static HeadUpDisplay hudData;
 
@@ -42,7 +41,7 @@ public class UIWorldPanel extends UIHUDPanel {
 
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        if (Minecraft.getMinecraft().player == null || Minecraft.getMinecraft().player.world == null) {
+        if (this.client.player == null || this.client.player.world == null) {
             return;
         }
         super.drawForeground(renderer, mouseX, mouseY, partialTick);

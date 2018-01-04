@@ -31,7 +31,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-public class UIPlayerListPanel extends UIHUDPanel {
+public class UIPlayerListPanel extends AbstractPanel {
 
     @Inject private static ClientNickManager manager;
 
@@ -50,7 +50,6 @@ public class UIPlayerListPanel extends UIHUDPanel {
     private static final int MAX_DISPLAY_NAME_LENGTH_SUBSTRING = MAX_DISPLAY_NAME_LENGTH - DISPLAY_NAME_TRAILING_DOTS_AMOUNT;
     private static final int MAX_HEIGHT = 175;
     private static final TextFormatting DEFAULT_COLOR = TextFormatting.WHITE;
-    private final Minecraft client = Minecraft.getMinecraft();
     private final UISimpleList playerList;
 
     @SuppressWarnings("unchecked")
