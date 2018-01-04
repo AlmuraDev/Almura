@@ -1,0 +1,23 @@
+&fAlmura was created and is maintained by the AlmuraDev Team (https://github.com/AlmuraDev/)
+
+&lThe Beginning...&r
+Almura 1.0 was conceived on June 1st, 2011. It was built around Spoutcraft (1.7.3 beta). As the technology changed we were forced to abandon the Spoutcraft ecosystem in favor of the Forge one. &bZidane&r our lead developer for AlmuraDev finally put his foot down and said enough is enough which began our six month journey to migrate the features we had relied on in Spoutcraft to our new client.
+
+Almura 2.0 - Rediscovered was initially conceived on September 4th, 2014.
+
+Almura has a number of changes from a typical Minecraft setup that gives it an extremely unique and customizable experience.
+  • ASM through Mixin.
+  • YAML/JSON content loading system for items, blocks, crops, trees and more.
+  • Client/Server security system.
+  • Customized GUI for a more unique experience.
+  • Information guide system displayed in-game.
+  • Player accessory system for hats, wings, capes, earrings and more.
+
+Almura 2.5 - Origins was introduced in October of 2016
+  • Removed some server conflicting mods and started a world cleanup.
+  • Added SGcraft and CustomFurniture Mods
+  • Introduced a custom cache system.
+
+Almura 3.0 Resurrected had its first alpha build on 9/19/2017.
+  • Brand new server concept running on SpongeForge w/Minecraft 1.12.1 and above.
+  • New Plugins, new player HUD, new everything!

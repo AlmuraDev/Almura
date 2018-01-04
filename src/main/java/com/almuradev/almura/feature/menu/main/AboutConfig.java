@@ -7,53 +7,27 @@
  */
 package com.almuradev.almura.feature.menu.main;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.Resources;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public interface AboutConfig {
+public final class AboutConfig {
 
-    Text TITLE = Text.of(TextColors.WHITE, "Almura");
-    Text STORY = Text.of(
-            TextColors.WHITE, "Almura was created and is maintained by the AlmuraDev Team (https://www.github.com/AlmuraDev/)",
-            Text.NEW_LINE, Text.NEW_LINE,
-            TextStyles.BOLD, "The Beginning...",
-            TextStyles.RESET, TextColors.RESET, Text.NEW_LINE,
-            "Almura 1.0 was conceived on June 1st, 2011. It was built around Spoutcraft (1.7.3 beta). As the technology changed we were",
-            " forced to abandon the Spoutcraft ecosystem in favor of the Forge one. ", TextColors.AQUA, "Zidane", TextColors.RESET,
-            " our lead developer for AlmuraDev finally put his foot down and said enough is enough which began our six ",
-            "month journey to migrate the features we had relied on in Spoutcraft to our new client.", Text.NEW_LINE,
-            Text.NEW_LINE,
-            "Almura 2.0 - Rediscovered was initially conceived on September 4th, 2014.", Text.NEW_LINE,
-            Text.NEW_LINE,
-            "Almura has a number of changes from a typical Minecraft setup that gives it an extremely unique and customizable "
-                    + "experience.",
-            Text.NEW_LINE,
-            "  • ASM through Mixin.", Text.NEW_LINE,
-            "  • YAML/JSON content loading system for items, blocks, crops, trees and more.", Text.NEW_LINE,
-            "  • Client/Server security system.", Text.NEW_LINE,
-            "  • Customized GUI for a more unique experience.", Text.NEW_LINE,
-            "  • Information guide system displayed in-game.", Text.NEW_LINE,
-            "  • Player accessory system for hats, wings, capes, earrings and more.", Text.NEW_LINE,
-            Text.NEW_LINE,
-            "Almura 2.5 - Origins was introduced in October of 2016", Text.NEW_LINE,
-            "  • Removed some server conflicting mods and started a world cleanup.", Text.NEW_LINE,
-            "  • Added SGcraft and CustomFurniture Mods", Text.NEW_LINE,
-            "  • Introduced a custom cache system. ", Text.NEW_LINE,
-            Text.NEW_LINE,
-            "Almura 3.0 Resurrected had its first alpha build on 9/19/2017. ", Text.NEW_LINE,
-            "  • Brand new server concept running on SpongeForge w/Minecraft 1.12.1 and above. ", Text.NEW_LINE,
-            "  • New Plugins, new player HUD, new everything! ", Text.NEW_LINE,
-            " ");
-    List<Entry> ENTRIES = ImmutableList.of(
+    public static final Text TITLE = Text.of(TextColors.WHITE, "Almura");
+    public static final Text STORY = story();
+    public static final List<Entry> ENTRIES = ImmutableList.of(
             // NinjaZidane
             new Entry("zidane", UUID.fromString("85271de5-8380-4db5-9f05-ada3b4aa785c"), TextColors.BLUE,3),
             // Kashike
@@ -72,7 +46,19 @@ public interface AboutConfig {
             new Entry("blood", UUID.fromString("87caf570-b1fc-4100-bd95-3e7f1fa2e153"), TextColors.DARK_RED, 2)
     );
 
-    class Entry {
+    private static Text story() {
+        return TextSerializers.FORMATTING_CODE.deserialize(Joiner.on('\n').join(storyLines()));
+    }
+
+    private static List<String> storyLines() {
+        try {
+            return Resources.readLines(AboutConfig.class.getResource("/assets/almura/text/about/story.txt"), StandardCharsets.UTF_8);
+        } catch (final IOException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public static final class Entry {
 
         public final String name;
         final UUID uniqueId;
