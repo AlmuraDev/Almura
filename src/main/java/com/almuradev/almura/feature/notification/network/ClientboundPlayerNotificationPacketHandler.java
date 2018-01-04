@@ -9,6 +9,8 @@ package com.almuradev.almura.feature.notification.network;
 
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
+import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
+import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -30,7 +32,7 @@ public class ClientboundPlayerNotificationPacketHandler implements MessageHandle
     @Override
     public void handleMessage(ClientboundPlayerNotificationPacket message, RemoteConnection connection, Platform.Type side) {
         if (message.inWindow) {
-            // TODO Dockter, show the damn window
+            UIMessageBox.showDialog(null,message.title.toPlain(), message.message.toPlain(), MessageBoxButtons.OK, null);
         } else {
             this.manager.queuePopup(new PopupNotification(message.title, message.message, message.timeToLive));
         }
