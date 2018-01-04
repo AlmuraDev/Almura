@@ -21,7 +21,7 @@ public abstract class AbstractDebugPanel extends AbstractAutoSizingPanel {
     }
 
     @Nullable
-    protected final Entity getView() {
+    protected final Entity cameraView() {
         final Entity view = this.client.getRenderViewEntity();
         if (view == null || this.client.player == null || this.client.player.world == null || !this.client.gameSettings.showDebugInfo) {
             return null;

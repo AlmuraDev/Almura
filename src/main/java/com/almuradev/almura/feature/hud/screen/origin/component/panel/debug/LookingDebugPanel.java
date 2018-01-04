@@ -17,6 +17,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemMonsterPlacer;
@@ -34,7 +35,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class LookingDebugPanel extends AbstractDebugPanel {
-
     private boolean lookingAtBlock;
     private boolean lookingAtEntity;
 
@@ -48,7 +48,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
             return;
         }
 
-        @Nullable final Entity view = this.getView();
+        @Nullable final Entity view = this.cameraView();
         if (view == null) {
             return;
         }
@@ -103,7 +103,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
                 final Comparable<?> value = entry.getValue();
                 final String describedValue = getName(property, value);
                 if (value instanceof Boolean) {
-                    this.drawText(Text.of(TextColors.WHITE, name, ": ", ((Boolean) value) ? TextColors.GREEN : TextColors.RED, describedValue),24, this.autoHeight);
+                    this.drawText(Text.of(TextColors.WHITE, name, ": ", ((Boolean) value) ? TextColors.GREEN : TextColors.RED, describedValue), 24, this.autoHeight);
                 } else {
                     this.drawProperty(name, describedValue, 24, this.autoHeight);
                 }
@@ -129,7 +129,9 @@ public class LookingDebugPanel extends AbstractDebugPanel {
 
         this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
         this.autoHeight -= 2;
-        this.drawProperty("name", entity.getName(), 24, this.autoHeight);
+        if (entity.hasCustomName() || entity instanceof EntityPlayer) {
+            this.drawProperty("name", entity.getName(), 24, this.autoHeight);
+        }
     }
 
     private void drawBlock(final IBlockState state, final int x, final int y) {

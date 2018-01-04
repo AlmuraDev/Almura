@@ -31,7 +31,6 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import javax.annotation.Nullable;
 
 public class InformationDebugPanel extends AbstractDebugPanel {
-
     private static final double XYZ_SINGLE_LINE_MAX = 100000d;
     private static final String DEFAULT_VERSION = "dev";
     private final Text title;
@@ -46,14 +45,14 @@ public class InformationDebugPanel extends AbstractDebugPanel {
                 TextStyles.NONE, " ",
                 Text.of(TextStyles.UNDERLINE, TextColors.GOLD, 's' + StringUtils.substringAfterLast(platformContainerVersion(game, Platform.Component.IMPLEMENTATION), "-")),
                 TextStyles.NONE, " ",
-                Text.of(TextStyles.UNDERLINE, TextColors.DARK_AQUA, 'b' + StringUtils.substringAfterLast(pluginVersion(game, "almura"), "-b"))
+                Text.of(TextStyles.UNDERLINE, TextColors.DARK_AQUA, 'b' + StringUtils.substringAfterLast(pluginVersion(game, Almura.ID), "-b"))
         );
         this.titleWidth = this.client.fontRenderer.getStringWidth(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.title)) / 2;
     }
 
     @Override
     public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-        @Nullable final Entity view = this.getView();
+        @Nullable final Entity view = this.cameraView();
         if (view == null) {
             return;
         }
@@ -78,19 +77,19 @@ public class InformationDebugPanel extends AbstractDebugPanel {
         // ...but the rest depends on the reduced debug value.
         final boolean reducedDebug = this.client.isReducedDebug();
         if (reducedDebug) {
-            this.drawProperty("Chunk-relative", String.format("%d %d %d", fx & 0xf, fy & 0xf, fz & 0xf), 4, this.autoHeight);
+            this.drawProperty("Chunk-relative", String.format("%d %d %d", fx & 0xf, fy & 0xf, fz & 0xf), 4);
         } else {
             final BlockPos pos = new BlockPos(x, y, z);
             final Chunk chunk = view.getEntityWorld().getChunkFromBlockCoords(pos);
 
             this.renderXYZ(x, y, z);
             this.renderFacing(view.getHorizontalFacing(), view.rotationYaw, view.rotationPitch);
-            this.drawProperty("Block", fx + ", " + fy + ", " + fz, 4, this.autoHeight);
-            this.drawProperty("Chunk", String.format("%d, %d, %d in %d, %d, %d", fx & 0xf, fy & 0xf, fz & 0xf, fx >> 4, fy >> 4, fz >> 4), 4, this.autoHeight);
+            this.drawProperty("Block", fx + ", " + fy + ", " + fz, 4);
+            this.drawProperty("Chunk", String.format("%d, %d, %d in %d, %d, %d", fx & 0xf, fy & 0xf, fz & 0xf, fx >> 4, fy >> 4, fz >> 4), 4);
             if (view.getEntityWorld().isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !chunk.isEmpty()) {
                 final Biome biome = chunk.getBiome(pos, this.client.world.getBiomeProvider());
-                this.drawProperty("Biome", biome.getBiomeName(), 4, this.autoHeight);
-                this.drawProperty("Light", getLightDetails(pos, chunk), 4, this.autoHeight);
+                this.drawProperty("Biome", biome.getBiomeName(), 4);
+                this.drawProperty("Light", getLightDetails(pos, chunk), 4);
             }
         }
 
@@ -119,33 +118,33 @@ public class InformationDebugPanel extends AbstractDebugPanel {
 
     private void renderGame() {
         this.drawProperty("Java", this.getJavaDetails(), 4, this.autoHeight += 4);
-        this.drawProperty("Memory", getMemoryDetails(), 4, this.autoHeight);
-        this.drawProperty("FPS", String.valueOf(Minecraft.getDebugFPS()), 4, this.autoHeight);
+        this.drawProperty("Memory", getMemoryDetails(), 4);
+        this.drawProperty("FPS", String.valueOf(Minecraft.getDebugFPS()), 4);
     }
 
     private void renderXYZ(final double x, final double y, final double z) {
         if (x >= XYZ_SINGLE_LINE_MAX || y >= XYZ_SINGLE_LINE_MAX || z >= XYZ_SINGLE_LINE_MAX) {
-            this.drawProperty("X", String.format("%.3f", x), 4, this.autoHeight);
-            this.drawProperty("Y", String.format("%.3f", y), 4, this.autoHeight);
-            this.drawProperty("Z", String.format("%.3f", z), 4, this.autoHeight);
+            this.drawProperty("X", String.format("%.3f", x), 4);
+            this.drawProperty("Y", String.format("%.3f", y), 4);
+            this.drawProperty("Z", String.format("%.3f", z), 4);
         } else {
-            this.drawProperty("XYZ", String.format("%.3f, %.3f, %.3f", x, y, z), 4, this.autoHeight);
+            this.drawProperty("XYZ", String.format("%.3f, %.3f, %.3f", x, y, z), 4);
         }
     }
 
     private void renderFacing(final EnumFacing facing, final float yaw, final float pitch) {
         final String facingTowards = describeFacing(facing);
         this.drawProperty("Facing", String.format("%s%s (%.1f, %.1f)", facing.name().charAt(0), facingTowards,
-                MathHelper.wrapDegrees(yaw), MathHelper.wrapDegrees(pitch)), 4, this.autoHeight);
+                MathHelper.wrapDegrees(yaw), MathHelper.wrapDegrees(pitch)), 4);
     }
 
     private void renderLook(final int x, final int y, final int z) {
         if (x >= XYZ_SINGLE_LINE_MAX || y >= XYZ_SINGLE_LINE_MAX || z >= XYZ_SINGLE_LINE_MAX) {
-            this.drawProperty("Look X", String.format("%d", x), 4, this.autoHeight);
-            this.drawProperty("Look Y", String.format("%d", y), 4, this.autoHeight);
-            this.drawProperty("Look Z", String.format("%d", z), 4, this.autoHeight);
+            this.drawProperty("Look X", String.format("%d", x), 4);
+            this.drawProperty("Look Y", String.format("%d", y), 4);
+            this.drawProperty("Look Z", String.format("%d", z), 4);
         } else {
-            this.drawProperty("Look", String.format("%d, %d, %d", x, y, z), 4, this.autoHeight);
+            this.drawProperty("Look", String.format("%d, %d, %d", x, y, z), 4);
         }
     }
 

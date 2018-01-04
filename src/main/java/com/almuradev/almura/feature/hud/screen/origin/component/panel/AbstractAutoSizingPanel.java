@@ -15,7 +15,6 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 public abstract class AbstractAutoSizingPanel extends AbstractPanel {
-
     private final int initialTextOffsetY;
     protected int baseWidth;
     protected int baseHeight;
@@ -44,6 +43,10 @@ public abstract class AbstractAutoSizingPanel extends AbstractPanel {
 
     protected final int autoSizeWidth() {
         return this.autoWidth + 4;
+    }
+
+    protected final void drawProperty(final String key, final String value, final int x) {
+        this.drawProperty(key, value, x, this.autoHeight);
     }
 
     @Override
