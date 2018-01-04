@@ -7,13 +7,17 @@
  */
 package com.almuradev.almura.feature.hud;
 
+import static org.spongepowered.api.command.args.GenericArguments.text;
+
 import com.almuradev.almura.core.server.ServerConfiguration;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
+import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
+import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
 import net.kyori.membrane.facet.Activatable;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
@@ -37,6 +41,8 @@ import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.Account;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.economy.transaction.TransactionResult;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.world.World;
 
 import java.math.BigDecimal;
@@ -50,14 +56,16 @@ public class ServerHeadUpDisplayManager extends Witness.Impl implements Activata
     private final PluginContainer container;
     private final ChannelBinding.IndexedMessageChannel network;
     private final MappedConfiguration<ServerConfiguration> config;
+    private final ServerNotificationManager snm;
 
     @Inject
     private ServerHeadUpDisplayManager(final Game game, final PluginContainer container, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
-            .IndexedMessageChannel network, final MappedConfiguration<ServerConfiguration> config) {
+            .IndexedMessageChannel network, final MappedConfiguration<ServerConfiguration> config, final ServerNotificationManager snm) {
         this.game = game;
         this.container = container;
         this.network = network;
         this.config = config;
+        this.snm = snm;
     }
 
     @Override
@@ -130,6 +138,17 @@ public class ServerHeadUpDisplayManager extends Witness.Impl implements Activata
                     this.network.sendTo(player, packet);
                 }
             }).submit(this.container));
+        }
+    }
+
+    @Listener
+    public void onPlayerFirstJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") Player player) {
+        for (final Player viewer : this.game.getServer().getOnlinePlayers()) {
+            if (viewer == player) {
+                continue;
+            }
+
+            snm.sendPopupNotification(player, Text.of("New Player!!!"), Text.of("Please welcome " + player.getName() + " to Almura."), 5);
         }
     }
 
