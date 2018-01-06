@@ -75,9 +75,10 @@ public class OBJModelParser {
                     continue;
                 }
 
+                final int index = line.indexOf(' ');
                 final String[] combinedLineContents = line.split(" ");
-                final String lineHeader = combinedLineContents[0];
-                final String[] lineContents = Arrays.copyOfRange(combinedLineContents, 1, combinedLineContents.length);
+                final String lineHeader = line.substring(0, index);
+                final String[] lineContents = line.substring(index, line.length()).trim().split(" ");
 
                 switch (lineHeader) {
                     case OBJModelConfig.MATERIAL_LIBRARY:
