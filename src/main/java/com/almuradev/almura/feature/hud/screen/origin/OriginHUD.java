@@ -75,6 +75,7 @@ public class OriginHUD extends AbstractHUD {
         // Notifications panel
         this.notificationPanel = new UINotificationPanel(this, 124, 26, this.manager);
         this.notificationPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
+        this.notificationPanel.setAlpha(0); // Hide this initially.
 
         // World panel
         this.worldPanel = new UIWorldPanel(this, 124, 25);
