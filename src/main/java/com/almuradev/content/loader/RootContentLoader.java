@@ -135,12 +135,18 @@ public final class RootContentLoader implements Witness {
         this.logger.debug("Processing queued content...");
         for (final ContentType type : this.types) {
             this.logger.debug("    Processing queued '{}' content...", type.id());
-            for (final SearchableSearchEntry entry : searchable) {
-                entry.process(this.injector, this.logger, type);
-            }
+            this.process(this.injector, this.logger, type);
         }
 
         this.state.write(this.logger, this.assets);
+    }
+
+    private void process(final Injector injector, final Logger logger, final ContentType type) {
+        try {
+            injector.getInstance(type.loader()).process();
+        } catch (final DetailedReportedException e) {
+            logger.error("{}:\n {}", e.getMessage(), e.report().toString());
+        }
     }
 
     private void resolveJars(final List<JarSearchEntry> jars, final Path target) {

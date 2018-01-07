@@ -38,14 +38,6 @@ abstract class SearchableSearchEntry extends SearchEntry {
         }
     }
 
-    void process(final Injector injector, final Logger logger, final ContentType type) {
-        try {
-            injector.getInstance(type.loader()).process();
-        } catch (final DetailedReportedException e) {
-            logger.error("{}:\n {}", e.getMessage(), e.report().toString());
-        }
-    }
-
     static boolean exists(final Logger logger, final Path path) {
         if (!Files.exists(path)) {
             logger.debug("Ignoring path '{}' for content searching", path);
