@@ -79,7 +79,7 @@ public class UIPropertyBar extends UIComponent {
             barX = ICON_SIZE + 2;
         }
 
-        final int alpha = (int) MathUtil.squash(this.getAlpha() - 75, 0, 255);
+        final int alpha = MathUtil.squashi(this.getAlpha() - 75, 0, 255);
         renderer.drawRectangle(barX, 1, this.zIndex, barWidth, barHeight, 0, alpha);
         renderer.drawRectangle(barX + 1, 2, this.zIndex, this.getConvertedFill(), barHeight - 2, this.color, this.getAlpha());
     }

@@ -103,7 +103,7 @@ public class OriginHUD extends AbstractHUD {
 
     public boolean handleScroll() {
         if (this.playerListPanel != null && this.playerListPanel.isVisible()) {
-            this.playerListPanel.onScrollWheel(Mouse.getEventX(), Mouse.getEventY(), (int) MathUtil.squash(Mouse.getEventDWheel(), -1, 1));
+            this.playerListPanel.onScrollWheel(Mouse.getEventX(), Mouse.getEventY(), MathUtil.squashi(Mouse.getEventDWheel(), -1, 1));
             return true;
         }
         return false;
@@ -112,53 +112,22 @@ public class OriginHUD extends AbstractHUD {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         final ClientCategory category = this.config.get().client;
-        // Set current alpha value
-        this.userPanel.setAlpha(category.originHudOpacity);
 
-        this.worldPanel.setVisible(this.config.get().client.displayWorldCompassWidget);
+        this.userPanel.setAlpha(category.originHudOpacity);
 
         this.detailsPanel.setVisible(this.config.get().client.displayLocationWidget);
         this.detailsPanel.setAlpha(category.originHudOpacity);
 
+        this.worldPanel.setVisible(this.config.get().client.displayWorldCompassWidget);
+
         if (manager.getCurrent() == null) {
-            if (this.notificationPanel.getAlpha() > 0) {
-
-                this.notificationPanel.setAlpha(this.notificationPanel.getAlpha()-2);
-                if (this.notificationPanel.getAlpha() < 0) {
-                    this.notificationPanel.setAlpha(0);
-                }
-
-                if (this.worldPanel.getAlpha() < category.originHudOpacity) {
-                    this.worldPanel.setAlpha(this.worldPanel.getAlpha() + 2);
-                    if (this.worldPanel.getAlpha() > category.originHudOpacity) {
-                        this.worldPanel.setAlpha(category.originHudOpacity);
-                    }
-                }
-            } else {
-                if (this.worldPanel.getAlpha() < category.originHudOpacity) {
-                    this.worldPanel.setAlpha(this.worldPanel.getAlpha() + 2);
-                    if (this.worldPanel.getAlpha() > category.originHudOpacity) {
-                        this.worldPanel.setAlpha(category.originHudOpacity);
-                    }
-                } else {
-                    this.worldPanel.setAlpha(category.originHudOpacity);
-                }
-            }
+            this.notificationPanel.setAlpha(Math.max(this.notificationPanel.getAlpha() - 2, 0));
+            this.worldPanel.setAlpha(Math.min(this.worldPanel.getAlpha() + 2, category.originHudOpacity));
         } else {
-            if (this.notificationPanel.getAlpha() < 255) {
-                this.notificationPanel.setAlpha(this.notificationPanel.getAlpha()+5);
-                if (this.notificationPanel.getAlpha() > 255) {
-                    this.notificationPanel.setAlpha(255);
-                }
-                if (this.worldPanel.getAlpha() > 0) {
-                    this.worldPanel.setAlpha(this.worldPanel.getAlpha() - 20);
-                    if (this.worldPanel.getAlpha() < 0) {
-                        this.worldPanel.setAlpha(0);
-                    }
-                }
-            }
+            this.notificationPanel.setAlpha(Math.min(this.notificationPanel.getAlpha() + 5, 255));
+            this.worldPanel.setAlpha(Math.max(this.worldPanel.getAlpha() - 20, 0));
 
-            if ((this.notificationPanel.notificationTitle.getWidth() + 10) < (this.notificationPanel.notificationLabel.getWidth() + 10)) {
+            if ((this.notificationPanel.notificationTitle.getWidth()) < (this.notificationPanel.notificationLabel.getWidth())) {
                 this.notificationPanel.setSize(this.notificationPanel.notificationLabel.getContentWidth() + 10, this.notificationPanel.getHeight());
             } else {
                 this.notificationPanel.setSize(this.notificationPanel.notificationTitle.getContentWidth() + 10, this.notificationPanel.getHeight());
@@ -172,10 +141,10 @@ public class OriginHUD extends AbstractHUD {
             // Get proper position based on what potion effects are being shown
             int yOffset = SimpleScreen.getPaddedY(this.detailsPanel, PADDING);
             if (this.client.player.getActivePotionEffects().stream().anyMatch(potion -> potion.getPotion().isBeneficial())) {
-                yOffset += 25; // 24 for potion icon, 2 for padding
+                yOffset += 25; // 24 for potion icon, 1 for padding
             }
             if (this.client.player.getActivePotionEffects().stream().anyMatch(potion -> !potion.getPotion().isBeneficial())) {
-                yOffset += 25; // 24 for potion icon, 2 for padding
+                yOffset += 25; // 24 for potion icon, 1 for padding
             }
             // Debug block panel
             this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
