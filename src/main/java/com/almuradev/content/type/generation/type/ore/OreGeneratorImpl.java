@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.generation.type.ore;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -43,7 +43,7 @@ public final class OreGeneratorImpl implements IWorldGenerator, OreGenerator {
                 continue;
             }
 
-            final WorldGenMinable feature = new WorldGenMinable((IBlockState) definition.block().get(), definition.size());
+            final WorldGenMinable feature = new WorldGenMinable(((Block) definition.block().get()).getDefaultState(), definition.size());
             for (int i = 0, length = definition.count(); i < length; i++) {
                 final int x =  cx * 16 + random.nextInt(16);
                 final int y = random.nextInt(64);
