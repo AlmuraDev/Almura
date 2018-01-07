@@ -1,0 +1,20 @@
+{
+    // The weight of this ore generator.
+    "weight": 10,
+    // The entries of this ore generator.
+    "entries": [
+        {
+            // The block type for ore generation.
+            "block": "almura:horizontal/ore/marbleore",
+            // The amount of blocks to generate.
+            "size": 5,
+            // The amount of times to generate.
+            "count": 3
+        },
+        {
+            "block": "almura:horizontal/ore/saltore",
+            "size": 5,
+            "count": 3
+        }
+    ]
+}

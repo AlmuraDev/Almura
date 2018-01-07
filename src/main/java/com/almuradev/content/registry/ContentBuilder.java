@@ -21,6 +21,7 @@ public interface ContentBuilder<C extends CatalogedContent> {
 
     enum StringType {
         NAMESPACE,
+        ID,
         SEMI_ABSOLUTE_PATH,
         TRANSLATION
     }
@@ -47,6 +48,7 @@ public interface ContentBuilder<C extends CatalogedContent> {
                     return this.sap;
                 case TRANSLATION:
                     return this.namespace + '.' + this.sap.replace('/', '.');
+                case ID:
                 default:
                     return this.id;
             }
