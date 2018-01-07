@@ -74,6 +74,17 @@ public class UIForm extends UIWindow {
         return this;
     }
 
+    public void onClose() {
+        final MalisisGui currentGui = getGui();
+        if (currentGui != null) {
+            if (currentGui.isOverlay()) {
+                currentGui.closeOverlay();
+            } else {
+                currentGui.close();
+            }
+        }
+    }
+
     @Override
     public boolean onDrag(int lastX, int lastY, int x, int y, MouseButton button) {
         if (!this.movable || button != MouseButton.LEFT || this.closeButton.isInsideBounds(x, y)) {
@@ -100,6 +111,7 @@ public class UIForm extends UIWindow {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.form.close":
                 if (this.closeButton.isInsideBounds(event.getX(), event.getY())) {
+                    this.onClose();
                     ((UIContainer) this.getParent()).remove(this);
                 }
                 break;
@@ -114,7 +126,6 @@ public class UIForm extends UIWindow {
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
-        this.closeButton.setFontOptions(this.closeButton.isInsideBounds(mouseX, mouseY) ?
-                FontColors.WHITE_FO : FontColors.GRAY_FO);
+        this.closeButton.setFontOptions(this.closeButton.isInsideBounds(mouseX, mouseY) ? FontColors.WHITE_FO : FontColors.GRAY_FO);
     }
 }

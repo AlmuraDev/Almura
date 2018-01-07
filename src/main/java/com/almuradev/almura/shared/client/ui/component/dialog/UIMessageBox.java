@@ -9,14 +9,17 @@ package com.almuradev.almura.shared.client.ui.component.dialog;
 
 import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
+import net.malisis.core.client.gui.component.control.UIScrollBar;
+import net.malisis.core.client.gui.component.control.UISlimScrollbar;
+import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -43,22 +46,24 @@ public class UIMessageBox extends UIForm {
     @Nullable private MessageBoxResult result;
 
     private UIMessageBox(MalisisGui gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer consumer) {
-        super(gui, 0, 0, title);
+        super(gui, 300, 100, title);
         this.messageBoxButtons = buttons;
         this.message = message;
         this.consumer = consumer;
         this.construct(gui);
+        this.setClosable(true);
     }
 
     private void construct(MalisisGui gui) {
-        this.setTopPadding(topPadding);
-        this.setBottomPadding(bottomPadding);
+        setTopPadding(topPadding);
+        setBottomPadding(bottomPadding);
 
         if (!this.message.isEmpty()) {
-            final UIExpandingLabel messageLabel = new UIExpandingLabel(gui, this.message, true);
-            final int width = gui.width == 0 ? Math.max(messageLabel.getWidth() + 3, 250) : Math.min(Math.max(messageLabel.getWidth() + 3, 250),
-                    gui.width);
-            setSize(width, topPadding + messageLabel.getContentHeight() +bottomPadding + 10);
+            final UILabel messageLabel = new UILabel(gui, this.message, true);
+            messageLabel.setSize(UIComponent.INHERITED, UIComponent.INHERITED);
+
+            final UISlimScrollbar scrollbar = new UISlimScrollbar(gui, messageLabel, UIScrollBar.Type.VERTICAL);
+            scrollbar.setAutoHide(true);
 
             add(messageLabel);
         }
@@ -124,6 +129,29 @@ public class UIMessageBox extends UIForm {
                 this.result = MessageBoxResult.YES;
                 onClose();
                 break;
+            case "button.form.close":
+                switch (messageBoxButtons) {
+                    case OK:
+                        this.result = MessageBoxResult.OK;
+                        onClose();
+                        break;
+                    case OK_CANCEL:
+                        this.result = MessageBoxResult.CANCEL;
+                        onClose();
+                        break;
+                    case CLOSE:
+                        this.result = MessageBoxResult.CLOSE;
+                        onClose();
+                        break;
+                    case YES_NO:
+                        this.result = MessageBoxResult.NO;
+                        onClose();
+                        break;
+                    case YES_NO_CANCEL:
+                        this.result = MessageBoxResult.CANCEL;
+                        onClose();
+                        break;
+                }
         }
     }
 
@@ -137,11 +165,6 @@ public class UIMessageBox extends UIForm {
             }
         }
         super.onClose();
-    }
-
-    @Override
-    public UIMessageBox setClosable(boolean closable) {
-        throw new UnsupportedOperationException("This component does not support the ability to close via a X button.");
     }
 
     private UIButton buildButton(MalisisGui gui, String name) {
@@ -179,15 +202,16 @@ public class UIMessageBox extends UIForm {
         }
     }
 
-    public static void showDialog(SimpleScreen gui, String title, String message, MessageBoxButtons buttons) {
+    public static void showDialog(@Nullable SimpleScreen gui, String title, String message, MessageBoxButtons buttons) {
         showDialog(gui, title, message, buttons, null);
     }
 
-    public static void showDialog(SimpleScreen gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer consumer) {
+    public static void showDialog(@Nullable SimpleScreen gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer
+            consumer) {
         final SimpleScreen screen = new SimpleScreen(gui) {
             @Override
             public void construct() {
-                this.guiscreenBackground = false;
+                guiscreenBackground = false;
                 // Disable escape key press
                 registerKeyListener((keyChar, keyCode) -> keyCode == Keyboard.KEY_ESCAPE);
                 addToScreen(new UIMessageBox(this, title, message, buttons, consumer)
