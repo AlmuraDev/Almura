@@ -140,6 +140,7 @@ compileJava {
 
 jar {
     classifier 'base'
+    exclude 'log4j2-test.xml'
 
     manifest {
         attributes(
