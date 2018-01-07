@@ -23,7 +23,7 @@ public final class HorizontalBlockStateDefinition extends BlockStateDefinition.I
     HorizontalBlockStateDefinition(final HorizontalBlockStateDefinitionBuilderImpl builder) {
         super(builder);
         this.facing = builder.facing;
-        this.nullCollisionBox = this.collisionBox == null;
+        this.nullCollisionBox = this.collisionBox != null && this.collisionBox.box() == null;
     }
 
     @Nullable
