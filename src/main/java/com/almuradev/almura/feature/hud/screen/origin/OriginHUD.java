@@ -128,11 +128,20 @@ public class OriginHUD extends AbstractHUD {
                     this.notificationPanel.setAlpha(0);
                 }
 
-                if (this.worldPanel.getAlpha() < 255) {
+                if (this.worldPanel.getAlpha() < category.originHudOpacity) {
                     this.worldPanel.setAlpha(this.worldPanel.getAlpha() + 2);
-                    if (this.worldPanel.getAlpha() > 255) {
-                        this.worldPanel.setAlpha(255);
+                    if (this.worldPanel.getAlpha() > category.originHudOpacity) {
+                        this.worldPanel.setAlpha(category.originHudOpacity);
                     }
+                }
+            } else {
+                if (this.worldPanel.getAlpha() < category.originHudOpacity) {
+                    this.worldPanel.setAlpha(this.worldPanel.getAlpha() + 2);
+                    if (this.worldPanel.getAlpha() > category.originHudOpacity) {
+                        this.worldPanel.setAlpha(category.originHudOpacity);
+                    }
+                } else {
+                    this.worldPanel.setAlpha(category.originHudOpacity);
                 }
             }
         } else {
