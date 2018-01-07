@@ -18,10 +18,12 @@ import javax.annotation.Nullable;
 public final class HorizontalBlockStateDefinition extends BlockStateDefinition.Impl<HorizontalBox, HorizontalBox.Collision, HorizontalBox> {
 
     public final EnumFacing facing;
+    public final boolean nullCollisionBox;
 
     HorizontalBlockStateDefinition(final HorizontalBlockStateDefinitionBuilderImpl builder) {
         super(builder);
         this.facing = builder.facing;
+        this.nullCollisionBox = this.collisionBox == null;
     }
 
     @Nullable

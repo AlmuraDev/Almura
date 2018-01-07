@@ -70,7 +70,11 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @Override
     public AxisAlignedBB getCollisionBoundingBox(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
         final EnumFacing facing = state.getValue(FACING);
-        final AxisAlignedBB collisionBox = this.state(facing).collisionBox(facing);
+        final HorizontalBlockStateDefinition definition = this.state(facing);
+        if (definition.nullCollisionBox) {
+            return null;
+        }
+        final AxisAlignedBB collisionBox = definition.collisionBox(facing);
         return collisionBox != null ? collisionBox : super.getCollisionBoundingBox(state, world, pos);
     }
 
