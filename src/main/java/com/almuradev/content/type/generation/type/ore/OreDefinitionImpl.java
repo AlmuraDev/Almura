@@ -22,17 +22,12 @@ final class OreDefinitionImpl implements OreDefinition {
         this.block = definition.block;
         this.size = definition.size;
         this.count = definition.count;
-        this.dimension = builder.string(ContentBuilder.StringType.ID);
+        this.dimension = builder.string(ContentBuilder.StringType.NAME);
     }
 
     @Override
     public Delegate<BlockType> block() {
         return this.block;
-    }
-
-    @Override
-    public String dimension() {
-        return this.dimension;
     }
 
     @Override

@@ -14,15 +14,11 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraftforge.fml.common.IWorldGenerator;
-import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Random;
 
-import javax.inject.Inject;
-
 public final class OreGeneratorImpl implements IWorldGenerator, OreGenerator {
-    @Inject private static Logger logger;
     private final int weight;
     private final List<OreDefinition> definitions;
 
@@ -44,7 +40,6 @@ public final class OreGeneratorImpl implements IWorldGenerator, OreGenerator {
 
         for (final OreDefinition definition : this.definitions) {
             if (!definition.accepts(world.provider)) {
-                logger.debug("Dimension '{}' does not match definition requirement of '{}'", world.provider.getDimensionType().getName(), definition.dimension());
                 continue;
             }
 

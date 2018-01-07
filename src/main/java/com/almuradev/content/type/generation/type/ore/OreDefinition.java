@@ -16,8 +16,6 @@ import javax.annotation.Nullable;
 public interface OreDefinition {
     Delegate<BlockType> block();
 
-    String dimension();
-
     int size();
 
     int count();
