@@ -20,5 +20,6 @@ public final class OreGeneratorModule extends GenerationModule.Module {
         this.processors()
                 .only(EntriesOreGenerationContentProcessor.class, GenerationGenre.ORE)
                 .only(WeightOreGenerationContentProcessor.class, GenerationGenre.ORE);
+        this.requestStaticInjection(OreGeneratorImpl.class);
     }
 }

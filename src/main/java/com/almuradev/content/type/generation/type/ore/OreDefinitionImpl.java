@@ -12,13 +12,11 @@ import com.almuradev.content.registry.ContentBuilder;
 import net.minecraft.world.WorldProvider;
 import org.spongepowered.api.block.BlockType;
 
-import javax.annotation.Nullable;
-
 final class OreDefinitionImpl implements OreDefinition {
     private final Delegate<BlockType> block;
     private final int size;
     private final int count;
-    @Nullable private final String dimension;
+    private final String dimension;
 
     OreDefinitionImpl(final OreDefinition.Builder.Impl definition, final OreGenerator.Builder builder) {
         this.block = definition.block;
@@ -33,6 +31,11 @@ final class OreDefinitionImpl implements OreDefinition {
     }
 
     @Override
+    public String dimension() {
+        return this.dimension;
+    }
+
+    @Override
     public int size() {
         return this.size;
     }
@@ -44,6 +47,6 @@ final class OreDefinitionImpl implements OreDefinition {
 
     @Override
     public boolean accepts(final WorldProvider dimension) {
-        return this.dimension == null || this.dimension.equals(dimension.getDimensionType().getName());
+        return this.dimension.equals(dimension.getDimensionType().getName());
     }
 }
