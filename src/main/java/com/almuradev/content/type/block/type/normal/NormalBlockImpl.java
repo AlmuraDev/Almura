@@ -39,7 +39,10 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
         this.box = definition.box;
         this.collisionBox = definition.collisionBox;
         this.wireFrame = definition.wireFrame;
-        definition.fill(this);
+        definition.hardness.ifPresent(hardness -> this.setHardness((float) hardness));
+        definition.lightEmission.ifPresent(emission -> this.setLightLevel((float) emission));
+        definition.lightOpacity.ifPresent(this::setLightOpacity);
+        definition.resistance.ifPresent(resistance -> this.setResistance((float) resistance));
     }
 
     @Override

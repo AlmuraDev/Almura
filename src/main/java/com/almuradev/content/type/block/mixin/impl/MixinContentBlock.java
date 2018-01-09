@@ -17,12 +17,11 @@ import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.BlockStateDefinition;
 import com.almuradev.content.type.block.ContentBlockType;
 import com.almuradev.content.type.block.SpecialBlockStateBlock;
-import com.almuradev.content.type.block.mixin.iface.IMixinAlmuraBlock;
+import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlockImpl;
 import com.almuradev.content.type.block.type.normal.NormalBlockImpl;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
-import com.almuradev.content.type.blocksoundgroup.mixin.iface.IMixinLazyBlockSoundGroup;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import com.almuradev.content.type.itemgroup.mixin.iface.IMixinLazyItemGroup;
 import net.minecraft.block.Block;
@@ -54,11 +53,9 @@ import javax.annotation.Nullable;
     NormalBlockImpl.class,
     CropBlockImpl.class
 })
-public abstract class MixinContentBlock extends MixinBlock implements ContentBlockType, IMixinAlmuraBlock, IMixinLazyItemGroup,
-        IMixinLazyBlockSoundGroup, SpecialBlockStateBlock {
+public abstract class MixinContentBlock extends MixinBlock implements ContentBlockType, IMixinContentBlock, IMixinLazyItemGroup, SpecialBlockStateBlock {
 
     @Nullable private Delegate<ItemGroup> lazyItemGroup;
-    @Nullable private Delegate<BlockSoundGroup> lazySoundGroup;
     private ResourceLocation blockStateDefinitionLocation;
 
     @Override
@@ -95,22 +92,22 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
 
     @Override
     public SoundType getSoundType(final IBlockState state, final World world, final BlockPos pos, @Nullable final Entity entity) {
-        return this.lazySoundGroup != null ? (SoundType) this.lazySoundGroup.get() : super.getSoundType(state, world, pos, entity);
+        return (SoundType) this.soundGroup(state).orElse((BlockSoundGroup) super.getSoundType(state, world, pos, entity));
     }
 
     @Override
-    public void soundGroup(final Delegate<BlockSoundGroup> group) {
-        this.lazySoundGroup = group;
+    public abstract BlockStateDefinition.Impl<?, ?, ?> definition(final IBlockState state);
+
+    @Override
+    public Optional<BlockSoundGroup> soundGroup(final IBlockState state) {
+        return Delegate.optional(this.definition(state).sound);
     }
 
     @Nullable
     @Override
     public BlockDestroyAction destroyAction(final IBlockState state) {
-        return this.definition(state).destroyAction.get();
+        return Delegate.get(this.definition(state).destroyAction);
     }
-
-    @Override
-    public abstract BlockStateDefinition.Impl<?, ?, ?> definition(IBlockState state);
 
     // Almura Start - Handle drops from Break
     @Override
