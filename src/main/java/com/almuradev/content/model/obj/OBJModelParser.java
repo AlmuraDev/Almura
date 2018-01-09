@@ -285,8 +285,8 @@ public class OBJModelParser {
                         groupBuilder.face(faceBuilder.build());
                         break;
                     default:
-                        this.logger.debug("Encountered unsupported element [{}] while parsing obj! Source -> "
-                                + "Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents), lineHeader);
+//                        this.logger.debug("Encountered unsupported element [{}] while parsing obj! Source -> "
+//                                + "Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents), lineHeader);
                 }
             }
 
@@ -351,8 +351,8 @@ public class OBJModelParser {
                         mtlBuilder.diffuseTexture(ResourceLocations.buildResourceLocationPath(lineContents[0], parentPath));
                         break;
                     default:
-                        this.logger.debug("Encountered unsupported element [{}] while parsing material library! Source -> "
-                                + "Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents), lineHeader);
+//                        this.logger.debug("Encountered unsupported element [{}] while parsing material library! Source -> "
+//                                + "Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents), lineHeader);
 
                 }
             }
