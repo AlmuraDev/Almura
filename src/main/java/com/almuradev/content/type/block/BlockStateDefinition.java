@@ -10,7 +10,6 @@ package com.almuradev.content.type.block;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.component.aabb.BlockAABB;
-import com.almuradev.content.type.block.mixin.iface.IMixinAlmuraBlock;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
 import net.minecraft.block.Block;
 
@@ -185,9 +184,6 @@ public interface BlockStateDefinition {
                 this.lightEmission.ifPresent(emission -> block.setLightLevel((float) emission));
                 this.lightOpacity.ifPresent(block::setLightOpacity);
                 this.resistance.ifPresent(resistance -> block.setResistance((float) resistance));
-                if (this.destroyAction != null) {
-                    ((IMixinAlmuraBlock) block).destroyAction(this.destroyAction.get());
-                }
             }
         }
     }

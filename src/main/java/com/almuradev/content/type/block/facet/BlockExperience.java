@@ -13,6 +13,7 @@ import com.almuradev.content.type.action.component.drop.ExperienceDrop;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.mixin.iface.IMixinAlmuraBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -31,16 +32,17 @@ public final class BlockExperience implements Witness {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void destroy(final BlockEvent.BreakEvent event) {
         final World world = event.getWorld();
-        final Block block = world.getBlockState(event.getPos()).getBlock();
-        if (!(block instanceof IMixinAlmuraBlock) || ((IMixinAlmuraBlock) block).destroyAction() == null) {
+        final IBlockState state = world.getBlockState(event.getPos());
+        final Block block = state.getBlock();
+        if (!(block instanceof IMixinAlmuraBlock) || ((IMixinAlmuraBlock) block).destroyAction(state) == null) {
             return;
         }
 
-        int experience = this.calculate((ItemType) event.getPlayer().getActiveItemStack().getItem(), (IMixinAlmuraBlock) block, world.rand);
+        int experience = this.calculate((ItemType) event.getPlayer().getActiveItemStack().getItem(), state, (IMixinAlmuraBlock) block, world.rand);
 
         if (experience == NO_EXPERIENCE) {
             // if no exp for this itemstack, fallback to empty hand and check again
-            experience = this.calculate(ItemStack.empty().getType(), (IMixinAlmuraBlock) block, world.rand);
+            experience = this.calculate(ItemStack.empty().getType(), state, (IMixinAlmuraBlock) block, world.rand);
         }
 
         if (experience != NO_EXPERIENCE) {
@@ -48,9 +50,9 @@ public final class BlockExperience implements Witness {
         }
     }
 
-    private int calculate(final ItemType with, final IMixinAlmuraBlock block, final Random random) {
+    private int calculate(final ItemType with, final IBlockState state, final IMixinAlmuraBlock block, final Random random) {
         int experience = NO_EXPERIENCE;
-        for (final BlockDestroyAction.Entry entry : block.destroyAction().entries()) {
+        for (final BlockDestroyAction.Entry entry : block.destroyAction(state).entries()) {
             if (entry.test(with)) {
                 for (final Drop drop : entry.drops()) {
                     if (drop instanceof ExperienceDrop) {

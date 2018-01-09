@@ -14,6 +14,7 @@ import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.action.component.drop.Drop;
 import com.almuradev.content.type.action.component.drop.ItemDrop;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
+import com.almuradev.content.type.block.BlockStateDefinition;
 import com.almuradev.content.type.block.ContentBlockType;
 import com.almuradev.content.type.block.SpecialBlockStateBlock;
 import com.almuradev.content.type.block.mixin.iface.IMixinAlmuraBlock;
@@ -58,7 +59,6 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
 
     @Nullable private Delegate<ItemGroup> lazyItemGroup;
     @Nullable private Delegate<BlockSoundGroup> lazySoundGroup;
-    private BlockDestroyAction destroyAction;
     private ResourceLocation blockStateDefinitionLocation;
 
     @Override
@@ -105,20 +105,18 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
 
     @Nullable
     @Override
-    public BlockDestroyAction destroyAction() {
-        return this.destroyAction;
+    public BlockDestroyAction destroyAction(final IBlockState state) {
+        return this.definition(state).destroyAction.get();
     }
 
     @Override
-    public void destroyAction(final BlockDestroyAction destroyAction) {
-        this.destroyAction = destroyAction;
-    }
+    public abstract BlockStateDefinition.Impl<?, ?, ?> definition(IBlockState state);
 
     // Almura Start - Handle drops from Break
     @Override
     public void harvestBlock(final World world, final EntityPlayer player, final BlockPos pos, final IBlockState state, @Nullable final TileEntity te, final ItemStack stack) {
         // Almura Start - If this is the client or if we have no breaks, this block is not meant to perform any drops
-        if (world.isRemote || this.destroyAction.entries().isEmpty()) {
+        if (world.isRemote || this.destroyAction(state).entries().isEmpty()) {
             return;
         }
 
@@ -182,7 +180,7 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
         boolean hasActions = false;
 
         final ApplyContext context = new EverythingApplyContext(random, pos, state, stack);
-        for (final BlockDestroyAction.Entry entry : this.destroyAction.entries()) {
+        for (final BlockDestroyAction.Entry entry : this.destroyAction(state).entries()) {
             if (entry.test(usedType)) {
                 for (final Apply action : entry.apply()) {
                     hasActions = true;
@@ -197,7 +195,7 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
     private boolean fireHarvestAndDrop(final ItemType type, final World world, final BlockPos pos, final IBlockState state, float chance, final int fortune) {
         final List<ItemStack> drops = new ArrayList<>();
 
-        for (final BlockDestroyAction.Entry entry : this.destroyAction.entries()) {
+        for (final BlockDestroyAction.Entry entry : this.destroyAction(state).entries()) {
             if (entry.test(type)) {
                 for (final Drop drop : entry.drops()) {
                     if (drop instanceof ItemDrop) {
