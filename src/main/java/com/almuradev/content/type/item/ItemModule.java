@@ -29,8 +29,7 @@ public final class ItemModule extends AbstractModule implements CommonBinder {
         this.install(new Module() {
             @Override
             protected void configure() {
-                this.processors()
-                        .all(ItemGroupItemContentProcessor.class);
+                this.processors().all(ItemGroupItemContentProcessor.class);
             }
         });
     }

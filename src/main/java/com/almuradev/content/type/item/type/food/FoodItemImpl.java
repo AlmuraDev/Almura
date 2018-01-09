@@ -76,6 +76,8 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
                 }
             }
         }
+
+        this.tabToDisplayOn = null;
     }
 
     @Override

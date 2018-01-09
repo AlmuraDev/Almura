@@ -36,6 +36,7 @@ public final class SeedItemImpl extends ItemSeeds implements SeedItem {
         this.cropDelegate = builder.crop;
         this.soilDelegate = builder.soil;
         this.grass = builder.grass;
+        this.tabToDisplayOn = null;
         builder.fill(this);
     }
 
