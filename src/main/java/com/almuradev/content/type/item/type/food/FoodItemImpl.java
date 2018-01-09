@@ -56,6 +56,8 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
     public FoodItemImpl(final FoodItemBuilder builder) {
         super(0, 0f, false); // We'll handle these values on our own
 
+        this.tabToDisplayOn = null;
+
         builder.fill(this);
 
         try {
@@ -76,8 +78,6 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
                 }
             }
         }
-
-        this.tabToDisplayOn = null;
     }
 
     @Override
