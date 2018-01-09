@@ -7,22 +7,18 @@
  */
 package com.almuradev.content.extension;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
-public class ExtensionLoaderImpl implements ExtensionLoader {
-    private final Multimap<Path, Extension> extensions = HashMultimap.create();
+import javax.inject.Singleton;
+
+@Singleton
+public final class ExtensionLoaderImpl implements ExtensionLoader {
+    private final Set<Path> extensions = new HashSet<>();
 
     @Override
-    public Push push(final Path path) {
-        return new Push() {
-            @Override
-            public <E extends Extension> Push with(final E extension) {
-                ExtensionLoaderImpl.this.extensions.put(path, extension);
-                return this;
-            }
-        };
+    public void push(final Path path) {
+        this.extensions.add(path);
     }
 }

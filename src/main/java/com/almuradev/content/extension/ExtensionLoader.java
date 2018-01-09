@@ -10,9 +10,5 @@ package com.almuradev.content.extension;
 import java.nio.file.Path;
 
 public interface ExtensionLoader {
-    Push push(final Path path);
-
-    interface Push {
-        <E extends Extension> Push with(final E extension);
-    }
+    void push(final Path path);
 }
