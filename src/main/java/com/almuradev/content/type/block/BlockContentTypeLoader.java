@@ -82,6 +82,6 @@ public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGe
 
     @Override
     public String buildTranslationKey(final String namespace, final BlockGenre type, final Iterable<String> components,final String key) {
-        return "tile." + namespace + '.' + type.id() + '.' + DOT_JOINER.join(components) + '.' + key;
+        return this.buildTranslationKey("tile", namespace, type, components, key);
     }
 }

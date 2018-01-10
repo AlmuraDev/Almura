@@ -15,6 +15,7 @@ import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -146,6 +147,16 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
 
     public interface Translated<T extends Enum<T> & ContentType.MultiType> {
         String buildTranslationKey(final String namespace, final T type, final Iterable<String> components, final String key);
+
+        default String buildTranslationKey(final String what, final String namespace, final T type, final Iterable<String> components, final String key) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append(what).append('.').append(namespace).append('.').append(type.id()).append('.');
+            if (!Iterables.isEmpty(components)) {
+                sb.append(DOT_JOINER.join(components)).append('.');
+            }
+            sb.append(key);
+            return sb.toString();
+        }
     }
 
     public static class Entry<T extends Enum<T> & ContentType.MultiType, C extends CatalogedContent, B extends ContentBuilder<C>> extends ContentLoaderImpl.Entry<C, B> {

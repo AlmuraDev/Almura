@@ -60,6 +60,6 @@ public final class ItemContentTypeLoader extends MultiTypeContentLoader<ItemGenr
 
     @Override
     public String buildTranslationKey(final String namespace, final ItemGenre type, final Iterable<String> components, final String key) {
-        return "item." + namespace + '.' + type.id() + '.' + DOT_JOINER.join(components) + '.' + key;
+        return this.buildTranslationKey("item", namespace, type, components, key);
     }
 }
