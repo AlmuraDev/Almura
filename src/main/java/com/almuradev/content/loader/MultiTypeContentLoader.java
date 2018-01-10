@@ -135,7 +135,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
             public FileVisitResult preVisitDirectory(final Path directory, final BasicFileAttributes attributes) throws IOException {
                 if (translations) {
                     if (directory.getFileName().toString().equals(TranslationManager.DIRECTORY)) {
-                        final Iterable<String> components = SLASH_SPLITTER.split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
+                        final Iterable<String> components = SLASH_SPLITTER.trimResults().omitEmptyStrings().split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
                         MultiTypeContentLoader.this.translationManager.pushSource(directory, key -> ((Translated<T>) MultiTypeContentLoader.this).buildTranslationKey(namespace, type, components, key));
                         return FileVisitResult.SKIP_SUBTREE;
                     }
