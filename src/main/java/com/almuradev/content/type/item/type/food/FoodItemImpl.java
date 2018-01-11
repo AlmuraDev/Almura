@@ -27,27 +27,11 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Random;
 
 public final class FoodItemImpl extends ItemFood implements FoodItem {
 
-    private static Field itemUseDurationField;
-
-    static {
-        try {
-            itemUseDurationField = ItemFood.class.getDeclaredField("itemUseDuration");
-
-            final Field modifiersField = Field.class.getDeclaredField( "modifiers" );
-            modifiersField.setAccessible(true);
-            modifiersField.setInt(itemUseDurationField, itemUseDurationField.getModifiers() & ~Modifier.FINAL );
-
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
     private final List<Apply> apply;
     private final FoodEffect foodEffect;
     private IntRange foodLevelChange;
@@ -59,12 +43,7 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
         this.tabToDisplayOn = null;
 
         builder.fill(this);
-
-        try {
-            itemUseDurationField.setInt(this, builder.durationTicks);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        this.itemUseDuration = builder.durationTicks;
 
         this.apply = builder.apply;
         this.foodEffect = builder.foodEffect;
