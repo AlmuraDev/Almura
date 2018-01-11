@@ -241,7 +241,6 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
         if (fertilizer) {
             world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
-
             return;
         }
 
@@ -307,6 +306,11 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                 if (RANDOM.nextDouble() <= (chanceRange.random(RANDOM) / 100) && this.isGrowthEven(world, pos, age)) {
                     // If growth will be even, grow
                     world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
+
+                    if (!world.isRemote) {
+                        world.playEvent(2005, pos, 0);
+                    }
+
                 }
             }
         }
