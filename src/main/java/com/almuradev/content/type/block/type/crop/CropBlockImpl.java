@@ -310,7 +310,6 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                     if (!world.isRemote) {
                         world.playEvent(2005, pos, 0);
                     }
-
                 }
             }
         }
