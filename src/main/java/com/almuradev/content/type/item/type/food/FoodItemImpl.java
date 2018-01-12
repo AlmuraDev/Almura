@@ -57,6 +57,10 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
                 }
             }
         }
+
+        if (builder.alwaysEdible) {
+            this.setAlwaysEdible();
+        }
     }
 
     @Override
