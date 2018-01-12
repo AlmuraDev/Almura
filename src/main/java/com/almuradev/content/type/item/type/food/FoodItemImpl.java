@@ -65,6 +65,10 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
 
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
+        if (!worldIn.isRemote) {
+            return stack;
+        }
+
         if (this.apply != null) {
             for (Apply apply : this.apply) {
                 apply.apply(entityLiving, new ItemOnlyApplyContext(stack, worldIn.rand));

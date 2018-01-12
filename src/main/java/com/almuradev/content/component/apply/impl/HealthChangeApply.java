@@ -35,6 +35,7 @@ public final class HealthChangeApply implements Apply<EntityLivingBase, ApplyCon
 
     @Override
     public void apply0(EntityLivingBase entity, ApplyContext context) {
-        entity.heal((float) this.change.random(context.random()));
+        final double heal = this.change.random(context.random());
+        entity.heal((float) heal);
     }
 }
