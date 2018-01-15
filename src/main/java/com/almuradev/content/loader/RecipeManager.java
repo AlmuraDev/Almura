@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.loader;
 
+import com.almuradev.content.mixin.MixinSupport;
 import com.almuradev.content.type.item.definition.ItemDefinition;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -82,7 +83,12 @@ public final class RecipeManager {
     private static Object parseRecipe(final JsonObject object) {
         String type = JsonUtils.getString(object, "type");
         if ("crafting_shaped".equals(type)) {
-            return ShapedRecipes.deserialize(object);
+            try {
+                MixinSupport.useCountWithShapedRecipe = true;
+                return ShapedRecipes.deserialize(object);
+            } finally {
+                MixinSupport.useCountWithShapedRecipe = false;
+            }
         } else if ("crafting_shapeless".equals(type)) {
             return ShapelessRecipes.deserialize(object);
         } else if ("furnace".equals(type)) {
