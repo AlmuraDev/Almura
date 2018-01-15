@@ -16,6 +16,9 @@ import com.google.common.graph.MutableGraph;
 import com.google.inject.Injector;
 import net.kyori.indigo.DetailedReportedException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.slf4j.Logger;
@@ -46,6 +49,7 @@ public final class RootContentLoader implements Witness {
     private final AssetState state;
     private final List<SearchEntry> entries = new ArrayList<>();
     private final MutableGraph<JarSearchEntry> graph = GraphBuilder.directed().build();
+    @Inject private RecipeManager recipeManager; // HACK
 
     @Inject
     public RootContentLoader(@Named("assets") final Path assets, final Injector injector, final Logger logger, final Set<ContentType> types) {
@@ -204,6 +208,15 @@ public final class RootContentLoader implements Witness {
             } catch (final DetailedReportedException e) {
                 this.logger.error("{}:\n {}", e.getMessage(), e.report().toString());
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void recipes(final RegistryEvent.Register<IRecipe> event) {
+        try {
+            this.recipeManager.load();
+        } catch (final IOException e) {
+            this.logger.error("Encountered an exception while loading recipes");
         }
     }
 }

@@ -53,6 +53,9 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
 
             @Override
             public FileVisitResult preVisitDirectory(final Path directory, final BasicFileAttributes attributes) throws IOException {
+                if (directory.getFileName().toString().equals(RecipeManager.DIRECTORY)) {
+                    SingleTypeContentLoader.this.recipeManager.push(directory);
+                }
                 if (translations) {
                     if (directory.getFileName().toString().equals(TranslationManager.DIRECTORY)) {
                         final Iterable<String> components = SLASH_SPLITTER.trimResults().omitEmptyStrings().split(path.relativize(directory.getParent()).toString().replace('\\', '/'));

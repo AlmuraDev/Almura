@@ -40,6 +40,7 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
     @Inject Injector injector;
     @Inject protected Logger logger;
     @Inject TranslationManager translationManager;
+    @Inject RecipeManager recipeManager;
     private final Set<String> names = new HashSet<>();
     protected final Map<String, E> entries = new HashMap<>();
     protected Stage stage = Stage.SEARCH;
@@ -102,7 +103,7 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
 
     protected final boolean queue(final Path path, final boolean longIndent) {
         final String indent = longIndent ? "            " : "        ";
-        if (JSON_MATCHER.matches(path)) {
+        if (JSON_MATCHER.matches(path) && !path.getParent().getFileName().toString().equals("_recipes")) {
             if (this.names.add(pathName(path))) {
                 this.logger.debug("{}Found {}", indent, path.toAbsolutePath());
                 return true;

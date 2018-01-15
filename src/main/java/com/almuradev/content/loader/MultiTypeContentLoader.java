@@ -133,6 +133,9 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
 
             @Override
             public FileVisitResult preVisitDirectory(final Path directory, final BasicFileAttributes attributes) throws IOException {
+                if (directory.getFileName().toString().equals(RecipeManager.DIRECTORY)) {
+                    MultiTypeContentLoader.this.recipeManager.push(directory);
+                }
                 if (translations) {
                     if (directory.getFileName().toString().equals(TranslationManager.DIRECTORY)) {
                         final Iterable<String> components = SLASH_SPLITTER.trimResults().omitEmptyStrings().split(path.relativize(directory.getParent()).toString().replace('\\', '/'));

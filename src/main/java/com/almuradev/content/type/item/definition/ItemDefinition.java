@@ -13,8 +13,11 @@ import com.almuradev.content.registry.delegate.CatalogDelegate;
 import com.almuradev.content.type.action.component.drop.Droppable;
 import com.almuradev.content.type.action.component.drop.ItemDrop;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.JsonUtils;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.util.weighted.VariableAmount;
@@ -58,6 +61,18 @@ public final class ItemDefinition implements Droppable {
     private final Delegate<ItemType> item;
     private final int quantity;
     @Deprecated private final int meta;
+
+    public static ItemDefinition parse(final JsonElement element) {
+        if(element.isJsonObject()) {
+            final JsonObject object = element.getAsJsonObject();
+            final Delegate<ItemType> item = CatalogDelegate.create(ItemType.class, ResourceLocations.requireNamespaced(String.valueOf(JsonUtils.getString(object, "item"))));
+            final int quantity = JsonUtils.getInt(object, ItemDefinitionConfig.QUANTITY, DEFAULT_QUANTITY);
+            final int meta = JsonUtils.getInt(object, ItemDefinitionConfig.META, DEFAULT_META);
+            return new ItemDefinition(item, quantity, meta);
+        } else {
+            return new ItemDefinition(CatalogDelegate.create(ItemType.class, ResourceLocations.requireNamespaced(element.getAsString())), DEFAULT_QUANTITY, DEFAULT_META);
+        }
+    }
 
     private ItemDefinition(final Delegate<ItemType> item, final int quantity, @Deprecated final int meta) {
         this.item = item;
