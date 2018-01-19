@@ -15,6 +15,7 @@
         "world.MixinBossBarColor"
     ],
     "client": [
+        "client.MixinModelLoader",
         "client.gui.MixinGuiBossOverlay",
         "client.gui.MixinGuiIngame",
         "client.gui.MixinGuiMultiplayer",
