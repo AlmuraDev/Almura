@@ -7,20 +7,26 @@
  */
 package com.almuradev.content.loader;
 
+import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.util.text.translation.LanguageMap;
 import org.slf4j.Logger;
+import org.spongepowered.common.text.SpongeTexts;
+import org.spongepowered.common.text.serializer.LegacyTexts;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -31,6 +37,7 @@ import javax.inject.Singleton;
 @SuppressWarnings("all")
 public class TranslationManager {
     private static final Gson GSON = new GsonBuilder().create();
+    private static final Joiner JOINER = Joiner.on("\n").skipNulls();
     static final String DIRECTORY = "_translations";
     private static final String EXTENSION = ".properties";
     static final String DEFAULT_TRANSLATION_ID = "en_us";
@@ -81,7 +88,7 @@ public class TranslationManager {
                 final JsonObject object = GSON.fromJson(new InputStreamReader(is), JsonObject.class);
                 for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
                     final String key = source.getValue().buildTranslationKey(entry.getKey());
-                    final String value = LanguageMap.NUMERIC_VARIABLE_PATTERN.matcher(entry.getValue().getAsString()).replaceAll("%$1s");
+                    final String value = LanguageMap.NUMERIC_VARIABLE_PATTERN.matcher(LegacyTexts.replace(readValue(entry.getValue()), '&', SpongeTexts.COLOR_CHAR)).replaceAll("%$1s");
                     map.put(key, value);
                 }
             }
@@ -93,5 +100,19 @@ public class TranslationManager {
         this.cachedId = id;
         this.cachedTranslations = map;
         return map;
+    }
+
+    private static String readValue(final JsonElement element) {
+        if (element.isJsonPrimitive()) {
+            return element.getAsString();
+        } else if (element.isJsonArray()) {
+            final List<String> entries = new ArrayList<>();
+            final JsonArray array = element.getAsJsonArray();
+            for (int i = 0, size = array.size(); i < size; i++) {
+                entries.add(array.get(i).getAsString());
+            }
+            return JOINER.join(entries);
+        }
+        throw new IllegalArgumentException(element.getClass().getName());
     }
 }
