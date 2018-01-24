@@ -7,12 +7,16 @@
  */
 package com.almuradev.content.loader;
 
-import com.google.common.collect.Iterables;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.minecraft.util.text.translation.LanguageMap;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -26,7 +30,7 @@ import javax.inject.Singleton;
 @Singleton
 @SuppressWarnings("all")
 public class TranslationManager {
-
+    private static final Gson GSON = new GsonBuilder().create();
     static final String DIRECTORY = "_translations";
     private static final String EXTENSION = ".properties";
     static final String DEFAULT_TRANSLATION_ID = "en_us";
@@ -73,14 +77,12 @@ public class TranslationManager {
         int oldSize = 0;
         this.logger.debug("Loading translations for language '{}'", id);
         for (final Map.Entry<Path, TranslationKeyFactory> source : this.sources(id).entrySet()) {
-            for (final String line : Files.readAllLines(source.getKey(), StandardCharsets.UTF_8)) {
-                if (!line.isEmpty() && line.charAt(0) != '#') {
-                    final String[] parts = Iterables.toArray(LanguageMap.EQUAL_SIGN_SPLITTER.split(line), String.class);
-                    if (parts != null && parts.length == 2) {
-                        final String key = source.getValue().buildTranslationKey(parts[0]);
-                        final String value = LanguageMap.NUMERIC_VARIABLE_PATTERN.matcher(parts[1]).replaceAll("%$1s");
-                        map.put(key, value);
-                    }
+            try (final InputStream is = Files.newInputStream(source.getKey())) {
+                final JsonObject object = GSON.fromJson(new InputStreamReader(is), JsonObject.class);
+                for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
+                    final String key = source.getValue().buildTranslationKey(entry.getKey());
+                    final String value = LanguageMap.NUMERIC_VARIABLE_PATTERN.matcher(entry.getValue().getAsString()).replaceAll("%$1s");
+                    map.put(key, value);
                 }
             }
             final int newSize = map.size();

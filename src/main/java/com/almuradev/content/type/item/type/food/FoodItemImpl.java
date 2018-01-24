@@ -11,11 +11,13 @@ import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ItemOnlyApplyContext;
 import com.almuradev.content.component.apply.impl.FoodLevelChangeApply;
 import com.almuradev.content.component.apply.impl.SaturationChangeApply;
+import com.almuradev.content.type.item.ItemTooltip;
 import com.almuradev.content.type.item.type.food.processor.foodeffect.FoodEffect;
 import com.almuradev.content.type.item.type.food.processor.foodeffect.potioneffect.PotionEffectTemplate;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import com.almuradev.toolbox.util.math.IntRange;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -26,12 +28,16 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.Random;
 
-public final class FoodItemImpl extends ItemFood implements FoodItem {
+import javax.annotation.Nullable;
 
+public final class FoodItemImpl extends ItemFood implements FoodItem {
+    private final ItemTooltip tooltip = new ItemTooltip.Impl(this);
     private final List<Apply> apply;
     private final FoodEffect foodEffect;
     private IntRange foodLevelChange;
@@ -61,6 +67,12 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
         if (builder.alwaysEdible) {
             this.setAlwaysEdible();
         }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, @Nullable final World world, final List<String> list, final ITooltipFlag flag) {
+        this.tooltip.render(list);
     }
 
     @Override
