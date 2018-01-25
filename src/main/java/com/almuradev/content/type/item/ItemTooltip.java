@@ -35,7 +35,7 @@ public interface ItemTooltip {
             }
             if (this.translation == null) {
                 this.translation = this.item.getUnlocalizedName() + ".tooltip";
-                this.empty = I18n.hasKey(this.translation);
+                this.empty = !I18n.hasKey(this.translation);
                 if (this.empty) {
                     return;
                 }
