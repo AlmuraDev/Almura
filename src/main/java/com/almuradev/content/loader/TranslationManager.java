@@ -39,7 +39,7 @@ public class TranslationManager {
     private static final Gson GSON = new GsonBuilder().create();
     private static final Joiner JOINER = Joiner.on("\n").skipNulls();
     static final String DIRECTORY = "_translations";
-    private static final String EXTENSION = ".properties";
+    private static final String EXTENSION = ".json";
     static final String DEFAULT_TRANSLATION_ID = "en_us";
     private final Map<Path, TranslationKeyFactory> sources = new HashMap<>();
     private final Logger logger;
