@@ -20,7 +20,7 @@ public final class ItemGroupContentTypeLoader extends SingleTypeContentLoader<It
 
     @SubscribeEvent
     public void construction(final RegistryEvent.Register<Block> event) {
-        this.build();
+        this.build(BuildType.SORTED);
 
         // Registration is not necessary here - automatically done in constructor via mixin
     }

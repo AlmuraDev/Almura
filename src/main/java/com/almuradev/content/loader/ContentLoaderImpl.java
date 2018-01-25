@@ -23,8 +23,11 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -71,8 +74,16 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
     }
 
     public final boolean build() {
+        return this.build(BuildType.NORMAL);
+    }
+
+    public final boolean build(final BuildType type) {
         if (this.stage == Stage.SEARCH) {
-            for (final E entry : this.entries.values()) {
+            final List<E> entries = new ArrayList<>(this.entries.values());
+            if (type == BuildType.SORTED) {
+                Collections.sort(entries);
+            }
+            for (final E entry : entries) {
                 final B builder = entry.builder;
                 this.catching(() -> entry.value = builder.build(), "Encountered a critical exception while constructing game content.", dr -> entry.populate(dr));
             }
@@ -139,7 +150,12 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
         return string;
     }
 
-    public static class Entry<C extends CatalogedContent, B extends ContentBuilder<C>> {
+    public enum BuildType {
+        NORMAL,
+        SORTED;
+    }
+
+    public static class Entry<C extends CatalogedContent, B extends ContentBuilder<C>> implements Comparable<Entry<C, B>> {
 
         @Nullable private final Path path;
         final String id;
@@ -162,6 +178,11 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
                 drc.detail("path", this.path.toAbsolutePath().toString());
             }
             drc.detail("builder", this.builder.getClass());
+        }
+
+        @Override
+        public int compareTo(final Entry<C, B> that) {
+            return this.id.compareTo(that.id);
         }
     }
 
