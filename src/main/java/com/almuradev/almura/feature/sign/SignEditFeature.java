@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature;
+package com.almuradev.almura.feature.sign;
 
 import com.almuradev.almura.shared.event.Witness;
 import net.minecraft.entity.player.EntityPlayerMP;

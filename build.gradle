@@ -165,7 +165,8 @@ jar {
                         'mixins.almura.content.itemgroup.json',
                         'mixins.almura.content.mapcolor.json',
                         'mixins.almura.content.material.json',
-                        'mixins.almura.feature.title'
+                        'mixins.almura.feature.sign.json',
+                        'mixins.almura.feature.title.json'
                 ].join(','),
                 'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0
