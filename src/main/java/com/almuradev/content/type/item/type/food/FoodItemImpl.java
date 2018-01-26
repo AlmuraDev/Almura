@@ -77,7 +77,7 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
 
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
-        if (!worldIn.isRemote) {
+        if (worldIn.isRemote) {
             return stack;
         }
 
@@ -106,7 +106,7 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
 
     @Override
     protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
-        if (!worldIn.isRemote || this.foodEffect == null) {
+        if (worldIn.isRemote || this.foodEffect == null) {
             return;
         }
 
