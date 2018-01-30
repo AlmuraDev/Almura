@@ -12,6 +12,7 @@ import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
 import com.almuradev.almura.feature.sign.SignEditFeature;
 import com.almuradev.almura.feature.title.TitleModule;
+import com.almuradev.almura.feature.wand.WandFeature;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 
@@ -23,5 +24,6 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new NotificationModule());
         this.install(new TitleModule());
         this.facet().add(SignEditFeature.class);
+        this.facet().add(WandFeature.class);
     }
 }
