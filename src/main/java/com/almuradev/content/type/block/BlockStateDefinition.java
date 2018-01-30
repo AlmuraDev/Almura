@@ -10,9 +10,7 @@ package com.almuradev.content.type.block;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.component.aabb.BlockAABB;
-import com.almuradev.content.type.block.mixin.iface.IMixinAlmuraBlock;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
-import net.minecraft.block.Block;
 
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -159,7 +157,7 @@ public interface BlockStateDefinition {
         public final OptionalDouble lightEmission;
         public final OptionalInt lightOpacity;
         public final OptionalDouble resistance;
-        public final Delegate<BlockSoundGroup> sound;
+        @Nullable public final Delegate<BlockSoundGroup> sound;
         @Nullable public final Delegate<BlockDestroyAction> destroyAction;
 
         protected Impl(final Builder.Impl<? extends BlockStateDefinition, ? extends Builder.Impl> builder) {
@@ -178,16 +176,6 @@ public interface BlockStateDefinition {
 
             protected Single(final Builder.Impl<? extends BlockStateDefinition, ? extends Builder.Impl> builder) {
                 super(builder);
-            }
-
-            public void fill(final Block block) {
-                this.hardness.ifPresent(hardness -> block.setHardness((float) hardness));
-                this.lightEmission.ifPresent(emission -> block.setLightLevel((float) emission));
-                this.lightOpacity.ifPresent(block::setLightOpacity);
-                this.resistance.ifPresent(resistance -> block.setResistance((float) resistance));
-                if (this.destroyAction != null) {
-                    ((IMixinAlmuraBlock) block).destroyAction(this.destroyAction.get());
-                }
             }
         }
     }
