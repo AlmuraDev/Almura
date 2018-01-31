@@ -17,6 +17,7 @@ import com.almuradev.content.type.mapcolor.MapColor;
 import com.almuradev.content.type.material.Material;
 import com.google.common.base.Preconditions;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -45,6 +46,8 @@ public interface ContentBlockType extends CatalogedContent, ItemGrouped {
     default Optional<ItemGroup> itemGroup() {
         throw new PEBKACException("mixin");
     }
+
+    BlockStateDefinition definition(final IBlockState state);
 
     interface InInventory extends ContentBlockType {
 

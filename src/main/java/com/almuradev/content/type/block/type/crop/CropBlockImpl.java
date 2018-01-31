@@ -74,7 +74,8 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         return new BlockStateContainer(this, this.age);
     }
 
-    private CropBlockStateDefinition state(final IBlockState state) {
+    @Override
+    public CropBlockStateDefinition definition(final IBlockState state) {
         return this.state(state.getValue(this.age));
     }
 
@@ -85,21 +86,21 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     @Deprecated
     @Override
     public float getBlockHardness(final IBlockState state, final World world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.state(state);
+        final CropBlockStateDefinition definition = this.definition(state);
         return (float) definition.hardness.orElseGet(() -> super.getBlockHardness(state, world, pos));
     }
 
     @Deprecated
     @Override
     public int getLightOpacity(final IBlockState state) {
-        final CropBlockStateDefinition definition = this.state(state);
+        final CropBlockStateDefinition definition = this.definition(state);
         return definition.lightOpacity.orElseGet(() -> super.getLightOpacity(state));
     }
 
     @Deprecated
     @Override
     public int getLightValue(final IBlockState state) {
-        final CropBlockStateDefinition definition = this.state(state);
+        final CropBlockStateDefinition definition = this.definition(state);
         return PrimitiveOptionals.mapToInt(definition.lightEmission, value -> (int) (15f * value))
                 .orElseGet(() -> super.getLightValue(state));
     }
@@ -118,7 +119,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     @Override
     public float getExplosionResistance(final World world, final BlockPos pos, @Nullable final Entity exploder, final Explosion explosion) {
         final IBlockState state = world.getBlockState(pos);
-        final CropBlockStateDefinition definition = this.state(state);
+        final CropBlockStateDefinition definition = this.definition(state);
         return definition.resistance.isPresent() ? (float) definition.resistance.getAsDouble() : super.getExplosionResistance(exploder);
     }
 
@@ -126,7 +127,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     @Override
     @SuppressWarnings("ConstantConditions")
     public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.state(state);
+        final CropBlockStateDefinition definition = this.definition(state);
         return definition.box != null ? definition.box.box() : super.getBoundingBox(state, world, pos);
     }
 
@@ -134,7 +135,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     @Nullable
     @Override
     public AxisAlignedBB getCollisionBoundingBox(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.state(state);
+        final CropBlockStateDefinition definition = this.definition(state);
         return definition.collisionBox != null ? definition.collisionBox.box() : super.getCollisionBoundingBox(state, world, pos);
     }
 
@@ -143,7 +144,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     @SideOnly(Side.CLIENT)
     @SuppressWarnings("ConstantConditions")
     public AxisAlignedBB getSelectedBoundingBox(final IBlockState state, final World world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.state(state);
+        final CropBlockStateDefinition definition = this.definition(state);
         return definition.wireFrame != null ? definition.wireFrame.box().offset(pos) : super.getSelectedBoundingBox(state, world, pos);
     }
 
@@ -167,7 +168,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
             if (!this.isMaxAge(state)) {
                 // TODO Maybe best to move this into an interact listener and make this hook do nothing
 
-                final CropBlockStateDefinition definition = this.state(state);
+                final CropBlockStateDefinition definition = this.definition(state);
 
                 if (definition.fertilizer != null) {
                     final Fertilizer fertilizer = definition.fertilizer;
@@ -194,7 +195,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
     @Override
     public boolean isFertile(final World world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.state(world.getBlockState(pos.up()));
+        final CropBlockStateDefinition definition = this.definition(world.getBlockState(pos.up()));
 
         final IBlockState soilState = world.getBlockState(pos);
 
