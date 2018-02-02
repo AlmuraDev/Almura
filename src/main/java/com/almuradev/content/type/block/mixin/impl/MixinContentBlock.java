@@ -96,17 +96,14 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
     }
 
     @Override
-    public abstract BlockStateDefinition.Impl<?, ?, ?> definition(final IBlockState state);
-
-    @Override
     public Optional<BlockSoundGroup> soundGroup(final IBlockState state) {
-        return Delegate.optional(this.definition(state).sound);
+        return Delegate.optional(((BlockStateDefinition.Impl<?, ?, ?>) this.definition(state)).sound);
     }
 
     @Nullable
     @Override
     public BlockDestroyAction destroyAction(final IBlockState state) {
-        return Delegate.get(this.definition(state).destroyAction);
+        return Delegate.get(((BlockStateDefinition.Impl<?, ?, ?>) this.definition(state)).destroyAction);
     }
 
     // Almura Start - Handle drops from Break
