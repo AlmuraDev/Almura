@@ -40,7 +40,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 archivesBaseName = project.name.toLowerCase()
-version = "${project.minecraftVersion}-${project.forgeBuild}-r${project.spongeAPIVersion.split("-")[0]}"
+version = "mc[${project.minecraftVersion}]-forge[${project.forgeBuild}]-sf[${project.spongeImplVersion.split("-")[4]}]-${project.internalBuild}"
 
 minecraft {
     version = "${project.forgeVersion}"
