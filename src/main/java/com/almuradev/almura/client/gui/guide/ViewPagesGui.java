@@ -357,7 +357,7 @@ public class ViewPagesGui extends SimpleGui {
     }
     
     public boolean canChange(String name) {
-        return name.equalsIgnoreCase("tunnel_brat") || name.equalsIgnoreCase("mcsnetworks") || name.equalsIgnoreCase("gregabyte") || name
+        return name.equalsIgnoreCase("tunnel_brat") || name.equalsIgnoreCase("dockter_almura") || name.equalsIgnoreCase("gregabyte") || name
                 .equalsIgnoreCase("wolfeyeamd0") || name.equalsIgnoreCase("wifee");
     }
 }
