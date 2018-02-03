@@ -109,8 +109,14 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
     // Almura Start - Handle drops from Break
     @Override
     public void harvestBlock(final World world, final EntityPlayer player, final BlockPos pos, final IBlockState state, @Nullable final TileEntity te, final ItemStack stack) {
-        // Almura Start - If this is the client or if we have no breaks, this block is not meant to perform any drops
-        if (world.isRemote || this.destroyAction(state).entries().isEmpty()) {
+        // Almura Start - If this is the client
+        if (world.isRemote) {
+            return;
+        }
+
+        // Now check if we have no breaks, this block is not meant to perform any logic on harvest
+        final BlockDestroyAction blockDestroyAction = this.destroyAction(state);
+        if (blockDestroyAction == null || blockDestroyAction.entries().isEmpty()) {
             return;
         }
 
@@ -142,16 +148,16 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
         harvesters.set(player);
 
         // Almura Start - Run through the kitkats and break!
-        if (!this.fireBreakActions((ItemType) stack.getItem(), state, player, pos, world.rand, stack)) {
+        if (!this.fireBreakActions((ItemType) stack.getItem(), state, player, pos, world.rand, stack, blockDestroyAction)) {
             // Fallback to empty action block if nothing overrides it
-            this.fireBreakActions(org.spongepowered.api.item.inventory.ItemStack.empty().getItem(), state, player, pos, world.rand, stack);
+            this.fireBreakActions(org.spongepowered.api.item.inventory.ItemStack.empty().getItem(), state, player, pos, world.rand, stack, blockDestroyAction);
         }
 
         // TODO Expose fortune to config and see if admin wants to let it use it
         final int fortune = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
-        if (!this.fireHarvestAndDrop((ItemType) stack.getItem(), world, pos, state, 1f, fortune)) {
+        if (!this.fireHarvestAndDrop((ItemType) stack.getItem(), world, pos, state, 1f, fortune, blockDestroyAction)) {
             // Fallback to empty drop block if nothing overrides it
-            this.fireHarvestAndDrop(org.spongepowered.api.item.inventory.ItemStack.empty().getItem(), world, pos, state, 1f, fortune);
+            this.fireHarvestAndDrop(org.spongepowered.api.item.inventory.ItemStack.empty().getItem(), world, pos, state, 1f, fortune, blockDestroyAction);
         }
 
         // Almura End
@@ -166,19 +172,33 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
             // Almura Start - We don't use the drops here
             // List<ItemStack> drops = getDrops(world, pos, state, fortune); // use the old method until it gets removed, for backward compatibility
             // Almura End
-            this.fireHarvestAndDrop(org.spongepowered.api.item.inventory.ItemStack.empty().getItem(), world, pos, state, chance, fortune);
+
+            // Now check if we have no breaks, this block is not meant to perform any logic on harvest
+            final BlockDestroyAction blockDestroyAction = this.destroyAction(state);
+            if (blockDestroyAction == null || blockDestroyAction.entries().isEmpty()) {
+                return;
+            }
+
+            this.fireHarvestAndDrop(org.spongepowered.api.item.inventory.ItemStack.empty().getItem(), world, pos, state, chance, fortune, blockDestroyAction);
         }
     }
 
-    private boolean fireBreakActions(final ItemType usedType, final IBlockState state, final EntityPlayer player, final BlockPos pos, final Random random, final ItemStack stack) {
+    private boolean fireBreakActions(final ItemType usedType, final IBlockState state, final EntityPlayer player, final BlockPos pos, final Random
+            random, final ItemStack stack, @Nullable final BlockDestroyAction destroyAction) {
+        if (destroyAction == null) {
+            return false;
+        }
+
         boolean hasActions = false;
 
         final ApplyContext context = new EverythingApplyContext(random, pos, state, stack);
-        for (final BlockDestroyAction.Entry entry : this.destroyAction(state).entries()) {
+        for (final BlockDestroyAction.Entry entry : destroyAction.entries()) {
             if (entry.test(usedType)) {
                 for (final Apply action : entry.apply()) {
-                    hasActions = true;
-                    action.apply(player, context);
+                    if (action.accepts(player)) {
+                        hasActions = true;
+                        action.apply(player, context);
+                    }
                 }
             }
         }
@@ -186,10 +206,16 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
         return hasActions;
     }
 
-    private boolean fireHarvestAndDrop(final ItemType type, final World world, final BlockPos pos, final IBlockState state, float chance, final int fortune) {
+    private boolean fireHarvestAndDrop(final ItemType type, final World world, final BlockPos pos, final IBlockState state, float chance, final int
+            fortune, @Nullable final BlockDestroyAction destroyAction) {
+
+        if (destroyAction == null) {
+            return false;
+        }
+
         final List<ItemStack> drops = new ArrayList<>();
 
-        for (final BlockDestroyAction.Entry entry : this.destroyAction(state).entries()) {
+        for (final BlockDestroyAction.Entry entry : destroyAction.entries()) {
             if (entry.test(type)) {
                 for (final Drop drop : entry.drops()) {
                     if (drop instanceof ItemDrop) {
