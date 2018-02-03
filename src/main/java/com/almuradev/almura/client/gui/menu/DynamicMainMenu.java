@@ -98,7 +98,7 @@ public class DynamicMainMenu extends SimpleGui {
         quitButton.register(this);
 
         // Create the copyright label
-        final UILabel copyrightLabel = new UILabel(this, Colors.GRAY + "Copyright AlmuraDev 2012 - 2016");
+        final UILabel copyrightLabel = new UILabel(this, Colors.GRAY + "Copyright AlmuraDev 2012 - 2018");
         copyrightLabel.setPosition(0, -9, Anchor.CENTER | Anchor.BOTTOM);
         copyrightLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
