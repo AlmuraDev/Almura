@@ -153,12 +153,51 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
     @Listener(order = Order.LAST)
     public void playerMove(final MoveEntityEvent.Teleport event, @Getter("getTargetEntity") final Player player) throws IllegalAccessException {
         if (differentExtent(event.getFromTransform(), event.getToTransform())) {
-            final EntityPlayerMP mcPlayer = (EntityPlayerMP) player;
-            final String modNick = ForgeEventFactory.getPlayerDisplayName(mcPlayer, mcPlayer.getDisplayNameString());
-            final Text finalNick = TextSerializers.LEGACY_FORMATTING_CODE.deserialize(modNick);
+            this.game.getServiceManager().provide(NucleusNicknameService.class).ifPresent((service) -> {
+                service.getNickname(player).ifPresent((nick) -> {
+                    final String oldNick = TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick);
 
-            // Tell everyone about the new nick
-            this.network.sendToAll(this.getMappingMessage(player, Text.of("~" + finalNick.toPlain())));
+                    // Tell the Forge mods
+                    final String newNick = ForgeEventFactory.getPlayerDisplayName((EntityPlayer) event.getTargetEntity(), TextSerializers
+                            .LEGACY_FORMATTING_CODE.serialize(nick));
+
+                    if (!oldNick.equals(newNick)) {
+                        try {
+                            service.setNickname(player, TextSerializers.LEGACY_FORMATTING_CODE.deserialize(newNick));
+                        } catch (NicknameException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    try {
+                        displayNameField.set(player, newNick);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                // Send the joining player's nickname to others
+                Text nickname = service.getNickname(player).orElse(null);
+                if (nickname == null) {
+                    nickname = Text.of(player.getName());
+                } else {
+                    nickname = Text.of("~" + nickname.toPlain());
+                }
+
+                final ClientboundNucleusNameChangeMappingPacket joiningPlayerPacket =
+                        this.getMappingMessage(player, nickname);
+
+                this.game.getServer().getOnlinePlayers().stream().filter((players) -> !players.getUniqueId().equals(player.getUniqueId()))
+                        .forEach((players) -> this.network.sendTo(players, joiningPlayerPacket));
+
+                Task.builder()
+                        .delayTicks(40)
+                        .execute(t -> {
+                            // Send everyone's nicknames to the joining player
+                            this.network.sendTo(player, this.getMappingMessage(service));
+                        })
+                        .submit(this.container);
+            });
         }
     }
 
