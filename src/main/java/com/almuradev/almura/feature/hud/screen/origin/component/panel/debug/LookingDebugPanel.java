@@ -116,10 +116,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
     }
 
     private void renderEntity(final Entity entity) {
-        if (entity == null) { //Catch entity being null during teleport event.
-            return;
-        }
-        final ResourceLocation id = requireNonNull(EntityList.getKey(entity));
+        final ResourceLocation id = requireNonNull(EntityList.getKey(entity), () -> "Entity of class " + entity.getClass() + " is not registered!");
 
         // Draw egg, if available
         if (EntityList.ENTITY_EGGS.containsKey(id)) {
