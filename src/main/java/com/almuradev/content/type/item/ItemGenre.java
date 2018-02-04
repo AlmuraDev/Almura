@@ -28,7 +28,11 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
     /**
      * An item type representing a seed.
      */
-    SEED("seed", SeedItem.Builder.class);
+    SEED("seed", SeedItem.Builder.class),
+    /**
+     * HOE HOE HOE
+     */
+    TOOL_HOE("tool_hoe", null);
 
     /**
      * The id of this item type.
