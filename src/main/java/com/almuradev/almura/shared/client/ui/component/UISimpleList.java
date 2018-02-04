@@ -21,6 +21,7 @@ public class UISimpleList<S> extends UIListContainer<S> {
     public UISimpleList(MalisisGui gui, int width, int height) {
         super(gui, width, height);
 
+        this.removeControlComponent(this.scrollbar);
         this.scrollbar = new UISlimScrollbar(gui, self(), UIScrollBar.Type.VERTICAL);
         this.scrollbar.setAutoHide(true);
     }
