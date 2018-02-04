@@ -151,11 +151,9 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
 
     @SuppressWarnings("deprecation")
     @Subscribe
-    public void onElementSelect(UIListContainer.SelectEvent event) {
-        if (event.getSelected() instanceof AboutListElement) {
-            final AboutListElement element = (AboutListElement) event.getSelected();
-
-            this.textField.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(element.getElementData().getContent()));
+    private void onElementSelect(UIListContainer.SelectEvent<AboutListElementData> event) {
+        if (event.getSelected() != null) {
+            this.textField.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(event.getSelected().getContent()));
         }
     }
 
@@ -192,8 +190,17 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
             this.setBorder(BORDER_COLOR, 1, 255);
         }
 
-        AboutListElementData getElementData() {
+        private AboutListElementData getElementData() {
             return this.elementData;
+        }
+
+        @Override
+        public boolean onClick(int x, int y) {
+            final UIComponent component = getComponentAt(x, y);
+            if (this.label.equals(component) || this.elementData.getImage().equals(component) || this.equals(component)) {
+                this.elementData.getParent().select(this.elementData);
+            }
+            return true;
         }
 
         @Override
@@ -205,7 +212,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
 
                 setSize(width, getHeight());
 
-                if (this == parent.getSelected()) {
+                if (this.elementData == parent.getSelected()) {
                     super.drawBackground(renderer, mouseX, mouseY, partialTick);
                 }
             }
@@ -214,14 +221,14 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
 
     private static final class AboutListElementData {
 
-        private final UISimpleList parent;
+        private final UISimpleList<AboutListElementData> parent;
         private final UIImage image;
         private final Text title;
         private final Text content;
         private final int padding;
 
-        private AboutListElementData(UISimpleList parent, UIImage image, int imageX, int imageY, int imageWidth, int imageHeight, int padding,
-                Text title, Text content) {
+        private AboutListElementData(UISimpleList<AboutListElementData> parent, UIImage image, int imageX, int imageY,
+                int imageWidth,int imageHeight, int padding, Text title, Text content) {
             this.parent = parent;
             this.image = image;
             this.image.setPosition(imageX, imageY, Anchor.MIDDLE | Anchor.LEFT);
@@ -233,7 +240,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
             this.content = content;
         }
 
-        public UISimpleList getParent() {
+        public UISimpleList<AboutListElementData> getParent() {
             return this.parent;
         }
 
