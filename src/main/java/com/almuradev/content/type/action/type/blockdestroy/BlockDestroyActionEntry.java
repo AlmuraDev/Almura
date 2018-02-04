@@ -36,7 +36,17 @@ public final class BlockDestroyActionEntry implements BlockDestroyAction.Entry {
 
     @Override
     public boolean test(final ItemType type) {
-        return this.emptyWith || this.with.stream().anyMatch(item -> item.test(type));
+        boolean match = this.with.stream().anyMatch(item -> item.test(type));
+
+        if (match) {
+            return true;
+        }
+
+        if (this.emptyWith) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override

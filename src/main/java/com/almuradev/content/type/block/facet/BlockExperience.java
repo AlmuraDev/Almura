@@ -34,15 +34,29 @@ public final class BlockExperience implements Witness {
         final World world = event.getWorld();
         final IBlockState state = world.getBlockState(event.getPos());
         final Block block = state.getBlock();
-        if (!(block instanceof IMixinContentBlock) || ((IMixinContentBlock) block).destroyAction(state) == null) {
+        if (world.isRemote) {
             return;
         }
 
-        int experience = this.calculate((ItemType) event.getPlayer().getActiveItemStack().getItem(), state, (IMixinContentBlock) block, world.rand);
+        if (event.getPlayer().isCreative()) {
+            return;
+        }
+
+        if (!(block instanceof IMixinContentBlock)) {
+            return;
+        }
+
+        final BlockDestroyAction destroyAction = ((IMixinContentBlock) block).destroyAction(state);
+
+        if (destroyAction == null) {
+            return;
+        }
+
+        int experience = this.calculate((ItemType) event.getPlayer().getActiveItemStack().getItem(), destroyAction, world.rand);
 
         if (experience == NO_EXPERIENCE) {
             // if no exp for this itemstack, fallback to empty hand and check again
-            experience = this.calculate(ItemStack.empty().getType(), state, (IMixinContentBlock) block, world.rand);
+            experience = this.calculate(ItemStack.empty().getType(), destroyAction, world.rand);
         }
 
         if (experience != NO_EXPERIENCE) {
@@ -50,9 +64,9 @@ public final class BlockExperience implements Witness {
         }
     }
 
-    private int calculate(final ItemType with, final IBlockState state, final IMixinContentBlock block, final Random random) {
+    private int calculate(final ItemType with, final BlockDestroyAction destroyAction, final Random random) {
         int experience = NO_EXPERIENCE;
-        for (final BlockDestroyAction.Entry entry : block.destroyAction(state).entries()) {
+        for (final BlockDestroyAction.Entry entry : destroyAction.entries()) {
             if (entry.test(with)) {
                 for (final Drop drop : entry.drops()) {
                     if (drop instanceof ExperienceDrop) {

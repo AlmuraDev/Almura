@@ -10,6 +10,7 @@ package com.almuradev.content.type.block.mixin.iface;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.Optional;
 
@@ -20,4 +21,6 @@ public interface IMixinContentBlock {
 
     @Nullable
     BlockDestroyAction destroyAction(final IBlockState state);
+
+    ThreadLocal<EntityPlayer> getHarvesters();
 }

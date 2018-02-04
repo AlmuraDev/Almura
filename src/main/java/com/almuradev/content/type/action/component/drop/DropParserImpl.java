@@ -16,6 +16,7 @@ import org.spongepowered.api.util.weighted.VariableAmount;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -39,17 +40,21 @@ public final class DropParserImpl implements DropParser {
 
         final List<? extends ConfigurationNode> children = config.getChildrenList();
         final List<Drop> drops = new ArrayList<>(children.size());
-        for (int i = 0; i < children.size(); i++) {
-            final ConfigurationNode child = children.get(i);
+        for (final ConfigurationNode child : children) {
             if (child.getValue() instanceof String) {
                 parseSimpleItem(child).ifPresent(drops::add);
-            } else if (child.getValue() instanceof ConfigurationNode) {
+            } else if (child.getValue() instanceof Map) {
                 final VariableAmount amount = VariableAmounts.deserialize(child.getNode(VariableAmounts.Config.AMOUNT), VariableAmounts.FIXED_1);
-                @Nullable final VariableAmount bonusAmount = VariableAmounts.deserialize(child.getNode(VariableAmounts.Config.BONUS, VariableAmounts.Config.BONUS_AMOUNT)).orElse(null);
-                @Nullable final VariableAmount bonusChance = VariableAmounts.deserialize(child.getNode(VariableAmounts.Config.BONUS, VariableAmounts.Config.BONUS_CHANCE)).orElse(null);
+                @Nullable final VariableAmount bonusAmount =
+                        VariableAmounts.deserialize(child.getNode(VariableAmounts.Config.BONUS, VariableAmounts.Config.BONUS_AMOUNT)).orElse(null);
+                @Nullable final VariableAmount bonusChance =
+                        VariableAmounts.deserialize(child.getNode(VariableAmounts.Config.BONUS, VariableAmounts.Config.BONUS_CHANCE)).orElse(null);
 
-                if (!child.getNode(ItemDefinitionConfig.ITEM).isVirtual()) {
-                    parseFullItem(child).map(item -> item.asDrop(amount, bonusAmount, bonusChance)).ifPresent(drops::add);
+                final ConfigurationNode item = child.getNode(ItemDefinitionConfig.ITEM);
+
+                if (!item.isVirtual()) {
+                    parseFullItem(item).map(itemDef -> itemDef.asDrop(amount, bonusAmount, bonusChance)).ifPresent
+                            (drops::add);
                 } else if (!child.getNode(ExperienceDrop.EXPERIENCE).isVirtual()) {
                     drops.add(new ExperienceDrop(amount, bonusAmount, bonusChance));
                 }
