@@ -21,9 +21,11 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.ForgeEventFactory;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
@@ -32,6 +34,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.world.World;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -147,6 +150,18 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
         }
     }
 
+    @Listener(order = Order.LAST)
+    public void playerMove(final MoveEntityEvent.Teleport event, @Getter("getTargetEntity") final Player player) throws IllegalAccessException {
+        if (differentExtent(event.getFromTransform(), event.getToTransform())) {
+            final EntityPlayerMP mcPlayer = (EntityPlayerMP) player;
+            final String modNick = ForgeEventFactory.getPlayerDisplayName(mcPlayer, mcPlayer.getDisplayNameString());
+            final Text finalNick = TextSerializers.LEGACY_FORMATTING_CODE.deserialize(modNick);
+
+            // Tell everyone about the new nick
+            this.network.sendToAll(this.getMappingMessage(player, Text.of("~" + finalNick.toPlain())));
+        }
+    }
+
     private ClientboundNucleusNameChangeMappingPacket getMappingMessage(final Player player, final Text nick) {
         return new ClientboundNucleusNameChangeMappingPacket(player.getUniqueId(), nick);
     }
@@ -165,5 +180,9 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
         });
 
         return new ClientboundNucleusNameMappingsPacket(nicknames);
+    }
+
+    private static boolean differentExtent(final Transform<World> from, final Transform<World> to) {
+        return !from.getExtent().equals(to.getExtent());
     }
 }
