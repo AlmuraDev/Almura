@@ -32,7 +32,7 @@ public final class ItemDrop extends Drop {
 
     public void fill(final List<ItemStack> items) {
         final ItemStack drop = this.item.create();
-        drop.setCount(amount.getFlooredAmount(random));
+        drop.setCount(super.flooredAmount(random));
         items.add(drop);
     }
 }
