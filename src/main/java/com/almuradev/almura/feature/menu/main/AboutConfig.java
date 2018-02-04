@@ -29,7 +29,7 @@ public final class AboutConfig {
     public static final Text STORY = story();
     public static final List<Entry> ENTRIES = ImmutableList.of(
             // NinjaZidane
-            new Entry("zidane", UUID.fromString("85271de5-8380-4db5-9f05-ada3b4aa785c"), TextColors.BLUE,3),
+            new Entry("zidane", UUID.fromString("85271de5-8380-4db5-9f05-ada3b4aa785c"), TextColors.BLUE, 3),
             // Kashike
             new Entry("kashike", UUID.fromString("eb121687-8b1a-4944-bd4d-e0a818d9dfe2"), TextColors.GRAY, 2),
             // Dockter
