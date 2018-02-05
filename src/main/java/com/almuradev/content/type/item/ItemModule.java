@@ -19,10 +19,10 @@ import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
 
 public final class ItemModule extends AbstractModule implements CommonBinder {
-
     @Override
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("item", ItemContentTypeLoader.class));
+        this.registry().module(ContentItemType.Tier.class, TierRegistryModule.class);
         this.facet().add(ItemContentTypeLoader.class);
         this.install(new FoodItemModule());
         this.install(new NormalItemModule());

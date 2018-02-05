@@ -14,7 +14,6 @@ import com.almuradev.content.type.item.type.tool.type.pickaxe.PickaxeToolItemMod
 public final class ToolItemModule extends ItemModule.Module {
     @Override
     protected void configure() {
-        this.registry().module(ToolItem.Tier.class, ToolTierRegistryModule.class);
         this.install(new HoeToolItemModule());
         this.install(new PickaxeToolItemModule());
     }

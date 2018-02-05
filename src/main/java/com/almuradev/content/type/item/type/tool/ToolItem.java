@@ -8,7 +8,6 @@
 package com.almuradev.content.type.item.type.tool;
 
 import com.almuradev.content.component.delegate.Delegate;
-import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.type.item.ContentItemType;
 
 public interface ToolItem extends ContentItemType {
@@ -23,9 +22,5 @@ public interface ToolItem extends ContentItemType {
                 this.tier = tier;
             }
         }
-    }
-
-    interface Tier extends CatalogedContent {
-        // TODO(kashike): support for custom tiers in the future
     }
 }
