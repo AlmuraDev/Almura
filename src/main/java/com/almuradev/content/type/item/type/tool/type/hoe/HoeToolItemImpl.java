@@ -13,6 +13,7 @@ import net.minecraft.item.ItemHoe;
 public final class HoeToolItemImpl extends ItemHoe implements HoeToolItem {
     HoeToolItemImpl(final HoeToolItemBuilder builder) {
         super(Delegate.require(builder.tier, ToolMaterial.class));
+        this.tabToDisplayOn = null;
         builder.fill(this);
     }
 }
