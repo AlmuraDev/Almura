@@ -8,6 +8,6 @@
 package com.almuradev.content.type.item;
 
 public interface ItemConfig {
-
+    String DURABILITY = "durability";
     String ITEM_GROUP = "item_group";
 }

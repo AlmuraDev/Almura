@@ -18,6 +18,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.spongepowered.api.util.PEBKACException;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 
 // This cannot extend ItemType.
 public interface ContentItemType extends CatalogedContent, ItemGrouped {
@@ -38,12 +39,18 @@ public interface ContentItemType extends CatalogedContent, ItemGrouped {
     }
 
     interface Builder<C extends ContentItemType> extends ContentBuilder<C> {
+        void durability(final int durability);
 
         void itemGroup(final Delegate<ItemGroup> itemGroup);
 
         abstract class Impl<C extends ContentItemType> extends ContentBuilder.Impl<C> implements Builder<C> {
-
+            private OptionalInt durability = OptionalInt.empty();
             private Delegate<ItemGroup> itemGroup;
+
+            @Override
+            public void durability(final int durability) {
+                this.durability = OptionalInt.of(durability);
+            }
 
             @Override
             public void itemGroup(final Delegate<ItemGroup> itemGroup) {
@@ -55,6 +62,7 @@ public interface ContentItemType extends CatalogedContent, ItemGrouped {
                 super.fill(entry);
                 ((Item) entry).setUnlocalizedName(this.string(StringType.TRANSLATION));
                 ((IMixinLazyItemGroup) entry).itemGroup(this.itemGroup);
+                this.durability.ifPresent(((Item) entry)::setMaxDamage);
             }
         }
     }

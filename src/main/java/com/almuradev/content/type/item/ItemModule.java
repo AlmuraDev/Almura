@@ -10,6 +10,7 @@ package com.almuradev.content.type.item;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
+import com.almuradev.content.type.item.processor.DurabilityProcessor;
 import com.almuradev.content.type.item.processor.ItemGroupItemContentProcessor;
 import com.almuradev.content.type.item.type.food.FoodItemModule;
 import com.almuradev.content.type.item.type.normal.NormalItemModule;
@@ -31,7 +32,9 @@ public final class ItemModule extends AbstractModule implements CommonBinder {
         this.install(new Module() {
             @Override
             protected void configure() {
-                this.processors().all(ItemGroupItemContentProcessor.class);
+                this.processors()
+                        .all(DurabilityProcessor.class)
+                        .all(ItemGroupItemContentProcessor.class);
             }
         });
     }

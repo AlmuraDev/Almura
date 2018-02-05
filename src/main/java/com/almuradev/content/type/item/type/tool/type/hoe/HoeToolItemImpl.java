@@ -14,8 +14,6 @@ public final class HoeToolItemImpl extends ItemHoe implements HoeToolItem {
     HoeToolItemImpl(final HoeToolItemBuilder builder) {
         super(Delegate.require(builder.tier, ToolMaterial.class));
         this.tabToDisplayOn = null;
-        // ToDo: replace this with a configurable value from config.
-        this.setMaxDamage(this.toolMaterial.getMaxUses() * 2); // Rakes are twice as good.
         builder.fill(this);
     }
 }
