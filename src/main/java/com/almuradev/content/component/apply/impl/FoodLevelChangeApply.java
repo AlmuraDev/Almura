@@ -8,7 +8,6 @@
 package com.almuradev.content.component.apply.impl;
 
 import com.almuradev.content.component.apply.Apply;
-import com.almuradev.content.component.apply.context.ApplyContext;
 import com.almuradev.content.component.apply.context.ItemApplyContext;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import com.almuradev.toolbox.util.math.IntRange;

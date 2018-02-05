@@ -7,12 +7,7 @@
  */
 package com.almuradev.content.type.block.mixin.impl;
 
-import com.almuradev.content.component.apply.Apply;
-import com.almuradev.content.component.apply.context.ApplyContext;
-import com.almuradev.content.component.apply.context.EverythingApplyContext;
 import com.almuradev.content.component.delegate.Delegate;
-import com.almuradev.content.type.action.component.drop.Drop;
-import com.almuradev.content.type.action.component.drop.ItemDrop;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.BlockStateDefinition;
 import com.almuradev.content.type.block.ContentBlockType;
@@ -25,27 +20,19 @@ import com.almuradev.content.type.block.util.BlockUtil;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import com.almuradev.content.type.itemgroup.mixin.iface.IMixinLazyItemGroup;
-import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Enchantments;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.spongepowered.api.item.ItemType;
 import org.spongepowered.asm.mixin.Mixin;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import javax.annotation.Nullable;
 

@@ -12,7 +12,6 @@ import com.almuradev.content.registry.predicate.ResourceLocationPredicateParser;
 import com.almuradev.content.type.item.definition.ItemDefinition;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import com.google.common.base.MoreObjects;
-import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistryEntry;

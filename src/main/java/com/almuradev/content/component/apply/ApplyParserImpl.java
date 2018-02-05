@@ -10,8 +10,8 @@ package com.almuradev.content.component.apply;
 import com.almuradev.content.component.apply.impl.ApplyExhaustion;
 import com.almuradev.content.component.apply.impl.FoodLevelChangeApply;
 import com.almuradev.content.component.apply.impl.HealthChangeApply;
-import com.almuradev.content.component.apply.impl.SaturationChangeApply;
 import com.almuradev.content.component.apply.impl.ReduceDurability;
+import com.almuradev.content.component.apply.impl.SaturationChangeApply;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import ninja.leaping.configurate.ConfigurationNode;
 

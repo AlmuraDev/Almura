@@ -10,17 +10,13 @@ package com.almuradev.content.type.item.type.food.processor.foodeffect;
 import com.almuradev.content.type.item.type.food.processor.foodeffect.potioneffect.RandomPotionEffectTemplate;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import net.minecraft.potion.Potion;
-import org.spongepowered.api.Sponge;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 public final class FoodEffect {
 
