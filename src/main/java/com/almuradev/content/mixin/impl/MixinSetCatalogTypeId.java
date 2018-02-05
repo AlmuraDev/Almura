@@ -12,11 +12,13 @@ import com.almuradev.content.type.generation.type.ore.OreGeneratorImpl;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.item.Item;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin({
     // CreativeTabs.class intentionally excluded
+    Item.ToolMaterial.class,
     MapColor.class,
     Material.class,
     OreGeneratorImpl.class,

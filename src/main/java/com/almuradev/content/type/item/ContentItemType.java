@@ -58,4 +58,8 @@ public interface ContentItemType extends CatalogedContent, ItemGrouped {
             }
         }
     }
+
+    interface Tier extends CatalogedContent {
+        // TODO(kashike): support for custom tiers in the future
+    }
 }
