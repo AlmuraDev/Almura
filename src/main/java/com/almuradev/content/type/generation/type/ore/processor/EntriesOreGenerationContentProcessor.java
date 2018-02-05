@@ -7,7 +7,6 @@
  */
 package com.almuradev.content.type.generation.type.ore.processor;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.registry.delegate.CatalogDelegate;
 import com.almuradev.content.type.generation.type.ore.OreDefinition;
 import com.almuradev.content.type.generation.type.ore.OreGenerationConfig;
@@ -50,7 +49,7 @@ public final class EntriesOreGenerationContentProcessor implements AbstractArray
     @Override
     public void processChild(final ConfigurationNode config, final int index, final OreGenerator.Builder builder) {
         final OreDefinition.Builder definition = this.builder.get();
-        definition.block(CatalogDelegate.create(BlockType.class, ResourceLocations.requireNamespaced(BLOCK.in(config))));
+        definition.block(CatalogDelegate.namespaced(BlockType.class, BLOCK.in(config)));
         definition.count(COUNT.in(config).getInt());
         definition.size(SIZE.in(config).getInt());
         builder.push(definition.build(builder));

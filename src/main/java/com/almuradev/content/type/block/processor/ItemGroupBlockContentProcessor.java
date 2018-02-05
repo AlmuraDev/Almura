@@ -7,7 +7,6 @@
  */
 package com.almuradev.content.type.block.processor;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.registry.delegate.CatalogDelegate;
 import com.almuradev.content.type.block.BlockConfig;
 import com.almuradev.content.type.block.BlockContentProcessor;
@@ -33,6 +32,6 @@ public final class ItemGroupBlockContentProcessor implements BlockContentProcess
 
     @Override
     public void processTagged(final ConfigurationNode config, final ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> builder) {
-        builder.itemGroup(CatalogDelegate.create(ItemGroup.class, ResourceLocations.requireNamespaced(config)));
+        builder.itemGroup(CatalogDelegate.namespaced(ItemGroup.class, config));
     }
 }

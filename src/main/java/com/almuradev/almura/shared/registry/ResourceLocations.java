@@ -71,10 +71,6 @@ public final class ResourceLocations {
         return new ResourceLocation(namespace, value);
     }
 
-    public static String requireNamespaced(final ConfigurationNode config) {
-        return requireNamespaced(config.getString());
-    }
-
     public static String requireNamespaced(final String string) {
         if (string.indexOf(':') == -1) {
             throw new IllegalArgumentException("Expected a namespaced string");

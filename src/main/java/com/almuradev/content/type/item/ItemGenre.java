@@ -11,6 +11,9 @@ import com.almuradev.content.ContentType;
 import com.almuradev.content.type.item.type.food.FoodItem;
 import com.almuradev.content.type.item.type.normal.NormalItem;
 import com.almuradev.content.type.item.type.seed.SeedItem;
+import com.almuradev.content.type.item.type.tool.type.hoe.HoeToolItem;
+import com.almuradev.content.type.item.type.tool.type.pickaxe.PickaxeToolItem;
+import com.almuradev.content.type.item.type.tool.type.shovel.ShovelToolItem;
 
 /**
  * An enumeration of item types.
@@ -28,7 +31,19 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
     /**
      * An item type representing a seed.
      */
-    SEED("seed", SeedItem.Builder.class);
+    SEED("seed", SeedItem.Builder.class),
+    /**
+     * HOE HOE HOE
+     */
+    TOOL_HOE("tool_hoe", HoeToolItem.Builder.class),
+    /**
+     * An item type representing a pickaxe.
+     */
+    TOOL_PICKAXE("tool_pickaxe", PickaxeToolItem.Builder.class),
+    /**
+     * An item type representing a shovel.
+     */
+    TOOL_SHOVEL("tool_shovel", ShovelToolItem.Builder.class);
 
     /**
      * The id of this item type.

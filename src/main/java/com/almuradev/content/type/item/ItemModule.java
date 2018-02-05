@@ -14,6 +14,7 @@ import com.almuradev.content.type.item.processor.ItemGroupItemContentProcessor;
 import com.almuradev.content.type.item.type.food.FoodItemModule;
 import com.almuradev.content.type.item.type.normal.NormalItemModule;
 import com.almuradev.content.type.item.type.seed.SeedItemModule;
+import com.almuradev.content.type.item.type.tool.ToolItemModule;
 import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
 
@@ -23,9 +24,10 @@ public final class ItemModule extends AbstractModule implements CommonBinder {
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("item", ItemContentTypeLoader.class));
         this.facet().add(ItemContentTypeLoader.class);
+        this.install(new FoodItemModule());
         this.install(new NormalItemModule());
         this.install(new SeedItemModule());
-        this.install(new FoodItemModule());
+        this.install(new ToolItemModule());
         this.install(new Module() {
             @Override
             protected void configure() {

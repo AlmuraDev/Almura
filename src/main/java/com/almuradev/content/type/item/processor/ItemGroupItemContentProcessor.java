@@ -7,7 +7,6 @@
  */
 package com.almuradev.content.type.item.processor;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.registry.delegate.CatalogDelegate;
 import com.almuradev.content.type.item.ContentItemType;
 import com.almuradev.content.type.item.ItemConfig;
@@ -32,6 +31,6 @@ public final class ItemGroupItemContentProcessor implements ItemContentProcessor
 
     @Override
     public void processTagged(final ConfigurationNode config, final ContentItemType.Builder builder) {
-        builder.itemGroup(CatalogDelegate.create(ItemGroup.class, ResourceLocations.requireNamespaced(config)));
+        builder.itemGroup(CatalogDelegate.namespaced(ItemGroup.class, config));
     }
 }
