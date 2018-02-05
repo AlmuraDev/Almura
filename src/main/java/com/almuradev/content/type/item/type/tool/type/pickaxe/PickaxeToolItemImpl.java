@@ -13,5 +13,6 @@ import net.minecraft.item.ItemPickaxe;
 public final class PickaxeToolItemImpl extends ItemPickaxe implements PickaxeToolItem {
     PickaxeToolItemImpl(final PickaxeToolItemBuilder builder) {
         super(Delegate.require(builder.tier, ToolMaterial.class));
+        builder.fill(this);
     }
 }

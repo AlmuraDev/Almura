@@ -13,5 +13,6 @@ import net.minecraft.item.ItemSpade;
 public final class ShovelToolItemImpl extends ItemSpade implements ShovelToolItem {
     ShovelToolItemImpl(final ShovelToolItemBuilder builder) {
         super(Delegate.require(builder.tier, ToolMaterial.class));
+        builder.fill(this);
     }
 }
