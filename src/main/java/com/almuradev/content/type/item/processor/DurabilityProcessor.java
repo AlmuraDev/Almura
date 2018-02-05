@@ -7,11 +7,9 @@
  */
 package com.almuradev.content.type.item.processor;
 
-import com.almuradev.content.registry.delegate.CatalogDelegate;
 import com.almuradev.content.type.item.ContentItemType;
 import com.almuradev.content.type.item.ItemConfig;
 import com.almuradev.content.type.item.ItemContentProcessor;
-import com.almuradev.content.type.itemgroup.ItemGroup;
 import com.almuradev.toolbox.config.tag.ConfigTag;
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -25,6 +23,6 @@ public final class DurabilityProcessor implements ItemContentProcessor.AnyTagged
 
     @Override
     public void processTagged(final ConfigurationNode config, final ContentItemType.Builder builder) {
-        builder.itemGroup(CatalogDelegate.namespaced(ItemGroup.class, config));
+        builder.durability(config.getInt());
     }
 }
