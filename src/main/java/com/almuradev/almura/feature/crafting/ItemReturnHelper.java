@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ItemReturnHelper implements Witness {
 
-    private boolean debug = true;
+    private boolean debug = false;
 
     // Sunflower Destroy Action Modifier.
     @SubscribeEvent
@@ -56,7 +56,7 @@ public class ItemReturnHelper implements Witness {
         switch (name.toUpperCase()) {
             case "ITEM.ALMURA.NORMAL.TOOL.GRINDER":
                 reusableItem = new ItemStack(currentStack.getItem(), 1, currentStack.getMetadata());
-                //damage = 1;
+                damage = 1;
                 break;
 
             case "ITEM.ALMURA.NORMAL.INGREDIENTS.VINEGAR":
