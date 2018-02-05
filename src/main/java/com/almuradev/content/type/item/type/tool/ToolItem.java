@@ -11,5 +11,7 @@ import com.almuradev.content.type.item.ContentItemType;
 
 public interface ToolItem extends ContentItemType {
     interface Builder<T extends ToolItem> extends ContentItemType.Builder<T> {
+        abstract class Impl<T extends ToolItem> extends ContentItemType.Builder.Impl<T> implements Builder<T> {
+        }
     }
 }

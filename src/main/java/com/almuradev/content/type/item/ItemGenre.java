@@ -11,6 +11,7 @@ import com.almuradev.content.ContentType;
 import com.almuradev.content.type.item.type.food.FoodItem;
 import com.almuradev.content.type.item.type.normal.NormalItem;
 import com.almuradev.content.type.item.type.seed.SeedItem;
+import com.almuradev.content.type.item.type.tool.hoe.HoeToolItem;
 
 /**
  * An enumeration of item types.
@@ -32,7 +33,7 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
     /**
      * HOE HOE HOE
      */
-    TOOL_HOE("tool_hoe", null);
+    TOOL_HOE("tool_hoe", HoeToolItem.Builder.class);
 
     /**
      * The id of this item type.
