@@ -7,7 +7,6 @@
  */
 package com.almuradev.content.type.item.definition;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.registry.delegate.CatalogDelegate;
 import com.almuradev.content.type.action.component.drop.Droppable;
@@ -44,16 +43,16 @@ public final class ItemDefinition implements Droppable {
             for (final Map.Entry<Object, ? extends ConfigurationNode> itemNodeEntry : config.getChildrenMap().entrySet()) {
                 final ConfigurationNode itemNode = itemNodeEntry.getValue();
 
-                final Delegate<ItemType> item = CatalogDelegate.create(ItemType.class, ResourceLocations.requireNamespaced(String.valueOf(itemNodeEntry.getKey())));
+                final Delegate<ItemType> item = CatalogDelegate.namespaced(ItemType.class, String.valueOf(itemNodeEntry.getKey()));
                 final int quantity = itemNode.getNode(ItemDefinitionConfig.QUANTITY).getInt(DEFAULT_QUANTITY);
                 final int meta = itemNode.getNode(ItemDefinitionConfig.META).getInt(DEFAULT_META);
                 return Optional.of(new ItemDefinition(item, quantity, meta));
             }
         } else if (config.getValue() instanceof String) {
-            return Optional.of(new ItemDefinition(CatalogDelegate.create(ItemType.class, ResourceLocations.requireNamespaced(config)), DEFAULT_QUANTITY, DEFAULT_META));
+            return Optional.of(new ItemDefinition(CatalogDelegate.namespaced(ItemType.class, config), DEFAULT_QUANTITY, DEFAULT_META));
         }
 
-        final Delegate<ItemType> item = CatalogDelegate.create(ItemType.class, ResourceLocations.requireNamespaced(config.getNode(ItemDefinitionConfig.ITEM)));
+        final Delegate<ItemType> item = CatalogDelegate.namespaced(ItemType.class, config.getNode(ItemDefinitionConfig.ITEM));
         final int quantity = config.getNode(ItemDefinitionConfig.QUANTITY).getInt(DEFAULT_QUANTITY);
         final int meta = config.getNode(ItemDefinitionConfig.META).getInt(DEFAULT_META);
         return Optional.of(new ItemDefinition(item, quantity, meta));
@@ -65,12 +64,12 @@ public final class ItemDefinition implements Droppable {
     public static ItemDefinition parse(final JsonElement element) {
         if(element.isJsonObject()) {
             final JsonObject object = element.getAsJsonObject();
-            final Delegate<ItemType> item = CatalogDelegate.create(ItemType.class, ResourceLocations.requireNamespaced(String.valueOf(JsonUtils.getString(object, "item"))));
+            final Delegate<ItemType> item = CatalogDelegate.namespaced(ItemType.class, String.valueOf(JsonUtils.getString(object, "item")));
             final int quantity = JsonUtils.getInt(object, ItemDefinitionConfig.QUANTITY, DEFAULT_QUANTITY);
             final int meta = JsonUtils.getInt(object, ItemDefinitionConfig.META, DEFAULT_META);
             return new ItemDefinition(item, quantity, meta);
         } else {
-            return new ItemDefinition(CatalogDelegate.create(ItemType.class, ResourceLocations.requireNamespaced(element.getAsString())), DEFAULT_QUANTITY, DEFAULT_META);
+            return new ItemDefinition(CatalogDelegate.namespaced(ItemType.class, element.getAsString()), DEFAULT_QUANTITY, DEFAULT_META);
         }
     }
 

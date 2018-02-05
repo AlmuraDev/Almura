@@ -7,7 +7,6 @@
  */
 package com.almuradev.content.type.item.type.seed.processor;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.registry.delegate.CatalogDelegate;
 import com.almuradev.content.type.item.type.seed.SeedItem;
 import com.almuradev.content.type.item.type.seed.SeedItemConfig;
@@ -26,6 +25,6 @@ public final class CropSeedItemContentProcessor implements SeedItemContentProces
 
     @Override
     public void processTagged(final ConfigurationNode config, final SeedItem.Builder builder) {
-        builder.crop(CatalogDelegate.create(BlockType.class, ResourceLocations.requireNamespaced(config)));
+        builder.crop(CatalogDelegate.namespaced(BlockType.class, config));
     }
 }

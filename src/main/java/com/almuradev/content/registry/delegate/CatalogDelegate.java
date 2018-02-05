@@ -11,6 +11,7 @@ import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.component.delegate.LazyDelegate;
 import com.google.common.base.MoreObjects;
+import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
 
@@ -23,6 +24,10 @@ public final class CatalogDelegate<C extends CatalogType> extends LazyDelegate<C
 
     public static <C extends CatalogType> Delegate<C> create(final Class<C> type, final String id) {
         return new CatalogDelegate<>(type, id);
+    }
+
+    public static <C extends CatalogType> Delegate<C> namespaced(final Class<C> type, final ConfigurationNode config) {
+        return namespaced(type, config.getString());
     }
 
     public static <C extends CatalogType> Delegate<C> namespaced(final Class<C> type, final String id) {

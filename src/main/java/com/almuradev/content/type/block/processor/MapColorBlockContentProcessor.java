@@ -7,7 +7,6 @@
  */
 package com.almuradev.content.type.block.processor;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.registry.delegate.CatalogDelegate;
 import com.almuradev.content.type.block.BlockConfig;
 import com.almuradev.content.type.block.BlockContentProcessor;
@@ -33,6 +32,6 @@ public final class MapColorBlockContentProcessor implements BlockContentProcesso
 
     @Override
     public void processTagged(final ConfigurationNode config, final ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> builder) {
-        builder.mapColor(CatalogDelegate.create(MapColor.class, ResourceLocations.requireNamespaced(config)));
+        builder.mapColor(CatalogDelegate.namespaced(MapColor.class, config));
     }
 }

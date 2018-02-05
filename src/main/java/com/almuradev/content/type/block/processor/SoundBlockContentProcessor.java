@@ -7,7 +7,6 @@
  */
 package com.almuradev.content.type.block.processor;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.loader.SingleTypeExternalContentProcessor;
 import com.almuradev.content.registry.ContentBuilder;
@@ -42,7 +41,7 @@ public final class SoundBlockContentProcessor implements BlockContentProcessor.S
     @Override
     public void processState(final ConfigurationNode config, final ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> builder, final BlockStateDefinition.Builder<BlockStateDefinition> definition) {
         if (config.getValue() instanceof String) {
-            definition.sound(CatalogDelegate.create(BlockSoundGroup.class, ResourceLocations.requireNamespaced(config)));
+            definition.sound(CatalogDelegate.namespaced(BlockSoundGroup.class, config));
         } else {
             final BlockSoundGroup.Builder bsg = this.bsg.processExternal(builder.string(ContentBuilder.StringType.NAMESPACE), config, UUID.randomUUID().toString());
             definition.sound(Delegate.supplying(bsg::build));
