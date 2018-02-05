@@ -7,8 +7,10 @@
  */
 package com.almuradev.content.registry.delegate;
 
+import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.component.delegate.LazyDelegate;
+import com.google.common.base.MoreObjects;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
 
@@ -23,6 +25,10 @@ public final class CatalogDelegate<C extends CatalogType> extends LazyDelegate<C
         return new CatalogDelegate<>(type, id);
     }
 
+    public static <C extends CatalogType> Delegate<C> namespaced(final Class<C> type, final String id) {
+        return new CatalogDelegate<>(type, ResourceLocations.requireNamespaced(id));
+    }
+
     private CatalogDelegate(final Class<C> type, final String id) {
         this.type = type;
         this.id = id;
@@ -32,5 +38,13 @@ public final class CatalogDelegate<C extends CatalogType> extends LazyDelegate<C
     @Override
     protected C load() {
         return Sponge.getRegistry().getType(this.type, this.id).orElse(null);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("type", this.type)
+            .add("id", this.id)
+            .toString();
     }
 }

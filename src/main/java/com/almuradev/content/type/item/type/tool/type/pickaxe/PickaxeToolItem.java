@@ -5,11 +5,11 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.content.type.item.type.tool.hoe;
+package com.almuradev.content.type.item.type.tool.type.pickaxe;
 
 import com.almuradev.content.type.item.type.tool.ToolItem;
 
-public interface HoeToolItem extends ToolItem {
-    interface Builder extends ToolItem.Builder<HoeToolItem> {
+public interface PickaxeToolItem extends ToolItem {
+    interface Builder extends ToolItem.Builder<PickaxeToolItem> {
     }
 }

@@ -5,13 +5,13 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.content.type.item.type.tool.hoe;
+package com.almuradev.content.type.item.type.tool.type.hoe;
 
 import com.almuradev.content.type.item.type.tool.ToolItem;
 
 public final class HoeToolItemBuilder extends ToolItem.Builder.Impl<HoeToolItem> implements HoeToolItem.Builder {
     @Override
     public HoeToolItem build() {
-        return null;
+        return new HoeToolItemImpl(this);
     }
 }
