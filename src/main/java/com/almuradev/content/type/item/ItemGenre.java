@@ -45,6 +45,8 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
      */
     TOOL_SHOVEL("tool_shovel", ShovelToolItem.Builder.class);
 
+    // ToDo:  Need type TOOL_SICKLE, new type, goal is to implement a maxDamage setter and override onBlockDestroyed from Item to increment damaged based on specific crop.
+
     /**
      * The id of this item type.
      *
