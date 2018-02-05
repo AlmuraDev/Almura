@@ -30,5 +30,11 @@ public final class NormalItemImpl extends Item implements NormalItem {
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, @Nullable final World world, final List<String> list, final ITooltipFlag flag) {
         this.tooltip.render(list);
+        if (stack.getUnlocalizedName().equalsIgnoreCase("ITEM.ALMURA.NORMAL.TOOL.GRINDER")) {
+            //System.out.println("Set Max damage of Grinder");
+            //this.setMaxDamage(10);  Cannot Implement yet, receipe question for Zidane.
+            // ToDO:  Why is this being called 4 times on the client during startup.
+            // ToDo:  RecipeMatcher is hell now days.
+        }
     }
 }

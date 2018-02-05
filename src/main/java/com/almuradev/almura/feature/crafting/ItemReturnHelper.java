@@ -36,7 +36,7 @@ public class ItemReturnHelper implements Witness {
         switch (name.toUpperCase()) {
             case "ITEM.ALMURA.NORMAL.TOOL.GRINDER":
                 reUseItem = new ItemStack(currentStack.getItem(), 1, currentStack.getMetadata());
-                //damage = 1;  Not configurable yet.
+                //damage = 1;
                 break;
 
             case "ITEM.ALMURA.NORMAL.INGREDIENTS.VINEGAR":

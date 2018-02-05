@@ -19,10 +19,10 @@ public final class ToolTierRegistryModule extends AbstractCatalogRegistryModule.
 
     @Override
     public void registerDefaults() {
-        this.register("wood", Item.ToolMaterial.WOOD);
-        this.register("stone", Item.ToolMaterial.STONE);
-        this.register("iron", Item.ToolMaterial.IRON);
-        this.register("diamond", Item.ToolMaterial.DIAMOND);
-        this.register("gold", Item.ToolMaterial.GOLD);
+       // this.register("wood", Item.ToolMaterial.WOOD);
+       // this.register("stone", Item.ToolMaterial.STONE);
+       // this.register("iron", Item.ToolMaterial.IRON);
+       // this.register("diamond", Item.ToolMaterial.DIAMOND);
+       // this.register("gold", Item.ToolMaterial.GOLD);
     }
 }
