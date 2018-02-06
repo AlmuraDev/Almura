@@ -11,7 +11,6 @@ import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.model.obj.geometry.Face;
 import com.almuradev.content.model.obj.geometry.Group;
 import com.almuradev.content.model.obj.geometry.MalformedGeometryException;
-import com.almuradev.content.model.obj.geometry.UVWOutOfBoundsException;
 import com.almuradev.content.model.obj.geometry.Vertex;
 import com.almuradev.content.model.obj.geometry.VertexDefinition;
 import com.almuradev.content.model.obj.geometry.VertexNormal;
@@ -120,8 +119,8 @@ public class OBJModelParser {
                         break;
                     case OBJModelConfig.VERTEX_TEXTURE_COORDINATE:
                         try {
-                            final float u = Float.parseFloat(lineContents[0]);
-                            final float v = Float.parseFloat(lineContents[1]);
+                            final float u = Math.max(0f, Math.min(1f, Float.parseFloat(lineContents[0])));
+                            final float v = Math.max(0f, Math.min(1f, Float.parseFloat(lineContents[1])));
 
                             float w = 1f;
 
@@ -129,19 +128,8 @@ public class OBJModelParser {
                                 w = Float.parseFloat(lineContents[2]);
                             }
 
-                            if (u < 0 || u > 1 || v < 0 || v > 1 || w < 0 || w > 1) {
-                                throw new UVWOutOfBoundsException("Illegal vertex texture coordinate encountered! Vertex texture coordinates "
-                                        + "must have at least two float values and be no less than 0 and no greater than 1. Source -> Line: " +
-                                        (i + 1) + ", Content: " + Arrays.toString(combinedLineContents));
-
-                            }
-
                             objBuilder.textureCoordinate(new VertexTextureCoordinate(u, v, w));
                         } catch (final Exception e) {
-                            if (e instanceof UVWOutOfBoundsException) {
-                                throw e;
-                            }
-
                             throw new MalformedGeometryException("Illegal vertex texture coordinate encountered! Vertex texture coordinates must "
                                     + "have at least two float values. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString
                                     (combinedLineContents), e);
