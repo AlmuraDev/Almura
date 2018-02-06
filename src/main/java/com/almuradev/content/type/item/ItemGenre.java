@@ -11,9 +11,11 @@ import com.almuradev.content.ContentType;
 import com.almuradev.content.type.item.type.food.FoodItem;
 import com.almuradev.content.type.item.type.normal.NormalItem;
 import com.almuradev.content.type.item.type.seed.SeedItem;
+import com.almuradev.content.type.item.type.tool.type.axe.AxeToolItem;
 import com.almuradev.content.type.item.type.tool.type.hoe.HoeToolItem;
 import com.almuradev.content.type.item.type.tool.type.pickaxe.PickaxeToolItem;
 import com.almuradev.content.type.item.type.tool.type.shovel.ShovelToolItem;
+import com.almuradev.content.type.item.type.tool.type.sickle.SickleToolItem;
 
 /**
  * An enumeration of item types.
@@ -33,6 +35,10 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
      */
     SEED("seed", SeedItem.Builder.class),
     /**
+     * An item type representing an axe.
+     */
+    TOOL_AXE("tool_axe", AxeToolItem.Builder.class),
+    /**
      * HOE HOE HOE
      */
     TOOL_HOE("tool_hoe", HoeToolItem.Builder.class),
@@ -43,9 +49,11 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
     /**
      * An item type representing a shovel.
      */
-    TOOL_SHOVEL("tool_shovel", ShovelToolItem.Builder.class);
-
-    // ToDo:  Need type TOOL_SICKLE, new type, goal is to implement a maxDamage setter and override onBlockDestroyed from Item to increment damaged based on specific crop.
+    TOOL_SHOVEL("tool_shovel", ShovelToolItem.Builder.class),
+    /**
+     * An item type representing a sickle.
+     */
+    TOOL_SICKLE("tool_sickle", SickleToolItem.Builder.class);;
 
     /**
      * The id of this item type.
