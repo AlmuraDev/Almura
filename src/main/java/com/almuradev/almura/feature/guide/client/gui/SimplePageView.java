@@ -113,7 +113,7 @@ public class SimplePageView extends SimpleScreen {
                 SimpleScreen.getPaddedHeight(form) - this.pagesSelect.getHeight() - (innerPadding * 2) - this.buttonFormat.getHeight());
         contentField.setPosition(0, SimpleScreen.getPaddedY(this.pagesSelect, innerPadding));
         contentField.setEditable(this.hasModifyPermission());
-        contentField.getScrollbar().setZIndex(-10);
+        contentField.setOptions(5592405, 13158600, 0);
 
         // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
