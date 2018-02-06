@@ -10,8 +10,10 @@
         "block.MixinBlockVine",
         "block.MixinBlockFence",
         "entity.MixinEntityList",
-        "util.MixinFoodStats",
+        "item.MixinItemBucket",
+        "item.MixinItemBucketMilk",
         "tileentity.MixinTileEntity",
+        "util.MixinFoodStats",
         "world.MixinBossBarColor"
     ],
     "client": [
