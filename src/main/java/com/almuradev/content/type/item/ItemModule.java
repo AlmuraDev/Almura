@@ -35,8 +35,8 @@ public final class ItemModule extends AbstractModule implements CommonBinder {
             protected void configure() {
                 this.processors()
                         .all(DurabilityProcessor.class)
-                        .all(MaxStackSizeProcessor.class)
-                        .all(ItemGroupItemContentProcessor.class);
+                        .all(ItemGroupItemContentProcessor.class)
+                        .all(MaxStackSizeProcessor.class);
             }
         });
     }

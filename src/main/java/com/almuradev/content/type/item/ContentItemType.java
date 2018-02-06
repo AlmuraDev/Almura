@@ -40,13 +40,15 @@ public interface ContentItemType extends CatalogedContent, ItemGrouped {
 
     interface Builder<C extends ContentItemType> extends ContentBuilder<C> {
         void durability(final int durability);
-        void maxStackSize(final int maxStackSize);
+
         void itemGroup(final Delegate<ItemGroup> itemGroup);
+
+        void maxStackSize(final int maxStackSize);
 
         abstract class Impl<C extends ContentItemType> extends ContentBuilder.Impl<C> implements Builder<C> {
             private OptionalInt durability = OptionalInt.empty();
-            private OptionalInt maxStackSize = OptionalInt.empty();
             private Delegate<ItemGroup> itemGroup;
+            private OptionalInt maxStackSize = OptionalInt.empty();
 
             @Override
             public void durability(final int durability) {
@@ -54,13 +56,13 @@ public interface ContentItemType extends CatalogedContent, ItemGrouped {
             }
 
             @Override
-            public void maxStackSize(final int maxStackSize) {
-                this.maxStackSize = OptionalInt.of(maxStackSize);
+            public void itemGroup(final Delegate<ItemGroup> itemGroup) {
+                this.itemGroup = itemGroup;
             }
 
             @Override
-            public void itemGroup(final Delegate<ItemGroup> itemGroup) {
-                this.itemGroup = itemGroup;
+            public void maxStackSize(final int maxStackSize) {
+                this.maxStackSize = OptionalInt.of(maxStackSize);
             }
 
             @Override
