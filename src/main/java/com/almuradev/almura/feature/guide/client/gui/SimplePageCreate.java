@@ -59,7 +59,7 @@ public class SimplePageCreate extends SimpleScreen {
         this.textFieldId.setPosition(0, SimpleScreen.getPaddedY(labelId, 1));
         this.textFieldId.setSize(UIComponent.INHERITED, 0);
         this.textFieldId.setFocused(true);
-        //this.textFieldId.setFilter(String::toLowerCase);
+        this.textFieldId.setFilter(String::toLowerCase);
 
         // Index
         final UILabel labelIndex = new UILabel(this, I18n.format("almura.guide.label.index"));
@@ -70,7 +70,7 @@ public class SimplePageCreate extends SimpleScreen {
         this.textFieldIndex.setAnchor(Anchor.TOP | Anchor.LEFT);
         this.textFieldIndex.setPosition(0, SimpleScreen.getPaddedY(labelIndex, 1));
         this.textFieldIndex.setSize(UIComponent.INHERITED, 0);
-        //this.textFieldIndex.setFilter(s -> s.replaceAll("[^\\d]", ""));
+        this.textFieldIndex.setFilter(s -> s.replaceAll("[^\\d]", ""));
 
         // Title
         final UILabel labelName = new UILabel(this, I18n.format("almura.guide.label.name"));
@@ -81,7 +81,7 @@ public class SimplePageCreate extends SimpleScreen {
         this.textFieldName.setAnchor(Anchor.TOP | Anchor.LEFT);
         this.textFieldName.setPosition(0, SimpleScreen.getPaddedY(labelName, 1));
         this.textFieldName.setSize(UIComponent.INHERITED, 0);
-//        this.textFieldName.setFilter(s -> s.substring(0, Math.min(s.length(), 50)));
+        this.textFieldName.setFilter(s -> s.substring(0, Math.min(s.length(), 50)));
 
         // Save/Cancel
         final UIButton buttonSave = new UIButtonBuilder(this)

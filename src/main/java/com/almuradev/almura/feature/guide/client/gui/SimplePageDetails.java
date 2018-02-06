@@ -83,7 +83,7 @@ public class SimplePageDetails extends SimpleScreen {
         this.textFieldIndex.setAnchor(Anchor.TOP | Anchor.LEFT);
         this.textFieldIndex.setPosition(0, SimpleScreen.getPaddedY(labelIndex, 1));
         this.textFieldIndex.setSize(UIComponent.INHERITED, 0);
-//        this.textFieldIndex.setFilter(s -> s.replaceAll("[^\\d]", ""));
+        this.textFieldIndex.setFilter(s -> s.replaceAll("[^\\d]", ""));
 
         // Title
         final UILabel labelName = new UILabel(this, I18n.format("almura.guide.label.name"));
@@ -94,7 +94,7 @@ public class SimplePageDetails extends SimpleScreen {
         this.textFieldName.setAnchor(Anchor.TOP | Anchor.LEFT);
         this.textFieldName.setPosition(0, SimpleScreen.getPaddedY(labelName, 1));
         this.textFieldName.setSize(UIComponent.INHERITED, 0);
-//        this.textFieldName.setFilter(s -> s.substring(0, Math.min(s.length(), 5)));
+        this.textFieldName.setFilter(s -> s.substring(0, Math.min(s.length(), 5)));
 
         // Creator
         final UILabel labelCreator = new UILabel(this, I18n.format("almura.guide.label.creator"));
