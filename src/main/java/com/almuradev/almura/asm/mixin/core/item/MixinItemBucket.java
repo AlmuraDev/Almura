@@ -19,7 +19,6 @@ public abstract class MixinItemBucket extends Item {
     @Inject(method = "<init>", at = @At("RETURN"))
     public void onConstruction(CallbackInfo ci) {
         this.setMaxStackSize(64);
-        this.setCreativeTab(CreativeTabs.MISC);
     }
     
     @Override
