@@ -12,6 +12,7 @@ import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.core.common.CommonModule;
 import com.almuradev.almura.feature.menu.MainMenuModule;
 import com.almuradev.almura.feature.speed.ClientOptimizationModule;
+import com.almuradev.almura.shared.client.keyboard.binder.KeyBindingInstaller;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.content.model.obj.OBJModelLoader;
 import com.google.inject.Inject;
@@ -40,6 +41,7 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
         this.install(new MainMenuModule());
         this.install(new ClientOptimizationModule());
         this.install(new ClientConfiguration.Module());
+        this.facet().add(KeyBindingInstaller.class);
         this.model().loader(OBJModelLoader.class, binder -> binder.domains(Almura.ID));
         this.requestStaticInjection(StaticAccess.class);
     }

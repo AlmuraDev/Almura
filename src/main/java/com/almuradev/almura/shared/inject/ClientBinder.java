@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.shared.inject;
 
+import com.almuradev.almura.shared.client.keyboard.binder.KeyBindingBinder;
 import com.almuradev.content.model.ModelBinder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -24,5 +25,14 @@ public interface ClientBinder extends CommonBinder {
      */
     default ModelBinder model() {
         return ModelBinder.create(this.binder());
+    }
+
+    /**
+     * Creates a keybinding binder.
+     *
+     * @return a keybinding binder
+     */
+    default KeyBindingBinder keybinding() {
+        return KeyBindingBinder.create(this.binder());
     }
 }

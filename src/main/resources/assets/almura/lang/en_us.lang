@@ -60,3 +60,51 @@ almura.menu_button.ok=OK
 almura.menu_button.options=Almura - Options
 almura.menu_button.quit=Quit
 almura.menu_button.shop=Shop
+
+
+# ---------------
+# ---- guide ----
+# ---------------
+almura.guide.view.button.formatted=Formatted
+almura.guide.view.button.formatted.tooltip=Showing formatted text
+almura.guide.view.button.raw=Raw
+almura.guide.view.button.raw.tooltip=Showing raw text
+almura.guide.view.form.title=Guide
+almura.guide.view.button.add.tooltip=Add
+almura.guide.view.button.remove.tooltip=Remove
+almura.guide.view.button.details.tooltip=Details
+almura.guide.create.form.title=Create a page
+almura.guide.details.form.title=Details for
+almura.guide.label.id=ID
+almura.guide.label.index=Index
+almura.guide.label.name=Name
+almura.guide.label.creator=Creator
+almura.guide.label.created=Created
+almura.guide.label.last_modifier=Last Modifier
+almura.guide.label.last_modified=Last Modified
+almura.guide.action.any.missing_id=An ID must be set for the page!
+almura.guide.action.any.missing_name=A name must be set for the page!
+almura.guide.action.add.fail=An error accorded while attempting to add a page.
+almura.guide.action.add.id_exists.content=A page with that ID already exists.
+almura.guide.action.add.success=Page was successfully created!
+almura.guide.action.modify.fail=An error accorded while attempting to modify a page.
+almura.guide.action.modify.success=Page was successfully saved!
+almura.guide.action.remove.fail=An error accorded while attempting to remove a page.
+almura.guide.action.remove.success=Page was successfully removed!
+almura.guide.dialog.error.page.content=An error occurred while attempting to open the details for this page.
+almura.guide.dialog.error.title=Uh oh!
+almura.guide.dialog.error.id.empty.title=ID cannot be empty!
+almura.guide.dialog.error.id.empty.content=An id must be entered.
+almura.guide.dialog.error.id.exists.title=ID already in use!
+almura.guide.dialog.error.name.empty.title=Name cannot be empty!
+almura.guide.dialog.error.name.empty.content=A name must be entered.
+almura.guide.dialog.success.title=Hurray!
+almura.guide.button.cancel=Cancel
+almura.guide.button.save=Save
+almura.guide.button.close=Close
+almura.guide.permission.open.missing=You do not have permission to open Guide!
+almura.guide.permission.add.missing=You do not have permission to add new pages!
+almura.guide.permission.modify.missing=You do not have permission to remove this page!
+almura.guide.permission.remove.missing=You do not have permission to remove this page!
+key.almura.guide.open=Open
+key.categories.almura.guide=Guide

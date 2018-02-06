@@ -202,13 +202,13 @@ public class UIMessageBox extends UIForm {
         }
     }
 
-    public static void showDialog(@Nullable SimpleScreen gui, String title, String message, MessageBoxButtons buttons) {
+    public static void showDialog(@Nullable GuiScreen gui, String title, String message, MessageBoxButtons buttons) {
         showDialog(gui, title, message, buttons, null);
     }
 
-    public static void showDialog(@Nullable SimpleScreen gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer
+    public static void showDialog(@Nullable GuiScreen gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer
             consumer) {
-        final SimpleScreen screen = new SimpleScreen(gui) {
+        final SimpleScreen screen = new SimpleScreen(gui, true) {
             @Override
             public void construct() {
                 guiscreenBackground = false;
@@ -217,38 +217,8 @@ public class UIMessageBox extends UIForm {
                 addToScreen(new UIMessageBox(this, title, message, buttons, consumer)
                         .setMovable(true)
                         .setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER)
+                        .setZIndex(50)
                 );
-            }
-
-            @Override
-            public void drawScreen(int mouseX, int mouseY, float partialTick) {
-                this.parent.ifPresent(screen -> screen.drawScreen(mouseX, mouseY, partialTick));
-                super.drawScreen(mouseX, mouseY, partialTick);
-            }
-
-            @Override
-            public void updateScreen() {
-                this.parent.ifPresent(GuiScreen::updateScreen);
-                super.updateScreen();
-            }
-
-            @Override
-            public void onResize(Minecraft minecraft, int width, int height) {
-                this.parent.ifPresent(screen -> screen.onResize(minecraft, width, height));
-                super.onResize(minecraft, width, height);
-            }
-
-            @Override
-            public void update(int mouseX, int mouseY, float partialTick) {
-                this.parent.filter(screen -> screen instanceof MalisisGui).ifPresent(screen -> ((MalisisGui) screen).update(mouseX, mouseY,
-                        partialTick));
-                super.update(mouseX, mouseY, partialTick);
-            }
-
-            @Override
-            public void updateGui() {
-                this.parent.filter(screen -> screen instanceof MalisisGui).ifPresent(screen -> ((MalisisGui) screen).updateGui());
-                super.updateGui();
             }
         };
         screen.display();

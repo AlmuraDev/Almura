@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature;
 
 import com.almuradev.almura.feature.crafting.ItemReturnHelper;
+import com.almuradev.almura.feature.guide.GuideModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
@@ -23,6 +24,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new NickModule());
         this.install(new NotificationModule());
         this.install(new TitleModule());
+        this.install(new GuideModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
     }

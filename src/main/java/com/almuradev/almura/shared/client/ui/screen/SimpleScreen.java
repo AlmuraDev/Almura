@@ -12,6 +12,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.control.IScrollable;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -26,6 +27,7 @@ import javax.annotation.Nullable;
 public abstract class SimpleScreen extends MalisisGui {
 
     protected final Optional<GuiScreen> parent;
+    private final boolean drawParentInBackground;
 
     /**
      * Creates a gui with an absent parent
@@ -40,8 +42,80 @@ public abstract class SimpleScreen extends MalisisGui {
      * @param parent the {@link SimpleScreen} that we came from
      */
     public SimpleScreen(@Nullable GuiScreen parent) {
+        this(parent, false);
+    }
+
+    public SimpleScreen(@Nullable GuiScreen parent, boolean drawParentInBackground) {
         this.parent = Optional.ofNullable(parent);
         this.renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
+        this.drawParentInBackground = drawParentInBackground;
+    }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTick) {
+        if (this.drawParentInBackground) {
+            this.parent.ifPresent(screen -> screen.drawScreen(mouseX, mouseY, partialTick));
+        }
+        super.drawScreen(mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void updateScreen() {
+        if (this.drawParentInBackground) {
+            this.parent.ifPresent(GuiScreen::updateScreen);
+        }
+        super.updateScreen();
+    }
+
+    @Override
+    public void onResize(Minecraft minecraft, int width, int height) {
+        if (this.drawParentInBackground) {
+            this.parent.ifPresent(screen -> screen.onResize(minecraft, width, height));
+        }
+        super.onResize(minecraft, width, height);
+    }
+
+    @Override
+    public void update(int mouseX, int mouseY, float partialTick) {
+        if (this.drawParentInBackground) {
+            this.parent.filter(screen -> screen instanceof MalisisGui).ifPresent(screen -> ((MalisisGui) screen).update(mouseX, mouseY, partialTick));
+        }
+        super.update(mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void updateGui() {
+        if (this.drawParentInBackground) {
+            this.parent.filter(screen -> screen instanceof MalisisGui).ifPresent(screen -> ((MalisisGui) screen).updateGui());
+        }
+        super.updateGui();
+    }
+
+    /**
+     * Closes this {@link SimpleScreen} and displays the parent, if present.
+     */
+    @Override
+    public void close() {
+        setFocusedComponent(null, true);
+        setHoveredComponent(null, true);
+        Keyboard.enableRepeatEvents(false);
+        if (this.mc.player != null) {
+            this.mc.player.closeScreen();
+        }
+
+        this.onClose();
+
+        this.mc.displayGuiScreen(this.parent.orElse(null));
+        if (!this.parent.isPresent()) {
+            this.mc.setIngameFocus();
+        }
+    }
+
+    public void addToScreen(UIComponent... components) {
+        Arrays.stream(components).forEach(this::addToScreen);
+    }
+
+    protected void onClose() {
     }
 
     /**
@@ -114,32 +188,5 @@ public abstract class SimpleScreen extends MalisisGui {
      */
     public static int getPaddedHeight(UIComponent<? extends IScrollable> component) {
         return component.getHeight() - component.self().getTopPadding() - component.self().getBottomPadding();
-    }
-
-    /**
-     * Closes this {@link SimpleScreen} and displays the parent, if present.
-     */
-    @Override
-    public void close() {
-        setFocusedComponent(null, true);
-        setHoveredComponent(null, true);
-        Keyboard.enableRepeatEvents(false);
-        if (this.mc.player != null) {
-            this.mc.player.closeScreen();
-        }
-
-        this.onClose();
-
-        this.mc.displayGuiScreen(this.parent.orElse(null));
-        if (!this.parent.isPresent()) {
-            this.mc.setIngameFocus();
-        }
-    }
-
-    public void addToScreen(UIComponent... components) {
-        Arrays.stream(components).forEach(this::addToScreen);
-    }
-
-    protected void onClose() {
     }
 }
