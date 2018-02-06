@@ -16,6 +16,6 @@ public final class AxeToolItemModule extends ItemModule.Module {
     protected void configure() {
         this.bind(AxeToolItem.Builder.class).to(AxeToolItemBuilder.class);
         this.processors()
-            .only(TierProcessor.class, ItemGenre.TOOL_HOE);
+            .only(TierProcessor.class, ItemGenre.TOOL_AXE);
     }
 }
