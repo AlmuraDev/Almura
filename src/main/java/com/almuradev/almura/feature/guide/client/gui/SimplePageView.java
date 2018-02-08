@@ -22,7 +22,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Mouse;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -35,7 +35,7 @@ public class SimplePageView extends SimpleScreen {
 
     @Inject
     private static ClientPageManager manager;
-
+    private int lastUpdate = 0;
     private boolean canAdd, canRemove, canModify;
     private boolean showRaw = false;
     private UIButton buttonRemove, buttonAdd, buttonDetails, buttonFormat, buttonSave;
@@ -185,7 +185,17 @@ public class SimplePageView extends SimpleScreen {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
-        Mouse.setGrabbed(false); //This is stupid.
+        if (++this.lastUpdate > 60) { // 2.5 second delay
+            final String currentContent = this.contentField.getText();
+            this.contentField.setText(Page.asFriendlyText(currentContent));
+            this.lastUpdate = 0;
+        }
+    }
+
+    @Override
+    protected void keyTyped(char keyChar, int keyCode) {
+        super.keyTyped(keyChar, keyCode);
+        this.lastUpdate = 0; // Reset the timer when key is typed.
     }
 
     @Subscribe
