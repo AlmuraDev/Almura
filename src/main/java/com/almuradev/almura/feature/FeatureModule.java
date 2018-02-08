@@ -9,6 +9,7 @@ package com.almuradev.almura.feature;
 
 import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.almura.feature.guide.GuideModule;
+import com.almuradev.almura.feature.complex.ComplexContentModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
@@ -18,6 +19,7 @@ import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 
 public final class FeatureModule extends AbstractModule implements CommonBinder {
+
     @Override
     protected void configure() {
         this.install(new HeadUpDisplayModule());
@@ -25,6 +27,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new NotificationModule());
         this.install(new TitleModule());
         this.install(new GuideModule());
+        this.install(new ComplexContentModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
     }
