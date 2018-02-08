@@ -8,7 +8,12 @@
 package com.almuradev.almura.feature.guide.network;
 
 import com.almuradev.almura.feature.guide.ClientPageManager;
+import com.almuradev.almura.feature.guide.client.gui.SimplePageCreate;
 import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
+import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import net.malisis.core.MalisisCore;
+import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,11 +36,21 @@ public final class ClientboundPageListingsPacketHandler implements MessageHandle
     @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(ClientboundPageListingsPacket message, RemoteConnection connection, Platform.Type side) {
-        this.manager.setPageEntries(message.pageEntries);
+        this.manager.setPageEntries(message.pageEntries, message.switchToPageId);
+
+        SimplePageView view = null;
 
         final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-        if (currentScreen != null && currentScreen instanceof SimplePageView) {
-            ((SimplePageView) currentScreen).refreshPageEntries();
+
+        if (currentScreen instanceof UIMessageBox.MessageBoxDialogScreen && ((UIMessageBox.MessageBoxDialogScreen) currentScreen).getParent()
+                instanceof SimplePageView) {
+            view = (SimplePageView) ((UIMessageBox.MessageBoxDialogScreen) currentScreen).getParent();
+        } else if (currentScreen instanceof SimplePageView) {
+            view = (SimplePageView) currentScreen;
+        }
+
+        if (view != null) {
+            view.refreshPageEntries(message.switchToPageId);
         }
     }
 }

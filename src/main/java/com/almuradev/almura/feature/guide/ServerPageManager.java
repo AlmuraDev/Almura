@@ -200,7 +200,7 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
         if (loaded) {
             this.game.getServer().getOnlinePlayers().forEach((player) -> {
                 this.network.sendTo(player, new ClientboundPageListingsPacket(this.getAvailablePagesFor(player).entrySet().stream().map(entry ->
-                        new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toSet())));
+                        new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toSet()), null));
             });
         }
 

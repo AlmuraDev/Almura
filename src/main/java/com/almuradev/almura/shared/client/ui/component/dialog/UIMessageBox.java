@@ -208,19 +208,43 @@ public class UIMessageBox extends UIForm {
 
     public static void showDialog(@Nullable GuiScreen gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer
             consumer) {
-        final SimpleScreen screen = new SimpleScreen(gui, true) {
-            @Override
-            public void construct() {
-                guiscreenBackground = false;
-                // Disable escape key press
-                registerKeyListener((keyChar, keyCode) -> keyCode == Keyboard.KEY_ESCAPE);
-                addToScreen(new UIMessageBox(this, title, message, buttons, consumer)
-                        .setMovable(true)
-                        .setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER)
-                        .setZIndex(50)
-                );
-            }
-        };
+        final MessageBoxDialogScreen screen = new MessageBoxDialogScreen(gui, title, message, buttons, consumer);
         screen.display();
+    }
+
+    public static class MessageBoxDialogScreen extends SimpleScreen {
+
+        @Nullable private final GuiScreen gui;
+        private final String title;
+        private final String message;
+        private final MessageBoxButtons buttons;
+        @Nullable private final MessageBoxConsumer consumer;
+
+        public MessageBoxDialogScreen(@Nullable GuiScreen gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer
+                consumer) {
+            super(gui, true);
+            this.gui = gui;
+            this.title = title;
+            this.message = message;
+            this.buttons = buttons;
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void construct() {
+            guiscreenBackground = false;
+            // Disable escape key press
+            registerKeyListener((keyChar, keyCode) -> keyCode == Keyboard.KEY_ESCAPE);
+            addToScreen(new UIMessageBox(this, title, message, buttons, consumer)
+                    .setMovable(true)
+                    .setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER)
+                    .setZIndex(50)
+            );
+        }
+
+        @Nullable
+        public GuiScreen getParent() {
+            return this.gui;
+        }
     }
 }

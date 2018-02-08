@@ -21,6 +21,7 @@ import org.spongepowered.api.network.PlayerConnection;
 import org.spongepowered.api.network.RemoteConnection;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -64,7 +65,7 @@ public final class ServerboundPageChangeRequestPacketHandler implements MessageH
                 // If the id being sent up is already in the manager, we've got a desync
                 if (page != null) {
                     this.network.sendTo(player, new ClientboundPageListingsPacket(this.manager.getAvailablePagesFor(player).entrySet().stream().map
-                            (entry -> new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toSet())));
+                            (entry -> new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toSet()), null));
                     this.network.sendTo(player, new ClientboundPageChangeResponsePacket(message.changeType, false, message.id,
                             "almura.guide.action.add.id_exists"));
                     return;
@@ -82,7 +83,7 @@ public final class ServerboundPageChangeRequestPacketHandler implements MessageH
                 // Sent up a modify or remove of a page but someone deleted it, we've got a desync
                 if (page == null) {
                     this.network.sendTo(player, new ClientboundPageListingsPacket(this.manager.getAvailablePagesFor(player).entrySet().stream().map
-                            (entry -> new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toSet())));
+                            (entry -> new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toSet()), null));
                     return;
                 }
 
@@ -113,13 +114,20 @@ public final class ServerboundPageChangeRequestPacketHandler implements MessageH
                 this.manager.savePage(page);
             }
 
-            // Sync the listings to everyone
-            this.game.getServer().getOnlinePlayers().forEach((online) -> this.network.sendTo(online, new ClientboundPageListingsPacket(this.manager
-                    .getAvailablePagesFor(online).entrySet().stream().map(entry -> new PageListEntry(entry.getKey(), entry.getValue().getName()))
-                    .collect(Collectors.toSet()))));
-
+            // Let the player know they were successful
             this.network.sendTo(player, new ClientboundPageChangeResponsePacket(message.changeType, true, message.id,
                     "almura.guide.action." + message.changeType.name().toLowerCase() + ".success"));
+
+            // Sync the listings to the player who caused this change and put them on that page (only to fix switching on creation).
+            this.network.sendTo(player, new ClientboundPageListingsPacket(this.manager
+                    .getAvailablePagesFor(player).entrySet().stream().map(entry -> new PageListEntry(entry.getKey(), entry.getValue().getName()))
+                    .collect(Collectors.toSet()), message.id));
+
+            // Sync the listings to everyone else
+            this.game.getServer().getOnlinePlayers().stream().filter(p -> !p.getUniqueId().equals(player.getUniqueId())).forEach((online) -> this
+                    .network.sendTo(online, new ClientboundPageListingsPacket(this.manager
+                            .getAvailablePagesFor(player).entrySet().stream().map(entry -> new PageListEntry(entry.getKey(), entry.getValue().getName()))
+                            .collect(Collectors.toSet()), null)));
         }
     }
 }
