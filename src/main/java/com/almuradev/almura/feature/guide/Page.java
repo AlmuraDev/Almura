@@ -102,11 +102,11 @@ public final class Page {
         return this.id.hashCode();
     }
 
-    public static String asUglyText(final String string) {
+    public static String asFriendlyText(final String string) {
         return LegacyTexts.replace(string, '&', SpongeTexts.COLOR_CHAR);
     }
 
-    public static String asFriendlyText(final String string) {
+    public static String asUglyText(final String string) {
         return LegacyTexts.replace(string, SpongeTexts.COLOR_CHAR, '&');
     }
 
