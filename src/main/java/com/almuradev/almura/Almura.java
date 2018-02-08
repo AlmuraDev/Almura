@@ -26,6 +26,7 @@ public class Almura {
 
     public static final String ID = "almura";
     public static final String NAME = "Almura";
+    public static boolean debug = true;
 
     @SidedProxy(
             modId = Almura.ID,
