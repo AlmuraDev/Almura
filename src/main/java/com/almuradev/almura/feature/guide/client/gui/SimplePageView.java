@@ -52,7 +52,7 @@ public class SimplePageView extends SimpleScreen {
     public void construct() {
         guiscreenBackground = true;
 
-        final UIForm form = new UIForm(this, 250, 225, I18n.format("almura.guide.view.form.title"));
+        final UIForm form = new UIForm(this, 400, 225, I18n.format("almura.guide.view.form.title"));
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -156,10 +156,10 @@ public class SimplePageView extends SimpleScreen {
                 final String currentContent = this.contentField.getText();
                 if (showRaw) {
                     // Need to convert the content from sectional -> ampersand
-                    this.contentField.setText(Page.asFriendlyText(currentContent));
+                    this.contentField.setText(Page.asUglyText(currentContent));
                 } else {
                     // Need to convert the content from ampersand -> sectional
-                    this.contentField.setText(Page.asUglyText(currentContent));
+                    this.contentField.setText(Page.asFriendlyText(currentContent));
                 }
                 break;
             case "button.add":
@@ -185,7 +185,7 @@ public class SimplePageView extends SimpleScreen {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
-        if (++this.lastUpdate > 60) { // 2.5 second delay
+        if (++this.lastUpdate > 60 && !showRaw) { // 2.5 second delay
             final String currentContent = this.contentField.getText();
             this.contentField.setText(Page.asFriendlyText(currentContent));
             this.lastUpdate = 0;
@@ -239,7 +239,7 @@ public class SimplePageView extends SimpleScreen {
     }
 
     public void refreshPage() {
-        this.contentField.setText(manager.getPage() == null ? "" : manager.getPage().getContent());
+        this.contentField.setText(Page.asFriendlyText(manager.getPage() == null ? "" : manager.getPage().getContent()));
         this.updateButtons();
     }
 
