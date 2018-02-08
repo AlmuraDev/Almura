@@ -185,9 +185,20 @@ public class SimplePageView extends SimpleScreen {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
-        if (++this.lastUpdate > 60 && !showRaw) { // 2.5 second delay
+        if (++this.lastUpdate > 100 && !showRaw) {
+
+            // Get the current cursor position so we can set it back after the refresh
+            final int x = this.contentField.getCursorPosition().getXOffset();
+            final int y = this.contentField.getCursorPosition().getYOffset();
+
+            // Format current text.
             final String currentContent = this.contentField.getText();
             this.contentField.setText(Page.asFriendlyText(currentContent));
+
+            // Set original cursor position prior to format.
+            this.contentField.setCursorPosition(x, y);
+
+            //Reset timer.
             this.lastUpdate = 0;
         }
     }
