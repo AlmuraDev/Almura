@@ -61,7 +61,7 @@ public final class ClientPageManager implements Witness {
         return Collections.unmodifiableSet(this.pageEntries);
     }
 
-    public void setPageEntries(Set<PageListEntry> pageEntries) {
+    public void setPageEntries(Set<PageListEntry> pageEntries, String switchToPage) {
         final Page oldPage = this.page;
         if (this.page != null) {
             this.page = null;
@@ -70,14 +70,15 @@ public final class ClientPageManager implements Witness {
         this.pageEntries.clear();
         this.pageEntries.addAll(pageEntries);
 
-
         if (!this.pageEntries.isEmpty()) {
-            if (oldPage != null) {
+            if (oldPage != null && switchToPage == null) {
                 this.pageEntries
                         .stream()
                         .filter(p -> p.getId().equalsIgnoreCase(oldPage.getId()))
                         .findFirst()
                         .ifPresent(p -> this.requestPage(p.getId()));
+            } else if (switchToPage != null) {
+                this.requestPage(switchToPage);
             } else {
                 this.pageEntries
                         .stream()

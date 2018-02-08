@@ -9,6 +9,8 @@ package com.almuradev.almura.feature.guide.network;
 
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
+import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
+import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
@@ -33,9 +35,19 @@ public final class ClientboundPageOpenResponsePacketHandler implements MessageHa
     public void handleMessage(ClientboundPageOpenResponsePacket message, RemoteConnection connection, Platform.Type side) {
         this.manager.setPage(message.page);
 
+        SimplePageView view = null;
+
         final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-        if (currentScreen != null && currentScreen instanceof SimplePageView) {
-            ((SimplePageView) currentScreen).refreshPage();
+
+        if (currentScreen instanceof UIMessageBox.MessageBoxDialogScreen && ((UIMessageBox.MessageBoxDialogScreen) currentScreen).getParent()
+                instanceof SimplePageView) {
+            view = (SimplePageView) ((UIMessageBox.MessageBoxDialogScreen) currentScreen).getParent();
+        } else if (currentScreen instanceof SimplePageView) {
+            view = (SimplePageView) currentScreen;
+        }
+
+        if (view != null) {
+            view.refreshPage();
         }
     }
 }

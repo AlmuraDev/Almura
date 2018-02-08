@@ -17,12 +17,18 @@ import java.util.Set;
 public final class ClientboundPageListingsPacket implements Message {
 
     public Set<PageListEntry> pageEntries = new LinkedHashSet<>();
+    public boolean shouldSwitchToPage;
+    public String switchToPageId;
 
     public ClientboundPageListingsPacket() {
     }
 
-    public ClientboundPageListingsPacket(Set<PageListEntry> pageEntries) {
+    public ClientboundPageListingsPacket(Set<PageListEntry> pageEntries, String switchToPageId) {
         this.pageEntries = pageEntries;
+        if (switchToPageId != null) {
+            this.shouldSwitchToPage = true;
+        }
+        this.switchToPageId = switchToPageId;
     }
 
     @Override
@@ -34,6 +40,11 @@ public final class ClientboundPageListingsPacket implements Message {
 
             this.pageEntries.add(new PageListEntry(id, name));
         }
+
+        this.shouldSwitchToPage = buf.readBoolean();
+        if (this.shouldSwitchToPage) {
+            this.switchToPageId = buf.readString();
+        }
     }
 
     @Override
@@ -43,5 +54,9 @@ public final class ClientboundPageListingsPacket implements Message {
             buf.writeString(entry.getId());
             buf.writeString(entry.getName());
         });
+        buf.writeBoolean(this.shouldSwitchToPage);
+        if (this.shouldSwitchToPage) {
+            buf.writeString(this.switchToPageId);
+        }
     }
 }

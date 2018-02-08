@@ -208,34 +208,16 @@ public class SimplePageView extends SimpleScreen {
                     final PageListEntry entry = (PageListEntry) event.getNewValue();
                     manager.requestPage(entry.getId());
                 }
-                this.updateButtons();
             }
         }
     }
 
-    public void refreshPageEntries() {
-        final PageListEntry oldEntry = this.pagesSelect.getSelectedValue();
-
+    public void refreshPageEntries(String switchToPage) {
         this.pagesSelect.setOptions(manager.getPageEntries());
 
-        if (oldEntry == null) {
-            this.pagesSelect.selectFirst();
-            this.refreshPage();
-
-            return;
+        if (switchToPage != null) {
+            manager.getPageEntries().stream().filter(en -> en.getId().equalsIgnoreCase(switchToPage)).findFirst().ifPresent(en -> this.pagesSelect.select(en));
         }
-
-        final PageListEntry newEntry = manager.getPageEntries()
-                .stream()
-                .filter(p -> p.getId().equalsIgnoreCase(oldEntry.getId()))
-                .findFirst().orElse(null);
-        if (newEntry != null) {
-            this.pagesSelect.select(newEntry);
-        } else {
-            this.pagesSelect.selectFirst();
-        }
-
-        this.refreshPage();
     }
 
     public void refreshPage() {
