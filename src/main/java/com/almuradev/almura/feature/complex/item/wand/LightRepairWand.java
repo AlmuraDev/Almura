@@ -33,7 +33,7 @@ public final class LightRepairWand extends WandItem {
 
             final org.spongepowered.api.entity.living.player.Player spongePlayer = (org.spongepowered.api.entity.living.player.Player) playerIn;
 
-            if (spongePlayer.hasPermission("almura.wand.light_repair_wand.json")) {
+            if (spongePlayer.hasPermission("almura.wand.light_repair_wand")) {
 
                 final BlockPos pos = ((EntityPlayerMP) playerIn).getPosition();
 
