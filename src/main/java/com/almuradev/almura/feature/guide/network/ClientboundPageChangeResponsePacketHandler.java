@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.guide.network;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.guide.ClientPageManager;
+import com.almuradev.almura.feature.guide.client.gui.SimpleConfirmGui;
 import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
@@ -40,14 +41,13 @@ public final class ClientboundPageChangeResponsePacketHandler implements Message
                 System.out.println("Debug: Received ClientBoundChangeResponsePacket for Guide.");
             }
             if (!message.success) {
-                UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, I18n.format("almura.guide.dialog.error.title"), I18n.format(message.message), MessageBoxButtons.OK);
+                //UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, I18n.format("almura.guide.dialog.error.title"), I18n.format(message.message), MessageBoxButtons.OK);
             } else {
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
                 if (currentScreen != null && currentScreen instanceof SimplePageView) {
                     ((SimplePageView) currentScreen).refreshPage();
                 }
-
-                UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, I18n.format("almura.guide.dialog.success.title"), I18n.format(message.message), MessageBoxButtons.OK);
+                //UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, I18n.format("almura.guide.dialog.success.title"), I18n.format(message.message), MessageBoxButtons.OK);
             }
         }
     }
