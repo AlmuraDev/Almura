@@ -22,6 +22,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Mouse;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -179,6 +180,12 @@ public class SimplePageView extends SimpleScreen {
                 close();
                 break;
         }
+    }
+
+    @Override
+    public void update(int mouseX, int mouseY, float partialTick) {
+        super.update(mouseX, mouseY, partialTick);
+        Mouse.setGrabbed(false); //This is stupid.
     }
 
     @Subscribe
