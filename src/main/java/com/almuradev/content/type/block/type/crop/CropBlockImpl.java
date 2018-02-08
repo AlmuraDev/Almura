@@ -22,15 +22,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.Random;
@@ -121,31 +118,6 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         final IBlockState state = world.getBlockState(pos);
         final CropBlockStateDefinition definition = this.definition(state);
         return definition.resistance.isPresent() ? (float) definition.resistance.getAsDouble() : super.getExplosionResistance(exploder);
-    }
-
-    @Deprecated
-    @Override
-    @SuppressWarnings("ConstantConditions")
-    public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.definition(state);
-        return definition.box != null ? definition.box.box() : super.getBoundingBox(state, world, pos);
-    }
-
-    @Deprecated
-    @Nullable
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.definition(state);
-        return definition.collisionBox != null ? definition.collisionBox.box() : super.getCollisionBoundingBox(state, world, pos);
-    }
-
-    @Deprecated
-    @Override
-    @SideOnly(Side.CLIENT)
-    @SuppressWarnings("ConstantConditions")
-    public AxisAlignedBB getSelectedBoundingBox(final IBlockState state, final World world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.definition(state);
-        return definition.wireFrame != null ? definition.wireFrame.box().offset(pos) : super.getSelectedBoundingBox(state, world, pos);
     }
 
     @Override

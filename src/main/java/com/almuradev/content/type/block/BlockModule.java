@@ -24,6 +24,7 @@ import com.almuradev.content.type.block.processor.SoundBlockContentProcessor;
 import com.almuradev.content.type.block.type.container.ContainerBlockModule;
 import com.almuradev.content.type.block.type.crop.CropBlockModule;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlockModule;
+import com.almuradev.content.type.block.type.leaf.LeafBlockModule;
 import com.almuradev.content.type.block.type.normal.NormalBlockModule;
 import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
@@ -37,6 +38,7 @@ public final class BlockModule extends AbstractModule implements CommonBinder {
         this.install(new ContainerBlockModule());
         this.install(new CropBlockModule());
         this.install(new HorizontalBlockModule());
+        this.install(new LeafBlockModule());
         this.install(new NormalBlockModule());
         this.facet()
                 .add(BlockExperience.class);
