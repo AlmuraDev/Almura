@@ -21,6 +21,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.api.text.Text;
 
 import javax.annotation.Nullable;
@@ -105,6 +106,7 @@ public class SimplePageCreate extends SimpleScreen {
                 buttonCancel, buttonSave);
 
         addToScreen(form);
+        this.textFieldId.setFocused(true);
     }
 
     @Subscribe
@@ -128,5 +130,29 @@ public class SimplePageCreate extends SimpleScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return true;
+    }
+
+    @Override
+    protected void keyTyped(char keyChar, int keyCode) {
+        if (keyCode == 15) {  //Tab
+            if (textFieldId.isFocused()) {
+                this.textFieldId.setFocused(false);
+                this.textFieldIndex.setFocused(true);
+                return;
+            }
+
+            if (textFieldIndex.isFocused()) {
+                this.textFieldIndex.setFocused(false);
+                this.textFieldName.setFocused(true);
+                return;
+            }
+
+            if (this.textFieldName.isFocused()) {
+                this.textFieldName.setFocused(false);
+                this.textFieldId.setFocused(true);
+                return;
+            }
+        }
+        super.keyTyped(keyChar, keyCode);
     }
 }

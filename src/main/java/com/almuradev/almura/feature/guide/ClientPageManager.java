@@ -25,7 +25,6 @@ import org.spongepowered.api.network.ChannelId;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Nullable;
