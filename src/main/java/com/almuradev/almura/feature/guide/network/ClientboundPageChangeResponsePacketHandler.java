@@ -40,13 +40,13 @@ public final class ClientboundPageChangeResponsePacketHandler implements Message
                 System.out.println("Debug: Received ClientBoundChangeResponsePacket for Guide.");
             }
             if (!message.success) {
-                UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, I18n.format("almura.guide.dialog.error.title"), I18n.format(message.message), MessageBoxButtons.OK);
+               // UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, I18n.format("almura.guide.dialog.error.title"), I18n.format(message.message), MessageBoxButtons.OK);
             } else {
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
                 if (currentScreen != null && currentScreen instanceof SimplePageView) {
                     ((SimplePageView) currentScreen).refreshPage();
                 }
-                UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, I18n.format("almura.guide.dialog.success.title"), I18n.format(message.message), MessageBoxButtons.OK);
+               // UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, I18n.format("almura.guide.dialog.success.title"), I18n.format(message.message), MessageBoxButtons.OK);
             }
         }
     }

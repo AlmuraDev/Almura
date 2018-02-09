@@ -12,12 +12,17 @@ import com.almuradev.almura.feature.guide.Page;
 import com.almuradev.almura.feature.guide.PageListEntry;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
+import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxConsumer;
+import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
+import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -205,6 +210,19 @@ public class SimplePageView extends SimpleScreen {
             }
 
             if (details.equalsIgnoreCase("pageRemove")) {
+                // Todo: Disabled at the moment because I can't get the text within the messagebox to center.
+                // Todo: Confirmation window is closing the Guide which is not intended.
+                if (false) {
+                    UIMessageBox.showDialog(this, I18n.format("almura.guide.view.form.title"), "Do you wish to delete the "
+                            + "selected guide?", MessageBoxButtons.YES_NO, new MessageBoxConsumer() {
+                        @Override
+                        public void accept(MessageBoxResult messageBoxResult) {
+                            if (messageBoxResult == MessageBoxResult.YES) {
+                                manager.requestRemovePage(manager.getPage().getId());
+                            }
+                        }
+                    });
+                }
                 new SimpleConfirmRemove(this).display();
             }
         };

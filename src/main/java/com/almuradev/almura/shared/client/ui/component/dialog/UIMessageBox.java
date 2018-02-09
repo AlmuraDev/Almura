@@ -39,14 +39,14 @@ import javax.annotation.Nullable;
 public class UIMessageBox extends UIForm {
     private static final int buttonPadding = 4;
     private static final int topPadding = 20;
-    private static final int bottomPadding = 30;
+    private static final int bottomPadding = 10;
     private final MessageBoxButtons messageBoxButtons;
     private final String message;
     @Nullable private final MessageBoxConsumer consumer;
     @Nullable private MessageBoxResult result;
 
     private UIMessageBox(MalisisGui gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer consumer) {
-        super(gui, 300, 100, title);
+        super(gui, 300, 80, title);
         this.messageBoxButtons = buttons;
         this.message = message;
         this.consumer = consumer;
@@ -64,8 +64,7 @@ public class UIMessageBox extends UIForm {
 
             final UISlimScrollbar scrollbar = new UISlimScrollbar(gui, messageLabel, UIScrollBar.Type.VERTICAL);
             scrollbar.setAutoHide(true);
-
-            add(messageLabel);
+            add(messageLabel.setAnchor(Anchor.CENTER | Anchor.MIDDLE));
         }
 
         final UIBackgroundContainer buttonContainer = new UIBackgroundContainer(gui);
@@ -101,7 +100,7 @@ public class UIMessageBox extends UIForm {
 
         width += buttonPadding * (buttons.size() - 1);
         buttonContainer.setSize(width, GuiConfig.Button.HEIGHT);
-        buttonContainer.setPosition(0, 25, Anchor.BOTTOM | Anchor.CENTER);
+        buttonContainer.setPosition(0, 5, Anchor.BOTTOM | Anchor.RIGHT);
         buttonContainer.setBackgroundAlpha(0);
         add(buttonContainer);
     }

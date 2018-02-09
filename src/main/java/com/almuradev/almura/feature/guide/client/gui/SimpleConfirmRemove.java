@@ -22,14 +22,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 public class SimpleConfirmRemove extends SimpleScreen {
-
-    private boolean showCloseButton = false;
-    private String message1 = "message1";
-    private String message2 = "message2";
-    private String titleMessage = "title";
 
     public SimpleConfirmRemove(@Nullable GuiScreen parent) {
         super(parent, true);
@@ -70,7 +64,6 @@ public class SimpleConfirmRemove extends SimpleScreen {
                 close();
                 break;
             case "button.no":
-
                 close();
                 break;
         }
