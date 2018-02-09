@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.guide.client.gui;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.guide.Page;
 import com.almuradev.almura.feature.guide.PageListEntry;
@@ -23,8 +24,13 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -41,6 +47,7 @@ public class SimplePageView extends SimpleScreen {
     private UIButton buttonRemove, buttonAdd, buttonDetails, buttonFormat, buttonSave;
     private UISelect<PageListEntry> pagesSelect;
     private UITextField contentField;
+    @Inject private static PluginContainer container;
 
     public SimplePageView(boolean canAdd, boolean canRemove, boolean canModify) {
         this.canAdd = canAdd;
@@ -147,8 +154,10 @@ public class SimplePageView extends SimpleScreen {
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.details":
-                new SimplePageDetails(this).display();
+                this.buttonDetails.getTooltip().setVisible(false);
+                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(openWindow("pageDetails")).submit(container);
                 break;
+
             case "button.format":
                 this.showRaw = !this.showRaw;
                 this.updateFormattingButton();
@@ -163,9 +172,12 @@ public class SimplePageView extends SimpleScreen {
                 }
                 break;
             case "button.add":
-                new SimplePageCreate(this).display();
+                this.buttonAdd.getTooltip().setVisible(false);
+                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(openWindow("pageCreate")).submit(container);
                 break;
+
             case "button.remove":
+                this.buttonAdd.getTooltip().setVisible(false);
                 if (manager.getPage() != null) {
                     manager.requestRemovePage(manager.getPage().getId());
                 }
@@ -182,11 +194,23 @@ public class SimplePageView extends SimpleScreen {
         }
     }
 
+    Consumer<Task> openWindow(String details) {
+        return task -> {
+            System.out.println("Task Running");
+            if (details.equalsIgnoreCase("pageDetails")) {
+                new SimplePageDetails(this).display();
+            }
+
+            if (details.equalsIgnoreCase("pageCreate")) {
+                new SimplePageCreate(this).display();
+            }
+        };
+    }
+
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
         if (++this.lastUpdate > 100 && !showRaw) {
-
             // Get the current cursor position so we can set it back after the refresh
             final int x = this.contentField.getCursorPosition().getXOffset();
             final int y = this.contentField.getCursorPosition().getYOffset();
@@ -200,6 +224,14 @@ public class SimplePageView extends SimpleScreen {
 
             //Reset timer.
             this.lastUpdate = 0;
+
+            //Enable tooltips
+
+            if ((mc.currentScreen instanceof SimplePageView)) {
+                System.out.println("Called");
+                this.buttonAdd.getTooltip().setVisible(true);
+                this.buttonDetails.getTooltip().setVisible(true);
+            }
         }
     }
 
@@ -207,6 +239,12 @@ public class SimplePageView extends SimpleScreen {
     protected void keyTyped(char keyChar, int keyCode) {
         super.keyTyped(keyChar, keyCode);
         this.lastUpdate = 0; // Reset the timer when key is typed.
+    }
+
+    @Override
+    protected void mouseClicked(int x, int y, int button) {
+        super.mouseClicked(x, y, button);
+        this.lastUpdate = 0; // Reset the timer when mouse is pressed.
     }
 
     @Subscribe
@@ -270,6 +308,6 @@ public class SimplePageView extends SimpleScreen {
 
     @Override
     public boolean doesGuiPauseGame() {
-        return true;
+        return false;
     }
 }
