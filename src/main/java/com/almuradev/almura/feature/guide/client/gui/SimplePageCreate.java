@@ -133,7 +133,7 @@ public class SimplePageCreate extends SimpleScreen {
 
     @Override
     protected void keyTyped(char keyChar, int keyCode) {
-        if (keyCode == 15) {  //Tab
+        if (keyCode == Keyboard.KEY_TAB) {
             if (textFieldId.isFocused()) {
                 this.textFieldId.setFocused(false);
                 this.textFieldIndex.setFocused(true);
