@@ -24,6 +24,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
@@ -214,7 +215,11 @@ public class SimplePageView extends SimpleScreen {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
+        if (lastUpdate == 0) {
+            Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
+        }
         if (++this.lastUpdate > 100 && !showRaw) {
+
             // Get the current cursor position so we can set it back after the refresh
             final int x = this.contentField.getCursorPosition().getXOffset();
             final int y = this.contentField.getCursorPosition().getYOffset();
@@ -232,7 +237,6 @@ public class SimplePageView extends SimpleScreen {
             //Enable tooltips
 
             if ((mc.currentScreen instanceof SimplePageView)) {
-                System.out.println("Called");
                 this.buttonAdd.getTooltip().setVisible(true);
                 this.buttonDetails.getTooltip().setVisible(true);
                 this.buttonRemove.getTooltip().setVisible(true);
