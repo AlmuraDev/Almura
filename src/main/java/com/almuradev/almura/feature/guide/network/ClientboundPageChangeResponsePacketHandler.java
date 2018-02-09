@@ -9,7 +9,6 @@ package com.almuradev.almura.feature.guide.network;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.guide.ClientPageManager;
-import com.almuradev.almura.feature.guide.client.gui.SimpleConfirmGui;
 import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;

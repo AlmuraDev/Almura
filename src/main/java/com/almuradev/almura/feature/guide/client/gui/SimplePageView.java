@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.feature.guide.client.gui;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.guide.Page;
 import com.almuradev.almura.feature.guide.PageListEntry;
@@ -23,7 +22,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -41,7 +39,7 @@ public class SimplePageView extends SimpleScreen {
     private static final int innerPadding = 2;
 
     @Inject
-    private static ClientPageManager manager;
+    public static ClientPageManager manager;
     private int lastUpdate = 0;
     private boolean canAdd, canRemove, canModify;
     private boolean showRaw = false;
@@ -207,7 +205,7 @@ public class SimplePageView extends SimpleScreen {
             }
 
             if (details.equalsIgnoreCase("pageRemove")) {
-                manager.requestRemovePage(manager.getPage().getId());
+                new SimpleConfirmRemove(this).display();
             }
         };
     }
