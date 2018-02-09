@@ -177,9 +177,9 @@ public class SimplePageView extends SimpleScreen {
                 break;
 
             case "button.remove":
-                this.buttonAdd.getTooltip().setVisible(false);
+                this.buttonRemove.getTooltip().setVisible(false);
                 if (manager.getPage() != null) {
-                    manager.requestRemovePage(manager.getPage().getId());
+                    Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(openWindow("pageRemove")).submit(container);
                 }
                 break;
             case "button.save":
@@ -203,6 +203,10 @@ public class SimplePageView extends SimpleScreen {
 
             if (details.equalsIgnoreCase("pageCreate")) {
                 new SimplePageCreate(this).display();
+            }
+
+            if (details.equalsIgnoreCase("pageRemove")) {
+                manager.requestRemovePage(manager.getPage().getId());
             }
         };
     }
@@ -231,6 +235,7 @@ public class SimplePageView extends SimpleScreen {
                 System.out.println("Called");
                 this.buttonAdd.getTooltip().setVisible(true);
                 this.buttonDetails.getTooltip().setVisible(true);
+                this.buttonRemove.getTooltip().setVisible(true);
             }
         }
     }
@@ -308,6 +313,6 @@ public class SimplePageView extends SimpleScreen {
 
     @Override
     public boolean doesGuiPauseGame() {
-        return false;
+        return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
     }
 }
