@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 public final class ItemContentTypeLoader extends MultiTypeContentLoader<ItemGenre, ContentItemType, ContentItemType.Builder<ContentItemType>, ItemContentProcessor<ContentItemType, ContentItemType.Builder<ContentItemType>>> implements MultiTypeContentLoader.Translated<ItemGenre>, Witness {
 
     private static final String NORMAL = "normal";
+    private static String current = "not available";
 
     @SubscribeEvent
     public void items(final RegistryEvent.Register<Item> event) {
@@ -42,6 +43,7 @@ public final class ItemContentTypeLoader extends MultiTypeContentLoader<ItemGenr
     @SubscribeEvent
     public void models(final ModelRegistryEvent event) {
         for (final Entry<ItemGenre, ContentItemType, ContentItemType.Builder<ContentItemType>> entry : this.entries.values()) {
+            current = entry.value.toString();
             final ModelResourceLocation mrl = fromCatalog(entry.value);
             ModelLoader.setCustomModelResourceLocation((Item) entry.value, 0, mrl);
         }
@@ -49,6 +51,9 @@ public final class ItemContentTypeLoader extends MultiTypeContentLoader<ItemGenr
 
     @SideOnly(Side.CLIENT)
     private static ModelResourceLocation fromCatalog(final CatalogType catalog) {
+        if (catalog == null || catalog.getId() == null) {
+            System.out.println("Debug - Model Loading Error for: " + current);
+        }
         final String string = catalog.getId();
         return new ModelResourceLocation(
                 0,
