@@ -11,7 +11,6 @@ import com.almuradev.almura.feature.guide.Page;
 import com.almuradev.almura.feature.guide.PageListEntry;
 import com.almuradev.almura.feature.guide.ServerPageManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
-import net.minecraft.client.resources.I18n;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBinding;
@@ -45,7 +44,7 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
             final Player player = ((PlayerConnection) connection).getPlayer();
 
             if (!player.hasPermission("almura.guide.open")) {
-                player.sendMessage(Text.of(I18n.format("almura.guide.permission.open.missing")));
+                player.sendMessage(Text.of("almura.guide.permission.open.missing"));
                 return;
             }
 
