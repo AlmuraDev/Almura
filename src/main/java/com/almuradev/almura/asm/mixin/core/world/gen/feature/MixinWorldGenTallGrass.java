@@ -12,16 +12,17 @@ import net.minecraft.world.gen.feature.WorldGenTallGrass;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Random;
 
 @Mixin(value = WorldGenTallGrass.class, priority = 999)
 public abstract class MixinWorldGenTallGrass extends WorldGenerator {
 
-    private final IBlockState tallGrassState;
+    @Shadow private final IBlockState tallGrassState;
 
     public MixinWorldGenTallGrass(BlockTallGrass.EnumType p_i45629_1_) {
-        this.tallGrassState = Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, p_i45629_1_);
+        this.tallGrassState = Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, p_i45629_1_);  //This is never called so shadowing the field works when in production mode.
     }
 
     /**
