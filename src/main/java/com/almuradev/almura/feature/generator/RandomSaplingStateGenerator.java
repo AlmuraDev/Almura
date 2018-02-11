@@ -13,7 +13,7 @@ public class RandomSaplingStateGenerator {
     public static IBlockState randomSapling(World worldIn, BlockPos blockPos, Random random) {
         String saplingName = "";
         int saplingAge = 0;
-        int sapling = random.nextInt(64); // Total Crops
+        int sapling = random.nextInt(10); // Total Crops
 
         if (sapling == 0) {
             saplingName = "almura:sapling/cheery_sapling";
