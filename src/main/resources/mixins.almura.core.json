@@ -14,7 +14,10 @@
         "item.MixinItemBucketMilk",
         "tileentity.MixinTileEntity",
         "util.MixinFoodStats",
-        "world.MixinBossBarColor"
+        "world.MixinBossBarColor",
+        "world.gen.feature.MixinWorldGenTallGrass",
+        "world.gen.feature.MixinWorldGenDeadBush",
+        "world.gen.feature.MixinWorldGenCactus"
     ],
     "client": [
         "client.gui.MixinGuiBossOverlay",
