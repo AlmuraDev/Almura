@@ -378,7 +378,7 @@ public class RandomPlantStateGenerator {
         } else if (plant == 73) {
             plantName = "almura:horizontal/flower/flower_daisy";
         } else if (plant == 74) {
-            plantName = "almura:horizontal/flower/flower_dydrangea";
+            plantName = "almura:horizontal/flower/flower_hydrangea";
         } else if (plant == 75) {
             plantName = "almura:horizontal/flower/flower_lotus";
         } else if (plant == 76) {
