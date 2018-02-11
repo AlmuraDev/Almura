@@ -33,7 +33,7 @@ public abstract class MixinWorldGenDeadBush extends WorldGenerator {
             BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
 
             if (worldIn.isAirBlock(blockpos) && Blocks.DEADBUSH.canBlockStay(worldIn, blockpos, Blocks.DEADBUSH.getDefaultState())) {
-                final int chance = random.nextInt(4 + 1);
+                final int chance = random.nextInt(4) + 1;
 
                 if (chance == 1) {
                     final IBlockState desertPlantState = RandomPlantStateGenerator.randomDesertPlant(worldIn, blockpos, random);
