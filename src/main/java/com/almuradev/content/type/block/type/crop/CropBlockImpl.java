@@ -256,7 +256,10 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
         // Crop soil isn't fertile? Don't grow and rollback if applicable
         if (!this.isFertile(world, pos.down())) {
-            rollback = true;
+            //rollback = true;
+            //Todo:  Can't do this because isFertile will always return false if the soil moisture is below a certain level.
+            // This fact negates the ability to do a water radius check...
+            //Todo:  Disabled on 2/11/2018 as it was preventing large fields without high soil moisture.
         }
 
         // Check if its time to perform a growth tick
