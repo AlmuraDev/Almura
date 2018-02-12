@@ -42,9 +42,13 @@ public abstract class MixinBlockFarmland extends Block {
     @Override
     @Overwrite
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+        final Random random = new Random();
+
         int soilMoisture = ((Integer)state.getValue(MOISTURE)).intValue();
+        int revertChance = random.nextInt(25);
+
         if (!this.hasWater(worldIn, pos) && !worldIn.isRainingAt(pos.up()) && !(worldIn.getBiomeForCoordsBody(pos).getRainfall() > 0.5)) { // Add Biome rainfall.
-            if (soilMoisture > 0) {
+            if (soilMoisture > 0 && revertChance == 1) { // Slow down the revert to account for longer lasting rain.
                 worldIn.setBlockState(pos, state.withProperty(MOISTURE, Integer.valueOf(soilMoisture - 1)), 2);
             } else if (!this.hasCrops(worldIn, pos)) {
                 // ToDo:  We need a hook into GP for a Soil Flag like we did with Res-Protect.
