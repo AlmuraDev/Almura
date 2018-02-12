@@ -16,7 +16,7 @@ public class RandomSaplingStateGenerator {
         int sapling = random.nextInt(10); // Total Crops
 
         if (sapling == 0) {
-            saplingName = "almura:sapling/cheery_sapling";
+            saplingName = "almura:sapling/cherry_sapling";
         } else if (sapling == 1) {
             saplingName = "almura:sapling/grape_fruit_sapling";
         } else if (sapling == 2) {
