@@ -18,5 +18,6 @@ public final class ComplexContentFeature implements Witness {
     @SubscribeEvent
     public void onRegisterItem(RegistryEvent.Register<Item> event) {
         event.getRegistry().register(new LightRepairWand());
+        //event.getRegistry().register(new FarmersAlmanacItem()); // Todo: Hook up here.
     }
 }
