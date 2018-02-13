@@ -12,9 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 public class IngameFarmersAlmanac extends SimpleScreen {
 
@@ -25,7 +23,6 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     private final float rain;
     private final int areaBlockLight;
     private final int sunlight;
-    public static final ResourceLocation BLOCKS_TEXTURE = TextureMap.LOCATION_BLOCKS_TEXTURE;
 
     public IngameFarmersAlmanac(Block block, int metadata, boolean fertile, float temp, float rain, int areaBlockLight, int sunlight) {
         this.block = block;
