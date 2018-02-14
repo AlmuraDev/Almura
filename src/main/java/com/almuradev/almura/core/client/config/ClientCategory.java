@@ -35,6 +35,15 @@ public final class ClientCategory {
     @Setting(value = "item-frame-render-distance", comment = "Controls an item frame's render distance. Valid options are 0|16|32|64|128 (blocks)")
     public int itemFrameRenderDistance = 16;
 
+    @Setting(value = "player-name-render-distance", comment = "Controls the Player Name render distance")
+    public int playerNameRenderDistance = 8;
+
+    @Setting(value = "enemy-name-render-distance", comment = "Controls the Enemy Name render distance")
+    public int enemyNameRenderDistance = 8;
+
+    @Setting(value = "animal-name-render-distance", comment = "Controls the Animal Name render distance")
+    public int animalNameRenderDistance = 4;
+
     @Setting(value = "sign-text-render-distance", comment = "Controls a sign text's render distance. Valid options are 0|16|32|64|128 (blocks)")
     public int signTextRenderDistance = 16;
 

@@ -112,6 +112,42 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 .listener(this)
                 .build("slider.itemFrameRenderDistance");
 
+        final UISlider<OptionsConverter.Options> sliderPlayerNameRenderDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
+                .text("Player Name Distance: %s")
+                .value(Arrays.stream(OptionsConverter.Options.values())
+                        .filter(o -> o.value == config.playerNameRenderDistance)
+                        .findFirst()
+                        .orElse(OptionsConverter.Options.DEFAULT))
+                .size(CONTROL_WIDTH, CONTROL_HEIGHT)
+                .position(CONTROL_WIDTH / 2 + CONTROL_PADDING, getPaddedY(sliderItemFrameDistance, CONTROL_PADDING))
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .listener(this)
+                .build("slider.playerNameRenderDistance");
+
+        final UISlider<OptionsConverter.Options> sliderEnemyNameRenderDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
+                .text("Enemy Name Distance: %s")
+                .value(Arrays.stream(OptionsConverter.Options.values())
+                        .filter(o -> o.value == config.enemyNameRenderDistance)
+                        .findFirst()
+                        .orElse(OptionsConverter.Options.DEFAULT))
+                .size(CONTROL_WIDTH, CONTROL_HEIGHT)
+                .position(CONTROL_WIDTH / 2 + CONTROL_PADDING, getPaddedY(sliderPlayerNameRenderDistance, CONTROL_PADDING))
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .listener(this)
+                .build("slider.enemyNameRenderDistance");
+
+        final UISlider<OptionsConverter.Options> sliderAnimalNameRenderDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
+                .text("Animal Name Distance: %s")
+                .value(Arrays.stream(OptionsConverter.Options.values())
+                        .filter(o -> o.value == config.animalNameRenderDistance)
+                        .findFirst()
+                        .orElse(OptionsConverter.Options.DEFAULT))
+                .size(CONTROL_WIDTH, CONTROL_HEIGHT)
+                .position(CONTROL_WIDTH / 2 + CONTROL_PADDING, getPaddedY(sliderEnemyNameRenderDistance, CONTROL_PADDING))
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .listener(this)
+                .build("slider.animalNameRenderDistance");
+
         final UIButton buttonDone = new UIButtonBuilder(this)
                 .text(I18n.format("gui.done"))
                 .size(200, CONTROL_HEIGHT)
@@ -151,7 +187,8 @@ public class SimpleOptionsMenu extends SimpleScreen {
         checkboxNumericHUDValues.setName("checkbox.numeric_hud_values");
         checkboxNumericHUDValues.register(this);
 
-        addToScreen(this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget, checkboxNumericHUDValues, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, buttonDone);
+        addToScreen(this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget, checkboxNumericHUDValues, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance,
+                sliderPlayerNameRenderDistance, sliderEnemyNameRenderDistance, sliderAnimalNameRenderDistance, buttonDone);
     }
 
     @Override
@@ -208,6 +245,15 @@ public class SimpleOptionsMenu extends SimpleScreen {
             case "slider.itemFrameRenderDistance" :
                 StaticAccess.config.get().client.itemFrameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
+            case "slider.playerNameRenderDistance" :
+                StaticAccess.config.get().client.playerNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                break;
+            case "slider.enemyNameRenderDistance" :
+                StaticAccess.config.get().client.enemyNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                break;
+            case "slider.animalNameRenderDistance" :
+                StaticAccess.config.get().client.animalNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                break;
             case "checkbox.world_compass_widget" :
                 StaticAccess.config.get().client.displayWorldCompassWidget = (boolean) event.getNewValue();
                 break;
@@ -243,10 +289,12 @@ public class SimpleOptionsMenu extends SimpleScreen {
         }
 
         protected enum Options {
-            DEFAULT("Default", 0, 0),
-            V16("16", 1, 16),
-            V32("32", 2, 32),
-            V64("64", 3, 64),
+            DEFAULT("Disabled", 0, 0),
+            V4("4", 1, 4),
+            V8("8", 2, 8),
+            V16("16", 3, 16),
+            V32("32", 4, 32),
+            V64("64", 4, 64),
             V128("128", 4, 128);
 
             public final String name;

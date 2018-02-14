@@ -1,7 +1,10 @@
 package com.almuradev.almura.feature.healthbar.asm.mixin.client.renderer.entity;
 
+import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.google.inject.Inject;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -15,6 +18,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.entity.living.animal.Animal;
+import org.spongepowered.api.entity.living.monster.Monster;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -36,13 +42,7 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
     @Override
     public void renderLivingLabel(EntityLivingBase entityIn, String name, double x, double y, double z, int maxDistance) {
         double distance = entityIn.getDistanceSq(this.renderManager.renderViewEntity);
-        double distanceLimit = (maxDistance * maxDistance); // Default is 4096
-
-        if (entityIn instanceof EntityPlayerMP) {
-            distanceLimit = 1024;
-        } else {
-            distanceLimit = 512;
-        }
+        double distanceLimit = (maxDistance*maxDistance); // Default is 4096
 
         if (distance <= distanceLimit) {  //default 4096
             boolean isSneaking = entityIn.isSneaking();
@@ -63,16 +63,19 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
 
     @Overwrite // Was override but synthetic bridge conflict occurred.
     public void renderName(EntityLivingBase entity, double x, double y, double z) {
-        if (this.showName()) {
-            this.renderLivingLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, 64);
+        if ((entity instanceof Player || entity instanceof EntityPlayerSP) && StaticAccess.config.get().client.playerNameRenderDistance > 0) {
+            this.renderLivingLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.playerNameRenderDistance);
+        }
+
+        if (entity instanceof Monster && StaticAccess.config.get().client.enemyNameRenderDistance > 0) {
+            this.renderLivingLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.enemyNameRenderDistance);
+        }
+
+        if (entity instanceof Animal && StaticAccess.config.get().client.animalNameRenderDistance > 0) {
+            this.renderLivingLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.animalNameRenderDistance);
         }
     }
 
-    private boolean showName() {
-        // ToDo:  Timer code goes here.
-        // ToDo:  Lots of other things I haven't though of too.
-        return true;
-    }
 
     public void drawCombo(EntityLivingBase entityIn, FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking) {
         GlStateManager.pushMatrix();
