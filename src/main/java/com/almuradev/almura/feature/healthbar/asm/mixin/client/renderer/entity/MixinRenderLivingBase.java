@@ -1,5 +1,7 @@
 package com.almuradev.almura.feature.healthbar.asm.mixin.client.renderer.entity;
 
+import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.google.inject.Inject;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -22,6 +24,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(value = RenderLivingBase.class, priority = 999)
 public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
 
+    @Inject private static ClientTitleManager manager;
     @Shadow protected ModelBase mainModel;
 
     public MixinRenderLivingBase(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn) {
@@ -47,9 +50,9 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
             float viewerPitch = this.renderManager.playerViewX;
             boolean isThirdPersonFrontal = this.renderManager.options.thirdPersonView == 2;
             float sneakAdjustment = entityIn.height + 0.5F - (isSneaking ? 0.25F : 0.0F);
-            int verticalShift = -10;
+            int verticalShift = 0;
 
-            drawCombo(entityIn, this.getFontRendererFromRenderManager(), name, (float)x,(float)y + sneakAdjustment, (float)z, verticalShift, viewerYaw, viewerPitch, isThirdPersonFrontal, isSneaking);
+            drawCombo(entityIn, this.getFontRendererFromRenderManager(), name, (float) x, (float) y + sneakAdjustment, (float) z, verticalShift, viewerYaw, viewerPitch, isThirdPersonFrontal, isSneaking);
         }
     }
 
@@ -71,25 +74,27 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
         return true;
     }
 
-    public void drawCombo(EntityLivingBase entityIn, FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking)
-    {
+    public void drawCombo(EntityLivingBase entityIn, FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
         GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate((float)(isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate((float) (isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
         GlStateManager.scale(-0.025F, -0.025F, 0.025F);
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
 
+        final String title = manager.getTitle(entityIn.getUniqueID());
+
         if (!isSneaking) {
             GlStateManager.disableDepth();
         }
+
         int i = fontRendererIn.getStringWidth(str) / 2;
 
         double a = entityIn.getMaxHealth() / entityIn.getHealth();
         double b = 100 / a;
-        double c = (double) (i*2) / 100;
+        double c = (double) (i * 2) / 100;
         double size = c * b;
 
         GlStateManager.enableBlend();
@@ -99,18 +104,37 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
 
-        // Draw dark box for Nameplate.
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.pos((double)(-i - 1), (double)(-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        bufferbuilder.pos((double)(-i - 1), (double)(8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        bufferbuilder.pos((double)(i + 1), (double)(8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        bufferbuilder.pos((double)(i + 1), (double)(-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        tessellator.draw();
+        if (title != null) {
+            int t = fontRendererIn.getStringWidth(title) / 2;
+            int m = t;
+
+            if (t > i) {
+                m = t;
+            } else {
+                m = i;
+            }
+
+            // Draw dark box for Title & Nameplate.
+            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+            bufferbuilder.pos((double) (-m - 1), (double) (-1 + verticalShift-10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            bufferbuilder.pos((double) (-m - 1), (double) (18 + verticalShift-10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            bufferbuilder.pos((double) (m + 1), (double) (18 + verticalShift-10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            bufferbuilder.pos((double) (m + 1), (double) (-1 + verticalShift-10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            tessellator.draw();
+        } else {
+            // Draw dark box for Nameplate.
+            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+            bufferbuilder.pos((double) (-i - 1), (double) (-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            bufferbuilder.pos((double) (-i - 1), (double) (8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            bufferbuilder.pos((double) (i + 1), (double) (8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            bufferbuilder.pos((double) (i + 1), (double) (-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            tessellator.draw();
+        }
 
         // Re-position for healthbar.
         int healthbarOffset = verticalShift + 10;
 
-        if (entityIn.getHealth() > 0) {
+        if (entityIn.getHealth() > 0 && !isSneaking) {
             // Draw healthbar
             bufferbuilder = tessellator.getBuffer();
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
@@ -119,15 +143,26 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
             bufferbuilder.pos((double) ((-i + 1) + size), (double) (3 + healthbarOffset), 0.0D).color(1.0F, 0.0F, 0.0F, 0.45F).endVertex();
             bufferbuilder.pos((double) ((-i + 1) + size), (double) (-1 + healthbarOffset), 0.0D).color(1.0F, 0.0F, 0.0F, 0.45F).endVertex();
             tessellator.draw();
-            GlStateManager.enableTexture2D();
+        }
+
+        GlStateManager.enableTexture2D();
+
+        if (title != null) {
+            verticalShift = verticalShift - 10;
         }
 
         if (!isSneaking) {
+            if (title != null) {
+                fontRendererIn.drawString(title, -fontRendererIn.getStringWidth(title) / 2, verticalShift + 10, 553648127);
+            }
             fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, 553648127);
             GlStateManager.enableDepth();
         }
 
         GlStateManager.depthMask(true);
+        if (title != null) {
+            fontRendererIn.drawString(title, -fontRendererIn.getStringWidth(title) / 2, verticalShift + 10, isSneaking ? 553648127 : -1);
+        }
         fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, isSneaking ? 553648127 : -1);
         GlStateManager.enableLighting();
         GlStateManager.disableBlend();

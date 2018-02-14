@@ -37,6 +37,7 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
      * @author Zidane
      * @reason To have titles render under the nameplate
      */
+    /*
     @Overwrite
     protected void renderEntityName(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq) {
         if (distanceSq < 100.0D) {
@@ -57,14 +58,13 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
             // Scoreboard
             final String title = manager.getTitle(entityIn.getUniqueID());
             if (title != null) {
-                // TODO Could make this configurable
                 this.renderLivingLabel(entityIn, title, x, y, z, 128);
                 y += (double) ((float) this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * 0.025F);
             }
         }
 
         super.renderEntityName(entityIn, x, y, z, name, distanceSq);
-    }
+    } */
 
     /**
      * @author Dockter
