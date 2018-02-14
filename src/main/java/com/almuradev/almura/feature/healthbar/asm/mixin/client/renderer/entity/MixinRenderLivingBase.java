@@ -39,8 +39,27 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
         this.shadowSize = shadowSizeIn;
     }
 
-    @Override
-    public void renderLivingLabel(EntityLivingBase entityIn, String name, double x, double y, double z, int maxDistance) {
+    /**
+     * @author Dockter
+     * @reason To have control over rendering names
+     */
+
+    @Overwrite // Was override but synthetic bridge conflict occurred.
+    public void renderName(EntityLivingBase entity, double x, double y, double z) {
+        if ((entity instanceof Player || entity instanceof EntityPlayerSP) && StaticAccess.config.get().client.playerNameRenderDistance > 0) {
+            this.renderLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.playerNameRenderDistance, StaticAccess.config.get().client.displayNames, StaticAccess.config.get().client.displayHealthbars);
+        }
+
+        if (entity instanceof Monster && StaticAccess.config.get().client.enemyNameRenderDistance > 0) {
+            this.renderLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.enemyNameRenderDistance, StaticAccess.config.get().client.displayNames, StaticAccess.config.get().client.displayHealthbars);
+        }
+
+        if (entity instanceof Animal && StaticAccess.config.get().client.animalNameRenderDistance > 0) {
+            this.renderLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.animalNameRenderDistance, StaticAccess.config.get().client.displayNames, StaticAccess.config.get().client.displayHealthbars);
+        }
+    }
+
+    private void renderLabel(EntityLivingBase entityIn, String name, double x, double y, double z, int maxDistance, boolean showName, boolean showHealthbar) {
         double distance = entityIn.getDistanceSq(this.renderManager.renderViewEntity);
         double distanceLimit = (maxDistance*maxDistance); // Default is 4096
 
@@ -52,32 +71,13 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
             float sneakAdjustment = entityIn.height + 0.5F - (isSneaking ? 0.25F : 0.0F);
             int verticalShift = 0;
 
-            drawCombo(entityIn, this.getFontRendererFromRenderManager(), name, (float) x, (float) y + sneakAdjustment, (float) z, verticalShift, viewerYaw, viewerPitch, isThirdPersonFrontal, isSneaking);
-        }
-    }
-
-    /**
-     * @author Dockter
-     * @reason To have control over rendering names
-     */
-
-    @Overwrite // Was override but synthetic bridge conflict occurred.
-    public void renderName(EntityLivingBase entity, double x, double y, double z) {
-        if ((entity instanceof Player || entity instanceof EntityPlayerSP) && StaticAccess.config.get().client.playerNameRenderDistance > 0) {
-            this.renderLivingLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.playerNameRenderDistance);
-        }
-
-        if (entity instanceof Monster && StaticAccess.config.get().client.enemyNameRenderDistance > 0) {
-            this.renderLivingLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.enemyNameRenderDistance);
-        }
-
-        if (entity instanceof Animal && StaticAccess.config.get().client.animalNameRenderDistance > 0) {
-            this.renderLivingLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.animalNameRenderDistance);
+            drawCombo(entityIn, this.getFontRendererFromRenderManager(), name, (float) x, (float) y + sneakAdjustment, (float) z, verticalShift, viewerYaw, viewerPitch, isThirdPersonFrontal, isSneaking, showName, showHealthbar);
         }
     }
 
 
-    public void drawCombo(EntityLivingBase entityIn, FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking) {
+    private void drawCombo(EntityLivingBase entityIn, FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking, boolean showName,
+            boolean showHealthbar) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
         GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
@@ -107,37 +107,39 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
 
-        if (title != null) {
-            int t = fontRendererIn.getStringWidth(title) / 2;
-            int m = t;
+        if (showName) {
+            if (title != null) {
+                int t = fontRendererIn.getStringWidth(title) / 2;
+                int m = t;
 
-            if (t > i) {
-                m = t;
+                if (t > i) {
+                    m = t;
+                } else {
+                    m = i;
+                }
+
+                // Draw dark box for Title & Nameplate.
+                bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+                bufferbuilder.pos((double) (-m - 1), (double) (-1 + verticalShift - 10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                bufferbuilder.pos((double) (-m - 1), (double) (18 + verticalShift - 10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                bufferbuilder.pos((double) (m + 1), (double) (18 + verticalShift - 10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                bufferbuilder.pos((double) (m + 1), (double) (-1 + verticalShift - 10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                tessellator.draw();
             } else {
-                m = i;
+                // Draw dark box for Nameplate.
+                bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+                bufferbuilder.pos((double) (-i - 1), (double) (-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                bufferbuilder.pos((double) (-i - 1), (double) (8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                bufferbuilder.pos((double) (i + 1), (double) (8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                bufferbuilder.pos((double) (i + 1), (double) (-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+                tessellator.draw();
             }
-
-            // Draw dark box for Title & Nameplate.
-            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            bufferbuilder.pos((double) (-m - 1), (double) (-1 + verticalShift-10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            bufferbuilder.pos((double) (-m - 1), (double) (18 + verticalShift-10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            bufferbuilder.pos((double) (m + 1), (double) (18 + verticalShift-10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            bufferbuilder.pos((double) (m + 1), (double) (-1 + verticalShift-10), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            tessellator.draw();
-        } else {
-            // Draw dark box for Nameplate.
-            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            bufferbuilder.pos((double) (-i - 1), (double) (-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            bufferbuilder.pos((double) (-i - 1), (double) (8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            bufferbuilder.pos((double) (i + 1), (double) (8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            bufferbuilder.pos((double) (i + 1), (double) (-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            tessellator.draw();
         }
 
         // Re-position for healthbar.
         int healthbarOffset = verticalShift + 10;
 
-        if (entityIn.getHealth() > 0 && !isSneaking) {
+        if (showHealthbar && entityIn.getHealth() > 0 && !isSneaking) {
             // Draw healthbar
             bufferbuilder = tessellator.getBuffer();
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
@@ -155,18 +157,22 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
         }
 
         if (!isSneaking) {
-            if (title != null) {
-                fontRendererIn.drawString(title, -fontRendererIn.getStringWidth(title) / 2, verticalShift + 10, 553648127);
+            if (showName) {
+                if (title != null) {
+                    fontRendererIn.drawString(title, -fontRendererIn.getStringWidth(title) / 2, verticalShift + 10, 553648127);
+                }
+                fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, 553648127);
             }
-            fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, 553648127);
             GlStateManager.enableDepth();
         }
 
         GlStateManager.depthMask(true);
-        if (title != null) {
-            fontRendererIn.drawString(title, -fontRendererIn.getStringWidth(title) / 2, verticalShift + 10, isSneaking ? 553648127 : -1);
+        if (showName) {
+            if (title != null) {
+                fontRendererIn.drawString(title, -fontRendererIn.getStringWidth(title) / 2, verticalShift + 10, isSneaking ? 553648127 : -1);
+            }
+            fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, isSneaking ? 553648127 : -1);
         }
-        fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, isSneaking ? 553648127 : -1);
         GlStateManager.enableLighting();
         GlStateManager.disableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

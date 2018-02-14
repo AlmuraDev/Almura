@@ -58,4 +58,10 @@ public final class ClientCategory {
 
     @Setting(value = "display-numeric-hud-values", comment = "Toggles the display of numeric values in the Origin HUD")
     public boolean displayNumericHUDValues = true;
+
+    @Setting(value = "display-names", comment = "Toggles the display of Entity Names")
+    public boolean displayNames = true;
+
+    @Setting(value = "display-healthbars", comment = "Toggles the display Entity Healthbars")
+    public boolean displayHealthbars = true;
 }

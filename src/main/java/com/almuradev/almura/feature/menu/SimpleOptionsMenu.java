@@ -187,7 +187,26 @@ public class SimpleOptionsMenu extends SimpleScreen {
         checkboxNumericHUDValues.setName("checkbox.numeric_hud_values");
         checkboxNumericHUDValues.register(this);
 
-        addToScreen(this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget, checkboxNumericHUDValues, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance,
+        final boolean displayNames = config.displayNames;
+        final UICheckBox checkboxDisplayNames = new UICheckBox(this);
+        checkboxDisplayNames.setText(TextFormatting.WHITE + "Display Entity Names");
+        checkboxDisplayNames.setAnchor(Anchor.TOP | Anchor.CENTER);
+        checkboxDisplayNames.setPosition(this.buttonHudType.getX(),  getPaddedY(checkboxNumericHUDValues, CONTROL_PADDING));
+        checkboxDisplayNames.setChecked(displayNames);
+        checkboxDisplayNames.setName("checkbox.display_names");
+        checkboxDisplayNames.register(this);
+
+        final boolean displayHealthbars = config.displayHealthbars;
+        final UICheckBox checkboxDisplayHealthbars = new UICheckBox(this);
+        checkboxDisplayHealthbars.setText(TextFormatting.WHITE + "Display Entity Healthbars");
+        checkboxDisplayHealthbars.setAnchor(Anchor.TOP | Anchor.CENTER);
+        checkboxDisplayHealthbars.setPosition(this.buttonHudType.getX(),  getPaddedY(checkboxDisplayNames, CONTROL_PADDING));
+        checkboxDisplayHealthbars.setChecked(displayHealthbars);
+        checkboxDisplayHealthbars.setName("checkbox.display_healthbars");
+        checkboxDisplayHealthbars.register(this);
+
+        addToScreen(this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget, checkboxNumericHUDValues, checkboxDisplayNames, checkboxDisplayHealthbars, sliderChestDistance, sliderSignTextDistance,
+                sliderItemFrameDistance,
                 sliderPlayerNameRenderDistance, sliderEnemyNameRenderDistance, sliderAnimalNameRenderDistance, buttonDone);
     }
 
@@ -262,6 +281,14 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 break;
             case "checkbox.numeric_hud_values" :
                 StaticAccess.config.get().client.displayNumericHUDValues = (boolean) event.getNewValue();
+                break;
+
+            case "checkbox.display_names" :
+                StaticAccess.config.get().client.displayNames = (boolean) event.getNewValue();
+                break;
+
+            case "checkbox.display_healthbars" :
+                StaticAccess.config.get().client.displayHealthbars = (boolean) event.getNewValue();
                 break;
         }
 
