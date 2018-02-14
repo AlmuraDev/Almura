@@ -159,7 +159,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
         final UIButton quitButton = new UIButtonBuilder(this)
                 .container(contentContainer)
                 .text(Text.of(I18n.format("almura.menu_button.quit")))
-                .fro(FontOptions.builder().from(FontColors.LIGHT_RED_FO).shadow(true).build())
+                .fro(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
                 .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
                 .size(GuiConfig.Button.WIDTH_SHORT, GuiConfig.Button.HEIGHT)
                 .position(0, SimpleScreen.getPaddedY(shortcutContainer, 25))

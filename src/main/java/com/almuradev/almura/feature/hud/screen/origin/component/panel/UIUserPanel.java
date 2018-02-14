@@ -178,7 +178,7 @@ public class UIUserPanel extends AbstractPanel {
             this.currencyImage.setVisible(true);
             this.currencyLabel.setVisible(true);
             this.currencyLabel.setText(hudData.economyAmount);
-            this.currencyLabel.setFontOptions(Fonts.colorAndScale(FontColors.ORANGE, 0.7F));
+            this.currencyLabel.setFontOptions(Fonts.colorAndScale(FontColors.GOLD, 0.7F));
             this.currencyLabel.setPosition(-3, SimpleScreen.getPaddedY(this.usernameLabel, 1),Anchor.TOP | Anchor.RIGHT);
             this.currencyImage.setPosition(-(this.currencyLabel.getWidth() + 5), SimpleScreen.getPaddedY(this.usernameLabel, -1), Anchor.TOP | Anchor.RIGHT);
         }
