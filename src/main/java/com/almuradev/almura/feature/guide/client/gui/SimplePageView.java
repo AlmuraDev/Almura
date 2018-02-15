@@ -52,6 +52,7 @@ public class SimplePageView extends SimpleScreen {
     private UISelect<PageListEntry> pagesSelect;
     private UITextField contentField;
     @Inject private static PluginContainer container;
+    private boolean unlockMouse = true;
 
     public SimplePageView(boolean canAdd, boolean canRemove, boolean canModify) {
         this.canAdd = canAdd;
@@ -65,7 +66,7 @@ public class SimplePageView extends SimpleScreen {
 
         final UIForm form = new UIForm(this, 400, 225, I18n.format("almura.guide.view.form.title"));
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        form.setMovable(true);
+        form.setMovable(false);
         form.setClosable(true);
 
         // Remove button
@@ -230,11 +231,15 @@ public class SimplePageView extends SimpleScreen {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
-        if (lastUpdate == 0) {
+        if (unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
+            unlockMouse = false; // Only unlock once per session.
         }
+
         if (++this.lastUpdate > 100 && !showRaw) {
 
+            // Todo: disabled, causing some issues with scroll.
+            /*
             // Get the current cursor position so we can set it back after the refresh
             final int x = this.contentField.getCursorPosition().getXOffset();
             final int y = this.contentField.getCursorPosition().getYOffset();
@@ -246,6 +251,7 @@ public class SimplePageView extends SimpleScreen {
             // Set original cursor position prior to format.
             this.contentField.setCursorPosition(x, y);
 
+
             //Reset timer.
             this.lastUpdate = 0;
 
@@ -255,7 +261,7 @@ public class SimplePageView extends SimpleScreen {
                 this.buttonAdd.getTooltip().setVisible(true);
                 this.buttonDetails.getTooltip().setVisible(true);
                 this.buttonRemove.getTooltip().setVisible(true);
-            }
+            } */
         }
     }
 
