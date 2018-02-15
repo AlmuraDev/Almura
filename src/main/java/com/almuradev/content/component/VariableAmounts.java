@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.util;
+package com.almuradev.content.component;
 
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import ninja.leaping.configurate.ConfigurationNode;

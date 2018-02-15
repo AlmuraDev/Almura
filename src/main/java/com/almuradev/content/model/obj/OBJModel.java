@@ -9,13 +9,13 @@ package com.almuradev.content.model.obj;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.model.obj.geometry.Group;
 import com.almuradev.content.model.obj.geometry.Vertex;
 import com.almuradev.content.model.obj.geometry.VertexNormal;
 import com.almuradev.content.model.obj.geometry.VertexTextureCoordinate;
 import com.almuradev.content.model.obj.material.MaterialDefinition;
 import com.almuradev.content.model.obj.material.MaterialLibrary;
+import com.almuradev.content.registry.ResourceLocations;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.renderer.block.model.IBakedModel;

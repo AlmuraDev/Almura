@@ -7,9 +7,9 @@
  */
 package com.almuradev.content.registry.delegate;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.component.delegate.LazyDelegate;
+import com.almuradev.content.registry.ResourceLocations;
 import com.google.common.base.MoreObjects;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.CatalogType;

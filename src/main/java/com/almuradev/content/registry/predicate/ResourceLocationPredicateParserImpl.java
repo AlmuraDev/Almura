@@ -7,9 +7,9 @@
  */
 package com.almuradev.content.registry.predicate;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.component.predicate.AbstractFunctionPredicateParser;
 import com.almuradev.content.component.predicate.FunctionPredicate;
+import com.almuradev.content.registry.ResourceLocations;
 import net.minecraft.util.ResourceLocation;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.Types;

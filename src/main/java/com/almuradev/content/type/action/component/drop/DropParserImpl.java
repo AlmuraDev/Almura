@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.action.component.drop;
 
-import com.almuradev.almura.shared.util.VariableAmounts;
+import com.almuradev.content.component.VariableAmounts;
 import com.almuradev.content.type.item.definition.ItemDefinition;
 import com.almuradev.content.type.item.definition.ItemDefinitionConfig;
 import ninja.leaping.configurate.ConfigurationNode;

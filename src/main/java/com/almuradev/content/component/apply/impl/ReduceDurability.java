@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.component.apply.impl;
 
-import com.almuradev.almura.shared.util.VariableAmounts;
+import com.almuradev.content.component.VariableAmounts;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ItemApplyContext;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;

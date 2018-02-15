@@ -7,7 +7,6 @@
  */
 package com.almuradev.content.model.obj;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.model.obj.geometry.Face;
 import com.almuradev.content.model.obj.geometry.Group;
 import com.almuradev.content.model.obj.geometry.MalformedGeometryException;
@@ -18,6 +17,7 @@ import com.almuradev.content.model.obj.geometry.VertexTextureCoordinate;
 import com.almuradev.content.model.obj.material.MalformedMaterialLibraryException;
 import com.almuradev.content.model.obj.material.MaterialDefinition;
 import com.almuradev.content.model.obj.material.MaterialLibrary;
+import com.almuradev.content.registry.ResourceLocations;
 import com.google.inject.assistedinject.Assisted;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
