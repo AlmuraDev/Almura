@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.complex;
 
+import com.almuradev.almura.feature.complex.item.almanac.item.FarmersAlmanacItem;
 import com.almuradev.almura.feature.complex.item.wand.LightRepairWand;
 import com.almuradev.almura.shared.event.Witness;
 import net.minecraft.item.Item;
@@ -18,6 +19,6 @@ public final class ComplexContentFeature implements Witness {
     @SubscribeEvent
     public void onRegisterItem(RegistryEvent.Register<Item> event) {
         event.getRegistry().register(new LightRepairWand());
-        //event.getRegistry().register(new FarmersAlmanacItem()); // Todo: Hook up here.
+        event.getRegistry().register(new FarmersAlmanacItem());
     }
 }
