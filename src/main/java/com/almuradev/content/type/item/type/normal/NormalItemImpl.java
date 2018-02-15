@@ -24,11 +24,6 @@ public final class NormalItemImpl extends Item implements NormalItem {
 
     NormalItemImpl(final NormalItemBuilder builder) {
         builder.fill(this);
-
-        // TODO: add ability to specify a maxDamage type in the item json file.
-        if (this.getUnlocalizedName().equalsIgnoreCase("ITEM.ALMURA.NORMAL.TOOL.GRINDER")) {
-            this.setMaxDamage(10);
-        }
     }
 
     @Override
