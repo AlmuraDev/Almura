@@ -8,42 +8,41 @@
 package com.almuradev.content.component;
 
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
+import com.almuradev.toolbox.util.math.DoubleRange;
 import ninja.leaping.configurate.ConfigurationNode;
-import org.spongepowered.api.util.weighted.VariableAmount;
 
 import java.util.Map;
 import java.util.Optional;
 
-public final class VariableAmounts {
-
+public final class DoubleRanges {
     /**
-     * A {@link VariableAmount} with a fixed value of {@code 1}.
+     * A {@link DoubleRange} with a fixed value of {@code 1}.
      */
-    public static final VariableAmount FIXED_1 = VariableAmount.fixed(1d);
+    public static final DoubleRange FIXED_1 = DoubleRange.fixed(1d);
 
-    private static final ConfigurationNodeDeserializer<VariableAmount> SERIALIZER = node -> {
+    private static final ConfigurationNodeDeserializer<DoubleRange> SERIALIZER = node -> {
         if (node.isVirtual()) {
             return Optional.empty();
         }
         if (node.getValue() instanceof Map) {
-            return Optional.of(VariableAmount.range(
+            return Optional.of(DoubleRange.range(
                     node.getNode("min").getDouble(),
                     node.getNode("max").getDouble()
             ));
         } else if (node.getValue() instanceof Number) {
-            return Optional.of(VariableAmount.fixed(node.getDouble()));
+            return Optional.of(DoubleRange.fixed(node.getDouble()));
         }
         throw new IllegalArgumentException("Unknown type '" + node.getValue() + "'");
     };
 
-    private VariableAmounts() {
+    private DoubleRanges() {
     }
 
-    public static Optional<VariableAmount> deserialize(final ConfigurationNode node) {
+    public static Optional<DoubleRange> deserialize(final ConfigurationNode node) {
         return SERIALIZER.deserialize(node);
     }
 
-    public static VariableAmount deserialize(final ConfigurationNode node, final VariableAmount defaultValue) {
+    public static DoubleRange deserialize(final ConfigurationNode node, final DoubleRange defaultValue) {
         return SERIALIZER.deserialize(node, defaultValue);
     }
 

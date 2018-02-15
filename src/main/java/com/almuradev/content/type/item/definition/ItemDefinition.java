@@ -12,6 +12,7 @@ import com.almuradev.content.registry.delegate.CatalogDelegate;
 import com.almuradev.content.type.action.component.drop.Droppable;
 import com.almuradev.content.type.action.component.drop.ItemDrop;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
+import com.almuradev.toolbox.util.math.DoubleRange;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.item.Item;
@@ -19,7 +20,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.JsonUtils;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.util.weighted.VariableAmount;
 
 import java.util.Map;
 import java.util.Optional;
@@ -92,7 +92,7 @@ public final class ItemDefinition implements Droppable {
     }
 
     @Override
-    public ItemDrop asDrop(final VariableAmount amount, @Nullable final VariableAmount bonusAmount, @Nullable final VariableAmount bonusChance) {
+    public ItemDrop asDrop(final DoubleRange amount, @Nullable final DoubleRange bonusAmount, @Nullable final DoubleRange bonusChance) {
         return new ItemDrop(amount, bonusAmount, bonusChance, this);
     }
 }

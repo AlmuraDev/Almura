@@ -7,11 +7,10 @@
  */
 package com.almuradev.content.type.action.component.drop;
 
-import org.spongepowered.api.util.weighted.VariableAmount;
+import com.almuradev.toolbox.util.math.DoubleRange;
 
 import javax.annotation.Nullable;
 
 public interface Droppable {
-
-    Drop asDrop(final VariableAmount amount, @Nullable final VariableAmount bonusAmount, @Nullable final VariableAmount bonusChance);
+    Drop asDrop(final DoubleRange amount, @Nullable final DoubleRange bonusAmount, @Nullable final DoubleRange bonusChance);
 }

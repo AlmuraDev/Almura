@@ -7,14 +7,14 @@
  */
 package com.almuradev.content.component.apply.impl;
 
-import com.almuradev.content.component.VariableAmounts;
+import com.almuradev.content.component.DoubleRanges;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ItemApplyContext;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
+import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import org.spongepowered.api.util.weighted.VariableAmount;
 
 import java.util.Random;
 
@@ -23,10 +23,10 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public final class ReduceDurability implements Apply<EntityPlayer, ItemApplyContext> {
 
-    public static final ConfigurationNodeDeserializer<ReduceDurability> PARSER = config -> VariableAmounts.deserialize(config).map(ReduceDurability::new);
-    private final VariableAmount reduction;
+    public static final ConfigurationNodeDeserializer<ReduceDurability> PARSER = config -> DoubleRanges.deserialize(config).map(ReduceDurability::new);
+    private final DoubleRange reduction;
 
-    private ReduceDurability(final VariableAmount reduction) {
+    private ReduceDurability(final DoubleRange reduction) {
         this.reduction = reduction;
     }
 
@@ -39,7 +39,7 @@ public final class ReduceDurability implements Apply<EntityPlayer, ItemApplyCont
     public void apply0(final EntityPlayer entity, final ItemApplyContext context) {
         if (entity instanceof EntityPlayerMP) {
             final Random random = context.random();
-            context.item().attemptDamageItem(this.reduction.getFlooredAmount(random), random, (EntityPlayerMP) entity);
+            context.item().attemptDamageItem(this.reduction.flooredRandom(random), random, (EntityPlayerMP) entity);
         }
     }
 }
