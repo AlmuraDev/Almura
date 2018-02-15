@@ -11,19 +11,21 @@ import com.almuradev.almura.feature.guide.PageListEntry;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class ClientboundPageListingsPacket implements Message {
 
-    public Set<PageListEntry> pageEntries = new LinkedHashSet<>();
+    public List<PageListEntry> pageEntries = new ArrayList<>();
     public boolean shouldSwitchToPage;
     public String switchToPageId;
 
     public ClientboundPageListingsPacket() {
     }
 
-    public ClientboundPageListingsPacket(Set<PageListEntry> pageEntries, String switchToPageId) {
+    public ClientboundPageListingsPacket(List<PageListEntry> pageEntries, String switchToPageId) {
         this.pageEntries = pageEntries;
         if (switchToPageId != null) {
             this.shouldSwitchToPage = true;

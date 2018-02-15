@@ -23,8 +23,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -38,7 +40,7 @@ public final class ClientPageManager implements Witness {
     private final ChannelBinding.IndexedMessageChannel network;
     private final KeyBinding guideOpenBinding;
 
-    private Set<PageListEntry> pageEntries = new HashSet<>();
+    private List<PageListEntry> pageEntries = new ArrayList<>();
     private Page page;
 
     @Inject
@@ -56,11 +58,11 @@ public final class ClientPageManager implements Witness {
         }
     }
 
-    public Set<PageListEntry> getPageEntries() {
-        return Collections.unmodifiableSet(this.pageEntries);
+    public List<PageListEntry> getPageEntries() {
+        return Collections.unmodifiableList(this.pageEntries);
     }
 
-    public void setPageEntries(Set<PageListEntry> pageEntries, String switchToPage) {
+    public void setPageEntries(List<PageListEntry> pageEntries, String switchToPage) {
         final Page oldPage = this.page;
         if (this.page != null) {
             this.page = null;

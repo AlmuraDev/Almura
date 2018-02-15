@@ -20,6 +20,7 @@ import org.spongepowered.api.network.PlayerConnection;
 import org.spongepowered.api.network.RemoteConnection;
 import org.spongepowered.api.text.Text;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -57,8 +58,8 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
             final Map<String, Page> pagesToSend = this.manager.getAvailablePagesFor(player);
             if (pagesToSend.size() > 0) {
 
-                final Set<PageListEntry> playerListings = pagesToSend.entrySet().stream().map(entry -> new PageListEntry
-                        (entry.getKey(), entry.getValue().getName())).collect(Collectors.toSet());
+                final List<PageListEntry> playerListings = pagesToSend.entrySet().stream().map(entry -> new PageListEntry
+                        (entry.getKey(), entry.getValue().getName())).collect(Collectors.toList());
                 final PageListEntry switchToPageEntry = playerListings.stream().findFirst().orElse(null);
 
                 // Send the list of pages

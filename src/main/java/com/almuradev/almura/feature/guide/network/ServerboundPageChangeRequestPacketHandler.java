@@ -65,7 +65,7 @@ public final class ServerboundPageChangeRequestPacketHandler implements MessageH
                 // If the id being sent up is already in the manager, we've got a desync
                 if (page != null) {
                     this.network.sendTo(player, new ClientboundPageListingsPacket(this.manager.getAvailablePagesFor(player).entrySet().stream().map
-                            (entry -> new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toSet()), null));
+                            (entry -> new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toList()), null));
                     this.network.sendTo(player, new ClientboundPageChangeResponsePacket(message.changeType, false, message.id,
                             "almura.guide.action.add.id_exists"));
                     return;
@@ -83,7 +83,7 @@ public final class ServerboundPageChangeRequestPacketHandler implements MessageH
                 // Sent up a modify or remove of a page but someone deleted it, we've got a desync
                 if (page == null) {
                     this.network.sendTo(player, new ClientboundPageListingsPacket(this.manager.getAvailablePagesFor(player).entrySet().stream().map
-                            (entry -> new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toSet()), null));
+                            (entry -> new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toList()), null));
                     return;
                 }
 
@@ -121,13 +121,13 @@ public final class ServerboundPageChangeRequestPacketHandler implements MessageH
             // Sync the listings to the player who caused this change and put them on that page (only to fix switching on creation).
             this.network.sendTo(player, new ClientboundPageListingsPacket(this.manager
                     .getAvailablePagesFor(player).entrySet().stream().map(entry -> new PageListEntry(entry.getKey(), entry.getValue().getName()))
-                    .collect(Collectors.toSet()), message.id));
+                    .collect(Collectors.toList()), message.id));
 
             // Sync the listings to everyone else
             this.game.getServer().getOnlinePlayers().stream().filter(p -> !p.getUniqueId().equals(player.getUniqueId())).forEach((online) -> this
                     .network.sendTo(online, new ClientboundPageListingsPacket(this.manager
                             .getAvailablePagesFor(player).entrySet().stream().map(entry -> new PageListEntry(entry.getKey(), entry.getValue().getName()))
-                            .collect(Collectors.toSet()), null)));
+                            .collect(Collectors.toList()), null)));
         }
     }
 }
