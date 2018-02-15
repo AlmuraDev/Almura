@@ -10,18 +10,23 @@ package com.almuradev.almura.feature.guide.client.gui;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.guide.Page;
 import com.almuradev.almura.feature.guide.PageListEntry;
+import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
+import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxConsumer;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.util.Colors;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
@@ -63,13 +68,24 @@ public class SimplePageView extends SimpleScreen {
 
     @Override
     public void construct() {
-        guiscreenBackground = true;
+        guiscreenBackground = false;
+
         Keyboard.enableRepeatEvents(true);
-        
-        final UIForm form = new UIForm(this, 400, 225, I18n.format("almura.guide.view.form.title"));
+
+        final UIFormContainer form = new UIFormContainer(this, 420, 225, Colors.WHITE + I18n.format("almura.guide.view.form.title"));
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        form.setMovable(false);
+        form.setMovable(true);
         form.setClosable(true);
+        form.setBorder(FontColors.WHITE, 1, 185);
+        form.setBackgroundAlpha(185);
+        form.setBottomPadding(3);
+        form.setRightPadding(3);
+        form.setTopPadding(20);
+        form.setLeftPadding(3);
+
+        //UILabel titleLabel = new UILabel(this, "Farmer's Almanac");
+        //titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        //titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Remove button
         this.buttonRemove = new UIButtonBuilder(this)
