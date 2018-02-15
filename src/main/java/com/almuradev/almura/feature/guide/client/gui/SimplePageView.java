@@ -27,6 +27,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -63,7 +64,8 @@ public class SimplePageView extends SimpleScreen {
     @Override
     public void construct() {
         guiscreenBackground = true;
-
+        Keyboard.enableRepeatEvents(true);
+        
         final UIForm form = new UIForm(this, 400, 225, I18n.format("almura.guide.view.form.title"));
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(false);
@@ -236,7 +238,7 @@ public class SimplePageView extends SimpleScreen {
             unlockMouse = false; // Only unlock once per session.
         }
 
-        if (++this.lastUpdate > 100 && !showRaw) {
+        if (++this.lastUpdate > 100 && !showRaw &&  hasModifyPermission()) {
 
             // Todo: disabled, causing some issues with scroll.
             /*
