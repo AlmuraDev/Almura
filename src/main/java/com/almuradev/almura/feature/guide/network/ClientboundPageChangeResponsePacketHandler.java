@@ -7,14 +7,10 @@
  */
 package com.almuradev.almura.feature.guide.network;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
-import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -36,17 +32,15 @@ public final class ClientboundPageChangeResponsePacketHandler implements Message
     @Override
     public void handleMessage(ClientboundPageChangeResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
-            if (Almura.debug) {
-                System.out.println("Debug: Received ClientBoundChangeResponsePacket for Guide.");
-            }
+            // Todo: left this stubbed out for future use.
             if (!message.success) {
-               // UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, I18n.format("almura.guide.dialog.error.title"), I18n.format(message.message), MessageBoxButtons.OK);
+               // Do nothing.
             } else {
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
                 if (currentScreen != null && currentScreen instanceof SimplePageView) {
                     ((SimplePageView) currentScreen).refreshPage();
                 }
-               // UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, I18n.format("almura.guide.dialog.success.title"), I18n.format(message.message), MessageBoxButtons.OK);
+               // Do nothing.  Handled within the notifications manager.
             }
         }
     }
