@@ -71,7 +71,14 @@ public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGe
                     entry.builder.string(ContentBuilder.StringType.NAMESPACE),
                     entry.builder.string(ContentBuilder.StringType.SEMI_ABSOLUTE_PATH)
             );
-            ((SpecialBlockStateBlock) entry.value).blockStateDefinitionLocation(path);
+
+            if (entry.value instanceof SpecialBlockStateBlock) {
+                ((SpecialBlockStateBlock) entry.value).blockStateDefinitionLocation(path);
+            }
+
+            if (entry.value instanceof StateMappedBlock) {
+                ModelLoader.setCustomStateMapper((Block) entry.value, ((StateMappedBlock) entry.value).createStateMapper());
+            }
 
             @Nullable final ItemType item = this.gr.getType(ItemType.class, entry.value.getId()).orElse(null);
             if (item != null) {
