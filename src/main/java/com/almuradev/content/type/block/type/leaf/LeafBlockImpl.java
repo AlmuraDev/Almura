@@ -33,6 +33,11 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);
+        this.setDefaultState(
+                this.blockState.getBaseState()
+                        .withProperty(CHECK_DECAY, true)
+                        .withProperty(DECAYABLE, true)
+        );
     }
 
     @Override
