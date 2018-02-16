@@ -87,7 +87,8 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
         if (!player.hasPermission("almura.guide.open")) {
-            player.sendMessage(Text.of("almura.guide.permission.open.missing"));
+            // Todo: Dockter fix this with notifcation manager.
+            //player.sendMessage(Text.of("almura.guide.permission.open.missing"));
             return;
         }
 
@@ -286,9 +287,6 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
 
         if (notify) {
             for (final Player player : this.game.getServer().getOnlinePlayers()) {
-                if (player == null) {
-                    System.out.println("Player Null");
-                }
                 manager.sendPopupNotification(player, Text.of("Guide Update"), Text.of("The Guide: (" + page.getName() + ") has been updated!"), 10);
             }
         }

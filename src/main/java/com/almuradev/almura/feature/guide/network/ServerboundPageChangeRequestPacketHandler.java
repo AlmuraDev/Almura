@@ -110,8 +110,11 @@ public final class ServerboundPageChangeRequestPacketHandler implements MessageH
                 page.setIndex(message.index);
                 page.setName(message.name);
                 page.setContent(message.content);
-
-                this.manager.savePage(page);
+                if (message.changeType == PageChangeType.ADD) {
+                    this.manager.savePage(page, false);
+                } else {
+                    this.manager.savePage(page, true);
+                }
             }
 
             // Let the player know they were successful
