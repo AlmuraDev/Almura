@@ -12,6 +12,9 @@ import com.almuradev.almura.feature.complex.item.ComplexItem;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.content.type.itemgroup.ItemGroup;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockCrops;
+import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -59,20 +62,26 @@ public final class FarmersAlmanacItem extends ComplexItem {
 
         if (!world.isRemote) {
             final Player spongePlayer = (Player) player;
-            if (!spongePlayer.hasPermission("almura.wand.light_repair_wand")) { // TODO Dockter, we need a perm
+            if (!spongePlayer.hasPermission("almura.farmers_almanac")) { // TODO Dockter, we need a perm
                 return EnumActionResult.FAIL;
             }
 
-            final Biome biome = world.getBiome(pos);
-            final float biomeTemperature = biome.getTemperature(pos);
-            final float biomeRainfall = biome.getRainfall();
-            final int blockLight = world.getLightFor(EnumSkyBlock.BLOCK, pos);
-            final int skyLight = world.getLightFor(EnumSkyBlock.SKY, pos) - world.getSkylightSubtracted();
+            Block block = world.getBlockState(pos).getBlock();
+            if (block instanceof BlockFarmland | block instanceof BlockCrops) {
 
-            player.swingArm(hand);
+                final Biome biome = world.getBiome(pos);
+                final float biomeTemperature = biome.getTemperature(pos);
+                final float biomeRainfall = biome.getRainfall();
+                final int blockLight = world.getLightFor(EnumSkyBlock.BLOCK, pos);
+                final int skyLight = world.getLightFor(EnumSkyBlock.SKY, pos) - world.getSkylightSubtracted();
 
-            network.sendTo(spongePlayer, new ClientboundWorldPositionInformationPacket(pos.getX(), pos.getY(), pos.getZ(), hitX, hitY, hitZ, (
-                    (BiomeType) biome).getId(), biomeTemperature, biomeRainfall, blockLight, skyLight));
+                player.swingArm(hand);
+
+                network.sendTo(spongePlayer, new ClientboundWorldPositionInformationPacket(pos.getX(), pos.getY(), pos.getZ(), hitX, hitY, hitZ, (
+                        (BiomeType) biome).getId(), biomeTemperature, biomeRainfall, blockLight, skyLight));
+            } else {
+                System.out.println("Not functional on other blocks than BlockFarmland or BlockCrops");
+            }
         }
 
         return EnumActionResult.PASS;

@@ -37,10 +37,10 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     private final IBlockState state;
     private final int metadata;
     private boolean fertile;
-    private final float temp;
-    private final float rain;
-    private final int areaBlockLight;
-    private final int sunlight;
+    private float temp;
+    private float rain;
+    private int areaBlockLight;
+    private int sunlight;
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
 
@@ -49,28 +49,44 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         this.state = state;
         this.metadata = block.getMetaFromState(state);
 
-        // Get Ground Moisture value
-        BlockPos underBlockPos = new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ());
-        IBlockState underBlockState = worldIn.getBlockState(underBlockPos);
-        if (state.getProperties().containsKey(BlockFarmland.MOISTURE)) {
-            Integer moisture = state.getValue(BlockFarmland.MOISTURE);
-            if (moisture > 0) {
-                fertile = true;
-            } else {
-                fertile = false;
+
+        if (block instanceof BlockCrops) {
+            // Get Ground Moisture value
+            BlockPos underBlockPos = new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ());
+            IBlockState underBlockState = worldIn.getBlockState(underBlockPos);
+            if (underBlockState.getProperties().containsKey(BlockFarmland.MOISTURE)) {
+                Integer moisture = underBlockState.getValue(BlockFarmland.MOISTURE);
+                if (moisture > 0) {
+                    fertile = true;
+                } else {
+                    fertile = false;
+                }
             }
+
+            areaBlockLight = worldIn.getLightFor(EnumSkyBlock.BLOCK, pos);
+            sunlight = worldIn.getLightFor(EnumSkyBlock.SKY, pos) - worldIn.getSkylightSubtracted();
+
+        } else if (block instanceof BlockFarmland) {
+
+            BlockPos aboveBlockPos = new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ());
+            IBlockState aboveBlockState = worldIn.getBlockState(aboveBlockPos);
+
+            if (state.getProperties().containsKey(BlockFarmland.MOISTURE)) {
+                Integer moisture = state.getValue(BlockFarmland.MOISTURE);
+                if (moisture > 0) {
+                    fertile = true;
+                } else {
+                    fertile = false;
+                }
+            }
+
+            areaBlockLight = worldIn.getLightFor(EnumSkyBlock.BLOCK, aboveBlockPos);
+            sunlight = worldIn.getLightFor(EnumSkyBlock.SKY, aboveBlockPos) - worldIn.getSkylightSubtracted();
         }
 
         rain = message.biomeRainfall;
         temp = message.biomeTemperature;
 
-        if (block instanceof BlockCrops) {
-            areaBlockLight = worldIn.getLightFor(EnumSkyBlock.BLOCK, pos);
-            sunlight = worldIn.getLightFor(EnumSkyBlock.SKY, pos) - worldIn.getSkylightSubtracted();
-        } else {
-            areaBlockLight = worldIn.getLightFor(EnumSkyBlock.BLOCK, underBlockPos);
-            sunlight = worldIn.getLightFor(EnumSkyBlock.SKY, underBlockPos) - worldIn.getSkylightSubtracted();
-        }
     }
 
     private static String getFormattedString(String raw, int length, String suffix) {
@@ -88,8 +104,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         final int xPadding = 10;
         final int yPadding = 1;
         int formHeight = 135;
-        int formWidth = 235;
-
+        int formWidth = 185;
 
         String groundTemp = "";
         String groundMoisture = "";
@@ -183,7 +198,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
                 metadataLabel.setText(TextFormatting.GRAY + "Growth Stage: " + TextFormatting.BLUE + plantAge + " of " + plantMaxAge);
             }
         } else {
-            metadataLabel.setText(TextFormatting.GRAY + "Meta Data: " + TextFormatting.BLUE + metadata);
+            metadataLabel.setText(TextFormatting.GRAY + "Moisture Level: " + TextFormatting.BLUE + metadata);
 
         }
 
@@ -191,10 +206,6 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
         final UILabel moisturedataLabel = new UILabel(this, TextFormatting.GRAY + "Ground Moisture: " + TextFormatting.BLUE + groundMoisture);
         moisturedataLabel.setPosition(xPadding, getPaddedY(metadataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
-
-        if (!state.getProperties().containsKey(BlockFarmland.MOISTURE)) {
-            moisturedataLabel.setVisible(false);
-        }
 
         final UILabel temperaturedataLabel = new UILabel(this, TextFormatting.GRAY + "Ground Temperature: " + TextFormatting.BLUE + groundTemp);
         temperaturedataLabel.setPosition(xPadding, getPaddedY(moisturedataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
