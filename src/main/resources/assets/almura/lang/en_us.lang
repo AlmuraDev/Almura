@@ -108,3 +108,6 @@ almura.guide.permission.modify.missing=You do not have permission to remove this
 almura.guide.permission.remove.missing=You do not have permission to remove this page!
 key.almura.guide.open=Open
 key.categories.almura.guide=Guide
+
+item.farmers_almanac.name=Farmer's Almanac
+item.light_repair_wand.name=Area Light Repair Wand

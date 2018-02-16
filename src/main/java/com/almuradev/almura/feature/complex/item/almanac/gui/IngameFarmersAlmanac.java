@@ -88,7 +88,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         final int xPadding = 10;
         final int yPadding = 1;
         int formHeight = 135;
-        int formWidth = 180;
+        int formWidth = 235;
 
 
         String groundTemp = "";
@@ -152,8 +152,6 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         form.setMovable(true);
         form.setClosable(false);
         form.setBorder(FontColors.WHITE, 1, 185);
-
-
         form.setBackgroundAlpha(185);
         form.setPosition(0, 25, Anchor.TOP | Anchor.CENTER);
 
@@ -161,7 +159,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
-        final UIImage blockImage = new UIImage(this, new ItemStack(block, 1, block.getMetaFromState(state)));
+        final UIImage blockImage = new UIImage(this, new ItemStack(block));
         blockImage.setPosition(xPadding, (yPadding + 3) * 2, Anchor.LEFT | Anchor.TOP);
 
         final String localized = block.getLocalizedName();
@@ -169,14 +167,13 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         localizedNameLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.3F).build());
         localizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), blockImage.getY(), Anchor.LEFT | Anchor.TOP);
 
-        final UILabel unlocalizedNameLabel = new UILabel(this, TextFormatting.GRAY + getFormattedString(block.getUnlocalizedName(), 60, "..."));
+        final UILabel unlocalizedNameLabel = new UILabel(this, TextFormatting.GRAY + getFormattedString(block.getRegistryName().toString(), 60, "..."));
         unlocalizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), getPaddedY(localizedNameLabel, 0), Anchor.LEFT | Anchor.TOP);
 
         final UILabel metadataLabel = new UILabel(this, "");
 
         if (block instanceof IMixinBlockCrops) {
             final PropertyInteger ageProperty = ((IMixinBlockCrops) block).getAgePropertyDirect();
-
             if (state.getProperties().containsKey(ageProperty)) {
 
                 BlockCrops crop = (BlockCrops) block;
@@ -184,9 +181,10 @@ public class IngameFarmersAlmanac extends SimpleScreen {
                 int plantAge = state.getValue(ageProperty);
 
                 metadataLabel.setText(TextFormatting.GRAY + "Growth Stage: " + TextFormatting.BLUE + plantAge + " of " + plantMaxAge);
-            } else {
-                metadataLabel.setText(TextFormatting.GRAY + "Meta Data: " + TextFormatting.BLUE + metadata);
             }
+        } else {
+            metadataLabel.setText(TextFormatting.GRAY + "Meta Data: " + TextFormatting.BLUE + metadata);
+
         }
 
         metadataLabel.setPosition(xPadding, getPaddedY(unlocalizedNameLabel, yPadding + 5), Anchor.LEFT | Anchor.TOP);
