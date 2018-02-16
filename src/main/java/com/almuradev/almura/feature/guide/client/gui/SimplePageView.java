@@ -19,15 +19,11 @@ import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxConsumer
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.almura.shared.util.Colors;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
-import net.malisis.core.renderer.font.FontOptions;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -41,7 +37,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.function.Consumer;
-
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
@@ -72,7 +67,7 @@ public class SimplePageView extends SimpleScreen {
 
         Keyboard.enableRepeatEvents(true);
 
-        final UIFormContainer form = new UIFormContainer(this, 420, 225, Colors.WHITE + I18n.format("almura.guide.view.form.title"));
+        final UIFormContainer form = new UIFormContainer(this, 420, 225, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);

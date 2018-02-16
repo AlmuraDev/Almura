@@ -61,7 +61,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     }
 
     @Override
-    protected PropertyInteger getAgeProperty() {
+    public PropertyInteger getAgeProperty() {
         return this.age;
     }
 

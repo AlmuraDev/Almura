@@ -1,36 +1,35 @@
 package com.almuradev.almura.feature.complex.item.almanac.gui;
 
+import com.almuradev.almura.feature.complex.item.almanac.asm.interfaces.IMixinBlockCrops;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
-import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.almura.shared.util.Colors;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.renderer.font.FontOptions;
-import net.malisis.core.renderer.icon.provider.GuiIconProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
+import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import org.lwjgl.input.Mouse;
+
 
 public class IngameFarmersAlmanac extends SimpleScreen {
 
     private final Block block;
     private final IBlockState state;
     private final int metadata;
-    private final boolean fertile;
+    private boolean fertile;
     private final float temp;
     private final float rain;
     private final int areaBlockLight;
@@ -46,11 +45,13 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         // Get Ground Moisture value
         BlockPos underBlockPos = new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ());
         IBlockState underBlockState = worldIn.getBlockState(underBlockPos);
-        int underBlockMeta = underBlockState.getBlock().getMetaFromState(underBlockState);
-        if (underBlockMeta > 0) {
-            fertile = true;
-        } else {
-            fertile = false;
+        if (state.getProperties().containsKey(BlockFarmland.MOISTURE)) {
+            Integer moisture = state.getValue(BlockFarmland.MOISTURE);
+            if (moisture > 0) {
+                fertile = true;
+            } else {
+                fertile = false;
+            }
         }
 
         rain = message.biomeRainfall;
@@ -92,50 +93,50 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         //Frozen = Temp =< 0.14
 
         if (temp <= 0.14) {
-            groundTemp = Colors.DARK_RED + "Frozen";
+            groundTemp = TextFormatting.DARK_RED + "Frozen";
         }
         if (temp >= 0.15 && temp <= 0.2) {
-            groundTemp = Colors.BLUE + "Chilly";
+            groundTemp = TextFormatting.BLUE + "Chilly";
         }
         if (temp >= 0.21 && temp <= 0.5) {
-            groundTemp = Colors.GREEN + "Slightly Warm";
+            groundTemp = TextFormatting.GREEN + "Slightly Warm";
         }
         if (temp >= 0.51 && temp <= 1.2) {
-            groundTemp = Colors.DARK_GREEN + "Warm";
+            groundTemp = TextFormatting.DARK_GREEN + "Warm";
         }
         if (temp >= 1.21 && temp <= 1.9) {
-            groundTemp = Colors.GOLD + "Very Warm";
+            groundTemp = TextFormatting.GOLD + "Very Warm";
         }
         if (temp >= 1.91) {
-            groundTemp = Colors.RED + "Hot";
+            groundTemp = TextFormatting.RED + "Hot";
         }
 
         if (this.fertile) {
-            groundMoisture = Colors.DARK_GREEN + "Fertile";
+            groundMoisture = TextFormatting.DARK_GREEN + "Fertile";
         } else {
-            groundMoisture = Colors.RED + "Too Dry";
+            groundMoisture = TextFormatting.RED + "Too Dry";
         }
 
         if (rain > 0.4) {
-            rainAmount = "" + Colors.DARK_GREEN + rain;
+            rainAmount = "" + TextFormatting.DARK_GREEN + rain;
         } else {
-            rainAmount = "" + Colors.RED + rain;
+            rainAmount = "" + TextFormatting.RED + rain;
         }
 
         if (sunlight < 6) {
-            sunlightText = "" + Colors.RED + sunlight;
+            sunlightText = "" + TextFormatting.RED + sunlight;
         } else {
-            sunlightText = "" + Colors.DARK_GREEN + sunlight;
+            sunlightText = "" + TextFormatting.DARK_GREEN + sunlight;
         }
 
         if (areaBlockLight < 6) {
             if (sunlight < 6) {
-                areaBlockLightText = "" + Colors.RED + areaBlockLight;
+                areaBlockLightText = "" + TextFormatting.RED + areaBlockLight;
             } else {
-                areaBlockLightText = "" + Colors.YELLOW + areaBlockLight;
+                areaBlockLightText = "" + TextFormatting.YELLOW + areaBlockLight;
             }
         } else {
-            areaBlockLightText = "" + Colors.DARK_GREEN + areaBlockLight;
+            areaBlockLightText = "" + TextFormatting.DARK_GREEN + areaBlockLight;
         }
 
         final UIFormContainer form = new UIFormContainer(this, formWidth, formHeight, "");
@@ -147,7 +148,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
 
         form.setBackgroundAlpha(185);
-        form.setPosition(0,25, Anchor.TOP | Anchor.CENTER);
+        form.setPosition(0, 25, Anchor.TOP | Anchor.CENTER);
 
         UILabel titleLabel = new UILabel(this, "Farmer's Almanac");
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
@@ -161,81 +162,53 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         localizedNameLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.3F).build());
         localizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), blockImage.getY(), Anchor.LEFT | Anchor.TOP);
 
-        final UILabel unlocalizedNameLabel = new UILabel(this, "§7" + getFormattedString(block.getUnlocalizedName(), 60, "..."));
+        final UILabel unlocalizedNameLabel = new UILabel(this, TextFormatting.GRAY + getFormattedString(block.getUnlocalizedName(), 60, "..."));
         unlocalizedNameLabel.setPosition(getPaddedX(blockImage, xPadding), getPaddedY(localizedNameLabel, 0), Anchor.LEFT | Anchor.TOP);
-        //unlocalizedNameLabel.setFontRenderOptions(FontRenderOptionsConstants.FRO_SCALE_070);
 
         final UILabel metadataLabel = new UILabel(this, "");
 
-        if (block instanceof BlockFarmland) {
-            //metadataLabel.setText(Colors.GRAY + "Growth Stage: " + Colors.BLUE + "N/A");
-        } else {
-            if (block instanceof BlockCrops) {
-                metadataLabel.setText(Colors.GRAY + "Growth Stage: " + Colors.BLUE + metadata + " of " + ("MAX_AGE"));  //Todo: fix MAX_AGE
+        if (block instanceof IMixinBlockCrops) {
+            final PropertyInteger ageProperty = ((IMixinBlockCrops) block).getAgePropertyDirect();
+
+            if (state.getProperties().containsKey(ageProperty)) {
+
+                BlockCrops crop = (BlockCrops) block;
+                int plantMaxAge = crop.getMaxAge();
+                int plantAge = state.getValue(ageProperty);
+
+                metadataLabel.setText(TextFormatting.GRAY + "Growth Stage: " + TextFormatting.BLUE + plantAge + " of " + plantMaxAge);
+            } else {
+                metadataLabel.setText(TextFormatting.GRAY + "Meta Data: " + TextFormatting.BLUE + metadata);
             }
         }
 
         metadataLabel.setPosition(xPadding, getPaddedY(unlocalizedNameLabel, yPadding + 5), Anchor.LEFT | Anchor.TOP);
 
-        final UILabel moisturedataLabel = new UILabel(this, Colors.GRAY + "Ground Moisture: " + Colors.BLUE + groundMoisture);
+        final UILabel moisturedataLabel = new UILabel(this, TextFormatting.GRAY + "Ground Moisture: " + TextFormatting.BLUE + groundMoisture);
         moisturedataLabel.setPosition(xPadding, getPaddedY(metadataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
-        final UILabel temperaturedataLabel = new UILabel(this, Colors.GRAY + "Ground Temperature: " + Colors.BLUE + groundTemp);
+        if (!state.getProperties().containsKey(BlockFarmland.MOISTURE)) {
+            moisturedataLabel.setVisible(false);
+        }
+
+        final UILabel temperaturedataLabel = new UILabel(this, TextFormatting.GRAY + "Ground Temperature: " + TextFormatting.BLUE + groundTemp);
         temperaturedataLabel.setPosition(xPadding, getPaddedY(moisturedataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
-        final UILabel biomeRainLabel = new UILabel(this, Colors.GRAY + "Biome Rain: " + rainAmount);
+        final UILabel biomeRainLabel = new UILabel(this, TextFormatting.GRAY + "Biome Rain: " + rainAmount);
         biomeRainLabel.setPosition(xPadding, getPaddedY(temperaturedataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
-        final UILabel sunlightValueLabel = new UILabel(this, Colors.GRAY + "Sunlight Value: " + sunlightText);
+        final UILabel sunlightValueLabel = new UILabel(this, TextFormatting.GRAY + "Sunlight Value: " + sunlightText);
         sunlightValueLabel.setPosition(xPadding, getPaddedY(biomeRainLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
-        final UILabel areaLightValueLabel = new UILabel(this, Colors.GRAY + "Area Light Value: " + areaBlockLightText);
+        final UILabel areaLightValueLabel = new UILabel(this, TextFormatting.GRAY + "Area Light Value: " + areaBlockLightText);
         areaLightValueLabel.setPosition(xPadding, getPaddedY(sunlightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
         UILabel modelNameLabel = null;
 
-        /*
-        if (block instanceof IModelContainer && block instanceof IPackObject) {
-
-            final IModelContainer modelContainer = (IModelContainer) block;
-            final UILabel textureNameLabel = new UILabel(this, Colors.GRAY + "Texture Name: " + Colors.BLUE + block.getTextureName());
-            textureNameLabel.setPosition(xPadding, getPaddedY(areaLightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
-            form.getContentContainer().add(textureNameLabel);
-
-            String modelName;
-
-            if (block instanceof PackCrops) {
-                final PackCrops crop = (PackCrops) block;
-                final Stage stage = crop.getStages().get(metadata);
-                modelName = stage.getModelName();
-            } else {
-                modelName = modelContainer.getModelName();
-            }
-
-            modelNameLabel = new UILabel(this, Colors.GRAY + "Model Name: " + Colors.BLUE + modelName);
-            modelNameLabel.setPosition(xPadding, getPaddedY(textureNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
-            form.getContentContainer().add(modelNameLabel);
-
-            final UILabel packNameLabel =
-                    new UILabel(this, Colors.GRAY + "Pack Name: " + Colors.BLUE + ((IPackObject) block).getPack().getName());
-            packNameLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
-            form.getContentContainer().add(packNameLabel);
-
-            if (modelNameLabel.getWidth() >= (formWidth - 20)) {
-                newWindowWidth = modelNameLabel.getWidth() + 20;
-            }
-
-            if (textureNameLabel.getWidth() >= (formWidth - 20)) {
-                newWindowWidth = textureNameLabel.getWidth() + 20;
-            }
-
-            formWidth = newWindowWidth;
-            formHeight += 30;
-        } */
         final IBlockState state = block.getStateFromMeta(metadata);
         final String harvestTool = block.getHarvestTool(state);
         if (harvestTool != null && !harvestTool.isEmpty()) {
-            final UILabel harvestToolLabel = new UILabel(this, Colors.GRAY + "Harvest tool: " + Colors.BLUE + harvestTool);
+            final UILabel harvestToolLabel = new UILabel(this, TextFormatting.GRAY + "Harvest tool: " + TextFormatting.BLUE + harvestTool);
             if (block instanceof BlockCrops) {
                 harvestToolLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             } else {
