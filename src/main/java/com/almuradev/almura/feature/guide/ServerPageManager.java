@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.guide;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.guide.network.ClientboundPageListingsPacket;
+import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.typesafe.config.ConfigRenderOptions;
@@ -27,6 +28,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
+import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -58,6 +60,9 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
     private final Path pageRoot;
     private final ChannelBinding.IndexedMessageChannel network;
     private final Map<String, Page> pages = new HashMap<>();
+
+    @com.google.inject.Inject
+    private static ServerNotificationManager manager;
 
     @Inject
     public ServerPageManager(final Game game, Logger logger, @ConfigDir(sharedRoot = false) final Path configRoot, final @ChannelId(NetworkConfig
@@ -248,6 +253,13 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
 
         // Packet sends up as sectional, since I am a nice guy I'll let them save as ampersand
         rootNode.getNode(GuideConfig.CONTENT).setValue(Page.asFriendlyText(page.getContent()));
+
+        for (final Player player : this.game.getServer().getOnlinePlayers()) {
+            if (player == null) {
+                System.out.println("Player Null");
+            }
+            manager.sendPopupNotification(player, Text.of("Guide Update"), Text.of("The Guide: (" + page.getName() + ") has been updated!"), 10);
+        }
 
         try {
             loader.save(rootNode);

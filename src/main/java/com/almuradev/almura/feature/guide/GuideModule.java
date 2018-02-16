@@ -55,6 +55,7 @@ public final class GuideModule extends AbstractModule implements CommonBinder {
 
         this.facet().add(ServerPageManager.class);
         this.requestStaticInjection(GuideCommands.class);
+        this.requestStaticInjection(ServerPageManager.class);
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {
 
