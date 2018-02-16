@@ -82,6 +82,7 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
     @Override
     public void process() {
         this.queue.forEach(entry -> {
+            // WARNING: IntelliJ is dumb - this CANNOT be replaced with a method reference.
             this.catching(() -> this.process(entry.config, entry.builder), "Encountered an exception while processing content", (dr) -> entry.populate(dr));
             this.entries.put(entry.id, entry);
         });

@@ -85,6 +85,7 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
             }
             for (final E entry : entries) {
                 final B builder = entry.builder;
+                // WARNING: IntelliJ is dumb - this CANNOT be replaced with a method reference.
                 this.catching(() -> entry.value = builder.build(), "Encountered a critical exception while constructing game content.", dr -> entry.populate(dr));
             }
             this.clean();
