@@ -67,20 +67,21 @@ public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGe
     @SubscribeEvent
     public void models(final ModelRegistryEvent event) {
         this.entries.values().forEach(entry -> {
+            final ContentBlockType block = entry.value;
             final ResourceLocation path = new ResourceLocation(
                     entry.builder.string(ContentBuilder.StringType.NAMESPACE),
                     entry.builder.string(ContentBuilder.StringType.SEMI_ABSOLUTE_PATH)
             );
 
-            if (entry.value instanceof SpecialBlockStateBlock) {
-                ((SpecialBlockStateBlock) entry.value).blockStateDefinitionLocation(path);
+            if (block instanceof SpecialBlockStateBlock) {
+                ((SpecialBlockStateBlock) block).blockStateDefinitionLocation(path);
             }
 
-            if (entry.value instanceof StateMappedBlock) {
-                ModelLoader.setCustomStateMapper((Block) entry.value, ((StateMappedBlock) entry.value).createStateMapper());
+            if (block instanceof StateMappedBlock) {
+                ModelLoader.setCustomStateMapper((Block) block, ((StateMappedBlock) block).createStateMapper());
             }
 
-            @Nullable final ItemType item = this.gr.getType(ItemType.class, entry.value.getId()).orElse(null);
+            @Nullable final ItemType item = this.gr.getType(ItemType.class, block.getId()).orElse(null);
             if (item != null) {
                 ModelLoader.setCustomModelResourceLocation((Item) item, 0, new ModelResourceLocation(path, "inventory"));
             }
