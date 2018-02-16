@@ -39,7 +39,7 @@ import javax.inject.Inject;
 abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBuilder<C>, E extends ContentLoaderImpl.Entry<C, B>> implements ContentFinder<C, B>, ContentLoader {
 
     private static final PathMatcher JSON_MATCHER = FileSystems.getDefault().getPathMatcher("glob:**.json");
-    static final Splitter SLASH_SPLITTER = Splitter.on('/');
+    static final Splitter SLASH_SPLITTER = Splitter.on('/').trimResults().omitEmptyStrings();
     @Inject Injector injector;
     @Inject protected Logger logger;
     @Inject TranslationManager translationManager;
