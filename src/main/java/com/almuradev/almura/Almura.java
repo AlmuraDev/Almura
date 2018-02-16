@@ -22,8 +22,6 @@ import javax.inject.Inject;
 })
 public class Almura {
 
-    public static Almura instance;
-
     public static final String ID = "almura";
     public static final String NAME = "Almura";
     public static boolean debug = true;
@@ -37,12 +35,12 @@ public class Almura {
     @Inject private Injector injector;
 
     @Listener
-    public void onGameConstruction(GameConstructionEvent event) {
+    public void gameConstruct(final GameConstructionEvent event) {
         proxy.construct(this.injector);
     }
 
     @Listener
-    public void gameStopping(final GameStoppingEvent event) {
+    public void gameDestruct(final GameStoppingEvent event) {
         proxy.destruct();
     }
 }
