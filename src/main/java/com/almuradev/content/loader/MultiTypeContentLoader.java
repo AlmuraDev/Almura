@@ -72,6 +72,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
     public void process() {
         for (final T type : this.queue.keySet()) {
             this.queue.get(type).forEach(entry -> {
+                // WARNING: IntelliJ is dumb - this CANNOT be replaced with a method reference.
                 this.catching(() -> this.process(type, entry.config, entry.builder), "Encountered an exception while processing content", (dr) -> entry.populate(dr));
                 this.entries.put(entry.id, entry);
             });
