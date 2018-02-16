@@ -152,7 +152,7 @@ public class BlockUtil {
             if (entry.test(type)) {
                 for (final Drop drop : entry.drops()) {
                     if (drop instanceof ItemDrop) {
-                        ((ItemDrop) drop).fill(drops);
+                        ((ItemDrop) drop).fill(drops, world.rand);
                     }
                 }
             }

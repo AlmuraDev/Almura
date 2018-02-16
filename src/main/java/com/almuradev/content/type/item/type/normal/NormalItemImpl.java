@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.List;
 
@@ -25,11 +24,6 @@ public final class NormalItemImpl extends Item implements NormalItem {
 
     NormalItemImpl(final NormalItemBuilder builder) {
         builder.fill(this);
-
-        // TODO: add ability to specify a maxDamage type in the item json file.
-        if (this.getUnlocalizedName().equalsIgnoreCase("ITEM.ALMURA.NORMAL.TOOL.GRINDER")) {
-            this.setMaxDamage(10);
-        }
     }
 
     @Override

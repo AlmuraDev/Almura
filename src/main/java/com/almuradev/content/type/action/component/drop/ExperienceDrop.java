@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.action.component.drop;
 
-import org.spongepowered.api.util.weighted.VariableAmount;
+import com.almuradev.toolbox.util.math.DoubleRange;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -17,7 +17,7 @@ public final class ExperienceDrop extends Drop {
 
     static final String EXPERIENCE = "experience";
 
-    public ExperienceDrop(final VariableAmount amount, @Nullable final VariableAmount bonusAmount, @Nullable final VariableAmount bonusChance) {
+    public ExperienceDrop(final DoubleRange amount, @Nullable final DoubleRange bonusAmount, @Nullable final DoubleRange bonusChance) {
         super(amount, bonusAmount, bonusChance);
     }
 }

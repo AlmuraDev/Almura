@@ -7,11 +7,11 @@
  */
 package com.almuradev.content.type.action.component.drop;
 
-import com.almuradev.almura.shared.util.VariableAmounts;
+import com.almuradev.content.component.DoubleRanges;
 import com.almuradev.content.type.item.definition.ItemDefinition;
 import com.almuradev.content.type.item.definition.ItemDefinitionConfig;
+import com.almuradev.toolbox.util.math.DoubleRange;
 import ninja.leaping.configurate.ConfigurationNode;
-import org.spongepowered.api.util.weighted.VariableAmount;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,11 +44,11 @@ public final class DropParserImpl implements DropParser {
             if (child.getValue() instanceof String) {
                 parseSimpleItem(child).ifPresent(drops::add);
             } else if (child.getValue() instanceof Map) {
-                final VariableAmount amount = VariableAmounts.deserialize(child.getNode(VariableAmounts.Config.AMOUNT), VariableAmounts.FIXED_1);
-                @Nullable final VariableAmount bonusAmount =
-                        VariableAmounts.deserialize(child.getNode(VariableAmounts.Config.BONUS, VariableAmounts.Config.BONUS_AMOUNT)).orElse(null);
-                @Nullable final VariableAmount bonusChance =
-                        VariableAmounts.deserialize(child.getNode(VariableAmounts.Config.BONUS, VariableAmounts.Config.BONUS_CHANCE)).orElse(null);
+                final DoubleRange amount = DoubleRanges.deserialize(child.getNode(DoubleRanges.Config.AMOUNT), DoubleRanges.FIXED_1);
+                @Nullable final DoubleRange bonusAmount =
+                        DoubleRanges.deserialize(child.getNode(DoubleRanges.Config.BONUS, DoubleRanges.Config.BONUS_AMOUNT)).orElse(null);
+                @Nullable final DoubleRange bonusChance =
+                        DoubleRanges.deserialize(child.getNode(DoubleRanges.Config.BONUS, DoubleRanges.Config.BONUS_CHANCE)).orElse(null);
 
                 final ConfigurationNode item = child.getNode(ItemDefinitionConfig.ITEM);
 
@@ -66,7 +66,7 @@ public final class DropParserImpl implements DropParser {
 
     private static Optional<ItemDrop> parseSimpleItem(final ConfigurationNode config) {
         return ItemDefinition.PARSER.deserialize(config)
-                .map(item -> item.asDrop(VariableAmounts.FIXED_1, null, null));
+                .map(item -> item.asDrop(DoubleRanges.FIXED_1, null, null));
     }
 
     private static Optional<ItemDefinition> parseFullItem(final ConfigurationNode config) {

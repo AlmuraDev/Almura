@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.registry;
+package com.almuradev.content.registry;
 
 import net.minecraft.util.ResourceLocation;
 import ninja.leaping.configurate.ConfigurationNode;

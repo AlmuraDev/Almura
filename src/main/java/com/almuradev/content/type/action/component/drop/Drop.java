@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.action.component.drop;
 
-import org.spongepowered.api.util.weighted.VariableAmount;
+import com.almuradev.toolbox.util.math.DoubleRange;
 
 import java.util.Random;
 
@@ -15,22 +15,22 @@ import javax.annotation.Nullable;
 
 public abstract class Drop {
 
-    private final VariableAmount amount;
-    @Nullable private final VariableAmount bonusAmount;
-    @Nullable private final VariableAmount bonusChance;
+    private final DoubleRange amount;
+    @Nullable private final DoubleRange bonusAmount;
+    @Nullable private final DoubleRange bonusChance;
 
-    protected Drop(final VariableAmount amount, @Nullable final VariableAmount bonusAmount, @Nullable final VariableAmount bonusChance) {
+    protected Drop(final DoubleRange amount, @Nullable final DoubleRange bonusAmount, @Nullable final DoubleRange bonusChance) {
         this.amount = amount;
         this.bonusAmount = bonusAmount;
         this.bonusChance = bonusChance;
     }
 
     public int flooredAmount(final Random random) {
-        final int amount = this.amount.getFlooredAmount(random);
+        final int amount = this.amount.flooredRandom(random);
         if (this.bonusAmount != null && this.bonusChance != null) {
-            final double chance = this.bonusChance.getAmount(random);
+            final double chance = this.bonusChance.random(random);
             if (random.nextDouble() < (chance / 100)) {
-                return amount + this.bonusAmount.getFlooredAmount(random);
+                return amount + this.bonusAmount.flooredRandom(random);
             }
         }
         return amount;

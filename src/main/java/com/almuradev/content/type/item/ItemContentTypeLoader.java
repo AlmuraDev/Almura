@@ -8,8 +8,8 @@
 package com.almuradev.content.type.item;
 
 import com.almuradev.almura.shared.event.Witness;
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.loader.MultiTypeContentLoader;
+import com.almuradev.content.registry.ResourceLocations;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
