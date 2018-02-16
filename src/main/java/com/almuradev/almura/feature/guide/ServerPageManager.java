@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.guide;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.almuradev.almura.feature.guide.network.ClientboundGuideOpenResponsePacket;
 import com.almuradev.almura.feature.guide.network.ClientboundPageListingsPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.event.Witness;
@@ -25,7 +26,10 @@ import org.spongepowered.api.GameState;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
@@ -42,6 +46,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -77,6 +82,31 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
     @Override
     public boolean lifecycleSubscribable(GameState state) {
         return state == GameState.SERVER_STARTING;
+    }
+
+    @Listener(order = Order.LAST)
+    public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
+        if (!player.hasPermission("almura.guide.open")) {
+            player.sendMessage(Text.of("almura.guide.permission.open.missing"));
+            return;
+        }
+
+        // Open the GUI
+        this.network.sendTo(player, new ClientboundGuideOpenResponsePacket(
+                player.hasPermission("almura.guide.add"),
+                player.hasPermission("almura.guide.remove"),
+                player.hasPermission("almura.guide.modify")));
+
+        final Map<String, Page> pagesToSend = this.getAvailablePagesFor(player);
+        if (pagesToSend.size() > 0) {
+
+            final List<PageListEntry> playerListings = pagesToSend.entrySet().stream().map(entry -> new PageListEntry
+                    (entry.getKey(), entry.getValue().getName())).collect(Collectors.toList());
+            final PageListEntry switchToPageEntry = playerListings.stream().findFirst().orElse(null);
+
+            // Send the list of pages
+            this.network.sendTo(player, new ClientboundPageListingsPacket(playerListings, switchToPageEntry == null ? null : switchToPageEntry.getId()));
+        }
     }
 
     @Listener
@@ -233,7 +263,7 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
         }
     }
 
-    public void savePage(Page page) {
+    public void savePage(Page page, boolean notify) {
         checkNotNull(page);
 
         final Path path = this.pageRoot.resolve(page.getId() + GuideConfig.EXT_CONFIG_PAGE);
@@ -254,11 +284,13 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
         // Packet sends up as sectional, since I am a nice guy I'll let them save as ampersand
         rootNode.getNode(GuideConfig.CONTENT).setValue(Page.asFriendlyText(page.getContent()));
 
-        for (final Player player : this.game.getServer().getOnlinePlayers()) {
-            if (player == null) {
-                System.out.println("Player Null");
+        if (notify) {
+            for (final Player player : this.game.getServer().getOnlinePlayers()) {
+                if (player == null) {
+                    System.out.println("Player Null");
+                }
+                manager.sendPopupNotification(player, Text.of("Guide Update"), Text.of("The Guide: (" + page.getName() + ") has been updated!"), 10);
             }
-            manager.sendPopupNotification(player, Text.of("Guide Update"), Text.of("The Guide: (" + page.getName() + ") has been updated!"), 10);
         }
 
         try {
