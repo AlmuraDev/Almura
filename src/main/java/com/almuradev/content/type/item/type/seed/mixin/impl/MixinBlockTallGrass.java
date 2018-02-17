@@ -25,14 +25,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 @Mixin(BlockTallGrass.class)
 public abstract class MixinBlockTallGrass extends MixinBlock {
 
-    @javax.inject.Inject private static GameRegistry registry;
+    @Inject private static GameRegistry registry;
 
     /**
      * @author Zidane - Chris Sanders
@@ -43,57 +44,54 @@ public abstract class MixinBlockTallGrass extends MixinBlock {
 
         final Random random = ((World) world).rand;
 
-        // Forge Start - Lookup seed each time and then do random check. Almura handles its own chance code
-        final ItemStack modSeed = net.minecraftforge.common.ForgeHooks.getGrassSeed(random, fortune);
-        if (!modSeed.isEmpty() && random.nextInt(8) == 0) {
-            drops.add(modSeed);
-        }
-        // Forge End
+        // Roll 1 is Vanilla's 1/8 chance to drop a seed
+        final int roll1 = random.nextInt(8);
 
-        // Almura Start
-        // Don't double up with Vanilla/mod drops
-        if (!drops.isEmpty()) {
-            return;
-        }
+        if (roll1 == 0) {
+            // Forge Start - Lookup seed each time and then do random check. Almura handles its own chance code
+            final ItemStack modSeed = net.minecraftforge.common.ForgeHooks.getGrassSeed(random, fortune);
+            if (!modSeed.isEmpty()) {
+                drops.add(modSeed);
 
-        // Global Seed drop variable.
-
-        if (random.nextInt(7) == 1) {
+                // Forge End
+                
+                // Almura Start
+                // Don't double up with Vanilla/mod drops
+                return;
+            }
 
             final Biome biome = ((World) world).getBiome(pos);
 
-            final Iterator<ItemType> iter = registry.getAllOf(ItemType.class)
+            // Roll 2 is shuffling Almura seeds and picking the first one after shuffling
+            registry.getAllOf(ItemType.class)
                     .stream()
                     .filter(itemType -> itemType instanceof SeedItem && ((SeedItem) itemType).getGrass() != null)
                     .collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
                         Collections.shuffle(collected);
                         return collected.stream();
                     }))
-                    .iterator();
+                    .findFirst()
+                    .ifPresent((itemType) -> {
+                        final SeedItem seed = (SeedItem) itemType;
+                        final IntRange amountRange = seed.getGrass().getOrLoadAmountRequiredRangeForBiome(biome);
 
-            while (iter.hasNext()) {
-                final ItemType itemType = iter.next();
-                final SeedItem seed = (SeedItem) itemType;
-                final IntRange amountRange = seed.getGrass().getOrLoadAmountRequiredRangeForBiome(biome);
+                        if (amountRange != null) {
+                            final int stackSize = amountRange.random(random);
 
-                if (amountRange != null) {
-                    final int stackSize = amountRange.random(random);
+                            final DoubleRange chanceRange = seed.getGrass().getOrLoadChanceRangeForBiome(biome);
 
-                    final DoubleRange chanceRange = seed.getGrass().getOrLoadChanceRangeForBiome(biome);
+                            if (chanceRange != null) {
+                                final double chance = chanceRange.random(random);
 
-                    if (chanceRange != null) {
-                        final double chance = chanceRange.random(random);
-
-                        if (random.nextDouble() <= (chance / 100)) {
-                            drops.add((ItemStack) (Object) org.spongepowered.api.item.inventory.ItemStack.of(itemType, stackSize));
-                            return;
+                                // Roll 3 is allowing the seed configuration to determine the chance for the drop
+                                if (random.nextDouble() <= (chance / 100)) {
+                                    drops.add((ItemStack) (Object) org.spongepowered.api.item.inventory.ItemStack.of(itemType, stackSize));
+                                }
+                            } else {
+                                drops.add((ItemStack) (Object) org.spongepowered.api.item.inventory.ItemStack.of(itemType, stackSize));
+                            }
                         }
-                    } else {
-                        drops.add((ItemStack) (Object) org.spongepowered.api.item.inventory.ItemStack.of(itemType, stackSize));
-                        return;
-                    }
-                }
-            }
+                    });
         }
         // Almura End
     }
