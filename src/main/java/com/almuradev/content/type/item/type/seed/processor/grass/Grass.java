@@ -94,7 +94,7 @@ public final class Grass {
                                 (biomePredicate, amountRange)));
                 return Optional.empty();
             } else {
-                return IntRange.PARSER.deserialize(biomeAmountNode);
+                return IntRange.PARSER.deserialize(amountNode);
             }
         }
     };
@@ -170,7 +170,7 @@ public final class Grass {
                 .add("biomeChancePredicates", this.biomeChancePredicates)
                 .add("globalChanceRange", this.globalChanceRange)
                 .add("biomeAmountPredicates", this.biomeAmountPredicates)
-                .add("globalAmounttRange", this.globalAmountRange)
+                .add("globalAmountRange", this.globalAmountRange)
                 .toString();
     }
 }
