@@ -89,6 +89,7 @@ public abstract class MixinItemBucket extends Item {
         }
     }
 
+    @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
         boolean flag = this.containedBlock == Blocks.AIR;
@@ -164,6 +165,7 @@ public abstract class MixinItemBucket extends Item {
                     if (itemstack.getCount() > 1) {
                         itemstack.shrink(1);
                         // Almura Mod
+                        // Purpose: check to see if the bucket they just used has multiple quantities, if it does, shrink the stack size and return an empty bucket via inventory search.
                         returnItem(playerIn, new ItemStack(Items.BUCKET));
                         return !playerIn.capabilities.isCreativeMode ? new ActionResult(EnumActionResult.SUCCESS, itemstack) : new ActionResult(EnumActionResult.SUCCESS, itemstack);
                     } else {
