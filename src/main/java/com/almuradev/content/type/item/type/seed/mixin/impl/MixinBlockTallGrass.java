@@ -56,37 +56,42 @@ public abstract class MixinBlockTallGrass extends MixinBlock {
             return;
         }
 
-        final Biome biome = ((World) world).getBiome(pos);
+        // Global Seed drop variable.
 
-        final Iterator<ItemType> iter = registry.getAllOf(ItemType.class)
-                .stream()
-                .filter(itemType -> itemType instanceof SeedItem && ((SeedItem) itemType).getGrass() != null)
-                .collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
-                    Collections.shuffle(collected);
-                    return collected.stream();
-                }))
-                .iterator();
+        if (random.nextInt(7) == 1) {
 
-        while (iter.hasNext()) {
-            final ItemType itemType = iter.next();
-            final SeedItem seed = (SeedItem) itemType;
-            final IntRange amountRange = seed.getGrass().getOrLoadAmountRequiredRangeForBiome(biome);
+            final Biome biome = ((World) world).getBiome(pos);
 
-            if (amountRange != null) {
-                final int stackSize = amountRange.random(random);
+            final Iterator<ItemType> iter = registry.getAllOf(ItemType.class)
+                    .stream()
+                    .filter(itemType -> itemType instanceof SeedItem && ((SeedItem) itemType).getGrass() != null)
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
+                        Collections.shuffle(collected);
+                        return collected.stream();
+                    }))
+                    .iterator();
 
-                final DoubleRange chanceRange = seed.getGrass().getOrLoadChanceRangeForBiome(biome);
+            while (iter.hasNext()) {
+                final ItemType itemType = iter.next();
+                final SeedItem seed = (SeedItem) itemType;
+                final IntRange amountRange = seed.getGrass().getOrLoadAmountRequiredRangeForBiome(biome);
 
-                if (chanceRange != null) {
-                    final double chance = chanceRange.random(random);
+                if (amountRange != null) {
+                    final int stackSize = amountRange.random(random);
 
-                    if (random.nextDouble() <= (chance / 100)) {
+                    final DoubleRange chanceRange = seed.getGrass().getOrLoadChanceRangeForBiome(biome);
+
+                    if (chanceRange != null) {
+                        final double chance = chanceRange.random(random);
+
+                        if (random.nextDouble() <= (chance / 100)) {
+                            drops.add((ItemStack) (Object) org.spongepowered.api.item.inventory.ItemStack.of(itemType, stackSize));
+                            return;
+                        }
+                    } else {
                         drops.add((ItemStack) (Object) org.spongepowered.api.item.inventory.ItemStack.of(itemType, stackSize));
                         return;
                     }
-                } else {
-                    drops.add((ItemStack) (Object) org.spongepowered.api.item.inventory.ItemStack.of(itemType, stackSize));
-                    return;
                 }
             }
         }
