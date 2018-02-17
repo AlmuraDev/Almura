@@ -53,12 +53,6 @@ public class ItemReturnHelper implements Witness {
         }
     }
 
-    @SubscribeEvent
-    public void onItemSmeltedEvent (PlayerEvent.ItemSmeltedEvent event) {
-        ItemStack itemStack = event.smelting;
-        contentTypeItemCrafted(event.player, itemStack.getUnlocalizedName(), itemStack);
-    }
-
     @SuppressWarnings("unused")
     private void contentTypeItemCrafted(EntityPlayer player, String name, ItemStack currentStack) {
         int damage = 0;
