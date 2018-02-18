@@ -32,6 +32,7 @@ import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
@@ -90,9 +91,12 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
             return;
         }
 
-        // Open the GUI
+        openGuideForPlayer(player, 1, null);
+    }
+
+    public void openGuideForPlayer(Player player, int type, String pageName) {
         this.network.sendTo(player, new ClientboundGuideOpenResponsePacket(
-                1, // Specifies what called the open request.
+                type, // Specifies what called the open request.
                 player.hasPermission("almura.guide.add"),
                 player.hasPermission("almura.guide.remove"),
                 player.hasPermission("almura.guide.modify")));
@@ -100,12 +104,15 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
         final Map<String, Page> pagesToSend = this.getAvailablePagesFor(player);
         if (pagesToSend.size() > 0) {
 
-            final List<PageListEntry> playerListings = pagesToSend.entrySet().stream().map(entry -> new PageListEntry
-                    (entry.getKey(), entry.getValue().getName())).collect(Collectors.toList());
-            final PageListEntry switchToPageEntry = playerListings.stream().findFirst().orElse(null);
+            final List<PageListEntry> playerListings = pagesToSend.entrySet().stream().map(entry -> new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toList());
+            final PageListEntry allPages = playerListings.stream().findFirst().orElse(null);
 
-            // Send the list of pages
-            this.network.sendTo(player, new ClientboundPageListingsPacket(playerListings, switchToPageEntry == null ? null : switchToPageEntry.getId()));
+            if (pageName != null) {
+                final Page page = getPage(pageName).orElse(null);
+                this.network.sendTo(player, new ClientboundPageListingsPacket(playerListings, page == null ? allPages.getId() : page.getId()));
+            } else {
+                this.network.sendTo(player, new ClientboundPageListingsPacket(playerListings, allPages == null ? null : allPages.getId()));
+            }
         }
     }
 
