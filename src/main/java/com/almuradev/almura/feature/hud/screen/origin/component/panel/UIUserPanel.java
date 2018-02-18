@@ -19,6 +19,7 @@ import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.renderer.icon.Icon;
@@ -37,6 +38,7 @@ import org.spongepowered.api.text.Text;
 
 import java.text.DecimalFormat;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
@@ -51,6 +53,7 @@ public class UIUserPanel extends AbstractPanel {
     private final UILabel currencyLabel, levelLabel, usernameLabel;
     private final UIPropertyBar airBar, armorBar, experienceBar, healthBar, hungerBar, mountHealthBar, staminaBar;
     private final DecimalFormat df = new DecimalFormat("0.##");
+    @Nullable private UIComponent lastVisibleComponent;
 
     public UIUserPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
@@ -85,7 +88,7 @@ public class UIUserPanel extends AbstractPanel {
         // XP Orb Image
         this.xpOrbImage = new UIXPOrbImage(gui);
         this.xpOrbImage.setSize(9, 9);
-        this.xpOrbImage.setPosition(2, SimpleScreen.getPaddedY(this.levelLabel, 2));
+        this.xpOrbImage.setPosition(2, SimpleScreen.getPaddedY(this.levelLabel, 3));
 
         // Experience
         this.experienceBar = new UIPropertyBar(gui, barWidth - 11, 7)
@@ -141,29 +144,31 @@ public class UIUserPanel extends AbstractPanel {
         }
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
 
-        // Reset height
+        // Reset variables
         this.height = this.baseHeight;
+        this.lastVisibleComponent = null;
 
         // Update
         this.updateUserImage();
         this.updateDisplayName();
         this.updateCurrency();
-        this.updateExperience();
         this.updateLevel();
+
+        // Update property bars, call order defines visual layout
+        this.updateExperience();
         this.updateHealth();
         this.updateArmor();
         this.updateHunger();
-        this.updateStatmina();
+
+        // Update temporary property bars, call order defines visual layout
+        this.updateStamina();
         this.updateAir();
         this.updateMountHealth();
     }
 
     private void updateDisplayName() {
         if (this.client.player != null) {
-            final ITextComponent displayName = this.client.player.getDisplayName();
-            if (displayName != null) {
-                this.usernameLabel.setText(TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
-            }
+            this.usernameLabel.setText(TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
         }
     }
 
@@ -199,6 +204,11 @@ public class UIUserPanel extends AbstractPanel {
             this.experienceBar.setText(Text.EMPTY);
         }
         this.experienceBar.setAmount(MathUtil.convertToRange(experience, 0, experienceCap, 0f, 1f));
+        this.xpOrbImage.setPosition(2, this.lastVisibleComponent != null
+                ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 2)
+                : SimpleScreen.getPaddedY(this.levelLabel, 3));
+        this.experienceBar.setPosition(6, this.xpOrbImage.getY(), Anchor.TOP | Anchor.CENTER);
+        this.lastVisibleComponent = this.xpOrbImage;
     }
 
     private void updateHealth() {
@@ -211,6 +221,10 @@ public class UIUserPanel extends AbstractPanel {
         } else {
             this.healthBar.setText(Text.EMPTY);
         }
+        this.healthBar.setPosition(0, this.lastVisibleComponent != null
+                ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
+                : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
+        this.lastVisibleComponent = this.healthBar;
         this.height += 10;
     }
 
@@ -235,6 +249,10 @@ public class UIUserPanel extends AbstractPanel {
             this.armorBar.setText(Text.EMPTY);
         }
         this.armorBar.setAmount(MathUtil.convertToRange(currentArmor, 0, maxArmor, 0f, 1f));
+        this.armorBar.setPosition(0, this.lastVisibleComponent != null
+                ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
+                : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
+        this.lastVisibleComponent = this.armorBar;
         this.height += 10;
     }
 
@@ -247,12 +265,17 @@ public class UIUserPanel extends AbstractPanel {
             this.hungerBar.setText(Text.EMPTY);
         }
         this.hungerBar.setAmount(MathUtil.convertToRange(foodLevel, 0, 20, 0f, 1f));
+        this.hungerBar.setPosition(0, this.lastVisibleComponent != null
+                ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
+                : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
+        this.lastVisibleComponent = this.hungerBar;
         this.height += 10;
     }
 
-    private void updateStatmina() {
-        this.staminaBar.setVisible(this.client.player.getFoodStats().getSaturationLevel()>0);
+    private void updateStamina() {
         final float staminaLevel = this.client.player.getFoodStats().getSaturationLevel();
+
+        this.staminaBar.setVisible(staminaLevel > 0);
         if (this.staminaBar.isVisible()) {
             if (StaticAccess.config.get().client.displayNumericHUDValues) {
                 this.staminaBar.setText(Text.of(this.df.format(staminaLevel) + "/" + this.df.format(20f)));
@@ -261,6 +284,10 @@ public class UIUserPanel extends AbstractPanel {
                 this.staminaBar.setText(Text.EMPTY);
             }
             this.staminaBar.setAmount(MathUtil.convertToRange(staminaLevel, 0, 20, 0f, 1f));
+            this.staminaBar.setPosition(0, this.lastVisibleComponent != null
+                    ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
+                    : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
+            this.lastVisibleComponent = this.staminaBar;
             this.height += 10;
         }
     }
@@ -278,6 +305,10 @@ public class UIUserPanel extends AbstractPanel {
                 this.airBar.setText(Text.EMPTY);
             }
             this.airBar.setAmount(MathUtil.convertToRange(air, 0, 300, 0f, 1f));
+            this.airBar.setPosition(0, this.lastVisibleComponent != null
+                    ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
+                    : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
+            this.lastVisibleComponent = this.airBar;
             this.height += 10;
         }
     }
@@ -296,7 +327,10 @@ public class UIUserPanel extends AbstractPanel {
                 this.mountHealthBar.setText(Text.EMPTY);
             }
             this.mountHealthBar.setAmount(MathUtil.convertToRange(health, 0, maxHealth, 0f, 1f));
-            this.mountHealthBar.setPosition(0, SimpleScreen.getPaddedY(this.airBar.isVisible() ? this.airBar : this.hungerBar, 1));
+            this.mountHealthBar.setPosition(0, this.lastVisibleComponent != null
+                    ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
+                    : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
+            this.lastVisibleComponent = this.mountHealthBar;
             this.height += 10;
         }
     }
