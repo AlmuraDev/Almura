@@ -187,7 +187,13 @@ public final class CacheBlock extends BlockContainer {
             return;
         }
 
-        final int amountToExtract = Math.min(cacheStack.getItem().getItemStackLimit(), player.inventory.getInventoryStackLimit());
+        int amountToExtract = 0;
+
+        if (player.isSneaking()) {
+            amountToExtract =1;
+        } else {
+            amountToExtract = Math.min(cacheStack.getItem().getItemStackLimit(), player.inventory.getInventoryStackLimit());
+        }
 
         final ItemStack toExtract = itemHandler.extractItem(0, amountToExtract, true);
 
