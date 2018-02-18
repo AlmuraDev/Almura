@@ -23,7 +23,6 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -46,7 +45,7 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
             final Player player = ((PlayerConnection) connection).getPlayer();
 
             if (!player.hasPermission("almura.guide.open")) {
-                player.sendMessage(Text.of(TextColors.WHITE + "Access denied, missing permission: ", TextColors.AQUA + "almura.guide.open" + TextColors.WHITE, "."));
+                player.sendMessage(Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.guide.open", TextColors.WHITE, "."));
                 return;
             }
 
