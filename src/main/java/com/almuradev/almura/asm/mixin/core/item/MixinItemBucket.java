@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 
-@Mixin(value = ItemBucket.class, remap = false)
+@Mixin(value = ItemBucket.class)
 public abstract class MixinItemBucket extends Item {
 
     @Shadow private final Block containedBlock;
