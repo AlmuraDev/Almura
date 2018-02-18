@@ -42,8 +42,8 @@ import javax.annotation.Nullable;
 public abstract class MixinItemBucket extends Item {
 
     @Shadow private final Block containedBlock;
-    @Shadow public boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World worldIn, BlockPos posIn) {return true;}
-    @Shadow private ItemStack fillBucket(ItemStack emptyBuckets, EntityPlayer player, Item fullBucket) {return emptyBuckets;}
+    @Shadow public abstract boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World worldIn, BlockPos posIn);
+    @Shadow abstract ItemStack fillBucket(ItemStack emptyBuckets, EntityPlayer player, Item fullBucket);
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void onConstruction(CallbackInfo ci) {
