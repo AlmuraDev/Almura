@@ -9,6 +9,7 @@ package com.almuradev.almura.feature;
 
 import com.almuradev.almura.feature.cache.CacheModule;
 import com.almuradev.almura.feature.crafting.ItemReturnHelper;
+import com.almuradev.almura.feature.exchange.ExchangeModule;
 import com.almuradev.almura.feature.guide.GuideModule;
 import com.almuradev.almura.feature.complex.ComplexContentModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
@@ -30,6 +31,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new GuideModule());
         this.install(new ComplexContentModule());
         this.install(new CacheModule());
+        this.install(new ExchangeModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
     }

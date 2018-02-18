@@ -64,13 +64,13 @@ public final class FarmersAlmanacItem extends ComplexItem {
 
         if (!world.isRemote) {
             final Player spongePlayer = (Player) player;
-            if (!spongePlayer.hasPermission("almura.item.farmers_almanac")) { // TODO Dockter, we need a perm
-                ((Player) player).sendMessage(Text.of(TextColors.WHITE + "Access denied, missing permission: ", TextColors.AQUA, "almura.item.farmers_almanac", TextColors.WHITE, "."));
-                System.out.println("Almura: Missing Permissions - almura.item.farmers_almanac");
+            if (!spongePlayer.hasPermission("almura.item.farmers_almanac")) {
+                spongePlayer.sendMessage(Text.of(TextColors.WHITE + "Access denied, missing permission: ", TextColors.AQUA, "almura.item.farmers_"
+                        + "almanac", TextColors.WHITE, "."));
                 return EnumActionResult.FAIL;
             }
 
-            Block block = world.getBlockState(pos).getBlock();
+            final Block block = world.getBlockState(pos).getBlock();
             if (block instanceof BlockFarmland | block instanceof BlockCrops) {
 
                 final Biome biome = world.getBiome(pos);
@@ -84,7 +84,8 @@ public final class FarmersAlmanacItem extends ComplexItem {
                 network.sendTo(spongePlayer, new ClientboundWorldPositionInformationPacket(pos.getX(), pos.getY(), pos.getZ(), hitX, hitY, hitZ, (
                         (BiomeType) biome).getId(), biomeTemperature, biomeRainfall, blockLight, skyLight));
             } else {
-                ((Player) player).sendMessage(Text.of(TextColors.WHITE + "The  ", TextColors.AQUA,"Farmer's Almanac", TextColors.WHITE, " can only be used on crops or farmland."));
+                spongePlayer.sendMessage(Text.of(TextColors.WHITE + "The  ", TextColors.AQUA,"Farmer's Almanac", TextColors.WHITE, " can only be "
+                        + "used on crops or farmland."));
             }
         }
 

@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class ExchangeGUI extends SimpleScreen {
+public final class ExchangeGUI extends SimpleScreen {
 
     private static final int innerPadding = 2;
     private int lastUpdate = 0;

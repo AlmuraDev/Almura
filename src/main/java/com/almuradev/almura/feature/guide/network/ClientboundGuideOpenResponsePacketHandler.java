@@ -17,19 +17,13 @@ import org.spongepowered.api.network.RemoteConnection;
 
 public final class ClientboundGuideOpenResponsePacketHandler implements MessageHandler<ClientboundGuideOpenResponsePacket> {
 
-    /* Message Types
-    1 = onPlayerLogin
-    2 = Client-Side onKeyTyped
-    3 = Forced open via command via different player.
-     */
-
     @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(ClientboundGuideOpenResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
-            if (message.type == 1 && (!Minecraft.getMinecraft().isIntegratedServerRunning())) {  // Request from ServerManager onLogin && ignore Single Player
+            if (message.type == GuideOpenType.PLAYER_LOGGED_IN && (!Minecraft.getMinecraft().isIntegratedServerRunning())) {
                 new SimplePageView(message.canAdd, message.canRemove, message.canModify).display();
-            } else if (message.type >= 2) {
+            } else if (message.type != GuideOpenType.PLAYER_LOGGED_IN) {
                 new SimplePageView(message.canAdd, message.canRemove, message.canModify).display();
             }
         }

@@ -17,7 +17,7 @@ import org.spongepowered.api.Sponge;
 
 public abstract class WandItem extends ComplexItem {
 
-    public WandItem(ResourceLocation registryName, String unlocalizedName) {
+    WandItem(ResourceLocation registryName, String unlocalizedName) {
         super(registryName, unlocalizedName);
         this.maxStackSize = 1;
 
