@@ -7,14 +7,19 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.feature.menu.main.SimpleAboutMenu;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UISimpleList;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.button.UISimpleButton;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -38,9 +43,12 @@ public class ExchangeGUI extends SimpleScreen {
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
     private UILabel titleLabel;
+
     private World world;
     private EntityPlayer player;
     private BlockPos blockpos;
+    //private UISimpleList<SimpleAboutMenu.AboutListElementData> list;
+    private UITextField textField;
 
     @Inject private static PluginContainer container;
 
@@ -70,6 +78,28 @@ public class ExchangeGUI extends SimpleScreen {
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
+        final UIFormContainer searchArea = new UIFormContainer(this, 295, 250, "");
+        searchArea.setPosition(0, 10, Anchor.LEFT | Anchor.TOP);
+        searchArea.setMovable(false);
+        searchArea.setClosable(false);
+        searchArea.setBorder(FontColors.WHITE, 1, 185);
+        searchArea.setBackgroundAlpha(215);
+        searchArea.setBottomPadding(3);
+        searchArea.setRightPadding(3);
+        searchArea.setTopPadding(3);
+        searchArea.setLeftPadding(3);
+
+        final UIFormContainer inventoryArea = new UIFormContainer(this, 295, 350, "");
+        inventoryArea.setPosition(0, 10, Anchor.RIGHT | Anchor.TOP);
+        inventoryArea.setMovable(false);
+        inventoryArea.setClosable(false);
+        inventoryArea.setBorder(FontColors.WHITE, 1, 185);
+        inventoryArea.setBackgroundAlpha(215);
+        inventoryArea.setBottomPadding(3);
+        inventoryArea.setRightPadding(3);
+        inventoryArea.setTopPadding(3);
+        inventoryArea.setLeftPadding(3);
+
 
         // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
@@ -79,7 +109,7 @@ public class ExchangeGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel, buttonClose);
+        form.add(titleLabel, searchArea, inventoryArea, buttonClose);
 
         addToScreen(form);
     }
