@@ -19,6 +19,7 @@ import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.PlayerConnection;
 import org.spongepowered.api.network.RemoteConnection;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
             final Player player = ((PlayerConnection) connection).getPlayer();
 
             if (!player.hasPermission("almura.guide.open")) {
-                player.sendMessage(Text.of("almura.guide.permission.open.missing"));
+                player.sendMessage(Text.of(TextColors.WHITE + "Access denied, missing permission: ", TextColors.AQUA + "almura.guide.open" + TextColors.WHITE, "."));
                 return;
             }
 

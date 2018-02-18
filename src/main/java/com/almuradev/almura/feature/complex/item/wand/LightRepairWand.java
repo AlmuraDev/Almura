@@ -20,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public final class LightRepairWand extends WandItem {
 
@@ -29,16 +30,17 @@ public final class LightRepairWand extends WandItem {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        if ((playerIn instanceof EntityPlayerMP)) {
+        if ((worldIn.isRemote)) {
 
             final org.spongepowered.api.entity.living.player.Player spongePlayer = (org.spongepowered.api.entity.living.player.Player) playerIn;
 
-            if (spongePlayer.hasPermission("almura.wand.light_repair_wand")) {
-
+            if (!spongePlayer.hasPermission("almura.item.light_repair_wand")) {
+                spongePlayer.sendMessage(Text.of(TextColors.WHITE + "Access denied, missing permission: ", TextColors.AQUA + "almura.item.light_repair_wand" + TextColors.WHITE, "."));
+                return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
+            } else {
                 final BlockPos pos = ((EntityPlayerMP) playerIn).getPosition();
 
-                for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos
-                        .getAllInBoxMutable(pos.add(-100, -20, -100), pos.add(100, 20, 100))) {
+                for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-100, -20, -100), pos.add(100, 20, 100))) {
                     worldIn.setLightFor(EnumSkyBlock.BLOCK, blockpos$mutableblockpos, 0);
                     if (worldIn.getBlockState(blockpos$mutableblockpos).getBlock() == Blocks.TORCH) {
                         worldIn.setBlockToAir(blockpos$mutableblockpos);
@@ -49,8 +51,7 @@ public final class LightRepairWand extends WandItem {
                     }
                 }
 
-                spongePlayer.sendMessage(
-                        Text.of("Light values within a -100/[40]+100 range have been fixed.  Unload and reload chunks to get client ot update."));
+                spongePlayer.sendMessage(Text.of("Light values within a -100/[40]+100 range have been fixed.  Unload and reload chunks to get client ot update."));
             }
         }
 
