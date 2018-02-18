@@ -212,7 +212,7 @@ public class SimplePageView extends SimpleScreen {
         }
     }
 
-    Consumer<Task> openWindow(String details) {
+    protected Consumer<Task> openWindow(String details) {
         return task -> {
             if (details.equalsIgnoreCase("pageDetails")) {
                 new SimplePageDetails(this).display();
