@@ -52,15 +52,11 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
         if (block instanceof BlockCrops) {
             // Get Ground Moisture value
-            BlockPos underBlockPos = new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ());
-            IBlockState underBlockState = worldIn.getBlockState(underBlockPos);
+            final BlockPos underBlockPos = new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ());
+            final IBlockState underBlockState = worldIn.getBlockState(underBlockPos);
             if (underBlockState.getProperties().containsKey(BlockFarmland.MOISTURE)) {
                 Integer moisture = underBlockState.getValue(BlockFarmland.MOISTURE);
-                if (moisture > 0) {
-                    fertile = true;
-                } else {
-                    fertile = false;
-                }
+                fertile = moisture > 0;
             }
 
             areaBlockLight = worldIn.getLightFor(EnumSkyBlock.BLOCK, pos);
@@ -68,16 +64,11 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
         } else if (block instanceof BlockFarmland) {
 
-            BlockPos aboveBlockPos = new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ());
-            IBlockState aboveBlockState = worldIn.getBlockState(aboveBlockPos);
+            final BlockPos aboveBlockPos = new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ());
 
             if (state.getProperties().containsKey(BlockFarmland.MOISTURE)) {
                 Integer moisture = state.getValue(BlockFarmland.MOISTURE);
-                if (moisture > 0) {
-                    fertile = true;
-                } else {
-                    fertile = false;
-                }
+                fertile = moisture > 0;
             }
 
             areaBlockLight = worldIn.getLightFor(EnumSkyBlock.BLOCK, aboveBlockPos);

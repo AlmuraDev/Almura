@@ -19,6 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -29,16 +30,15 @@ public final class LightRepairWand extends WandItem {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        if ((worldIn.isRemote)) {
-
-            final org.spongepowered.api.entity.living.player.Player spongePlayer = (org.spongepowered.api.entity.living.player.Player) playerIn;
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer player, EnumHand handIn) {
+        if (!worldIn.isRemote) {
+            final Player spongePlayer = (org.spongepowered.api.entity.living.player.Player) player;
 
             if (!spongePlayer.hasPermission("almura.item.light_repair_wand")) {
                 spongePlayer.sendMessage(Text.of(TextColors.WHITE + "Access denied, missing permission: ", TextColors.AQUA, "almura.item.light_repair_wand", TextColors.WHITE, "."));
-                return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
+                return new ActionResult<>(EnumActionResult.FAIL, player.getHeldItem(handIn));
             } else {
-                final BlockPos pos = ((EntityPlayerMP) playerIn).getPosition();
+                final BlockPos pos = player.getPosition();
 
                 for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-100, -20, -100), pos.add(100, 20, 100))) {
                     worldIn.setLightFor(EnumSkyBlock.BLOCK, blockpos$mutableblockpos, 0);
@@ -55,6 +55,6 @@ public final class LightRepairWand extends WandItem {
             }
         }
 
-        return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));  //Both Server & Client expect a returned value.
+        return new ActionResult<>(EnumActionResult.PASS, player.getHeldItem(handIn));  //Both Server & Client expect a returned value.
     }
 }

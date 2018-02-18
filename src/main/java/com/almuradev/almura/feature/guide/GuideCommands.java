@@ -12,6 +12,7 @@ import static org.spongepowered.api.command.args.GenericArguments.playerOrSource
 import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.command.args.GenericArguments.text;
 
+import com.almuradev.almura.feature.guide.network.GuideOpenType;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
@@ -74,7 +75,7 @@ public final class GuideCommands {
                     final Player target = arguments.<Player>getOne("target").orElse(null);
                     final String pageId = arguments.<String>getOne("page_id").orElse(null);
 
-                    manager.openGuideForPlayer(target, 2, pageId);
+                    manager.openGuideForPlayer(target, GuideOpenType.COMMAND, pageId);
                     notificationManager.sendPopupNotification(target, Text.of("Guide"), Text.of("Guide has been forced open by: ", TextColors.AQUA,
                             source.getName()), 5);
                     return CommandResult.success();

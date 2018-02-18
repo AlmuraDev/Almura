@@ -11,6 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.guide.network.ClientboundGuideOpenResponsePacket;
 import com.almuradev.almura.feature.guide.network.ClientboundPageListingsPacket;
+import com.almuradev.almura.feature.guide.network.GuideOpenType;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -91,10 +92,10 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
             return;
         }
 
-        openGuideForPlayer(player, 1, null);
+        openGuideForPlayer(player, GuideOpenType.PLAYER_LOGGED_IN, null);
     }
 
-    public void openGuideForPlayer(Player player, int type, String pageName) {
+    public void openGuideForPlayer(Player player, GuideOpenType type, String pageName) {
         this.network.sendTo(player, new ClientboundGuideOpenResponsePacket(
                 type, // Specifies what called the open request.
                 player.hasPermission("almura.guide.add"),
