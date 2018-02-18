@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": {
+            "item": "minecraft:purple_shulker_box"
+        },
+        "B": {
+            "item": "almura:cache/nether"
+        }
+    },
+    "result": {
+        "item": "almura:cache/ender"
+    }
+}

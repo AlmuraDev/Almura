@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": {
+            "item": "minecraft:planks",
+            "data": 32767
+        },
+        "B": {
+            "item": "minecraft:chest"
+        }
+    },
+    "result": {
+        "item": "almura:cache/wood"
+    }
+}

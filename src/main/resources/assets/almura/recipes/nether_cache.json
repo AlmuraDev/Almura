@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": {
+            "item": "minecraft:nether_star"
+        },
+        "B": {
+            "item": "almura:cache/diamond"
+        }
+    },
+    "result": {
+        "item": "almura:cache/nether"
+    }
+}

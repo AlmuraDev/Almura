@@ -61,6 +61,16 @@ almura.menu_button.options=Almura - Options
 almura.menu_button.quit=Quit
 almura.menu_button.shop=Shop
 
+# ----------------------
+# ----    caches    ----
+# ----------------------
+
+tile.cache.wood.name=Wood Cache
+tile.cache.iron.name=Iron Cache
+tile.cache.gold.name=Gold Cache
+tile.cache.diamond.name=Diamond Cache
+tile.cache.nether.name=Nether Cache
+tile.cache.ender.name=Ender Cache
 
 # ---------------
 # ---- guide ----
