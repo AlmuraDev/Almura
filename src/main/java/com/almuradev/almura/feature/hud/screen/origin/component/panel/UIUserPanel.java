@@ -90,9 +90,12 @@ public class UIUserPanel extends AbstractPanel {
         this.xpOrbImage.setSize(9, 9);
         this.xpOrbImage.setPosition(2, SimpleScreen.getPaddedY(this.levelLabel, 3));
 
+        // TODO: Toggle for font scaling? Looks horrid on GUI Size: Normal
+
         // Experience
         this.experienceBar = new UIPropertyBar(gui, barWidth - 11, 7)
                 .setPosition(6, this.xpOrbImage.getY(), Anchor.TOP | Anchor.CENTER)
+                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
 
         // Health
@@ -100,24 +103,28 @@ public class UIUserPanel extends AbstractPanel {
         this.healthBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.experienceBar, 3), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(187, 19, 19).getRgb())
+                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setIcons(GuiConfig.Icon.VANILLA_HEART_BACKGROUND, GuiConfig.Icon.VANILLA_HEART_FOREGROUND);
 
         // Armor
         this.armorBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.healthBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(102, 103, 109).getRgb())
+                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_ARMOR);
 
         // Hunger
         this.hungerBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.armorBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(137, 89, 47).getRgb())
+                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setIcons(GuiConfig.Icon.VANILLA_HUNGER_BACKGROUND, GuiConfig.Icon.VANILLA_HUNGER_FOREGROUND);
 
         // Stamina
         this.staminaBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.hungerBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
+                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.STAMINA)
                 .setSpritesheet(GuiConfig.SpriteSheet.ALMURA); // You must call this if you are loading icon within the TexturePack when in-game.
 
@@ -125,12 +132,14 @@ public class UIUserPanel extends AbstractPanel {
         this.airBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.staminaBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
+                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_AIR);
 
         // Mount Health
         this.mountHealthBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setPosition(0, SimpleScreen.getPaddedY(this.airBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(239, 126, 74).getRgb())
+                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_MOUNT);
 
         this.add(this.userAvatarImage, this.usernameLabel, this.xpOrbImage, this.levelLabel, this.experienceBar, this.currencyImage,
@@ -197,13 +206,8 @@ public class UIUserPanel extends AbstractPanel {
         final int experienceCap = this.client.player.xpBarCap();
         final int experience = (int) (this.client.player.experience * experienceCap);
 
-        if (StaticAccess.config.get().client.displayNumericHUDValues) {
-            this.experienceBar.setText(Text.of(this.df.format(experience) + "/" + this.df.format(experienceCap)));
-            this.experienceBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
-        } else {
-            this.experienceBar.setText(Text.EMPTY);
-        }
-        this.experienceBar.setAmount(MathUtil.convertToRange(experience, 0, experienceCap, 0f, 1f));
+        this.updateBarProperties(this.experienceBar, experience, experienceCap, false, false);
+
         this.xpOrbImage.setPosition(2, this.lastVisibleComponent != null
                 ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 2)
                 : SimpleScreen.getPaddedY(this.levelLabel, 3));
@@ -212,20 +216,7 @@ public class UIUserPanel extends AbstractPanel {
     }
 
     private void updateHealth() {
-        final float health = this.client.player.getHealth();
-        final float maxHealth = this.client.player.getMaxHealth();
-        this.healthBar.setAmount(MathUtil.convertToRange(health,0f, maxHealth, 0f, 1f));
-        if (StaticAccess.config.get().client.displayNumericHUDValues) {
-            this.healthBar.setText(Text.of(this.df.format(health) + "/" + this.df.format(maxHealth)));
-            this.healthBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
-        } else {
-            this.healthBar.setText(Text.EMPTY);
-        }
-        this.healthBar.setPosition(0, this.lastVisibleComponent != null
-                ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
-                : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
-        this.lastVisibleComponent = this.healthBar;
-        this.height += 10;
+        this.updateBarProperties(this.healthBar, this.client.player.getHealth(), this.client.player.getMaxHealth());
     }
 
     private void updateArmor() {
@@ -241,35 +232,11 @@ public class UIUserPanel extends AbstractPanel {
                 currentDamage += stack.getItem().getDamage(stack);
             }
         }
-        final int currentArmor = maxArmor - currentDamage;
-        if (StaticAccess.config.get().client.displayNumericHUDValues) {
-            this.armorBar.setText(Text.of(this.df.format((float) currentArmor) + "/" + this.df.format((float) maxArmor)));
-            this.armorBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
-        } else {
-            this.armorBar.setText(Text.EMPTY);
-        }
-        this.armorBar.setAmount(MathUtil.convertToRange(currentArmor, 0, maxArmor, 0f, 1f));
-        this.armorBar.setPosition(0, this.lastVisibleComponent != null
-                ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
-                : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
-        this.lastVisibleComponent = this.armorBar;
-        this.height += 10;
+        this.updateBarProperties(this.armorBar, maxArmor - currentDamage, maxArmor);
     }
 
     private void updateHunger() {
-        final float foodLevel = this.client.player.getFoodStats().getFoodLevel();
-        if (StaticAccess.config.get().client.displayNumericHUDValues) {
-            this.hungerBar.setText(Text.of(this.df.format(foodLevel) + "/" + this.df.format(20f)));
-            this.hungerBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
-        } else {
-            this.hungerBar.setText(Text.EMPTY);
-        }
-        this.hungerBar.setAmount(MathUtil.convertToRange(foodLevel, 0, 20, 0f, 1f));
-        this.hungerBar.setPosition(0, this.lastVisibleComponent != null
-                ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
-                : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
-        this.lastVisibleComponent = this.hungerBar;
-        this.height += 10;
+        this.updateBarProperties(this.hungerBar, this.client.player.getFoodStats().getFoodLevel(), 300);
     }
 
     private void updateStamina() {
@@ -277,18 +244,7 @@ public class UIUserPanel extends AbstractPanel {
 
         this.staminaBar.setVisible(staminaLevel > 0);
         if (this.staminaBar.isVisible()) {
-            if (StaticAccess.config.get().client.displayNumericHUDValues) {
-                this.staminaBar.setText(Text.of(this.df.format(staminaLevel) + "/" + this.df.format(20f)));
-                this.staminaBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
-            } else {
-                this.staminaBar.setText(Text.EMPTY);
-            }
-            this.staminaBar.setAmount(MathUtil.convertToRange(staminaLevel, 0, 20, 0f, 1f));
-            this.staminaBar.setPosition(0, this.lastVisibleComponent != null
-                    ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
-                    : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
-            this.lastVisibleComponent = this.staminaBar;
-            this.height += 10;
+            this.updateBarProperties(this.staminaBar, staminaLevel, 20f);
         }
     }
 
@@ -298,18 +254,7 @@ public class UIUserPanel extends AbstractPanel {
         // TODO Hardcoded to not care above 300, if we can do this better in the future then we should do so
         if (this.airBar.isVisible()) {
             final int air = Math.max(this.client.player.getAir(), 0);
-            if (StaticAccess.config.get().client.displayNumericHUDValues) {
-                this.airBar.setText(Text.of(this.df.format((float) air) + "/" + this.df.format((float) 300)));
-                this.airBar.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
-            } else {
-                this.airBar.setText(Text.EMPTY);
-            }
-            this.airBar.setAmount(MathUtil.convertToRange(air, 0, 300, 0f, 1f));
-            this.airBar.setPosition(0, this.lastVisibleComponent != null
-                    ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
-                    : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
-            this.lastVisibleComponent = this.airBar;
-            this.height += 10;
+            this.updateBarProperties(this.airBar, air, 300);
         }
     }
 
@@ -319,19 +264,38 @@ public class UIUserPanel extends AbstractPanel {
         this.mountHealthBar.setVisible(entityIsLiving);
         if (entityIsLiving) {
             final EntityLivingBase ridingEntityLivingBase = (EntityLivingBase) entity;
-            final float health = ridingEntityLivingBase.getHealth();
-            final float maxHealth = ridingEntityLivingBase.getMaxHealth();
-            if (StaticAccess.config.get().client.displayNumericHUDValues) {
-                this.mountHealthBar.setText(Text.of(this.df.format(health) + "/" + this.df.format(maxHealth)));
-            } else {
-                this.mountHealthBar.setText(Text.EMPTY);
-            }
-            this.mountHealthBar.setAmount(MathUtil.convertToRange(health, 0, maxHealth, 0f, 1f));
-            this.mountHealthBar.setPosition(0, this.lastVisibleComponent != null
+
+            this.updateBarProperties(this.mountHealthBar, ridingEntityLivingBase.getHealth(), ridingEntityLivingBase.getMaxHealth());
+        }
+    }
+
+    private void updateBarProperties(UIPropertyBar propertyBar, float value, float maxValue) {
+        this.updateBarProperties(propertyBar, value, maxValue, true, true);
+    }
+
+    private void updateBarProperties(UIPropertyBar propertyBar, float value, float maxValue, boolean updatePosition, boolean updateLastVisible) {
+        // Update text
+        Text text = StaticAccess.config.get().client.displayNumericHUDValues
+                ? Text.of(this.df.format(value) + "/" + this.df.format(maxValue))
+                : Text.EMPTY;
+        propertyBar.setText(text);
+
+        // Update amount value
+        propertyBar.setAmount(MathUtil.convertToRange(value, 0, maxValue, 0f, 1f));
+
+        // Pad against last visible component
+        if (updatePosition) {
+            propertyBar.setPosition(0, this.lastVisibleComponent != null
                     ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
                     : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
-            this.lastVisibleComponent = this.mountHealthBar;
-            this.height += 10;
         }
+
+        // Update last visible component
+        if (updateLastVisible) {
+            this.lastVisibleComponent = propertyBar;
+        }
+
+        // Update height
+        this.height += 10;
     }
 }

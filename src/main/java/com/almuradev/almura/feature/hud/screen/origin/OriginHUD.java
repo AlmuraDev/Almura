@@ -65,7 +65,7 @@ public class OriginHUD extends AbstractHUD {
         this.renderer.setDefaultTexture(GuiConfig.SpriteSheet.VANILLA_CONTAINER_INVENTORY);
 
         // User panel
-        this.userPanel = new UIUserPanel(this, 124, 37);
+        this.userPanel = new UIUserPanel(this, 124, 27);
         this.userPanel.setPosition(0, 0);
 
         // Debug block panel
