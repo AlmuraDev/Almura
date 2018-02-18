@@ -32,7 +32,7 @@ public final class ExchangeWand extends WandItem {
         if ((worldIn.isRemote)) {
             Player spongePlayer = (Player) playerIn;
             if (!spongePlayer.hasPermission("almura.item.exchange_wand")) {
-                spongePlayer.sendMessage(Text.of(TextColors.WHITE + "Access denied, missing permission: ", TextColors.AQUA + "almura.item.exchange_wand" + TextColors.WHITE, "."));
+                spongePlayer.sendMessage(Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.item.exchange_wand", TextColors.WHITE, "."));
                 return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
             } else {
                 playerIn.swingArm(handIn);
