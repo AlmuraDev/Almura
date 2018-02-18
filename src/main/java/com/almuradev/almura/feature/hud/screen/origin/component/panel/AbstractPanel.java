@@ -21,7 +21,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 @SideOnly(Side.CLIENT)
-@SuppressWarnings("all")
+@SuppressWarnings("deprecation")
 public abstract class AbstractPanel extends UIPanel {
 
     protected final Minecraft client = Minecraft.getMinecraft();

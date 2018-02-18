@@ -20,6 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 @SideOnly(Side.CLIENT)
+@SuppressWarnings("deprecation")
 public final class UINotificationPanel extends AbstractPanel {
 
     private final ClientNotificationManager manager;

@@ -52,6 +52,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
+@SuppressWarnings("deprecation")
 public final class ServerTitleManager extends Witness.Impl implements Witness.Lifecycle {
 
     private final Game game;

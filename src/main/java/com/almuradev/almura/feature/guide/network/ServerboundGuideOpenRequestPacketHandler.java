@@ -52,6 +52,7 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
 
             // Open the GUI
             this.network.sendTo(player, new ClientboundGuideOpenResponsePacket(
+                    2, // Requested from Player.
                     player.hasPermission("almura.guide.add"),
                     player.hasPermission("almura.guide.remove"),
                     player.hasPermission("almura.guide.modify")));

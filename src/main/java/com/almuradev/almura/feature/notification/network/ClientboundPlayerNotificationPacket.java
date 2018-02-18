@@ -12,6 +12,7 @@ import org.spongepowered.api.network.Message;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+@SuppressWarnings("deprecation")
 public final class ClientboundPlayerNotificationPacket implements Message {
 
     public Text title;

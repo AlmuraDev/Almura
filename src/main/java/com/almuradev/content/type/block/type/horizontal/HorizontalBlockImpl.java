@@ -31,6 +31,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("deprecation")
 public final class HorizontalBlockImpl extends BlockHorizontal implements HorizontalBlock {
 
     private final Map<EnumFacing, HorizontalBlockStateDefinition> states = new EnumMap<>(EnumFacing.class);

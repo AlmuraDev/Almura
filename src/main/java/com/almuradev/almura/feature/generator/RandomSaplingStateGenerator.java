@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
+@SuppressWarnings("deprecation")
 public class RandomSaplingStateGenerator {
     static boolean debug = false;
 

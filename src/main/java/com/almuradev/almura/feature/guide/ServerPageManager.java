@@ -86,14 +86,13 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
 
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-        if (!player.hasPermission("almura.guide.open")) {
-            // Todo: Dockter fix this with notifcation manager.
-            //player.sendMessage(Text.of("almura.guide.permission.open.missing"));
+        if (!player.hasPermission("almura.guide.open_at_login")) {
             return;
         }
 
         // Open the GUI
         this.network.sendTo(player, new ClientboundGuideOpenResponsePacket(
+                1, // Specifies what called the open request.
                 player.hasPermission("almura.guide.add"),
                 player.hasPermission("almura.guide.remove"),
                 player.hasPermission("almura.guide.modify")));

@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Random;
 
+@SuppressWarnings("deprecation")
 @Mixin(value = BlockVine.class, priority = 999)
 public abstract class MixinBlockVine extends Block {
 

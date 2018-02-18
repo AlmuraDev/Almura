@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("deprecation")
 public final class ClientboundPlayerSelectedTitlesPacketHandler implements MessageHandler<ClientboundPlayerSelectedTitlesPacket> {
 
     private final ClientTitleManager manager;

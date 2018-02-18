@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.title.network;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
+@SuppressWarnings("deprecation")
 public final class ServerboundPlayerSetTitlePacket implements Message {
 
     public String title;

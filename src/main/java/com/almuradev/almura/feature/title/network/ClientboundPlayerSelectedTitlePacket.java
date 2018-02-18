@@ -14,6 +14,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 public final class ClientboundPlayerSelectedTitlePacket implements Message {
 
     public UUID uniqueId;

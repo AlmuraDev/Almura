@@ -17,6 +17,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("deprecation")
 public final class ClientboundPlayerSelectedTitlePacketHandler implements MessageHandler<ClientboundPlayerSelectedTitlePacket> {
 
     private final ClientTitleManager manager;

@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Singleton
+@SuppressWarnings("deprecation")
 public final class ServerNickManager extends Witness.Impl implements Witness.Lifecycle {
 
     private final PluginContainer container;

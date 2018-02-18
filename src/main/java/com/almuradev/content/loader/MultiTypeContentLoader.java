@@ -35,6 +35,7 @@ import javax.inject.Inject;
 /**
  * An abstract implementation of a content loader that has a multiple types.
  */
+@SuppressWarnings("deprecation")
 public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.MultiType<C, B>, C extends CatalogedContent, B extends ContentBuilder<C>, P extends ConfigProcessor<B>> extends ContentLoaderImpl<C, B, MultiTypeContentLoader.Entry<T, C, B>> implements MultiTypeExternalContentProcessor<T, C, B> {
 
     private final TypeToken<T> type = new TypeToken<T>(this.getClass()) {};

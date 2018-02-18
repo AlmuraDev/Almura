@@ -49,6 +49,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("deprecation")
 public final class CacheBlock extends BlockContainer {
 
     private final int slotLimit;

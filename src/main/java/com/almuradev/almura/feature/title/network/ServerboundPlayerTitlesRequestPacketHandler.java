@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("deprecation")
 public final class ServerboundPlayerTitlesRequestPacketHandler implements MessageHandler<ServerboundPlayerTitlesRequestPacket> {
 
     private final ServerTitleManager manager;

@@ -30,6 +30,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("deprecation")
 public class InformationDebugPanel extends AbstractDebugPanel {
     private static final double XYZ_SINGLE_LINE_MAX = 100000d;
     private static final String DEFAULT_VERSION = "dev";

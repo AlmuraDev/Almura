@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("deprecation")
 public final class ClientboundNucleusNameChangeMappingPacketHandler implements MessageHandler<ClientboundNucleusNameChangeMappingPacket> {
 
     private final ClientNickManager nickManager;

@@ -16,6 +16,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("deprecation")
 public final class ClientboundPlayerTitlesResponsePacketHandler implements MessageHandler<ClientboundPlayerTitlesResponsePacket> {
 
     @Override

@@ -30,7 +30,7 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import org.lwjgl.input.Mouse;
 
-
+@SuppressWarnings("deprecation")
 public class IngameFarmersAlmanac extends SimpleScreen {
 
     private final Block block;

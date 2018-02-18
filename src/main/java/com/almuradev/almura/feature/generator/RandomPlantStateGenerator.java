@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
+@SuppressWarnings("deprecation")
 public class RandomPlantStateGenerator {
 
     static boolean debug = false;

@@ -37,6 +37,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("deprecation")
 public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
     private static final int GROWTH_CHECK_RADIUS = 4;
