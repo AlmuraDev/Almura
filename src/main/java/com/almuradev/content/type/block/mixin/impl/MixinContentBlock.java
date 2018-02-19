@@ -11,10 +11,10 @@ import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.BlockStateDefinition;
 import com.almuradev.content.type.block.ContentBlockType;
-import com.almuradev.content.type.block.SpecialBlockStateBlock;
 import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlockImpl;
+import com.almuradev.content.type.block.type.leaf.LeafBlockImpl;
 import com.almuradev.content.type.block.type.normal.NormalBlockImpl;
 import com.almuradev.content.type.block.util.BlockUtil;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
@@ -27,7 +27,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,24 +36,14 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 @Mixin({
+    CropBlockImpl.class,
     HorizontalBlockImpl.class,
-    NormalBlockImpl.class,
-    CropBlockImpl.class
+    LeafBlockImpl.class,
+    NormalBlockImpl.class
 })
-public abstract class MixinContentBlock extends MixinBlock implements ContentBlockType, IMixinContentBlock, IMixinLazyItemGroup, SpecialBlockStateBlock {
+public abstract class MixinContentBlock extends MixinBlock implements ContentBlockType, IMixinContentBlock, IMixinLazyItemGroup {
 
     @Nullable private Delegate<ItemGroup> lazyItemGroup;
-    private ResourceLocation blockStateDefinitionLocation;
-
-    @Override
-    public ResourceLocation blockStateDefinitionLocation() {
-        return this.blockStateDefinitionLocation;
-    }
-
-    @Override
-    public void blockStateDefinitionLocation(final ResourceLocation location) {
-        this.blockStateDefinitionLocation = location;
-    }
 
     @Override
     public Optional<ItemGroup> itemGroup() {

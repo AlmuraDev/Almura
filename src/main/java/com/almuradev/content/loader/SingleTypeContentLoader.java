@@ -58,7 +58,7 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
                 }
                 if (translations) {
                     if (directory.getFileName().toString().equals(TranslationManager.DIRECTORY)) {
-                        final Iterable<String> components = SLASH_SPLITTER.trimResults().omitEmptyStrings().split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
+                        final Iterable<String> components = SLASH_SPLITTER.split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
                         SingleTypeContentLoader.this.translationManager.pushSource(directory, key -> ((Translated) SingleTypeContentLoader.this).buildTranslationKey(namespace, components, key));
                         return FileVisitResult.SKIP_SUBTREE;
                     }

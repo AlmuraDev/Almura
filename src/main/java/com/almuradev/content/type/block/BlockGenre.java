@@ -15,6 +15,7 @@ import com.almuradev.content.type.block.type.container.ContainerBlock;
 import com.almuradev.content.type.block.type.crop.CropBlock;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlock;
 import com.almuradev.content.type.block.type.horizontal.component.aabb.HorizontalBoxFactory;
+import com.almuradev.content.type.block.type.leaf.LeafBlock;
 import com.almuradev.content.type.block.type.normal.NormalBlock;
 
 /**
@@ -31,13 +32,17 @@ public enum BlockGenre implements ContentType.MultiType<ContentBlockType, Conten
      */
     CROP("crop", CropBlock.Builder.class),
     /**
-     * A block type representing a normal block.
-     */
-    NORMAL("normal", NormalBlock.Builder.class),
-    /**
      * A block type representing a horizontal block.
      */
-    HORIZONTAL("horizontal", HorizontalBlock.Builder.class, HorizontalBoxFactory.class);
+    HORIZONTAL("horizontal", HorizontalBlock.Builder.class, HorizontalBoxFactory.class),
+    /**
+     * A block type representing a leaf block.
+     */
+    LEAF("leaf", LeafBlock.Builder.class),
+    /**
+     * A block type representing a normal block.
+     */
+    NORMAL("normal", NormalBlock.Builder.class);
 
     /**
      * The id of this block type.
