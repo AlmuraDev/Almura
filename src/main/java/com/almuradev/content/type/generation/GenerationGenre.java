@@ -8,14 +8,19 @@
 package com.almuradev.content.type.generation;
 
 import com.almuradev.content.ContentType;
-import com.almuradev.content.type.generation.type.ore.OreGenerator;
+import com.almuradev.content.type.generation.type.feature.tree.TreeGenerator;
+import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGenerator;
 
 @ContentType.MultiType.Name("generators")
 public enum GenerationGenre implements ContentType.MultiType<ContentGenerator, ContentGenerator.Builder<ContentGenerator>> {
     /**
+     * A generator type representing a tree.
+     */
+    TREE_FEATURE("feature/tree", "tree feature", TreeGenerator.Builder.class),
+    /**
      * A generator type representing ore.
      */
-    ORE("ore", OreGenerator.Builder.class);
+    UNDERGROUND_ORE("underground/ore", "underground ore", UndergroundOreGenerator.Builder.class);
 
     /**
      * The id of this item type.
@@ -23,16 +28,23 @@ public enum GenerationGenre implements ContentType.MultiType<ContentGenerator, C
      * <p>The id is used for identification and loading.</p>
      */
     private final String id;
+    private final String friendlyName;
     private final Class<? extends ContentGenerator.Builder<? extends ContentGenerator>> builder;
 
-    GenerationGenre(final String id, final Class<? extends ContentGenerator.Builder<? extends ContentGenerator>> builder) {
+    GenerationGenre(final String id, final String friendlyName, final Class<? extends ContentGenerator.Builder<? extends ContentGenerator>> builder) {
         this.id = id;
+        this.friendlyName = friendlyName;
         this.builder = builder;
     }
 
     @Override
     public String id() {
         return this.id;
+    }
+
+    @Override
+    public String friendlyName() {
+        return this.friendlyName;
     }
 
     @Override

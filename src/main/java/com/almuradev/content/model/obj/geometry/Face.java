@@ -14,7 +14,6 @@ import com.google.common.base.MoreObjects;
 import java.util.LinkedList;
 
 public final class Face {
-
     private final LinkedList<VertexDefinition> vertices;
     private int index;
 
@@ -61,7 +60,6 @@ public final class Face {
     }
 
     public static final class Builder {
-
         private LinkedList<VertexDefinition> vertices = new LinkedList<>();
 
         public Builder vertex(final VertexDefinition vertex) {

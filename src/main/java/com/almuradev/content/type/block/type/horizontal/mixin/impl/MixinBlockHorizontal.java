@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.Mixin;
 @Implements(@Interface(iface = HorizontalBlock.class, prefix = "rotatable$"))
 @Mixin(value = BlockHorizontal.class, priority = 999)
 public abstract class MixinBlockHorizontal extends Block {
-
     public MixinBlockHorizontal(final Material material, final MapColor color) {
         super(material, color);
     }

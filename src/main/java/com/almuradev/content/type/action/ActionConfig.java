@@ -10,7 +10,6 @@ package com.almuradev.content.type.action;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyActionConfig;
 
 public interface ActionConfig {
-
     /**
      * @see BlockDestroyActionConfig
      */

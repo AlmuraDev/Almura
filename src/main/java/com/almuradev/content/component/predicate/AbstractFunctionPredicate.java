@@ -10,7 +10,6 @@ package com.almuradev.content.component.predicate;
 import java.util.function.Function;
 
 public abstract class AbstractFunctionPredicate<I, O> implements FunctionPredicate<I, O> {
-
     private final Function<I, O> function;
 
     protected AbstractFunctionPredicate(final Function<I, O> function) {

@@ -9,13 +9,15 @@ package com.almuradev.content.type.block.mixin.impl;
 
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
-import com.almuradev.content.type.block.BlockStateDefinition;
-import com.almuradev.content.type.block.ContentBlockType;
-import com.almuradev.content.type.block.SpecialBlockStateBlock;
+import com.almuradev.content.type.block.AbstractBlockStateDefinition;
+import com.almuradev.content.type.block.ContentBlock;
 import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlockImpl;
+import com.almuradev.content.type.block.type.leaf.LeafBlockImpl;
+import com.almuradev.content.type.block.type.log.LogBlockImpl;
 import com.almuradev.content.type.block.type.normal.NormalBlockImpl;
+import com.almuradev.content.type.block.type.sapling.SaplingBlockImpl;
 import com.almuradev.content.type.block.util.BlockUtil;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
 import com.almuradev.content.type.itemgroup.ItemGroup;
@@ -29,7 +31,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -40,24 +41,15 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 @Mixin({
+    CropBlockImpl.class,
     HorizontalBlockImpl.class,
+    LeafBlockImpl.class,
+    LogBlockImpl.class,
     NormalBlockImpl.class,
-    CropBlockImpl.class
+    SaplingBlockImpl.class
 })
-public abstract class MixinContentBlock extends MixinBlock implements ContentBlockType, IMixinContentBlock, IMixinLazyItemGroup, SpecialBlockStateBlock {
-
+public abstract class MixinContentBlock extends MixinBlock implements ContentBlock, IMixinContentBlock, IMixinLazyItemGroup {
     @Nullable private Delegate<ItemGroup> lazyItemGroup;
-    private ResourceLocation blockStateDefinitionLocation;
-
-    @Override
-    public ResourceLocation blockStateDefinitionLocation() {
-        return this.blockStateDefinitionLocation;
-    }
-
-    @Override
-    public void blockStateDefinitionLocation(final ResourceLocation location) {
-        this.blockStateDefinitionLocation = location;
-    }
 
     @Override
     public Optional<ItemGroup> itemGroup() {
@@ -88,13 +80,13 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
 
     @Override
     public Optional<BlockSoundGroup> soundGroup(final IBlockState state) {
-        return Delegate.optional(((BlockStateDefinition.Impl<?, ?, ?>) this.definition(state)).sound);
+        return Delegate.optional(((AbstractBlockStateDefinition<?, ?, ?>) this.definition(state)).sound);
     }
 
     @Nullable
     @Override
     public BlockDestroyAction destroyAction(final IBlockState state) {
-        return Delegate.get(((BlockStateDefinition.Impl<?, ?, ?>) this.definition(state)).destroyAction);
+        return Delegate.get(((AbstractBlockStateDefinition<?, ?, ?>) this.definition(state)).destroyAction);
     }
 
     @Override
@@ -104,7 +96,7 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
 
     @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
-        return ((BlockStateDefinition.Impl<?, ?, ?>) this.definition(state)).blockFaceShape;
+        return ((AbstractBlockStateDefinition<?, ?, ?>) this.definition(state)).blockFaceShape;
     }
 
     // Almura Start - Handle drops from Break

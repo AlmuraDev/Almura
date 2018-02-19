@@ -34,7 +34,7 @@ import java.nio.file.Paths;
 public final class CommonModule extends AbstractModule implements CommonBinder {
     private final Plugin plugin;
 
-    public CommonModule(Plugin plugin) {
+    public CommonModule(final Plugin plugin) {
         this.plugin = plugin;
     }
 

@@ -11,9 +11,7 @@ import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.almuradev.toolbox.config.processor.TaggedConfigProcessor;
 import com.almuradev.toolbox.config.tag.ConfigTag;
 
-public interface ItemContentProcessor<C extends ContentItemType, B extends ContentItemType.Builder<C>> extends ConfigProcessor<B> {
-
-    interface AnyTagged extends ItemContentProcessor<ContentItemType, ContentItemType.Builder<ContentItemType>>, TaggedConfigProcessor<ContentItemType.Builder<ContentItemType>, ConfigTag> {
-
+public interface ItemContentProcessor<C extends ContentItem, B extends ContentItem.Builder<C>> extends ConfigProcessor<B> {
+    interface AnyTagged extends ItemContentProcessor<ContentItem, ContentItem.Builder<ContentItem>>, TaggedConfigProcessor<ContentItem.Builder<ContentItem>, ConfigTag> {
     }
 }

@@ -11,7 +11,6 @@ import com.almuradev.content.component.apply.ApplyModule;
 import net.kyori.violet.AbstractModule;
 
 public final class ComponentModule extends AbstractModule {
-
     @Override
     protected void configure() {
         this.install(new ApplyModule());

@@ -23,13 +23,11 @@ import java.util.Optional;
 import java.util.Set;
 
 public final class PotionEffectTemplate {
-
     private static final ResourceLocationPredicateParser<Potion>
             POTION_FILTER_BY_REGISTRY_NAME = ResourceLocationPredicateParser.of(IForgeRegistryEntry.Impl::getRegistryName);
-
     public static ConfigurationNodeDeserializer<PotionEffectTemplate> PARSER = new ConfigurationNodeDeserializer<PotionEffectTemplate>() {
         @Override
-        public Optional<PotionEffectTemplate> deserialize(ConfigurationNode node) {
+        public Optional<PotionEffectTemplate> deserialize(final ConfigurationNode node) {
             if (node.isVirtual()) {
                 return Optional.empty();
             }
@@ -73,8 +71,8 @@ public final class PotionEffectTemplate {
     private final boolean ambient;
     private final boolean showParticles;
 
-    private PotionEffectTemplate(FunctionPredicate<Potion, ResourceLocation> potionPredicate, Set<ItemDefinition> curatives, int duration, int
-            amplifier, boolean ambient, boolean showParticles) {
+    private PotionEffectTemplate(final FunctionPredicate<Potion, ResourceLocation> potionPredicate, final Set<ItemDefinition> curatives, final int duration, final int
+            amplifier, final boolean ambient, final boolean showParticles) {
         this.potionPredicate = potionPredicate;
         this.curatives = curatives;
         this.duration = duration;
@@ -84,7 +82,7 @@ public final class PotionEffectTemplate {
     }
 
     public FunctionPredicate<Potion, ResourceLocation> getPotionPredicate() {
-        return potionPredicate;
+        return this.potionPredicate;
     }
 
     public Set<ItemDefinition> getCuratives() {
@@ -92,19 +90,19 @@ public final class PotionEffectTemplate {
     }
 
     public int getDuration() {
-        return duration;
+        return this.duration;
     }
 
     public int getAmplifier() {
-        return amplifier;
+        return this.amplifier;
     }
 
     public boolean isAmbient() {
-        return ambient;
+        return this.ambient;
     }
 
     public boolean isShowParticles() {
-        return showParticles;
+        return this.showParticles;
     }
 
     @Override

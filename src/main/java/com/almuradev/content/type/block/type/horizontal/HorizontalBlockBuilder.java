@@ -7,8 +7,8 @@
  */
 package com.almuradev.content.type.block.type.horizontal;
 
+import com.almuradev.content.type.block.AbstractParsedBlockBuilder;
 import com.almuradev.content.type.block.BlockGenre;
-import com.almuradev.content.type.block.ContentBlockType;
 import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinition;
 import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinitionBuilder;
 import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinitionBuilderImpl;
@@ -22,8 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public final class HorizontalBlockBuilder extends ContentBlockType.Builder.Impl.Parsed<HorizontalBlock, HorizontalBlockStateDefinition, HorizontalBlockStateDefinitionBuilder> implements HorizontalBlock.Builder {
-
+public final class HorizontalBlockBuilder extends AbstractParsedBlockBuilder<HorizontalBlock, HorizontalBlockStateDefinition, HorizontalBlockStateDefinitionBuilder> implements HorizontalBlock.Builder {
     private static final Pattern FACING = Pattern.compile("facing=([a-z]*)");
     private final IntSet facings = new IntArraySet();
 

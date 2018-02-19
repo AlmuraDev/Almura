@@ -37,7 +37,6 @@ import javax.inject.Inject;
  */
 @SuppressWarnings("deprecation")
 public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.MultiType<C, B>, C extends CatalogedContent, B extends ContentBuilder<C>, P extends ConfigProcessor<B>> extends ContentLoaderImpl<C, B, MultiTypeContentLoader.Entry<T, C, B>> implements MultiTypeExternalContentProcessor<T, C, B> {
-
     private final TypeToken<T> type = new TypeToken<T>(this.getClass()) {};
     private final SetMultimap<T, Entry<T, C, B>> queue = HashMultimap.create();
     private final T[] types;
@@ -53,7 +52,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
     public final void search(final String namespace, final Path path) throws IOException {
         checkState(this.stage == Stage.SEARCH, "loader is not searching");
         for (final T type : this.types) {
-            this.logger.debug("        Searching for '{}' {}...", type.id(), this.name);
+            this.logger.debug("        Searching for '{}' {}...", type.friendlyName(), this.name);
             this.walk(namespace, type, path.resolve(type.id()));
         }
     }
@@ -140,7 +139,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
                 }
                 if (translations) {
                     if (directory.getFileName().toString().equals(TranslationManager.DIRECTORY)) {
-                        final Iterable<String> components = SLASH_SPLITTER.trimResults().omitEmptyStrings().split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
+                        final Iterable<String> components = SLASH_SPLITTER.split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
                         MultiTypeContentLoader.this.translationManager.pushSource(directory, key -> ((Translated<T>) MultiTypeContentLoader.this).buildTranslationKey(namespace, type, components, key));
                         return FileVisitResult.SKIP_SUBTREE;
                     }
@@ -165,7 +164,6 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
     }
 
     public static class Entry<T extends Enum<T> & ContentType.MultiType, C extends CatalogedContent, B extends ContentBuilder<C>> extends ContentLoaderImpl.Entry<C, B> {
-
         final T type;
 
         public Entry(final String id, final T type, final B builder, @Nullable final Path path, final ConfigurationNode config) {

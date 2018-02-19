@@ -32,7 +32,6 @@ import javax.inject.Inject;
 
 @Mixin(BlockTallGrass.class)
 public abstract class MixinBlockTallGrass extends MixinBlock {
-
     @Inject private static GameRegistry registry;
 
     /**

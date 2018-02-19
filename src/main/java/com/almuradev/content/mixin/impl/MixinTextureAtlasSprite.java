@@ -21,22 +21,22 @@ public abstract class MixinTextureAtlasSprite implements IMixinTextureAtlasSprit
     @Shadow protected float maxV;
 
     @Override
-    public void setMinU(float minU) {
+    public void setMinU(final float minU) {
         this.minU = minU;
     }
 
     @Override
-    public void setMinV(float minV) {
+    public void setMinV(final float minV) {
         this.minV = minV;
     }
 
     @Override
-    public void setMaxU(float maxU) {
+    public void setMaxU(final float maxU) {
         this.maxU = maxU;
     }
 
     @Override
-    public void setMaxV(float maxV) {
+    public void setMaxV(final float maxV) {
         this.maxV = maxV;
     }
 }

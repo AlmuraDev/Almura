@@ -30,7 +30,6 @@ import javax.inject.Singleton;
 @SideOnly(Side.CLIENT)
 @Singleton
 public class OBJModelLoader implements ICustomModelLoader, OnDemandModelLoader {
-
     private final Set<String> domains = new HashSet<>();
     private final Map<ResourceLocation, IModel> cache = new HashMap<>();
     private final Map<ResourceLocation, Exception> errors = new HashMap<>();

@@ -8,8 +8,8 @@
 package com.almuradev.content.type.block.type.crop;
 
 import com.almuradev.content.component.delegate.Delegate;
+import com.almuradev.content.type.block.AbstractParsedBlockBuilder;
 import com.almuradev.content.type.block.BlockGenre;
-import com.almuradev.content.type.block.ContentBlockType;
 import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinition;
 import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinitionBuilder;
 import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinitionBuilderImpl;
@@ -24,8 +24,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
-public final class CropBlockBuilder extends ContentBlockType.Builder.Impl.Parsed<CropBlock, CropBlockStateDefinition, CropBlockStateDefinitionBuilder> implements CropBlock.Builder {
-
+public final class CropBlockBuilder extends AbstractParsedBlockBuilder<CropBlock, CropBlockStateDefinition, CropBlockStateDefinitionBuilder> implements CropBlock.Builder {
     private static final Pattern AGE = Pattern.compile("age=(\\d)");
     /**
      * The {@link Block} constructor requires that {@link Block#createBlockState()} return a non-{@code null} value for

@@ -21,7 +21,6 @@ import java.util.Optional;
  * optional {@link VertexNormal}.
  */
 public class VertexDefinition {
-
     private final Vertex vertex;
     private final VertexTextureCoordinate textureCoordinate;
     private final VertexNormal normal;
@@ -83,7 +82,6 @@ public class VertexDefinition {
     }
 
     public static class Builder {
-
         private Vertex vertex;
         private VertexTextureCoordinate textureCoordinate;
         private VertexNormal normal;

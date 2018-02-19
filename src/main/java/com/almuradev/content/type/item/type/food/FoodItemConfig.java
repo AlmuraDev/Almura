@@ -8,12 +8,8 @@
 package com.almuradev.content.type.item.type.food;
 
 public interface FoodItemConfig {
-
-    String DURATION_TICKS = "duration_ticks";
-
     String ALWAYS_EDIBLE = "always_edible";
-
     String APPLY = "apply";
-
+    String DURATION_TICKS = "duration_ticks";
     String POTION_EFFECTS = "potion_effects";
 }

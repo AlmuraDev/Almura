@@ -43,7 +43,6 @@ import java.util.function.Function;
  */
 @SideOnly(Side.CLIENT)
 public class OBJModel implements IModel {
-
     private final ResourceLocation source;
     private final String name;
     private final MaterialLibrary materialLibrary;
@@ -165,7 +164,6 @@ public class OBJModel implements IModel {
     }
 
     public static final class Builder {
-
         private MaterialLibrary materialLibrary;
         private LinkedHashMap<Vertex, Integer> vertices = new LinkedHashMap<>();
         private LinkedHashMap<VertexNormal, Integer> normals = new LinkedHashMap<>();

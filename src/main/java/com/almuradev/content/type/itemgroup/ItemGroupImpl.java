@@ -20,7 +20,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 
 public final class ItemGroupImpl extends CreativeTabs {
-
     @Nullable private final String translation;
     private final ItemDefinition icon;
     private final boolean sort;

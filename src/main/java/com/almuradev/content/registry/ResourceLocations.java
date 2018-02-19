@@ -15,7 +15,6 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 
 public final class ResourceLocations {
-
     private static final String MINECRAFT_NAMESPACE = "minecraft";
     public static final char NAMESPACE_SEPARATOR = ':';
     public static final int NOT_FOUND = -1;

@@ -8,7 +8,6 @@
 package com.almuradev.content.type.action.type.blockdestroy;
 
 public interface BlockDestroyActionConfig {
-
     String APPLY = "apply";
     String DROP = "drop";
     String WITH = "with";

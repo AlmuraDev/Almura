@@ -11,7 +11,6 @@ import com.flowpowered.math.vector.Vector4f;
 import com.google.common.base.MoreObjects;
 
 public class Vertex extends Vector4f {
-
     private int index;
 
     public Vertex(final float x, final float y, final float z, final float w) {

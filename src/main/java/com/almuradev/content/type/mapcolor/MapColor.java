@@ -10,5 +10,4 @@ package com.almuradev.content.type.mapcolor;
 import com.almuradev.content.registry.CatalogedContent;
 
 public interface MapColor extends CatalogedContent {
-
 }

@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MaterialLibrary {
-
     private final ResourceLocation source;
     private final String name;
     private final Set<MaterialDefinition> materialDefinitions;
@@ -64,7 +63,6 @@ public class MaterialLibrary {
     }
 
     public static final class Builder {
-
         private Set<MaterialDefinition> materialDefinitions = new HashSet<>();
 
         public Builder materialDefinition(final MaterialDefinition materialDefinition) {

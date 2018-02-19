@@ -15,7 +15,6 @@ import com.almuradev.content.type.block.type.crop.processor.hydration.Hydration;
 import javax.annotation.Nullable;
 
 public interface CropBlockStateDefinitionBuilder extends BlockStateDefinition.Builder<CropBlockStateDefinition> {
-
     void canRollback(boolean canRollback);
 
     void fertilizer(@Nullable final Fertilizer fertilizer);

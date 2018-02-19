@@ -10,7 +10,6 @@ package com.almuradev.content.model.obj.geometry;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 
 public class MalformedGeometryException extends ModelLoaderRegistry.LoaderException {
-
     public MalformedGeometryException(final String message) {
         super(message);
     }

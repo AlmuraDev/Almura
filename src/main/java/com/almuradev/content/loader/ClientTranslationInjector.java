@@ -23,7 +23,6 @@ import javax.inject.Singleton;
 @SideOnly(Side.CLIENT)
 @Singleton
 public final class ClientTranslationInjector extends TranslationInjector implements IResourceManagerReloadListener {
-
     private final LanguageManager lm;
 
     @Inject

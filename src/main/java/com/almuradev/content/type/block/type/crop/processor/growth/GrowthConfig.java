@@ -8,7 +8,6 @@
 package com.almuradev.content.type.block.type.crop.processor.growth;
 
 public interface GrowthConfig {
-
     String BIOME = "biome";
     String CHANCE = "chance";
     String LIGHT = "light";

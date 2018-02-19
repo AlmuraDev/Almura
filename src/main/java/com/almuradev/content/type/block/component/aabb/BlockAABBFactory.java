@@ -13,7 +13,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import javax.annotation.Nullable;
 
 public interface BlockAABBFactory<B extends BlockAABB.Box, C extends BlockAABB.Collision, W extends BlockAABB.WireFrame> {
-
     default B box(final ConfigurationNode config) {
         return this.box(Boxes.from(config));
     }

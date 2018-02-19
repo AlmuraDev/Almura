@@ -18,10 +18,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class SaturationChangeApply implements Apply<EntityPlayer, ApplyContext> {
-
-    public static final ConfigurationNodeDeserializer<SaturationChangeApply> PARSER = config -> DoubleRange.PARSER.deserialize(config).map
-            (SaturationChangeApply::new);
-
+    public static final ConfigurationNodeDeserializer<SaturationChangeApply> PARSER = config -> DoubleRange.PARSER.deserialize(config).map(SaturationChangeApply::new);
     private final DoubleRange change;
 
     private SaturationChangeApply(final DoubleRange change) {
@@ -29,12 +26,12 @@ public final class SaturationChangeApply implements Apply<EntityPlayer, ApplyCon
     }
 
     @Override
-    public boolean accepts(Entity entity) {
+    public boolean accepts(final Entity entity) {
         return entity instanceof EntityPlayer;
     }
 
     @Override
-    public void apply0(EntityPlayer entity, ApplyContext context) {
+    public void apply0(final EntityPlayer entity, final ApplyContext context) {
         entity.getFoodStats().foodSaturationLevel = (float) this.change.random(context.random());
     }
 

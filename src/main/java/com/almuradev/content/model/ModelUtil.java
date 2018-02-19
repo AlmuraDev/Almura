@@ -23,8 +23,8 @@ public final class ModelUtil {
     private ModelUtil() {
     }
 
-    public static IBakedModel getDamageModel(IBakedModel originalBakedModel, TextureAtlasSprite damageSprite, IBlockState state, IBlockAccess world,
-            BlockPos pos) {
+    public static IBakedModel getDamageModel(final IBakedModel originalBakedModel, final TextureAtlasSprite damageSprite, IBlockState state, final IBlockAccess world,
+            final BlockPos pos) {
 
         state = state.getBlock().getExtendedState(state, world, pos);
 

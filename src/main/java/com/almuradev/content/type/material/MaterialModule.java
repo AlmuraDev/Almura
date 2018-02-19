@@ -16,7 +16,6 @@ import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
 
 public final class MaterialModule extends AbstractModule implements CommonBinder {
-
     @Override
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("material", MaterialContentTypeLoader.class));

@@ -29,7 +29,6 @@ import javax.inject.Inject;
  */
 @SideOnly(Side.CLIENT)
 public final class ModelBinder {
-
     private final Multibinder<Entry<? extends ICustomModelLoader>> loaders;
 
     public static ModelBinder create(final Binder binder) {
@@ -56,7 +55,6 @@ public final class ModelBinder {
 
     @SideOnly(Side.CLIENT)
     public static class Entry<L extends ICustomModelLoader> {
-
         private final Class<L> loader;
         private final Set<String> domains = new HashSet<>();
 
@@ -71,7 +69,6 @@ public final class ModelBinder {
 
     @SideOnly(Side.CLIENT)
     public static final class Installer implements Enableable {
-
         private final Injector injector;
         private final Set<Entry<? extends ICustomModelLoader>> loaders;
 

@@ -8,6 +8,5 @@
 package com.almuradev.content.type.item.type.food.processor.foodeffect.potioneffect;
 
 public interface RandomPotionEffectConfig {
-
     String CHANCE = "chance";
 }

@@ -14,7 +14,6 @@ import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 
 @EagerCatalogRegistration
 public final class BlockSoundGroupRegistryModule extends AbstractCatalogRegistryModule.Mapped<BlockSoundGroup, SoundType> implements AdditionalCatalogRegistryModule<BlockSoundGroup> {
-
     public BlockSoundGroupRegistryModule() {
         super(12);
     }

@@ -11,6 +11,5 @@ import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 
 public interface IMixinLazyItemGroup {
-
     void itemGroup(final Delegate<ItemGroup> group);
 }

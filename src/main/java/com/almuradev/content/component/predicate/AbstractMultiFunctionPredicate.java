@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.function.Function;
 
 public abstract class AbstractMultiFunctionPredicate<I, O> extends AbstractFunctionPredicate<I, O> {
-
     final List<FunctionPredicate<I, O>> predicates;
 
     protected AbstractMultiFunctionPredicate(final Function<I, O> function, final List<FunctionPredicate<I, O>> predicates) {

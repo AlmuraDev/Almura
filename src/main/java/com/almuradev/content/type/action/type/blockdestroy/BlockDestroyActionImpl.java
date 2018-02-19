@@ -12,7 +12,6 @@ import com.almuradev.content.registry.CatalogedContent;
 import java.util.List;
 
 public final class BlockDestroyActionImpl extends CatalogedContent.Impl implements BlockDestroyAction {
-
     private final List<Entry> entries;
 
     BlockDestroyActionImpl(final String id, final String name, final List<Entry> entries) {

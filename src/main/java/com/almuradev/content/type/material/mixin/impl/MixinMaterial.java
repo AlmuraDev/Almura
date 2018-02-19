@@ -12,5 +12,4 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(Material.class)
 public abstract class MixinMaterial implements com.almuradev.content.type.material.Material {
-
 }

@@ -13,6 +13,5 @@ import java.util.List;
 
 @FunctionalInterface
 public interface ApplyParser {
-
     List<Apply> parse(final ConfigurationNode config);
 }

@@ -19,7 +19,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class BlockSoundGroupContentTypeLoader extends SingleTypeContentLoader<BlockSoundGroup, BlockSoundGroup.Builder> implements SingleTypeExternalContentProcessor<BlockSoundGroup, BlockSoundGroup.Builder>, Witness {
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void blocks(final RegistryEvent.Register<Block> event) {
         this.build();

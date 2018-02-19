@@ -8,7 +8,6 @@
 package com.almuradev.content.type.material;
 
 public interface MaterialConfig {
-
     String BLOCKS_LIGHT = "blocks_light";
     String BLOCKS_MOVEMENT = "blocks_movement";
     String LIQUID = "liquid";

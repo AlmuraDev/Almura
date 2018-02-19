@@ -15,7 +15,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class ServerTranslationInjector extends TranslationInjector implements Witness {
-
     @Override
     void inject() {
         this.inject(this.manager.get(TranslationManager.DEFAULT_TRANSLATION_ID));

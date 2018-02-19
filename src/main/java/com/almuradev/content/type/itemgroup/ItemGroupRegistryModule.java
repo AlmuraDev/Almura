@@ -14,7 +14,6 @@ import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 
 @EagerCatalogRegistration
 public final class ItemGroupRegistryModule extends AbstractCatalogRegistryModule.Mapped<ItemGroup, CreativeTabs> implements AdditionalCatalogRegistryModule<ItemGroup> {
-
     // This is the number of vanilla groups plus an alias (see below).
     private static final int INITIAL_CAPACITY = 13 + 1;
 
@@ -33,7 +32,6 @@ public final class ItemGroupRegistryModule extends AbstractCatalogRegistryModule
     }
 
     private static final class Holder {
-
         static final ItemGroupRegistryModule INSTANCE = new ItemGroupRegistryModule();
     }
 }

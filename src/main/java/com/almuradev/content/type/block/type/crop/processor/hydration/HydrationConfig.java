@@ -8,8 +8,6 @@
 package com.almuradev.content.type.block.type.crop.processor.hydration;
 
 public interface HydrationConfig {
-
+    String BLOCK = "block";
     String MAX_RADIUS = "max_radius";
-
-    String BLOCKSTATE = "blockstate";
 }

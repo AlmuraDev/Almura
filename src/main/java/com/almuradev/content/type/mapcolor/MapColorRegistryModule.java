@@ -13,7 +13,6 @@ import net.minecraft.block.material.MapColor;
 
 @EagerCatalogRegistration
 public final class MapColorRegistryModule extends AbstractCatalogRegistryModule.Mapped<com.almuradev.content.type.mapcolor.MapColor, MapColor> {
-
     public MapColorRegistryModule() {
         super(52);
     }

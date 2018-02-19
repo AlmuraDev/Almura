@@ -13,6 +13,5 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public interface OnDemandModelLoader extends ICustomModelLoader {
-
     void registerInterest(final String id);
 }

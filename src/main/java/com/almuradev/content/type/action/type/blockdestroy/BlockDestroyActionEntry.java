@@ -16,7 +16,6 @@ import org.spongepowered.api.item.ItemType;
 import java.util.List;
 
 public final class BlockDestroyActionEntry implements BlockDestroyAction.Entry {
-
     private final List<Apply> apply;
     private final List<? extends Drop> drop;
     private final List<ItemDefinition> with;
@@ -36,7 +35,7 @@ public final class BlockDestroyActionEntry implements BlockDestroyAction.Entry {
 
     @Override
     public boolean test(final ItemType type) {
-        boolean match = this.with.stream().anyMatch(item -> item.test(type));
+        final boolean match = this.with.stream().anyMatch(item -> item.test(type));
 
         if (match) {
             return true;
@@ -60,7 +59,6 @@ public final class BlockDestroyActionEntry implements BlockDestroyAction.Entry {
     }
 
     public static class Builder implements BlockDestroyAction.Entry.Builder {
-
         private List<Apply> apply;
         private List<? extends Drop> drop;
         private List<ItemDefinition> with;

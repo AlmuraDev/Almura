@@ -11,7 +11,6 @@ import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.content.type.item.definition.ItemDefinition;
 
 final class ItemGroupBuilder extends ContentBuilder.Impl<ItemGroup> implements ItemGroup.Builder {
-
     private ItemDefinition icon;
     private boolean sort = true;
 

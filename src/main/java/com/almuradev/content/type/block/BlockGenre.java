@@ -15,13 +15,16 @@ import com.almuradev.content.type.block.type.container.ContainerBlock;
 import com.almuradev.content.type.block.type.crop.CropBlock;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlock;
 import com.almuradev.content.type.block.type.horizontal.component.aabb.HorizontalBoxFactory;
+import com.almuradev.content.type.block.type.leaf.LeafBlock;
+import com.almuradev.content.type.block.type.log.LogBlock;
 import com.almuradev.content.type.block.type.normal.NormalBlock;
+import com.almuradev.content.type.block.type.sapling.SaplingBlock;
 
 /**
  * An enumeration of block types.
  */
 @ContentType.MultiType.Name("blocks")
-public enum BlockGenre implements ContentType.MultiType<ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> {
+public enum BlockGenre implements ContentType.MultiType<ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> {
     /**
      * A block type representing a container block.
      */
@@ -31,13 +34,25 @@ public enum BlockGenre implements ContentType.MultiType<ContentBlockType, Conten
      */
     CROP("crop", CropBlock.Builder.class),
     /**
+     * A block type representing a horizontal block.
+     */
+    HORIZONTAL("horizontal", HorizontalBlock.Builder.class, HorizontalBoxFactory.class),
+    /**
+     * A block type representing a leaf block.
+     */
+    LEAF("leaf", LeafBlock.Builder.class),
+    /**
+     * A block type representing a log block.
+     */
+    LOG("log", LogBlock.Builder.class),
+    /**
      * A block type representing a normal block.
      */
     NORMAL("normal", NormalBlock.Builder.class),
     /**
-     * A block type representing a horizontal block.
+     * A block type representing a sapling block.
      */
-    HORIZONTAL("horizontal", HorizontalBlock.Builder.class, HorizontalBoxFactory.class);
+    SAPLING("sapling", SaplingBlock.Builder.class);
 
     /**
      * The id of this block type.
@@ -48,17 +63,17 @@ public enum BlockGenre implements ContentType.MultiType<ContentBlockType, Conten
     /**
      * The builder.
      */
-    private final Class<? extends ContentBlockType.Builder<? extends ContentBlockType, ? extends BlockStateDefinition, ? extends BlockStateDefinition.Builder<? extends BlockStateDefinition>>> builder;
+    private final Class<? extends ContentBlock.Builder<? extends ContentBlock, ? extends BlockStateDefinition, ? extends BlockStateDefinition.Builder<? extends BlockStateDefinition>>> builder;
     /**
      * The box factory.
      */
     public final Class<? extends BlockAABBFactory<? extends BlockAABB.Box, ? extends BlockAABB.Collision, ? extends BlockAABB.WireFrame>> boxFactory;
 
-    BlockGenre(final String id, final Class<? extends ContentBlockType.Builder<? extends ContentBlockType, ? extends BlockStateDefinition, ? extends BlockStateDefinition.Builder<? extends BlockStateDefinition>>> builder) {
+    BlockGenre(final String id, final Class<? extends ContentBlock.Builder<? extends ContentBlock, ? extends BlockStateDefinition, ? extends BlockStateDefinition.Builder<? extends BlockStateDefinition>>> builder) {
         this(id, builder, NormalBoxFactory.class);
     }
 
-    BlockGenre(final String id, final Class<? extends ContentBlockType.Builder<? extends ContentBlockType, ? extends BlockStateDefinition, ? extends BlockStateDefinition.Builder<? extends BlockStateDefinition>>> builder, final Class<? extends BlockAABBFactory<? extends BlockAABB.Box, ? extends BlockAABB.Collision, ? extends BlockAABB.WireFrame>> boxFactory) {
+    BlockGenre(final String id, final Class<? extends ContentBlock.Builder<? extends ContentBlock, ? extends BlockStateDefinition, ? extends BlockStateDefinition.Builder<? extends BlockStateDefinition>>> builder, final Class<? extends BlockAABBFactory<? extends BlockAABB.Box, ? extends BlockAABB.Collision, ? extends BlockAABB.WireFrame>> boxFactory) {
         this.id = id;
         this.builder = builder;
         this.boxFactory = boxFactory;
@@ -71,7 +86,7 @@ public enum BlockGenre implements ContentType.MultiType<ContentBlockType, Conten
 
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> builder() {
-        return (Class<ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>>) this.builder;
+    public Class<ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> builder() {
+        return (Class<ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>>) this.builder;
     }
 }

@@ -44,7 +44,6 @@ import javax.vecmath.Vector4f;
 
 @SideOnly(Side.CLIENT)
 public class OBJBakedModel implements IBakedModel {
-
     private final OBJModel model;
     private final IModelState state;
     private final VertexFormat format;
@@ -227,11 +226,11 @@ public class OBJBakedModel implements IBakedModel {
         return this.quads;
     }
 
-    public OBJBakedModel retextureQuadsFor(TextureAtlasSprite damageSprite) {
+    public OBJBakedModel retextureQuadsFor(final TextureAtlasSprite damageSprite) {
         return new OBJBakedModel(this.model, this.state, this.format, damageSprite);
     }
 
-    private TextureAtlasSprite createParticleSpriteFor(Face face, TextureAtlasSprite diffuseSprite) {
+    private TextureAtlasSprite createParticleSpriteFor(final Face face, final TextureAtlasSprite diffuseSprite) {
 
         /*
          * 0: (0, 0)       3: (0, 1)
@@ -246,7 +245,10 @@ public class OBJBakedModel implements IBakedModel {
         final VertexTextureCoordinate vt1 = face.getVertices().get(0).getTextureCoordinate().orElse(null);
         final VertexTextureCoordinate vt3 = face.getVertices().get(2).getTextureCoordinate().orElse(null);
 
-        float u1, u2, v1, v2;
+        final float u1;
+        final float u2;
+        final float v1;
+        final float v2;
 
         if (vt1 != null) {
             u1 = particleSprite.getInterpolatedU(vt1.getU() * 16f);

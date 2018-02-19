@@ -12,9 +12,7 @@ import com.almuradev.content.registry.ContentBuilder;
 import org.spongepowered.api.effect.sound.SoundType;
 
 public interface BlockSoundGroup extends org.spongepowered.api.block.BlockSoundGroup, CatalogedContent {
-
     interface Builder extends ContentBuilder<BlockSoundGroup> {
-
         void volume(final double volume);
 
         void pitch(final double pitch);

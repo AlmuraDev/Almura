@@ -18,10 +18,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class HealthChangeApply implements Apply<EntityLivingBase, ApplyContext> {
-
-    public static final ConfigurationNodeDeserializer<HealthChangeApply> PARSER = config -> DoubleRange.PARSER.deserialize(config).map
-            (HealthChangeApply::new);
-
+    public static final ConfigurationNodeDeserializer<HealthChangeApply> PARSER = config -> DoubleRange.PARSER.deserialize(config).map(HealthChangeApply::new);
     private final DoubleRange change;
 
     private HealthChangeApply(final DoubleRange change) {
@@ -29,12 +26,12 @@ public final class HealthChangeApply implements Apply<EntityLivingBase, ApplyCon
     }
 
     @Override
-    public boolean accepts(Entity entity) {
+    public boolean accepts(final Entity entity) {
         return entity instanceof EntityLivingBase;
     }
 
     @Override
-    public void apply0(EntityLivingBase entity, ApplyContext context) {
+    public void apply0(final EntityLivingBase entity, final ApplyContext context) {
         final double heal = this.change.random(context.random());
         entity.heal((float) heal);
     }

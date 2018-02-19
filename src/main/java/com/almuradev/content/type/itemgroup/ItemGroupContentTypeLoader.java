@@ -17,7 +17,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class ItemGroupContentTypeLoader extends SingleTypeContentLoader<ItemGroup, ItemGroup.Builder> implements Witness, SingleTypeContentLoader.Translated {
-
     @SubscribeEvent
     public void construction(final RegistryEvent.Register<Block> event) {
         this.build(BuildType.SORTED);

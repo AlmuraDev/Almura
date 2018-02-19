@@ -10,7 +10,6 @@ package com.almuradev.content.component.apply;
 import com.almuradev.content.component.ComponentModule;
 
 public final class ApplyModule extends ComponentModule.Module {
-
     @Override
     protected void configure() {
         this.bind(ApplyParser.class).to(ApplyParserImpl.class);

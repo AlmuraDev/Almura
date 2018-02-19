@@ -21,7 +21,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 final class ResourceLocationPredicateParserImpl<T> extends AbstractFunctionPredicateParser<T, ResourceLocation> implements ResourceLocationPredicateParser<T> {
-
     ResourceLocationPredicateParserImpl(final Function<T, ResourceLocation> function) {
         super(function);
     }
@@ -52,5 +51,20 @@ final class ResourceLocationPredicateParserImpl<T> extends AbstractFunctionPredi
             default:
                 throw new IllegalArgumentException("Could not find deserialization method for '" + key + "'");
         }
+    }
+
+    @Override
+    public FunctionPredicate<T, ResourceLocation> alwaysTrue() {
+        return new FunctionPredicate<T, ResourceLocation>() {
+            @Override
+            public boolean test0(final ResourceLocation value) {
+                return true;
+            }
+
+            @Override
+            public boolean test(final T value) {
+                return true;
+            }
+        };
     }
 }

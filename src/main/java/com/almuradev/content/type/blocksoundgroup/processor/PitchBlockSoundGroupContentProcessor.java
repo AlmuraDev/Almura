@@ -16,7 +16,6 @@ import com.almuradev.toolbox.config.tag.ConfigTag;
 import ninja.leaping.configurate.ConfigurationNode;
 
 public final class PitchBlockSoundGroupContentProcessor implements TaggedConfigProcessor<BlockSoundGroup.Builder, ConfigTag> {
-
     private static final ConfigTag TAG = ConfigTag.create(BlockSoundGroupConfig.PITCH);
 
     @Override

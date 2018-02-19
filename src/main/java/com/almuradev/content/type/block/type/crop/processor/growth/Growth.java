@@ -27,9 +27,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class Growth {
-
     private static final ResourceLocationPredicateParser<Biome> BIOME_FILTER_BY_REGISTRY_NAME = ResourceLocationPredicateParser.of(IForgeRegistryEntry.Impl::getRegistryName);
-
     public static final ConfigurationNodeDeserializer<Growth> PARSER = new ConfigurationNodeDeserializer<Growth>() {
         @Override
         public Optional<Growth> deserialize(final ConfigurationNode config) {

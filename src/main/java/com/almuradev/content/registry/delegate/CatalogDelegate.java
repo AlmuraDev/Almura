@@ -8,6 +8,7 @@
 package com.almuradev.content.registry.delegate;
 
 import com.almuradev.content.component.delegate.Delegate;
+import com.almuradev.content.component.delegate.DelegateNotSatisfiedException;
 import com.almuradev.content.component.delegate.LazyDelegate;
 import com.almuradev.content.registry.ResourceLocations;
 import com.google.common.base.MoreObjects;
@@ -18,7 +19,6 @@ import org.spongepowered.api.Sponge;
 import javax.annotation.Nullable;
 
 public final class CatalogDelegate<C extends CatalogType> extends LazyDelegate<C> {
-
     private final Class<C> type;
     private final String id;
 
@@ -43,6 +43,14 @@ public final class CatalogDelegate<C extends CatalogType> extends LazyDelegate<C
     @Override
     protected C load() {
         return Sponge.getRegistry().getType(this.type, this.id).orElse(null);
+    }
+
+    @Override
+    public C require() {
+        if(this.value != null) {
+            return this.value;
+        }
+        return this.optional().orElseThrow(() -> new DelegateNotSatisfiedException("Could not resolve '" + this.type.getName() + "' with id '" + this.id + '\''));
     }
 
     @Override

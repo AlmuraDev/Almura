@@ -27,7 +27,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 final class AssetState {
-
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(AssetState.class, new AssetStateSerializer())
             .registerTypeAdapter(AssetStateEntry.class, new AssetStateEntrySerializer())

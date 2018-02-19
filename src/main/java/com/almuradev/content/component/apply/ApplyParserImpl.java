@@ -28,7 +28,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class ApplyParserImpl implements ApplyParser {
-
     private final Map<String, ConfigurationNodeDeserializer<? extends Apply>> parsers = new HashMap<>();
 
     @Inject

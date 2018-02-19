@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public abstract class AbstractCatalogRegistryModule<C extends CatalogType> implements AlternateCatalogRegistryModule<C> {
-
     private final boolean eager = this.getClass().isAnnotationPresent(EagerCatalogRegistration.class);
     private final Map<String, C> map;
 
@@ -61,8 +60,12 @@ public abstract class AbstractCatalogRegistryModule<C extends CatalogType> imple
         return this.map;
     }
 
-    public static abstract class Mapped<C extends CatalogType, R> extends AbstractCatalogRegistryModule<C> {
+    // soft implementation
+    public void registerAdditionalCatalog(final C catalog) {
+        this.map.put(catalog.getId(), catalog);
+    }
 
+    public static abstract class Mapped<C extends CatalogType, R> extends AbstractCatalogRegistryModule<C> {
         protected Mapped(final int initialCapacity) {
             super(initialCapacity);
         }
@@ -77,7 +80,7 @@ public abstract class AbstractCatalogRegistryModule<C extends CatalogType> imple
             ((IMixinSetCatalogTypeId) real).setId(id, name);
         }
 
-        // soft implementation
+        @Override
         public final void registerAdditionalCatalog(final C catalog) {
             this.register(catalog.getId(), (R) catalog);
         }

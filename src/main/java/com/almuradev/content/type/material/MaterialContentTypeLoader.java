@@ -13,5 +13,4 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class MaterialContentTypeLoader extends SingleTypeContentLoader<Material, Material.Builder> {
-
 }

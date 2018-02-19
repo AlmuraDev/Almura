@@ -33,7 +33,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 final class JarSearchEntry extends SearchEntry {
-
     private static final JsonParser PARSER = new JsonParser();
     private final URI uri;
     final AssetStateEntry state;

@@ -55,11 +55,11 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
         this.foodEffect = builder.foodEffect;
 
         if (this.apply != null) {
-            for (Apply apply : this.apply) {
+            for (final Apply apply : this.apply) {
                 if (apply instanceof FoodLevelChangeApply) {
-                    foodLevelChange = ((FoodLevelChangeApply) apply).getChange();
+                    this.foodLevelChange = ((FoodLevelChangeApply) apply).getChange();
                 } else if (apply instanceof SaturationChangeApply) {
-                    saturationChange = ((SaturationChangeApply) apply).getChange();
+                    this.saturationChange = ((SaturationChangeApply) apply).getChange();
                 }
             }
         }
@@ -76,19 +76,19 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
+    public ItemStack onItemUseFinish(final ItemStack stack, final World worldIn, final EntityLivingBase entityLiving) {
         if (worldIn.isRemote) {
             return stack;
         }
 
         if (this.apply != null) {
-            for (Apply apply : this.apply) {
+            for (final Apply apply : this.apply) {
                 apply.apply(entityLiving, new ItemOnlyApplyContext(stack, worldIn.rand));
             }
         }
 
         if (entityLiving instanceof EntityPlayer) {
-            EntityPlayer entityplayer = (EntityPlayer)entityLiving;
+            final EntityPlayer entityplayer = (EntityPlayer)entityLiving;
             //entityplayer.getFoodStats().addStats(this, stack); -- Handled by the applys
             worldIn.playSound((EntityPlayer)null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5F, worldIn.rand.nextFloat() * 0.1F + 0.9F);
             this.onFoodEaten(stack, worldIn, entityplayer);
@@ -105,7 +105,7 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
     }
 
     @Override
-    protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
+    protected void onFoodEaten(final ItemStack stack, final World worldIn, final EntityPlayer player) {
         if (worldIn.isRemote || this.foodEffect == null) {
             return;
         }
@@ -128,22 +128,22 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
     }
 
     @Override
-    public int getMaxItemUseDuration(ItemStack stack) {
+    public int getMaxItemUseDuration(final ItemStack stack) {
         return this.itemUseDuration;
     }
 
     // TODO I'm doing it this way to ensure compatibility with mods
     @Override
-    public int getHealAmount(ItemStack stack) {
+    public int getHealAmount(final ItemStack stack) {
         if (this.foodLevelChange == null) {
             return 0;
         }
 
-        return foodLevelChange.random(new Random()); // TODO Cache a random elsewhere lol?
+        return this.foodLevelChange.random(new Random()); // TODO Cache a random elsewhere lol?
     }
 
     @Override
-    public float getSaturationModifier(ItemStack stack) {
+    public float getSaturationModifier(final ItemStack stack) {
         if (this.saturationChange == null) {
             return 0;
         }

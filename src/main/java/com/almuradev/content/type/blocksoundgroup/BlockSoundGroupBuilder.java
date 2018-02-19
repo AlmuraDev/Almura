@@ -18,7 +18,6 @@ import org.spongepowered.api.effect.sound.SoundType;
 import javax.annotation.Nullable;
 
 final class BlockSoundGroupBuilder extends ContentBuilder.Impl<BlockSoundGroup> implements BlockSoundGroup.Builder {
-
     @Nullable private Double volume;
     @Nullable private Double pitch;
     @Nullable private SoundType breakSound;

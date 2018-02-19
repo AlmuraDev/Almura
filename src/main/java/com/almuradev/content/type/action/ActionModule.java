@@ -17,7 +17,6 @@ import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
 
 public final class ActionModule extends AbstractModule {
-
     @Override
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("action", ActionContentTypeLoader.class));

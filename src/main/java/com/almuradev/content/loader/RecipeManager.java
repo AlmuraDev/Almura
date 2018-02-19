@@ -80,7 +80,7 @@ public final class RecipeManager {
     }
 
     private static Object parseRecipe(final JsonObject object) {
-        String type = JsonUtils.getString(object, "type");
+        final String type = JsonUtils.getString(object, "type");
         if ("crafting_shaped".equals(type)) {
             return ShapedRecipes.deserialize(object);
         } else if ("crafting_shapeless".equals(type)) {

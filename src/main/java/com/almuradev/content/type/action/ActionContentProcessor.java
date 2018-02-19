@@ -10,5 +10,4 @@ package com.almuradev.content.type.action;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
 
 public interface ActionContentProcessor<C extends ActionContentType, B extends ActionContentType.Builder<C>> extends ConfigProcessor<B> {
-
 }

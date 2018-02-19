@@ -11,7 +11,6 @@ import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.MoreObjects;
 
 public class VertexTextureCoordinate extends Vector3f {
-
     private int index;
 
     public VertexTextureCoordinate(final float u, final float v, final float w) {

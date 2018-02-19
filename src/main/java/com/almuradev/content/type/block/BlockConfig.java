@@ -12,7 +12,6 @@ import com.almuradev.content.type.block.component.aabb.AABBConfig;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroupConfig;
 
 public interface BlockConfig {
-
     String STATE = "state";
     String DEFAULT_STATE_NAME = "normal";
 
@@ -22,7 +21,6 @@ public interface BlockConfig {
     String ITEM_GROUP = "item_group";
 
     interface State {
-
         String PARENT = "parent";
 
         /**
@@ -46,7 +44,6 @@ public interface BlockConfig {
         String SOUND = "sound";
 
         interface Light {
-
             String EMISSION = "emission";
             String OPACITY = "opacity";
         }

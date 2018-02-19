@@ -15,7 +15,6 @@ import net.minecraft.util.ResourceLocation;
 import java.util.Optional;
 
 public class MaterialDefinition {
-
     private final String name;
     private final ResourceLocation diffuseTexture;
 
