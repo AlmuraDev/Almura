@@ -170,7 +170,7 @@ public class SimplePageView extends SimpleScreen {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.details":
                 this.buttonDetails.getTooltip().setVisible(false);
-                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(openWindow("pageDetails")).submit(container);
+                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("pageDetails")).submit(container);
                 break;
 
             case "button.format":
@@ -189,13 +189,13 @@ public class SimplePageView extends SimpleScreen {
                 break;
             case "button.add":
                 this.buttonAdd.getTooltip().setVisible(false);
-                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(openWindow("pageCreate")).submit(container);
+                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("pageCreate")).submit(container);
                 break;
 
             case "button.remove":
                 this.buttonRemove.getTooltip().setVisible(false);
                 if (manager.getPage() != null) {
-                    Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(openWindow("pageRemove")).submit(container);
+                    Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("pageRemove")).submit(container);
                 }
                 break;
             case "button.save":
@@ -221,7 +221,7 @@ public class SimplePageView extends SimpleScreen {
                                         } else if (messageBoxResult == MessageBoxResult.CANCEL) {
                                             return;
                                         } else if (messageBoxResult == MessageBoxResult.NO) {
-                                            Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(openWindow("closeGUI")).submit(container);
+                                            Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("closeGUI")).submit(container);
                                         }
                                     }
                                 });
@@ -235,7 +235,7 @@ public class SimplePageView extends SimpleScreen {
         }
     }
 
-    protected Consumer<Task> openWindow(String details) {
+    protected Consumer<Task> delayedTask(String details) {
         return task -> {
             if (details.equalsIgnoreCase("pageDetails")) {
                 new SimplePageDetails(this).display();
