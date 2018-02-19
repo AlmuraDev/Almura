@@ -101,28 +101,24 @@ public class UIUserPanel extends AbstractPanel {
         // Health
         // TODO Show effects (or icon) for golden apple, wither, poison, etc
         this.healthBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setPosition(0, SimpleScreen.getPaddedY(this.experienceBar, 3), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(187, 19, 19).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setIcons(GuiConfig.Icon.VANILLA_HEART_BACKGROUND, GuiConfig.Icon.VANILLA_HEART_FOREGROUND);
 
         // Armor
         this.armorBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setPosition(0, SimpleScreen.getPaddedY(this.healthBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(102, 103, 109).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_ARMOR);
 
         // Hunger
         this.hungerBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setPosition(0, SimpleScreen.getPaddedY(this.armorBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(137, 89, 47).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setIcons(GuiConfig.Icon.VANILLA_HUNGER_BACKGROUND, GuiConfig.Icon.VANILLA_HUNGER_FOREGROUND);
 
         // Stamina
         this.staminaBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setPosition(0, SimpleScreen.getPaddedY(this.hungerBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.STAMINA)
@@ -130,14 +126,12 @@ public class UIUserPanel extends AbstractPanel {
 
         // Air
         this.airBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setPosition(0, SimpleScreen.getPaddedY(this.staminaBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_AIR);
 
         // Mount Health
         this.mountHealthBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setPosition(0, SimpleScreen.getPaddedY(this.airBar, 1), Anchor.TOP | Anchor.CENTER)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(239, 126, 74).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_MOUNT);
@@ -236,7 +230,7 @@ public class UIUserPanel extends AbstractPanel {
     }
 
     private void updateHunger() {
-        this.updateBarProperties(this.hungerBar, this.client.player.getFoodStats().getFoodLevel(), 300);
+        this.updateBarProperties(this.hungerBar, this.client.player.getFoodStats().getFoodLevel(), 20f);
     }
 
     private void updateStamina() {
