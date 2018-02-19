@@ -37,7 +37,7 @@ import javax.inject.Singleton;
 @Singleton
 public final class ClientPageManager implements Witness {
 
-    private final ChannelBinding.IndexedMessageChannel network;
+    public final ChannelBinding.IndexedMessageChannel network;
     private final KeyBinding guideOpenBinding;
 
     private List<PageListEntry> pageEntries = new ArrayList<>();

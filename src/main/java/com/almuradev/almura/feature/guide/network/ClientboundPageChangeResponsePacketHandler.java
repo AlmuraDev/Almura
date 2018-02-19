@@ -32,15 +32,18 @@ public final class ClientboundPageChangeResponsePacketHandler implements Message
     @Override
     public void handleMessage(ClientboundPageChangeResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
-            // Todo: left this stubbed out for future use.
             if (!message.success) {
-               // Do nothing.
+                // Do nothing.
             } else {
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
                 if (currentScreen != null && currentScreen instanceof SimplePageView) {
-                    ((SimplePageView) currentScreen).refreshPage();
+                    if (message.changeType == PageChangeType.REMOVE) {
+                        ((SimplePageView) currentScreen).close();
+                        manager.network.sendToServer(new ServerboundGuideOpenRequestPacket());
+                    } else {
+                        ((SimplePageView) currentScreen).refreshPage();
+                    }
                 }
-               // Do nothing.  Handled within the notifications manager.
             }
         }
     }

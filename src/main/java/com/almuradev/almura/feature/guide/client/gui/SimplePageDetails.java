@@ -207,6 +207,6 @@ public class SimplePageDetails extends SimpleScreen {
 
     @Override
     public boolean doesGuiPauseGame() {
-        return true;
+        return false;
     }
 }

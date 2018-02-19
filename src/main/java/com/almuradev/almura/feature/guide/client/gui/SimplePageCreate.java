@@ -131,7 +131,7 @@ public class SimplePageCreate extends SimpleScreen {
 
     @Override
     public boolean doesGuiPauseGame() {
-        return true;
+        return false;
     }
 
     @Override

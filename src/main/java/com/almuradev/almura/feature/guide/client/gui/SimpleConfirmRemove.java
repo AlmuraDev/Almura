@@ -84,4 +84,9 @@ public class SimpleConfirmRemove extends SimpleScreen {
             this.close();
         }
     }
+
+    @Override
+    public boolean doesGuiPauseGame() {
+        return false;
+    }
 }
