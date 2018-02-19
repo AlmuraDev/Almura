@@ -120,9 +120,11 @@ public class SimplePageCreate extends SimpleScreen {
                 final String rawIndex = this.textFieldIndex.getText();
                 final int index = rawIndex.isEmpty() ? 0 : Integer.valueOf(rawIndex);
                 final String name = this.textFieldName.getText().trim();
-                manager.requestNewPage(id, index, name);
+                if (!id.isEmpty() && !rawIndex.isEmpty() && !name.isEmpty()) {
+                    manager.requestNewPage(id, index, name);
+                    close();
+                }
 
-                close();
                 break;
         }
     }
