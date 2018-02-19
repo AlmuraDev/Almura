@@ -42,6 +42,7 @@ public final class ClientPageManager implements Witness {
 
     private List<PageListEntry> pageEntries = new ArrayList<>();
     private Page page;
+    public String preSnapshot, postSnapshot;
 
     @Inject
     public ClientPageManager(final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network, final Set<KeyBindingEntry>

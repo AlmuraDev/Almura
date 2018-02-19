@@ -11,7 +11,6 @@ import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.guide.Page;
 import com.almuradev.almura.feature.guide.PageListEntry;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
@@ -24,6 +23,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -37,6 +37,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.function.Consumer;
+
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
@@ -77,10 +78,6 @@ public class SimplePageView extends SimpleScreen {
         form.setRightPadding(3);
         form.setTopPadding(20);
         form.setLeftPadding(3);
-
-        //UILabel titleLabel = new UILabel(this, "Farmer's Almanac");
-        //titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        //titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Remove button
         this.buttonRemove = new UIButtonBuilder(this)
@@ -181,6 +178,7 @@ public class SimplePageView extends SimpleScreen {
                 this.updateFormattingButton();
 
                 final String currentContent = this.contentField.getText();
+
                 if (showRaw) {
                     // Need to convert the content from sectional -> ampersand
                     this.contentField.setText(Page.asUglyText(currentContent));
@@ -202,12 +200,37 @@ public class SimplePageView extends SimpleScreen {
                 break;
             case "button.save":
                 if (manager.getPage() != null) {
-                    manager.getPage().setContent(this.contentField.getText());
-                    manager.requestSavePage();
+                    if (!manager.preSnapshot.equalsIgnoreCase(this.contentField.getText())) {
+                        manager.getPage().setContent(this.contentField.getText());
+                        manager.requestSavePage();
+                    }
                 }
                 break;
             case "button.close":
-                close();
+                if (canModify && manager.getPage() != null) {
+                    if (!manager.preSnapshot.equalsIgnoreCase(this.contentField.getText())) {
+                        // Save the postSnapshot to the manager so it can be accessed within manager.
+                        manager.postSnapshot = this.contentField.getText();
+                        UIMessageBox.showDialog(this, I18n.format("almura.guide.view.form.title"), "Changes detected to current guide, do you wish to save?"
+                                , MessageBoxButtons.YES_NO_CANCEL, new MessageBoxConsumer() {
+                                    @Override
+                                    public void accept(MessageBoxResult messageBoxResult) {
+                                        if (messageBoxResult == MessageBoxResult.YES) {
+                                            manager.getPage().setContent(manager.postSnapshot);
+                                            manager.requestSavePage();
+                                        } else if (messageBoxResult == MessageBoxResult.CANCEL) {
+                                            return;
+                                        } else if (messageBoxResult == MessageBoxResult.NO) {
+                                            Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(openWindow("closeGUI")).submit(container);
+                                        }
+                                    }
+                                });
+                    } else {
+                        close();
+                    }
+                } else {
+                    close();
+                }
                 break;
         }
     }
@@ -220,6 +243,12 @@ public class SimplePageView extends SimpleScreen {
 
             if (details.equalsIgnoreCase("pageCreate")) {
                 new SimplePageCreate(this).display();
+            }
+
+            if (details.equalsIgnoreCase("closeGUI")) {
+                if (Minecraft.getMinecraft().currentScreen instanceof SimplePageView) {
+                    ((SimplePageView) Minecraft.getMinecraft().currentScreen).close();
+                }
             }
 
             if (details.equalsIgnoreCase("pageRemove")) {
@@ -249,7 +278,7 @@ public class SimplePageView extends SimpleScreen {
             unlockMouse = false; // Only unlock once per session.
         }
 
-        if (++this.lastUpdate > 100 && !showRaw &&  hasModifyPermission()) {
+        if (++this.lastUpdate > 100 && !showRaw && hasModifyPermission()) {
 
             // Todo: disabled, causing some issues with scroll.
             /*
@@ -314,6 +343,8 @@ public class SimplePageView extends SimpleScreen {
 
     public void refreshPage() {
         this.contentField.setText(Page.asFriendlyText(manager.getPage() == null ? "" : manager.getPage().getContent()));
+        manager.preSnapshot = this.contentField.getText();
+
         this.updateButtons();
     }
 
