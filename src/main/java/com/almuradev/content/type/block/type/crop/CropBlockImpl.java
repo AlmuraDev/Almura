@@ -19,12 +19,14 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
@@ -254,6 +256,13 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         }
 
         return false;
+    }
+
+    @Override
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
+    {
+        // Crops have no item representation.
+        return ItemStack.EMPTY;
     }
 
     private void advanceState(final World world, final BlockPos pos, final IBlockState state, final boolean fertilizer) {

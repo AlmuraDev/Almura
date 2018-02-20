@@ -21,6 +21,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -98,9 +99,11 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         // Draw what we know of
         if (!pickStack.isEmpty()) {
             this.drawItem(pickStack, 4, this.autoHeight + 4);
-            this.drawText(Text.of(TextColors.WHITE, pickStack.getDisplayName()), 24, this.autoHeight - 14, false, true);
+            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(((ItemBlock) pickStack.getItem()).getBlock())), 24, this.autoHeight -
+                            14,
+                    false, true);
         } else {
-            this.drawText(Text.of(TextColors.WHITE, state.getBlock().getLocalizedName()), 24, this.autoHeight - 14, false, true);
+            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock()), 24, this.autoHeight - 14, false, true);
         }
 
         final Map<IProperty<?>, Comparable<?>> properties = state.getProperties();
