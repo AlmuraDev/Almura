@@ -98,6 +98,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         // Draw what we know of
         if (!pickStack.isEmpty()) {
             this.drawItem(pickStack, 4, this.autoHeight + 4);
+            this.drawText(Text.of(TextColors.WHITE, pickStack.getDisplayName()), 24, this.autoHeight - 14, false, true);
         } else {
             this.drawText(Text.of(TextColors.WHITE, state.getBlock().getLocalizedName()), 24, this.autoHeight - 14, false, true);
         }
