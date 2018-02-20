@@ -99,11 +99,11 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         // Draw what we know of
         if (!pickStack.isEmpty()) {
             this.drawItem(pickStack, 4, this.autoHeight + 4);
-            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(((ItemBlock) pickStack.getItem()).getBlock())), 24, this.autoHeight -
-                            14,
-                    false, true);
+            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(((ItemBlock) pickStack.getItem()).getBlock())), 24,
+                    this.autoHeight - 14, false, true);
         } else {
-            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock()), 24, this.autoHeight - 14, false, true);
+            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24, this.autoHeight - 14,
+                    false, true);
         }
 
         final Map<IProperty<?>, Comparable<?>> properties = state.getProperties();
