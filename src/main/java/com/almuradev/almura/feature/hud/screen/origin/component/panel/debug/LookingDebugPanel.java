@@ -19,8 +19,8 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
@@ -82,7 +82,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
             final IBlockState state = getState(world, blockPos);
             final ItemStack pickStack = state.getBlock().getPickBlock(state, objectMouseOver, world, blockPos, this.client.player);
 
-            this.renderBlock(state, pickStack);
+            this.renderItemStackFromBlock(state, pickStack);
         } else if (this.lookingAtEntity) {
             this.renderEntity(objectMouseOver.entityHit);
         }
@@ -93,14 +93,19 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         this.client.mcProfiler.endSection();
     }
 
-    private void renderBlock(final IBlockState state, final ItemStack pickStack) {
+    private void renderItemStackFromBlock(final IBlockState state, final ItemStack pickStack) {
         this.clipContent = false;
 
         // Draw what we know of
         if (!pickStack.isEmpty()) {
             this.drawItem(pickStack, 4, this.autoHeight + 4);
-            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(((ItemBlock) pickStack.getItem()).getBlock())), 24,
-                    this.autoHeight - 14, false, true);
+            if (pickStack.getItem() instanceof ItemBlock) {
+                this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(((ItemBlock) pickStack.getItem()).getBlock())), 24,
+                        this.autoHeight - 14, false, true);
+            } else {
+                this.drawText(Text.of(TextColors.WHITE, Item.REGISTRY.getNameForObject(pickStack.getItem())), 24,
+                        this.autoHeight - 14, false, true);
+            }
         } else {
             this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24, this.autoHeight - 14,
                     false, true);
