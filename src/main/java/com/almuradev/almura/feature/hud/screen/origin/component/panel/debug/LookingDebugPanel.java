@@ -78,10 +78,10 @@ public class LookingDebugPanel extends AbstractDebugPanel {
             final WorldClient world = this.client.world;
             final BlockPos blockPos = objectMouseOver.getBlockPos();
 
-            final IBlockState state = world.getBlockState(blockPos);
+            final IBlockState state = getState(world, blockPos);
             final ItemStack pickStack = state.getBlock().getPickBlock(state, objectMouseOver, world, blockPos, this.client.player);
 
-            this.renderBlock(getState(world, blockPos), pickStack);
+            this.renderBlock(state, pickStack);
         } else if (this.lookingAtEntity) {
             this.renderEntity(objectMouseOver.entityHit);
         }
@@ -141,8 +141,6 @@ public class LookingDebugPanel extends AbstractDebugPanel {
             final ItemStack item = new ItemStack(Items.SPAWN_EGG);
             ItemMonsterPlacer.applyEntityIdToItemStack(item, id);
             this.drawItem(item, 4, this.autoHeight + 4);
-        } else {
-            this.drawItem(ItemStack.EMPTY, 4, this.autoHeight + 4);
         }
 
         this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
