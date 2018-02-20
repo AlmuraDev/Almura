@@ -12,13 +12,14 @@ import static com.google.common.base.Preconditions.checkState;
 import com.google.common.base.MoreObjects;
 
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
-public class Face {
+public final class Face {
 
-    private final LinkedHashSet<VertexDefinition> vertices;
+    private final LinkedList<VertexDefinition> vertices;
     private int index;
 
-    private Face(final LinkedHashSet<VertexDefinition> vertices) {
+    private Face(final LinkedList<VertexDefinition> vertices) {
         this.vertices = vertices;
     }
 
@@ -38,7 +39,7 @@ public class Face {
         this.index = index;
     }
 
-    public LinkedHashSet<VertexDefinition> getVertices() {
+    public LinkedList<VertexDefinition> getVertices() {
         return this.vertices;
     }
 
@@ -62,7 +63,7 @@ public class Face {
 
     public static final class Builder {
 
-        private LinkedHashSet<VertexDefinition> vertices = new LinkedHashSet<>();
+        private LinkedList<VertexDefinition> vertices = new LinkedList<>();
 
         public Builder vertex(final VertexDefinition vertex) {
             this.vertices.add(vertex);

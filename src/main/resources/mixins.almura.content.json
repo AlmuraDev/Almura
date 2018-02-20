@@ -9,6 +9,8 @@
         "MixinSetCatalogTypeId"
     ],
     "client": [
-        "MixinBlockStateMapper"
+        "MixinForgeHooksClient",
+        "MixinBlockStateMapper",
+        "MixinTextureAtlasSprite"
     ]
 }

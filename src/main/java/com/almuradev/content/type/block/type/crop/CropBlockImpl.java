@@ -22,6 +22,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
@@ -54,6 +55,24 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         for (final CropBlockStateDefinition state : states) {
             this.states[state.age] = state;
         }
+    }
+
+    @Deprecated
+    @Override
+    public boolean isFullCube(final IBlockState state) {
+        return false;
+    }
+
+    @Deprecated
+    @Override
+    public boolean isOpaqueCube(final IBlockState state) {
+        return false;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     @Override

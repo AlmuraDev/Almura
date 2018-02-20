@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.model.obj;
 
+import com.almuradev.content.mixin.iface.IMixinTextureAtlasSprite;
 import com.almuradev.content.model.obj.geometry.Face;
 import com.almuradev.content.model.obj.geometry.Group;
 import com.almuradev.content.model.obj.geometry.Vertex;
@@ -47,23 +48,29 @@ public class OBJBakedModel implements IBakedModel {
     private final OBJModel model;
     private final IModelState state;
     private final VertexFormat format;
-    private final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
+
+    @Nullable
+    private TextureAtlasSprite spriteOverride;
+    @Nullable
+    private Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
     @Nullable
     private List<BakedQuad> quads;
-
-
-    // TEST CODE
     private TextureAtlasSprite particleDiffuseSprite = ModelLoader.White.INSTANCE;
-    @Nullable
-    private Face particleFace;
 
     OBJBakedModel(final OBJModel model, final IModelState state, final VertexFormat format, final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
         this.model = model;
         this.state = state;
         this.format = format;
         this.bakedTextureGetter = bakedTextureGetter;
+        this.spriteOverride = null;
+    }
 
-        // TODO Figure out how to do particle texture as we do some atlases.
+    OBJBakedModel(final OBJModel mode, final IModelState state, final VertexFormat format, final TextureAtlasSprite sprite) {
+        this.model = mode;
+        this.state = state;
+        this.format = format;
+        this.bakedTextureGetter = resourceLocation -> sprite;
+        this.spriteOverride = sprite;
     }
 
     @Override
@@ -79,22 +86,28 @@ public class OBJBakedModel implements IBakedModel {
 
             final TRSRTransformation transformation = this.state.apply(Optional.empty()).orElse(null);
 
+            Face particleFace = null;
+            TextureAtlasSprite particleAtlasSprite = null;
+
             for (final Group group : this.model.getGroups()) {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
 
-                TextureAtlasSprite diffuseSprite = null;
-                if (materialDefinition != null) {
-                    if (materialDefinition.getDiffuseTexture().isPresent()) {
-                        final ResourceLocation diffuseLocation = materialDefinition.getDiffuseTexture().orElse(null);
+                TextureAtlasSprite diffuseSprite = this.spriteOverride;
 
-                        if (diffuseLocation != null) {
+                if (diffuseSprite == null) {
+                    if (materialDefinition != null) {
+                        if (materialDefinition.getDiffuseTexture().isPresent()) {
+                            final ResourceLocation diffuseLocation = materialDefinition.getDiffuseTexture().orElse(null);
 
-                            if (diffuseLocation.getResourcePath().endsWith(".png")) {
-                                diffuseSprite =
-                                        this.bakedTextureGetter.apply(new ResourceLocation(diffuseLocation.getResourceDomain(), diffuseLocation
-                                                .getResourcePath().split("\\.")[0]));
-                            } else {
-                                diffuseSprite = this.bakedTextureGetter.apply(diffuseLocation);
+                            if (diffuseLocation != null) {
+
+                                if (diffuseLocation.getResourcePath().endsWith(".png")) {
+                                    diffuseSprite =
+                                            this.bakedTextureGetter.apply(new ResourceLocation(diffuseLocation.getResourceDomain(), diffuseLocation
+                                                    .getResourcePath().split("\\.")[0]));
+                                } else {
+                                    diffuseSprite = this.bakedTextureGetter.apply(diffuseLocation);
+                                }
                             }
                         }
                     }
@@ -104,11 +117,11 @@ public class OBJBakedModel implements IBakedModel {
                     diffuseSprite = ModelLoader.White.INSTANCE;
                 }
 
+                particleAtlasSprite = diffuseSprite;
+
                 for (final Face face : group.getFaces()) {
-                    if (this.particleFace == null) {
-                        this.particleFace = face;
-                        this.particleDiffuseSprite = diffuseSprite;
-                    }
+                    particleFace = face;
+
                     final UnpackedBakedQuad.Builder quadBuilder = new UnpackedBakedQuad.Builder(this.format);
                     quadBuilder.setContractUVs(true);
                     quadBuilder.setTexture(diffuseSprite);
@@ -135,17 +148,50 @@ public class OBJBakedModel implements IBakedModel {
 
                                     break;
                                 case UV:
-                                    final VertexTextureCoordinate textureCoordinate = vertexDef.getTextureCoordinate().orElse(null);
-
                                     final float u;
                                     final float v;
 
-                                    if (textureCoordinate != null) {
-                                        u = textureCoordinate.getU();
-                                        v = 1f - textureCoordinate.getV();
+                                    if (this.spriteOverride == null) {
+                                        final VertexTextureCoordinate textureCoordinate = vertexDef.getTextureCoordinate().orElse(null);
+
+                                        if (textureCoordinate != null) {
+                                            u = textureCoordinate.getU();
+                                            v = 1f - textureCoordinate.getV();
+                                        } else {
+                                            u = 0f;
+                                            v = 1f;
+                                        }
+
                                     } else {
-                                        u = 0f;
-                                        v = 1f;
+
+                                        /*
+                                         * 0: (0, 0)       3: (0, 1)
+                                         *
+                                         *
+                                         * 1: (1, 0)       2: (1, 1)
+                                         */
+
+                                        switch (vertexDef.getIndex()) {
+                                            case 1:
+                                                u = 0f;
+                                                v = 0f;
+                                                break;
+                                            case 2:
+                                                u = 1f;
+                                                v = 0f;
+                                                break;
+                                            case 3:
+                                                u = 1f;
+                                                v = 1f;
+                                                break;
+                                            case 4:
+                                                u = 0f;
+                                                v = 1f;
+                                                break;
+                                            default:
+                                                u = 0f;
+                                                v = 0f;
+                                        }
                                     }
 
                                     quadBuilder.put(e, diffuseSprite.getInterpolatedU(u * 16f), diffuseSprite.getInterpolatedV(v * 16f));
@@ -171,9 +217,59 @@ public class OBJBakedModel implements IBakedModel {
                     this.quads.add(quadBuilder.build());
                 }
             }
+
+            if (particleFace != null && particleAtlasSprite != null) {
+                // For now, last face = particle generation
+                this.particleDiffuseSprite = this.createParticleSpriteFor(particleFace, particleAtlasSprite);
+            }
         }
 
         return this.quads;
+    }
+
+    public OBJBakedModel retextureQuadsFor(TextureAtlasSprite damageSprite) {
+        return new OBJBakedModel(this.model, this.state, this.format, damageSprite);
+    }
+
+    private TextureAtlasSprite createParticleSpriteFor(Face face, TextureAtlasSprite diffuseSprite) {
+
+        /*
+         * 0: (0, 0)       3: (0, 1)
+         *
+         *
+         * 1: (1, 0)       2: (1, 1)
+         */
+
+        final TextureAtlasSprite particleSprite = new TextureAtlasSprite(diffuseSprite.getIconName());
+        particleSprite.copyFrom(diffuseSprite);
+
+        final VertexTextureCoordinate vt1 = face.getVertices().get(0).getTextureCoordinate().orElse(null);
+        final VertexTextureCoordinate vt3 = face.getVertices().get(2).getTextureCoordinate().orElse(null);
+
+        float u1, u2, v1, v2;
+
+        if (vt1 != null) {
+            u1 = particleSprite.getInterpolatedU(vt1.getU() * 16f);
+            v1 = particleSprite.getInterpolatedV((1 - vt1.getV()) * 16f);
+        } else {
+            u1 = 0f;
+            v1 = 0f;
+        }
+
+        if (vt3 != null) {
+            u2 = particleSprite.getInterpolatedU(vt3.getU() * 16f);
+            v2 = particleSprite.getInterpolatedV((1 - vt3.getV()) * 16f);
+        } else {
+            u2 = 1f;
+            v2 = 1f;
+        }
+
+        final IMixinTextureAtlasSprite mixinSprite = (IMixinTextureAtlasSprite) particleSprite;
+        mixinSprite.setMinU(u1);
+        mixinSprite.setMaxU(u2);
+        mixinSprite.setMinV(v1);
+        mixinSprite.setMaxV(v2);
+        return particleSprite;
     }
 
     @Override
