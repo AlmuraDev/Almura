@@ -14,6 +14,7 @@ import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -71,10 +72,18 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         this.client.mcProfiler.startSection("debug");
 
         // Draw block we're currently looking at
+        final RayTraceResult objectMouseOver = this.client.objectMouseOver;
+
         if (this.lookingAtBlock) {
-            this.renderBlock(getState(this.client.world, this.client.objectMouseOver.getBlockPos()));
+            final WorldClient world = this.client.world;
+            final BlockPos blockPos = objectMouseOver.getBlockPos();
+
+            final IBlockState state = world.getBlockState(blockPos);
+            final ItemStack pickStack = state.getBlock().getPickBlock(state, objectMouseOver, world, blockPos, this.client.player);
+
+            this.renderBlock(getState(world, blockPos), pickStack);
         } else if (this.lookingAtEntity) {
-            this.renderEntity(this.client.objectMouseOver.entityHit);
+            this.renderEntity(objectMouseOver.entityHit);
         }
 
         this.autoHeight += 4; // Extra padding
@@ -83,35 +92,38 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         this.client.mcProfiler.endSection();
     }
 
-    private void renderBlock(final IBlockState state) {
+    private void renderBlock(final IBlockState state, final ItemStack pickStack) {
         this.clipContent = false;
 
-        if (state.getBlock() != Blocks.AIR) {
-            this.drawBlock(state, 4, this.autoHeight + 4);
-            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24, this.autoHeight - 14, false, true);
+        // Draw what we know of
+        if (!pickStack.isEmpty()) {
+            this.drawItem(pickStack, 4, this.autoHeight + 4);
+        } else {
+            this.drawText(Text.of(TextColors.WHITE, state.getBlock().getLocalizedName()), 24, this.autoHeight - 14, false, true);
+        }
 
-            final Map<IProperty<?>, Comparable<?>> properties = state.getProperties();
-            final boolean hasProperties = !properties.isEmpty();
+        final Map<IProperty<?>, Comparable<?>> properties = state.getProperties();
+        final boolean hasProperties = !properties.isEmpty();
 
-            if (hasProperties) {
-                this.autoHeight -= 2;
+        if (hasProperties) {
+            this.autoHeight -= 2;
+        }
+
+        for (final Map.Entry<IProperty<?>, Comparable<?>> entry : properties.entrySet()) {
+            final IProperty<?> property = entry.getKey();
+            final String name = property.getName();
+            final Comparable<?> value = entry.getValue();
+            final String describedValue = getName(property, value);
+            if (value instanceof Boolean) {
+                this.drawText(Text.of(TextColors.WHITE, name, ": ", ((Boolean) value) ? TextColors.GREEN : TextColors.RED, describedValue), 24,
+                        this.autoHeight);
+            } else {
+                this.drawProperty(name, describedValue, 24, this.autoHeight);
             }
+        }
 
-            for (final Map.Entry<IProperty<?>, Comparable<?>> entry : properties.entrySet()) {
-                final IProperty<?> property = entry.getKey();
-                final String name = property.getName();
-                final Comparable<?> value = entry.getValue();
-                final String describedValue = getName(property, value);
-                if (value instanceof Boolean) {
-                    this.drawText(Text.of(TextColors.WHITE, name, ": ", ((Boolean) value) ? TextColors.GREEN : TextColors.RED, describedValue), 24, this.autoHeight);
-                } else {
-                    this.drawProperty(name, describedValue, 24, this.autoHeight);
-                }
-            }
-
-            if (hasProperties) {
-                this.autoHeight -= 4;
-            }
+        if (hasProperties) {
+            this.autoHeight -= 4;
         }
     }
 
@@ -129,7 +141,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
             ItemMonsterPlacer.applyEntityIdToItemStack(item, id);
             this.drawItem(item, 4, this.autoHeight + 4);
         } else {
-            this.drawBlock(Blocks.AIR.getDefaultState(), 4, this.autoHeight + 4);
+            this.drawItem(ItemStack.EMPTY, 4, this.autoHeight + 4);
         }
 
         this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
@@ -137,10 +149,6 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         if (entity.hasCustomName() || entity instanceof EntityPlayer) {
             this.drawProperty("name", entity.getName(), 24, this.autoHeight);
         }
-    }
-
-    private void drawBlock(final IBlockState state, final int x, final int y) {
-        this.drawItem(new ItemStack(state.getBlock()), x, y);
     }
 
     private void drawItem(final ItemStack item, final int x, final int y) {
