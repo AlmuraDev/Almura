@@ -7,8 +7,12 @@
  */
 package com.almuradev.content.model.obj;
 
+/*
+ * Reference Materials
+ *     http://paulbourke.net/dataformats/mtl/
+ *     http://people.sc.fsu.edu/~jburkardt/data/mtl/mtl.html
+ */
 public interface OBJModelConfig {
-
     String COMMENT = "#";
 
     String FACE = "f";
@@ -26,23 +30,57 @@ public interface OBJModelConfig {
     String VERTEX_NORMAL = "vn";
     String VERTEX_TEXTURE_COORDINATE = "vt";
 
-    // Reference Materials:  http://paulbourke.net/dataformats/mtl/  && http://people.sc.fsu.edu/~jburkardt/data/mtl/mtl.html
-
-    // Additional features of a MTL file from 3ds
-    String SpecularExponent = "Ns";       // Specifies the specular exponent for the current material.  This defines the focus of the specular highlight.
-    String OpticalDensity = "Ni";         // Specifies the optical density for the surface.
-    String Factor = "d";                  //"factor" is the amount this material dissolves into the background.  A factor of 0.0 is fully dissolved (completely transparent).
-    String TransparencyAlpha = "Tr";      // Transparency value set in Alfa.
-    String TransmissionFilter = "Tf";     // The Tf statement specifies the transmission filter using RGB values.
-    String IlluminiationModel = "illum";  // The "illum" statement specifies the illumination model to use in the material.
-    String AmbientReflectivity = "Ka";    // The Ka statement specifies the ambient reflectivity using RGB values.
-    String SpecularReflectivity = "Ks";   // The Ks statement specifies the specular reflectivity using RGB values.
-    String DiffuseReflectivity = "Kd";    // The Kd statement specifies the diffuse reflectivity using RGB values.
-    String UnknownValue = "Ke";           // Unknown Value.
-
     interface Material {
-
         String DIFFUSE = "map_Kd";
         String NEW_MATERIAL = "newmtl";
     }
+
+    /*
+     * Additional features from 3ds
+     */
+
+    /**
+     * The ambient reflectivity using RGB values.
+     */
+    String AMBIENT_REFLECTIVITY = "Ka";
+    /**
+     * The diffuse reflectivity using RGB values.
+     */
+    String DIFFUSE_REFLECTIVITY = "Kd";
+    /**
+     * The amount this material dissolves into the background.
+     *
+     * <p>A factor of {@code 0.0} is fully dissolved (completely transparent).</p>
+     */
+    String FACTOR = "d";
+    /**
+     * The illumination model to use in the material.
+     */
+    String ILLUMINIATION_MODEL = "illum";
+    /**
+     * The optical density for the surface.
+     */
+    String OPTICAL_DENSITY = "Ni";
+    /**
+     * The specular exponent for the current material.
+     *
+     * <p>This defines the focus of the specular highlight.</p>
+     */
+    String SPECULAR_EXPONENT = "Ns";
+    /**
+     * The specular reflectivity using RGB values.
+     */
+    String SPECULAR_REFLECTIVITY = "Ks";
+    /**
+     * Transparency value set in Alfa.
+     */
+    String TRANSPARENCY_ALPHA = "Tr";
+    /**
+     * The transmission filter using RGB values.
+     */
+    String TRANSMISSION_FILTER = "Tf";
+    /**
+     * Unknown value.
+     */
+    String UNKNOWN_VALUE = "Ke";
 }
