@@ -107,7 +107,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
                         this.autoHeight - 14, false, true);
             }
         } else {
-            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24, this.autoHeight - 14,
+            this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24, this.autoHeight + 3,
                     false, true);
         }
 
@@ -124,10 +124,11 @@ public class LookingDebugPanel extends AbstractDebugPanel {
             final Comparable<?> value = entry.getValue();
             final String describedValue = getName(property, value);
             if (value instanceof Boolean) {
-                this.drawText(Text.of(TextColors.WHITE, name, ": ", ((Boolean) value) ? TextColors.GREEN : TextColors.RED, describedValue), 24,
-                        this.autoHeight);
+                    this.drawText(Text.of(TextColors.WHITE, name, ": ", ((Boolean) value) ? TextColors.GREEN : TextColors.RED, describedValue), 24,
+                            this.autoHeight);
+
             } else {
-                this.drawProperty(name, describedValue, 24, this.autoHeight);
+                this.drawProperty(name, describedValue, 24, pickStack.isEmpty() ? this.autoHeight + 13 : this.autoHeight);
             }
         }
 
