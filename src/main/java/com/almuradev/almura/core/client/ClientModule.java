@@ -14,6 +14,7 @@ import com.almuradev.almura.feature.menu.MainMenuModule;
 import com.almuradev.almura.feature.speed.ClientOptimizationModule;
 import com.almuradev.almura.shared.client.keyboard.binder.KeyBindingInstaller;
 import com.almuradev.almura.shared.inject.ClientBinder;
+import com.almuradev.almura.shared.plugin.Plugin;
 import com.almuradev.content.model.obj.OBJModelLoader;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
@@ -33,10 +34,15 @@ import java.util.Set;
  */
 @SideOnly(Side.CLIENT)
 public final class ClientModule extends AbstractModule implements ClientBinder {
+    private final Plugin plugin;
+
+    public ClientModule(final Plugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     protected void configure() {
-        this.install(new CommonModule());
+        this.install(new CommonModule(this.plugin));
         this.install(new VanillaModule());
         this.install(new MainMenuModule());
         this.install(new ClientOptimizationModule());

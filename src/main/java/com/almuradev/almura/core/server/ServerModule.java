@@ -8,16 +8,22 @@
 package com.almuradev.almura.core.server;
 
 import com.almuradev.almura.core.common.CommonModule;
+import com.almuradev.almura.shared.plugin.Plugin;
 import net.kyori.violet.AbstractModule;
 
 /**
  * The root module for the server.
  */
 public final class ServerModule extends AbstractModule {
+    private final Plugin plugin;
+
+    ServerModule(Plugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     protected void configure() {
-        this.install(new CommonModule());
+        this.install(new CommonModule(this.plugin));
         // ServerConfiguration is installed in CommonModule
     }
 }
