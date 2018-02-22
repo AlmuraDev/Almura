@@ -7,13 +7,14 @@
     ],
     "key": {
         "A": {
-            "item": "minecraft:emerald_block"
+            "item": "minecraft:planks",
+            "data": 1
         },
         "B": {
-            "item": "minecraft:ender_chest"
+            "item": "minecraft:chest"
         }
     },
     "result": {
-        "item": "almura:storage/quantum_chest"
+        "item": "almura:storage/spruce_storage_crate"
     }
 }

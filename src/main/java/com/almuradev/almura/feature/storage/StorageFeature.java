@@ -53,27 +53,32 @@ public final class StorageFeature extends Witness.Impl implements Witness.Lifecy
 
     @SubscribeEvent
     public void onRegisterItems(RegistryEvent.Register<Item> event) {
+        ItemBlock item = null;
 
-        ItemBlock item = (ItemBlock) new ItemBlock(StorageBlocks.DOCK_CHEST).setRegistryName(StorageBlocks.DOCK_CHEST.getRegistryName());
+        for (int j = 0; j < 4; ++j) {
+            if (j == 0)
+                item = (ItemBlock) new ItemBlock(StorageBlocks.DOCK_CHEST).setRegistryName(StorageBlocks.DOCK_CHEST.getRegistryName());
+            if (j == 1)
+                item = (ItemBlock) new ItemBlock(StorageBlocks.BIRCH_STORAGE_CRATE).setRegistryName(StorageBlocks.BIRCH_STORAGE_CRATE.getRegistryName());
+            if (j == 2)
+                item = (ItemBlock) new ItemBlock(StorageBlocks.OAK_STORAGE_CRATE).setRegistryName(StorageBlocks.OAK_STORAGE_CRATE.getRegistryName());
+            if (j == 3)
+                item = (ItemBlock) new ItemBlock(StorageBlocks.SPRUCE_STORAGE_CRATE).setRegistryName(StorageBlocks.SPRUCE_STORAGE_CRATE.getRegistryName());
 
-        event.getRegistry().register(item);
+            event.getRegistry().register(item);
 
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            this.registerInventoryModel(item, item.getRegistryName());
-        }
-
-        item = (ItemBlock) new ItemBlock(StorageBlocks.QUANTUM_CHEST).setRegistryName(StorageBlocks.QUANTUM_CHEST.getRegistryName());
-
-        event.getRegistry().register(item);
-
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            this.registerInventoryModel(item, item.getRegistryName());
+            if (FMLCommonHandler.instance().getSide().isClient()) {
+                this.registerInventoryModel(item, item.getRegistryName());
+            }
         }
     }
 
     @SubscribeEvent
     public void onRegisterBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().register(StorageBlocks.DOCK_CHEST);
+        event.getRegistry().register(StorageBlocks.BIRCH_STORAGE_CRATE);
+        event.getRegistry().register(StorageBlocks.OAK_STORAGE_CRATE);
+        event.getRegistry().register(StorageBlocks.SPRUCE_STORAGE_CRATE);
     }
 
     @SideOnly(Side.CLIENT)

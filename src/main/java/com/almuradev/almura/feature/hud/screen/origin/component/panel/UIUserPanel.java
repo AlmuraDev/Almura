@@ -104,12 +104,15 @@ public class UIUserPanel extends AbstractPanel {
                 .setColor(org.spongepowered.api.util.Color.ofRgb(187, 19, 19).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setIcons(GuiConfig.Icon.VANILLA_HEART_BACKGROUND, GuiConfig.Icon.VANILLA_HEART_FOREGROUND);
+        this.healthBar.setTooltip("Health Value");
 
         // Armor
         this.armorBar = new UIPropertyBar(gui, barWidth, barHeight)
                 .setColor(org.spongepowered.api.util.Color.ofRgb(102, 103, 109).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_ARMOR);
+        this.armorBar.setTooltip("Armor Value");
+
 
         // Hunger
         this.hungerBar = new UIPropertyBar(gui, barWidth, barHeight)
