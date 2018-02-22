@@ -9,8 +9,8 @@ package com.almuradev.almura.feature.storage;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.storage.block.StorageBlocks;
-import com.almuradev.almura.shared.tileentity.MultiSlotTileEntity;
 import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.almura.shared.tileentity.MultiSlotTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -27,7 +27,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.plugin.PluginContainer;
 
 import javax.inject.Inject;
 

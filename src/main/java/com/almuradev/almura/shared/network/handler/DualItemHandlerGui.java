@@ -8,13 +8,10 @@
 package com.almuradev.almura.shared.network.handler;
 
 import com.almuradev.almura.shared.inventory.DualItemHandlerContainer;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;

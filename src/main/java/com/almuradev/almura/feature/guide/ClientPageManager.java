@@ -12,7 +12,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.feature.guide.network.ServerboundGuideOpenRequestPacket;
 import com.almuradev.almura.feature.guide.network.ServerboundPageChangeRequestPacket;
 import com.almuradev.almura.feature.guide.network.ServerboundPageOpenRequestPacket;
-import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
 import com.almuradev.almura.shared.client.keyboard.binder.KeyBindingEntry;
 import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -26,7 +25,6 @@ import org.spongepowered.api.network.ChannelId;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 

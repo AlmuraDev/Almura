@@ -21,19 +21,14 @@ import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.Info
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.LookingDebugPanel;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.keyboard.binder.KeyBindingEntry;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import net.malisis.core.client.gui.Anchor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.api.Game;
 
