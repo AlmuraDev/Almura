@@ -8,13 +8,14 @@
 package com.almuradev.almura.feature.cache.block;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.core.common.CommonModule;
 import com.almuradev.almura.feature.cache.CacheFeature;
-import com.almuradev.almura.feature.cache.tileentity.CacheTileEntity;
+import com.almuradev.almura.shared.capability.SharedCapabilities;
+import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
 import com.almuradev.almura.shared.capability.ISingleSlotItemHandler;
 import com.almuradev.almura.shared.capability.impl.SingleSlotItemHandler;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -39,7 +40,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -107,7 +107,7 @@ public final class CacheBlock extends BlockContainer {
             tooltip.add("Type: Empty");
         } else {
             final ItemStack cacheStack =
-                    ((SingleSlotItemHandler.Storage) CacheFeature.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.getStorage()).readItemStackFromNBT(slotCompound
+                    ((SingleSlotItemHandler.Storage) SharedCapabilities.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.getStorage()).readItemStackFromNBT(slotCompound
                             .getCompoundTag("Slot"));
 
             if (cacheStack.isEmpty()) {
@@ -155,8 +155,9 @@ public final class CacheBlock extends BlockContainer {
     @Nullable
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        final CacheTileEntity cte = new CacheTileEntity();
-        final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        final SingleSlotTileEntity cte = new SingleSlotTileEntity();
+        final ISingleSlotItemHandler
+                itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         ((SingleSlotItemHandler) itemHandler).setSlotLimit(this.slotLimit);
         return cte;
     }
@@ -170,13 +171,14 @@ public final class CacheBlock extends BlockContainer {
 
         final TileEntity te = world.getTileEntity(pos);
 
-        if (te == null || !(te instanceof CacheTileEntity)) {
+        if (te == null || !(te instanceof SingleSlotTileEntity)) {
             return;
         }
 
-        final CacheTileEntity cte = (CacheTileEntity) te;
+        final SingleSlotTileEntity cte = (SingleSlotTileEntity) te;
 
-        final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        final ISingleSlotItemHandler
+                itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
         if (itemHandler == null) {
             return;
@@ -234,13 +236,14 @@ public final class CacheBlock extends BlockContainer {
         }
 
         final TileEntity te = world.getTileEntity(pos);
-        if (te == null || !(te instanceof CacheTileEntity)) {
+        if (te == null || !(te instanceof SingleSlotTileEntity)) {
             return false;
         }
 
-        final CacheTileEntity cte = (CacheTileEntity) te;
+        final SingleSlotTileEntity cte = (SingleSlotTileEntity) te;
 
-        final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        final ISingleSlotItemHandler
+                itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
         if (itemHandler == null) {
             return false;
@@ -364,12 +367,11 @@ public final class CacheBlock extends BlockContainer {
             te = cacheTe;
         }
 
-        if (te == null || !(te instanceof CacheTileEntity)) {
+        if (te == null || !(te instanceof SingleSlotTileEntity)) {
             return;
         }
 
-        final CacheTileEntity cte = (CacheTileEntity) te;
-
+        final SingleSlotTileEntity cte = (SingleSlotTileEntity) te;
 
         this.addCacheToStack(toDrop, cte);
 
@@ -381,8 +383,8 @@ public final class CacheBlock extends BlockContainer {
         final ItemStack pickStack = new ItemStack(this, 1, 0);
 
         final TileEntity te = world.getTileEntity(pos);
-        if (te != null && te instanceof CacheTileEntity) {
-            final CacheTileEntity cte = (CacheTileEntity) te;
+        if (te != null && te instanceof SingleSlotTileEntity) {
+            final SingleSlotTileEntity cte = (SingleSlotTileEntity) te;
 
             // Alright, we have a Cache...need to put it on a stack now
             this.addCacheToStack(pickStack, cte);
@@ -391,7 +393,7 @@ public final class CacheBlock extends BlockContainer {
         return pickStack;
     }
 
-    private ItemStack addCacheToStack(ItemStack targetStack, CacheTileEntity cte) {
+    private ItemStack addCacheToStack(ItemStack targetStack, SingleSlotTileEntity cte) {
         final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
                 null);
 
@@ -404,7 +406,7 @@ public final class CacheBlock extends BlockContainer {
                 final NBTTagCompound tagCompound = compound.getCompoundTag("tag");
                 final NBTTagCompound cacheCompound = tagCompound.getCompoundTag("Cache");
 
-                cacheCompound.setTag(Almura.ID + ":single_slot", CacheFeature.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
+                cacheCompound.setTag(Almura.ID + ":single_slot", SharedCapabilities.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
 
                 tagCompound.setTag("Cache", cacheCompound);
                 compound.setTag("tag", tagCompound);
@@ -434,11 +436,11 @@ public final class CacheBlock extends BlockContainer {
 
             final TileEntity te = worldIn.getTileEntity(pos);
 
-            if (te == null || !(te instanceof CacheTileEntity)) {
+            if (te == null || !(te instanceof SingleSlotTileEntity)) {
                 return;
             }
 
-            final CacheTileEntity cte = (CacheTileEntity) te;
+            final SingleSlotTileEntity cte = (SingleSlotTileEntity) te;
             final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
                     null);
 
@@ -446,7 +448,7 @@ public final class CacheBlock extends BlockContainer {
                 return;
             }
 
-            CacheFeature.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, cacheCompound.getCompoundTag(Almura.ID + ":single_slot"));
+            SharedCapabilities.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, cacheCompound.getCompoundTag(Almura.ID + ":single_slot"));
         }
     }
 }

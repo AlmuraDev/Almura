@@ -5,61 +5,46 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.cache.tileentity;
+package com.almuradev.almura.shared.tileentity;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.cache.CacheFeature;
-import com.almuradev.almura.shared.capability.impl.SingleSlotItemHandler;
+import com.almuradev.almura.feature.storage.block.StorageBlock;
+import com.almuradev.almura.shared.capability.IMultiSlotItemHandler;
+import com.almuradev.almura.shared.capability.SharedCapabilities;
+import com.almuradev.almura.shared.capability.impl.MultiSlotItemHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
 
-public final class CacheTileEntity extends TileEntity {
+public final class MultiSlotTileEntity extends TileEntity {
 
-    private final SingleSlotItemHandler itemHandler = new SingleSlotItemHandler() {
+    private final MultiSlotItemHandler itemHandler = new MultiSlotItemHandler() {
         @Override
-        public void onSlotChange() {
-            final World world = CacheTileEntity.this.world;
-            final BlockPos pos = CacheTileEntity.this.pos;
-            final Block blockType = CacheTileEntity.this.blockType;
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+
+            final World world = MultiSlotTileEntity.this.world;
+            final BlockPos pos = MultiSlotTileEntity.this.pos;
+            final Block blockType = MultiSlotTileEntity.this.blockType;
 
             if (world != null && !world.isRemote) {
                 final IBlockState state = world.getBlockState(pos);
                 world.markBlockRangeForRenderUpdate(pos, pos);
                 world.notifyBlockUpdate(pos, state, state, 3);
-                world.scheduleBlockUpdate(pos, blockType,0,0);
-                CacheTileEntity.this.markDirty();
+                world.scheduleBlockUpdate(pos, blockType, 0, 0);
+                MultiSlotTileEntity.this.markDirty();
             }
         }
     };
-
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(this.pos, 0, this.getUpdateTag());
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag() {
-        return this.writeToNBT(new NBTTagCompound());
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-        this.readFromNBT(pkt.getNbtCompound());
-    }
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
@@ -76,7 +61,6 @@ public final class CacheTileEntity extends TileEntity {
         return super.getCapability(capability, facing);
     }
 
-    // TODO The following can't be right..if it is the Forge Capability system is literally insane
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
@@ -84,8 +68,9 @@ public final class CacheTileEntity extends TileEntity {
         if (compound.hasKey("ForgeCaps")) {
             final NBTTagCompound forgeCaps = compound.getCompoundTag("ForgeCaps");
 
-            if (forgeCaps.hasKey(Almura.ID + ":single_slot")) {final NBTTagCompound compoundTag = forgeCaps.getCompoundTag(Almura.ID + ":single_slot");
-                CacheFeature.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.readNBT(this.itemHandler, null, compoundTag);
+            if (forgeCaps.hasKey(Almura.ID + ":multi_slot")) {
+                final NBTBase tag = forgeCaps.getTag(Almura.ID + ":multi_slot");
+                SharedCapabilities.MULTI_SLOT_ITEM_HANDLER_CAPABILITY.readNBT(this.itemHandler, null, tag);
             }
         }
     }
@@ -95,9 +80,20 @@ public final class CacheTileEntity extends TileEntity {
         compound = super.writeToNBT(compound);
 
         final NBTTagCompound forgeCaps = compound.getCompoundTag("ForgeCaps");
-        forgeCaps.setTag(Almura.ID + ":single_slot", CacheFeature.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.writeNBT(this.itemHandler, null));
+        forgeCaps.setTag(Almura.ID + ":multi_slot", SharedCapabilities.MULTI_SLOT_ITEM_HANDLER_CAPABILITY.writeNBT(this.itemHandler, null));
 
         compound.setTag("ForgeCaps", forgeCaps);
         return compound;
+    }
+
+    @Override
+    public void onLoad() {
+        final IMultiSlotItemHandler itemHandler = (IMultiSlotItemHandler) this.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        final IBlockState state = this.world.getBlockState(this.pos);
+        final Block block = state.getBlock();
+        if (block instanceof StorageBlock) {
+            final int slotCount = ((StorageBlock) block).getSlotCount();
+            itemHandler.resize(slotCount);
+        }
     }
 }

@@ -11,7 +11,9 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.cache.block.CacheBlock;
 import com.almuradev.almura.feature.cache.block.CacheBlocks;
 import com.almuradev.almura.feature.cache.client.tileentity.renderer.CacheTileEntityRenderer;
-import com.almuradev.almura.feature.cache.tileentity.CacheTileEntity;
+import com.almuradev.almura.shared.capability.IMultiSlotItemHandler;
+import com.almuradev.almura.shared.capability.impl.MultiSlotItemHandler;
+import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
 import com.almuradev.almura.shared.capability.ISingleSlotItemHandler;
 import com.almuradev.almura.shared.capability.impl.SingleSlotItemHandler;
 import com.almuradev.almura.shared.event.Witness;
@@ -24,8 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -46,9 +46,6 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
 
     public static final NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
 
-    @CapabilityInject(ISingleSlotItemHandler.class)
-    public static Capability<ISingleSlotItemHandler> SINGLE_SLOT_ITEM_HANDLER_CAPABILITY = null;
-
     @Override
     public boolean lifecycleSubscribable(GameState state) {
         return state == GameState.PRE_INITIALIZATION;
@@ -56,13 +53,11 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
 
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
-        GameRegistry.registerTileEntity(CacheTileEntity.class, Almura.ID + ":cache");
+        GameRegistry.registerTileEntity(SingleSlotTileEntity.class, Almura.ID + ":cache");
 
         if (FMLCommonHandler.instance().getSide().isClient()) {
             this.bindBlockRenderer();
         }
-
-        CapabilityManager.INSTANCE.register(ISingleSlotItemHandler.class, new SingleSlotItemHandler.Storage(), SingleSlotItemHandler::new);
     }
 
     @SubscribeEvent
@@ -130,7 +125,7 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
 
     @SideOnly(Side.CLIENT)
     private void bindBlockRenderer() {
-        ClientRegistry.bindTileEntitySpecialRenderer(CacheTileEntity.class, new CacheTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(SingleSlotTileEntity.class, new CacheTileEntityRenderer());
     }
 
     @SideOnly(Side.CLIENT)

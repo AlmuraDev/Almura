@@ -16,6 +16,7 @@ import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.typesafe.config.ConfigRenderOptions;
+import net.minecraft.server.integrated.IntegratedServer;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -24,6 +25,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -35,6 +37,7 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.common.SpongeImpl;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -88,7 +91,7 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
 
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-        if (!player.hasPermission("almura.guide.open_at_login")) {
+        if (!player.hasPermission("almura.guide.open_at_login") || SpongeImpl.getServer() instanceof IntegratedServer) {
             return;
         }
 

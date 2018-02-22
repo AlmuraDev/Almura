@@ -72,6 +72,13 @@ tile.cache.diamond.name=Diamond Cache
 tile.cache.nether.name=Nether Cache
 tile.cache.ender.name=Ender Cache
 
+# ----------------------
+# ----   storage    ----
+# ----------------------
+
+tile.storage.dock_chest.name=Dock Chest
+tile.storage.quantum_chest.name=Quantum Chest
+
 # ---------------
 # ---- guide ----
 # ---------------

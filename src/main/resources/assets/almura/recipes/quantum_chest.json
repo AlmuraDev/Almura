@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": {
+            "item": "minecraft:emerald_block"
+        },
+        "B": {
+            "item": "minecraft:ender_chest"
+        }
+    },
+    "result": {
+        "item": "almura:storage/quantum_chest"
+    }
+}

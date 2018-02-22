@@ -31,6 +31,6 @@ public final class KeyBindingInstaller implements Enableable {
 
     @Override
     public void disable() {
-        // Commands cannot be removed
+        // Keybindings cannot be removed
     }
 }

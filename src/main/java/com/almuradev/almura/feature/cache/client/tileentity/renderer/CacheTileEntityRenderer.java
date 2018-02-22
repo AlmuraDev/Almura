@@ -9,7 +9,7 @@ package com.almuradev.almura.feature.cache.client.tileentity.renderer;
 
 import com.almuradev.almura.feature.cache.CacheFeature;
 import com.almuradev.almura.feature.cache.block.CacheBlock;
-import com.almuradev.almura.feature.cache.tileentity.CacheTileEntity;
+import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
 import com.almuradev.almura.shared.capability.ISingleSlotItemHandler;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
@@ -19,18 +19,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
-public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<CacheTileEntity> {
+public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<SingleSlotTileEntity> {
 
 
     private static final String ZERO_QUANTITY = "0";
@@ -40,9 +34,10 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Cac
 
 
     @Override
-    public void render(CacheTileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+    public void render(SingleSlotTileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 
-        final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        final ISingleSlotItemHandler
+                itemHandler = (ISingleSlotItemHandler) te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
         if (itemHandler == null) {
             return;

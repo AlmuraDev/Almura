@@ -10,6 +10,11 @@ package com.almuradev.almura.core.common;
 import com.almuradev.almura.core.server.ServerConfiguration;
 import com.almuradev.almura.feature.FeatureModule;
 import com.almuradev.almura.registry.BossBarColorRegistryModule;
+import com.almuradev.almura.shared.capability.IMultiSlotItemHandler;
+import com.almuradev.almura.shared.capability.ISingleSlotItemHandler;
+import com.almuradev.almura.shared.capability.binder.CapabilityInstaller;
+import com.almuradev.almura.shared.capability.impl.MultiSlotItemHandler;
+import com.almuradev.almura.shared.capability.impl.SingleSlotItemHandler;
 import com.almuradev.almura.shared.command.binder.CommandInstaller;
 import com.almuradev.almura.shared.event.WitnessModule;
 import com.almuradev.almura.shared.inject.CommonBinder;
@@ -36,10 +41,14 @@ public final class CommonModule extends AbstractModule implements CommonBinder {
     @Override
     protected void configure() {
         this.bind(Plugin.class).toInstance(this.plugin);
+        this.capability()
+                .register(ISingleSlotItemHandler.class, new SingleSlotItemHandler.Storage(), SingleSlotItemHandler::new)
+                .register(IMultiSlotItemHandler.class, new MultiSlotItemHandler.Storage(), MultiSlotItemHandler::new);
         this.bind(Path.class).annotatedWith(Names.named("assets")).toInstance(Paths.get("assets"));
         this.facet()
                 .add(RegistryInstaller.class)
-                .add(CommandInstaller.class);
+                .add(CommandInstaller.class)
+                .add(CapabilityInstaller.class);
         this.registry().module(BossBarColorRegistryModule.class);
         this.install(new NetworkModule());
         this.install(new WitnessModule());
