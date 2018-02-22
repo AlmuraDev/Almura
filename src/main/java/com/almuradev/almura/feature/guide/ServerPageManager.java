@@ -91,10 +91,10 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
 
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-        if (!player.hasPermission("almura.guide.open_at_login") || SpongeImpl.getServer() instanceof IntegratedServer) {
+        if (!player.hasPermission("almura.guide.open_at_login")) {
             return;
         }
-
+        
         openGuideForPlayer(player, GuideOpenType.PLAYER_LOGGED_IN, null);
     }
 
