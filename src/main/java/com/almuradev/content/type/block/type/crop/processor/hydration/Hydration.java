@@ -8,7 +8,7 @@
 package com.almuradev.content.type.block.type.crop.processor.hydration;
 
 import com.almuradev.content.registry.delegate.CatalogDelegate;
-import com.almuradev.content.type.block.predicate.LazyBlockState;
+import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.state.IBlockState;

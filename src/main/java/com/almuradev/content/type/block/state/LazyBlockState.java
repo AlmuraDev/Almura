@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.content.type.block.predicate;
+package com.almuradev.content.type.block.state;
 
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.component.delegate.LazyDelegate;

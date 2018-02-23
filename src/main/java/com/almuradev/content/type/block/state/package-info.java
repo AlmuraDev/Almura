@@ -6,4 +6,4 @@
  * All Rights Reserved.
  */
 @org.spongepowered.api.util.annotation.NonnullByDefault
-package com.almuradev.content.type.block.predicate;
+package com.almuradev.content.type.block.state;

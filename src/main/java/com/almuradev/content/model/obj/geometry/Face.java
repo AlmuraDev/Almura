@@ -11,7 +11,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.base.MoreObjects;
 
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 public final class Face {
