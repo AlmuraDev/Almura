@@ -93,7 +93,7 @@ dependencies {
         exclude module: 'testplugins'
     }
     compile 'net.kyori:indigo:1.0.0-SNAPSHOT'
-    compile 'net.kyori:lunar:1.0.3'
+    compile 'net.kyori:lunar:1.0.5-SNAPSHOT'
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
     deobfCompile ('net.malisis:malisiscore:1.12.2-6.4.1-SNAPSHOT') {

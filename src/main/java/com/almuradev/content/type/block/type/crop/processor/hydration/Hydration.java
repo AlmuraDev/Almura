@@ -71,6 +71,10 @@ public final class Hydration {
         this.maxRadius = maxRadius;
     }
 
+    public Set<LazyBlockState> blockStates() {
+        return this.blockStates;
+    }
+
     public int getMaxRadius() {
         return this.maxRadius;
     }
