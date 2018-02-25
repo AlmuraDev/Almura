@@ -225,9 +225,8 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
             // Vanilla mechanics
 
-            if (soilState.getBlock() == net.minecraft.init.Blocks.FARMLAND)
-            {
-                return ((Integer)soilState.getValue(BlockFarmland.MOISTURE)) > 0;
+            if (soilState.getBlock() == net.minecraft.init.Blocks.FARMLAND) {
+                return ((Integer) soilState.getValue(BlockFarmland.MOISTURE)) > 0;
             }
 
             // Not farmland? Seed said our soil is something else so just assume always fertile since their config lacked it
@@ -259,8 +258,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     }
 
     @Override
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
-    {
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
         // Crops have no item representation.
         return ItemStack.EMPTY;
     }
@@ -292,7 +290,6 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         @Nullable final Growth growth = definition.growth;
         if (!rollback && growth != null) {
             final Biome biome = world.getBiome(pos);
-
             // Temperature of biome isn't in required range? Don't grow and rollback if applicable
             // TODO Should fertilizer be blocked from advancing a crop if out of temperature? Or should it be allowed
             // TODO and punish the user afterwards (might be more amusing that way)
@@ -311,7 +308,6 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
             final DoubleRange lightRange = growth.getOrLoadLightRangeForBiome(biome);
 
             if (lightRange != null) {
-
                 // TODO Split out required light levels based on light source (BLOCK/SKY)?
 
                 final int minLight = (int) lightRange.min();
@@ -322,6 +318,12 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
                 if ((minLight > areaBlockLight || maxLight < areaBlockLight) && (minLight > worldLight || maxLight < worldLight)) {
                     rollback = true;
+                }
+
+                if (canRollback && rollback && world.canSeeSky(pos)) {
+                    if (worldLight < 6) {  // Indicates Night?
+                        rollback = false;  // Prevent a crop from rolling back in the middle of the night if it can see sky.
+                    }
                 }
             }
 
