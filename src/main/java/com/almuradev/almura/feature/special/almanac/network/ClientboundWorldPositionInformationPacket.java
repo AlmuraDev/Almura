@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.complex.item.almanac.network;
+package com.almuradev.almura.feature.special.almanac.network;
 
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;

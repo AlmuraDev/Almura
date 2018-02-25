@@ -5,9 +5,9 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.complex.item.almanac.network;
+package com.almuradev.almura.feature.special.almanac.network;
 
-import com.almuradev.almura.feature.complex.item.almanac.gui.IngameFarmersAlmanac;
+import com.almuradev.almura.feature.special.almanac.gui.IngameFarmersAlmanac;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;

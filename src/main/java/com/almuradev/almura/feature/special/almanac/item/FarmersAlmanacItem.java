@@ -5,19 +5,18 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.complex.item.almanac.item;
+package com.almuradev.almura.feature.special.almanac.item;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.complex.item.ComplexItem;
-import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
+import com.almuradev.almura.feature.special.almanac.network.ClientboundWorldPositionInformationPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -37,15 +36,17 @@ import org.spongepowered.api.world.biome.BiomeType;
 
 import javax.inject.Inject;
 
-public final class FarmersAlmanacItem extends ComplexItem {
+public final class FarmersAlmanacItem extends Item {
 
     @Inject
     @ChannelId(NetworkConfig.CHANNEL)
     private static ChannelBinding.IndexedMessageChannel network;
 
     public FarmersAlmanacItem() {
-        super(new ResourceLocation(Almura.ID, "normal/tool/farmers_almanac"), "farmers_almanac");
+        this.setRegistryName(new ResourceLocation(Almura.ID, "normal/farming/farmers_almanac"));
+        this.setUnlocalizedName("normal.farming.farmers_almanac");
         this.setMaxStackSize(1);
+
         Sponge.getRegistry().getType(ItemGroup.class, Almura.ID + ":tool").ifPresent((itemGroup) -> this.setCreativeTab((CreativeTabs) itemGroup));
     }
 

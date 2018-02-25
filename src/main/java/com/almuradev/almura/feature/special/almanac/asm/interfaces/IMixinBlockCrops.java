@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.complex.item.almanac.asm.interfaces;
+package com.almuradev.almura.feature.special.almanac.asm.interfaces;
 
 import net.minecraft.block.properties.PropertyInteger;
 

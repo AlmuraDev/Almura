@@ -5,10 +5,10 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.complex.item.almanac.gui;
+package com.almuradev.almura.feature.special.almanac.gui;
 
-import com.almuradev.almura.feature.complex.item.almanac.asm.interfaces.IMixinBlockCrops;
-import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
+import com.almuradev.almura.feature.special.almanac.asm.interfaces.IMixinBlockCrops;
+import com.almuradev.almura.feature.special.almanac.network.ClientboundWorldPositionInformationPacket;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;

@@ -5,11 +5,10 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.complex.item.wand;
+package com.almuradev.almura.feature.special.wand.item;
 
 import com.almuradev.almura.Almura;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -26,7 +25,7 @@ import org.spongepowered.api.text.format.TextColors;
 public final class LightRepairWand extends WandItem {
 
     public LightRepairWand() {
-        super(new ResourceLocation(Almura.ID, "normal/tool/light_repair_wand"), "light_repair_wand");
+        super(new ResourceLocation(Almura.ID, "normal/tool/light_repair_wand"), "normal.tool.light_repair_wand");
     }
 
     @Override

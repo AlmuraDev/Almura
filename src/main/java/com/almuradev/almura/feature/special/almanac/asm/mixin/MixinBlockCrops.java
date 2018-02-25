@@ -5,9 +5,9 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.complex.item.almanac.asm.mixin;
+package com.almuradev.almura.feature.special.almanac.asm.mixin;
 
-import com.almuradev.almura.feature.complex.item.almanac.asm.interfaces.IMixinBlockCrops;
+import com.almuradev.almura.feature.special.almanac.asm.interfaces.IMixinBlockCrops;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.properties.PropertyInteger;

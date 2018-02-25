@@ -11,7 +11,7 @@ import com.almuradev.almura.feature.cache.CacheModule;
 import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.almura.feature.exchange.ExchangeModule;
 import com.almuradev.almura.feature.guide.GuideModule;
-import com.almuradev.almura.feature.complex.ComplexContentModule;
+import com.almuradev.almura.feature.special.SpecialContentModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
@@ -30,7 +30,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new NotificationModule());
         this.install(new TitleModule());
         this.install(new GuideModule());
-        this.install(new ComplexContentModule());
+        this.install(new SpecialContentModule());
         this.install(new CacheModule());
         this.install(new ExchangeModule());
         this.install(new StorageModule());
