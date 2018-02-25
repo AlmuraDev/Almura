@@ -106,7 +106,7 @@ public final class Growth {
                                 (biomePredicate, lightRange)));
                 return Optional.empty();
             } else {
-                return DoubleRange.PARSER.deserialize(biomeLightNode);
+                return DoubleRange.PARSER.deserialize(lightNode);
             }
         }
 
