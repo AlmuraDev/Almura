@@ -294,11 +294,9 @@ public class SimpleOptionsMenu extends SimpleScreen {
             case "checkbox.numeric_hud_values" :
                 StaticAccess.config.get().client.displayNumericHUDValues = (boolean) event.getNewValue();
                 break;
-
             case "checkbox.display_names" :
                 StaticAccess.config.get().client.displayNames = (boolean) event.getNewValue();
                 break;
-
             case "checkbox.display_healthbars" :
                 StaticAccess.config.get().client.displayHealthbars = (boolean) event.getNewValue();
                 break;
@@ -333,8 +331,8 @@ public class SimpleOptionsMenu extends SimpleScreen {
             V8("8", 2, 8),
             V16("16", 3, 16),
             V32("32", 4, 32),
-            V64("64", 4, 64),
-            V128("128", 4, 128);
+            V64("64", 5, 64),
+            V128("128", 6, 128);
 
             public final String name;
             public final int index;
