@@ -45,10 +45,15 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Sin
 
         final ItemStack cache = itemHandler.getStackInSlot(0);
 
-        final CacheBlock block = (CacheBlock) te.getBlockType();
         final BlockPos pos = te.getPos();
         final World world = te.getWorld();
         final IBlockState blockState = world.getBlockState(pos);
+
+        if (!(blockState.getBlock() instanceof CacheBlock)) {
+            return;
+        }
+
+        final CacheBlock block = (CacheBlock) blockState.getBlock();
         final int blockX = pos.getX();
         final int blockY = pos.getY();
         final int blockZ = pos.getZ();
@@ -56,7 +61,6 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Sin
         GlStateManager.pushMatrix();
 
         float angle = 0f;
-        float itemAngle = 0f;
         double translatedX = x;
         double translatedZ = z;
         float brightness = 0f;
