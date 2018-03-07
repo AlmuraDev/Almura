@@ -145,6 +145,10 @@ public class IngameFarmersAlmanac extends SimpleScreen {
             groundTemp = TextFormatting.DARK_GREEN + "" + temp;
         }
 
+        if (minTemp == -1 || maxTemp == -1) {
+            groundTemp = TextFormatting.BLUE + "" + temp;
+        }
+
         if (this.fertile) {
             groundMoisture = TextFormatting.DARK_GREEN + "Fertile";
         } else {
