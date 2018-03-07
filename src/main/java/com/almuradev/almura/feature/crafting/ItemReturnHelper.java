@@ -7,14 +7,12 @@
  */
 package com.almuradev.almura.feature.crafting;
 
-import com.almuradev.almura.Almura;
 import com.almuradev.almura.shared.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -53,7 +51,6 @@ public class ItemReturnHelper implements Witness {
         }
     }
 
-    @SuppressWarnings("unused")
     private void contentTypeItemCrafted(EntityPlayer player, String name, ItemStack currentStack) {
         int damage = 0;
         ItemStack reusableItem;
