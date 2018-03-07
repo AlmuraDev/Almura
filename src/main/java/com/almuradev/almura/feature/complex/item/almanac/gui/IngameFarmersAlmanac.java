@@ -12,6 +12,10 @@ import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorl
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.content.type.block.type.crop.CropBlockImpl;
+import com.almuradev.content.type.block.type.crop.processor.growth.Growth;
+import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinition;
+import com.almuradev.toolbox.util.math.DoubleRange;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -28,7 +32,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import org.lwjgl.input.Mouse;
+
+import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
 public class IngameFarmersAlmanac extends SimpleScreen {
@@ -42,7 +49,8 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     private int areaBlockLight;
     private int sunlight;
     private int lastUpdate = 0;
-    private boolean unlockMouse = true;
+    private boolean unlockMouse = true, canRollback = false;
+    private double minTemp = -1, maxTemp = -1, minLight = -1, maxLight = -1;
 
     public IngameFarmersAlmanac(ClientboundWorldPositionInformationPacket message, World worldIn, BlockPos pos, IBlockState state) {
         this.block = state.getBlock();
@@ -59,6 +67,31 @@ public class IngameFarmersAlmanac extends SimpleScreen {
                 fertile = moisture > 0;
             }
 
+            if (block instanceof CropBlockImpl) {
+                CropBlockImpl customCrop = (CropBlockImpl) block;
+                final int age = ((Integer)state.getValue(customCrop.getAgeProperty()));
+                final CropBlockStateDefinition definition = customCrop.state(age);
+                final Biome biome = worldIn.getBiome(pos);
+
+                @Nullable final Growth growth = definition.growth;
+                if (growth != null) {
+                    canRollback = definition.canRollback;
+
+                    final DoubleRange temperatureRequiredRange = growth.getOrLoadTemperatureRequiredRangeForBiome(biome);
+                    if (temperatureRequiredRange != null) {
+                        minTemp = temperatureRequiredRange.min();
+                        maxTemp = temperatureRequiredRange.max();
+                    }
+
+                    final DoubleRange lightRange = growth.getOrLoadLightRangeForBiome(biome);
+                    if (lightRange != null) {
+                        minLight = lightRange.min();
+                        maxLight = lightRange.max();
+                    }
+                }
+            }
+
+
             areaBlockLight = worldIn.getLightFor(EnumSkyBlock.BLOCK, pos);
             sunlight = worldIn.getLightFor(EnumSkyBlock.SKY, pos) - worldIn.getSkylightSubtracted();
 
@@ -74,6 +107,9 @@ public class IngameFarmersAlmanac extends SimpleScreen {
             areaBlockLight = worldIn.getLightFor(EnumSkyBlock.BLOCK, aboveBlockPos);
             sunlight = worldIn.getLightFor(EnumSkyBlock.SKY, aboveBlockPos) - worldIn.getSkylightSubtracted();
         }
+
+
+        System.out.println("Stuff: " + minLight + "/" + maxLight + "/" + minTemp + "/" + maxTemp);
 
         rain = message.biomeRainfall;
         temp = message.biomeTemperature;
@@ -94,7 +130,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
         final int xPadding = 10;
         final int yPadding = 1;
-        int formHeight = 135;
+        int formHeight = 155;
         int formWidth = 185;
 
         String groundTemp = "";
@@ -103,25 +139,10 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         String sunlightText;
         String areaBlockLightText;
 
-        //Frozen = Temp =< 0.14
-
-        if (temp <= 0.14) {
-            groundTemp = TextFormatting.DARK_RED + "Frozen";
-        }
-        if (temp >= 0.15 && temp <= 0.2) {
-            groundTemp = TextFormatting.BLUE + "Chilly";
-        }
-        if (temp >= 0.21 && temp <= 0.5) {
-            groundTemp = TextFormatting.GREEN + "Slightly Warm";
-        }
-        if (temp >= 0.51 && temp <= 1.2) {
-            groundTemp = TextFormatting.DARK_GREEN + "Warm";
-        }
-        if (temp >= 1.21 && temp <= 1.9) {
-            groundTemp = TextFormatting.GOLD + "Very Warm";
-        }
-        if (temp >= 1.91) {
-            groundTemp = TextFormatting.RED + "Hot";
+        if (temp > maxTemp || temp < minTemp) {
+            groundTemp = TextFormatting.RED + "" + temp;
+        } else {
+            groundTemp = TextFormatting.DARK_GREEN + "" + temp;
         }
 
         if (this.fertile) {
@@ -201,14 +222,43 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         final UILabel temperaturedataLabel = new UILabel(this, TextFormatting.GRAY + "Ground Temperature: " + TextFormatting.BLUE + groundTemp);
         temperaturedataLabel.setPosition(xPadding, getPaddedY(moisturedataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
+        final UILabel temperatureRequiredDataLabel = new UILabel(this, TextFormatting.GRAY + "     Required: " + TextFormatting.GREEN + minTemp + "-" + maxTemp);
+        temperatureRequiredDataLabel.setPosition(xPadding, getPaddedY(temperaturedataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+
         final UILabel biomeRainLabel = new UILabel(this, TextFormatting.GRAY + "Biome Rain: " + rainAmount);
-        biomeRainLabel.setPosition(xPadding, getPaddedY(temperaturedataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+
+        if (minTemp == -1 || maxTemp == -1) {
+            biomeRainLabel.setPosition(xPadding, getPaddedY(temperaturedataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+        } else {
+            biomeRainLabel.setPosition(xPadding, getPaddedY(temperatureRequiredDataLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+        }
 
         final UILabel sunlightValueLabel = new UILabel(this, TextFormatting.GRAY + "Sunlight Value: " + sunlightText);
         sunlightValueLabel.setPosition(xPadding, getPaddedY(biomeRainLabel, yPadding), Anchor.LEFT | Anchor.TOP);
 
         final UILabel areaLightValueLabel = new UILabel(this, TextFormatting.GRAY + "Area Light Value: " + areaBlockLightText);
         areaLightValueLabel.setPosition(xPadding, getPaddedY(sunlightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+
+        final UILabel areaLightRequiredValueLabel = new UILabel(this, TextFormatting.GRAY + "     Required: " + TextFormatting.GREEN + minLight + "-" + maxLight);
+        areaLightRequiredValueLabel.setPosition(xPadding, getPaddedY(areaLightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+
+        if (minTemp == -1 || maxTemp == -1) {
+            temperatureRequiredDataLabel.setVisible(false);
+        }
+
+        if (minLight == -1 || maxLight == -1) {
+            areaLightRequiredValueLabel.setVisible(false);
+        }
+
+        final UILabel canDieLabel = new UILabel(this, TextFormatting.RED + "This crop can die!");
+        if (areaLightRequiredValueLabel.isVisible()) {
+            canDieLabel.setPosition(xPadding, getPaddedY(areaLightRequiredValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+        } else {
+            canDieLabel.setPosition(xPadding, getPaddedY(areaLightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+        }
+        if (!canRollback) {
+            canDieLabel.setVisible(false);
+        }
 
         UILabel modelNameLabel = null;
 
@@ -217,9 +267,18 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         if (harvestTool != null && !harvestTool.isEmpty()) {
             final UILabel harvestToolLabel = new UILabel(this, TextFormatting.GRAY + "Harvest tool: " + TextFormatting.BLUE + harvestTool);
             if (block instanceof BlockCrops) {
+                // This has not been tested with custom crops and is likely wrong.
                 harvestToolLabel.setPosition(xPadding, getPaddedY(modelNameLabel, yPadding), Anchor.LEFT | Anchor.TOP);
             } else {
-                harvestToolLabel.setPosition(xPadding, getPaddedY(areaLightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+                if (canDieLabel.isVisible()) {
+                    harvestToolLabel.setPosition(xPadding, getPaddedY(canDieLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+                } else {
+                    if (areaLightRequiredValueLabel.isVisible()) {
+                        harvestToolLabel.setPosition(xPadding, getPaddedY(areaLightRequiredValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+                    } else {
+                        harvestToolLabel.setPosition(xPadding, getPaddedY(areaLightValueLabel, yPadding), Anchor.LEFT | Anchor.TOP);
+                    }
+                }
             }
             formHeight += 10;
             form.add(harvestToolLabel);
@@ -233,7 +292,8 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         closeButton.setName("button.close");
         closeButton.register(this);
 
-        form.add(titleLabel, blockImage, localizedNameLabel, unlocalizedNameLabel, metadataLabel, moisturedataLabel, temperaturedataLabel, biomeRainLabel, sunlightValueLabel, areaLightValueLabel, closeButton);
+        form.add(titleLabel, blockImage, localizedNameLabel, unlocalizedNameLabel, metadataLabel, moisturedataLabel, temperaturedataLabel, temperatureRequiredDataLabel, biomeRainLabel, sunlightValueLabel, areaLightValueLabel,
+                areaLightRequiredValueLabel, canDieLabel, closeButton);
 
         addToScreen(form);
     }
