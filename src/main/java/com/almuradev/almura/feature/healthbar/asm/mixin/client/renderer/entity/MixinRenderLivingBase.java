@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.healthbar.asm.mixin.client.renderer.entity;
 import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.google.inject.Inject;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -25,7 +25,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.monster.Monster;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -51,7 +50,7 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
 
     @Overwrite // Was override but synthetic bridge conflict occurred.
     public void renderName(EntityLivingBase entity, double x, double y, double z) {
-        if ((entity instanceof Player || entity instanceof EntityPlayerSP) && StaticAccess.config.get().client.playerNameRenderDistance > 0) {
+        if (entity instanceof AbstractClientPlayer && StaticAccess.config.get().client.playerNameRenderDistance > 0) {
             this.renderLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.playerNameRenderDistance, StaticAccess.config.get().client.displayNames, StaticAccess.config.get().client.displayHealthbars);
         }
 

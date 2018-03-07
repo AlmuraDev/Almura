@@ -37,6 +37,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class LookingDebugPanel extends AbstractDebugPanel {
+    private static final int ITEM_HEIGHT_OFFSET = 20;
     private boolean lookingAtBlock;
     private boolean lookingAtEntity;
 
@@ -138,23 +139,28 @@ public class LookingDebugPanel extends AbstractDebugPanel {
     }
 
     private void renderEntity(final Entity entity) {
+        final boolean player = entity instanceof EntityPlayer;
         final ResourceLocation id;
-        if (entity instanceof EntityPlayer) {
-            id = new ResourceLocation("player");
+        if (player) {
+            id = EntityList.PLAYER;
         } else {
             id = requireNonNull(EntityList.getKey(entity), () -> "Entity of class " + entity.getClass() + " is not registered!");
         }
 
-        // Draw egg, if available
-        if (EntityList.ENTITY_EGGS.containsKey(id)) {
-            final ItemStack item = new ItemStack(Items.SPAWN_EGG);
-            ItemMonsterPlacer.applyEntityIdToItemStack(item, id);
-            this.drawItem(item, 4, this.autoHeight + 4);
+        if (!player) {
+            // Draw egg, if available
+            if (EntityList.ENTITY_EGGS.containsKey(id)) {
+                final ItemStack item = new ItemStack(Items.SPAWN_EGG);
+                ItemMonsterPlacer.applyEntityIdToItemStack(item, id);
+                this.drawItem(item, 4, this.autoHeight + 4);
+            } else {
+                this.autoHeight += ITEM_HEIGHT_OFFSET;
+            }
         }
 
         this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
         this.autoHeight -= 2;
-        if (entity.hasCustomName() || entity instanceof EntityPlayer) {
+        if (entity.hasCustomName() || player) {
             this.drawProperty("name", entity.getName(), 24, this.autoHeight);
         }
     }
@@ -165,7 +171,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         RenderHelper.disableStandardItemLighting();
 
         this.autoWidth = Math.max(16, this.autoWidth);
-        this.autoHeight += 20;
+        this.autoHeight += ITEM_HEIGHT_OFFSET;
     }
 
     @SuppressWarnings("unchecked")

@@ -39,8 +39,8 @@ public final class FoodLevelChangeApply implements Apply<EntityPlayer, ItemApply
     public void apply0(EntityPlayer entity, ItemApplyContext context) {
         final ItemStack usedStack = context.item();
 
-        if (usedStack.item instanceof ItemFood) {
-            entity.getFoodStats().addStats((ItemFood) context.item().item, context.item());
+        if (usedStack.getItem() instanceof ItemFood) {
+            entity.getFoodStats().addStats((ItemFood) context.item().getItem(), context.item());
         }
     }
 
