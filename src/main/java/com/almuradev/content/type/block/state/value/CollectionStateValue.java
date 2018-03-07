@@ -28,11 +28,11 @@ final class CollectionStateValue<V extends Comparable<V>> implements StateValue<
         final Supplier<Collection<V>>[] supplier = (Supplier<Collection<V>>[]) new Object[1];
         this.values = property -> {
             if (supplier[0] == null) {
-                supplier[0] = Suppliers.memoize(() -> values.stream()
+                supplier[0] = (Supplier<Collection<V>>) (Object) Suppliers.memoize(() -> values.stream()
                         .map(property::parseValue)
                         .map(Optional::orNull)
                         .filter(Objects::nonNull)
-                        .collect(Collectors.toList()));;
+                        .collect(Collectors.toList()));
             }
             return supplier[0];
         };

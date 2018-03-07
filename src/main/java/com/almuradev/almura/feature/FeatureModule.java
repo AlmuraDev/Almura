@@ -18,6 +18,7 @@ import com.almuradev.almura.feature.notification.NotificationModule;
 import com.almuradev.almura.feature.offhand.OffHandListener;
 import com.almuradev.almura.feature.sign.SignEditFeature;
 import com.almuradev.almura.feature.storage.StorageModule;
+import com.almuradev.almura.feature.biome.BiomeModule;
 import com.almuradev.almura.feature.title.TitleModule;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -35,6 +36,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new CacheModule());
         this.install(new ExchangeModule());
         this.install(new StorageModule());
+        this.install(new BiomeModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         this.facet().add(OffHandListener.class);

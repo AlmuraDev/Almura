@@ -131,7 +131,7 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
 
     @Listener
     public void onPlayerCraftedItem(CraftItemEvent.Preview event) {
-        final ItemStack result = ItemStackUtil.toNative(event.getPreview().getFinal().createStack());
+        final ItemStack result = ItemStackUtil.toNative(event.getPreview().getFinal().createStack());;
         final Item resultItemType = result.getItem();
 
         // We only care about caches

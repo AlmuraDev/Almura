@@ -27,8 +27,8 @@ public abstract class MixinForgeHooksClient {
      * @author Zidane - Chris Sanders
      * @reason Redirect to ModelUtil for damage model bug-fix
      */
-    @Overwrite
-    public static IBakedModel getDamageModel(final IBakedModel ibakedmodel, final TextureAtlasSprite texture, final IBlockState state, final IBlockAccess world, final BlockPos pos)
+    @Overwrite(remap = false)
+    public static IBakedModel getDamageModel(IBakedModel ibakedmodel, TextureAtlasSprite texture, IBlockState state, IBlockAccess world, BlockPos pos)
     {
         return ModelUtil.getDamageModel(ibakedmodel, texture, state, world, pos);
     }
