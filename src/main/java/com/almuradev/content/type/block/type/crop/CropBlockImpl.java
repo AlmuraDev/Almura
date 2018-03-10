@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.block.type.crop;
 
+import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.type.crop.processor.fertilizer.Fertilizer;
 import com.almuradev.content.type.block.type.crop.processor.growth.Growth;
@@ -23,6 +24,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -35,6 +37,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.util.List;
 import java.util.Random;
@@ -48,12 +52,14 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     private static final Random RANDOM = new Random();
     private final CropBlockStateDefinition[] states;
     private final int maxAge;
+    private final Delegate<ItemType> seed;
     @SuppressWarnings("NullableProblems")
     private PropertyInteger age;
 
     CropBlockImpl(final CropBlockBuilder builder, final List<CropBlockStateDefinition> states) {
         builder.fill(this);
         this.maxAge = builder.age;
+        this.seed = builder.seed;
         this.states = new CropBlockStateDefinition[this.maxAge + 1];
         for (final CropBlockStateDefinition state : states) {
             this.states[state.age] = state;
@@ -273,9 +279,13 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     }
 
     @Override
+    public Item getSeed() {
+        return (Item) this.seed.get();
+    }
+
+    @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-        // Crops have no item representation.
-        return ItemStack.EMPTY;
+        return ItemStackUtil.toNative(org.spongepowered.api.item.inventory.ItemStack.of((ItemType) this.getSeed(), 1));
     }
 
     private void advanceState(final World world, final BlockPos pos, final IBlockState state, final boolean fertilizer) {

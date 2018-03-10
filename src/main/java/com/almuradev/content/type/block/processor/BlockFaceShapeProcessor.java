@@ -8,7 +8,7 @@ import com.almuradev.toolbox.config.tag.ConfigTag;
 import net.minecraft.block.state.BlockFaceShape;
 import ninja.leaping.configurate.ConfigurationNode;
 
-public class BlockFaceShapeProcessor implements BlockContentProcessor.State.Any {
+public final class BlockFaceShapeProcessor implements BlockContentProcessor.State.Any {
 
     private static final ConfigTag TAG = ConfigTag.create(BlockConfig.State.BLOCK_FACE_SHAPE);
 

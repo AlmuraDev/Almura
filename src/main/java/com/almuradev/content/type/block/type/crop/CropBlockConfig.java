@@ -14,6 +14,8 @@ import com.almuradev.content.type.block.BlockConfig;
  */
 public interface CropBlockConfig {
 
+    String SEED = "seed";
+
     interface State {
         String CAN_ROLLBACK = "can_rollback";
         String FERTILIZER = "fertilizer";

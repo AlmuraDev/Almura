@@ -7,14 +7,15 @@
  */
 package com.almuradev.content.type.block.type.crop;
 
+import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.block.BlockGenre;
 import com.almuradev.content.type.block.ContentBlockType;
-import com.almuradev.content.type.block.type.crop.processor.hydration.Hydration;
 import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinition;
 import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinitionBuilder;
 import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinitionBuilderImpl;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyInteger;
+import org.spongepowered.api.item.ItemType;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -35,7 +36,7 @@ public final class CropBlockBuilder extends ContentBlockType.Builder.Impl.Parsed
     @Nullable static PropertyInteger property;
     private static final int MAXIMUM_AGE = 7;
     int age;
-    @Nullable Hydration hydration;
+    Delegate<ItemType> seed;
 
     public CropBlockBuilder() {
         super(BlockGenre.CROP);
@@ -49,6 +50,12 @@ public final class CropBlockBuilder extends ContentBlockType.Builder.Impl.Parsed
     @Override
     protected String describePattern() {
         return "age=value";
+    }
+
+    @Override
+    public CropBlock.Builder seed(Delegate<ItemType> seed) {
+        this.seed = seed;
+        return this;
     }
 
     @Override
