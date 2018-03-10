@@ -13,6 +13,7 @@ import com.almuradev.content.type.block.type.crop.processor.growth.Growth;
 import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinition;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.kyori.lunar.PrimitiveOptionals;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.properties.PropertyInteger;
@@ -257,6 +258,20 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         return false;
     }
 
+    private boolean hasAdditionalSource(World worldIn, BlockPos pos, int type) {
+        // Todo: ability to add more heat/light sources.
+        Block block = Block.getBlockFromName("almura:horizontal/lighting/plant_light");
+        if (block != null) {
+            for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-2, 1, -2), pos.add(2, 3, 2))) {
+                if (worldIn.getBlockState(blockpos$mutableblockpos).getBlock() == block) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
         // Crops have no item representation.
@@ -300,29 +315,42 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                 final float biomeTemperature = biome.getTemperature(pos);
 
                 if (!temperatureRequiredRange.contains(biomeTemperature)) {
-                    rollback = true;
+                    rollback = true; // Range Check
+                }
+
+                if (biomeTemperature < temperatureRequiredRange.min()) {  // Check for additional heat source
+                    if (hasAdditionalSource(world, pos, 1)) {
+                        rollback = false;
+                    }
                 }
             }
 
             // Light of biome isn't in required range? Don't grow and rollback if applicable
             final DoubleRange lightRange = growth.getOrLoadLightRangeForBiome(biome);
 
-            if (lightRange != null) {
-                // TODO Split out required light levels based on light source (BLOCK/SKY)?
-
+            // Only run light checks if surrounding chunks are loaded else this will trigger chunk loads
+            // Skip this section if rollback is true because a Tempoerature fail should never be overridden by light.
+            if (rollback = false && lightRange != null && world.isAreaLoaded(pos, 1)) {
                 final int minLight = (int) lightRange.min();
                 final int maxLight = (int) lightRange.max();
 
-                final int areaBlockLight = world.getLightFor(EnumSkyBlock.BLOCK, pos);
-                final int worldLight = world.getLightFor(EnumSkyBlock.SKY, pos) - world.getSkylightSubtracted();
+                final int light = world.getLightFromNeighbors(pos);
 
-                if ((minLight > areaBlockLight || maxLight < areaBlockLight) && (minLight > worldLight || maxLight < worldLight)) {
-                    rollback = true;
+                if (light < minLight || light > maxLight) {
+                    if (hasAdditionalSource(world, pos, 2)) {
+                        rollback = false;
+                    } else {
+                        rollback = true;
+                    }
                 }
 
-                if (canRollback && rollback && world.canSeeSky(pos)) {
-                    if (worldLight < 6) {  // Indicates Night?
-                        rollback = false;  // Prevent a crop from rolling back in the middle of the night if it can see sky.
+                if (canRollback && rollback) {
+                    if (world.canSeeSky(pos)) {
+                        final int worldLight = world.getLightFor(EnumSkyBlock.SKY, pos) - world.getSkylightSubtracted();
+
+                        if (worldLight < 6) {  // Crops go to sleep on a routine if their light is predictable
+                            rollback = false;  // Prevent a crop from rolling back in the middle of the night if it can see sky.
+                        }
                     }
                 }
             }
