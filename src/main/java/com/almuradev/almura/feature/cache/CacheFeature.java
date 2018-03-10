@@ -11,33 +11,29 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.cache.block.CacheBlock;
 import com.almuradev.almura.feature.cache.block.CacheBlocks;
 import com.almuradev.almura.feature.cache.client.tileentity.renderer.CacheTileEntityRenderer;
-import com.almuradev.almura.shared.capability.IMultiSlotItemHandler;
-import com.almuradev.almura.shared.capability.impl.MultiSlotItemHandler;
 import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
-import com.almuradev.almura.shared.capability.ISingleSlotItemHandler;
-import com.almuradev.almura.shared.capability.impl.SingleSlotItemHandler;
 import com.almuradev.almura.shared.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.item.inventory.CraftItemEvent;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
+import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -133,15 +129,9 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
         ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(blockStateLocation, "inventory"));
     }
 
-
-    @SubscribeEvent
-    public void onPlayerCraftedItem(PlayerEvent.ItemCraftedEvent event) {
-        if (event.player.getEntityWorld().isRemote) {
-            return;
-        }
-
-        final IInventory craftMatrix = event.craftMatrix;
-        final ItemStack result = event.crafting;
+    @Listener
+    public void onPlayerCraftedItem(CraftItemEvent.Preview event) {
+        final ItemStack result = ItemStackUtil.toNative(event.getPreview().getFinal().createStack());
         final Item resultItemType = result.getItem();
 
         // We only care about caches
@@ -151,7 +141,10 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
 
         final CacheBlock resultCacheBlock = (CacheBlock) ((ItemBlock) resultItemType).getBlock();
 
-        final ItemStack cacheStack = craftMatrix.getStackInSlot(4);
+        final ItemStack cacheStack = ItemStackUtil.toNative(event.getCraftingInventory().getCraftingGrid()
+                .query(QueryOperationTypes.ITEM_STACK_CUSTOM.of(stack -> ((Block) stack.getType().getBlock().orElse(null)) instanceof CacheBlock))
+                .peek()
+                .orElse(org.spongepowered.api.item.inventory.ItemStack.empty()));
 
         // Safety check to ensure the cache stack is in the middle
         if (cacheStack.isEmpty() || !(cacheStack.getItem() instanceof ItemBlock) || !(((ItemBlock) cacheStack.getItem()).getBlock() instanceof
@@ -195,5 +188,6 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
         newCompound.getCompoundTag("tag").getCompoundTag("Cache").setTag(Almura.ID + ":single_slot", newSlotCompound);
 
         result.setTagCompound(newCompound);
+        event.getPreview().setCustom(ItemStackUtil.fromNative(result));
     }
 }
