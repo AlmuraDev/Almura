@@ -33,6 +33,7 @@ public interface BlockConfig {
          * @see ActionConfig
          */
         String ACTION = "action";
+        String BLOCK_FACE_SHAPE = "block_face_shape";
         String HARDNESS = "hardness";
         /**
          * @see Light

@@ -12,6 +12,7 @@ import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
 import com.almuradev.content.type.block.facet.BlockExperience;
 import com.almuradev.content.type.block.processor.AABBBlockContentProcessor;
+import com.almuradev.content.type.block.processor.BlockFaceShapeProcessor;
 import com.almuradev.content.type.block.processor.DestroyActionBlockContentProcessor;
 import com.almuradev.content.type.block.processor.HardnessBlockContentProcessor;
 import com.almuradev.content.type.block.processor.ItemGroupBlockContentProcessor;
@@ -46,6 +47,7 @@ public final class BlockModule extends AbstractModule implements CommonBinder {
                 this.processors()
                         .all(AABBBlockContentProcessor.class)
                         .all(DestroyActionBlockContentProcessor.class)
+                        .all(BlockFaceShapeProcessor.class)
                         .all(HardnessBlockContentProcessor.class)
                         .all(ItemGroupBlockContentProcessor.class)
                         .all(LightBlockContentProcessor.class)

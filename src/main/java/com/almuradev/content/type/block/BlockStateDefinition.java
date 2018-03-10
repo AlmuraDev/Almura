@@ -11,6 +11,7 @@ import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.component.aabb.BlockAABB;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
+import net.minecraft.block.state.BlockFaceShape;
 
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -28,6 +29,8 @@ public interface BlockStateDefinition {
         void collisionBox(@Nullable final BlockAABB.Collision collisionBox);
 
         void wireFrame(@Nullable final BlockAABB.WireFrame wireFrame);
+
+        void blockFaceShape(final BlockFaceShape blockFaceShape);
 
         void hardness(final float hardness);
 
@@ -51,6 +54,7 @@ public interface BlockStateDefinition {
             @Nullable protected BlockAABB.Box box;
             @Nullable protected BlockAABB.Collision collisionBox;
             @Nullable protected BlockAABB.WireFrame wireFrame;
+            protected BlockFaceShape blockFaceShape;
             protected OptionalDouble hardness = OptionalDouble.empty();
             protected OptionalDouble lightEmission = OptionalDouble.empty();
             protected OptionalInt lightOpacity = OptionalInt.empty();
@@ -79,6 +83,11 @@ public interface BlockStateDefinition {
             public void wireFrame(@Nullable final BlockAABB.WireFrame wireFrame) {
                 BlockAABB.shares(this.wireFrame, -1);
                 this.wireFrame = wireFrame;
+            }
+
+            @Override
+            public void blockFaceShape(final BlockFaceShape blockFaceShape) {
+                this.blockFaceShape = blockFaceShape;
             }
 
             @Override
@@ -140,6 +149,7 @@ public interface BlockStateDefinition {
                     if (this.resistance.isPresent()) that.resistance = this.resistance;
                     if (this.sound != null) that.sound = this.sound;
                     if (this.destroyAction != null) that.destroyAction = this.destroyAction;
+                    that.blockFaceShape = this.blockFaceShape;
                 }
             }
 
@@ -153,6 +163,7 @@ public interface BlockStateDefinition {
         @Nullable public final B box;
         @Nullable public final C collisionBox;
         @Nullable public final W wireFrame;
+        public final BlockFaceShape blockFaceShape;
         public final OptionalDouble hardness;
         public final OptionalDouble lightEmission;
         public final OptionalInt lightOpacity;
@@ -164,6 +175,7 @@ public interface BlockStateDefinition {
             this.box = (B) builder.box;
             this.collisionBox = (C) builder.collisionBox;
             this.wireFrame = (W) builder.wireFrame;
+            this.blockFaceShape = builder.blockFaceShape;
             this.hardness = builder.hardness;
             this.lightEmission = builder.lightEmission;
             this.lightOpacity = builder.lightOpacity;

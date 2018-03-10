@@ -8,7 +8,6 @@
     "mixins": [
         "block.MixinBlockFarmland",
         "block.MixinBlockVine",
-        "block.MixinBlockFence",
         "entity.MixinEntityList",
         "item.MixinItemBucket",
         "item.MixinItemBucketMilk",
