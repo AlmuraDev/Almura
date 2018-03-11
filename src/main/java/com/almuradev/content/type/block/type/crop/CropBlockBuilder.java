@@ -53,9 +53,8 @@ public final class CropBlockBuilder extends ContentBlockType.Builder.Impl.Parsed
     }
 
     @Override
-    public CropBlock.Builder seed(Delegate<ItemType> seed) {
+    public void seed(final Delegate<ItemType> seed) {
         this.seed = seed;
-        return this;
     }
 
     @Override

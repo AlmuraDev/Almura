@@ -19,7 +19,6 @@ public interface CropBlock extends ContentBlockType {
     CropBlockStateDefinition definition(final IBlockState state);
 
     interface Builder extends ContentBlockType.Builder<CropBlock, CropBlockStateDefinition, CropBlockStateDefinitionBuilder> {
-
-        Builder seed(Delegate<ItemType> seed);
+        void seed(final Delegate<ItemType> seed);
     }
 }

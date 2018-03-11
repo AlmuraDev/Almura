@@ -22,9 +22,9 @@ public final class CropBlockModule extends BlockModule.Module {
         this.bind(CropBlock.Builder.class).to(CropBlockBuilder.class);
         this.processors()
                 .only(CanRollbackCropBlockContentProcessor.class, BlockGenre.CROP)
+                .only(FertilizerCropBlockContentProcessor.class, BlockGenre.CROP)
                 .only(GrowthCropBlockContentProcessor.class, BlockGenre.CROP)
-                .only(SeedProcessor.class, BlockGenre.CROP)
                 .only(HydrationCropBlockContentProcessor.class, BlockGenre.CROP)
-                .only(FertilizerCropBlockContentProcessor.class, BlockGenre.CROP);
+                .only(SeedProcessor.class, BlockGenre.CROP);
     }
 }

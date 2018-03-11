@@ -13,7 +13,6 @@ import com.almuradev.content.type.block.BlockConfig;
  * @see BlockConfig
  */
 public interface CropBlockConfig {
-
     String SEED = "seed";
 
     interface State {

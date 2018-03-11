@@ -38,7 +38,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.item.ItemType;
-import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.util.List;
 import java.util.Random;
@@ -285,7 +284,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-        return ItemStackUtil.toNative(org.spongepowered.api.item.inventory.ItemStack.of((ItemType) this.getSeed(), 1));
+        return new ItemStack(this.getSeed());
     }
 
     private void advanceState(final World world, final BlockPos pos, final IBlockState state, final boolean fertilizer) {

@@ -1,3 +1,10 @@
+/*
+ * This file is part of Almura.
+ *
+ * Copyright (c) AlmuraDev <https://github.com/AlmuraDev/>
+ *
+ * All Rights Reserved.
+ */
 package com.almuradev.content.type.block.type.crop.processor;
 
 import com.almuradev.content.registry.delegate.CatalogDelegate;
@@ -8,7 +15,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.item.ItemType;
 
 public final class SeedProcessor implements CropBlockContentProcessor.AnyTagged {
-
     private static final ConfigTag TAG = ConfigTag.create(CropBlockConfig.SEED);
 
     @Override
@@ -22,7 +28,7 @@ public final class SeedProcessor implements CropBlockContentProcessor.AnyTagged 
     }
 
     @Override
-    public void processTagged(ConfigurationNode config, CropBlock.Builder context) {
-        context.seed(CatalogDelegate.namespaced(ItemType.class, config));
+    public void processTagged(final ConfigurationNode config, final CropBlock.Builder builder) {
+        builder.seed(CatalogDelegate.namespaced(ItemType.class, config));
     }
 }
