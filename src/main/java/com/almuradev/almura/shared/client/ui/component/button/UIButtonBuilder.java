@@ -38,6 +38,7 @@ public final class UIButtonBuilder {
     @Nullable private Text text;
     @Nullable private UIImage image;
     @Nullable private UITooltip tooltip;
+    @Nullable private Runnable onClickRunnable;
     private boolean enabled = true;
     private boolean visible = true;
 
@@ -159,6 +160,11 @@ public final class UIButtonBuilder {
         return this;
     }
 
+    public UIButtonBuilder onClick(Runnable onClickRunnable) {
+        this.onClickRunnable = onClickRunnable;
+        return this;
+    }
+
     @SuppressWarnings({"deprecation", "unchecked"})
     public UIButton build(String id) {
         checkNotNull(id);
@@ -199,6 +205,9 @@ public final class UIButtonBuilder {
         }
         if (this.container != null) {
             this.container.add(button);
+        }
+        if (this.onClickRunnable != null) {
+            button.onClick(this.onClickRunnable);
         }
         button.setEnabled(this.enabled);
         button.setVisible(this.visible);

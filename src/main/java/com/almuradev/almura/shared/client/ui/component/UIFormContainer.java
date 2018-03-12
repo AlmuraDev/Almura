@@ -28,10 +28,7 @@ public class UIFormContainer extends UIBackgroundContainer {
     private final UIBackgroundContainer contentContainer;
 
     public UIFormContainer(MalisisGui gui, int width, int height) {
-        super(gui, width, height);
-        contentContainer = new UIBackgroundContainer(gui);
-        contentContainer.setBackgroundAlpha(0);
-        this.construct();
+        this(gui, width, height, "");
     }
 
     public UIFormContainer(MalisisGui gui, int width, int height, String title) {
@@ -52,6 +49,7 @@ public class UIFormContainer extends UIBackgroundContainer {
         this.closeButton.register(this);
 
         if (this.titleLabel != null) {
+            this.titleLabel.setFontOptions(FontColors.WHITE_FO);
             this.titleLabel.setPosition(0, -getTopPadding() + 5, Anchor.TOP | Anchor.CENTER);
         }
     }
