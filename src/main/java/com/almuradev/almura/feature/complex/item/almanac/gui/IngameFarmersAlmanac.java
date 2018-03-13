@@ -42,6 +42,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
+import org.lwjgl.input.Mouse;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
@@ -50,8 +51,6 @@ import org.spongepowered.api.util.Tuple;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 public class IngameFarmersAlmanac extends SimpleScreen {
@@ -63,10 +62,10 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     private static final int propertyContainerMaxHeight = 120;
     private static final int formAlpha = 185;
     private static final int leftPad = 8;
-    private final List<Property> properties = new LinkedList<>();
     private final Minecraft client = Minecraft.getMinecraft();
-
     private final ClientboundWorldPositionInformationPacket message;
+    private UIBackgroundContainer propertyContainer;
+    private int lastPropertyY = 4;
 
     public IngameFarmersAlmanac(ClientboundWorldPositionInformationPacket message) {
         this.message = message;
@@ -117,31 +116,17 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         separator.setPosition(0, SimpleScreen.getPaddedY(labelRegistryName, 3), Anchor.TOP | Anchor.CENTER);
         form.add(separator);
 
-        final UIBackgroundContainer propertyContainer = new UIBackgroundContainer(this);
-        new UISlimScrollbar(this, propertyContainer, UIScrollBar.Type.VERTICAL).setAutoHide(true);
-        propertyContainer.setBackgroundAlpha(50);
-        propertyContainer.setPosition(0, SimpleScreen.getPaddedY(separator, 5));
-        form.add(propertyContainer);
+        // Property container
+        this.propertyContainer = new UIBackgroundContainer(this);
+        new UISlimScrollbar(this, this.propertyContainer, UIScrollBar.Type.VERTICAL).setAutoHide(true);
+        this.propertyContainer.setBackgroundAlpha(50);
+        this.propertyContainer.setPosition(0, SimpleScreen.getPaddedY(separator, 5));
+        form.add(this.propertyContainer);
 
         // Get all displayed properties
         loadProperties(world, blockState, blockPos);
 
-        // Add labels for all properties
-        int lastY = 4;
-        for (Property property : properties) {
-            final UILabel propertyLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(property.indent > 0 ? String.format("%" + property.indent + "s", "") : "",
-                            property.key, property.key.getColor(), ": ",
-                            property.value)),
-                    property.multiline);
-            propertyLabel.setPosition(leftPad, lastY);
-            if (property.multiline) {
-                propertyLabel.setSize(propertyLabel.getContentWidth(), propertyLabel.getContentHeight());
-            }
-            propertyContainer.add(propertyLabel);
-            lastY += propertyLabel.getHeight() + (property.multiline ? 0 : 2);
-        }
-
+        // Adjust the size of the container to reach at most the specified max height
         propertyContainer.setSize(UIComponent.INHERITED, Math.min(propertyContainerMaxHeight, propertyContainer.getContentHeight()));
 
         final UIButton closeButton = new UIButtonBuilder(this)
@@ -152,24 +137,25 @@ public class IngameFarmersAlmanac extends SimpleScreen {
                 .build("button.close");
         form.add(closeButton);
 
+        // Adjust the size of the form to better fit content
         form.setSize(form.getContentWidth() + leftPad, form.getContentHeight() + closeButton.getHeight() + 10);
-        // Because UIComponent.INHERITED doesn't account for the scrollbar
+
+        // Readjust size for width because MalisisCore doesn't account for the scrollbar with UIComponent.INHERITED
         propertyContainer.setSize(propertyContainer.getWidth() - 1, propertyContainer.getHeight());
 
         addToScreen(form);
+
+        Mouse.setGrabbed(false);
     }
 
+    @SuppressWarnings("unchecked")
     private void loadProperties(World world, IBlockState blockState, BlockPos blockPos) {
-        // Sweet baby Guthix
-        // TODO: This CAN be done better.
         final Hydration hydration = getHydrationDefinition(blockState).orElse(null);
         if (hydration != null) {
-            final String sourceNamePrefix = "  - ";
-            final String sourcePropertyPrefix = "      ";
-            final List<String> sources = new LinkedList<>();
+            this.addLineLabel(Text.of(TextColors.WHITE, "Hydrated by:"));
+
             hydration.blockStates().forEach(bs -> {
-                final StringBuilder builder = new StringBuilder();
-                builder.append(sourceNamePrefix).append(bs.block().getLocalizedName());
+                this.addLineLabel(Text.of(TextColors.WHITE, "- ", bs.block().getLocalizedName()), 2, false);
                 bs.properties().forEach(property -> bs.value(property).ifPresent(stateValue -> {
                     final String formattedValue;
                     if (stateValue instanceof RangeStateValue) {
@@ -177,83 +163,86 @@ public class IngameFarmersAlmanac extends SimpleScreen {
                         formattedValue = numberFormat.format(rangeStateValue.min()) + "-" + numberFormat.format(rangeStateValue.max());
                     } else {
                         final Comparable rawValue = stateValue.get((IProperty) property);
-                        if (rawValue != null) {
-                            formattedValue = rawValue.toString();
-                        } else {
-                            formattedValue = "";
-                        }
+                        formattedValue = rawValue == null ? "" : rawValue.toString();
                     }
-                    builder.append("\n").append(sourcePropertyPrefix).append(property.getName()).append(": ").append(formattedValue);
+                    this.addLineLabel(this.getGenericPropertyText("- " + property.getName(), formattedValue), 6, false);
                 }));
-                sources.add(builder.toString());
             });
-            properties.add(Property.builder()
-                    .content(Text.of(TextColors.WHITE, "Hydrated by"),
-                            Text.of(TextColors.GRAY, Text.NEW_LINE, String.join("\n", sources)))
-                    .multiline(true)
-                    .build());
-            properties.add(Property.builder()
-                    .content("Hydration Radius", String.valueOf(hydration.getMaxRadius()))
-                    .build());
+            this.addLineLabel(this.getGenericPropertyText("Hydration Radius", String.valueOf(hydration.getMaxRadius())));
         }
 
         // Growth stage
-        getGrowthStage(blockState).ifPresent(growthStage -> properties.add(Property.builder()
-                .content("Growth Stage", String.format("%d of %d", growthStage.getFirst(), growthStage.getSecond())).build()));
+        getGrowthStage(blockState)
+                .ifPresent(growthStage -> this.addLineLabel(this.getGenericPropertyText("Growth Stage",
+                                String.format("%d of %d", growthStage.getFirst(), growthStage.getSecond()))));
 
         // Ground moisture
         final int moistureLevel = getMoistureLevel(blockState);
         final boolean isFertile = moistureLevel > 0;
-        properties.add(Property.builder()
-                .content(TextColors.WHITE, "Moisture", isFertile ? TextColors.DARK_GREEN : TextColors.RED, isFertile ? "Fertile" : "Too dry")
-                .build());
+        final TextColor fertileColor = isFertile ? TextColors.DARK_GREEN : TextColors.RED;
+        this.addLineLabel(Text.of(TextColors.WHITE, "Moisture: ", fertileColor, isFertile ? "Fertile" : "Too dry"));
 
         // Ground temperature
         final DoubleRange temperatureRange = getTemperatureRange(world, blockState, blockPos).orElse(null);
         if (temperatureRange != null) {
-            properties.add(Property.builder()
-                .content(TextColors.WHITE,
-                        "Ground Temperature",
+            this.addLineLabel(Text.of(
+                    TextColors.WHITE, "Ground Temperature: ",
                         (temperatureRange.min() == -1 || temperatureRange.max() == -1) ? TextColors.RED : TextColors.DARK_GREEN,
-                        numberFormat.format(message.biomeTemperature))
-                .build());
-            properties.add(Property.builder()
-                .content("Required",
-                    String.format("%s-%s", numberFormat.format(temperatureRange.min()), numberFormat.format(temperatureRange.max())))
-                .indent(2)
-                .build());
+                        numberFormat.format(message.biomeTemperature)));
+            this.addLineLabel(this.getGenericPropertyText("Required",
+                    String.format("%s-%s", numberFormat.format(temperatureRange.min()), numberFormat.format(temperatureRange.max()))), 2, false);
         }
 
         // Biome rain
-        properties.add(Property.builder()
-                .content(TextColors.WHITE, "Rain",
-                        message.biomeRainfall > 0.4 ? TextColors.DARK_GREEN : TextColors.RED, numberFormat.format(message.biomeRainfall))
-                .build());
+        this.addLineLabel(Text.of(TextColors.WHITE, "Rain: ",
+                        message.biomeRainfall > 0.4 ? TextColors.DARK_GREEN : TextColors.RED, numberFormat.format(message.biomeRainfall)));
 
         // Sunlight value
         final int sunlight = world.getLightFor(EnumSkyBlock.SKY, blockPos) - world.getSkylightSubtracted();
-        properties.add(Property.builder().content("Sunlight", String.valueOf(sunlight)).build());
+        this.addLineLabel(this.getGenericPropertyText("Sunlight", String.valueOf(sunlight)));
 
         // Area light value
         final DoubleRange lightRange = getLightRange(world, blockState, blockPos).orElse(null);
         if (lightRange != null) {
             final int lightValue = world.getLightFor(EnumSkyBlock.SKY, blockPos);
             final TextColor valueColor = lightValue < 6 ? (sunlight < 6 ? TextColors.RED : TextColors.YELLOW) : TextColors.DARK_GREEN;
-            properties.add(Property.builder().content(TextColors.WHITE, "Area light", valueColor, String.valueOf(lightValue)).build());
-            properties.add(Property.builder()
-                    .content("Required", String.format("%s-%s", numberFormat.format(lightRange.min()), numberFormat.format(lightRange.max())))
-                    .indent(2)
-                    .build());
+            this.addLineLabel(Text.of(TextColors.WHITE, "Area light: ", valueColor, String.valueOf(lightValue)));
+            this.addLineLabel(this.getGenericPropertyText("Required",
+                    String.format("%s-%s", numberFormat.format(lightRange.min()), numberFormat.format(lightRange.max()))), 2, false);
         }
 
         // Can Die
-        properties.add(Property.builder().content("Can Die", String.valueOf(canRollback(blockState))).build());
+        this.addLineLabel(this.getGenericPropertyText("Can Die", String.valueOf(canRollback(blockState))));
 
         // Harvest Tool
         final String harvestTool = blockState.getBlock().getHarvestTool(blockState);
         if (harvestTool != null && !harvestTool.isEmpty()) {
-            properties.add(Property.builder().content("Harvested by", harvestTool).build());
+            addLineLabel(this.getGenericPropertyText("Harvested by", harvestTool));
         }
+    }
+
+    private Text getGenericPropertyText(String key, String value) {
+        return Text.of(TextColors.WHITE, key, ": ", TextColors.GRAY, value);
+    }
+
+    private void addLineLabel(Text text) {
+        this.addLineLabel(text, 0, false);
+    }
+
+    private void addLineLabel(Text text, boolean multline) {
+        this.addLineLabel(text, 0, multline);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void addLineLabel(Text text, int indent, boolean multiline) {
+        final String prefix = indent > 0 ? String.format("%" + indent + "s", "") : "";
+        final UILabel lineLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(prefix, text)), multiline);
+        lineLabel.setPosition(leftPad, this.lastPropertyY);
+        if (multiline) {
+            lineLabel.setSize(lineLabel.getContentWidth(), lineLabel.getContentHeight());
+        }
+        this.propertyContainer.add(lineLabel);
+        this.lastPropertyY += lineLabel.getHeight() + (multiline ? 0 : 2);
     }
 
     private static IBlockState getState(final World world, final BlockPos pos) {
@@ -324,59 +313,5 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         }
 
         return Optional.empty();
-    }
-
-    private static class Property {
-
-        final Text key;
-        final Text value;
-        final int indent;
-        final boolean multiline;
-
-        Property(Text key, Text value, int indent, boolean multiline) {
-            this.key = key;
-            this.value = value;
-            this.indent = indent;
-            this.multiline = multiline;
-        }
-
-        static Builder builder() {
-            return new Builder();
-        }
-
-        static class Builder {
-            private Text key;
-            private Text value;
-            private int indent;
-            private boolean multiline;
-
-            Builder content(String key, String value) {
-                return content(Text.of(TextColors.WHITE, key), Text.of(TextColors.GRAY, value));
-            }
-
-            Builder content(TextColor keyColor, String key, TextColor valueColor, String value) {
-                return content(Text.of(keyColor, key), Text.of(valueColor, value));
-            }
-
-            Builder content(Text key, Text value) {
-                this.key = key;
-                this.value = value;
-                return this;
-            }
-
-            Builder indent(int indent) {
-                this.indent = indent;
-                return this;
-            }
-
-            Builder multiline(boolean multiline) {
-                this.multiline = multiline;
-                return this;
-            }
-
-            Property build() {
-                return new Property(key, value, indent, multiline);
-            }
-        }
     }
 }
