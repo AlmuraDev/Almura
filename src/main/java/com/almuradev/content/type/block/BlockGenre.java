@@ -19,6 +19,8 @@ import com.almuradev.content.type.block.type.leaf.LeafBlock;
 import com.almuradev.content.type.block.type.log.LogBlock;
 import com.almuradev.content.type.block.type.normal.NormalBlock;
 import com.almuradev.content.type.block.type.sapling.SaplingBlock;
+import com.almuradev.content.type.block.type.slab.SlabBlock;
+import com.almuradev.content.type.block.type.stair.StairBlock;
 
 /**
  * An enumeration of block types.
@@ -52,7 +54,15 @@ public enum BlockGenre implements ContentType.MultiType<ContentBlock, ContentBlo
     /**
      * A block type representing a sapling block.
      */
-    SAPLING("sapling", SaplingBlock.Builder.class);
+    SAPLING("sapling", SaplingBlock.Builder.class),
+    /**
+     * A block type representing a slab block.
+     */
+    SLAB("slab", SlabBlock.Builder.class),
+    /**
+     * A block type representing a stair block.
+     */
+    STAIR("stair", StairBlock.Builder.class);
 
     /**
      * The id of this block type.

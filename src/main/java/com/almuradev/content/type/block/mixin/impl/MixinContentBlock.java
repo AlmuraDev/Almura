@@ -18,6 +18,8 @@ import com.almuradev.content.type.block.type.leaf.LeafBlockImpl;
 import com.almuradev.content.type.block.type.log.LogBlockImpl;
 import com.almuradev.content.type.block.type.normal.NormalBlockImpl;
 import com.almuradev.content.type.block.type.sapling.SaplingBlockImpl;
+import com.almuradev.content.type.block.type.slab.SlabBlockImpl;
+import com.almuradev.content.type.block.type.stair.StairBlockImpl;
 import com.almuradev.content.type.block.util.BlockUtil;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
 import com.almuradev.content.type.itemgroup.ItemGroup;
@@ -46,7 +48,9 @@ import javax.annotation.Nullable;
     LeafBlockImpl.class,
     LogBlockImpl.class,
     NormalBlockImpl.class,
-    SaplingBlockImpl.class
+    SaplingBlockImpl.class,
+    SlabBlockImpl.class,
+    StairBlockImpl.class
 })
 public abstract class MixinContentBlock extends MixinBlock implements ContentBlock, IMixinContentBlock, IMixinLazyItemGroup {
     @Nullable private Delegate<ItemGroup> lazyItemGroup;
