@@ -20,7 +20,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 public abstract class AbstractFunctionPredicateParser<I, O> implements ConfigurationNodeDeserializer<FunctionPredicate<I, O>> {
-
     protected final Function<I, O> function;
 
     protected AbstractFunctionPredicateParser(final Function<I, O> function) {
@@ -34,6 +33,9 @@ public abstract class AbstractFunctionPredicateParser<I, O> implements Configura
 
     @Nullable
     private FunctionPredicate<I, O> deserializeOne(final ConfigurationNode config) {
+        if(config.getValue() == null) {
+            return null;
+        }
         return this.deserializeOne(config, config.getValue().getClass());
     }
 

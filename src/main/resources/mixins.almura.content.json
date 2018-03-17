@@ -10,7 +10,6 @@
     ],
     "client": [
         "MixinForgeHooksClient",
-        "MixinBlockStateMapper",
         "MixinTextureAtlasSprite"
     ]
 }

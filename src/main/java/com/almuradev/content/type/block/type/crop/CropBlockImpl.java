@@ -27,7 +27,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumSkyBlock;
@@ -46,7 +45,6 @@ import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
 public final class CropBlockImpl extends BlockCrops implements CropBlock {
-
     private static final int GROWTH_CHECK_RADIUS = 4;
     private static final Random RANDOM = new Random();
     private final CropBlockStateDefinition[] states;
@@ -149,31 +147,6 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         final IBlockState state = world.getBlockState(pos);
         final CropBlockStateDefinition definition = this.definition(state);
         return definition.resistance.isPresent() ? (float) definition.resistance.getAsDouble() : super.getExplosionResistance(exploder);
-    }
-
-    @Deprecated
-    @Override
-    @SuppressWarnings("ConstantConditions")
-    public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.definition(state);
-        return definition.box != null ? definition.box.box() : super.getBoundingBox(state, world, pos);
-    }
-
-    @Deprecated
-    @Nullable
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.definition(state);
-        return definition.collisionBox != null ? definition.collisionBox.box() : super.getCollisionBoundingBox(state, world, pos);
-    }
-
-    @Deprecated
-    @Override
-    @SideOnly(Side.CLIENT)
-    @SuppressWarnings("ConstantConditions")
-    public AxisAlignedBB getSelectedBoundingBox(final IBlockState state, final World world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.definition(state);
-        return definition.wireFrame != null ? definition.wireFrame.box().offset(pos) : super.getSelectedBoundingBox(state, world, pos);
     }
 
     @Override
@@ -283,7 +256,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     }
 
     @Override
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
+    public ItemStack getPickBlock(final IBlockState state, final RayTraceResult target, final World world, final BlockPos pos, final EntityPlayer player) {
         return new ItemStack(this.getSeed());
     }
 

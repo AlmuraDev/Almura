@@ -21,7 +21,6 @@ import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
 
 public final class BlockSoundGroupModule extends AbstractModule implements CommonBinder {
-
     @Override
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("block_sound_group", BlockSoundGroupContentTypeLoader.class));

@@ -14,7 +14,6 @@ import com.google.common.base.MoreObjects;
 import java.util.Optional;
 
 public final class RandomPotionEffectTemplate {
-
     public static ConfigurationNodeDeserializer<RandomPotionEffectTemplate> PARSER = node -> {
         if (node.isVirtual()) {
             return Optional.empty();
@@ -36,18 +35,17 @@ public final class RandomPotionEffectTemplate {
     private final PotionEffectTemplate potionEffectTemplate;
     private final DoubleRange chanceRange;
 
-    public RandomPotionEffectTemplate(PotionEffectTemplate potionEffectTemplate, DoubleRange chanceRange) {
-
+    public RandomPotionEffectTemplate(final PotionEffectTemplate potionEffectTemplate, final DoubleRange chanceRange) {
         this.potionEffectTemplate = potionEffectTemplate;
         this.chanceRange = chanceRange;
     }
 
     public PotionEffectTemplate getPotionEffect() {
-        return potionEffectTemplate;
+        return this.potionEffectTemplate;
     }
 
     public DoubleRange getChanceRange() {
-        return chanceRange;
+        return this.chanceRange;
     }
 
     @Override

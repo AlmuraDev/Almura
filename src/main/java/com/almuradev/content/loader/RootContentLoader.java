@@ -38,8 +38,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class RootContentLoader implements Witness {
-
-    private static final boolean FORCE_SEARCH_JARS = Boolean.getBoolean("almura.cl.searchJars");
+    private static final boolean FORCE_SEARCH_JARS = Boolean.getBoolean(ContentConfig.SYSTEM_PROPERTY_PREFIX + "loader.searchJars");
     public static final String FILESYSTEM_ASSETS = "fs";
     public static final String MANAGED_ASSETS = "managed";
     private final Path assets;
@@ -139,17 +138,17 @@ public final class RootContentLoader implements Witness {
         this.logger.debug("Processing queued content...");
         for (final ContentType type : this.types) {
             this.logger.debug("    Processing queued '{}' content...", type.id());
-            this.process(this.injector, this.logger, type);
+            this.process(type);
         }
 
         this.state.write(this.logger, this.assets);
     }
 
-    private void process(final Injector injector, final Logger logger, final ContentType type) {
+    private void process(final ContentType type) {
         try {
-            injector.getInstance(type.loader()).process();
+            type.loader(this.injector).process();
         } catch (final DetailedReportedException e) {
-            logger.error("{}:\n {}", e.getMessage(), e.report().toString());
+            this.logger.error("{}:\n {}", e.getMessage(), e.report().toString());
         }
     }
 
@@ -201,7 +200,7 @@ public final class RootContentLoader implements Witness {
         for (final ContentType type : this.types) {
             this.logger.debug("    Loading '{}' content...", type.id());
             try {
-                final int loaded = this.injector.getInstance(type.loader()).load();
+                final int loaded = type.loader(this.injector).load();
                 this.logger.debug("        Loaded '{}' asset{}", loaded, loaded == 1 ? "" : "s");
             } catch (final IOException e) {
                 this.logger.error("Encountered an exception while searching for '{}' content", type.id());

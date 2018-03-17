@@ -9,21 +9,19 @@ package com.almuradev.content.type.item.type.food;
 
 import com.almuradev.content.type.item.ItemGenre;
 import com.almuradev.content.type.item.ItemModule;
-import com.almuradev.content.type.item.type.food.processor.AlwaysEdibleFoodItemContentProcessor;
-import com.almuradev.content.type.item.type.food.processor.ApplyFoodItemContentProcessor;
-import com.almuradev.content.type.item.type.food.processor.DurationTicksFoodItemContentProcessor;
-import com.almuradev.content.type.item.type.food.processor.PotionEffectsFoodItemContentProcessor;
+import com.almuradev.content.type.item.type.food.processor.AlwaysEdibleProcessor;
+import com.almuradev.content.type.item.type.food.processor.ApplyProcessor;
+import com.almuradev.content.type.item.type.food.processor.DurationTicksProcessor;
+import com.almuradev.content.type.item.type.food.processor.PotionEffectsProcessor;
 
 public final class FoodItemModule extends ItemModule.Module {
-
-    @SuppressWarnings("UnnecessaryStaticInjection") // HACK: inject into required mixin target classes
     @Override
     protected void configure() {
         this.bind(FoodItem.Builder.class).to(FoodItemBuilder.class);
         this.processors()
-                .only(AlwaysEdibleFoodItemContentProcessor.class, ItemGenre.FOOD)
-                .only(ApplyFoodItemContentProcessor.class, ItemGenre.FOOD)
-                .only(DurationTicksFoodItemContentProcessor.class, ItemGenre.FOOD)
-                .only(PotionEffectsFoodItemContentProcessor.class, ItemGenre.FOOD);
+                .only(AlwaysEdibleProcessor.class, ItemGenre.FOOD)
+                .only(ApplyProcessor.class, ItemGenre.FOOD)
+                .only(DurationTicksProcessor.class, ItemGenre.FOOD)
+                .only(PotionEffectsProcessor.class, ItemGenre.FOOD);
     }
 }

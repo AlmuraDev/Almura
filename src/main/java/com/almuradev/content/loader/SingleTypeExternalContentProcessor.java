@@ -12,6 +12,5 @@ import com.almuradev.content.registry.ContentBuilder;
 import ninja.leaping.configurate.ConfigurationNode;
 
 public interface SingleTypeExternalContentProcessor<C extends CatalogedContent, B extends ContentBuilder<C>> {
-
     B processExternal(final String namespace, final ConfigurationNode config, final String id);
 }

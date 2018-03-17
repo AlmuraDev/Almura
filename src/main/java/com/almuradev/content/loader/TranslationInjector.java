@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 public abstract class TranslationInjector {
-
     @Inject protected TranslationManager manager;
 
     abstract void inject();

@@ -8,6 +8,5 @@
 package com.almuradev.content.type.block.type.container;
 
 public interface ContainerBlockConfig {
-
     String LIMIT = "limit";
 }

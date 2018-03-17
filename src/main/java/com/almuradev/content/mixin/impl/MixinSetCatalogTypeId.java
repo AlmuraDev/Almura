@@ -8,7 +8,8 @@
 package com.almuradev.content.mixin.impl;
 
 import com.almuradev.content.mixin.iface.IMixinSetCatalogTypeId;
-import com.almuradev.content.type.generation.type.ore.OreGeneratorImpl;
+import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGeneratorImpl;
+import com.almuradev.content.type.tree.TreeFeature;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -21,11 +22,11 @@ import org.spongepowered.asm.mixin.Mixin;
     Item.ToolMaterial.class,
     MapColor.class,
     Material.class,
-    OreGeneratorImpl.class,
-    SoundType.class
+    UndergroundOreGeneratorImpl.class,
+    SoundType.class,
+    TreeFeature.class
 })
 public class MixinSetCatalogTypeId implements CatalogType, IMixinSetCatalogTypeId {
-
     private String id;
     private String name;
 

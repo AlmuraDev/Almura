@@ -21,7 +21,7 @@ import com.almuradev.content.type.item.type.tool.type.sickle.SickleToolItem;
  * An enumeration of item types.
  */
 @ContentType.MultiType.Name("items")
-public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentItemType.Builder<ContentItemType>> {
+public enum ItemGenre implements ContentType.MultiType<ContentItem, ContentItem.Builder<ContentItem>> {
     /**
      * An item type representing a normal item.
      */
@@ -61,9 +61,9 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
      * <p>The id is used for identification and loading.</p>
      */
     private final String id;
-    private final Class<? extends ContentItemType.Builder<? extends ContentItemType>> builder;
+    private final Class<? extends ContentItem.Builder<? extends ContentItem>> builder;
 
-    ItemGenre(final String id, final Class<? extends ContentItemType.Builder<? extends ContentItemType>> builder) {
+    ItemGenre(final String id, final Class<? extends ContentItem.Builder<? extends ContentItem>> builder) {
         this.id = id;
         this.builder = builder;
     }
@@ -75,7 +75,7 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
 
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ContentItemType.Builder<ContentItemType>> builder() {
-        return (Class<ContentItemType.Builder<ContentItemType>>) this.builder;
+    public Class<ContentItem.Builder<ContentItem>> builder() {
+        return (Class<ContentItem.Builder<ContentItem>>) this.builder;
     }
 }

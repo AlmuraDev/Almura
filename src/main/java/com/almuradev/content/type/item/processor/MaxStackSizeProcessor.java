@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.item.processor;
 
-import com.almuradev.content.type.item.ContentItemType;
+import com.almuradev.content.type.item.ContentItem;
 import com.almuradev.content.type.item.ItemConfig;
 import com.almuradev.content.type.item.ItemContentProcessor;
 import com.almuradev.toolbox.config.tag.ConfigTag;
@@ -22,7 +22,7 @@ public final class MaxStackSizeProcessor implements ItemContentProcessor.AnyTagg
     }
 
     @Override
-    public void processTagged(final ConfigurationNode config, final ContentItemType.Builder builder) {
+    public void processTagged(final ConfigurationNode config, final ContentItem.Builder builder) {
         builder.maxStackSize(config.getInt());
     }
 }

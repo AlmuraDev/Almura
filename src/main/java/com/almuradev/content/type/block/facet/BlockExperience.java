@@ -24,7 +24,6 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import java.util.Random;
 
 public final class BlockExperience implements Witness {
-
     private static final int NO_EXPERIENCE = -1;
 
     // This is only necessary to get xp handled correctly for Player breaks in the Forge ecosystem

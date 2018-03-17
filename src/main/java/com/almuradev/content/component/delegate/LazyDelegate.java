@@ -10,8 +10,7 @@ package com.almuradev.content.component.delegate;
 import javax.annotation.Nullable;
 
 public abstract class LazyDelegate<T> implements Delegate<T> {
-
-    @Nullable private T value;
+    @Nullable protected T value;
 
     @Override
     @SuppressWarnings("ConstantConditions")

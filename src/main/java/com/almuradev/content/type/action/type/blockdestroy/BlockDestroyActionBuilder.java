@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class BlockDestroyActionBuilder extends ContentBuilder.Impl<BlockDestroyAction> implements BlockDestroyAction.Builder {
-
     private final Int2ObjectMap<BlockDestroyAction.Entry.Builder> entries = new Int2ObjectOpenHashMap<>();
 
     @Override

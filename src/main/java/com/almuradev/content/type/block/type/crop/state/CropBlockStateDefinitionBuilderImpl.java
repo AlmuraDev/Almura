@@ -7,15 +7,14 @@
  */
 package com.almuradev.content.type.block.type.crop.state;
 
-import com.almuradev.content.type.block.BlockStateDefinition;
+import com.almuradev.content.type.block.AbstractBlockStateDefinitionBuilder;
 import com.almuradev.content.type.block.type.crop.processor.fertilizer.Fertilizer;
 import com.almuradev.content.type.block.type.crop.processor.growth.Growth;
 import com.almuradev.content.type.block.type.crop.processor.hydration.Hydration;
 
 import javax.annotation.Nullable;
 
-public final class CropBlockStateDefinitionBuilderImpl extends BlockStateDefinition.Builder.Impl<CropBlockStateDefinition, CropBlockStateDefinitionBuilderImpl> implements CropBlockStateDefinitionBuilder {
-
+public final class CropBlockStateDefinitionBuilderImpl extends AbstractBlockStateDefinitionBuilder<CropBlockStateDefinition, CropBlockStateDefinitionBuilderImpl> implements CropBlockStateDefinitionBuilder {
     final int age;
     boolean canRollback;
     @Nullable Fertilizer fertilizer;

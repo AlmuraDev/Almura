@@ -13,6 +13,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.event.Listener;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.function.Predicate;
 
 /**
@@ -22,7 +27,6 @@ import java.util.function.Predicate;
  * @see SubscribeEvent
  */
 public interface Witness extends Facet {
-
     /**
      * Tests if this witness is subscribable.
      *
@@ -42,11 +46,28 @@ public interface Witness extends Facet {
         return witness -> Activatable.predicate().test(witness) && witness.subscribable();
     }
 
+    @Repeatable(Scope.Scopes.class)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    @interface Scope {
+        Type value();
+
+        enum Type {
+            NORMAL,
+            TERRAIN_GEN;
+        }
+
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.TYPE)
+        @interface Scopes {
+            Scope[] value();
+        }
+    }
+
     /**
      * A witness whose activation depends on a game lifecycle state.
      */
     interface Lifecycle extends Witness {
-
         /**
          * Tests if this witness is subscribable.
          *
@@ -76,8 +97,7 @@ public interface Witness extends Facet {
      *
      * <p>It is not necessary to extend this class.</p>
      */
-    class Impl implements Witness {
-
+    abstract class Impl implements Witness {
         boolean subscribed;
 
         @Override

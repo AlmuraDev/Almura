@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = CreativeTabs.class, priority = 999)
 public abstract class MixinItemGroup implements ItemGroup, IMixinSetCatalogTypeId {
-
     @Shadow @Final private String tabLabel;
     @Shadow @Final private int tabIndex;
     @Shadow public ItemStack iconItemStack;

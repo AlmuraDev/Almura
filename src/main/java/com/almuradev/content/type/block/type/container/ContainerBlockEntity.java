@@ -15,7 +15,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 public final class ContainerBlockEntity extends TileEntity implements ISidedInventory {
-
     private static final String LIMIT_TAG = "Limit";
     private int limit;
 

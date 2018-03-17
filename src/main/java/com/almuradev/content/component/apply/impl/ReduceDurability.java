@@ -7,9 +7,9 @@
  */
 package com.almuradev.content.component.apply.impl;
 
-import com.almuradev.content.component.DoubleRanges;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ItemApplyContext;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.entity.Entity;
@@ -22,7 +22,6 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class ReduceDurability implements Apply<EntityPlayer, ItemApplyContext> {
-
     public static final ConfigurationNodeDeserializer<ReduceDurability> PARSER = config -> DoubleRanges.deserialize(config).map(ReduceDurability::new);
     private final DoubleRange reduction;
 

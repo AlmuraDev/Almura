@@ -15,7 +15,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 public interface Delegate<T> extends Predicate<T>, Supplier<T> {
-
     static <T> Delegate<T> supplying(final Supplier<T> supplier) {
         return new SupplierDelegate<>(supplier);
     }
@@ -44,6 +43,10 @@ public interface Delegate<T> extends Predicate<T>, Supplier<T> {
 
     default Optional<T> optional() {
         return Optional.ofNullable(this.get());
+    }
+
+    default T require() {
+        return this.optional().orElseThrow(DelegateNotSatisfiedException::new);
     }
 
     @Override

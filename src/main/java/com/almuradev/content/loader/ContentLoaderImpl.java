@@ -37,9 +37,8 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBuilder<C>, E extends ContentLoaderImpl.Entry<C, B>> implements ContentFinder<C, B>, ContentLoader {
-
     private static final PathMatcher JSON_MATCHER = FileSystems.getDefault().getPathMatcher("glob:**.json");
-    static final Splitter SLASH_SPLITTER = Splitter.on('/');
+    static final Splitter SLASH_SPLITTER = Splitter.on('/').trimResults().omitEmptyStrings();
     @Inject Injector injector;
     @Inject protected Logger logger;
     @Inject TranslationManager translationManager;
@@ -157,8 +156,7 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
     }
 
     public static class Entry<C extends CatalogedContent, B extends ContentBuilder<C>> implements Comparable<Entry<C, B>> {
-
-        @Nullable private final Path path;
+        @Nullable final Path path;
         final String id;
         public final B builder;
         final ConfigurationNode config;
@@ -172,7 +170,10 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
         }
 
         void populate(final DetailedReport dr) {
-            final DetailedReportCategory drc = dr.category("asset");
+            this.populate(dr.category("asset"));
+        }
+
+        void populate(final DetailedReportCategory drc) {
             drc.detail("id", this.id);
             drc.detail("type", this.path != null ? "physical" : "virtual");
             if (this.path != null) {

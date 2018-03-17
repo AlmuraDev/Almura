@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.block.mixin.impl;
 
-import com.almuradev.content.type.block.ContentBlockType;
+import com.almuradev.content.type.block.ContentBlock;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -30,8 +30,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 @Mixin(value = Block.class, priority = 999)
-public abstract class MixinBlock implements ContentBlockType {
-
+public abstract class MixinBlock implements ContentBlock {
     @Nullable @Shadow public CreativeTabs displayOnCreativeTab;
     @Shadow public abstract CreativeTabs getCreativeTabToDisplayOn();
 

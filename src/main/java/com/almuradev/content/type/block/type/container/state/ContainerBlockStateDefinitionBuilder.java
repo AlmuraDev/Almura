@@ -10,5 +10,4 @@ package com.almuradev.content.type.block.type.container.state;
 import com.almuradev.content.type.block.BlockStateDefinition;
 
 public interface ContainerBlockStateDefinitionBuilder extends BlockStateDefinition.Builder<ContainerBlockStateDefinition> {
-
 }

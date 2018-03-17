@@ -12,5 +12,4 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(MapColor.class)
 public abstract class MixinMapColor implements com.almuradev.content.type.mapcolor.MapColor {
-
 }

@@ -7,10 +7,9 @@
  */
 package com.almuradev.content.type.item.type.normal;
 
-import com.almuradev.content.type.item.ContentItemType;
+import com.almuradev.content.type.item.AbstractItemBuilder;
 
-public final class NormalItemBuilder extends ContentItemType.Builder.Impl<NormalItem> implements NormalItem.Builder {
-
+public final class NormalItemBuilder extends AbstractItemBuilder<NormalItem> implements NormalItem.Builder {
     @Override
     public NormalItem build() {
         return new NormalItemImpl(this);

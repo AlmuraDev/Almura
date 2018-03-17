@@ -8,18 +8,16 @@
 package com.almuradev.content.type.blocksoundgroup;
 
 public interface BlockSoundGroupConfig {
-
     String PARENT = "parent";
-    String VOLUME = "volume";
     String PITCH = "pitch";
     String SOUND = "sound";
+    String VOLUME = "volume";
 
     interface Sound {
-
         String BREAK = "break";
-        String STEP = "step";
-        String PLACE = "place";
-        String HIT = "hit";
         String FALL = "fall";
+        String HIT = "hit";
+        String PLACE = "place";
+        String STEP = "step";
     }
 }

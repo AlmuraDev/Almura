@@ -10,7 +10,6 @@ package com.almuradev.content.model.obj.material;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 
 public class MalformedMaterialLibraryException extends ModelLoaderRegistry.LoaderException {
-
     public MalformedMaterialLibraryException(final String message) {
         super(message);
     }

@@ -10,14 +10,13 @@ package com.almuradev.content.type.item.type.seed;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.content.component.delegate.Delegate;
-import com.almuradev.content.type.item.ContentItemType;
+import com.almuradev.content.type.item.AbstractItemBuilder;
 import com.almuradev.content.type.item.type.seed.processor.grass.Grass;
 import org.spongepowered.api.block.BlockType;
 
 import javax.annotation.Nullable;
 
-public final class SeedItemBuilder extends ContentItemType.Builder.Impl<SeedItem> implements SeedItem.Builder {
-
+public final class SeedItemBuilder extends AbstractItemBuilder<SeedItem> implements SeedItem.Builder {
     Delegate<BlockType> crop;
     Delegate<BlockType> soil;
     @Nullable Grass grass;

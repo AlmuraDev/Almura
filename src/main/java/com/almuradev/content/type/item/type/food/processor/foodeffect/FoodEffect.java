@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.Set;
 
 public final class FoodEffect {
-
     public static ConfigurationNodeDeserializer<FoodEffect> PARSER = node -> {
         if (node.isVirtual()) {
             return Optional.empty();
@@ -44,25 +43,25 @@ public final class FoodEffect {
     private final Map<Potion, RandomPotionEffectTemplate> foundEffectsForPotion = new HashMap<>();
     private boolean cached = false;
 
-    private FoodEffect(Set<RandomPotionEffectTemplate> potionEffects) {
+    private FoodEffect(final Set<RandomPotionEffectTemplate> potionEffects) {
         this.potionEffects = potionEffects;
     }
 
     public Map<Potion, RandomPotionEffectTemplate> getPotionEffects() {
-        if (cached) {
+        if (this.cached) {
             return this.foundEffectsForPotion;
         }
 
         // By the time this is called for, we'll be in-game and the potions will be here
-        for (Potion potion : Potion.REGISTRY) {
-            potionEffects.forEach(potionEffect -> {
+        for (final Potion potion : Potion.REGISTRY) {
+            this.potionEffects.forEach(potionEffect -> {
                 if (potionEffect.getPotionEffect().getPotionPredicate().test(potion)) {
-                    foundEffectsForPotion.put(potion, potionEffect);
+                    this.foundEffectsForPotion.put(potion, potionEffect);
                 }
             });
         }
 
-        cached = true;
-        return foundEffectsForPotion;
+        this.cached = true;
+        return this.foundEffectsForPotion;
     }
 }

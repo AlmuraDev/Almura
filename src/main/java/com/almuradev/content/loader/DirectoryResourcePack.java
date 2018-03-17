@@ -24,7 +24,6 @@ import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
 public final class DirectoryResourcePack implements IResourcePack {
-
     private final AbstractFileSystemSearchEntry entry;
 
     public DirectoryResourcePack(final AbstractFileSystemSearchEntry entry) {

@@ -10,6 +10,5 @@ package com.almuradev.content.type.itemgroup;
 import java.util.Optional;
 
 public interface ItemGrouped {
-
     Optional<ItemGroup> itemGroup();
 }

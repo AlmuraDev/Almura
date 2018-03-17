@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.function.Function;
 
 final class InResourceLocationPredicate<T> extends AbstractFunctionPredicate<T, ResourceLocation> {
-
     static final String ID = "in";
     private final List<String> namespaces;
 

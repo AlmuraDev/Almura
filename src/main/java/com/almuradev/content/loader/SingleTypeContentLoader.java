@@ -30,7 +30,6 @@ import javax.inject.Inject;
  * An abstract implementation of a content loader that has a single type.
  */
 public abstract class SingleTypeContentLoader<C extends CatalogedContent, B extends ContentBuilder<C>> extends ContentLoaderImpl<C, B, ContentLoaderImpl.Entry<C, B>> implements SingleTypeExternalContentProcessor<C, B> {
-
     private final TypeToken<B> builder = new TypeToken<B>(this.getClass()) {};
     @Inject private Set<ConfigProcessor<? extends B>> processors;
     private final Set<Entry<C, B>> queue = new HashSet<>();
@@ -58,7 +57,7 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
                 }
                 if (translations) {
                     if (directory.getFileName().toString().equals(TranslationManager.DIRECTORY)) {
-                        final Iterable<String> components = SLASH_SPLITTER.trimResults().omitEmptyStrings().split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
+                        final Iterable<String> components = SLASH_SPLITTER.split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
                         SingleTypeContentLoader.this.translationManager.pushSource(directory, key -> ((Translated) SingleTypeContentLoader.this).buildTranslationKey(namespace, components, key));
                         return FileVisitResult.SKIP_SUBTREE;
                     }

@@ -14,5 +14,4 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(ItemFood.class)
 public abstract class MixinItemFood extends Item implements FoodItem {
-
 }

@@ -11,26 +11,28 @@ import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
 import com.almuradev.content.type.block.facet.BlockExperience;
-import com.almuradev.content.type.block.processor.AABBBlockContentProcessor;
+import com.almuradev.content.type.block.processor.AABBProcessor;
 import com.almuradev.content.type.block.processor.BlockFaceShapeProcessor;
-import com.almuradev.content.type.block.processor.DestroyActionBlockContentProcessor;
-import com.almuradev.content.type.block.processor.HardnessBlockContentProcessor;
-import com.almuradev.content.type.block.processor.ItemGroupBlockContentProcessor;
-import com.almuradev.content.type.block.processor.LightBlockContentProcessor;
-import com.almuradev.content.type.block.processor.MapColorBlockContentProcessor;
-import com.almuradev.content.type.block.processor.MaterialBlockContentProcessor;
-import com.almuradev.content.type.block.processor.ParentBlockContentProcessor;
-import com.almuradev.content.type.block.processor.ResistanceBlockContentProcessor;
-import com.almuradev.content.type.block.processor.SoundBlockContentProcessor;
+import com.almuradev.content.type.block.processor.DestroyActionProcessor;
+import com.almuradev.content.type.block.processor.HardnessProcessor;
+import com.almuradev.content.type.block.processor.ItemGroupProcessor;
+import com.almuradev.content.type.block.processor.LightProcessor;
+import com.almuradev.content.type.block.processor.MapColorProcessor;
+import com.almuradev.content.type.block.processor.MaterialProcessor;
+import com.almuradev.content.type.block.processor.ParentProcessor;
+import com.almuradev.content.type.block.processor.ResistanceProcessor;
+import com.almuradev.content.type.block.processor.SoundProcessor;
 import com.almuradev.content.type.block.type.container.ContainerBlockModule;
 import com.almuradev.content.type.block.type.crop.CropBlockModule;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlockModule;
+import com.almuradev.content.type.block.type.leaf.LeafBlockModule;
+import com.almuradev.content.type.block.type.log.LogBlockModule;
 import com.almuradev.content.type.block.type.normal.NormalBlockModule;
+import com.almuradev.content.type.block.type.sapling.SaplingBlockModule;
 import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
 
 public final class BlockModule extends AbstractModule implements CommonBinder {
-
     @Override
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("block", BlockContentTypeLoader.class));
@@ -38,35 +40,38 @@ public final class BlockModule extends AbstractModule implements CommonBinder {
         this.install(new ContainerBlockModule());
         this.install(new CropBlockModule());
         this.install(new HorizontalBlockModule());
+        this.install(new LeafBlockModule());
+        this.install(new LogBlockModule());
         this.install(new NormalBlockModule());
+        this.install(new SaplingBlockModule());
         this.facet()
                 .add(BlockExperience.class);
         this.install(new Module() {
             @Override
             protected void configure() {
                 this.processors()
-                        .all(AABBBlockContentProcessor.class)
-                        .all(DestroyActionBlockContentProcessor.class)
+                        .all(AABBProcessor.class)
+                        .all(DestroyActionProcessor.class)
                         .all(BlockFaceShapeProcessor.class)
-                        .all(HardnessBlockContentProcessor.class)
-                        .all(ItemGroupBlockContentProcessor.class)
-                        .all(LightBlockContentProcessor.class)
-                        .all(MapColorBlockContentProcessor.class)
-                        .all(MaterialBlockContentProcessor.class)
-                        .all(ResistanceBlockContentProcessor.class)
-                        .all(SoundBlockContentProcessor.class)
-                        .all(ParentBlockContentProcessor.class);
+                        .all(HardnessProcessor.class)
+                        .all(ItemGroupProcessor.class)
+                        .all(LightProcessor.class)
+                        .all(MapColorProcessor.class)
+                        .all(MaterialProcessor.class)
+                        .all(ResistanceProcessor.class)
+                        .all(SoundProcessor.class)
+                        .all(ParentProcessor.class);
             }
         });
     }
 
     public static abstract class Module extends AbstractModule implements CommonBinder {
-        protected final MultiTypeProcessorBinder<BlockGenre, ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockContentProcessor<ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> processors() {
+        protected final MultiTypeProcessorBinder<BlockGenre, ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockContentProcessor<ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> processors() {
             return new MultiTypeProcessorBinder<>(
                     this.binder(),
                     BlockGenre.values(),
                     new TypeLiteral<BlockGenre>() {},
-                    new TypeLiteral<BlockContentProcessor<ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>>() {}
+                    new TypeLiteral<BlockContentProcessor<ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>>() {}
             );
         }
     }

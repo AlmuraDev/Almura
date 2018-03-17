@@ -11,21 +11,19 @@ import net.kyori.membrane.facet.internal.Facets;
 import net.kyori.violet.AbstractModule;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.event.EventManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStateEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 
-import java.lang.annotation.Annotation;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
 public final class WitnessModule extends AbstractModule {
-
     @Inject private PluginContainer plugin;
     @Inject private EventManager em;
+    @Inject private Witnesses witnesses;
     @Inject private Facets facets;
 
     @Override
@@ -51,17 +49,7 @@ public final class WitnessModule extends AbstractModule {
                 ((Witness.Impl) witness).subscribed = true;
             }
 
-            if (anyMethodHas(witness.getClass(), SubscribeEvent.class)) {
-                MinecraftForge.EVENT_BUS.register(witness);
-            }
-
-            if (anyMethodHas(witness.getClass(), Listener.class)) {
-                this.em.registerListeners(this.plugin, witness);
-            }
+            this.witnesses.register(witness);
         });
-    }
-
-    private static boolean anyMethodHas(final Class<?> klass, final Class<? extends Annotation> annotation) {
-        return Stream.of(klass.getDeclaredMethods()).anyMatch(method -> method.getAnnotation(annotation) != null);
     }
 }

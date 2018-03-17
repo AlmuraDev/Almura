@@ -13,5 +13,4 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(SoundType.class)
 public abstract class MixinSoundType implements BlockSoundGroup {
-
 }

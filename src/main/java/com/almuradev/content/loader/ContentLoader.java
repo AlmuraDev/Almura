@@ -16,7 +16,6 @@ import java.nio.file.Path;
  * A content loader.
  */
 public interface ContentLoader {
-
     Joiner DOT_JOINER = Joiner.on('.');
 
     /**

@@ -16,7 +16,6 @@ import java.util.LinkedHashSet;
 import java.util.Optional;
 
 public class Group {
-
     private final String name;
     private final MaterialDefinition materialDefinition;
     private final LinkedHashSet<Face> faces;
@@ -63,7 +62,6 @@ public class Group {
     }
 
     public static final class Builder {
-
         private MaterialDefinition materialDefinition;
         private LinkedHashSet<Face> faces = new LinkedHashSet<>();
 

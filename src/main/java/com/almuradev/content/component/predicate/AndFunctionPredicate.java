@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.function.Function;
 
 public final class AndFunctionPredicate<I, O> extends AbstractMultiFunctionPredicate<I, O> {
-
     static final String ID = "and";
 
     public AndFunctionPredicate(final Function<I, O> function, final List<FunctionPredicate<I, O>> predicates) {

@@ -21,7 +21,6 @@ import net.minecraft.client.resources.IResourceManagerReloadListener;
 import org.spongepowered.api.Platform;
 
 public final class ContentModule extends AbstractModule implements CommonBinder {
-
     @Override
     protected void configure() {
         this.facet().add(RootContentLoader.class);

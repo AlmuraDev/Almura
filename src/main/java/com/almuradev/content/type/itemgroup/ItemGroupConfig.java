@@ -8,7 +8,6 @@
 package com.almuradev.content.type.itemgroup;
 
 public interface ItemGroupConfig {
-
     String ICON = "icon";
     String SORT = "sort";
 }

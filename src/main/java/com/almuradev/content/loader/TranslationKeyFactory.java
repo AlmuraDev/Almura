@@ -9,6 +9,5 @@ package com.almuradev.content.loader;
 
 @FunctionalInterface
 public interface TranslationKeyFactory {
-
     String buildTranslationKey(final String key);
 }

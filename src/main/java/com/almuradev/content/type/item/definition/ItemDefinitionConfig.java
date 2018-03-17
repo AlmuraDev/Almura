@@ -8,7 +8,6 @@
 package com.almuradev.content.type.item.definition;
 
 public interface ItemDefinitionConfig {
-
     String ITEM = "item";
     String META = "meta";
     String QUANTITY = "quantity";

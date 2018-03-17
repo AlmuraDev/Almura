@@ -7,9 +7,9 @@
  */
 package com.almuradev.content.type.action.component.drop;
 
-import com.almuradev.content.component.DoubleRanges;
 import com.almuradev.content.type.item.definition.ItemDefinition;
 import com.almuradev.content.type.item.definition.ItemDefinitionConfig;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -44,11 +44,11 @@ public final class DropParserImpl implements DropParser {
             if (child.getValue() instanceof String) {
                 parseSimpleItem(child).ifPresent(drops::add);
             } else if (child.getValue() instanceof Map) {
-                final DoubleRange amount = DoubleRanges.deserialize(child.getNode(DoubleRanges.Config.AMOUNT), DoubleRanges.FIXED_1);
+                final DoubleRange amount = DoubleRanges.deserialize(child.getNode(Config.AMOUNT), DoubleRanges.FIXED_1);
                 @Nullable final DoubleRange bonusAmount =
-                        DoubleRanges.deserialize(child.getNode(DoubleRanges.Config.BONUS, DoubleRanges.Config.BONUS_AMOUNT)).orElse(null);
+                        DoubleRanges.deserialize(child.getNode(Config.BONUS, Config.BONUS_AMOUNT)).orElse(null);
                 @Nullable final DoubleRange bonusChance =
-                        DoubleRanges.deserialize(child.getNode(DoubleRanges.Config.BONUS, DoubleRanges.Config.BONUS_CHANCE)).orElse(null);
+                        DoubleRanges.deserialize(child.getNode(Config.BONUS, Config.BONUS_CHANCE)).orElse(null);
 
                 final ConfigurationNode item = child.getNode(ItemDefinitionConfig.ITEM);
 
@@ -71,5 +71,12 @@ public final class DropParserImpl implements DropParser {
 
     private static Optional<ItemDefinition> parseFullItem(final ConfigurationNode config) {
         return ItemDefinition.PARSER.deserialize(config);
+    }
+
+    public interface Config {
+        String AMOUNT = "amount";
+        String BONUS = "bonus";
+        String BONUS_AMOUNT = "amount";
+        String BONUS_CHANCE = "chance";
     }
 }

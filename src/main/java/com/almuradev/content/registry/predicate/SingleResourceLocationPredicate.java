@@ -13,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 import java.util.function.Function;
 
 final class SingleResourceLocationPredicate<T> extends AbstractFunctionPredicate<T, ResourceLocation> {
-
     private final ResourceLocation id;
 
     SingleResourceLocationPredicate(final Function<T, ResourceLocation> function, final ResourceLocation id) {

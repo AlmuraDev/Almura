@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 
 public final class Boxes {
-
     public static final EnumFacing[] HORIZONTAL_PLANE = EnumFacing.Plane.HORIZONTAL.facings();
     public static final int HORIZONTAL_PLANES = HORIZONTAL_PLANE.length;
     private static final int[] COS = {1, 0, -1, 0};

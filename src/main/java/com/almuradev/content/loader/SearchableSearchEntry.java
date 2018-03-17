@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.util.Set;
 
 abstract class SearchableSearchEntry extends SearchEntry {
-
     SearchableSearchEntry(final String description) {
         super(description);
     }
@@ -29,7 +28,7 @@ abstract class SearchableSearchEntry extends SearchEntry {
         for (final ContentType type : types) {
             logger.debug("    Searching for '{}' content...", type.id());
             try {
-                injector.getInstance(type.loader()).search(namespace, path.resolve(type.id()));
+                type.loader(injector).search(namespace, path.resolve(type.id()));
             } catch (final IOException e) {
                 logger.error("Encountered an exception while searching for '{}' content", type.id());
             } catch (final DetailedReportedException e) {

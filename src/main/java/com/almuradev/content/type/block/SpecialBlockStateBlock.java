@@ -10,7 +10,6 @@ package com.almuradev.content.type.block;
 import net.minecraft.util.ResourceLocation;
 
 public interface SpecialBlockStateBlock {
-
     ResourceLocation blockStateDefinitionLocation();
 
     void blockStateDefinitionLocation(final ResourceLocation location);

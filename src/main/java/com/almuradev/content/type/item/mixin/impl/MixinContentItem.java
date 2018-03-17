@@ -8,7 +8,7 @@
 package com.almuradev.content.type.item.mixin.impl;
 
 import com.almuradev.content.component.delegate.Delegate;
-import com.almuradev.content.type.item.ContentItemType;
+import com.almuradev.content.type.item.ContentItem;
 import com.almuradev.content.type.item.type.food.FoodItemImpl;
 import com.almuradev.content.type.item.type.normal.NormalItemImpl;
 import com.almuradev.content.type.item.type.seed.SeedItemImpl;
@@ -34,8 +34,7 @@ import javax.annotation.Nullable;
     ShovelToolItemImpl.class,
     SickleToolItemImpl.class
 })
-public abstract class MixinContentItem extends MixinItem implements ContentItemType, IMixinLazyItemGroup {
-
+public abstract class MixinContentItem extends MixinItem implements ContentItem, IMixinLazyItemGroup {
     @Nullable private Delegate<ItemGroup> lazyItemGroup;
 
     @Override

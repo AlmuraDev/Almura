@@ -42,7 +42,6 @@ import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
 public class OBJModelParser {
-
     private final Logger logger;
     private final IResourceManager resourceManager;
     private final ResourceLocation source;
@@ -57,7 +56,6 @@ public class OBJModelParser {
     }
 
     public IModel parse() throws Exception {
-
         final OBJModel.Builder objBuilder = OBJModel.builder();
 
         try (final InputStream stream = this.resource.getInputStream()) {
@@ -394,7 +392,6 @@ public class OBJModelParser {
     }
 
     public interface Factory {
-
         OBJModelParser create(final IResourceManager resourceManager, final ResourceLocation source, final IResource resource);
     }
 }

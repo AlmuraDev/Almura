@@ -10,7 +10,9 @@ package com.almuradev.content.type.generation;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
-import com.almuradev.content.type.generation.type.ore.OreGeneratorModule;
+import com.almuradev.content.type.generation.processor.WeightProcessor;
+import com.almuradev.content.type.generation.type.feature.tree.TreeGeneratorModule;
+import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGeneratorModule;
 import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
 
@@ -19,7 +21,15 @@ public final class GenerationModule extends AbstractModule implements CommonBind
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("generation", GenerationContentTypeLoader.class));
         this.facet().add(GenerationContentTypeLoader.class);
-        this.install(new OreGeneratorModule());
+        this.install(new UndergroundOreGeneratorModule());
+        this.install(new TreeGeneratorModule());
+        this.install(new Module() {
+            @Override
+            protected void configure() {
+                this.processors()
+                        .all(WeightProcessor.class);
+            }
+        });
     }
 
     public static abstract class Module extends AbstractModule implements CommonBinder {

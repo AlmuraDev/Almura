@@ -10,9 +10,7 @@ package com.almuradev.content.registry;
 import org.spongepowered.api.CatalogType;
 
 public interface CatalogedContent extends CatalogType {
-
     abstract class Impl implements CatalogedContent {
-
         private final String id;
         private final String name;
 

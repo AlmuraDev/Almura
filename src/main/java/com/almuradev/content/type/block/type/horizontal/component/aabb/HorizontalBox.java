@@ -17,7 +17,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import javax.annotation.Nullable;
 
 public class HorizontalBox extends BlockAABB.Impl implements BlockAABB.Box, BlockAABB.Collision, BlockAABB.WireFrame {
-
     @Nullable private AxisAlignedBB[] horizontal;
 
     HorizontalBox(@Nullable final AxisAlignedBB bb) {
@@ -50,7 +49,6 @@ public class HorizontalBox extends BlockAABB.Impl implements BlockAABB.Box, Bloc
     }
 
     public static class Collision extends HorizontalBox implements BlockAABB.Collision {
-
         Collision(@Nullable final AxisAlignedBB bb) {
             super(bb);
         }

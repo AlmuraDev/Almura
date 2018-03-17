@@ -9,7 +9,8 @@ package com.almuradev.content.type.item.type.tool;
 
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.component.delegate.DelegateSet;
-import com.almuradev.content.type.item.ContentItemType;
+import com.almuradev.content.type.item.AbstractItemBuilder;
+import com.almuradev.content.type.item.ContentItem;
 import net.minecraft.block.Block;
 import org.spongepowered.api.block.BlockType;
 
@@ -17,13 +18,13 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-public interface ToolItem extends ContentItemType {
-    interface Builder<T extends ToolItem> extends ContentItemType.Builder<T> {
+public interface ToolItem extends ContentItem {
+    interface Builder<T extends ToolItem> extends ContentItem.Builder<T> {
         void tier(final Delegate<Tier> tier);
 
         void effectiveOn(final DelegateSet<BlockType, Block> effectiveOn);
 
-        abstract class Impl<T extends ToolItem> extends ContentItemType.Builder.Impl<T> implements Builder<T> {
+        abstract class Impl<T extends ToolItem> extends AbstractItemBuilder<T> implements Builder<T> {
             public Delegate<ToolItem.Tier> tier;
             @Nullable public DelegateSet<BlockType, Block> effectiveOn;
 

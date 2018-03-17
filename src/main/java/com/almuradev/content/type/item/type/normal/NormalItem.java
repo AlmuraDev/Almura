@@ -7,11 +7,9 @@
  */
 package com.almuradev.content.type.item.type.normal;
 
-import com.almuradev.content.type.item.ContentItemType;
+import com.almuradev.content.type.item.ContentItem;
 
-public interface NormalItem extends ContentItemType {
-
-    interface Builder extends ContentItemType.Builder<NormalItem> {
-
+public interface NormalItem extends ContentItem {
+    interface Builder extends ContentItem.Builder<NormalItem> {
     }
 }

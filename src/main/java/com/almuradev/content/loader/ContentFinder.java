@@ -13,6 +13,5 @@ import com.almuradev.content.registry.ContentBuilder;
 import java.util.Optional;
 
 public interface ContentFinder<C extends CatalogedContent, B extends ContentBuilder<C>> {
-
     Optional<B> findBuilder(final String id);
 }

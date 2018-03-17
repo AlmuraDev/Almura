@@ -11,7 +11,6 @@ import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.MoreObjects;
 
 public class VertexNormal extends Vector3f {
-
     private int index;
 
     public VertexNormal(final float x, final float y, final float z) {

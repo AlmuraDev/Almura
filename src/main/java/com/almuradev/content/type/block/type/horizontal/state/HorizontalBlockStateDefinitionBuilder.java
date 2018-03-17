@@ -10,5 +10,4 @@ package com.almuradev.content.type.block.type.horizontal.state;
 import com.almuradev.content.type.block.BlockStateDefinition;
 
 public interface HorizontalBlockStateDefinitionBuilder extends BlockStateDefinition.Builder<HorizontalBlockStateDefinition> {
-
 }

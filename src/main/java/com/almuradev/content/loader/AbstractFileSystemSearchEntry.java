@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.UUID;
 
 abstract class AbstractFileSystemSearchEntry extends SearchableSearchEntry {
-
     final String id = UUID.randomUUID().toString().substring(24);
     private final Set<String> namespaces = new HashSet<>();
     protected final Path path;

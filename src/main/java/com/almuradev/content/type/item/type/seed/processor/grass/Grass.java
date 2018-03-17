@@ -27,10 +27,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 public final class Grass {
-
     private static final ResourceLocationPredicateParser<Biome>
             BIOME_FILTER_BY_REGISTRY_NAME = ResourceLocationPredicateParser.of(IForgeRegistryEntry.Impl::getRegistryName);
-
     public static final ConfigurationNodeDeserializer<Grass> PARSER = new ConfigurationNodeDeserializer<Grass>() {
         @Override
         public Optional<Grass> deserialize(final ConfigurationNode rootNode) {

@@ -20,10 +20,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class FoodLevelChangeApply implements Apply<EntityPlayer, ItemApplyContext> {
-
-    public static final ConfigurationNodeDeserializer<FoodLevelChangeApply> PARSER = config -> IntRange.PARSER.deserialize(config).map
-            (FoodLevelChangeApply::new);
-
+    public static final ConfigurationNodeDeserializer<FoodLevelChangeApply> PARSER = config -> IntRange.PARSER.deserialize(config).map(FoodLevelChangeApply::new);
     private final IntRange change;
 
     private FoodLevelChangeApply(final IntRange change) {
@@ -31,12 +28,12 @@ public final class FoodLevelChangeApply implements Apply<EntityPlayer, ItemApply
     }
 
     @Override
-    public boolean accepts(Entity entity) {
+    public boolean accepts(final Entity entity) {
         return entity instanceof EntityPlayer;
     }
 
     @Override
-    public void apply0(EntityPlayer entity, ItemApplyContext context) {
+    public void apply0(final EntityPlayer entity, final ItemApplyContext context) {
         final ItemStack usedStack = context.item();
 
         if (usedStack.getItem() instanceof ItemFood) {

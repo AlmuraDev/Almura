@@ -15,10 +15,10 @@ import com.almuradev.content.type.item.ItemModule;
 import com.almuradev.content.type.itemgroup.ItemGroupModule;
 import com.almuradev.content.type.mapcolor.MapColorModule;
 import com.almuradev.content.type.material.MaterialModule;
+import com.almuradev.content.type.tree.TreeModule;
 import net.kyori.violet.AbstractModule;
 
 public final class TypeModule extends AbstractModule {
-
     @Override
     protected void configure() {
         this.install(new ActionModule());
@@ -29,5 +29,6 @@ public final class TypeModule extends AbstractModule {
         this.install(new ItemGroupModule());
         this.install(new MapColorModule());
         this.install(new MaterialModule());
+        this.install(new TreeModule());
     }
 }

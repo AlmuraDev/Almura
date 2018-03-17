@@ -10,7 +10,6 @@ package com.almuradev.content.loader;
 import java.nio.file.Path;
 
 final class ManagedFileSystemEntry extends AbstractFileSystemSearchEntry {
-
     ManagedFileSystemEntry(final Path path) {
         super(path);
     }

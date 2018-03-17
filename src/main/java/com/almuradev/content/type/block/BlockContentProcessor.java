@@ -13,18 +13,14 @@ import com.almuradev.toolbox.config.processor.TaggedConfigProcessor;
 import com.almuradev.toolbox.config.tag.ConfigTag;
 import ninja.leaping.configurate.ConfigurationNode;
 
-public interface BlockContentProcessor<C extends ContentBlockType, B extends ContentBlockType.Builder<C, S, D>, S extends BlockStateDefinition, D extends BlockStateDefinition.Builder<S>> extends ConfigProcessor<B> {
-
-    interface Any extends BlockContentProcessor<ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> {
-
+public interface BlockContentProcessor<C extends ContentBlock, B extends ContentBlock.Builder<C, S, D>, S extends BlockStateDefinition, D extends BlockStateDefinition.Builder<S>> extends ConfigProcessor<B> {
+    interface Any extends BlockContentProcessor<ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> {
     }
 
-    interface AnyTagged extends BlockContentProcessor<ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, TaggedConfigProcessor<ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, ConfigTag> {
-
+    interface AnyTagged extends BlockContentProcessor<ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, TaggedConfigProcessor<ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, ConfigTag> {
     }
 
-    interface State<C extends ContentBlockType, B extends ContentBlockType.Builder<C, S, D>, S extends BlockStateDefinition, D extends BlockStateDefinition.Builder<S>> extends BlockContentProcessor<C, B, S, D>, MappedConfigProcessor<B, ConfigTag> {
-
+    interface State<C extends ContentBlock, B extends ContentBlock.Builder<C, S, D>, S extends BlockStateDefinition, D extends BlockStateDefinition.Builder<S>> extends BlockContentProcessor<C, B, S, D>, MappedConfigProcessor<B, ConfigTag> {
         @Override
         default ConfigurationNode config(final ConfigurationNode config) {
             return config.getNode(BlockConfig.STATE);
@@ -47,9 +43,7 @@ public interface BlockContentProcessor<C extends ContentBlockType, B extends Con
         default void postProcessState(final ConfigurationNode config, final B builder, final D definition) {
         }
 
-        interface Any extends BlockContentProcessor.State<ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition,
-                BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> {
-
+        interface Any extends BlockContentProcessor.State<ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> {
         }
     }
 }

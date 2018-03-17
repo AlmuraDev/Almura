@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.item.mixin.impl;
 
-import com.almuradev.content.type.item.ContentItemType;
+import com.almuradev.content.type.item.ContentItem;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -19,8 +19,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 @Mixin(value = Item.class, priority = 999)
-public abstract class MixinItem implements ContentItemType {
-
+public abstract class MixinItem implements ContentItem {
     @Shadow public CreativeTabs tabToDisplayOn;
     @Nullable @Shadow public abstract CreativeTabs getCreativeTab();
 

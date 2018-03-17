@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(value = ItemSeeds.class, priority = 999)
 public abstract class MixinItemSeeds extends MixinItem implements SeedItem {
-
     // only Almura seeds have grass
     @Override
     public Grass getGrass() {

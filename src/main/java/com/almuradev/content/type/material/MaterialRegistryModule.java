@@ -13,7 +13,6 @@ import net.minecraft.block.material.Material;
 
 @EagerCatalogRegistration
 public final class MaterialRegistryModule extends AbstractCatalogRegistryModule.Mapped<com.almuradev.content.type.material.Material, Material> {
-
     public MaterialRegistryModule() {
         super(36);
     }

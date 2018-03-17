@@ -8,23 +8,21 @@
 package com.almuradev.content.type.item.type.food;
 
 import com.almuradev.content.component.apply.Apply;
-import com.almuradev.content.type.item.ContentItemType;
+import com.almuradev.content.type.item.ContentItem;
 import com.almuradev.content.type.item.type.food.processor.foodeffect.FoodEffect;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-public interface FoodItem extends ContentItemType {
+public interface FoodItem extends ContentItem {
+    interface Builder extends ContentItem.Builder<FoodItem> {
+        void alwaysEdible(boolean alwaysEdible);
 
-    interface Builder extends ContentItemType.Builder<FoodItem> {
+        void apply(final List<Apply> apply);
 
-        Builder alwaysEdible(boolean alwaysEdible);
+        void durationTicks(int durationTicks);
 
-        Builder apply(final List<Apply> apply);
-
-        Builder durationTicks(int durationTicks);
-
-        Builder foodEffect(@Nullable FoodEffect foodEffect);
+        void foodEffect(@Nullable FoodEffect foodEffect);
     }
 }
