@@ -11,7 +11,6 @@ import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
 import com.almuradev.content.util.MinimumIntWithVarianceFunctionPredicatePair;
 import net.kyori.lunar.collection.MoreIterables;
-import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.block.material.Material;

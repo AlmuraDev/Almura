@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 // Screw you, configurate.
-public final class ConfigureSucks {
+public final class ConfigurateSucks {
     /*
      * HELLO, I'M CONFIGURATE AND I'M A POOP HEAD.
      */
