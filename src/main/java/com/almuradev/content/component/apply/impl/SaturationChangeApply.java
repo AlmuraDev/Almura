@@ -32,7 +32,11 @@ public final class SaturationChangeApply implements Apply<EntityPlayer, ApplyCon
 
     @Override
     public void apply0(final EntityPlayer entity, final ApplyContext context) {
-        entity.getFoodStats().foodSaturationLevel = (float) this.change.random(context.random());
+        final int currentFoodLevel = entity.getFoodStats().foodLevel;
+        final float currentSaturationLevel = entity.getFoodStats().foodSaturationLevel;
+
+        entity.getFoodStats().foodSaturationLevel = Math.min(currentSaturationLevel + (float)currentFoodLevel * (float) this.change.random(context
+                .random()) * 2.0F, (float)currentFoodLevel);
     }
 
     public DoubleRange getChange() {

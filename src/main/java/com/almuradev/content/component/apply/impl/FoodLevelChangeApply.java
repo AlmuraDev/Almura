@@ -37,7 +37,10 @@ public final class FoodLevelChangeApply implements Apply<EntityPlayer, ItemApply
         final ItemStack usedStack = context.item();
 
         if (usedStack.getItem() instanceof ItemFood) {
-            entity.getFoodStats().addStats((ItemFood) context.item().getItem(), context.item());
+            final ItemFood food = (ItemFood) usedStack.getItem();
+            final int currentFoodLevel = entity.getFoodStats().foodLevel;
+
+            entity.getFoodStats().foodLevel = Math.min(currentFoodLevel + food.getHealAmount(usedStack), 20);
         }
     }
 
