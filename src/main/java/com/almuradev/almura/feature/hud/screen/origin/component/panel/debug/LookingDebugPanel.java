@@ -24,6 +24,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -158,6 +160,13 @@ public class LookingDebugPanel extends AbstractDebugPanel {
                 } else {
                     this.autoHeight += ITEM_HEIGHT_OFFSET;
                 }
+            } else {
+                // Draw the skull of the player
+                final ItemStack skull = new ItemStack(Items.SKULL, 1, 3);
+                final NBTTagCompound tag = new NBTTagCompound();
+                tag.setTag("SkullOwner", new NBTTagString(entity.getName()));
+                skull.setTagCompound(tag);
+                this.drawItem(skull, 4, this.autoHeight + 4);
             }
 
             this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
