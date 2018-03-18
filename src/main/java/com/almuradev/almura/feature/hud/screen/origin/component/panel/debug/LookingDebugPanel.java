@@ -140,9 +140,11 @@ public class LookingDebugPanel extends AbstractDebugPanel {
 
     private void renderEntity(final Entity entity) {
         final boolean player = entity instanceof EntityPlayer;
-        ResourceLocation id = EntityList.getKey(entity);
-        if (id == null && entity instanceof EntityPlayer) {
+        ResourceLocation id
+        if (entity instanceof EntityPlayer) {
             id = EntityList.PLAYER;
+        } else {
+            id = EntityList.getKey(entity);
         }
 
         if (id != null) {
