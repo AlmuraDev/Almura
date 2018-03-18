@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 
 import javax.annotation.Nullable;
 
-public abstract class AbstractDebugPanel extends AbstractAutoSizingPanel {
+abstract class AbstractDebugPanel extends AbstractAutoSizingPanel {
     private static final int INITIAL_TEXT_Y_OFFSET = 5;
 
     AbstractDebugPanel(final MalisisGui gui, final int width, final int height) {
@@ -21,7 +21,7 @@ public abstract class AbstractDebugPanel extends AbstractAutoSizingPanel {
     }
 
     @Nullable
-    protected final Entity cameraView() {
+    final Entity cameraView() {
         final Entity view = this.client.getRenderViewEntity();
         if (view == null || this.client.player == null || this.client.player.world == null || !this.client.gameSettings.showDebugInfo) {
             return null;

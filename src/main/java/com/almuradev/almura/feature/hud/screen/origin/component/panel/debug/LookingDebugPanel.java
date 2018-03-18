@@ -140,28 +140,28 @@ public class LookingDebugPanel extends AbstractDebugPanel {
 
     private void renderEntity(final Entity entity) {
         final boolean player = entity instanceof EntityPlayer;
-        final ResourceLocation id;
-        if (player) {
+        ResourceLocation id = EntityList.getKey(entity);
+        if (id == null && entity instanceof EntityPlayer) {
             id = EntityList.PLAYER;
-        } else {
-            id = requireNonNull(EntityList.getKey(entity), () -> "Entity of class " + entity.getClass() + " is not registered!");
         }
 
-        if (!player) {
-            // Draw egg, if available
-            if (EntityList.ENTITY_EGGS.containsKey(id)) {
-                final ItemStack item = new ItemStack(Items.SPAWN_EGG);
-                ItemMonsterPlacer.applyEntityIdToItemStack(item, id);
-                this.drawItem(item, 4, this.autoHeight + 4);
-            } else {
-                this.autoHeight += ITEM_HEIGHT_OFFSET;
+        if (id != null) {
+            if (!player) {
+                // Draw egg, if available
+                if (EntityList.ENTITY_EGGS.containsKey(id)) {
+                    final ItemStack item = new ItemStack(Items.SPAWN_EGG);
+                    ItemMonsterPlacer.applyEntityIdToItemStack(item, id);
+                    this.drawItem(item, 4, this.autoHeight + 4);
+                } else {
+                    this.autoHeight += ITEM_HEIGHT_OFFSET;
+                }
             }
-        }
 
-        this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
-        this.autoHeight -= 2;
-        if (entity.hasCustomName() || player) {
-            this.drawProperty("name", entity.getName(), 24, this.autoHeight);
+            this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
+            this.autoHeight -= 2;
+            if (entity.hasCustomName() || player) {
+                this.drawProperty("name", entity.getName(), 24, this.autoHeight);
+            }
         }
     }
 
