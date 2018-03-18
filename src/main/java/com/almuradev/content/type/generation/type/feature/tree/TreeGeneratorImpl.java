@@ -51,9 +51,7 @@ public class TreeGeneratorImpl implements TreeGenerator, Witness {
             return;
         }
 
-        final BlockPos chunkPos = event.getPos();
-        final BlockPos origin = new BlockPos(chunkPos.getX() << 4, 0, chunkPos.getZ() << 4);
-        final DoubleRange chance = this.chance(world.getBiome(origin));
+        final DoubleRange chance = this.chance(world.getBiome(event.getPos()));
         if (chance == null || chance.max() == 0) {
             return;
         }
@@ -62,7 +60,7 @@ public class TreeGeneratorImpl implements TreeGenerator, Witness {
         if (random.nextDouble() <= (chance.random(random) / 100d)) {
             final int x = random.nextInt(16) + 8;
             final int z = random.nextInt(16) + 8;
-            final BlockPos pos = world.getHeight(chunkPos.add(x, 0, z));
+            final BlockPos pos = world.getHeight(event.getPos().add(x, 0, z));
             ((TreeFeature) this.tree.require()).generate(world, random, pos, this.requires);
             event.setResult(Event.Result.DENY);
         }
