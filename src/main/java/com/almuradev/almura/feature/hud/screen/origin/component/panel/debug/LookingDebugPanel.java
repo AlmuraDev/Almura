@@ -142,6 +142,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
 
     private void renderEntity(final Entity entity) {
         final boolean player = entity instanceof EntityPlayer;
+        boolean drewItem = false;
         ResourceLocation id;
         
         if (player) {
@@ -157,6 +158,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
                     final ItemStack item = new ItemStack(Items.SPAWN_EGG);
                     ItemMonsterPlacer.applyEntityIdToItemStack(item, id);
                     this.drawItem(item, 4, this.autoHeight + 4);
+                    drewItem = true;
                 } else {
                     this.autoHeight += ITEM_HEIGHT_OFFSET;
                 }
@@ -167,12 +169,13 @@ public class LookingDebugPanel extends AbstractDebugPanel {
                 tag.setTag("SkullOwner", new NBTTagString(entity.getName()));
                 skull.setTagCompound(tag);
                 this.drawItem(skull, 4, this.autoHeight + 4);
+                drewItem = true;
             }
 
-            this.drawText(Text.of(TextColors.WHITE, id.toString()), 24, this.autoHeight - 14, false, true);
+            this.drawText(Text.of(TextColors.WHITE, id.toString()), drewItem ? 24 : 4, this.autoHeight - 14, false, true);
             this.autoHeight -= 2;
             if (entity.hasCustomName() || player) {
-                this.drawProperty("name", entity.getName(), 24, this.autoHeight);
+                this.drawProperty("name", entity.getName(), drewItem ? 24 : 4, this.autoHeight);
             }
         }
     }
