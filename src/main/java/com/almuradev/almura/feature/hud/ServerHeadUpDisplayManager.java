@@ -144,7 +144,7 @@ public class ServerHeadUpDisplayManager extends Witness.Impl implements Activata
             if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
                 this.manager.sendPopupNotification(player, Text.of("Welcome!"), Text.of("Welcome to Almura."), 5);
             } else {
-                this.manager.sendPopupNotification(player, Text.of("New Player!!!"), Text.of("Please welcome " + player.getName() +
+                this.manager.sendPopupNotification(onlinePlayer, Text.of("New Player!!!"), Text.of("Please welcome " + player.getName() +
                         " to Almura."), 5);
             }
         }
