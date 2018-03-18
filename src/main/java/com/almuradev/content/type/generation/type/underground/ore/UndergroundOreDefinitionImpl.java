@@ -52,7 +52,7 @@ final class UndergroundOreDefinitionImpl implements UndergroundOreDefinition {
             return true;
         } else {
             for (final String name : this.worlds) {
-                if (((org.spongepowered.api.world.World) world).getProperties().getWorldName().equalsIgnoreCase(name)) {
+                if (((org.spongepowered.api.world.World) world).getName().equalsIgnoreCase(name)) {
                     return true;
                 }
             }

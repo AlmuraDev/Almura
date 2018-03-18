@@ -43,7 +43,7 @@ public final class UndergroundOreGeneratorImpl implements IWorldGenerator, Under
                 continue;
             }
 
-            final WorldGenMinable feature = new WorldGenMinable(((Block) definition.block().get()).getDefaultState(), definition.size());
+            final WorldGenMinable feature = new WorldGenMinable(definition.block().get(), definition.size());
             for (int i = 0, length = definition.count(); i < length; i++) {
                 final int x =  cx * 16 + random.nextInt(16);
                 final int y = random.nextInt(64);
