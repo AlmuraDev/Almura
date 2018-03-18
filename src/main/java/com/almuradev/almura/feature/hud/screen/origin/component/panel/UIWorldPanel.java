@@ -58,10 +58,6 @@ public class UIWorldPanel extends AbstractPanel {
     private void updateWorld() {
         this.worldLabel.setText(hudData.worldName);
         this.worldLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
-        if (this.worldLabel.getWidth() + 15 <= this.compassLabel.getWidth() + 10) {
-            this.width = this.compassLabel.getWidth() + 10;
-        } else {
-            this.width = this.worldLabel.getWidth() + 15;
-        }
+        this.width = Math.max(this.worldLabel.getWidth() + 10, 60);
     }
 }
