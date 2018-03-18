@@ -7,8 +7,8 @@
  */
 package com.almuradev.content.type.tree;
 
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.content.loader.SingleTypeContentLoader;
+import com.almuradev.core.event.Witness;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 

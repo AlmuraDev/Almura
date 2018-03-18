@@ -8,6 +8,7 @@
 package com.almuradev.content.type.tree;
 
 public interface TreeConfig {
+    String BIG = "big";
     String FRUIT = "fruit";
     String HANGING = "hanging";
     String HEIGHT = "height";

@@ -10,13 +10,15 @@ package com.almuradev.content.type.block.type.sapling;
 import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.StateMappedBlock;
 import com.almuradev.content.type.block.type.sapling.state.SaplingBlockStateDefinition;
-import com.almuradev.content.type.tree.TreeFeature;
+import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import net.minecraftforge.event.terraingen.TerrainGen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -46,10 +48,17 @@ public final class SaplingBlockImpl extends AbstractSaplingBlock implements Sapl
 
         world.setBlockState(pos, Blocks.AIR.getDefaultState(), BlockUpdateFlag.PREVENT_RENDER);
 
-        final TreeFeature feature = (TreeFeature) this.definition.tree.get();
+        final WorldGenAbstractTree feature = this.tree(world.getBiome(pos), random);
         if (!feature.generate(world, random, pos)) {
             world.setBlockState(pos, state, BlockUpdateFlag.PREVENT_RENDER);
         }
+    }
+
+    private WorldGenAbstractTree tree(final Biome biome, final Random random) {
+        if(this.definition.bigTree != null && this.definition.bigTreeChances != null && random.nextDouble() <= (DoubleRangeFunctionPredicatePair.rangeOrRandom(this.definition.bigTreeChances, biome).random(random) / 100d)) {
+            return (WorldGenAbstractTree) this.definition.bigTree.require();
+        }
+        return (WorldGenAbstractTree) this.definition.tree.require();
     }
 
     @Override

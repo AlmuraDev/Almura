@@ -13,7 +13,7 @@ import com.almuradev.almura.feature.hud.ClientHeadUpDisplayManager;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;

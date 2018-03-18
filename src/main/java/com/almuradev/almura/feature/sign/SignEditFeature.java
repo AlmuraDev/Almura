@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.sign;
 
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketSignEditorOpen;
 import net.minecraft.tileentity.TileEntitySign;

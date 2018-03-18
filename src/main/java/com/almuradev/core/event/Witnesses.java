@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.event;
+package com.almuradev.core.event;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

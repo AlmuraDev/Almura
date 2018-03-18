@@ -29,6 +29,8 @@ public interface Tree extends CatalogedContent {
     }
 
     interface Builder extends ContentBuilder<Tree> {
+        void big(final boolean big);
+
         void fruit(final LazyBlockState block, final List<DoubleRangeFunctionPredicatePair<Biome>> chances);
 
         void hanging(final LazyBlockState block, final List<DoubleRangeFunctionPredicatePair<Biome>> chances);

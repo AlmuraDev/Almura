@@ -21,7 +21,6 @@ import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;

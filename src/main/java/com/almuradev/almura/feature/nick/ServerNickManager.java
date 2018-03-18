@@ -9,8 +9,8 @@ package com.almuradev.almura.feature.nick;
 
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameChangeMappingPacket;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameMappingsPacket;
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.core.event.Witness;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.nucleuspowered.nucleus.api.events.NucleusChangeNicknameEvent;

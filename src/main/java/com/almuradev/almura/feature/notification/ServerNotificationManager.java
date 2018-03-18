@@ -11,8 +11,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.feature.notification.network.ClientboundPlayerNotificationPacket;
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.core.event.Witness;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.entity.living.player.Player;

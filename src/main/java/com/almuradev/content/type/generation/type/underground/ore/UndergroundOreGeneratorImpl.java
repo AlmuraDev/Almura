@@ -7,7 +7,6 @@
  */
 package com.almuradev.content.type.generation.type.underground.ore;
 
-import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;

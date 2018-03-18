@@ -12,7 +12,7 @@ import com.almuradev.almura.feature.cache.block.CacheBlock;
 import com.almuradev.almura.feature.cache.block.CacheBlocks;
 import com.almuradev.almura.feature.cache.client.tileentity.renderer.CacheTileEntityRenderer;
 import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;

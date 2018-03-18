@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.offhand;
 
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.Root;

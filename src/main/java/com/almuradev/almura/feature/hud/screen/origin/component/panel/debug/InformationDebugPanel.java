@@ -18,7 +18,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.api.Game;

@@ -26,5 +26,7 @@ public interface TreeGenerator extends FeatureGenerator {
         void requires(final List<LazyBlockState> requires);
 
         void tree(final Delegate<Tree> tree);
+
+        void bigTree(final Delegate<Tree> bigTree, final List<DoubleRangeFunctionPredicatePair<Biome>> chances);
     }
 }

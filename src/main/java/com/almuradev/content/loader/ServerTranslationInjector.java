@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.loader;
 
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 

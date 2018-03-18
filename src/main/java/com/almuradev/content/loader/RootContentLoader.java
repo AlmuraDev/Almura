@@ -7,16 +7,16 @@
  */
 package com.almuradev.content.loader;
 
-import com.almuradev.almura.shared.event.Witness;
-import com.almuradev.almura.shared.util.Environment;
 import com.almuradev.content.ContentConfig;
 import com.almuradev.content.ContentType;
+import com.almuradev.core.event.Witness;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.google.inject.Injector;
 import net.kyori.indigo.DetailedReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -105,10 +105,10 @@ public final class RootContentLoader implements Witness {
     }
 
     private boolean shouldLoadJar(final Path path) {
-        if (FORCE_SEARCH_JARS || Environment.get() == Environment.PRODUCTION) {
+        if (FORCE_SEARCH_JARS || !((boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment"))) {
             return true;
         }
-        this.logger.info("Skipping asset JAR '{}' - JAR loading is not supported in Environment.{}", path, Environment.DEVELOPMENT);
+        this.logger.info("Skipping asset JAR '{}' - JAR loading is not supported in a deobfuscated environment.", path);
         return false;
     }
 

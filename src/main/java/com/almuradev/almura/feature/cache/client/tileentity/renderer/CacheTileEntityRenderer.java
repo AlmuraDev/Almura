@@ -9,8 +9,8 @@ package com.almuradev.almura.feature.cache.client.tileentity.renderer;
 
 import com.almuradev.almura.feature.cache.CacheFeature;
 import com.almuradev.almura.feature.cache.block.CacheBlock;
-import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
 import com.almuradev.almura.shared.capability.ISingleSlotItemHandler;
+import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

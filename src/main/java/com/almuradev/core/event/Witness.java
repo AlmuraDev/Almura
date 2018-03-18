@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.event;
+package com.almuradev.core.event;
 
 import net.kyori.membrane.facet.Activatable;
 import net.kyori.membrane.facet.Facet;

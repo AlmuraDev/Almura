@@ -7,8 +7,8 @@
  */
 package com.almuradev.almura.feature.storage;
 
-import com.almuradev.almura.shared.network.handler.DualItemHandlerGui;
 import com.almuradev.almura.shared.inventory.DualItemHandlerContainer;
+import com.almuradev.almura.shared.network.handler.DualItemHandlerGui;
 import com.almuradev.almura.shared.tileentity.MultiSlotTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;

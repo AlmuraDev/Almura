@@ -8,8 +8,8 @@
 package com.almuradev.almura.feature.biome;
 
 import com.almuradev.almura.feature.biome.network.ClientboundBiomeInformationPacket;
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.core.event.Witness;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistry;

@@ -19,11 +19,17 @@ import java.util.List;
 import java.util.Map;
 
 public final class TreeBuilder extends ContentBuilder.Impl<Tree> implements Tree.Builder {
+    private boolean big;
     private Map.Entry<LazyBlockState, List<DoubleRangeFunctionPredicatePair<Biome>>> fruit;
     private Map.Entry<LazyBlockState, List<DoubleRangeFunctionPredicatePair<Biome>>> hanging;
     private List<MinimumIntWithVarianceFunctionPredicatePair<Biome>> height;
     private LazyBlockState leaves;
     private LazyBlockState log;
+
+    @Override
+    public void big(final boolean big) {
+        this.big = big;
+    }
 
     @Override
     public void fruit(final LazyBlockState block, final List<DoubleRangeFunctionPredicatePair<Biome>> chances) {
@@ -52,7 +58,12 @@ public final class TreeBuilder extends ContentBuilder.Impl<Tree> implements Tree
 
     @Override
     public Tree build() {
-        final Tree tree = new TreeFeature(true, this.fruit, this.hanging, this.height, this.leaves, this.log);
+        final Tree tree;
+        if(this.big) {
+            tree = new BigTreeFeature(true, this.height, this.log, this.leaves, this.fruit, this.hanging);
+        } else {
+            tree = new TreeFeature(true, this.height, this.log, this.leaves, this.fruit, this.hanging);
+        }
         ((IMixinSetCatalogTypeId) tree).setId(this.id, this.name);
         return tree;
     }

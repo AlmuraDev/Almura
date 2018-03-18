@@ -7,19 +7,20 @@
  */
 package com.almuradev.content.type.tree;
 
-import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.SingleTypeProcessorBinder;
+import com.almuradev.content.type.tree.processor.BigProcessor;
 import com.almuradev.content.type.tree.processor.FruitProcessor;
 import com.almuradev.content.type.tree.processor.HangingProcessor;
 import com.almuradev.content.type.tree.processor.HeightProcessor;
 import com.almuradev.content.type.tree.processor.LeavesProcessor;
 import com.almuradev.content.type.tree.processor.LogProcessor;
+import com.almuradev.core.CoreBinder;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
 
-public final class TreeModule extends AbstractModule implements CommonBinder {
+public final class TreeModule extends AbstractModule implements CoreBinder {
     @Override
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("tree", TreeContentTypeLoader.class));
@@ -27,6 +28,7 @@ public final class TreeModule extends AbstractModule implements CommonBinder {
         this.bind(Tree.Builder.class).to(TreeBuilder.class);
         this.registry().module(Tree.class, TreeRegistryModule.class);
         this.processors()
+                .add(BigProcessor.class)
                 .add(FruitProcessor.class)
                 .add(HangingProcessor.class)
                 .add(HeightProcessor.class)

@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.registry.binder;
+package com.almuradev.core.registry.binder;
 
 import com.google.inject.Injector;
 import org.spongepowered.api.GameRegistry;
@@ -14,12 +14,11 @@ import org.spongepowered.api.GameRegistry;
  * An abstract registry binder entry.
  */
 abstract class AbstractEntry {
-
     /**
      * Install this entry into the registry.
      *
      * @param injector the injector
      * @param registry the registry
      */
-    public abstract void install(final Injector injector, final GameRegistry registry);
+    abstract void install(final Injector injector, final GameRegistry registry);
 }

@@ -9,7 +9,7 @@ package com.almuradev.almura.feature.complex;
 
 import com.almuradev.almura.feature.complex.item.almanac.item.FarmersAlmanacItem;
 import com.almuradev.almura.feature.complex.item.wand.LightRepairWand;
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

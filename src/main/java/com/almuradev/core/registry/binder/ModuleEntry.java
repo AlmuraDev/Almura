@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.registry.binder;
+package com.almuradev.core.registry.binder;
 
 import com.google.inject.Injector;
 import org.spongepowered.api.CatalogType;
@@ -19,7 +19,6 @@ import org.spongepowered.api.registry.RegistryModule;
  * @param <T> the type
  */
 abstract class ModuleEntry<T> extends AbstractEntry {
-
     /**
      * A registry binder entry for a non-catalog registry module that will be
      * constructed through the injector.
@@ -27,7 +26,6 @@ abstract class ModuleEntry<T> extends AbstractEntry {
      * @param <T> the type
      */
     static class Provider<T> extends ModuleEntry<T> {
-
         private final Class<? extends RegistryModule> module;
 
         Provider(final Class<? extends RegistryModule> module) {
@@ -35,7 +33,7 @@ abstract class ModuleEntry<T> extends AbstractEntry {
         }
 
         @Override
-        public void install(final Injector injector, final GameRegistry registry) {
+        void install(final Injector injector, final GameRegistry registry) {
             registry.registerModule(injector.getInstance(this.module));
         }
     }
@@ -47,7 +45,6 @@ abstract class ModuleEntry<T> extends AbstractEntry {
      * @param <C> the catalog type
      */
     static final class CatalogProvider<C extends CatalogType> extends ModuleEntry<C> {
-
         private final Class<C> type;
         private final Class<? extends CatalogRegistryModule<C>> module;
 
@@ -57,7 +54,7 @@ abstract class ModuleEntry<T> extends AbstractEntry {
         }
 
         @Override
-        public void install(final Injector injector, final GameRegistry registry) {
+        void install(final Injector injector, final GameRegistry registry) {
             registry.registerModule(this.type, injector.getInstance(this.module));
         }
     }
@@ -69,7 +66,6 @@ abstract class ModuleEntry<T> extends AbstractEntry {
      * @param <C> the catalog type
      */
     static final class CatalogInstance<C extends CatalogType> extends ModuleEntry<C> {
-
         private final RegistryModule module;
 
         CatalogInstance(final RegistryModule module) {
@@ -77,7 +73,7 @@ abstract class ModuleEntry<T> extends AbstractEntry {
         }
 
         @Override
-        public void install(final Injector injector, final GameRegistry registry) {
+        void install(final Injector injector, final GameRegistry registry) {
             registry.registerModule(this.module);
         }
     }
@@ -89,7 +85,6 @@ abstract class ModuleEntry<T> extends AbstractEntry {
      * @param <C> the catalog type
      */
     static final class DummyEnabledCatalogInstance<C extends CatalogType> extends ModuleEntry<C> {
-
         private final Class<C> type;
         private final CatalogRegistryModule<C> module;
 
@@ -99,7 +94,7 @@ abstract class ModuleEntry<T> extends AbstractEntry {
         }
 
         @Override
-        public void install(final Injector injector, final GameRegistry registry) {
+        void install(final Injector injector, final GameRegistry registry) {
             registry.registerModule(this.type, this.module);
         }
     }

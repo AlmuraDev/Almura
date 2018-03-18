@@ -22,6 +22,8 @@ public final class TreeGeneratorBuilder extends ContentGenerator.Builder.Impl<Tr
     private List<DoubleRangeFunctionPredicatePair<Biome>> biomes;
     private List<LazyBlockState> requires = Collections.emptyList();
     private Delegate<Tree> tree;
+    private Delegate<Tree> bigTree;
+    private List<DoubleRangeFunctionPredicatePair<Biome>> bigTreeChances;
 
     @Override
     public void worlds(final List<String> worlds) {
@@ -44,7 +46,12 @@ public final class TreeGeneratorBuilder extends ContentGenerator.Builder.Impl<Tr
     }
 
     @Override
+    public void bigTree(final Delegate<Tree> tree, final List<DoubleRangeFunctionPredicatePair<Biome>> chances) {
+        this.bigTree = tree;
+    }
+
+    @Override
     public TreeGenerator build() {
-        return new TreeGeneratorImpl(this.worlds, this.biomes, this.requires, this.tree);
+        return new TreeGeneratorImpl(this.worlds, this.biomes, this.requires, this.tree, this.bigTree, this.bigTreeChances);
     }
 }

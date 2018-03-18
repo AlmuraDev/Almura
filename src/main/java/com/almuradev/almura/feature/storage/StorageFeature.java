@@ -9,8 +9,8 @@ package com.almuradev.almura.feature.storage;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.storage.block.StorageBlocks;
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.tileentity.MultiSlotTileEntity;
+import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;

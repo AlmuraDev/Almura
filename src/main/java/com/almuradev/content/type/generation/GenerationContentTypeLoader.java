@@ -7,9 +7,9 @@
  */
 package com.almuradev.content.type.generation;
 
-import com.almuradev.almura.shared.event.Witness;
-import com.almuradev.almura.shared.event.Witnesses;
 import com.almuradev.content.loader.MultiTypeContentLoader;
+import com.almuradev.core.event.Witness;
+import com.almuradev.core.event.Witnesses;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.spongepowered.api.event.Listener;

@@ -8,8 +8,8 @@
 package com.almuradev.almura.feature.exchange;
 
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
-import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeOpenResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
+import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeOpenResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeOpenRequestPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;

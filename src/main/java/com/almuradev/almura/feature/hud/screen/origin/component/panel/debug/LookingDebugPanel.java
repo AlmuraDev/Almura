@@ -7,8 +7,6 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel.debug;
 
-import static java.util.Objects.requireNonNull;
-
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.block.Block;
