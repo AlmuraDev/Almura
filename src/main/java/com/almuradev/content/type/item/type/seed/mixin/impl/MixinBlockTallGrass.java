@@ -16,6 +16,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -39,9 +40,19 @@ public abstract class MixinBlockTallGrass extends MixinBlock {
      * @reason Add in content seeds to drop list for Tall Grass
      */
     @Overwrite(remap = false)
-    public void getDrops(final NonNullList<ItemStack> drops, final IBlockAccess world, final BlockPos pos, final IBlockState state, final int fortune) {
+    public void getDrops(final NonNullList<ItemStack> drops, final IBlockAccess access, final BlockPos pos, final IBlockState state, final int fortune) {
 
-        final Random random = ((World) world).rand;
+        World world;
+
+        if (access instanceof ChunkCache) {
+            world = ((ChunkCache) access).world;
+        } else if (access instanceof World) {
+            world = (World) access;
+        } else {
+            return;
+        }
+
+        final Random random = world.rand;
 
         // Roll 1 is Vanilla's 1/8 chance to drop a seed
         final int roll1 = random.nextInt(8);
@@ -59,7 +70,7 @@ public abstract class MixinBlockTallGrass extends MixinBlock {
                 return;
             }
 
-            final Biome biome = ((World) world).getBiome(pos);
+            final Biome biome = world.getBiome(pos);
 
             // Roll 2 is shuffling Almura seeds and picking the first one after shuffling
             registry.getAllOf(ItemType.class)
