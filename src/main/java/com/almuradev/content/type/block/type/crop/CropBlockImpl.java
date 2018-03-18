@@ -308,17 +308,17 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
             }
 
             // Light of biome isn't in required range? Don't grow and rollback if applicable
-            final DoubleRange lightRange = growth.getOrLoadLightRangeForBiome(biome);
+            final DoubleRange light = growth.getOrLoadLightRangeForBiome(biome);
 
             // Only run light checks if surrounding chunks are loaded else this will trigger chunk loads
             // Skip this section if rollback is true because a Tempoerature fail should never be overridden by light.
-            if (rollback = false && lightRange != null && world.isAreaLoaded(pos, 1)) {
-                final int minLight = (int) lightRange.min();
-                final int maxLight = (int) lightRange.max();
+            if (rollback = false && light != null && world.isAreaLoaded(pos, 1)) {
+                final int minLight = (int) light.min();
+                final int maxLight = (int) light.max();
 
-                final int light = world.getLightFromNeighbors(pos);
+                final int lightLevel = world.getLightFromNeighbors(pos);
 
-                if (light < minLight || light > maxLight) {
+                if (lightLevel < minLight || lightLevel > maxLight) {
                     if (hasAdditionalSource(world, pos, 2)) {
                         rollback = false;
                     } else {
@@ -330,7 +330,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                     if (world.canSeeSky(pos)) {
                         final int worldLight = world.getLightFor(EnumSkyBlock.SKY, pos) - world.getSkylightSubtracted();
 
-                        if (worldLight < 6) {  // Crops go to sleep on a routine if their light is predictable
+                        if (worldLight < 6) {  // Crops go to sleep on a routine if their lightLevel is predictable
                             rollback = false;  // Prevent a crop from rolling back in the middle of the night if it can see sky.
                         }
                     }
@@ -338,14 +338,14 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
             }
 
             if (!rollback && !this.isMaxAge(state)) {
-                final DoubleRange chanceRange = growth.getOrLoadChanceRangeForBiome(biome);
+                final DoubleRange change = growth.getOrLoadChanceRangeForBiome(biome);
 
-                if (chanceRange == null) {
+                if (change == null || change.max() == 0) {
                     return;
                 }
 
                 // Can we grow? Yes? Awesome!
-                if (RANDOM.nextDouble() <= (chanceRange.random(RANDOM) / 100) && this.isGrowthEven(world, pos, age)) {
+                if (RANDOM.nextDouble() <= (change.random(RANDOM) / 100) && this.isGrowthEven(world, pos, age)) {
                     // If growth will be even, grow
                     world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
 

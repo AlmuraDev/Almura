@@ -54,7 +54,7 @@ public class TreeGeneratorImpl implements TreeGenerator, Witness {
         final BlockPos chunkPos = event.getPos();
         final BlockPos origin = new BlockPos(chunkPos.getX() << 4, 0, chunkPos.getZ() << 4);
         final DoubleRange chance = this.chance(world.getBiome(origin));
-        if (chance == null) {
+        if (chance == null || chance.max() == 0) {
             return;
         }
 

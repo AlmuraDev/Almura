@@ -165,6 +165,10 @@ public class BlockUtil {
         chance = net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, fortune, chance, false,
                 block.getHarvesters().get());
 
+        if (chance == 0) {
+            return false;
+        }
+
         for (final ItemStack drop : drops) {
             if (world.rand.nextFloat() <= chance) {
                 Block.spawnAsEntity(world, pos, drop);
