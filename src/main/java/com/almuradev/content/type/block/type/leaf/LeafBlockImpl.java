@@ -32,6 +32,7 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
     private final LeafBlockStateDefinition definition;
 
     LeafBlockImpl(final LeafBlockBuilder builder) {
+        this.displayOnCreativeTab = null;
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);
