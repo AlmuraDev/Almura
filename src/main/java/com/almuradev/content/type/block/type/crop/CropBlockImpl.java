@@ -34,6 +34,7 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.item.ItemType;
@@ -312,18 +313,14 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
             // Only run light checks if surrounding chunks are loaded else this will trigger chunk loads
             // Skip this section if rollback is true because a Tempoerature fail should never be overridden by light.
-            if (rollback = false && light != null && world.isAreaLoaded(pos, 1)) {
+            if (!rollback && light != null && world.isAreaLoaded(pos, 1)) {
                 final int minLight = (int) light.min();
                 final int maxLight = (int) light.max();
 
                 final int lightLevel = world.getLightFromNeighbors(pos);
 
                 if (lightLevel < minLight || lightLevel > maxLight) {
-                    if (hasAdditionalSource(world, pos, 2)) {
-                        rollback = false;
-                    } else {
-                        rollback = true;
-                    }
+                    rollback = !hasAdditionalSource(world, pos, 2);
                 }
 
                 if (canRollback && rollback) {
@@ -349,8 +346,15 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                     // If growth will be even, grow
                     world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
 
-                    if (!world.isRemote) {
-                        world.playEvent(2005, pos, 0);
+                    if (ForgeHooks.onCropsGrowPre(world, pos, state, true)) {
+                        // If growth will be even, grow
+                        world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
+
+                        if (!world.isRemote) {
+                            world.playEvent(2005, pos, 0);
+                        }
+
+                        ForgeHooks.onCropsGrowPost(world, pos, state, null);
                     }
                 }
             }

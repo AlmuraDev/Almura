@@ -18,6 +18,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,17 +29,21 @@ import java.util.Random;
 @Mixin(value = BlockVine.class, priority = 999)
 public abstract class MixinBlockVine extends Block {
 
-    @Shadow static final PropertyBool UP = PropertyBool.create("up");
-    @Shadow static final PropertyBool NORTH = PropertyBool.create("north");
-    @Shadow static final PropertyBool EAST = PropertyBool.create("east");
-    @Shadow static final PropertyBool SOUTH = PropertyBool.create("south");
-    @Shadow static final PropertyBool WEST = PropertyBool.create("west");
-    @Shadow public abstract boolean canAttachTo(World p_193395_1_, BlockPos p_193395_2_, EnumFacing p_193395_3_);
+    @Shadow @Final static PropertyBool UP;
+    @Shadow @Final static PropertyBool NORTH;
+    @Shadow @Final static PropertyBool EAST;
+    @Shadow @Final static PropertyBool SOUTH;
+    @Shadow @Final static PropertyBool WEST;
+    @Shadow @Final public abstract boolean canAttachTo(World p_193395_1_, BlockPos p_193395_2_, EnumFacing p_193395_3_);
 
     public MixinBlockVine(final Material material) {
         super(material);
     }
 
+    /**
+     * @author Dockter - Mike Howe
+     * @reason Don't tick vines in Orilla
+     */
     //TODO:  There must be a better way to do this.
     @Overwrite
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)

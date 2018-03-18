@@ -15,7 +15,6 @@ import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -33,7 +32,6 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.biome.BiomeType;
 
 import javax.inject.Inject;
 
@@ -59,6 +57,7 @@ public final class FarmersAlmanacItem extends ComplexItem {
         return false;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 
@@ -81,8 +80,8 @@ public final class FarmersAlmanacItem extends ComplexItem {
 
                 player.swingArm(hand);
 
-                network.sendTo(spongePlayer, new ClientboundWorldPositionInformationPacket(pos.getX(), pos.getY(), pos.getZ(), hitX, hitY, hitZ, (
-                        (BiomeType) biome).getId(), biomeTemperature, biomeRainfall, blockLight, skyLight));
+                network.sendTo(spongePlayer, new ClientboundWorldPositionInformationPacket(pos.getX(), pos.getY(), pos.getZ(), hitX, hitY, hitZ,
+                        biome.getRegistryName().toString(), biomeTemperature, biomeRainfall, blockLight, skyLight));
             } else {
                 spongePlayer.sendMessage(Text.of("The ", TextColors.AQUA,"Farmer's Almanac", TextColors.WHITE, " can only be "
                         + "used on crops or farmland."));

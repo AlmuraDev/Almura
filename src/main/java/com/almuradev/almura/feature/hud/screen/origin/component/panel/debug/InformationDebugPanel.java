@@ -18,6 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.api.Game;
@@ -89,7 +90,9 @@ public class InformationDebugPanel extends AbstractDebugPanel {
             this.drawProperty("Chunk", String.format("%d, %d, %d in %d, %d, %d", fx & 0xf, fy & 0xf, fz & 0xf, fx >> 4, fy >> 4, fz >> 4), 4);
             if (view.getEntityWorld().isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !chunk.isEmpty()) {
                 final Biome biome = chunk.getBiome(pos, this.client.world.getBiomeProvider());
-                this.drawProperty("Biome", biome.getBiomeName(), 4);
+                this.drawProperty("Biome", this.getBiomeName(biome, pos), 4);
+                this.drawProperty("Temperature", "" + this.getTemperature(biome, pos),4);
+                this.drawProperty("Rainfall", "" + this.getRainfall(biome, pos), 4);
                 this.drawProperty("Light", getLightDetails(pos, chunk), 4);
             }
         }
@@ -108,6 +111,18 @@ public class InformationDebugPanel extends AbstractDebugPanel {
         this.autoSize();
 
         this.client.mcProfiler.endSection();
+    }
+
+    private String getBiomeName(Biome biome, BlockPos pos) {
+        return biome.getRegistryName().toString();
+    }
+
+    private float getTemperature(Biome biome, BlockPos pos) {
+        return biome.getTemperature(pos);
+    }
+
+    private float getRainfall(Biome biome, BlockPos pos) {
+        return biome.getRainfall();
     }
 
     private void renderTitle() {

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack implements IMixinItemStack {
 
-    @Shadow private net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities;
+    @Shadow(remap = false) private net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities;
 
     @Override
     public CapabilityDispatcher getCapabilities() {
