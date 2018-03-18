@@ -5,9 +5,11 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange.network;
+package com.almuradev.almura.feature.exchange.network.handler;
 
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeGUI;
+import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
+import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -20,12 +22,16 @@ public final class ClientboundExchangeOpenResponsePacketHandler implements Messa
     @Override
     public void handleMessage(ClientboundExchangeOpenResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
-            final Minecraft client = Minecraft.getMinecraft();
-            final EntityPlayerSP player = client.player;
-            final WorldClient world = client.world;
 
-            if (world != null) {
-                new ExchangeGUI(player, world, player.getPosition()).display();
+            final Minecraft client = Minecraft.getMinecraft();
+            if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
+
+                final EntityPlayerSP player = client.player;
+                final WorldClient world = client.world;
+
+                if (world != null) {
+                    new ExchangeGUI(player, world, player.getPosition()).display();
+                }
             }
         }
     }

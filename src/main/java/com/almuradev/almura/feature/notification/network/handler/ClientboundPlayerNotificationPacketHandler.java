@@ -5,12 +5,15 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.notification.network;
+package com.almuradev.almura.feature.notification.network.handler;
 
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
+import com.almuradev.almura.feature.notification.network.ClientboundPlayerNotificationPacket;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -31,10 +34,16 @@ public class ClientboundPlayerNotificationPacketHandler implements MessageHandle
     @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(ClientboundPlayerNotificationPacket message, RemoteConnection connection, Platform.Type side) {
-        if (message.inWindow) {
-            UIMessageBox.showDialog(null,message.title.toPlain(), message.message.toPlain(), MessageBoxButtons.OK, null);
-        } else {
-            this.manager.queuePopup(new PopupNotification(message.title, message.message, message.timeToLive));
+
+        if (side.isClient()) {
+
+            if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
+                if (message.inWindow) {
+                    UIMessageBox.showDialog(null, message.title.toPlain(), message.message.toPlain(), MessageBoxButtons.OK, null);
+                } else {
+                    this.manager.queuePopup(new PopupNotification(message.title, message.message, message.timeToLive));
+                }
+            }
         }
     }
 }

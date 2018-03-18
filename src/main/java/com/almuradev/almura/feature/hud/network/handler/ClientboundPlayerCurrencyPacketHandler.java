@@ -5,9 +5,12 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.hud.network;
+package com.almuradev.almura.feature.hud.network.handler;
 
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
+import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -31,10 +34,13 @@ public final class ClientboundPlayerCurrencyPacketHandler implements MessageHand
     @Override
     public void handleMessage(ClientboundPlayerCurrencyPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
-            final DecimalFormat format = new DecimalFormat("###,###.##");
 
-            hudData.isEconomyPresent = true;
-            hudData.economyAmount = format.format(message.money);
+            if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
+                final DecimalFormat format = new DecimalFormat("###,###.##");
+
+                hudData.isEconomyPresent = true;
+                hudData.economyAmount = format.format(message.money);
+            }
         }
     }
 }

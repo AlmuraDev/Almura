@@ -235,7 +235,7 @@ public class SimplePageView extends SimpleScreen {
         }
     }
 
-    protected Consumer<Task> delayedTask(String details) {
+    private Consumer<Task> delayedTask(String details) {
         return task -> {
             if (details.equalsIgnoreCase("pageDetails")) {
                 new SimplePageDetails(this).display();

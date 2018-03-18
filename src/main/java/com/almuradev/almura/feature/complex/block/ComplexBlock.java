@@ -10,8 +10,6 @@ package com.almuradev.almura.feature.complex.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
-
-
 public abstract class ComplexBlock extends Block {
 
     public ComplexBlock(Material materialIn) {

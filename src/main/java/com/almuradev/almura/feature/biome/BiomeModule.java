@@ -8,9 +8,9 @@
 package com.almuradev.almura.feature.biome;
 
 import com.almuradev.almura.feature.biome.network.ClientboundBiomeChunkDataPacket;
-import com.almuradev.almura.feature.biome.network.ClientboundBiomeChunkDataPacketHandler;
+import com.almuradev.almura.feature.biome.network.handler.ClientboundBiomeChunkDataPacketHandler;
 import com.almuradev.almura.feature.biome.network.ClientboundBiomeInformationPacket;
-import com.almuradev.almura.feature.biome.network.ClientboundBiomeInformationPacketHandler;
+import com.almuradev.almura.feature.biome.network.handler.ClientboundBiomeInformationPacketHandler;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.InformationDebugPanel;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;

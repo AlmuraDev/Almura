@@ -5,9 +5,12 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.hud.network;
+package com.almuradev.almura.feature.hud.network.handler;
 
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
+import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
@@ -26,8 +29,11 @@ public final class ClientboundPlayerCountPacketHandler implements MessageHandler
     @Override
     public void handleMessage(ClientboundPlayerCountPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
-            this.hudData.onlinePlayerCount = message.online;
-            this.hudData.maxPlayerCount = message.max;
+
+            if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
+                this.hudData.onlinePlayerCount = message.online;
+                this.hudData.maxPlayerCount = message.max;
+            }
         }
     }
 }

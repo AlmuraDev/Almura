@@ -5,9 +5,12 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.hud.network;
+package com.almuradev.almura.feature.hud.network.handler;
 
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
+import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
@@ -26,7 +29,10 @@ public final class ClientboundWorldNamePacketHandler implements MessageHandler<C
     @Override
     public void handleMessage(ClientboundWorldNamePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
-            this.hudData.worldName = message.name;
+
+            if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
+                this.hudData.worldName = message.name;
+            }
         }
     }
 }

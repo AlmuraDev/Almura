@@ -20,7 +20,8 @@ public final class ClientboundPlayerNotificationPacket implements Message {
     public int timeToLive = -1;
     public boolean inWindow = false;
 
-    public ClientboundPlayerNotificationPacket() {}
+    public ClientboundPlayerNotificationPacket() {
+    }
 
     public ClientboundPlayerNotificationPacket(Text title, Text message, int timeToLive) {
         this.title = title;

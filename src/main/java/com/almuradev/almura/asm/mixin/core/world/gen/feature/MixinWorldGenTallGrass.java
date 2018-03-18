@@ -79,7 +79,6 @@ public abstract class MixinWorldGenTallGrass extends WorldGenerator {
                     } else {
                         worldIn.setBlockState(blockpos, this.tallGrassState, 2);
                     }
-
                 }
             }
         }

@@ -5,9 +5,10 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.biome.network;
+package com.almuradev.almura.feature.biome.network.handler;
 
 import com.almuradev.almura.feature.biome.BiomeClientFeature;
+import com.almuradev.almura.feature.biome.network.ClientboundBiomeChunkDataPacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.api.Platform;

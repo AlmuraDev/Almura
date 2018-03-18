@@ -5,10 +5,14 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.guide.network;
+package com.almuradev.almura.feature.guide.network.handler;
 
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
+import com.almuradev.almura.feature.guide.network.ClientboundPageChangeResponsePacket;
+import com.almuradev.almura.feature.guide.network.PageChangeType;
+import com.almuradev.almura.feature.guide.network.ServerboundGuideOpenRequestPacket;
+import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,10 +35,11 @@ public final class ClientboundPageChangeResponsePacketHandler implements Message
     @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(ClientboundPageChangeResponsePacket message, RemoteConnection connection, Platform.Type side) {
-        if (side.isClient()) {
-            if (!message.success) {
-                // Do nothing.
-            } else {
+        if (side.isClient() && message.success) {
+
+            final Minecraft client = Minecraft.getMinecraft();
+
+            if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
                 if (currentScreen != null && currentScreen instanceof SimplePageView) {
                     if (message.changeType == PageChangeType.REMOVE) {

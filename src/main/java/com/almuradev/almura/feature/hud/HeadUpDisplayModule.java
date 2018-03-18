@@ -8,11 +8,11 @@
 package com.almuradev.almura.feature.hud;
 
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
-import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacketHandler;
+import com.almuradev.almura.feature.hud.network.handler.ClientboundPlayerCountPacketHandler;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
-import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacketHandler;
+import com.almuradev.almura.feature.hud.network.handler.ClientboundPlayerCurrencyPacketHandler;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
-import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacketHandler;
+import com.almuradev.almura.feature.hud.network.handler.ClientboundWorldNamePacketHandler;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;

@@ -5,9 +5,12 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.title.network;
+package com.almuradev.almura.feature.title.network.handler;
 
 import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlesPacket;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -35,12 +38,17 @@ public final class ClientboundPlayerSelectedTitlesPacketHandler implements Messa
     @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(ClientboundPlayerSelectedTitlesPacket message, RemoteConnection connection, Platform.Type side) {
-        final Map<UUID, String> selectedTitles = new HashMap<>();
+        if (side.isClient()) {
 
-        for (Map.Entry<UUID, Text> titleEntry : message.titles.entrySet()) {
-            selectedTitles.put(titleEntry.getKey(), TextSerializers.LEGACY_FORMATTING_CODE.serialize(titleEntry.getValue()));
+            if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
+                final Map<UUID, String> selectedTitles = new HashMap<>();
+
+                for (Map.Entry<UUID, Text> titleEntry : message.titles.entrySet()) {
+                    selectedTitles.put(titleEntry.getKey(), TextSerializers.LEGACY_FORMATTING_CODE.serialize(titleEntry.getValue()));
+                }
+
+                this.manager.putSelectedTitles(selectedTitles);
+            }
         }
-
-        this.manager.putSelectedTitles(selectedTitles);
     }
 }
