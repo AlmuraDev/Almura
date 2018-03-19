@@ -9,6 +9,7 @@ package com.almuradev.content.mixin.impl;
 
 import com.almuradev.content.mixin.iface.IMixinSetCatalogTypeId;
 import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGeneratorImpl;
+import com.almuradev.content.type.grass.GrassFeature;
 import com.almuradev.content.type.tree.BigTreeFeature;
 import com.almuradev.content.type.tree.TreeFeature;
 import net.minecraft.block.SoundType;
@@ -20,13 +21,14 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin({
     BigTreeFeature.class,
+    GrassFeature.class,
     // CreativeTabs.class intentionally excluded
     Item.ToolMaterial.class,
     MapColor.class,
     Material.class,
-    UndergroundOreGeneratorImpl.class,
     SoundType.class,
-    TreeFeature.class
+    TreeFeature.class,
+    UndergroundOreGeneratorImpl.class
 })
 public class MixinSetCatalogTypeId implements CatalogType, IMixinSetCatalogTypeId {
     private String id;

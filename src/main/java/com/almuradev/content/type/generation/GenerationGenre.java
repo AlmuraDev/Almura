@@ -8,6 +8,7 @@
 package com.almuradev.content.type.generation;
 
 import com.almuradev.content.ContentType;
+import com.almuradev.content.type.generation.type.feature.grass.GrassGenerator;
 import com.almuradev.content.type.generation.type.feature.tree.TreeGenerator;
 import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGenerator;
 
@@ -17,6 +18,10 @@ public enum GenerationGenre implements ContentType.MultiType<ContentGenerator, C
      * A generator type representing a tree.
      */
     TREE_FEATURE("feature/tree", "tree feature", TreeGenerator.Builder.class),
+    /**
+     * A generator type representing grass.
+     */
+    GRASS_FEATURE("feature/grass", "grass feature", GrassGenerator.Builder.class),
     /**
      * A generator type representing ore.
      */

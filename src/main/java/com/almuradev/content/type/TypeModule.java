@@ -11,6 +11,7 @@ import com.almuradev.content.type.action.ActionModule;
 import com.almuradev.content.type.block.BlockModule;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroupModule;
 import com.almuradev.content.type.generation.GenerationModule;
+import com.almuradev.content.type.grass.GrassModule;
 import com.almuradev.content.type.item.ItemModule;
 import com.almuradev.content.type.itemgroup.ItemGroupModule;
 import com.almuradev.content.type.mapcolor.MapColorModule;
@@ -30,5 +31,6 @@ public final class TypeModule extends AbstractModule {
         this.install(new MapColorModule());
         this.install(new MaterialModule());
         this.install(new TreeModule());
+        this.install(new GrassModule());
     }
 }
