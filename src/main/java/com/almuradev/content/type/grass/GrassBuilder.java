@@ -18,7 +18,7 @@ public final class GrassBuilder extends ContentBuilder.Impl<Grass> implements Gr
     private List<LazyBlockState> grasses = Collections.emptyList();
 
     @Override
-    public void grass(List<LazyBlockState> grasses) {
+    public void grass(final List<LazyBlockState> grasses) {
         this.grasses = grasses;
     }
 

@@ -11,7 +11,7 @@ public class DelegateNotSatisfiedException extends RuntimeException {
     public DelegateNotSatisfiedException() {
     }
 
-    public DelegateNotSatisfiedException(String message) {
+    public DelegateNotSatisfiedException(final String message) {
         super(message);
     }
 }

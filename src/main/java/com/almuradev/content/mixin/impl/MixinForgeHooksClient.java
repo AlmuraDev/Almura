@@ -19,17 +19,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
+@Mixin(value = ForgeHooksClient.class, remap = false)
 @SideOnly(Side.CLIENT)
-@Mixin(ForgeHooksClient.class)
 public abstract class MixinForgeHooksClient {
-
     /**
      * @author Zidane - Chris Sanders
      * @reason Redirect to ModelUtil for damage model bug-fix
      */
-    @Overwrite(remap = false)
-    public static IBakedModel getDamageModel(IBakedModel ibakedmodel, TextureAtlasSprite texture, IBlockState state, IBlockAccess world, BlockPos pos)
-    {
+    @Overwrite
+    public static IBakedModel getDamageModel(final IBakedModel ibakedmodel, final TextureAtlasSprite texture, final IBlockState state, final IBlockAccess world, final BlockPos pos) {
         return ModelUtil.getDamageModel(ibakedmodel, texture, state, world, pos);
     }
 }

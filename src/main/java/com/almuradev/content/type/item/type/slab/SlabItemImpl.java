@@ -164,7 +164,7 @@ public final class SlabItemImpl extends ItemSlab implements SlabItem {
             return false;
         }
 
-        IBlockState state = world.getBlockState(pos);
+        final IBlockState state = world.getBlockState(pos);
         if (state.getBlock() == this.getBlock()) {
             setTileEntityNBT(world, player, pos, stack);
             this.getBlock().onBlockPlacedBy(world, pos, state, player, stack);

@@ -24,7 +24,7 @@ public final class BlockFaceShapeProcessor implements BlockContentProcessor.Stat
     }
 
     @Override
-    public void processState(ConfigurationNode config, final ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> builder, final BlockStateDefinition.Builder<BlockStateDefinition> definition) {
+    public void processState(final ConfigurationNode config, final ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> builder, final BlockStateDefinition.Builder<BlockStateDefinition> definition) {
         final BlockFaceShape shape = BlockFaceShape.valueOf(config.getString("undefined").toUpperCase().replace(' ', '_'));
         definition.blockFaceShape(shape);
     }

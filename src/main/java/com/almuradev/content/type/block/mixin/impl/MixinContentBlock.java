@@ -99,7 +99,7 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
     }
 
     @Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+    public BlockFaceShape getBlockFaceShape(final IBlockAccess worldIn, final IBlockState state, final BlockPos pos, final EnumFacing face) {
         return ((AbstractBlockStateDefinition<?, ?, ?>) this.definition(state)).blockFaceShape;
     }
 

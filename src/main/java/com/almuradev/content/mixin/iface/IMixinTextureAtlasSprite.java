@@ -8,12 +8,11 @@
 package com.almuradev.content.mixin.iface;
 
 public interface IMixinTextureAtlasSprite {
+    void setMinU(final float minU);
 
-    void setMinU(float minU);
+    void setMinV(final float minV);
 
-    void setMinV(float minV);
+    void setMaxU(final float maxU);
 
-    void setMaxU(float maxU);
-
-    void setMaxV(float maxV);
+    void setMaxV(final float maxV);
 }
