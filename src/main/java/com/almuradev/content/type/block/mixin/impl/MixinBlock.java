@@ -41,7 +41,7 @@ public abstract class MixinBlock implements ContentBlock {
     @Shadow public abstract void dropBlockAsItemWithChance(final World world, final BlockPos pos, final IBlockState state, final float chance, final int fortune);
     @Shadow(remap = false) public SoundType getSoundType(final IBlockState state, final World world, final BlockPos pos, @Nullable final Entity
             entity) { return null; }
-    @Shadow public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) { return null; }
+    @Shadow public BlockFaceShape getBlockFaceShape(final IBlockAccess worldIn, final IBlockState state, final BlockPos pos, final EnumFacing face) { return null; }
 
     @Override
     public Optional<ItemGroup> itemGroup() {

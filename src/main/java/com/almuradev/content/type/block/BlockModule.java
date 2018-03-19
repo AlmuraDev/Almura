@@ -7,8 +7,8 @@
  */
 package com.almuradev.content.type.block;
 
-import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.block.facet.BlockExperience;
 import com.almuradev.content.type.block.processor.AABBProcessor;
 import com.almuradev.content.type.block.processor.BlockFaceShapeProcessor;

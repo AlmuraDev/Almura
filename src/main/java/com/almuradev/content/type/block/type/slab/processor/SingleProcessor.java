@@ -22,7 +22,7 @@ public final class SingleProcessor implements AbstractSlabProcessor.AnyTagged {
     }
 
     @Override
-    public void processTagged(ConfigurationNode config, SlabBlock.Builder builder) {
+    public void processTagged(final ConfigurationNode config, final SlabBlock.Builder builder) {
         builder.single(LazyBlockState.parse(config));
     }
 }

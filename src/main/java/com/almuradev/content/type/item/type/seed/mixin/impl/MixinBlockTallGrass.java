@@ -42,7 +42,7 @@ public abstract class MixinBlockTallGrass extends MixinBlock {
     @Overwrite(remap = false)
     public void getDrops(final NonNullList<ItemStack> drops, final IBlockAccess access, final BlockPos pos, final IBlockState state, final int fortune) {
 
-        World world;
+        final World world;
 
         if (access instanceof ChunkCache) {
             world = ((ChunkCache) access).world;

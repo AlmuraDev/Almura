@@ -66,7 +66,7 @@ final class StatefulLazyBlockState extends AbstractLazyBlockState {
     }
 
     @Override
-    protected <V extends Comparable<V>> boolean partialTest0(IBlockState state) {
+    protected <V extends Comparable<V>> boolean partialTest0(final IBlockState state) {
         // Check to see if specified properties match now
         for (final Map.Entry<IProperty<? extends Comparable<?>>, StateValue<? extends Comparable<?>>> entry : this.properties.get().entrySet()) {
             final IProperty<V> property = (IProperty<V>) entry.getKey();

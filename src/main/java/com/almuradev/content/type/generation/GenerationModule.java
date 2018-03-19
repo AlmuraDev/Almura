@@ -7,8 +7,8 @@
  */
 package com.almuradev.content.type.generation;
 
-import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.generation.processor.WeightProcessor;
 import com.almuradev.content.type.generation.type.feature.grass.GrassGeneratorModule;
 import com.almuradev.content.type.generation.type.feature.tree.TreeGeneratorModule;

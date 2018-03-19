@@ -7,8 +7,8 @@
  */
 package com.almuradev.content.type.itemgroup;
 
-import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.SingleTypeProcessorBinder;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.itemgroup.processor.IconProcessor;
 import com.almuradev.content.type.itemgroup.processor.SortProcessor;
 import com.almuradev.core.CoreBinder;

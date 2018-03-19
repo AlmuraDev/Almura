@@ -7,13 +7,13 @@
  */
 package com.almuradev.content.type.generation;
 
-import com.almuradev.content.ContentType;
+import com.almuradev.content.type.MultiContentType;
 import com.almuradev.content.type.generation.type.feature.grass.GrassGenerator;
 import com.almuradev.content.type.generation.type.feature.tree.TreeGenerator;
 import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGenerator;
 
-@ContentType.MultiType.Name("generators")
-public enum GenerationGenre implements ContentType.MultiType<ContentGenerator, ContentGenerator.Builder<ContentGenerator>> {
+@MultiContentType.Name("generators")
+public enum GenerationGenre implements MultiContentType<ContentGenerator, ContentGenerator.Builder<ContentGenerator>> {
     /**
      * A generator type representing a tree.
      */

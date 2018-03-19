@@ -8,8 +8,8 @@
 package com.almuradev.content.type.grass;
 
 import com.almuradev.almura.shared.inject.CommonBinder;
-import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.SingleTypeProcessorBinder;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.grass.processor.BlockProcessor;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.google.inject.TypeLiteral;

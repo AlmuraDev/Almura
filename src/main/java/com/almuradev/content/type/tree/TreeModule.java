@@ -7,8 +7,8 @@
  */
 package com.almuradev.content.type.tree;
 
-import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.SingleTypeProcessorBinder;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.tree.processor.BigProcessor;
 import com.almuradev.content.type.tree.processor.FruitProcessor;
 import com.almuradev.content.type.tree.processor.HangingProcessor;

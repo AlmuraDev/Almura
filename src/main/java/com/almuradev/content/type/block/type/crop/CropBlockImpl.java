@@ -237,11 +237,11 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         return false;
     }
 
-    private boolean hasAdditionalSource(World worldIn, BlockPos pos, int type) {
+    private boolean hasAdditionalSource(final World worldIn, final BlockPos pos, final int type) {
         // Todo: ability to add more heat/light sources.
-        Block block = Block.getBlockFromName("almura:horizontal/lighting/plant_light");
+        final Block block = Block.getBlockFromName("almura:horizontal/lighting/plant_light");
         if (block != null) {
-            for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-2, 1, -2), pos.add(2, 3, 2))) {
+            for (final BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-2, 1, -2), pos.add(2, 3, 2))) {
                 if (worldIn.getBlockState(blockpos$mutableblockpos).getBlock() == block) {
                     return true;
                 }

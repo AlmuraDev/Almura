@@ -25,7 +25,7 @@ public final class BlockProcessor implements AbstractGrassProcessor {
     }
 
     @Override
-    public void processTagged(ConfigurationNode config, Grass.Builder builder) {
+    public void processTagged(final ConfigurationNode config, final Grass.Builder builder) {
         builder.grass(ConfigurateSucks.children(config).stream().map(LazyBlockState::parse).collect(Collectors.toList()));
     }
 }

@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.item;
 
-import com.almuradev.content.ContentType;
+import com.almuradev.content.type.MultiContentType;
 import com.almuradev.content.type.item.type.food.FoodItem;
 import com.almuradev.content.type.item.type.normal.NormalItem;
 import com.almuradev.content.type.item.type.seed.SeedItem;
@@ -21,8 +21,8 @@ import com.almuradev.content.type.item.type.tool.type.sickle.SickleToolItem;
 /**
  * An enumeration of item types.
  */
-@ContentType.MultiType.Name("items")
-public enum ItemGenre implements ContentType.MultiType<ContentItem, ContentItem.Builder<ContentItem>> {
+@MultiContentType.Name("items")
+public enum ItemGenre implements MultiContentType<ContentItem, ContentItem.Builder<ContentItem>> {
     /**
      * An item type representing a normal item.
      */
