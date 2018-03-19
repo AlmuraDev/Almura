@@ -9,6 +9,7 @@ package com.almuradev.almura.feature;
 
 import com.almuradev.almura.feature.biome.BiomeModule;
 import com.almuradev.almura.feature.cache.CacheModule;
+import com.almuradev.almura.feature.cleanup.CleanupModule;
 import com.almuradev.almura.feature.complex.ComplexContentModule;
 import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.almura.feature.exchange.ExchangeModule;
@@ -37,6 +38,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new ExchangeModule());
         this.install(new StorageModule());
         this.install(new BiomeModule());
+        this.install(new CleanupModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         this.facet().add(OffHandListener.class);
