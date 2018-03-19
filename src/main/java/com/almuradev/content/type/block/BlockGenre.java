@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.block;
 
-import com.almuradev.content.ContentType;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.block.component.aabb.BlockAABB;
 import com.almuradev.content.type.block.component.aabb.BlockAABBFactory;
 import com.almuradev.content.type.block.component.aabb.NormalBoxFactory;

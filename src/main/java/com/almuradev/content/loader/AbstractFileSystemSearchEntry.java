@@ -8,7 +8,7 @@
 package com.almuradev.content.loader;
 
 import com.almuradev.content.ContentConfig;
-import com.almuradev.content.ContentType;
+import com.almuradev.content.type.ContentType;
 import com.google.inject.Injector;
 import org.slf4j.Logger;
 

@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.content;
+package com.almuradev.content.type;
 
 import com.almuradev.content.loader.ContentLoader;
 import com.almuradev.content.registry.CatalogedContent;

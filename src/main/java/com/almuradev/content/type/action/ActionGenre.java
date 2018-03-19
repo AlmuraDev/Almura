@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.action;
 
-import com.almuradev.content.ContentType;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 
 /**

@@ -7,8 +7,8 @@
  */
 package com.almuradev.content.type.item;
 
-import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.item.processor.DurabilityProcessor;
 import com.almuradev.content.type.item.processor.ItemGroupProcessor;
 import com.almuradev.content.type.item.processor.MaxStackSizeProcessor;

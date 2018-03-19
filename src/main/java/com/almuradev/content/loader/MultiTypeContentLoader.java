@@ -9,9 +9,9 @@ package com.almuradev.content.loader;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.content.ContentType;
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.HashMultimap;

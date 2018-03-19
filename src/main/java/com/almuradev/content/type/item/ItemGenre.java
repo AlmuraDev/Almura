@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.item;
 
-import com.almuradev.content.ContentType;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.item.type.food.FoodItem;
 import com.almuradev.content.type.item.type.normal.NormalItem;
 import com.almuradev.content.type.item.type.seed.SeedItem;

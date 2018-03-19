@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.generation;
 
-import com.almuradev.content.ContentType;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.generation.type.feature.grass.GrassGenerator;
 import com.almuradev.content.type.generation.type.feature.tree.TreeGenerator;
 import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGenerator;

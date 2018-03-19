@@ -8,7 +8,7 @@
 package com.almuradev.content.loader;
 
 import com.almuradev.content.ContentConfig;
-import com.almuradev.content.ContentType;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.core.event.Witness;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;

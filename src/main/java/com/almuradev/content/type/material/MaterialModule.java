@@ -7,8 +7,8 @@
  */
 package com.almuradev.content.type.material;
 
-import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.SingleTypeProcessorBinder;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.material.processor.MaterialProcessor;
 import com.almuradev.core.CoreBinder;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;

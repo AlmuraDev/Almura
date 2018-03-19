@@ -7,9 +7,9 @@
  */
 package com.almuradev.content.loader;
 
-import com.almuradev.content.ContentType;
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;

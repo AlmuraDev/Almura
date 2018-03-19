@@ -7,10 +7,10 @@
  */
 package com.almuradev.content.type.blocksoundgroup;
 
-import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.ContentFinder;
 import com.almuradev.content.loader.SingleTypeExternalContentProcessor;
 import com.almuradev.content.loader.SingleTypeProcessorBinder;
+import com.almuradev.content.type.ContentType;
 import com.almuradev.content.type.blocksoundgroup.processor.ParentBlockSoundGroupContentPostProcessor;
 import com.almuradev.content.type.blocksoundgroup.processor.PitchBlockSoundGroupContentProcessor;
 import com.almuradev.content.type.blocksoundgroup.processor.SoundBlockSoundGroupContentProcessor;

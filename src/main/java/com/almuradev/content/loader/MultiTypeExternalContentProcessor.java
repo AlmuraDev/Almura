@@ -7,9 +7,9 @@
  */
 package com.almuradev.content.loader;
 
-import com.almuradev.content.ContentType;
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
+import com.almuradev.content.type.ContentType;
 import ninja.leaping.configurate.ConfigurationNode;
 
 public interface MultiTypeExternalContentProcessor<T extends ContentType.MultiType<C, B>, C extends CatalogedContent, B extends ContentBuilder<C>> {
