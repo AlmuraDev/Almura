@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.biome;
 
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;

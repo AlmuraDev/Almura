@@ -11,8 +11,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlePacket;
 import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlesPacket;
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.core.event.Witness;
 import com.typesafe.config.ConfigRenderOptions;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;

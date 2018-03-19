@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.registry.binder;
+package com.almuradev.core.registry.binder;
 
 import com.google.inject.Injector;
 import net.kyori.membrane.facet.Enableable;
@@ -20,7 +20,6 @@ import javax.inject.Inject;
  * A facet that installs registry entries into the registry.
  */
 public final class RegistryInstaller implements Enableable {
-
     private final Injector injector;
     private final GameRegistry registry;
     private final Set<ModuleEntry<? extends CatalogType>> modules;

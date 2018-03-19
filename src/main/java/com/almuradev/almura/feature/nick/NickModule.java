@@ -9,8 +9,8 @@ package com.almuradev.almura.feature.nick;
 
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPlayerListPanel;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameChangeMappingPacket;
-import com.almuradev.almura.feature.nick.network.handler.ClientboundNucleusNameChangeMappingPacketHandler;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameMappingsPacket;
+import com.almuradev.almura.feature.nick.network.handler.ClientboundNucleusNameChangeMappingPacketHandler;
 import com.almuradev.almura.feature.nick.network.handler.ClientboundNucleusNameMappingsPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;

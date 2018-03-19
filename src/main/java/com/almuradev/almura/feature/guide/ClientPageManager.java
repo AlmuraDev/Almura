@@ -13,8 +13,8 @@ import com.almuradev.almura.feature.guide.network.ServerboundGuideOpenRequestPac
 import com.almuradev.almura.feature.guide.network.ServerboundPageChangeRequestPacket;
 import com.almuradev.almura.feature.guide.network.ServerboundPageOpenRequestPacket;
 import com.almuradev.almura.shared.client.keyboard.binder.KeyBindingEntry;
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.core.event.Witness;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;

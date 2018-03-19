@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.shared.capability.binder;
 
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import com.google.inject.Injector;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;

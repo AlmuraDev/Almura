@@ -8,12 +8,11 @@
 package com.almuradev.almura.feature.cache.block;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.core.common.CommonModule;
 import com.almuradev.almura.feature.cache.CacheFeature;
-import com.almuradev.almura.shared.capability.SharedCapabilities;
-import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
 import com.almuradev.almura.shared.capability.ISingleSlotItemHandler;
+import com.almuradev.almura.shared.capability.SharedCapabilities;
 import com.almuradev.almura.shared.capability.impl.SingleSlotItemHandler;
+import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockHorizontal;

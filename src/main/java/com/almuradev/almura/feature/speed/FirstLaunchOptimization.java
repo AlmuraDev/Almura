@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.speed;
 import com.almuradev.almura.core.client.ClientConfiguration;
 import com.almuradev.almura.core.client.config.ClientCategory;
 import com.almuradev.almura.shared.config.ConfigLoadEvent;
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

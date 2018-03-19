@@ -7,11 +7,11 @@
  */
 package com.almuradev.content.type.block.facet;
 
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.content.type.action.component.drop.Drop;
 import com.almuradev.content.type.action.component.drop.ExperienceDrop;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
+import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.world.World;

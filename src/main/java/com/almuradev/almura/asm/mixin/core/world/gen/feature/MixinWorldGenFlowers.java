@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.asm.mixin.core.world.gen.feature;
 
-import com.almuradev.almura.feature.generator.RandomPlantStateGenerator;
 import com.almuradev.almura.feature.generator.RandomSaplingStateGenerator;
 import com.almuradev.content.type.block.BlockUpdateFlag;
 import net.minecraft.block.BlockFlower;

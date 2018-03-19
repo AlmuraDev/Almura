@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.asm.mixin.core.item;
 
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucketMilk;
 import org.spongepowered.asm.mixin.Mixin;

@@ -9,6 +9,7 @@ package com.almuradev.content.mixin.impl;
 
 import com.almuradev.content.mixin.iface.IMixinSetCatalogTypeId;
 import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGeneratorImpl;
+import com.almuradev.content.type.tree.BigTreeFeature;
 import com.almuradev.content.type.tree.TreeFeature;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
@@ -18,6 +19,7 @@ import org.spongepowered.api.CatalogType;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin({
+    BigTreeFeature.class,
     // CreativeTabs.class intentionally excluded
     Item.ToolMaterial.class,
     MapColor.class,

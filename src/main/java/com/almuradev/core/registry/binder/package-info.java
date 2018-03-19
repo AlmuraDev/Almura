@@ -6,4 +6,4 @@
  * All Rights Reserved.
  */
 @org.spongepowered.api.util.annotation.NonnullByDefault
-package com.almuradev.almura.shared.event;
+package com.almuradev.core.registry.binder;

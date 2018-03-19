@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.feature.guide.client.gui;
 
-import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;

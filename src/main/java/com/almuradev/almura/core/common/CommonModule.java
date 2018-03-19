@@ -16,12 +16,12 @@ import com.almuradev.almura.shared.capability.binder.CapabilityInstaller;
 import com.almuradev.almura.shared.capability.impl.MultiSlotItemHandler;
 import com.almuradev.almura.shared.capability.impl.SingleSlotItemHandler;
 import com.almuradev.almura.shared.command.binder.CommandInstaller;
-import com.almuradev.almura.shared.event.WitnessModule;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.almura.shared.network.NetworkModule;
 import com.almuradev.almura.shared.plugin.Plugin;
-import com.almuradev.almura.shared.registry.binder.RegistryInstaller;
 import com.almuradev.content.ContentModule;
+import com.almuradev.core.event.WitnessModule;
+import com.almuradev.core.registry.binder.RegistryInstaller;
 import com.google.inject.name.Names;
 import net.kyori.violet.AbstractModule;
 

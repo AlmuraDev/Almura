@@ -7,7 +7,6 @@
  */
 package com.almuradev.content;
 
-import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.content.component.ComponentModule;
 import com.almuradev.content.loader.ClientTranslationInjector;
 import com.almuradev.content.loader.RootContentLoader;
@@ -16,11 +15,12 @@ import com.almuradev.content.loader.TranslationInjector;
 import com.almuradev.content.model.ModelBinder;
 import com.almuradev.content.model.obj.OBJModelParser;
 import com.almuradev.content.type.TypeModule;
+import com.almuradev.core.CoreBinder;
 import net.kyori.violet.AbstractModule;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import org.spongepowered.api.Platform;
 
-public final class ContentModule extends AbstractModule implements CommonBinder {
+public final class ContentModule extends AbstractModule implements CoreBinder {
     @Override
     protected void configure() {
         this.facet().add(RootContentLoader.class);
@@ -32,7 +32,7 @@ public final class ContentModule extends AbstractModule implements CommonBinder 
         this.install(new TypeModule());
     }
 
-    private static final class ModelModule extends AbstractModule implements CommonBinder {
+    private static final class ModelModule extends AbstractModule implements CoreBinder {
         @Override
         protected void configure() {
             this.on(Platform.Type.CLIENT, () -> {
@@ -42,7 +42,7 @@ public final class ContentModule extends AbstractModule implements CommonBinder 
         }
     }
 
-    private static final class TranslationModule extends AbstractModule implements CommonBinder {
+    private static final class TranslationModule extends AbstractModule implements CoreBinder {
         @Override
         protected void configure() {
             this.facet().add(ServerTranslationInjector.class);

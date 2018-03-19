@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.feature.generator;
 
-import com.almuradev.almura.Almura;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;

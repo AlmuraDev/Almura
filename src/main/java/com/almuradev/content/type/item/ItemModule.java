@@ -7,7 +7,6 @@
  */
 package com.almuradev.content.type.item;
 
-import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
 import com.almuradev.content.type.item.processor.DurabilityProcessor;
@@ -17,10 +16,11 @@ import com.almuradev.content.type.item.type.food.FoodItemModule;
 import com.almuradev.content.type.item.type.normal.NormalItemModule;
 import com.almuradev.content.type.item.type.seed.SeedItemModule;
 import com.almuradev.content.type.item.type.tool.ToolItemModule;
+import com.almuradev.core.CoreBinder;
 import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
 
-public final class ItemModule extends AbstractModule implements CommonBinder {
+public final class ItemModule extends AbstractModule implements CoreBinder {
     @Override
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("item", ItemContentTypeLoader.class));
@@ -41,7 +41,7 @@ public final class ItemModule extends AbstractModule implements CommonBinder {
         });
     }
 
-    public static abstract class Module extends AbstractModule implements CommonBinder {
+    public static abstract class Module extends AbstractModule implements CoreBinder {
         protected final MultiTypeProcessorBinder<ItemGenre, ContentItem, ContentItem.Builder<ContentItem>, ItemContentProcessor<ContentItem, ContentItem.Builder<ContentItem>>> processors() {
             return new MultiTypeProcessorBinder<>(
                     this.binder(),

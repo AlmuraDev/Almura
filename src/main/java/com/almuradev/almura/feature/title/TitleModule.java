@@ -8,8 +8,8 @@
 package com.almuradev.almura.feature.title;
 
 import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlePacket;
-import com.almuradev.almura.feature.title.network.handler.ClientboundPlayerSelectedTitlePacketHandler;
 import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlesPacket;
+import com.almuradev.almura.feature.title.network.handler.ClientboundPlayerSelectedTitlePacketHandler;
 import com.almuradev.almura.feature.title.network.handler.ClientboundPlayerSelectedTitlesPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;

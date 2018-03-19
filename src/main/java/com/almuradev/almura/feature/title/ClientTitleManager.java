@@ -9,7 +9,7 @@ package com.almuradev.almura.feature.title;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;

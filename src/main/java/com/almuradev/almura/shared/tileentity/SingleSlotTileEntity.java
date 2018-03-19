@@ -8,8 +8,6 @@
 package com.almuradev.almura.shared.tileentity;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.core.common.CommonModule;
-import com.almuradev.almura.feature.cache.CacheFeature;
 import com.almuradev.almura.shared.capability.ISingleSlotItemHandler;
 import com.almuradev.almura.shared.capability.SharedCapabilities;
 import com.almuradev.almura.shared.capability.impl.SingleSlotItemHandler;
@@ -26,7 +24,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 

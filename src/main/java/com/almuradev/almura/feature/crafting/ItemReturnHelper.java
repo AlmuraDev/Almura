@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.crafting;
 
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.entity.item.EntityItem;

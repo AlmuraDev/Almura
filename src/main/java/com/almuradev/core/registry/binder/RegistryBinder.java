@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.registry.binder;
+package com.almuradev.core.registry.binder;
 
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
@@ -21,7 +21,6 @@ import java.util.function.Supplier;
  * A registry binder.
  */
 public final class RegistryBinder {
-
     private final Multibinder<ModuleEntry<? extends CatalogType>> modules;
     private final Multibinder<BuilderEntry<?>> builders;
 

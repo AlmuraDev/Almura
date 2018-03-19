@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.registry.binder;
+package com.almuradev.core.registry.binder;
 
 import com.google.inject.Injector;
 import org.spongepowered.api.GameRegistry;
@@ -18,7 +18,6 @@ import java.util.function.Supplier;
  * @param <C> the type
  */
 final class BuilderEntry<C> extends AbstractEntry {
-
     private final Class<C> type;
     private final Supplier<? extends C> supplier;
 
@@ -28,7 +27,7 @@ final class BuilderEntry<C> extends AbstractEntry {
     }
 
     @Override
-    public void install(final Injector injector, final GameRegistry registry) {
+    void install(final Injector injector, final GameRegistry registry) {
         registry.registerBuilderSupplier(this.type, this.supplier);
     }
 }

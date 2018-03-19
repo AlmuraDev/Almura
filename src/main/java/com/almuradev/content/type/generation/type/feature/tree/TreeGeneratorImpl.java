@@ -7,12 +7,12 @@
  */
 package com.almuradev.content.type.generation.type.feature.tree;
 
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.block.state.LazyBlockState;
+import com.almuradev.content.type.tree.AbstractTreeFeature;
 import com.almuradev.content.type.tree.Tree;
-import com.almuradev.content.type.tree.TreeFeature;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
+import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -32,12 +32,16 @@ public class TreeGeneratorImpl implements TreeGenerator, Witness {
     private final List<DoubleRangeFunctionPredicatePair<Biome>> biomes;
     private final List<LazyBlockState> requires;
     private final Delegate<Tree> tree;
+    @Nullable private final Delegate<Tree> bigTree;
+    @Nullable private final List<DoubleRangeFunctionPredicatePair<Biome>> bigTreeChances;
 
-    TreeGeneratorImpl(final List<String> worlds, final List<DoubleRangeFunctionPredicatePair<Biome>> biomes, final List<LazyBlockState> requires, final Delegate<Tree> tree) {
+    TreeGeneratorImpl(final List<String> worlds, final List<DoubleRangeFunctionPredicatePair<Biome>> biomes, final List<LazyBlockState> requires, final Delegate<Tree> tree, @Nullable final Delegate<Tree> bigTree, @Nullable final List<DoubleRangeFunctionPredicatePair<Biome>> bigTreeChances) {
         this.worlds = worlds;
         this.biomes = biomes;
         this.requires = requires;
         this.tree = tree;
+        this.bigTree = bigTree;
+        this.bigTreeChances = bigTreeChances;
     }
 
     @SubscribeEvent
@@ -51,7 +55,7 @@ public class TreeGeneratorImpl implements TreeGenerator, Witness {
             return;
         }
 
-        final DoubleRange chance = this.chance(world.getBiome(event.getPos()));
+        final DoubleRange chance = DoubleRangeFunctionPredicatePair.range(this.biomes, world.getBiome(event.getPos()));
         if (chance == null || chance.max() == 0) {
             return;
         }
@@ -61,9 +65,16 @@ public class TreeGeneratorImpl implements TreeGenerator, Witness {
             final int x = random.nextInt(16) + 8;
             final int z = random.nextInt(16) + 8;
             final BlockPos pos = world.getHeight(event.getPos().add(x, 0, z));
-            ((TreeFeature) this.tree.require()).generate(world, random, pos, this.requires);
+            this.tree(world.getBiome(pos), random).generate(world, random, pos, this.requires);
             event.setResult(Event.Result.DENY);
         }
+    }
+
+    private AbstractTreeFeature tree(final Biome biome, final Random random) {
+        if(this.bigTree != null && this.bigTreeChances != null && random.nextDouble() <= (DoubleRangeFunctionPredicatePair.rangeOrRandom(this.bigTreeChances, biome).random(random) / 100d)) {
+            return (AbstractTreeFeature) this.bigTree.require();
+        }
+        return (AbstractTreeFeature) this.tree.require();
     }
 
     private boolean in(final World world) {
@@ -76,15 +87,5 @@ public class TreeGeneratorImpl implements TreeGenerator, Witness {
             }
         }
         return false;
-    }
-
-    @Nullable
-    private DoubleRange chance(final Biome biome) {
-        for (final DoubleRangeFunctionPredicatePair<Biome> predicate : this.biomes) {
-            if (predicate.test(biome)) {
-                return predicate.range();
-            }
-        }
-        return null;
     }
 }
