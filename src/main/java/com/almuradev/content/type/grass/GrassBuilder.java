@@ -11,12 +11,11 @@ import com.almuradev.content.mixin.iface.IMixinSetCatalogTypeId;
 import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.content.type.block.state.LazyBlockState;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class GrassBuilder extends ContentBuilder.Impl<Grass> implements Grass.Builder {
-
-    private List<LazyBlockState> grasses = new ArrayList<>();
+    private List<LazyBlockState> grasses = Collections.emptyList();
 
     @Override
     public void grass(List<LazyBlockState> grasses) {

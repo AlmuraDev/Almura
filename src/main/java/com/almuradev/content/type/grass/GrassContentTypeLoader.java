@@ -7,8 +7,8 @@
  */
 package com.almuradev.content.type.grass;
 
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.content.loader.SingleTypeContentLoader;
+import com.almuradev.core.event.Witness;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 
@@ -17,7 +17,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class GrassContentTypeLoader extends SingleTypeContentLoader<Grass, Grass.Builder> implements Witness {
-
     private final GrassRegistryModule module;
 
     @Inject

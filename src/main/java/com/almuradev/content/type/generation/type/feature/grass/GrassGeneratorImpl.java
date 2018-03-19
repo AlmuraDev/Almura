@@ -7,12 +7,12 @@
  */
 package com.almuradev.content.type.generation.type.feature.grass;
 
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.grass.Grass;
 import com.almuradev.content.type.grass.GrassFeature;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
+import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

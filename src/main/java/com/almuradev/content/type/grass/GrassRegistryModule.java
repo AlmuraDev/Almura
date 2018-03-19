@@ -15,7 +15,6 @@ import javax.inject.Singleton;
 @EagerCatalogRegistration
 @Singleton
 public final class GrassRegistryModule extends AbstractCatalogRegistryModule<Grass> {
-
     protected GrassRegistryModule() {
         super(1);
     }

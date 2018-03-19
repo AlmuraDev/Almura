@@ -8,6 +8,5 @@
 package com.almuradev.content.type.grass;
 
 public interface GrassConfig {
-
     String BLOCK = "block";
 }

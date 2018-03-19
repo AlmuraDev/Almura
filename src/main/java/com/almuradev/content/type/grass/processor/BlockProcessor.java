@@ -17,7 +17,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import java.util.stream.Collectors;
 
 public final class BlockProcessor implements AbstractGrassProcessor {
-
     private static final ConfigTag TAG = ConfigTag.create(GrassConfig.BLOCK);
 
     @Override

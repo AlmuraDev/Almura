@@ -15,7 +15,6 @@ import org.spongepowered.api.util.PEBKACException;
 import java.util.List;
 
 public interface Grass extends CatalogedContent {
-
     @Override
     default String getId() {
         throw new PEBKACException("api");
@@ -27,7 +26,6 @@ public interface Grass extends CatalogedContent {
     }
 
     interface Builder extends ContentBuilder<Grass> {
-
-        void grass(List<LazyBlockState> grasses);
+        void grass(final List<LazyBlockState> grasses);
     }
 }

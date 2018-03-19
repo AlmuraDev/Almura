@@ -16,7 +16,6 @@ import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
 
 public final class GrassModule extends AbstractModule implements CommonBinder {
-
     @Override
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("grass", GrassContentTypeLoader.class));
@@ -27,7 +26,6 @@ public final class GrassModule extends AbstractModule implements CommonBinder {
     }
 
     private SingleTypeProcessorBinder<Grass, Grass.Builder, ConfigProcessor<? extends Grass.Builder>> processors() {
-        return new SingleTypeProcessorBinder<>(this.binder(), new TypeLiteral<ConfigProcessor<? extends Grass.Builder>>() {
-        });
+        return new SingleTypeProcessorBinder<>(this.binder(), new TypeLiteral<ConfigProcessor<? extends Grass.Builder>>() {});
     }
 }
