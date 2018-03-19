@@ -15,6 +15,7 @@ import com.almuradev.content.type.item.processor.MaxStackSizeProcessor;
 import com.almuradev.content.type.item.type.food.FoodItemModule;
 import com.almuradev.content.type.item.type.normal.NormalItemModule;
 import com.almuradev.content.type.item.type.seed.SeedItemModule;
+import com.almuradev.content.type.item.type.slab.SlabItemModule;
 import com.almuradev.content.type.item.type.tool.ToolItemModule;
 import com.almuradev.core.CoreBinder;
 import com.google.inject.TypeLiteral;
@@ -29,6 +30,7 @@ public final class ItemModule extends AbstractModule implements CoreBinder {
         this.install(new FoodItemModule());
         this.install(new NormalItemModule());
         this.install(new SeedItemModule());
+        this.install(new SlabItemModule());
         this.install(new ToolItemModule());
         this.install(new Module() {
             @Override

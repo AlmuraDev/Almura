@@ -11,13 +11,17 @@ import com.almuradev.content.type.block.SpecialBlockStateBlock;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlockImpl;
 import com.almuradev.content.type.block.type.normal.NormalBlockImpl;
+import com.almuradev.content.type.block.type.slab.SlabBlockImpl;
+import com.almuradev.content.type.block.type.stair.StairBlockImpl;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin({
     CropBlockImpl.class,
     HorizontalBlockImpl.class,
-    NormalBlockImpl.class
+    NormalBlockImpl.class,
+    SlabBlockImpl.class,
+    StairBlockImpl.class
 })
 public class MixinSpecialBlockStateContentBlock implements SpecialBlockStateBlock {
     private ResourceLocation blockStateDefinitionLocation;

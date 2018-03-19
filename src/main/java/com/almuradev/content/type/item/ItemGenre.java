@@ -11,6 +11,7 @@ import com.almuradev.content.ContentType;
 import com.almuradev.content.type.item.type.food.FoodItem;
 import com.almuradev.content.type.item.type.normal.NormalItem;
 import com.almuradev.content.type.item.type.seed.SeedItem;
+import com.almuradev.content.type.item.type.slab.SlabItem;
 import com.almuradev.content.type.item.type.tool.type.axe.AxeToolItem;
 import com.almuradev.content.type.item.type.tool.type.hoe.HoeToolItem;
 import com.almuradev.content.type.item.type.tool.type.pickaxe.PickaxeToolItem;
@@ -34,6 +35,10 @@ public enum ItemGenre implements ContentType.MultiType<ContentItem, ContentItem.
      * An item type representing a seed.
      */
     SEED("seed", SeedItem.Builder.class),
+    /**
+     * An item type representing a slab.
+     */
+    SLAB("slab", SlabItem.Builder.class),
     /**
      * An item type representing an axe.
      */

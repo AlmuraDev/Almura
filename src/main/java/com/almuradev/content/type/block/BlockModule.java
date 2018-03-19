@@ -28,6 +28,8 @@ import com.almuradev.content.type.block.type.leaf.LeafBlockModule;
 import com.almuradev.content.type.block.type.log.LogBlockModule;
 import com.almuradev.content.type.block.type.normal.NormalBlockModule;
 import com.almuradev.content.type.block.type.sapling.SaplingBlockModule;
+import com.almuradev.content.type.block.type.slab.SlabBlockModule;
+import com.almuradev.content.type.block.type.stair.StairBlockModule;
 import com.almuradev.core.CoreBinder;
 import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
@@ -44,6 +46,8 @@ public final class BlockModule extends AbstractModule implements CoreBinder {
         this.install(new LogBlockModule());
         this.install(new NormalBlockModule());
         this.install(new SaplingBlockModule());
+        this.install(new SlabBlockModule());
+        this.install(new StairBlockModule());
         this.facet()
                 .add(BlockExperience.class);
         this.install(new Module() {
