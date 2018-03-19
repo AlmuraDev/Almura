@@ -7,14 +7,14 @@
  */
 package com.almuradev.content.type.action;
 
-import com.almuradev.content.type.ContentType;
+import com.almuradev.content.type.MultiContentType;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 
 /**
  * An enumeration of action types.
  */
-@ContentType.MultiType.Name("actions")
-public enum ActionGenre implements ContentType.MultiType<ActionContentType, ActionContentType.Builder<ActionContentType>> {
+@MultiContentType.Name("actions")
+public enum ActionGenre implements MultiContentType<ActionContentType, ActionContentType.Builder<ActionContentType>> {
     /**
      * An action representing block destruction.
      */

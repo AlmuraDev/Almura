@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.block;
 
-import com.almuradev.content.type.ContentType;
+import com.almuradev.content.type.MultiContentType;
 import com.almuradev.content.type.block.component.aabb.BlockAABB;
 import com.almuradev.content.type.block.component.aabb.BlockAABBFactory;
 import com.almuradev.content.type.block.component.aabb.NormalBoxFactory;
@@ -25,8 +25,8 @@ import com.almuradev.content.type.block.type.stair.StairBlock;
 /**
  * An enumeration of block types.
  */
-@ContentType.MultiType.Name("blocks")
-public enum BlockGenre implements ContentType.MultiType<ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> {
+@MultiContentType.Name("blocks")
+public enum BlockGenre implements MultiContentType<ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> {
     /**
      * A block type representing a container block.
      */

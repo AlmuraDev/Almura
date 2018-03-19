@@ -9,7 +9,7 @@ package com.almuradev.content.loader;
 
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
-import com.almuradev.content.type.ContentType;
+import com.almuradev.content.type.MultiContentType;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
@@ -17,7 +17,7 @@ import com.google.inject.multibindings.MapBinder;
 import net.kyori.violet.FriendlyTypeLiteral;
 import net.kyori.violet.TypeArgument;
 
-public final class MultiTypeProcessorBinder<T extends ContentType.MultiType<C, B>, C extends CatalogedContent, B extends ContentBuilder<C>, P extends ConfigProcessor<? extends B>> {
+public final class MultiTypeProcessorBinder<T extends MultiContentType<C, B>, C extends CatalogedContent, B extends ContentBuilder<C>, P extends ConfigProcessor<? extends B>> {
     private final T[] types;
     private final MapBinder<T, P> processors;
 

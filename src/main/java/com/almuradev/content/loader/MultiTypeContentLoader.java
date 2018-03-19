@@ -11,7 +11,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
-import com.almuradev.content.type.ContentType;
+import com.almuradev.content.type.MultiContentType;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.HashMultimap;
@@ -36,7 +36,7 @@ import javax.inject.Inject;
  * An abstract implementation of a content loader that has a multiple types.
  */
 @SuppressWarnings("deprecation")
-public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.MultiType<C, B>, C extends CatalogedContent, B extends ContentBuilder<C>, P extends ConfigProcessor<B>> extends ContentLoaderImpl<C, B, MultiTypeContentLoader.Entry<T, C, B>> implements MultiTypeExternalContentProcessor<T, C, B> {
+public abstract class MultiTypeContentLoader<T extends Enum<T> & MultiContentType<C, B>, C extends CatalogedContent, B extends ContentBuilder<C>, P extends ConfigProcessor<B>> extends ContentLoaderImpl<C, B, MultiTypeContentLoader.Entry<T, C, B>> implements MultiTypeExternalContentProcessor<T, C, B> {
     private final TypeToken<T> type = new TypeToken<T>(this.getClass()) {};
     private final SetMultimap<T, Entry<T, C, B>> queue = HashMultimap.create();
     private final T[] types;
@@ -45,7 +45,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
 
     protected MultiTypeContentLoader() {
         this.types = (T[]) this.type.getRawType().getEnumConstants();
-        this.name = this.type.getRawType().getAnnotation(ContentType.MultiType.Name.class).value();
+        this.name = this.type.getRawType().getAnnotation(MultiContentType.Name.class).value();
     }
 
     @Override
@@ -149,7 +149,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
         });
     }
 
-    public interface Translated<T extends Enum<T> & ContentType.MultiType> {
+    public interface Translated<T extends Enum<T> & MultiContentType> {
         String buildTranslationKey(final String namespace, final T type, final Iterable<String> components, final String key);
 
         default String buildTranslationKey(final String what, final String namespace, final T type, final Iterable<String> components, final String key) {
@@ -163,7 +163,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
         }
     }
 
-    public static class Entry<T extends Enum<T> & ContentType.MultiType, C extends CatalogedContent, B extends ContentBuilder<C>> extends ContentLoaderImpl.Entry<C, B> {
+    public static class Entry<T extends Enum<T> & MultiContentType, C extends CatalogedContent, B extends ContentBuilder<C>> extends ContentLoaderImpl.Entry<C, B> {
         final T type;
 
         public Entry(final String id, final T type, final B builder, @Nullable final Path path, final ConfigurationNode config) {
