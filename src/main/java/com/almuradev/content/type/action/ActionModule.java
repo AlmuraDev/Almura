@@ -12,6 +12,7 @@ import com.almuradev.content.loader.MultiTypeExternalContentProcessor;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
 import com.almuradev.content.type.action.component.drop.DropParser;
 import com.almuradev.content.type.action.component.drop.DropParserImpl;
+import com.almuradev.content.type.action.type.blockdecay.BlockDecayActionModule;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyActionModule;
 import com.google.inject.TypeLiteral;
 import net.kyori.violet.AbstractModule;
@@ -23,6 +24,7 @@ public final class ActionModule extends AbstractModule {
         this.bind(new TypeLiteral<MultiTypeExternalContentProcessor<ActionGenre, ActionContentType, ActionContentType.Builder<ActionContentType>>>() {}).to(ActionContentTypeLoader.class);
         this.bind(DropParser.class).to(DropParserImpl.class);
         this.install(new BlockDestroyActionModule());
+        this.install(new BlockDecayActionModule());
     }
 
     public static abstract class Module extends AbstractModule {

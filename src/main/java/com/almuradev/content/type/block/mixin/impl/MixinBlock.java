@@ -8,6 +8,7 @@
 package com.almuradev.content.type.block.mixin.impl;
 
 import com.almuradev.content.type.block.ContentBlock;
+import com.almuradev.content.type.block.mixin.iface.IMixinBlock;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -29,8 +30,8 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-@Mixin(value = Block.class, priority = 999)
-public abstract class MixinBlock implements ContentBlock {
+@Mixin(value = Block.class, priority = 998)
+public abstract class MixinBlock implements ContentBlock, IMixinBlock {
     @Nullable @Shadow public CreativeTabs displayOnCreativeTab;
     @Shadow public abstract CreativeTabs getCreativeTabToDisplayOn();
 
@@ -48,5 +49,17 @@ public abstract class MixinBlock implements ContentBlock {
     @Override
     public Optional<ItemGroup> itemGroup() {
         return Optional.ofNullable((ItemGroup) this.displayOnCreativeTab);
+    }
+
+    private boolean dropsFromDecay = false;
+
+    @Override
+    public boolean dropsFromDecay() {
+        return this.dropsFromDecay;
+    }
+
+    @Override
+    public void setDropsFromDecay(final boolean dropsFromDecay) {
+        this.dropsFromDecay = dropsFromDecay;
     }
 }

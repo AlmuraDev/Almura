@@ -12,8 +12,11 @@ import com.almuradev.content.component.apply.context.ApplyContext;
 import com.almuradev.content.component.apply.context.EverythingApplyContext;
 import com.almuradev.content.type.action.component.drop.Drop;
 import com.almuradev.content.type.action.component.drop.ItemDrop;
+import com.almuradev.content.type.action.type.blockdecay.BlockDecayAction;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
+import com.almuradev.content.type.block.mixin.iface.IMixinBlock;
 import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
+import com.almuradev.content.type.block.mixin.iface.IMixinDecayBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -24,6 +27,7 @@ import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import org.spongepowered.api.item.ItemType;
 
 import java.util.ArrayList;
@@ -99,20 +103,56 @@ public class BlockUtil {
 
 
     public static void handleDropBlockAsItemWithChance(final IMixinContentBlock block, final World world, final BlockPos pos, final IBlockState
-            state, final float chance, final int fortune) {
+            state, float chance, final int fortune) {
         if (!world.isRemote && !world.restoringBlockSnapshots) { // do not drop items while restoring blockstates, prevents item dupe
             // Almura Start - We don't use the drops here
             // List<ItemStack> drops = getDrops(world, pos, state, fortune); // use the old method until it gets removed, for backward compatibility
             // Almura End
 
-            // Now check if we have no breaks, this block is not meant to perform any logic on harvest
-            final BlockDestroyAction blockDestroyAction = block.destroyAction(state);
-            if (blockDestroyAction == null || blockDestroyAction.entries().isEmpty()) {
-                return;
-            }
+            final IMixinBlock coreBlock = (IMixinBlock) block;
 
-            fireHarvestAndDrop(block, org.spongepowered.api.item.inventory.ItemStack.empty().getType(), world, pos, state, chance, fortune,
-                    blockDestroyAction);
+            if (!coreBlock.dropsFromDecay()) {
+                // Now check if we have no breaks, this block is not meant to perform any logic on harvest
+                final BlockDestroyAction blockDestroyAction = block.destroyAction(state);
+                if (blockDestroyAction == null || blockDestroyAction.entries().isEmpty()) {
+                    return;
+                }
+
+                fireHarvestAndDrop(block, org.spongepowered.api.item.inventory.ItemStack.empty().getType(), world, pos, state, chance, fortune,
+                        blockDestroyAction);
+            } else {
+                final IMixinDecayBlock decayBlock = (IMixinDecayBlock) block;
+                final BlockDecayAction blockDecayAction = decayBlock.decayAction(state);
+                if (blockDecayAction == null || blockDecayAction.entries().isEmpty()) {
+                    return;
+                }
+
+                final Biome biome = world.getBiome(pos);
+                final List<ItemStack> drops = new ArrayList<>();
+
+                for (final BlockDecayAction.Entry entry : blockDecayAction.entries()) {
+                    if (entry.test(biome, world.rand)) {
+                        for (final Drop drop : entry.drops()) {
+                            if (drop instanceof ItemDrop) {
+                                ((ItemDrop) drop).fill(drops, world.rand);
+                            }
+                        }
+                    }
+                }
+
+                if (drops.isEmpty()) {
+                    return;
+                }
+
+                chance = net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, fortune, chance, false,
+                        block.getHarvesters().get());
+
+                if (chance == 0) {
+                    return;
+                }
+                
+                drop(world, pos, chance, drops);
+            }
         }
     }
 
@@ -169,12 +209,16 @@ public class BlockUtil {
             return false;
         }
 
+        drop(world, pos, chance, drops);
+
+        return true;
+    }
+
+    private static void drop(final World world, final BlockPos pos, final float chance, final List<ItemStack> drops) {
         for (final ItemStack drop : drops) {
             if (world.rand.nextFloat() <= chance) {
                 Block.spawnAsEntity(world, pos, drop);
             }
         }
-
-        return true;
     }
 }

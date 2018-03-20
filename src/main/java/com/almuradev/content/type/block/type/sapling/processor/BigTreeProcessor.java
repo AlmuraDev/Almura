@@ -13,6 +13,7 @@ import com.almuradev.content.type.block.type.sapling.SaplingBlock;
 import com.almuradev.content.type.block.type.sapling.SaplingBlockConfig;
 import com.almuradev.content.type.block.type.sapling.state.SaplingBlockStateDefinitionBuilder;
 import com.almuradev.content.type.tree.Tree;
+import com.almuradev.content.util.ConfigurateSucks;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
 import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.toolbox.config.tag.ConfigTag;
@@ -37,12 +38,10 @@ public final class BigTreeProcessor implements SaplingBlockContentProcessor.Stat
     public void processState(final ConfigurationNode config, final SaplingBlock.Builder builder, final SaplingBlockStateDefinitionBuilder definition) {
         final AtomicBoolean foundDefault = new AtomicBoolean();
         final List<DoubleRangeFunctionPredicatePair<Biome>> chances = new ArrayList<>();
-        config.getNode(SaplingBlockConfig.BigTree.CHANCE).getChildrenList().forEach(child -> {
-            chances.add(new DoubleRangeFunctionPredicatePair<>(
-                    BIOMES.allowingSingleAlwaysTrueDefault(foundDefault, child.getNode(SaplingBlockConfig.BigTree.Chance.BIOME), "chance"),
-                    DoubleRanges.deserialize(child).orElseThrow(() -> new IllegalArgumentException("chance value is missing"))
-            ));
-        });
+        config.getNode(SaplingBlockConfig.BigTree.CHANCE).getChildrenList().forEach(child -> chances.add(new DoubleRangeFunctionPredicatePair<>(
+                BIOMES.allowingSingleAlwaysTrueDefault(foundDefault, child.getNode(SaplingBlockConfig.BigTree.Chance.BIOME), "chance"),
+                DoubleRanges.deserialize(child).orElseThrow(() -> new IllegalArgumentException("chance value is missing"))
+        )));
         definition.bigTree(CatalogDelegate.namespaced(Tree.class, config.getNode(SaplingBlockConfig.BigTree.TYPE)), chances);
     }
 }
