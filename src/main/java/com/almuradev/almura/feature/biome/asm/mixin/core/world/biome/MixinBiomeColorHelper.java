@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @SideOnly(Side.CLIENT)
-@Mixin(value = BiomeColorHelper.class, remap = false)
+@Mixin(value = BiomeColorHelper.class)
 public abstract class MixinBiomeColorHelper {
 
     private static boolean areWater = false;
@@ -45,7 +45,7 @@ public abstract class MixinBiomeColorHelper {
      * @reason Have water respect our config
      */
     @Overwrite
-    public static int getColorAtPos(IBlockAccess blockAccess, BlockPos pos, BiomeColorHelper.ColorResolver colorResolver)
+    private static int getColorAtPos(IBlockAccess blockAccess, BlockPos pos, BiomeColorHelper.ColorResolver colorResolver)
     {
         int i = 0;
         int j = 0;
