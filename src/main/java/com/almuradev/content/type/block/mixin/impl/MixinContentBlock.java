@@ -32,10 +32,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.Optional;
@@ -54,6 +57,7 @@ import javax.annotation.Nullable;
 })
 public abstract class MixinContentBlock extends MixinBlock implements ContentBlock, IMixinContentBlock, IMixinLazyItemGroup {
     @Nullable private Delegate<ItemGroup> lazyItemGroup;
+    @Nullable private BlockRenderLayer renderLayer;
 
     @Override
     public Optional<ItemGroup> itemGroup() {
@@ -99,10 +103,16 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
     }
 
     @Override
+    public void setRenderLayer(BlockRenderLayer renderLayer) {
+        this.renderLayer = renderLayer;
+    }
+
+    @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
         return ((AbstractBlockStateDefinition<?, ?, ?>) this.definition(state)).blockFaceShape;
     }
 
+<<<<<<< HEAD
     @Override
     public int getFlammability(IBlockAccess world, BlockPos pos, EnumFacing face) {
         final IBlockState state = world.getBlockState(pos);
@@ -115,7 +125,18 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
         return ((AbstractBlockStateDefinition<?, ?, ?>) this.definition(state)).fireSpreadSpeed.orElse(0);
     }
 
-    // Almura Start - Handle drops.
+    @SideOnly(Side.CLIENT)
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return this.renderLayer;
+    }
+
+    @Override
+    public BlockRenderLayer renderLayer() {
+        return this.renderLayer;
+    }
+
+    // Almura Start - Handle drops
     @Override
     public void harvestBlock(final World world, final EntityPlayer player, final BlockPos pos, final IBlockState state, @Nullable final TileEntity te, final ItemStack stack) {
         BlockUtil.handleHarvest(this, world, player, pos, state, te, stack);

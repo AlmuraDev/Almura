@@ -11,6 +11,7 @@ import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.BlockRenderLayer;
 
 import java.util.Optional;
 
@@ -23,4 +24,6 @@ public interface IMixinContentBlock {
     BlockDestroyAction destroyAction(final IBlockState state);
 
     ThreadLocal<EntityPlayer> getHarvesters();
+
+    void setRenderLayer(final BlockRenderLayer renderLayer);
 }

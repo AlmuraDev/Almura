@@ -19,6 +19,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.util.PEBKACException;
 
 import java.util.Map;
@@ -41,6 +44,11 @@ public interface ContentBlock extends CatalogedContent, ItemGrouped {
         throw new PEBKACException("mixin");
     }
 
+    @SideOnly(Side.CLIENT)
+    default BlockRenderLayer renderLayer() {
+        throw new PEBKACException("render_layer");
+    }
+
     BlockStateDefinition definition(final IBlockState state);
 
     interface InInventory extends ContentBlock {
@@ -59,6 +67,8 @@ public interface ContentBlock extends CatalogedContent, ItemGrouped {
         void material(final Delegate<Material> material);
 
         void itemGroup(final Delegate<ItemGroup> itemGroup);
+
+        void renderLayer(final BlockRenderLayer renderLayer);
 
         // Definitions
 

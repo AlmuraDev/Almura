@@ -19,6 +19,7 @@ public interface BlockConfig {
     String MATERIAL = "material";
 
     String ITEM_GROUP = "item_group";
+    String RENDER_LAYER = "render_layer";
 
     interface State {
         String PARENT = "parent";

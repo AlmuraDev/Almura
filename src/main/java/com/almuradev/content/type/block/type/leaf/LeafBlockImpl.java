@@ -7,7 +7,9 @@
  */
 package com.almuradev.content.type.block.type.leaf;
 
+import com.almuradev.content.type.block.ContentBlock;
 import com.almuradev.content.type.block.StateMappedBlock;
+import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
 import com.almuradev.content.type.block.type.leaf.state.LeafBlockStateDefinition;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPlanks;
@@ -15,7 +17,10 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.renderer.block.statemap.StateMap;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -56,6 +61,11 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
                 .withProperty(CHECK_DECAY, (data & LEGACY_CHECK_DECAY) > 0);
     }
 
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return !Blocks.LEAVES.leavesFancy;
+    }
+
     @Deprecated
     @Override
     public int getMetaFromState(final IBlockState state) {
@@ -90,5 +100,13 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
         return new StateMap.Builder()
                 .ignore(CHECK_DECAY, DECAYABLE)
                 .build();
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
+    {
+        return (Blocks.LEAVES.leavesFancy || blockAccess.getBlockState(pos.offset(side)).getBlock() != this) && super.shouldSideBeRendered(blockState,
+                blockAccess, pos, side);
     }
 }

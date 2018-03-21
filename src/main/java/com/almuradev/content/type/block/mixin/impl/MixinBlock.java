@@ -19,10 +19,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -45,6 +48,8 @@ public abstract class MixinBlock implements ContentBlock, IMixinBlock {
     @Shadow public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) { return null; }
     @Shadow public abstract int getFlammability(IBlockAccess world, BlockPos pos, EnumFacing face);
     @Shadow public abstract int getFireSpreadSpeed(IBlockAccess world, BlockPos pos, EnumFacing face);
+    @SideOnly(Side.CLIENT)
+    @Shadow public abstract BlockRenderLayer getBlockLayer();
 
     @Override
     public Optional<ItemGroup> itemGroup() {

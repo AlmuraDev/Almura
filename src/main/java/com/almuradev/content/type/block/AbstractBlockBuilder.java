@@ -9,11 +9,13 @@ package com.almuradev.content.type.block;
 
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.registry.ContentBuilder;
+import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import com.almuradev.content.type.itemgroup.mixin.iface.IMixinLazyItemGroup;
 import com.almuradev.content.type.mapcolor.MapColor;
 import com.almuradev.content.type.material.Material;
 import net.minecraft.block.Block;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.HashMap;
@@ -25,6 +27,7 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
     public Delegate<MapColor> mapColor;
     public Delegate<Material> material;
     private Delegate<ItemGroup> itemGroup;
+    private BlockRenderLayer renderLayer;
 
     public AbstractBlockBuilder(final BlockGenre genre) {
         this.genre = genre;
@@ -51,6 +54,11 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
     }
 
     @Override
+    public void renderLayer(BlockRenderLayer renderLayer) {
+        this.renderLayer = renderLayer;
+    }
+
+    @Override
     public Map<String, B> stateBuilders() {
         return this.stateBuilders;
     }
@@ -67,5 +75,6 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
         super.fill(entry);
         ((Block) entry).setUnlocalizedName(this.string(StringType.TRANSLATION).replace('/', '.'));
         ((IMixinLazyItemGroup) entry).itemGroup(this.itemGroup);
+        ((IMixinContentBlock) entry).setRenderLayer(this.renderLayer);
     }
 }
