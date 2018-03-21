@@ -30,6 +30,8 @@ public abstract class AbstractBlockStateDefinition<B extends BlockAABB.Box, C ex
     public final OptionalDouble resistance;
     @Nullable public final Delegate<BlockSoundGroup> sound;
     @Nullable public final Delegate<BlockDestroyAction> destroyAction;
+    public final OptionalInt flammability;
+    public final OptionalInt fireSpreadSpeed;
 
     protected AbstractBlockStateDefinition(final AbstractBlockStateDefinitionBuilder<? extends BlockStateDefinition, ? extends AbstractBlockStateDefinitionBuilder> builder) {
         this.box = (B) builder.box;
@@ -42,5 +44,7 @@ public abstract class AbstractBlockStateDefinition<B extends BlockAABB.Box, C ex
         this.resistance = builder.resistance;
         this.sound = builder.sound;
         this.destroyAction = builder.destroyAction;
+        this.flammability = builder.flammability;
+        this.fireSpreadSpeed = builder.fireSpreadSpeed;
     }
 }

@@ -103,6 +103,18 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
         return ((AbstractBlockStateDefinition<?, ?, ?>) this.definition(state)).blockFaceShape;
     }
 
+    @Override
+    public int getFlammability(IBlockAccess world, BlockPos pos, EnumFacing face) {
+        final IBlockState state = world.getBlockState(pos);
+        return ((AbstractBlockStateDefinition<?, ?, ?>) this.definition(state)).flammability.orElse(0);
+    }
+
+    @Override
+    public int getFireSpreadSpeed(IBlockAccess world, BlockPos pos, EnumFacing face) {
+        final IBlockState state = world.getBlockState(pos);
+        return ((AbstractBlockStateDefinition<?, ?, ?>) this.definition(state)).fireSpreadSpeed.orElse(0);
+    }
+
     // Almura Start - Handle drops from Break
     @Override
     public void harvestBlock(final World world, final EntityPlayer player, final BlockPos pos, final IBlockState state, @Nullable final TileEntity te, final ItemStack stack) {

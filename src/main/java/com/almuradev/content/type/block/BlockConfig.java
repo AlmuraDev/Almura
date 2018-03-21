@@ -33,6 +33,8 @@ public interface BlockConfig {
         String ACTION = "action";
         String BLOCK_FACE_SHAPE = "block_face_shape";
         String HARDNESS = "hardness";
+        String FLAMMABILITY = "flammability";
+        String FIRE_SPREAD_SPEED = "fire_spread_speed";
         /**
          * @see Light
          */

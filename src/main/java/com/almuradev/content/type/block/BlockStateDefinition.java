@@ -39,6 +39,10 @@ public interface BlockStateDefinition {
 
         void destroyAction(final Delegate<BlockDestroyAction> destroyAction);
 
+        void flammability(final int flammability);
+
+        void fireSpreadSpeed(final int fireSpreadSpeed);
+
         D build();
     }
 }

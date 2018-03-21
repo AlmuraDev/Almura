@@ -32,6 +32,8 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
     protected OptionalDouble resistance = OptionalDouble.empty();
     @Nullable protected Delegate<BlockSoundGroup> sound;
     @Nullable protected Delegate<BlockDestroyAction> destroyAction;
+    public OptionalInt flammability = OptionalInt.empty();
+    public OptionalInt fireSpreadSpeed = OptionalInt.empty();
 
     @Override
     public void parent(@Nullable final BlockStateDefinition.Builder<D> that) {
@@ -96,6 +98,16 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
     }
 
     @Override
+    public void flammability(final int flammability) {
+        this.flammability = OptionalInt.of(flammability);
+    }
+
+    @Override
+    public void fireSpreadSpeed(final int fireSpreadSpeed) {
+        this.fireSpreadSpeed = OptionalInt.of(fireSpreadSpeed);
+    }
+
+    @Override
     public final D build() {
         this.inherit();
         return this.build0();
@@ -120,6 +132,8 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
             if (this.resistance.isPresent()) that.resistance = this.resistance;
             if (this.sound != null) that.sound = this.sound;
             if (this.destroyAction != null) that.destroyAction = this.destroyAction;
+            if (this.flammability.isPresent()) that.flammability = this.flammability;
+            if (this.fireSpreadSpeed.isPresent())  that.fireSpreadSpeed = this.fireSpreadSpeed;
             that.blockFaceShape = this.blockFaceShape;
         }
     }

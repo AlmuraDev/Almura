@@ -42,6 +42,8 @@ public abstract class MixinBlock implements ContentBlock {
     @Shadow(remap = false) public SoundType getSoundType(final IBlockState state, final World world, final BlockPos pos, @Nullable final Entity
             entity) { return null; }
     @Shadow public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) { return null; }
+    @Shadow public abstract int getFlammability(IBlockAccess world, BlockPos pos, EnumFacing face);
+    @Shadow public abstract int getFireSpreadSpeed(IBlockAccess world, BlockPos pos, EnumFacing face);
 
     @Override
     public Optional<ItemGroup> itemGroup() {
