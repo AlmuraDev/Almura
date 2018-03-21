@@ -112,7 +112,6 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
         return ((AbstractBlockStateDefinition<?, ?, ?>) this.definition(state)).blockFaceShape;
     }
 
-<<<<<<< HEAD
     @Override
     public int getFlammability(IBlockAccess world, BlockPos pos, EnumFacing face) {
         final IBlockState state = world.getBlockState(pos);
