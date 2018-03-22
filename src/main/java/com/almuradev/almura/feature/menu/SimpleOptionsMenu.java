@@ -60,7 +60,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
 
         this.addToScreen(titleLabel);
 
-        final UIBackgroundContainer optionsContainer = new UIBackgroundContainer(this, 315, 200);
+        final UIBackgroundContainer optionsContainer = new UIBackgroundContainer(this, 335, 200);
         optionsContainer.setBackgroundAlpha(0);
         optionsContainer.setPosition(0, getPaddedY(titleLabel, CONTROL_PADDING), Anchor.TOP | Anchor.CENTER);
 
@@ -114,6 +114,14 @@ public class SimpleOptionsMenu extends SimpleScreen {
         checkboxDisplayHealthbars.setName("checkbox.display_healthbars");
         checkboxDisplayHealthbars.register(this);
         this.updatePosition(checkboxDisplayHealthbars, Anchor.LEFT);
+
+        final boolean disableOffhandTorchPlacement = config.disableOffhandTorchPlacement;
+        final UICheckBox checkboxDisableOffhandTorchPlacement = new UICheckBox(this);
+        checkboxDisableOffhandTorchPlacement.setText(TextFormatting.WHITE + "Disable Offhand Torch Placement");
+        checkboxDisableOffhandTorchPlacement.setChecked(disableOffhandTorchPlacement);
+        checkboxDisableOffhandTorchPlacement.setName("checkbox.disable_offhand_torch_placement");
+        checkboxDisableOffhandTorchPlacement.register(this);
+        this.updatePosition(checkboxDisableOffhandTorchPlacement, Anchor.LEFT);
 
         // Reset for new column
         this.lastComponent = null;
@@ -208,10 +216,9 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 .build("button.done");
 
         optionsContainer.add(this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget,
-                checkboxNumericHUDValues,
-                checkboxDisplayNames, checkboxDisplayHealthbars, sliderChestDistance, sliderSignTextDistance,
-                sliderItemFrameDistance,
-                sliderPlayerNameRenderDistance, sliderEnemyNameRenderDistance, sliderAnimalNameRenderDistance, buttonDone);
+                checkboxNumericHUDValues, checkboxDisplayNames, checkboxDisplayHealthbars, checkboxDisableOffhandTorchPlacement,
+                sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, sliderPlayerNameRenderDistance,
+                sliderEnemyNameRenderDistance, sliderAnimalNameRenderDistance, buttonDone);
         addToScreen(optionsContainer);
     }
 
@@ -299,6 +306,9 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 break;
             case "checkbox.display_healthbars" :
                 StaticAccess.config.get().client.displayHealthbars = (boolean) event.getNewValue();
+                break;
+            case "checkbox.disable_offhand_torch_placement":
+                StaticAccess.config.get().client.disableOffhandTorchPlacement = (boolean) event.getNewValue();
                 break;
         }
 

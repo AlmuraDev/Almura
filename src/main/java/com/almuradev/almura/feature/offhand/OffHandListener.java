@@ -7,22 +7,33 @@
  */
 package com.almuradev.almura.feature.offhand;
 
+import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.core.event.Witness;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.filter.cause.Root;
-import org.spongepowered.api.event.item.inventory.InteractItemEvent;
-import org.spongepowered.api.item.ItemTypes;
+import net.minecraft.block.BlockTorch;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.util.EnumHand;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class OffHandListener implements Witness {
 
-    // Author: Grinch 3/7/2018
-    // Prevent item interaction with offhand torches
-    @Listener
-    public void onInteract(InteractItemEvent.Secondary.OffHand event, @Root Player player) {
-        if (event.getItemStack().getType() == ItemTypes.REDSTONE_TORCH
-                || event.getItemStack().getType() == ItemTypes.TORCH) {
-            event.setCancelled(true);
+    // Author: Grinch 3/21/2018
+    // Prevents interaction with torches from offhand if configuration option is enabled
+    @SubscribeEvent
+    public void onInteract(PlayerInteractEvent.RightClickBlock event) {
+        if (!StaticAccess.config.get().client.disableOffhandTorchPlacement) {
+            return;
+        }
+
+        if (event.getHand() == EnumHand.OFF_HAND) {
+            final Item item = event.getItemStack().getItem();
+            if (item instanceof ItemBlock) {
+                if (((ItemBlock) item).getBlock() instanceof BlockTorch) {
+                    event.setUseItem(Event.Result.DENY);
+                }
+            }
         }
     }
 }

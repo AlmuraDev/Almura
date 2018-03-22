@@ -64,4 +64,7 @@ public final class ClientCategory {
 
     @Setting(value = "display-healthbars", comment = "Toggles the display Entity Healthbars")
     public boolean displayHealthbars = true;
+
+    @Setting(value = "disable-offhand-torch-placement", comment = "When enabled the player is unable to place torches with their offhand.")
+    public boolean disableOffhandTorchPlacement = false;
 }
