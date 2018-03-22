@@ -57,7 +57,7 @@ import javax.annotation.Nullable;
 })
 public abstract class MixinContentBlock extends MixinBlock implements ContentBlock, IMixinContentBlock, IMixinLazyItemGroup {
     @Nullable private Delegate<ItemGroup> lazyItemGroup;
-    private BlockRenderLayer renderLayer = BlockRenderLayer.SOLID;
+    private BlockRenderLayer renderLayer = BlockRenderLayer.CUTOUT_MIPPED;
 
     @Override
     public Optional<ItemGroup> itemGroup() {

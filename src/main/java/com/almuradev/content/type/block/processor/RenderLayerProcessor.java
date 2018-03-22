@@ -27,7 +27,7 @@ public final class RenderLayerProcessor implements BlockContentProcessor.AnyTagg
     @Override
     public void processTagged(ConfigurationNode config,
             ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>> builder) {
-        final String rawRenderLayer = config.getString("solid").toUpperCase();
+        final String rawRenderLayer = config.getString("cutout_mipped").toUpperCase();
         builder.renderLayer(BlockRenderLayer.valueOf(rawRenderLayer));
     }
 }
