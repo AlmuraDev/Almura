@@ -10,7 +10,9 @@ package com.almuradev.content.type.grass;
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.content.type.block.state.LazyBlockState;
+import com.almuradev.content.util.WeightedLazyBlockState;
 import org.spongepowered.api.util.PEBKACException;
+import org.spongepowered.api.util.weighted.WeightedObject;
 
 import java.util.List;
 
@@ -26,6 +28,6 @@ public interface Grass extends CatalogedContent {
     }
 
     interface Builder extends ContentBuilder<Grass> {
-        void grass(final List<LazyBlockState> grasses);
+        void grass(final List<WeightedLazyBlockState> grasses);
     }
 }

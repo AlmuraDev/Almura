@@ -10,16 +10,18 @@ package com.almuradev.content.type.grass;
 import com.almuradev.content.mixin.iface.IMixinSetCatalogTypeId;
 import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.content.type.block.state.LazyBlockState;
+import com.almuradev.content.util.WeightedLazyBlockState;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public final class GrassBuilder extends ContentBuilder.Impl<Grass> implements Grass.Builder {
-    private List<LazyBlockState> grasses = Collections.emptyList();
+    private List<WeightedLazyBlockState> grasses = new ArrayList<>();
 
     @Override
-    public void grass(List<LazyBlockState> grasses) {
-        this.grasses = grasses;
+    public void grass(List<WeightedLazyBlockState> grasses) {
+        this.grasses.addAll(grasses);
     }
 
     @Override

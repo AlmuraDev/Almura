@@ -9,9 +9,11 @@ package com.almuradev.content.type.grass;
 
 import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.state.LazyBlockState;
+import com.almuradev.content.util.WeightedLazyBlockState;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -24,9 +26,9 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public final class GrassFeature extends WorldGenTallGrass implements Grass {
-    private final List<LazyBlockState> grasses;
+    private final List<WeightedLazyBlockState> grasses;
 
-    GrassFeature(final List<LazyBlockState> grasses) {
+    GrassFeature(final List<WeightedLazyBlockState> grasses) {
         super(BlockTallGrass.EnumType.GRASS);
         this.grasses = grasses;
     }
@@ -40,7 +42,9 @@ public final class GrassFeature extends WorldGenTallGrass implements Grass {
         final BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos(origin);
 
         // Find starting point
-        for (IBlockState state = world.getBlockState(mutPos); (state.getBlock().isAir(state, world, mutPos) || state.getBlock().isLeaves(state, world, mutPos)) && mutPos.getY() > 0; state = world.getBlockState(mutPos)) {
+        for (IBlockState state = world.getBlockState(mutPos);
+             (state.getBlock().isAir(state, world, mutPos) || state.getBlock().isLeaves(state, world, mutPos)) && mutPos.getY() > 0;
+             state = world.getBlockState(mutPos)) {
             mutPos.setPos(mutPos.getX(), mutPos.getY() - 1, mutPos.getZ());
         }
 
@@ -48,25 +52,20 @@ public final class GrassFeature extends WorldGenTallGrass implements Grass {
         origin = new BlockPos(mutPos);
 
         for (int i = 0; i < 128; i++) {
-            final BlockPos targetPos = origin.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
+            final BlockPos targetPos =
+                    origin.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
 
             final IBlockState existingState = world.getBlockState(targetPos);
             final IBlockState underState = world.getBlockState(targetPos.down());
 
             if (existingState.getBlock().isAir(existingState, world, targetPos)) {
-                this.grasses.stream()
-                        .collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
-                            Collections.shuffle(collected);
-                            return collected.stream();
-                        })).findFirst().ifPresent(grass -> {
-
-                    final IBlockState grassState = grass.get();
-                    if (this.canPlace(world, targetPos, EnumFacing.UP, underState, grassState, requires)) {
-                        world.setBlockState(targetPos, grassState, BlockUpdateFlag.UPDATE_CLIENTS);
-                    }
-                });
+                final IBlockState grassState = WeightedRandom.getRandomItem(world.rand, this.grasses).getLazyBlockState().get();
+                if (this.canPlace(world, targetPos, EnumFacing.UP, underState, grassState, requires)) {
+                    world.setBlockState(targetPos, grassState, BlockUpdateFlag.UPDATE_CLIENTS);
+                }
             }
         }
+
         return true;
     }
 

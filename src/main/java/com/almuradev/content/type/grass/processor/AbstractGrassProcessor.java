@@ -12,5 +12,5 @@ import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.almuradev.toolbox.config.processor.TaggedConfigProcessor;
 import com.almuradev.toolbox.config.tag.ConfigTag;
 
-interface AbstractGrassProcessor extends ConfigProcessor<Grass.Builder>, TaggedConfigProcessor<Grass.Builder, ConfigTag> {
+interface AbstractGrassProcessor extends TaggedConfigProcessor<Grass.Builder, ConfigTag> {
 }
