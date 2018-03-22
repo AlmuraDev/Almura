@@ -27,7 +27,7 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
     public Delegate<MapColor> mapColor;
     public Delegate<Material> material;
     private Delegate<ItemGroup> itemGroup;
-    private BlockRenderLayer renderLayer;
+    private BlockRenderLayer renderLayer = BlockRenderLayer.CUTOUT_MIPPED;
 
     public AbstractBlockBuilder(final BlockGenre genre) {
         this.genre = genre;
