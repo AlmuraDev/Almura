@@ -273,7 +273,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         final boolean isMaxAge = this.isMaxAge(state);
         final boolean canRollback = definition.canRollback;
 
-        if (isMaxAge && !canRollback) {
+        if (isMaxAge) {  // && !canRollback) { // Remove 3/22/2018 to prevent generated crops from rolling back.
             return;
         }
 
