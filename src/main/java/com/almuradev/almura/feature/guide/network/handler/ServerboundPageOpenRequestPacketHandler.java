@@ -15,6 +15,7 @@ import com.almuradev.almura.feature.guide.network.ClientboundPageOpenResponsePac
 import com.almuradev.almura.feature.guide.network.ServerboundPageOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import org.spongepowered.api.Platform;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
@@ -46,7 +47,7 @@ public final class ServerboundPageOpenRequestPacketHandler implements MessageHan
 
     @Override
     public void handleMessage(ServerboundPageOpenRequestPacket message, RemoteConnection connection, Platform.Type side) {
-        if (side.isServer() && connection instanceof PlayerConnection) {
+        if (side.isServer() && connection instanceof PlayerConnection && Sponge.isServerAvailable()) {
 
             this.scheduler.createTaskBuilder().delayTicks(0).execute(() -> {
                 final Player player = ((PlayerConnection) connection).getPlayer();

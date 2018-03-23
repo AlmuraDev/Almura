@@ -11,6 +11,7 @@ import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResp
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import org.spongepowered.api.Platform;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
@@ -40,7 +41,7 @@ public final class ServerboundExchangeOpenRequestPacketHandler implements Messag
 
     @Override
     public void handleMessage(ServerboundExchangeOpenRequestPacket message, RemoteConnection connection, Platform.Type side) {
-        if (side.isServer() && connection instanceof PlayerConnection) {
+        if (side.isServer() && connection instanceof PlayerConnection && Sponge.isServerAvailable()) {
 
             this.scheduler.createTaskBuilder().delayTicks(0).execute(() -> {
                 final PlayerConnection playerConnection = (PlayerConnection) connection;

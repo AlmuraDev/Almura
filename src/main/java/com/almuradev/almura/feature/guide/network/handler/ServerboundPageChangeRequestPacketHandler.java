@@ -17,6 +17,7 @@ import com.almuradev.almura.feature.guide.network.ServerboundPageChangeRequestPa
 import com.almuradev.almura.shared.network.NetworkConfig;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Platform;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
@@ -48,7 +49,7 @@ public final class ServerboundPageChangeRequestPacketHandler implements MessageH
 
     @Override
     public void handleMessage(ServerboundPageChangeRequestPacket message, RemoteConnection connection, Platform.Type side) {
-        if (side.isServer() && connection instanceof PlayerConnection && message.changeType != null) {
+        if (side.isServer() && connection instanceof PlayerConnection && message.changeType != null && Sponge.isServerAvailable()) {
 
             this.game.getScheduler().createTaskBuilder().delayTicks(0).execute(() -> {
                 final Player player = ((PlayerConnection) connection).getPlayer();
