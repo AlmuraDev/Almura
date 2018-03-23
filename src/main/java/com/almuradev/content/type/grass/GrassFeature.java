@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenTallGrass;
 import net.minecraftforge.common.IPlantable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -59,7 +60,9 @@ public final class GrassFeature extends WorldGenTallGrass implements Grass {
             final IBlockState underState = world.getBlockState(targetPos.down());
 
             if (existingState.getBlock().isAir(existingState, world, targetPos)) {
-                final IBlockState grassState = WeightedRandom.getRandomItem(world.rand, this.grasses).getLazyBlockState().get();
+                final List<WeightedLazyBlockState> grasses = new ArrayList<>(this.grasses);
+                Collections.shuffle(grasses);
+                final IBlockState grassState = WeightedRandom.getRandomItem(world.rand, grasses).getLazyBlockState().get();
                 if (this.canPlace(world, targetPos, EnumFacing.UP, underState, grassState, requires)) {
                     world.setBlockState(targetPos, grassState, BlockUpdateFlag.UPDATE_CLIENTS);
                 }
