@@ -104,7 +104,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
                 this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24,
                         this.autoHeight - 14, false, true);
             } else {
-                this.drawText(Text.of(TextColors.WHITE, Item.REGISTRY.getNameForObject(pickStack.getItem())), 24,
+                this.drawText(Text.of(TextColors.WHITE, Block.REGISTRY.getNameForObject(state.getBlock())), 24,
                         this.autoHeight - 14, false, true);
             }
         } else {
