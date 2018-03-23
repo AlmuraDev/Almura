@@ -79,7 +79,7 @@ public final class ItemDefinition implements Droppable {
     }
 
     public boolean test(final ItemStack stack) {
-        return this.item.get().equals(stack.getItem());
+        return this.item.get().equals(stack.getItem()) && this.meta == stack.getItemDamage();
     }
 
     public boolean test(final ItemType type) {

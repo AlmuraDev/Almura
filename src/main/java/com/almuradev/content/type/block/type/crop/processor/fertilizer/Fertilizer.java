@@ -11,6 +11,7 @@ import com.almuradev.content.type.item.definition.ItemDefinition;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.MoreCollectors;
 import net.minecraft.item.ItemStack;
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -71,28 +72,18 @@ public final class Fertilizer {
     };
 
     private final Map<ItemDefinition, DoubleRange> itemDefinitionChances;
-    private final Map<ItemStack, DoubleRange> itemStackChances = new HashMap<>();
 
     private Fertilizer(final Map<ItemDefinition, DoubleRange> itemDefinitionChances) {
         this.itemDefinitionChances = itemDefinitionChances;
     }
 
     @Nullable
-    public DoubleRange getOrLoadChanceRangeForItem(final ItemStack itemStack) {
-        @Nullable DoubleRange found = this.itemStackChances.get(itemStack);
-        if (found == null) {
-            for (final Map.Entry<ItemDefinition, DoubleRange> entry : this.itemDefinitionChances.entrySet()) {
-                final ItemStack definitionStack = entry.getKey().create();
-                if (ItemStack.areItemsEqual(definitionStack, itemStack)) {
-                    final DoubleRange range = entry.getValue();
-                    this.itemStackChances.put(definitionStack, range);
-                    found = range;
-                    break;
-                }
-            }
-        }
-
-        return found;
+    public DoubleRange getOrLoadChanceRangeForItem(final ItemStack item) {
+        return this.itemDefinitionChances.entrySet().stream()
+                .filter(entry -> entry.getKey().test(item))
+                .map(Map.Entry::getValue)
+                .collect(MoreCollectors.toOptional())
+                .orElse(null);
     }
 
     @Override
