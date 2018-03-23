@@ -26,6 +26,7 @@ public final class GrassBuilder extends ContentBuilder.Impl<Grass> implements Gr
 
     @Override
     public Grass build() {
+        Collections.shuffle(this.grasses);
         final Grass grass = new GrassFeature(this.grasses);
         ((IMixinSetCatalogTypeId) grass).setId(this.id, this.name);
         return grass;
