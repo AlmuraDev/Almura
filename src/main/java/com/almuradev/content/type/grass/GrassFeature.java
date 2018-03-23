@@ -10,11 +10,14 @@ package com.almuradev.content.type.grass;
 import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.util.WeightedLazyBlockState;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenTallGrass;
@@ -57,12 +60,11 @@ public final class GrassFeature extends WorldGenTallGrass implements Grass {
                     origin.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
 
             final IBlockState existingState = world.getBlockState(targetPos);
-            final IBlockState underState = world.getBlockState(targetPos.down());
 
             if (existingState.getBlock().isAir(existingState, world, targetPos)) {
                 Collections.shuffle(this.grasses);
                 final IBlockState grassState = WeightedRandom.getRandomItem(world.rand, this.grasses).getLazyBlockState().get();
-                if (this.canPlace(world, targetPos, EnumFacing.UP, underState, grassState, requires)) {
+                if (this.canPlace(world, targetPos, grassState, requires)) {
                     world.setBlockState(targetPos, grassState, BlockUpdateFlag.UPDATE_CLIENTS);
                 }
             }
@@ -71,17 +73,40 @@ public final class GrassFeature extends WorldGenTallGrass implements Grass {
         return true;
     }
 
-    private boolean canPlace(final IBlockAccess world, final BlockPos pos, final EnumFacing facing, final IBlockState underState, final IBlockState toPlaceState, final List<LazyBlockState> requires) {
-        // TODO Even if requires test passes, should we STILL do a check against sustaining plants in-case we're planting an IPlantable via config?
-        if (!requires.isEmpty()) {
-            for (final LazyBlockState lbs : requires) {
-                if (lbs.partialTest(underState)) {
-                    return true;
-                }
-            }
-            return false;
+    private boolean canPlace(final IBlockAccess access, final BlockPos pos, final IBlockState toPlaceState, final List<LazyBlockState> requires) {
+        World world;
+
+        if (access instanceof ChunkCache) {
+            world = ((ChunkCache) access).world;
+        } else {
+            world = (World) access;
         }
 
-        return !(toPlaceState.getBlock() instanceof IPlantable) || underState.getBlock().canSustainPlant(underState, world, pos, facing, (IPlantable) toPlaceState.getBlock());
+        final Block toPlaceBlock = toPlaceState.getBlock();
+
+        boolean canPlace = true;
+
+        if (!requires.isEmpty()) {
+            final IBlockState underState = access.getBlockState(pos.down());
+            
+            boolean found = false;
+
+            for (final LazyBlockState lbs : requires) {
+                if (lbs.partialTest(underState)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            canPlace = found;
+        }
+
+        if (canPlace) {
+            if (toPlaceBlock instanceof BlockBush) {
+                canPlace = ((BlockBush) toPlaceBlock).canBlockStay(world, pos, toPlaceState);
+            }
+        }
+
+        return canPlace;
     }
 }
