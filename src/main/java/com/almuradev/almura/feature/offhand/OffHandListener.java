@@ -15,13 +15,14 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class OffHandListener implements Witness {
 
     // Author: Grinch 3/21/2018
     // Prevents interaction with torches from offhand if configuration option is enabled
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent.RightClickBlock event) {
         if (!StaticAccess.config.get().client.disableOffhandTorchPlacement) {
             return;
