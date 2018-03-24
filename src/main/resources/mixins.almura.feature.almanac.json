@@ -7,7 +7,5 @@
     "compatibilityLevel": "JAVA_8",
     "mixins": [
         "MixinBlockCrops"
-    ],
-    "client": [
     ]
 }

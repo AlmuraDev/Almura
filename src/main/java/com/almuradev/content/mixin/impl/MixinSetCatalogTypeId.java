@@ -8,6 +8,9 @@
 package com.almuradev.content.mixin.impl;
 
 import com.almuradev.content.mixin.iface.IMixinSetCatalogTypeId;
+import com.almuradev.content.type.cactus.CactusFeature;
+import com.almuradev.content.type.deadbush.DeadBushFeature;
+import com.almuradev.content.type.flower.FlowerFeature;
 import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGeneratorImpl;
 import com.almuradev.content.type.grass.GrassFeature;
 import com.almuradev.content.type.tree.BigTreeFeature;
@@ -21,6 +24,9 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin({
     BigTreeFeature.class,
+    CactusFeature.class,
+    DeadBushFeature.class,
+    FlowerFeature.class,
     GrassFeature.class,
     // CreativeTabs.class intentionally excluded
     Item.ToolMaterial.class,
