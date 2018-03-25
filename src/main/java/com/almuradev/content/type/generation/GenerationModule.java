@@ -10,6 +10,9 @@ package com.almuradev.content.type.generation;
 import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
 import com.almuradev.content.type.generation.processor.WeightProcessor;
+import com.almuradev.content.type.generation.type.feature.cactus.CactusGeneratorModule;
+import com.almuradev.content.type.generation.type.feature.deadbush.DeadBushGeneratorModule;
+import com.almuradev.content.type.generation.type.feature.flower.FlowerGeneratorModule;
 import com.almuradev.content.type.generation.type.feature.grass.GrassGeneratorModule;
 import com.almuradev.content.type.generation.type.feature.tree.TreeGeneratorModule;
 import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGeneratorModule;
@@ -25,6 +28,9 @@ public final class GenerationModule extends AbstractModule implements CoreBinder
         this.install(new UndergroundOreGeneratorModule());
         this.install(new TreeGeneratorModule());
         this.install(new GrassGeneratorModule());
+        this.install(new FlowerGeneratorModule());
+        this.install(new DeadBushGeneratorModule());
+        this.install(new CactusGeneratorModule());
         this.install(new Module() {
             @Override
             protected void configure() {

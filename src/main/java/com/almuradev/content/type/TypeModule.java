@@ -10,6 +10,9 @@ package com.almuradev.content.type;
 import com.almuradev.content.type.action.ActionModule;
 import com.almuradev.content.type.block.BlockModule;
 import com.almuradev.content.type.blocksoundgroup.BlockSoundGroupModule;
+import com.almuradev.content.type.cactus.CactusModule;
+import com.almuradev.content.type.deadbush.DeadBushModule;
+import com.almuradev.content.type.flower.FlowerModule;
 import com.almuradev.content.type.generation.GenerationModule;
 import com.almuradev.content.type.grass.GrassModule;
 import com.almuradev.content.type.item.ItemModule;
@@ -32,5 +35,8 @@ public final class TypeModule extends AbstractModule {
         this.install(new MaterialModule());
         this.install(new TreeModule());
         this.install(new GrassModule());
+        this.install(new DeadBushModule());
+        this.install(new FlowerModule());
+        this.install(new CactusModule());
     }
 }

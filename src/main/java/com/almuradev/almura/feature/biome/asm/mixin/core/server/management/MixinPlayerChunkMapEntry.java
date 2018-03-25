@@ -39,7 +39,7 @@ public abstract class MixinPlayerChunkMapEntry {
     @Shadow @Final public ChunkPos pos;
     @Shadow public boolean sentToPlayers;
 
-    @Redirect(method = "sendToPlayer*", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetHandlerPlayServer;sendPacket"
+    @Redirect(method = "sendToPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetHandlerPlayServer;sendPacket"
             + "(Lnet/minecraft/network/Packet;)V"))
     private void redirectSendPacket(NetHandlerPlayServer netHandlerPlayServer, Packet<?> packetIn) {
         this.sendBiomeChunkThenRealChunkTo(netHandlerPlayServer, packetIn);

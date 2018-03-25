@@ -32,7 +32,7 @@ public final class ClientboundBiomeChunkDataPacket implements Message {
     public void readFrom(ChannelBuf buf) {
         this.chunkKey = buf.readLong();
         if (!buf.readBoolean()) {
-            this.biomeArray = new int[16 * 16];
+            this.biomeArray = new int[256];
             for (int i = 0; i < this.biomeArray.length; i++) {
                 this.biomeArray[i] = buf.readVarInt();
             }
