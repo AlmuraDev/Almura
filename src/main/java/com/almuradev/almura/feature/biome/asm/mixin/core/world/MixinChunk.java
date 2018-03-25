@@ -30,9 +30,9 @@ public abstract class MixinChunk implements IMixinChunk {
     @Override
     public int[] cacheRealBiomeIds() {
         this.extendedBiomeArray = new int[256];
-        Arrays.fill(this.extendedBiomeArray, Biome.getIdForBiome(Biomes.PLAINS));
+        Arrays.fill(this.extendedBiomeArray, Biome.getIdForBiome(Biomes.DEFAULT));
 
-        final Biome[] biomes = this.world.provider.getBiomeProvider().getBiomes(null, this.x * 16, this.z * 16, 16, 16, false);
+        final Biome[] biomes = this.world.provider.getBiomeProvider().getBiomes(null, this.x * 16, this.z * 16, 16, 16);
         for (int i = 0; i < biomes.length; i++) {
             this.extendedBiomeArray[i] = Biome.getIdForBiome(biomes[i]);
         }

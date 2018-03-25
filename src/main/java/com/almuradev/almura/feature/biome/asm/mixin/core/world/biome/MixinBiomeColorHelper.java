@@ -22,24 +22,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 @Mixin(value = BiomeColorHelper.class)
 public abstract class MixinBiomeColorHelper {
 
-    private static boolean areWater = false;
-
-    /**
-     * @author Zidane - Chris Sanders
-     * @reason Just a hack, nothing special..
-     */
-    @Overwrite
-    public static int getWaterColorAtPos(IBlockAccess blockAccess, BlockPos pos)
-    {
-        areWater = true;
-        try {
-            return getColorAtPos(blockAccess, pos, BiomeColorHelper.WATER_COLOR);
-        } finally {
-            areWater = false;
-        }
-
-    }
-
     /**
      * @author Zidane - Chris Sanders
      * @reason Have water respect our config
@@ -57,7 +39,7 @@ public abstract class MixinBiomeColorHelper {
 
             int l;
 
-            if (areWater) {
+            if (colorResolver == BiomeColorHelper.WATER_COLOR) {
                 final BiomeChunk biomeChunk = BiomeUtil.getChunk(blockpos$mutableblockpos);
                 if (biomeChunk == null) {
                     l = colorResolver.getColorAtPos(biome, blockpos$mutableblockpos);
