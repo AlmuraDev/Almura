@@ -67,6 +67,9 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     private UIBackgroundContainer propertyContainer;
     private int lastPropertyY = 4;
 
+    private boolean unlockMouse = true;
+    private int lastUpdate = 0;
+
     public IngameFarmersAlmanac(ClientboundWorldPositionInformationPacket message) {
         this.message = message;
     }
@@ -121,6 +124,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         new UISlimScrollbar(this, this.propertyContainer, UIScrollBar.Type.VERTICAL).setAutoHide(true);
         this.propertyContainer.setBackgroundAlpha(50);
         this.propertyContainer.setPosition(0, SimpleScreen.getPaddedY(separator, 5));
+
         form.add(this.propertyContainer);
 
         // Get all displayed properties
@@ -146,6 +150,18 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         addToScreen(form);
 
         Mouse.setGrabbed(false);
+    }
+
+    @Override
+    public void update(int mouseX, int mouseY, float partialTick) {
+        super.update(mouseX, mouseY, partialTick);
+        if (unlockMouse && this.lastUpdate == 25) {
+            Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
+            unlockMouse = false; // Only unlock once per session.
+        }
+        if (++this.lastUpdate > 100) {
+            // I am winning now.
+        }
     }
 
     @SuppressWarnings("unchecked")
