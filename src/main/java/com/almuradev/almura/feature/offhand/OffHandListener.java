@@ -14,7 +14,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -32,7 +31,7 @@ public class OffHandListener implements Witness {
             final Item item = event.getItemStack().getItem();
             if (item instanceof ItemBlock) {
                 if (((ItemBlock) item).getBlock() instanceof BlockTorch) {
-                    event.setUseItem(Event.Result.DENY);
+                    event.setCanceled(true);
                 }
             }
         }
