@@ -11,7 +11,10 @@ import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.almura.feature.title.network.ClientboundPlayerTitlesResponsePacket;
 import com.almuradev.almura.feature.title.network.ServerboundPlayerTitlesRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
@@ -47,7 +50,8 @@ public final class ServerboundPlayerTitlesRequestPacketHandler implements Messag
     public void handleMessage(ServerboundPlayerTitlesRequestPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection) {
 
-            this.scheduler.createTaskBuilder().delayTicks(0).execute(() -> {
+            final MinecraftServer server = (MinecraftServer) Sponge.getServer();
+            if (PacketUtil.checkThreadAndEnqueue(server, message, this, connection, side)) {
                 final Player player = ((PlayerConnection) connection).getPlayer();
                 final Set<Text> titles = this.manager.getTitlesFor(player);
 
@@ -72,7 +76,7 @@ public final class ServerboundPlayerTitlesRequestPacketHandler implements Messag
 
                     this.network.sendTo(player, new ClientboundPlayerTitlesResponsePacket(selectedIndex, titles));
                 }
-            }).submit(this.container);
+            }
         }
     }
 }

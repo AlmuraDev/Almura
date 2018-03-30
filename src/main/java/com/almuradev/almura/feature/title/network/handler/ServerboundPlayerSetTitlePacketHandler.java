@@ -9,7 +9,10 @@ package com.almuradev.almura.feature.title.network.handler;
 
 import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.almura.feature.title.network.ServerboundPlayerSetTitlePacket;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.PlayerConnection;
@@ -38,7 +41,8 @@ public final class ServerboundPlayerSetTitlePacketHandler implements MessageHand
     public void handleMessage(ServerboundPlayerSetTitlePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection) {
 
-            this.scheduler.createTaskBuilder().delayTicks(0).execute(() -> {
+            final MinecraftServer server = (MinecraftServer) Sponge.getServer();
+            if (PacketUtil.checkThreadAndEnqueue(server, message, this, connection, side)) {
                 final Player player = ((PlayerConnection) connection).getPlayer();
 
                 // TODO Perms/etc checking
@@ -49,7 +53,7 @@ public final class ServerboundPlayerSetTitlePacketHandler implements MessageHand
                 }
 
                 manager.refreshSelectedTitleFor(player, message.add);
-            }).submit(this.container);
+            }
         }
     }
 }

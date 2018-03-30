@@ -14,6 +14,8 @@ import com.almuradev.almura.feature.guide.network.ClientboundPageListingsPacket;
 import com.almuradev.almura.feature.guide.network.ClientboundPageOpenResponsePacket;
 import com.almuradev.almura.feature.guide.network.ServerboundPageOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -49,7 +51,8 @@ public final class ServerboundPageOpenRequestPacketHandler implements MessageHan
     public void handleMessage(ServerboundPageOpenRequestPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && Sponge.isServerAvailable()) {
 
-            this.scheduler.createTaskBuilder().delayTicks(0).execute(() -> {
+            final MinecraftServer server = (MinecraftServer) Sponge.getServer();
+            if (PacketUtil.checkThreadAndEnqueue(server, message, this, connection, side)) {
                 final Player player = ((PlayerConnection) connection).getPlayer();
                 final Page page = this.manager.getPage(message.id).orElse(null);
 
@@ -60,7 +63,7 @@ public final class ServerboundPageOpenRequestPacketHandler implements MessageHan
                 } else {
                     this.network.sendTo(player, new ClientboundPageOpenResponsePacket(page));
                 }
-            }).submit(this.container);
+            }
         }
     }
 }

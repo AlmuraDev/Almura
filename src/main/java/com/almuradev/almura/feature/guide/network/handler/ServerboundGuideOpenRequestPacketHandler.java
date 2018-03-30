@@ -15,6 +15,8 @@ import com.almuradev.almura.feature.guide.network.ClientboundPageListingsPacket;
 import com.almuradev.almura.feature.guide.network.GuideOpenType;
 import com.almuradev.almura.feature.guide.network.ServerboundGuideOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -54,7 +56,8 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
     public void handleMessage(ServerboundGuideOpenRequestPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && Sponge.isServerAvailable()) {
 
-            this.scheduler.createTaskBuilder().delayTicks(0).execute(() -> {
+            final MinecraftServer server = (MinecraftServer) Sponge.getServer();
+            if (PacketUtil.checkThreadAndEnqueue(server, message, this, connection, side)) {
                 final Player player = ((PlayerConnection) connection).getPlayer();
 
                 if (!player.hasPermission("almura.guide.open")) {
@@ -82,7 +85,7 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
                     this.network.sendTo(player,
                             new ClientboundPageListingsPacket(playerListings, switchToPageEntry == null ? null : switchToPageEntry.getId()));
                 }
-            }).submit(this.container);
+            }
         }
     }
 }

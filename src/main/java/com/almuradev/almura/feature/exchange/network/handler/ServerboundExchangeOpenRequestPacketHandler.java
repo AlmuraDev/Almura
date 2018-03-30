@@ -10,6 +10,8 @@ package com.almuradev.almura.feature.exchange.network.handler;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -43,7 +45,8 @@ public final class ServerboundExchangeOpenRequestPacketHandler implements Messag
     public void handleMessage(ServerboundExchangeOpenRequestPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && Sponge.isServerAvailable()) {
 
-            this.scheduler.createTaskBuilder().delayTicks(0).execute(() -> {
+            final MinecraftServer server = (MinecraftServer) Sponge.getServer();
+            if (PacketUtil.checkThreadAndEnqueue(server, message, this, connection, side)) {
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
 
@@ -54,7 +57,7 @@ public final class ServerboundExchangeOpenRequestPacketHandler implements Messag
                 }
 
                 this.network.sendTo(player, new ClientboundExchangeOpenResponsePacket());
-            }).submit(this.container);
+            }
         }
     }
 }

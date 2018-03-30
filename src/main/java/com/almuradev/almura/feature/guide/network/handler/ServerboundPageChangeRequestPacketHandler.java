@@ -15,6 +15,8 @@ import com.almuradev.almura.feature.guide.network.ClientboundPageListingsPacket;
 import com.almuradev.almura.feature.guide.network.PageChangeType;
 import com.almuradev.almura.feature.guide.network.ServerboundPageChangeRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.almura.shared.util.PacketUtil;
+import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
@@ -51,7 +53,8 @@ public final class ServerboundPageChangeRequestPacketHandler implements MessageH
     public void handleMessage(ServerboundPageChangeRequestPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && message.changeType != null && Sponge.isServerAvailable()) {
 
-            this.game.getScheduler().createTaskBuilder().delayTicks(0).execute(() -> {
+            final MinecraftServer server = (MinecraftServer) Sponge.getServer();
+            if (PacketUtil.checkThreadAndEnqueue(server, message, this, connection, side)) {
                 final Player player = ((PlayerConnection) connection).getPlayer();
 
                 // Alert player that ID was missing
@@ -143,7 +146,7 @@ public final class ServerboundPageChangeRequestPacketHandler implements MessageH
                                 .getAvailablePagesFor(player).entrySet().stream()
                                 .map(entry -> new PageListEntry(entry.getKey(), entry.getValue().getName()))
                                 .collect(Collectors.toList()), null)));
-            }).submit(this.container);
+            }
         }
     }
 }
