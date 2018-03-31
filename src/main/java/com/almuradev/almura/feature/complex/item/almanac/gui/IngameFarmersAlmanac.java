@@ -193,7 +193,8 @@ public class IngameFarmersAlmanac extends SimpleScreen {
                                 String.format("%d of %d", growthStage.getFirst(), growthStage.getSecond()))));
 
         // Ground moisture
-        final int moistureLevel = getMoistureLevel(world.getBlockState(blockPos.down()));
+        final IBlockState moistureBlockStateTarget = blockState.getBlock() instanceof BlockCrops ? world.getBlockState(blockPos.down()) : blockState;
+        final int moistureLevel = getMoistureLevel(moistureBlockStateTarget);
         final boolean isFertile = moistureLevel > 0;
         final TextColor fertileColor = isFertile ? TextColors.DARK_GREEN : TextColors.RED;
         this.addLineLabel(Text.of(TextColors.WHITE, "Moisture: ", fertileColor, isFertile ? "Fertile" : "Too dry"));
