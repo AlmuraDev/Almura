@@ -58,7 +58,7 @@ public class MathUtil {
      * @param end The end of the range
      * @return True if within the range
      */
-    public static boolean withinRange(float value, float start, float end) {
+    public static boolean withinRange(double value, double start, double end) {
         return value >= start && value <= end;
     }
 }

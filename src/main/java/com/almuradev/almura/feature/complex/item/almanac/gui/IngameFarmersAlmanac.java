@@ -13,6 +13,7 @@ import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.util.MathUtil;
 import com.almuradev.content.type.block.state.value.RangeStateValue;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.content.type.block.type.crop.processor.growth.Growth;
@@ -165,13 +166,13 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     }
 
     @SuppressWarnings("unchecked")
-    private void loadProperties(World world, IBlockState blockState, BlockPos blockPos) {
+    private void loadProperties(World world, IBlockState blockState, BlockPos targetBlockPos) {
         final Hydration hydration = getHydrationDefinition(blockState).orElse(null);
         if (hydration != null) {
             this.addLineLabel(Text.of(TextColors.WHITE, "Hydrated by:"));
 
             hydration.blockStates().forEach(bs -> {
-                this.addLineLabel(Text.of(TextColors.WHITE, "- ", bs.block().getLocalizedName()), 2, false);
+                this.addLineLabel(Text.of(TextColors.WHITE, "- ", bs.block().getLocalizedName()), 2);
                 bs.properties().forEach(property -> bs.value(property).ifPresent(stateValue -> {
                     final String formattedValue;
                     if (stateValue instanceof RangeStateValue) {
@@ -181,7 +182,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
                         final Comparable rawValue = stateValue.get((IProperty) property);
                         formattedValue = rawValue == null ? "" : rawValue.toString();
                     }
-                    this.addLineLabel(this.getGenericPropertyText("- " + property.getName(), formattedValue), 6, false);
+                    this.addLineLabel(this.getGenericPropertyText("- " + property.getName(), formattedValue), 6);
                 }));
             });
             this.addLineLabel(this.getGenericPropertyText("Hydration Radius", String.valueOf(hydration.getMaxRadius())));
@@ -193,21 +194,21 @@ public class IngameFarmersAlmanac extends SimpleScreen {
                                 String.format("%d of %d", growthStage.getFirst(), growthStage.getSecond()))));
 
         // Ground moisture
-        final IBlockState moistureBlockStateTarget = blockState.getBlock() instanceof BlockCrops ? world.getBlockState(blockPos.down()) : blockState;
+        final IBlockState moistureBlockStateTarget = blockState.getBlock() instanceof BlockCrops ? world.getBlockState(targetBlockPos.down()) : blockState;
         final int moistureLevel = getMoistureLevel(moistureBlockStateTarget);
         final boolean isFertile = moistureLevel > 0;
         final TextColor fertileColor = isFertile ? TextColors.DARK_GREEN : TextColors.RED;
         this.addLineLabel(Text.of(TextColors.WHITE, "Moisture: ", fertileColor, isFertile ? "Fertile" : "Too dry"));
 
         // Ground temperature
-        final DoubleRange temperatureRange = getTemperatureRange(world, blockState, blockPos).orElse(null);
+        final DoubleRange temperatureRange = getTemperatureRange(world, blockState, targetBlockPos).orElse(null);
         if (temperatureRange != null) {
-            this.addLineLabel(Text.of(
-                    TextColors.WHITE, "Ground Temperature: ",
-                        (temperatureRange.min() == -1 || temperatureRange.max() == -1) ? TextColors.RED : TextColors.DARK_GREEN,
-                        numberFormat.format(message.biomeTemperature)));
+            final TextColor temperatureColor = MathUtil.withinRange(message.biomeTemperature, temperatureRange.min(), temperatureRange.max())
+                    ? TextColors.DARK_GREEN
+                    : TextColors.RED;
+            this.addLineLabel(Text.of(TextColors.WHITE, "Ground Temperature: ", temperatureColor, numberFormat.format(message.biomeTemperature)));
             this.addLineLabel(this.getGenericPropertyText("Required",
-                    String.format("%s-%s", numberFormat.format(temperatureRange.min()), numberFormat.format(temperatureRange.max()))), 2, false);
+                    String.format("%s-%s", numberFormat.format(temperatureRange.min()), numberFormat.format(temperatureRange.max()))), 2);
         }
 
         // Biome rain
@@ -215,17 +216,20 @@ public class IngameFarmersAlmanac extends SimpleScreen {
                         message.biomeRainfall > 0.4 ? TextColors.DARK_GREEN : TextColors.RED, numberFormat.format(message.biomeRainfall)));
 
         // Sunlight value
-        final int sunlight = world.getLightFor(EnumSkyBlock.SKY, blockPos) - world.getSkylightSubtracted();
-        this.addLineLabel(this.getGenericPropertyText("Sunlight", String.valueOf(sunlight)));
+        final int sunlight = world.getLightFor(EnumSkyBlock.SKY, targetBlockPos) - world.getSkylightSubtracted();
+        final TextColor sunlightColor = sunlight < 6 ? TextColors.RED : TextColors.DARK_GREEN;
+        this.addLineLabel(Text.of(TextColors.WHITE, "Sunlight: ", sunlightColor, String.valueOf(sunlight)));
 
         // Area light value
-        final DoubleRange lightRange = getLightRange(world, blockState, blockPos).orElse(null);
+        final DoubleRange lightRange = getLightRange(world, blockState, targetBlockPos).orElse(null);
         if (lightRange != null) {
-            final int lightValue = world.getLightFor(EnumSkyBlock.SKY, blockPos);
-            final TextColor valueColor = lightValue < 6 ? (sunlight < 6 ? TextColors.RED : TextColors.YELLOW) : TextColors.DARK_GREEN;
-            this.addLineLabel(Text.of(TextColors.WHITE, "Area light: ", valueColor, String.valueOf(lightValue)));
+            final int lightValue = world.getLightFromNeighbors(targetBlockPos);
+            final TextColor lightColor = MathUtil.withinRange(lightValue, lightRange.min(), lightRange.max())
+                    ? TextColors.DARK_GREEN
+                    : TextColors.RED;
+            this.addLineLabel(Text.of(TextColors.WHITE, "Area light: ", lightColor, String.valueOf(lightValue)));
             this.addLineLabel(this.getGenericPropertyText("Required",
-                    String.format("%s-%s", numberFormat.format(lightRange.min()), numberFormat.format(lightRange.max()))), 2, false);
+                    String.format("%s-%s", numberFormat.format(lightRange.min()), numberFormat.format(lightRange.max()))), 2);
         }
 
         // Can Die
@@ -243,23 +247,16 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     }
 
     private void addLineLabel(Text text) {
-        this.addLineLabel(text, 0, false);
-    }
-
-    private void addLineLabel(Text text, boolean multline) {
-        this.addLineLabel(text, 0, multline);
+        this.addLineLabel(text, 0);
     }
 
     @SuppressWarnings("deprecation")
-    private void addLineLabel(Text text, int indent, boolean multiline) {
+    private void addLineLabel(Text text, int indent) {
         final String prefix = indent > 0 ? String.format("%" + indent + "s", "") : "";
-        final UILabel lineLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(prefix, text)), multiline);
+        final UILabel lineLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(prefix, text)));
         lineLabel.setPosition(leftPad, this.lastPropertyY);
-        if (multiline) {
-            lineLabel.setSize(lineLabel.getContentWidth(), lineLabel.getContentHeight());
-        }
         this.propertyContainer.add(lineLabel);
-        this.lastPropertyY += lineLabel.getHeight() + (multiline ? 0 : 2);
+        this.lastPropertyY += lineLabel.getHeight() + 2;
     }
 
     private static IBlockState getState(final World world, final BlockPos pos) {
