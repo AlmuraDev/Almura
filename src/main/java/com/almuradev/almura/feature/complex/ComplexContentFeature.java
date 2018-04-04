@@ -30,11 +30,15 @@ public final class ComplexContentFeature implements Witness {
         event.getRegistry().register(new FarmersAlmanacItem());
     }
 
+    // Note: This section is a complete hack to remove the vanilla recipe for stone brick because it includes 4 variants.  We add mossy and cracked stone brick
+    //       so in order for this to work correctly we remove the vanilla recipe that includes all the variants and re-add back just the single recipe.  Re-adding
+    //       is required here in order to prevent Advancments from breaking.
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         ResourceLocation StoneBrick = new ResourceLocation("minecraft:stone_brick_stairs");
         IForgeRegistryModifiable modRegistry = (IForgeRegistryModifiable) event.getRegistry();
-        modRegistry.remove(StoneBrick); // Remove Vanilla Stock Brick recipe because it includes 3 variants of stone brick which is just stupid.
+        modRegistry.remove(StoneBrick);
 
         GameRegistry.addShapedRecipe(new ResourceLocation("minecraft:stone_brick_stairs"), new ResourceLocation("minecraft:stone_brick_stairs"), new
                         ItemStack(Blocks.STONE_BRICK_STAIRS),
