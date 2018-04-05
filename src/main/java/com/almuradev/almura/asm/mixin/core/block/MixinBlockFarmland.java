@@ -12,6 +12,7 @@ import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
@@ -43,7 +44,6 @@ public abstract class MixinBlockFarmland extends Block {
     @Overwrite
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         final Random random = new Random();
-
         int soilMoisture = ((Integer)state.getValue(MOISTURE)).intValue();
         int revertChance = random.nextInt(25);
 
@@ -55,7 +55,20 @@ public abstract class MixinBlockFarmland extends Block {
                 //turnToDirt(worldIn, pos);
             }
         } else if (soilMoisture < 7) {
+            // Set original ticked location to high moisture.
             worldIn.setBlockState(pos, state.withProperty(MOISTURE, Integer.valueOf(7)), 2);
+        }
+        // Scan additional blocks around the original for possible updates if it is raining.
+        if (worldIn.isRainingAt(pos.up())) {
+            int spreadChance;
+            for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-1, 0, -1), pos.add(1, 0, 1))) {
+                if (worldIn.getBlockState(blockpos$mutableblockpos).getBlock() == Blocks.FARMLAND && (Integer) (worldIn.getBlockState(blockpos$mutableblockpos).getValue(MOISTURE)).intValue() < 7) {
+                    spreadChance = random.nextInt(2);
+                    if (spreadChance == 1 || blockpos$mutableblockpos == pos) {
+                        worldIn.setBlockState(blockpos$mutableblockpos, worldIn.getBlockState(blockpos$mutableblockpos).withProperty(MOISTURE, Integer.valueOf(7)), 2);
+                    }
+                }
+            }
         }
     }
 
