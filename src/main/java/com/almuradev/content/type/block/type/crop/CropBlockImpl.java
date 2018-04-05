@@ -219,7 +219,6 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                     pos.add(maxRadius, 0, maxRadius)
             )) {
                 final IBlockState inRangeState;
-
                 // Skip soil state lookup and use it to perform the check. Now you may ask how the soil could be the hydration but our system
                 // lets you do stone soil and "hydrated" by stone
                 if (inRange.equals(pos)) {
@@ -324,12 +323,8 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                 }
 
                 if (canRollback && rollback) {
-                    if (world.canSeeSky(pos)) {
-                        final int worldLight = world.getLightFor(EnumSkyBlock.SKY, pos) - world.getSkylightSubtracted();
-
-                        if (worldLight < 6) {  // Crops go to sleep on a routine if their lightLevel is predictable
-                            rollback = false;  // Prevent a crop from rolling back in the middle of the night if it can see sky.
-                        }
+                    if (world.canSeeSky(pos) && !world.isDaytime()) {
+                        rollback = false;  // Prevent a crop from rolling back in the middle of the night if it can see sky.
                     }
                 }
             }
