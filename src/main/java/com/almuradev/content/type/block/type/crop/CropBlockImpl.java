@@ -356,6 +356,9 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         }
 
         if (canRollback && rollback) {
+            if (!world.isRemote) {
+                world.playEvent(2000, pos, 10);  // Smoke
+            }
             if (age > 0) {
                 world.setBlockState(pos, this.withAge(age - 1), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
             } else {
