@@ -35,6 +35,8 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.common.text.SpongeTexts;
+import org.spongepowered.common.text.serializer.LegacyTexts;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -182,7 +184,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
             titleNode.getChildrenMap().forEach((permission, node) -> {
                 final String title = node.getString("");
                 if (!title.isEmpty()) {
-                    this.titlesByPermission.put(permission.toString(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(title));
+                    this.titlesByPermission.put(permission.toString(), Text.of(LegacyTexts.replace(title, '&', SpongeTexts.COLOR_CHAR)));
                 }
             });
         }

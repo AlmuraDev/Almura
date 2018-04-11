@@ -51,6 +51,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new ExchangeModule());
         this.install(new StorageModule());
         this.install(new BiomeModule());
+        this.install(new PermsModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         nerfVanillaFood();
@@ -65,12 +66,6 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
             }
             this.install(new ClientModule());
         });
-
-        // Activate Permissions Listener if LuckyPerms exists.
-        Optional<ProviderRegistration<LuckPermsApi>> provider = Sponge.getServiceManager().getRegistration(LuckPermsApi.class);
-        if (provider.isPresent()) {
-            this.install(new PermsModule());
-        }
     }
 
     //ToDo: put into its own module ones the ability to turn features on and off is implemented.
