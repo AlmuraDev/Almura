@@ -57,7 +57,7 @@ public final class PermsFeature implements Witness {
         final Player target = this.server.getPlayer(targetUniqueId).orElse(null);
         final String toGroup = e.getGroupTo().orElse(null);
 
-        if (toGroup != null) {
+        if (target != null && toGroup != null) {
           final String fancyGroupName = WordUtils.capitalize(toGroup);
           if (e.getAction().name().equalsIgnoreCase("promotion")) {
             for (final Player onlinePlayer : this.server.getOnlinePlayers()) {
