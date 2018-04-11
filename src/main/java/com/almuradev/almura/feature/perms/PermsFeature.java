@@ -61,7 +61,7 @@ public final class PermsFeature implements Witness {
             for (final Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
               if (!onlinePlayer.getUniqueId().equals(targetUniqueId)) {
                 this.notificationManager.sendPopupNotification(onlinePlayer, Text.of("Player Promotion!"), Text.of(TextColors.AQUA, target.getDisplayNameData()
-                  .displayName(), TextColors.WHITE, " has been promoted to: ", TextColors.GOLD, e.getGroupTo().get().toUpperCase()), 5);
+                  .displayName().get().toPlain(), TextColors.WHITE, " has been promoted to: ", TextColors.GOLD, e.getGroupTo().get().toUpperCase()), 5);
               } else {
                 this.notificationManager.sendPopupNotification(onlinePlayer, Text.of("Player Promotion!"), Text.of("You have been demoted to: ",
                   TextColors.GOLD, fancyGroupName), 5);
@@ -73,7 +73,7 @@ public final class PermsFeature implements Witness {
             for (final Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
               if (!onlinePlayer.getUniqueId().equals(targetUniqueId)) {
                 this.notificationManager.sendPopupNotification(onlinePlayer, Text.of("Player Demotion!"), Text.of(TextColors.AQUA, target.getDisplayNameData()
-                  .displayName(), TextColors.WHITE, " has been demoted to: ", TextColors.GOLD, e.getGroupTo().get().toUpperCase()), 5);
+                  .displayName().get().toPlain(), TextColors.WHITE, " has been demoted to: ", TextColors.GOLD, e.getGroupTo().get().toUpperCase()), 5);
               } else {
                 this.notificationManager.sendPopupNotification(onlinePlayer, Text.of("Player Demotion!"), Text.of("You have been demoted to: ",
                   TextColors.GOLD, fancyGroupName), 5);
