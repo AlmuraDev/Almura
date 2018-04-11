@@ -7,9 +7,11 @@
  */
 package com.almuradev.almura.feature.perms;
 
+import com.almuradev.almura.feature.nick.ServerNickManager;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.core.event.Witness;
+import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
 import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.api.event.user.track.UserTrackEvent;
@@ -34,34 +36,42 @@ public final class PermsFeature implements Witness {
 
   private static final String LUCK_PERMS_DEFAULT_GROUP = "default";
 
+  private final ServerNickManager nickManager;
   private final ServerNotificationManager notificationManager;
   private final ServerTitleManager titleManager;
 
-  private LuckPermsApi api;
+  private LuckPermsApi permApi;
+  private NucleusNicknameService nickApi;
 
   @Inject
-  public PermsFeature(final ServerNotificationManager notificationManager, final ServerTitleManager titleManager) {
+  public PermsFeature(final ServerNickManager nickManager, final ServerNotificationManager notificationManager, final ServerTitleManager
+    titleManager) {
+    this.nickManager = nickManager;
     this.notificationManager = notificationManager;
     this.titleManager = titleManager;
   }
 
   @Listener
   public void onServiceChange(ChangeServiceProviderEvent event) {
-    if (event.getNewProviderRegistration().getService().equals(LuckPermsApi.class)) {
-      this.api = (LuckPermsApi) event.getNewProviderRegistration().getProvider();
-      this.api.getEventBus().subscribe(UserTrackEvent.class, e -> {
+    if (event.getNewProviderRegistration().getService().equals(NucleusNicknameService.class)) {
+      this.nickApi = (NucleusNicknameService) event.getNewProviderRegistration().getProvider();
+    } else if (event.getNewProviderRegistration().getService().equals(LuckPermsApi.class)) {
+      this.permApi = (LuckPermsApi) event.getNewProviderRegistration().getProvider();
+
+      this.permApi.getEventBus().subscribe(UserTrackEvent.class, e -> {
 
         final UUID targetUniqueId = e.getUser().getUuid();
         final Player target = Sponge.getServer().getPlayer(targetUniqueId).orElse(null);
         final String toGroup = e.getGroupTo().orElse(null);
 
         if (target != null && toGroup != null) {
-          final String fancyGroupName = WordUtils.capitalize(toGroup);
+          final Text nick = this.nickApi.getNickname(target).orElse(Text.of(target.getName()));
+          final String fancyGroupName = WordUtils.capitalize(toGroup.toLowerCase());
           if (e.getAction().name().equalsIgnoreCase("promotion")) {
             for (final Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
               if (!onlinePlayer.getUniqueId().equals(targetUniqueId)) {
-                this.notificationManager.sendPopupNotification(onlinePlayer, Text.of("Player Promotion!"), Text.of(TextColors.AQUA, target.getName(),
-                  TextColors.WHITE, " has been promoted to: ", TextColors.GOLD, e.getGroupTo().get().toUpperCase()), 5);
+                this.notificationManager.sendPopupNotification(onlinePlayer, Text.of("Player Promotion!"), Text.of(TextColors.AQUA, nick.toPlain(),
+                  TextColors.WHITE, " has been promoted to: ", TextColors.GOLD, fancyGroupName), 5);
               } else {
                 this.notificationManager.sendPopupNotification(onlinePlayer, Text.of("Player Promotion!"), Text.of("You have been demoted to: ",
                   TextColors.GOLD, fancyGroupName), 5);
@@ -72,8 +82,8 @@ public final class PermsFeature implements Witness {
           if (e.getAction().name().equalsIgnoreCase("demotion")) {
             for (final Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
               if (!onlinePlayer.getUniqueId().equals(targetUniqueId)) {
-                this.notificationManager.sendPopupNotification(onlinePlayer, Text.of("Player Demotion!"), Text.of(TextColors.AQUA, target.getName(),
-                  TextColors.WHITE, " has been demoted to: ", TextColors.GOLD, e.getGroupTo().get().toUpperCase()), 5);
+                this.notificationManager.sendPopupNotification(onlinePlayer, Text.of("Player Demotion!"), Text.of(TextColors.AQUA, nick.toPlain(),
+                  TextColors.WHITE, " has been demoted to: ", TextColors.GOLD, fancyGroupName), 5);
               } else {
                 this.notificationManager.sendPopupNotification(onlinePlayer, Text.of("Player Demotion!"), Text.of("You have been demoted to: ",
                   TextColors.GOLD, fancyGroupName), 5);
@@ -90,12 +100,12 @@ public final class PermsFeature implements Witness {
 
   @Listener(order = Order.LAST)
   public void playerMove(final MoveEntityEvent.Teleport event, @Getter("getTargetEntity") final Player player) {
-    if (this.api != null && differentExtent(event.getFromTransform(), event.getToTransform())) {
-      final User user = this.api.getUser(player.getUniqueId());
+    if (this.permApi != null && differentExtent(event.getFromTransform(), event.getToTransform())) {
+      final User user = this.permApi.getUser(player.getUniqueId());
       if (user != null) {
       if (user.getPrimaryGroup().equalsIgnoreCase(LUCK_PERMS_DEFAULT_GROUP)) {
           // ToDo:  not ready to be implemented but is functional.
-          // api.getUser(player.getUniqueId()).setPrimaryGroup("citizen");
+          // permApi.getUser(player.getUniqueId()).setPrimaryGroup("citizen");
         }
       }
     }
