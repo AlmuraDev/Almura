@@ -104,6 +104,7 @@ dependencies {
     compile 'ninja.leaping.configurate:configurate-json:3.3'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
     compile 'io.github.nucleuspowered:nucleus-api:1.2.0-PR5-S7.0'
+    compile ("me.lucko.luckperms:luckperms-api:4.1")
 }
 
 idea {
