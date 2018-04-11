@@ -62,7 +62,7 @@ public final class PermsFeature implements Witness {
         final Player target = Sponge.getServer().getPlayer(targetUniqueId).orElse(null);
         final String toGroup = e.getGroupTo().orElse(null);
 
-        if (target != null && toGroup != null) {
+      if (target != null && toGroup != null && this.nickApi != null) {
           final Text nick = this.nickApi.getNickname(target).orElse(Text.of(target.getName()));
           final String fancyGroupName = WordUtils.capitalize(toGroup.toLowerCase());
           if (e.getAction().name().equalsIgnoreCase("promotion")) {
