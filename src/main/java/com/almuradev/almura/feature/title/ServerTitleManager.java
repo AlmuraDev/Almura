@@ -190,7 +190,13 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         }
 
         // Re-set selected titlesByPermission (they may have a title they no longer have permission for)
+        this.recalculateSelectedTitles();
 
+        return !this.titlesByPermission.isEmpty();
+    }
+
+    @Deprecated
+    public void recalculateSelectedTitles() {
         this.selectedTitlesById.clear();
 
         if (!this.titlesByPermission.isEmpty()) {
@@ -211,8 +217,6 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                 }
             });
         }
-
-        return !this.titlesByPermission.isEmpty();
     }
 
     private boolean createConfigIfNeeded(Path path) throws IOException {

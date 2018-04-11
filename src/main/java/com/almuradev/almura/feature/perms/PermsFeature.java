@@ -32,6 +32,7 @@ public final class PermsFeature implements Witness {
       api.getEventBus().subscribe(UserTrackEvent.class, e -> {
         System.out.println("Event: " + e.getAction().name());
 
+        this.titleManager.recalculateSelectedTitles();
         this.titleManager.refreshSelectedTitles();
       });
     }
