@@ -36,7 +36,6 @@ public final class PermsFeature implements Witness {
 
   private static final String LUCK_PERMS_DEFAULT_GROUP = "default";
 
-  private final ServerNickManager nickManager;
   private final ServerNotificationManager notificationManager;
   private final ServerTitleManager titleManager;
 
@@ -44,9 +43,8 @@ public final class PermsFeature implements Witness {
   private NucleusNicknameService nickApi;
 
   @Inject
-  public PermsFeature(final ServerNickManager nickManager, final ServerNotificationManager notificationManager, final ServerTitleManager
+  public PermsFeature(final ServerNotificationManager notificationManager, final ServerTitleManager
     titleManager) {
-    this.nickManager = nickManager;
     this.notificationManager = notificationManager;
     this.titleManager = titleManager;
   }
