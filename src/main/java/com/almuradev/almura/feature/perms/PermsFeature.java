@@ -103,7 +103,7 @@ public final class PermsFeature implements Witness {
       if (user != null) {
       if (user.getPrimaryGroup().equalsIgnoreCase(LUCK_PERMS_DEFAULT_GROUP)) {
           // ToDo:  not ready to be implemented but is functional.
-          // permApi.getUser(player.getUniqueId()).setPrimaryGroup("citizen");
+          // permApi.getUser(player.getUniqueId()).setPrimaryGroup("survivor");
         }
       }
     }

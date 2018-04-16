@@ -51,7 +51,6 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new ExchangeModule());
         this.install(new StorageModule());
         this.install(new BiomeModule());
-        this.install(new PermsModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         nerfVanillaFood();
@@ -65,6 +64,17 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 }
             }
             this.install(new ClientModule());
+        });
+        this.on(Platform.Type.SERVER, () -> {
+            final class ServerModule extends AbstractModule implements CommonBinder {
+
+                @SideOnly(Side.SERVER)
+                @Override
+                protected void configure() {
+                    this.install(new PermsModule());
+                }
+            }
+            this.install(new ServerModule());
         });
     }
 
