@@ -12,6 +12,7 @@
         "item.MixinItemBucket",
         "item.MixinItemBucketMilk",
         "tileentity.MixinTileEntity",
+        "tileentity.MixinTileEntityFurnace",
         "util.MixinFoodStats",
         "world.MixinBossBarColor"
     ],
