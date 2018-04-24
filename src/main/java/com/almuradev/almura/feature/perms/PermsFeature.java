@@ -59,8 +59,8 @@ public final class PermsFeature implements Witness {
       return;
     }
 
-    if (!player.gameMode().equals(GameModes.SURVIVAL)) {
-      System.out.println("Player: " + player.getName() + " was detected to be in mode: " + player.gameMode() + ", setting player to Survival mode.");
+    if (!player.gameMode().get().equals(GameModes.SURVIVAL)) {
+      System.out.println("Player: " + player.getName() + " was detected to be in mode: " + player.gameMode().get() + ", setting player to Survival mode.");
       player.gameMode().set(GameModes.SURVIVAL);
     }
   }
