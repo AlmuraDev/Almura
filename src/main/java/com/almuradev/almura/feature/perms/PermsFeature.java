@@ -117,9 +117,9 @@ public final class PermsFeature implements Witness {
     if (this.permApi != null && differentExtent(event.getFromTransform(), event.getToTransform())) {
       final User user = this.permApi.getUser(player.getUniqueId());
       if (user != null) {
-      if (user.getPrimaryGroup().equalsIgnoreCase(LUCK_PERMS_DEFAULT_GROUP)) {
-          // ToDo:  not ready to be implemented but is functional.
-          // permApi.getUser(player.getUniqueId()).setPrimaryGroup("survivor");
+        if (user.getPrimaryGroup().equalsIgnoreCase(LUCK_PERMS_DEFAULT_GROUP)) {
+          String command = "lp user " + player.getName() + " promote members";
+          Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
         }
       }
     }
