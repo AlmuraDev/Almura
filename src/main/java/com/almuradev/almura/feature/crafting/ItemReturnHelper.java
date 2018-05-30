@@ -46,12 +46,12 @@ public class ItemReturnHelper implements Witness {
 
         for (int i = 0; i < 9; i++) {  // Scan the crafting matrix.
             if (event.craftMatrix.getStackInSlot(i) != null) {
-                contentTypeItemCrafted(event.player, event.craftMatrix.getStackInSlot(i).getUnlocalizedName(), event.craftMatrix.getStackInSlot(i));
+                returnReusableItem(event.player, event.craftMatrix.getStackInSlot(i).getUnlocalizedName(), event.craftMatrix.getStackInSlot(i), debug);
             }
         }
     }
 
-    private void contentTypeItemCrafted(EntityPlayer player, String name, ItemStack currentStack) {
+    public static void returnReusableItem(EntityPlayer player, String name, ItemStack currentStack, boolean debug) {
         int damage = 0;
         ItemStack reusableItem;
         if (debug) {
@@ -84,6 +84,141 @@ public class ItemReturnHelper implements Witness {
             case "ITEM.ALMURA.NORMAL.INGREDIENTS.SALT":
             case "ITEM.ALMURA.NORMAL.INGREDIENTS.PEPPER":
                 reusableItem = GameRegistry.makeItemStack("almura:normal/ingredient/glass_jar", 0, 1, null);
+                break;
+
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_BEER":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_BOREALIS":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_COWTAIL":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_DELVERSLIGHT":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_FTBROS_BEER":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_FTBROS_LAGER":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_FTBROS_PORTER":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_FTBROS_STOUT":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_HARDGINGER":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_HIGHLANDS":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_IRONBELLY":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_LAVAPAIL":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_NETHER":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_PIGTROTTER":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_RIVERSIDE":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_ROCKBOTTOM":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_SOUTHERNGOLD":
+            case "ITEM.ALMURA.FOOD.DRINK.BEER_WITHERSHINS":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_BLOODYMARY":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_COSMOPOLITAN":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_DAIQUIRI":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_FUZZYNAVEL":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_GIBSON":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_GIMLET":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_GINTONIC":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_GREYHOUND":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_HIGHBALL":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_HURRICANE":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_KAMIKAZE":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_KIR":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_KIRROYALE":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_LEMONDROP":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_MAITAI":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_MARGARITA":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_MARTINI":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_MELONSOUR":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_MIMOSA":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_MINTJULEP":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_MOJITO":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_PARADISE":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_PINACOLADA":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_ROBROY":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_ROSE":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_RUMCOLA":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_SALTYDOG":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_SCREWDRIVER":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_SEABREEZE":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_SEXONTHEBEACH":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_SIDECAR":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_TEQUILASUNRISE":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_VODKAGIMLET":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_WHISKEYSOUR":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_WHITELADY":
+            case "ITEM.ALMURA.FOOD.DRINK.MIXED_ZOMBIE":
+            case "ITEM.ALMURA.FOOD.DRINK.OTHER_BUMBO":
+            case "ITEM.ALMURA.FOOD.DRINK.OTHER_GROG":
+            case "ITEM.ALMURA.FOOD.DRINK.OTHER_MEAD":
+            case "ITEM.ALMURA.FOOD.DRINK.OTHER_SPIDERBITE":
+                reusableItem = GameRegistry.makeItemStack("minecraft:potion", 0, 1, null);
+                break;
+
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_APPLE":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_BANANA":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_BLACKBERRY":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_BLUEBERRY":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_CANTALOUPE":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_CARROT":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_CHERRY":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_CONCORD_GRAPE":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_CRANBERRY":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_DRAGONFRUIT":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_GRAPEFRUIT":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_HONEYDEW":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_KIWI":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_LEMON":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_LIME":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_MIXEDGRAPE":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_MIXEDVEGETABLE":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_ORANGE":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_PEACH":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_PINEAPPLE":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_PLUM":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_RASPBERRY":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_STRAWBERRY":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_TOMATO":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_WATERMELON":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_WHITEGRAPE":
+            case "ITEM.ALMURA.FOOD.DRINK.JUICE_YUMMYBERRY":
+            case "ITEM.ALMURA.FOOD.DRINK.NONALC_APPLECIDER":
+            case "ITEM.ALMURA.FOOD.DRINK.NONALC_EGGNOG":
+            case "ITEM.ALMURA.FOOD.DRINK.NONALC_LEMONADE":
+            case "ITEM.ALMURA.FOOD.DRINK.NONALC_LIMEADE":
+            case "ITEM.ALMURA.FOOD.DRINK.NONALC_SODA_COLA":
+            case "ITEM.ALMURA.FOOD.DRINK.NONALC_SODA_GINGERALE":
+            case "ITEM.ALMURA.FOOD.DRINK.NONALC_SODA_GRAPE":
+            case "ITEM.ALMURA.FOOD.DRINK.NONALC_SODA_LEMONLIME":
+            case "ITEM.ALMURA.FOOD.DRINK.NONALC_SODA_ORANGE":
+            case "ITEM.ALMURA.FOOD.DRINK.NONALC_SODA_ROOTBEER":
+            case "ITEM.ALMURA.FOOD.DRINK.OTHER_HARDAPPLECIDER":
+            case "ITEM.ALMURA.FOOD.DRINK.OTHER_SPIKEDEGGNOG":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_ABSINTHE":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_BRANDY":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_CASSIS":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_GIN":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_MELONLIQUEUR":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_PORT":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_RUM":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_SHERRY":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_TEQUILA":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_TRIPLESEC":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_VERMOUTH":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_VODKA":
+            case "ITEM.ALMURA.FOOD.DRINK.SPIRIT_WHISKEY":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_OTHER_RICE":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_RED_FIREBRAND":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_RED_NETHERTEARS":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_RED_PRIORY":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_RED_PRIORY79":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_RED_PRIORY84":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_RED_SPICEDRUBY":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_RED_SWEETWATER":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_RED_TABLE":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_ROSE_PRIORY":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_ROSE_TABLE":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_ROSE_TRIPLEROSE":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_WHITE_DESSERT":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_WHITE_FEYFIRE":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_WHITE_ICEBRAND":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_WHITE_PRIORY":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_WHITE_SILVERDEW":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_WHITE_SPARKLING":
+            case "ITEM.ALMURA.FOOD.DRINK.WINE_WHITE_TABLE":
+                reusableItem = GameRegistry.makeItemStack("minecraft:glass_bottle", 0, 1, null);
                 break;
 
             default:

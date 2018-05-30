@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.item.type.food;
 
+import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ItemOnlyApplyContext;
 import com.almuradev.content.component.apply.impl.FoodLevelChangeApply;
@@ -98,7 +99,12 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
             {
                 CriteriaTriggers.CONSUME_ITEM.trigger((EntityPlayerMP)entityplayer, stack);
             }
+
+            // Return Re-Usable Items
+            ItemReturnHelper.returnReusableItem(entityplayer, stack.getUnlocalizedName(), stack, false);
         }
+
+
 
         stack.shrink(1);
         return stack;
