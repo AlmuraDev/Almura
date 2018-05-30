@@ -47,6 +47,11 @@ public abstract class MixinTileEntityFurnace extends TileEntityLockable implemen
                 return 12500;
             }
 
+            Block charcoalBlock = Block.getBlockFromName("almura:horizontal/building/charcoalblock");
+            if (charcoalBlock != null && item == Item.getItemFromBlock(charcoalBlock)) {
+                return 10000;
+            }
+
             // End Almura
 
             if (item == Item.getItemFromBlock(Blocks.WOODEN_SLAB)) {
