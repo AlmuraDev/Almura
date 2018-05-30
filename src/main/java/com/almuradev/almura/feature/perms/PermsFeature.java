@@ -18,6 +18,7 @@ import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.api.event.user.track.UserTrackEvent;
 import org.apache.commons.lang3.text.WordUtils;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
@@ -50,19 +51,6 @@ public final class PermsFeature implements Witness {
     titleManager) {
     this.notificationManager = notificationManager;
     this.titleManager = titleManager;
-  }
-
-  @Listener(order = Order.LAST)
-  public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-    // Purpose:  to check if player is not in survival upon login.
-    if (player.hasPermission("almura.title.ancient")) {
-      return;
-    }
-
-    if (!player.gameMode().get().equals(GameModes.SURVIVAL)) {
-      System.out.println("Player: " + player.getName() + " was detected to be in mode: " + player.gameMode().get() + ", setting player to Survival mode.");
-      player.gameMode().set(GameModes.SURVIVAL);
-    }
   }
 
   @Listener
