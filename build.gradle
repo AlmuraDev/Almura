@@ -93,6 +93,7 @@ configurations.all {
 dependencies {
     compile ("org.spongepowered:spongeforge:${project.spongeImplVersion}:dev") {
         exclude module: 'testplugins'
+	exclude module: 'testmods'
     }
     compile 'net.kyori:indigo:1.0.0-SNAPSHOT'
     compile 'net.kyori:lunar:1.0.5-SNAPSHOT'
