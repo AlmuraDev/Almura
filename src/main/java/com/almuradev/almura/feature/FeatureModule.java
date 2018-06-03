@@ -14,6 +14,7 @@ import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.almura.feature.exchange.ExchangeModule;
 import com.almuradev.almura.feature.guide.GuideModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
+import com.almuradev.almura.feature.menu.ingame.FeaturesModule;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
 import com.almuradev.almura.feature.offhand.OffHandListener;
@@ -23,19 +24,12 @@ import com.almuradev.almura.feature.storage.StorageModule;
 import com.almuradev.almura.feature.title.TitleModule;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.event.user.track.UserTrackEvent;
 import net.kyori.violet.AbstractModule;
-import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.service.ProviderRegistration;
-
-import java.util.Optional;
 
 public final class FeatureModule extends AbstractModule implements CommonBinder {
 
@@ -51,6 +45,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new ExchangeModule());
         this.install(new StorageModule());
         this.install(new BiomeModule());
+        this.install(new FeaturesModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         nerfVanillaFood();
