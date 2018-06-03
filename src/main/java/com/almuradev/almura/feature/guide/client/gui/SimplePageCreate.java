@@ -44,6 +44,7 @@ public class SimplePageCreate extends SimpleScreen {
     @Override
     public void construct() {
         this.guiscreenBackground = true;
+        Keyboard.enableRepeatEvents(true);
 
         final UIForm form = new UIForm(this, 150, 125, I18n.format("almura.guide.create.form.title"));
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);

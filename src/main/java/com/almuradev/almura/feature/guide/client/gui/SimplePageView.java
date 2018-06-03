@@ -346,6 +346,7 @@ public class SimplePageView extends SimpleScreen {
         manager.preSnapshot = this.contentField.getText();
 
         this.updateButtons();
+        Keyboard.enableRepeatEvents(true);
     }
 
     private boolean hasAnyPermission() {
