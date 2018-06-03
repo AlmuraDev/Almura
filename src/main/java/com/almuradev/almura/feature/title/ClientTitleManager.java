@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.title;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.core.event.Witness;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -27,6 +28,7 @@ import javax.inject.Singleton;
 public final class ClientTitleManager implements Witness {
 
     private final Map<UUID, String> selectedTitlesById = new HashMap<>();
+    public String temporaryTitle;
 
     @SubscribeEvent
     public void onClientConnectedToServerEvent(FMLNetworkEvent.ClientConnectedToServerEvent event) {
@@ -36,6 +38,12 @@ public final class ClientTitleManager implements Witness {
     @Nullable
     public String getTitle(UUID uniqueId) {
         checkNotNull(uniqueId);
+
+        // Return temporary title set within TitleGUI
+
+        if (temporaryTitle != null && !temporaryTitle.isEmpty() && uniqueId == Minecraft.getMinecraft().player.getUniqueID()) {
+            return temporaryTitle;
+        }
 
         final String title = this.selectedTitlesById.get(uniqueId);
         if (title == null) {
