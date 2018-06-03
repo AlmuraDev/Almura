@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.nick;
 
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPlayerListPanel;
+import com.almuradev.almura.feature.nick.client.gui.NicknameGUI;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameChangeMappingPacket;
 import com.almuradev.almura.feature.nick.network.ClientboundNucleusNameMappingsPacket;
 import com.almuradev.almura.feature.nick.network.handler.ClientboundNucleusNameChangeMappingPacketHandler;
@@ -31,6 +32,7 @@ public final class NickModule extends AbstractModule implements CommonBinder {
                 protected void configure() {
                     this.facet().add(ClientNickManager.class);
                     this.requestStaticInjection(UIPlayerListPanel.class);
+                    this.requestStaticInjection(NicknameGUI.class);
                 }
             }
             this.install(new ClientModule());
