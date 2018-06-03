@@ -26,7 +26,7 @@ import javax.inject.Singleton;
 @Singleton
 public final class ServerNotificationManager extends Witness.Impl implements Witness.Lifecycle {
 
-    private final Game game;
+    public final Game game;
     private final ChannelBinding.IndexedMessageChannel network;
 
     @Inject
