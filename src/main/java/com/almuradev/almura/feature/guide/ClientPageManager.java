@@ -54,8 +54,12 @@ public final class ClientPageManager implements Witness {
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (guideOpenBinding.isPressed()) {
-            this.network.sendToServer(new ServerboundGuideOpenRequestPacket());
+            requestGuideGUI();
         }
+    }
+
+    public void requestGuideGUI() {
+        this.network.sendToServer(new ServerboundGuideOpenRequestPacket());
     }
 
     public List<PageListEntry> getPageEntries() {
