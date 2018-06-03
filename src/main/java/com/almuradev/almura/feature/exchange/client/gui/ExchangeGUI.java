@@ -62,7 +62,7 @@ public final class ExchangeGUI extends SimpleScreen {
         guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
-        // Master Pane
+        // Main Panel
         final UIFormContainer form = new UIFormContainer(this, 600, 400, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
