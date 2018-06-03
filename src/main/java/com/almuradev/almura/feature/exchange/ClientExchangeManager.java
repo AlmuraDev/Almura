@@ -42,7 +42,11 @@ public final class ClientExchangeManager implements Witness {
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (exchangeOpenBinding.isPressed()) {
-            this.network.sendToServer(new ServerboundExchangeOpenRequestPacket());
+            requestExchangeGUI();
         }
+    }
+
+    public void requestExchangeGUI() {
+        this.network.sendToServer(new ServerboundExchangeOpenRequestPacket());
     }
 }
