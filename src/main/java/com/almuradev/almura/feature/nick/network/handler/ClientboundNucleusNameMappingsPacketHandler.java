@@ -29,7 +29,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 @SuppressWarnings("deprecation")
-public class ClientboundNucleusNameMappingsPacketHandler implements MessageHandler<ClientboundNucleusNameMappingsPacket> {
+public final class ClientboundNucleusNameMappingsPacketHandler implements MessageHandler<ClientboundNucleusNameMappingsPacket> {
 
     private final ClientNickManager nickManager;
 
@@ -62,11 +62,7 @@ public class ClientboundNucleusNameMappingsPacketHandler implements MessageHandl
 
                             this.nickManager.put(player.getUniqueID(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(newNick));
 
-                            try {
-                                this.nickManager.adjustPlayerNickname(player, newNick);
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
+                            this.nickManager.setForgeNickname(player, newNick);
                         }
                     });
                 }

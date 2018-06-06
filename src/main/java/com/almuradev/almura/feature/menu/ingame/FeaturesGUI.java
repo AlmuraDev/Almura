@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.menu.ingame;
 
 import com.almuradev.almura.feature.exchange.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
-import com.almuradev.almura.feature.nick.client.gui.NicknameGUI;
+import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.title.client.gui.TitleGUI;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
@@ -47,6 +47,7 @@ public final class FeaturesGUI extends SimpleScreen {
     @Inject private static PluginContainer container;
     @Inject private static ClientExchangeManager exchangeManager;
     @Inject private static ClientPageManager guideManager;
+    @Inject private static ClientNickManager nickManager;
 
     public FeaturesGUI(EntityPlayerSP player, World worldIn) {
         this.player = player;
@@ -138,19 +139,15 @@ public final class FeaturesGUI extends SimpleScreen {
             case "button.exchange":
                 exchangeManager.requestExchangeGUI();
                 break;
-
             case "button.guide":
                 guideManager.requestGuideGUI();
                 break;
-
             case "button.nickname":
-                new NicknameGUI(player).display();
+                nickManager.requestNicknameGUI();
                 break;
-
             case "button.title":
                 new TitleGUI(player).display();
                 break;
-
             case "button.close":
                 close();
                 break;

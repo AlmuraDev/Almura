@@ -183,7 +183,8 @@ jar {
                         'mixins.almura.feature.almanac.json',
                         'mixins.almura.feature.sign.json',
                         'mixins.almura.feature.title.json',
-                        'mixins.almura.feature.biome.json'
+                        'mixins.almura.feature.biome.json',
+                        'mixins.almura.feature.nick.json'
                 ].join(','),
                 'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0

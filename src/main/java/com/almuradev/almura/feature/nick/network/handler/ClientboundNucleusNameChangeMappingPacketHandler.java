@@ -61,12 +61,7 @@ public final class ClientboundNucleusNameChangeMappingPacketHandler implements M
                                 ForgeEventFactory.getPlayerDisplayName(player, TextSerializers.LEGACY_FORMATTING_CODE.serialize(nickname));
 
                         this.nickManager.put(entityUniqueId, TextSerializers.LEGACY_FORMATTING_CODE.deserialize(newNick));
-
-                        try {
-                            this.nickManager.adjustPlayerNickname(player, newNick);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
+                        this.nickManager.setForgeNickname(player, newNick);
                     }
                 }
 

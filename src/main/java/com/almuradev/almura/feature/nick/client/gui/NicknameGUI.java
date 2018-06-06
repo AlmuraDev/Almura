@@ -8,14 +8,15 @@ package com.almuradev.almura.feature.nick.client.gui;
  * All Rights Reserved.
  */
 
-import com.almuradev.almura.feature.nick.ClientNickManager;
+import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
+import com.almuradev.almura.feature.nick.network.ServerboundNucleusNameChangePacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
-import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -31,6 +32,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.network.ChannelBinding;
+import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
@@ -41,48 +44,43 @@ import javax.inject.Inject;
 @SideOnly(Side.CLIENT)
 public final class NicknameGUI extends SimpleScreen {
 
-    private static final int innerPadding = 2;
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
     private boolean update = true;
     private String originalNickname;
-    private UILabel titleLabel;
     private UIFormContainer form;
     private UITextField nicknameTextbox;
     private UISelect colorSelector;
 
     private EntityPlayer entityPlayer;
 
-    @Inject private static PluginContainer container;
-    @Inject private static ClientNickManager nickManager;
-    @Inject private static ServerNotificationManager serverNotificationManager;
+    @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientNotificationManager clientNotificationManager;
 
     public NicknameGUI(EntityPlayer entityPlayer) {
         this.entityPlayer = entityPlayer;
-        if (nickManager != null) {
-            this.originalNickname = entityPlayer.getDisplayName().getFormattedText(); // Save this so it can be used to revert to in the event the user doesn't click "Apply".
-        }
+        this.originalNickname = entityPlayer.getDisplayName().getFormattedText(); // Save this so it can be used to revert to in the event the user doesn't click "Apply".
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void construct() {
-        guiscreenBackground = false;
+        this.guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
         // Master Panel
-        form = new UIFormContainer(this, 300, 125, "");
-        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        form.setMovable(true);
-        form.setClosable(true);
-        form.setBorder(FontColors.WHITE, 1, 185);
-        form.setBackgroundAlpha(215);
-        form.setBottomPadding(3);
-        form.setRightPadding(3);
-        form.setTopPadding(20);
-        form.setLeftPadding(3);
+        this.form = new UIFormContainer(this, 300, 125, "");
+        this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        this.form.setMovable(true);
+        this.form.setClosable(true);
+        this.form.setBorder(FontColors.WHITE, 1, 185);
+        this.form.setBackgroundAlpha(215);
+        this.form.setBottomPadding(3);
+        this.form.setRightPadding(3);
+        this.form.setTopPadding(20);
+        this.form.setLeftPadding(3);
 
-        titleLabel = new UILabel(this, "Nicknames");
+        final UILabel titleLabel = new UILabel(this, "Nicknames");
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
@@ -110,26 +108,27 @@ public final class NicknameGUI extends SimpleScreen {
         listArea.setTopPadding(3);
         listArea.setLeftPadding(3);
 
-        UILabel nicknameLabel = new UILabel(this, "Enter desired nickname:");
+        final UILabel nicknameLabel = new UILabel(this, "Enter desired nickname:");
         nicknameLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         nicknameLabel.setPosition(7, 10, Anchor.LEFT | Anchor.TOP);
 
         // Nickname Entry Textbox
         this.nicknameTextbox = new UITextField(this, "", false);
         this.nicknameTextbox.setSize(150, 0);
-        this.nicknameTextbox.setText(entityPlayer.getDisplayName().getFormattedText());
+        this.nicknameTextbox.setText(this.originalNickname);
         this.nicknameTextbox.setPosition(7, 23, Anchor.LEFT | Anchor.TOP);
         this.nicknameTextbox.setEditable(true);
         this.nicknameTextbox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-        UILabel colorLabel = new UILabel(this, "Add colors:");
+        final UILabel colorLabel = new UILabel(this, "Add colors:");
         colorLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         colorLabel.setPosition(7, 40, Anchor.LEFT | Anchor.TOP);
 
         // Color Selection dropdown
-       colorSelector = new UISelect<>(this,
+        this.colorSelector = new UISelect<>(this,
                 100,
-                Arrays.asList(	"§1Dark Blue",
+                Arrays.asList(
+                        "§1Dark Blue",
                         "§9Blue",
                         "§3Dark Aqua",
                         "§bAqua",
@@ -144,10 +143,11 @@ public final class NicknameGUI extends SimpleScreen {
                         "§fWhite",
                         "§7Gray",
                         "§8Dark Gray",
-                        "§0Black,"));
-        colorSelector.setPosition(7, 50, Anchor.LEFT | Anchor.TOP);
-        colorSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
-        colorSelector.select("§1Dark Blue");
+                        "§0Black,")
+       );
+        this.colorSelector.setPosition(7, 50, Anchor.LEFT | Anchor.TOP);
+        this.colorSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
+        this.colorSelector.select("§1Dark Blue");
 
         // Add Color character button
         final UIButton buttonColor = new UIButtonBuilder(this)
@@ -165,7 +165,7 @@ public final class NicknameGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.reset");
 
-        UILabel nicknameRulesLabel = new UILabel(this, "Please follow nickname rules.");
+        final UILabel nicknameRulesLabel = new UILabel(this, "Please follow nickname rules.");
         nicknameRulesLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         nicknameRulesLabel.setPosition(3, -2, Anchor.LEFT | Anchor.BOTTOM);
 
@@ -187,45 +187,39 @@ public final class NicknameGUI extends SimpleScreen {
                 .build("button.apply");
 
 
-        form.add(titleLabel, listArea, playerArea, nicknameLabel, nicknameTextbox, nicknameRulesLabel, colorLabel, colorSelector, buttonColor, buttonReset, buttonClose, buttonApply);
-        addToScreen(form);
+        this.form.add(titleLabel, listArea, playerArea, nicknameLabel, this.nicknameTextbox, nicknameRulesLabel, colorLabel, this.colorSelector, buttonColor, buttonReset, buttonClose, buttonApply);
+        addToScreen(this.form);
     }
 
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.color":
-                String colorCode = colorSelector.getSelectedOption().getLabel().substring(0,2);
-                nicknameTextbox.addText(colorCode);
+                String colorCode = this.colorSelector.getSelectedOption().getLabel().substring(0,2);
+                this.nicknameTextbox.addText(colorCode);
                 break;
 
             case "button.reset":
-                nicknameTextbox.setText(originalNickname);
+                this.nicknameTextbox.setText(this.originalNickname);
                 break;
 
             case "button.apply":
-                if (nicknameTextbox.getText().equalsIgnoreCase(" ") || nicknameTextbox.getText().isEmpty()) {
-                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have blank title"),5));
+                if (this.nicknameTextbox.getText().isEmpty()) {
+                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have blank title!"),5));
                     break;
                 }
 
-                for (final Player onlinePlayer : serverNotificationManager.game.getServer().getOnlinePlayers()) {
-                    if (onlinePlayer.getUniqueId().equals(Minecraft.getMinecraft().player.getUniqueID())) {
-                        clientNotificationManager.queuePopup(new PopupNotification(Text.of("New Nickname!"), Text.of("You are now known as " + nicknameTextbox.getText().trim()),5));
-                    } else {
-                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of("New Nickname!"), Text.of(entityPlayer.getName() + " is now known as " + nicknameTextbox.getText().trim()), 5);
-                    }
-                }
+                this.update = false; // Stop automatic update of name based on textbox
+                network.sendToServer(new ServerboundNucleusNameChangePacket(this.nicknameTextbox.getText().trim()));
 
-                // Todo:  Sent packet to the server to set new nickname within NucleusNicknameService on Main Thread
-
-                close();
+                this.close();
                 break;
 
             case "button.close":
-                update = false; // Stop automatic update of name based on textbox
-                setName(entityPlayer, originalNickname);  // Revert nickname unless player hits apply
-                close();
+                this.update = false; // Stop automatic update of name based on textbox
+                this.setRendererName(this.entityPlayer, this.originalNickname);  // Revert nickname unless player hits apply
+
+                this.close();
                 break;
         }
     }
@@ -234,31 +228,27 @@ public final class NicknameGUI extends SimpleScreen {
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
 
-        if (update) {
-            setName(entityPlayer, nicknameTextbox.getText());
+        if (this.update) {
+            this.setRendererName(this.entityPlayer, this.nicknameTextbox.getText());
         }
 
         // Set location of Player Entity within Panel
-        int i = form.screenX()+210;
-        int j = form.screenY()+25;
+        int i = this.form.screenX()+210;
+        int j = this.form.screenY()+25;
 
         // Draw Player
-        GuiInventory.drawEntityOnScreen(i + 51, j + 75, 30, (float)(i + 51) - mouseX, (float)(j + 75 - 50) - mouseY, this.mc.player);
+        GuiInventory.drawEntityOnScreen(i + 51, j + 75, 30, (float)(i + 51) - mouseX, (float)(j + 75 - 50) - mouseY, this.entityPlayer);
 
-        if (unlockMouse && this.lastUpdate == 25) {
+        if (this.unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
-            unlockMouse = false; // Only unlock once per session.
+            this.unlockMouse = false; // Only unlock once per session.
         }
 
         if (++this.lastUpdate > 100) {}
     }
 
-    private void setName(EntityPlayer player, String name) {
-        try {
-            this.nickManager.adjustPlayerNickname(player, name);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    private void setRendererName(EntityPlayer player, String name) {
+        ((IMixinEntityPlayer) player).setDisplayName(name);
     }
 
     @Override
