@@ -71,12 +71,7 @@ public class SimplePageView extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         final UIFormContainer form = new UIFormContainer(this, 420, 225, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
-        if (hasModifyPermission()) {
-            form.setAnchor(Anchor.CENTER | Anchor.TOP);
-            form.setPosition(0, 35);
-        } else {
-            form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        }
+        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
         form.setBorder(FontColors.WHITE, 1, 185);
@@ -147,7 +142,7 @@ public class SimplePageView extends SimpleScreen {
 
         // Color Selection dropdown
         this.colorSelector = new UISelect<>(this,
-                100,
+                110,
                 Arrays.asList(
                         "§1Dark Blue§f - &1",
                         "§9Blue§f - &9",
@@ -164,18 +159,23 @@ public class SimplePageView extends SimpleScreen {
                         "§fWhite§f - &f",
                         "§7Gray§f - &7",
                         "§8Dark Gray§f - &8",
-                        "§0Black§f - &0")
+                        "§0Black§f - &0,",
+                        "§lBold§f - &l",
+                        "§mStrikethrough§f - &m",
+                        "§nUnderline§f - &n",
+                        "§oItalic§f - &o")
         );
         this.colorSelector.setPosition(60, -1, Anchor.BOTTOM | Anchor.LEFT);
         this.colorSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
         this.colorSelector.select("§1Dark Blue§f - &1");
         this.colorSelector.setVisible((hasAnyPermission()));
+        this.colorSelector.maxDisplayedOptions(7);
 
         // Add Color character button
         final UIButton buttonColor = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
-                .position(162, 0)
+                .position(172, 0)
                 .text(Text.of("Add"))
                 .visible(hasModifyPermission())
                 .listener(this)
