@@ -36,6 +36,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -53,6 +54,7 @@ public class SimplePageView extends SimpleScreen {
     private UIButton buttonRemove, buttonAdd, buttonDetails, buttonFormat, buttonSave;
     private UISelect<PageListEntry> pagesSelect;
     private UITextField contentField;
+    private UISelect colorSelector;
     @Inject private static PluginContainer container;
     private boolean unlockMouse = true;
 
@@ -69,7 +71,12 @@ public class SimplePageView extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         final UIFormContainer form = new UIFormContainer(this, 420, 225, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
-        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        if (hasModifyPermission()) {
+            form.setAnchor(Anchor.CENTER | Anchor.TOP);
+            form.setPosition(0, 35);
+        } else {
+            form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        }
         form.setMovable(true);
         form.setClosable(true);
         form.setBorder(FontColors.WHITE, 1, 185);
@@ -138,6 +145,42 @@ public class SimplePageView extends SimpleScreen {
         contentField.setEditable(this.hasModifyPermission());
         contentField.setOptions(0x555555, 0xc8c8c8, 0x00000);
 
+        // Color Selection dropdown
+        this.colorSelector = new UISelect<>(this,
+                100,
+                Arrays.asList(
+                        "§1Dark Blue§f - &1",
+                        "§9Blue§f - &9",
+                        "§3Dark Aqua§f - &3",
+                        "§bAqua§f - &b",
+                        "§4Dark Red§f - &4",
+                        "§cRed§f - &c",
+                        "§eYellow§f - &e",
+                        "§6Gold§f - &6",
+                        "§2Dark Green§f - &2",
+                        "§aGreen§f - &a",
+                        "§5Dark Purple§f - &5",
+                        "§dLight Purple§f - &d",
+                        "§fWhite§f - &f",
+                        "§7Gray§f - &7",
+                        "§8Dark Gray§f - &8",
+                        "§0Black§f - &0")
+        );
+        this.colorSelector.setPosition(60, -1, Anchor.BOTTOM | Anchor.LEFT);
+        this.colorSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
+        this.colorSelector.select("§1Dark Blue§f - &1");
+        this.colorSelector.setVisible((hasAnyPermission()));
+
+        // Add Color character button
+        final UIButton buttonColor = new UIButtonBuilder(this)
+                .width(40)
+                .anchor(Anchor.BOTTOM | Anchor.LEFT)
+                .position(162, 0)
+                .text(Text.of("Add"))
+                .visible(hasModifyPermission())
+                .listener(this)
+                .build("button.color");
+
         // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
                 .width(40)
@@ -158,7 +201,7 @@ public class SimplePageView extends SimpleScreen {
                 .build("button.save");
 
 
-        form.add(this.buttonRemove, this.pagesSelect, this.buttonDetails, this.buttonAdd, this.buttonFormat, contentField, buttonClose, buttonSave);
+        form.add(buttonRemove, pagesSelect, buttonDetails, buttonAdd, contentField, buttonFormat, colorSelector, buttonColor, buttonClose, buttonSave);
 
         addToScreen(form);
 
@@ -167,7 +210,27 @@ public class SimplePageView extends SimpleScreen {
 
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
+        float scrollPos = contentField.getScrollbar().getOffset();
+        UITextField.CursorPosition cursorPos = contentField.getCursorPosition();
+
+        String currentContent;
         switch (event.getComponent().getName().toLowerCase()) {
+            case "button.color":
+                String colorCode = this.colorSelector.getSelectedOption().getLabel().substring(0,2);
+                this.contentField.addText(colorCode);
+                currentContent = this.contentField.getText();
+                if (showRaw) {
+                    // Need to convert the content from sectional -> ampersand
+                    this.contentField.setText(Page.asUglyText(currentContent));
+                } else {
+                    // Need to convert the content from ampersand -> sectional
+                    this.contentField.setText(Page.asFriendlyText(currentContent));
+                }
+                contentField.getScrollbar().scrollTo(scrollPos);
+                contentField.setCursorPosition(cursorPos.getXOffset(), cursorPos.getYOffset());
+                contentField.setFocused(true);
+                break;
+
             case "button.details":
                 this.buttonDetails.getTooltip().setVisible(false);
                 Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("pageDetails")).submit(container);
@@ -176,9 +239,7 @@ public class SimplePageView extends SimpleScreen {
             case "button.format":
                 this.showRaw = !this.showRaw;
                 this.updateFormattingButton();
-
-                final String currentContent = this.contentField.getText();
-
+                currentContent = this.contentField.getText();
                 if (showRaw) {
                     // Need to convert the content from sectional -> ampersand
                     this.contentField.setText(Page.asUglyText(currentContent));
@@ -186,7 +247,11 @@ public class SimplePageView extends SimpleScreen {
                     // Need to convert the content from ampersand -> sectional
                     this.contentField.setText(Page.asFriendlyText(currentContent));
                 }
+                contentField.getScrollbar().scrollTo(scrollPos);
+                contentField.setCursorPosition(cursorPos.getXOffset(), cursorPos.getYOffset());
+                contentField.setFocused(true);
                 break;
+
             case "button.add":
                 this.buttonAdd.getTooltip().setVisible(false);
                 Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("pageCreate")).submit(container);
