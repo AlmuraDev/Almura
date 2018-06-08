@@ -151,6 +151,10 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
         service.setNickname(player, nick);
     }
 
+    public void removeNickname(NucleusNicknameService service, final Player player) throws NicknameException {
+        service.removeNickname(player);
+    }
+
     public void setForgeNickname(final EntityPlayer player, final String nick) {
         ((IMixinEntityPlayer) player).setDisplayName(nick);
     }

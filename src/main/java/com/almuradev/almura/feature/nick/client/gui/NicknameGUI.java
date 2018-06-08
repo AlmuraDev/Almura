@@ -8,6 +8,7 @@ package com.almuradev.almura.feature.nick.client.gui;
  * All Rights Reserved.
  */
 
+import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
 import com.almuradev.almura.feature.nick.network.ServerboundNucleusNameChangePacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
@@ -38,6 +39,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -56,10 +58,19 @@ public final class NicknameGUI extends SimpleScreen {
 
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientNotificationManager clientNotificationManager;
+    @Inject private static ClientNickManager clientNickManager;
 
     public NicknameGUI(EntityPlayer entityPlayer) {
         this.entityPlayer = entityPlayer;
         this.originalNickname = entityPlayer.getDisplayName().getFormattedText(); // Save this so it can be used to revert to in the event the user doesn't click "Apply".
+
+        if (originalNickname.substring(0,1).equalsIgnoreCase("~")) {
+            originalNickname = originalNickname.substring(1, originalNickname.length()); // Removes ~ value that exists in already set nicknames.
+        }
+
+        if (originalNickname.substring(originalNickname.length()-2,originalNickname.length()).equalsIgnoreCase("§r")) {
+            originalNickname = originalNickname.substring(0,originalNickname.length()-2);  // Removes reset character at the end of the nickname.
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -165,6 +176,14 @@ public final class NicknameGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.reset");
 
+        // Reset button
+        final UIButton buttonRemove = new UIButtonBuilder(this)
+                .width(70)
+                .position(105, 65, Anchor.LEFT | Anchor.TOP)
+                .text(Text.of("Remove Nickname"))
+                .listener(this)
+                .build("button.remove");
+
         final UILabel nicknameRulesLabel = new UILabel(this, "Please follow nickname rules.");
         nicknameRulesLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         nicknameRulesLabel.setPosition(3, -2, Anchor.LEFT | Anchor.BOTTOM);
@@ -187,7 +206,7 @@ public final class NicknameGUI extends SimpleScreen {
                 .build("button.apply");
 
 
-        this.form.add(titleLabel, listArea, playerArea, nicknameLabel, this.nicknameTextbox, nicknameRulesLabel, colorLabel, this.colorSelector, buttonColor, buttonReset, buttonClose, buttonApply);
+        this.form.add(titleLabel, listArea, playerArea, nicknameLabel, this.nicknameTextbox, nicknameRulesLabel, colorLabel, this.colorSelector, buttonColor, buttonReset, buttonRemove, buttonClose, buttonApply);
         addToScreen(this.form);
     }
 
@@ -195,7 +214,7 @@ public final class NicknameGUI extends SimpleScreen {
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.color":
-                String colorCode = this.colorSelector.getSelectedOption().getLabel().substring(0,2);
+                final String colorCode = this.colorSelector.getSelectedOption().getLabel().substring(0,2);
                 this.nicknameTextbox.addText(colorCode);
                 break;
 
@@ -203,13 +222,42 @@ public final class NicknameGUI extends SimpleScreen {
                 this.nicknameTextbox.setText(this.originalNickname);
                 break;
 
+            case "button.remove":
+                this.update = false; // Stop automatic update of name based on textbox
+                clientNotificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Removing Nickname from server...."),2));
+
+                network.sendToServer(new ServerboundNucleusNameChangePacket(entityPlayer.getName().trim()));
+
+                this.close();
+                break;
+
             case "button.apply":
+                final Text validateText = Text.of(nicknameTextbox.getText());
+                final String regexPattern = "[a-zA-Z0-9_§]+";
+                final Pattern nickNameRegex = Pattern.compile(regexPattern);
+
                 if (this.nicknameTextbox.getText().isEmpty()) {
                     clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have blank title!"),5));
                     break;
                 }
 
+                if (validateText.toPlain().length() <= 3) {
+                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname < 3 characters!"),5));
+                    break;
+                }
+
+                if (validateText.toPlain().length() > 20) {
+                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname > 20 characters!"),5));
+                    break;
+                }
+
+                if (!nickNameRegex.matcher(validateText.toPlain()).matches()) {
+                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Invalid Character in Nickname!"), 5));
+                    break;
+                }
                 this.update = false; // Stop automatic update of name based on textbox
+                clientNotificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Updating Nickname on server...."),2));
+
                 network.sendToServer(new ServerboundNucleusNameChangePacket(this.nicknameTextbox.getText().trim()));
 
                 this.close();
