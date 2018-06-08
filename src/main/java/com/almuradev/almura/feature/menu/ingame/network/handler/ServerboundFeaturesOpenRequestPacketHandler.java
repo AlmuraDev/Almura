@@ -56,7 +56,7 @@ public final class ServerboundFeaturesOpenRequestPacketHandler implements Messag
                     return;
                 }
 
-                this.network.sendTo(player, new ClientboundFeaturesOpenResponsePacket());
+                this.network.sendTo(player, new ClientboundFeaturesOpenResponsePacket(player.hasPermission("almura.admin")));
             }
         }
     }

@@ -27,8 +27,9 @@ public final class ClientboundFeaturesOpenResponsePacketHandler implements Messa
 
                 final EntityPlayerSP player = client.player;
                 final WorldClient world = client.world;
+                final boolean isAdmin = message.admin;
 
-                new FeaturesGUI(player, world).display();
+                new FeaturesGUI(player, world, isAdmin).display();
             }
         }
     }

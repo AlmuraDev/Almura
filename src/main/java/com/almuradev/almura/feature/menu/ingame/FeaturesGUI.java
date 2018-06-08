@@ -27,6 +27,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
@@ -38,8 +39,9 @@ public final class FeaturesGUI extends SimpleScreen {
     private static final int innerPadding = 2;
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
-    private UILabel titleLabel;
-    private UIButton guideButton, titleButton, nicknameButton, exchangeButton, accessoriesButton;
+    private boolean isAdmin = false;
+    private UILabel titleLabel, adminLabel;
+    private UIButton guideButton, titleButton, nicknameButton, exchangeButton, accessoriesButton, adminNicknameButton;
 
     private World world;
     private EntityPlayerSP player;
@@ -49,9 +51,10 @@ public final class FeaturesGUI extends SimpleScreen {
     @Inject private static ClientPageManager guideManager;
     @Inject private static ClientNickManager nickManager;
 
-    public FeaturesGUI(EntityPlayerSP player, World worldIn) {
+    public FeaturesGUI(EntityPlayerSP player, World worldIn, boolean isAdmin) {
         this.player = player;
         this.world = worldIn;
+        this.isAdmin = isAdmin;
     }
 
     @Override
@@ -92,7 +95,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.nickname");
 
-        // Nickname button
+        // Title button
        titleButton = new UIButtonBuilder(this)
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -120,6 +123,21 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.accessories");
 
+        adminLabel = new UILabel(this, "Admin Abilities");
+        adminLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        adminLabel.setPosition(0, accessoriesButton.getY() + 25, Anchor.TOP | Anchor.CENTER);
+        adminLabel.setVisible(isAdmin);
+
+        // Nickname button
+        adminNicknameButton = new UIButtonBuilder(this)
+                .width(100)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .text("Set Player Nickname")
+                .position(0, adminLabel.getY() + 15)
+                .listener(this)
+                .visible(isAdmin)
+                .build("button.adminNickname");
+
         // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
                 .width(40)
@@ -128,7 +146,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel, guideButton, exchangeButton, titleButton, nicknameButton, accessoriesButton, buttonClose);
+        form.add(titleLabel, guideButton, exchangeButton, titleButton, nicknameButton, accessoriesButton, adminLabel, adminNicknameButton, buttonClose);
 
         addToScreen(form);
     }
@@ -144,6 +162,9 @@ public final class FeaturesGUI extends SimpleScreen {
                 break;
             case "button.nickname":
                 nickManager.requestNicknameGUI();
+                break;
+            case "button.adminNickname":
+                //nickManager.requestNicknameGUI();
                 break;
             case "button.title":
                 new TitleGUI(player).display();
