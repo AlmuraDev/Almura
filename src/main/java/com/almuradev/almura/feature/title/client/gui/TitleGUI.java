@@ -1,5 +1,3 @@
-package com.almuradev.almura.feature.title.client.gui;
-
 /*
  * This file is part of Almura.
  *
@@ -7,6 +5,7 @@ package com.almuradev.almura.feature.title.client.gui;
  *
  * All Rights Reserved.
  */
+package com.almuradev.almura.feature.title.client.gui;
 
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
@@ -140,7 +139,7 @@ public final class TitleGUI extends SimpleScreen {
         int j = form.screenY()+75;
 
         // Draw Player
-        GuiInventory.drawEntityOnScreen(i + 51, j + 75, 30, (float)(i + 51) - mouseX, (float)(j + 75 - 50) - mouseY, this.mc.player);
+        GuiInventory.drawEntityOnScreen(i + 51, j + 75, 30, (float)(i + 51) - mouseX, (float)(j + 75 - 50) - mouseY, this.player);
 
         if (unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
