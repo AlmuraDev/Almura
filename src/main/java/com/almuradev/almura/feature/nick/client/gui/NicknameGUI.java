@@ -171,7 +171,7 @@ public final class NicknameGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.reset");
 
-        // Reset button
+        // Remove Nickname button
         final UIButton buttonRemove = new UIButtonBuilder(this)
                 .width(70)
                 .position(105, 65, Anchor.LEFT | Anchor.TOP)

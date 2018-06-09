@@ -111,7 +111,8 @@ public final class FeaturesGUI extends SimpleScreen {
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, titleButton.getY() + 18)
-                .text("Grand Exchange")
+                .visible(isAdmin)
+                .text("Exchange")
                 .listener(this)
                 .build("button.exchange");
 
@@ -121,7 +122,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, exchangeButton.getY() + 18)
                 .text("Accessories")
-                .enabled(false)
+                .visible(isAdmin)
                 .listener(this)
                 .build("button.accessories");
 
