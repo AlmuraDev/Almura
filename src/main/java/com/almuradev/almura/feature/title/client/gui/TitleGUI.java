@@ -111,7 +111,9 @@ public final class TitleGUI extends SimpleScreen {
         );
         titlesSelector.setPosition(10, 20, Anchor.LEFT | Anchor.TOP);
         titlesSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
-        titlesSelector.select(clientTitleManager.getTitle(Minecraft.getMinecraft().player.getUniqueID()));
+        if (clientTitleManager.getTitle(Minecraft.getMinecraft().player.getUniqueID()) != null) {
+            titlesSelector.select(clientTitleManager.getTitle(Minecraft.getMinecraft().player.getUniqueID()));
+        }
         titlesSelector.maxDisplayedOptions(7);
         titlesSelector.setName("selector");
         titlesSelector.register(this);
