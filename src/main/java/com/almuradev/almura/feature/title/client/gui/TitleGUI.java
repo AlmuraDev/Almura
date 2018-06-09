@@ -165,7 +165,6 @@ public final class TitleGUI extends SimpleScreen {
             case "button.apply":
                 clientNotificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Updating Title on server...."),2));
                     if (titlesSelector.getSelectedValue() != null) {
-                        System.out.println("Sending Packet to Set Title");
                         network.sendToServer(new ServerboundPlayerSetTitlePacket(titlesSelector.getSelectedValue().toString().trim()));
                     }
 
