@@ -58,7 +58,7 @@ public final class TitleGUI extends SimpleScreen {
     @Inject private static ClientTitleManager clientTitleManager;
     @Inject private static PluginContainer container;
 
-    public TitleGUI(EntityPlayer player, Set set) {
+    public TitleGUI(EntityPlayer player, Set<Text> set) {
         this.player = player;
         this.titles = set;
     }

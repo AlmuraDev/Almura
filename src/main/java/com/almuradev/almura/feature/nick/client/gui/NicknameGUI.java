@@ -58,7 +58,6 @@ public final class NicknameGUI extends SimpleScreen {
 
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientNotificationManager clientNotificationManager;
-    @Inject private static ClientNickManager clientNickManager;
 
     public NicknameGUI(EntityPlayer entityPlayer) {
         this.entityPlayer = entityPlayer;
