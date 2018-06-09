@@ -7,10 +7,18 @@
  */
 package com.almuradev.almura.feature.title;
 
+import com.almuradev.almura.feature.menu.ingame.network.ServerboundFeaturesOpenRequestPacket;
+import com.almuradev.almura.feature.menu.ingame.network.handler.ServerboundFeaturesOpenRequestPacketHandler;
 import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlePacket;
 import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlesPacket;
+import com.almuradev.almura.feature.title.network.ClientboundPlayerTitlesResponsePacket;
+import com.almuradev.almura.feature.title.network.ServerboundPlayerSetTitlePacket;
+import com.almuradev.almura.feature.title.network.ServerboundPlayerTitlesRequestPacket;
 import com.almuradev.almura.feature.title.network.handler.ClientboundPlayerSelectedTitlePacketHandler;
 import com.almuradev.almura.feature.title.network.handler.ClientboundPlayerSelectedTitlesPacketHandler;
+import com.almuradev.almura.feature.title.network.handler.ClientboundPlayerTitlesResponsePacketHandler;
+import com.almuradev.almura.feature.title.network.handler.ServerboundPlayerSetTitlePacketHandler;
+import com.almuradev.almura.feature.title.network.handler.ServerboundPlayerTitlesRequestPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -25,7 +33,10 @@ public final class TitleModule extends AbstractModule implements CommonBinder {
         this.command().child(TitleCommands.generateTitleCommand(), "title");
         this.packet()
                 .bind(ClientboundPlayerSelectedTitlePacket.class, binder -> binder.handler(ClientboundPlayerSelectedTitlePacketHandler.class, Platform.Type.CLIENT))
-                .bind(ClientboundPlayerSelectedTitlesPacket.class, binder -> binder.handler(ClientboundPlayerSelectedTitlesPacketHandler.class, Platform.Type.CLIENT));
+                .bind(ClientboundPlayerSelectedTitlesPacket.class, binder -> binder.handler(ClientboundPlayerSelectedTitlesPacketHandler.class, Platform.Type.CLIENT))
+                .bind(ServerboundPlayerSetTitlePacket.class, binder -> binder.handler(ServerboundPlayerSetTitlePacketHandler.class, Platform.Type.SERVER))
+                .bind(ServerboundPlayerTitlesRequestPacket.class, binder -> binder.handler(ServerboundPlayerTitlesRequestPacketHandler.class, Platform.Type.SERVER))
+                .bind(ClientboundPlayerTitlesResponsePacket.class, binder -> binder.handler(ClientboundPlayerTitlesResponsePacketHandler.class, Platform.Type.CLIENT));
         this.facet().add(ServerTitleManager.class);
         this.requestStaticInjection(TitleCommands.class);
         this.on(Platform.Type.CLIENT, () -> {
