@@ -11,11 +11,11 @@ import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
-import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UISlot;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.inventory.MalisisSlot;
 import net.malisis.core.renderer.font.FontOptions;
@@ -26,28 +26,42 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
 public final class ExchangeGUI extends SimpleScreen {
 
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
     private static final int innerPadding = 2;
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
-    private UILabel titleLabel;
 
     private World world;
     private EntityPlayer player;
     private BlockPos blockpos;
-    //private UISimpleList<ExchangeManager.BrokerListElementData> exchangeItemList;
-    //private UISimpleList<ExchangeManager.DealerListElementData> dealerItemList;
     private UITextField itemSearchField, sellerSearchField;
+    // MOCK DATA - START
+    public List<MockOffer> offers = new ArrayList<>();
+    public List<MockOffer> currentResults = new ArrayList<>();
+    // MOCK DATA - END
 
     @Inject private static PluginContainer container;
 
@@ -55,6 +69,20 @@ public final class ExchangeGUI extends SimpleScreen {
         this.player = player;
         this.world = worldIn;
         this.blockpos = blockpos;
+
+        // ADD MOCK DATA
+        offers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
+        offers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
+        offers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
+        offers.add(createMockOffer(ItemTypes.SNOWBALL));
+        offers.add(createMockOffer(ItemTypes.WATER_BUCKET));
+        offers.add(createMockOffer(ItemTypes.GOLDEN_AXE));
+        offers.add(createMockOffer(ItemTypes.STONE));
+        offers.add(createMockOffer(ItemTypes.PUMPKIN));
+        offers.add(createMockOffer(ItemTypes.END_ROD));
+        offers.add(createMockOffer(ItemTypes.APPLE));
+        offers.add(createMockOffer(ItemTypes.BAKED_POTATO));
+        offers.add(createMockOffer(ItemTypes.CARROT));
     }
 
     @Override
@@ -74,7 +102,7 @@ public final class ExchangeGUI extends SimpleScreen {
         form.setTopPadding(20);
         form.setLeftPadding(3);
 
-        UILabel titleLabel = new UILabel(this, "Almura Grand Exchange");
+        final UILabel titleLabel = new UILabel(this, "Almura Exchange");
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
@@ -85,39 +113,57 @@ public final class ExchangeGUI extends SimpleScreen {
         searchArea.setClosable(false);
         searchArea.setBorder(FontColors.WHITE, 1, 185);
         searchArea.setBackgroundAlpha(215);
-        searchArea.setBottomPadding(3);
-        searchArea.setRightPadding(3);
-        searchArea.setTopPadding(3);
-        searchArea.setLeftPadding(3);
+        searchArea.setPadding(3, 3);
 
-        UILabel searchLabel = new UILabel(this, "Item Name:");
-        searchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        searchLabel.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
+        final UILabel itemSearchLabel = new UILabel(this, "Item Name:");
+        itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
+        itemSearchLabel.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
 
         this.itemSearchField = new UITextField(this, "", false);
-        this.itemSearchField.setSize(150, 0);
-        this.itemSearchField.setPosition(searchLabel.getWidth() + innerPadding, searchLabel.getY(), Anchor.LEFT | Anchor.TOP);
+        this.itemSearchField.setSize(145, 0);
+        this.itemSearchField.setPosition(itemSearchLabel.getWidth() + innerPadding, itemSearchLabel.getY(), Anchor.LEFT | Anchor.TOP);
         this.itemSearchField.setEditable(true);
         this.itemSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Seller Search Area
-        UILabel sellerLabel = new UILabel(this, "Seller:");
-        sellerLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        sellerLabel.setPosition(itemSearchField.getX() - sellerLabel.getWidth() + innerPadding, searchLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
+        final UILabel sellerSearchLabel = new UILabel(this, "Seller:");
+        sellerSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
+        sellerSearchLabel.setPosition(itemSearchField.getX() - sellerSearchLabel.getWidth() + innerPadding, itemSearchLabel.getY() + 17,
+                Anchor.LEFT | Anchor.TOP);
 
         this.sellerSearchField = new UITextField(this, "", false);
-        this.sellerSearchField.setSize(150, 0);
-        this.sellerSearchField.setPosition(itemSearchField.getX(), sellerLabel.getY(), Anchor.LEFT | Anchor.TOP);
+        this.sellerSearchField.setSize(145, 0);
+        this.sellerSearchField.setPosition(itemSearchField.getX(), sellerSearchLabel.getY(), Anchor.LEFT | Anchor.TOP);
         this.sellerSearchField.setEditable(true);
         this.sellerSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
+        // Sort combobox
+        final UISelect<SortType> comboBoxSortType = new UISelect<>(this, 80, Arrays.asList(SortType.values()));
+        comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.displayName); // Because that's reasonable.
+        comboBoxSortType.selectFirst();
+        comboBoxSortType.setPosition(-innerPadding, sellerSearchLabel.getY(), Anchor.RIGHT | Anchor.TOP);
+
         // Search button
         final UIButton buttonSearch = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.LEFT | Anchor.TOP)
-                .position(sellerSearchField.getX() + sellerSearchField.getWidth() + 10, sellerLabel.getY() - 7)
+                .width(80)
+                .anchor(Anchor.RIGHT | Anchor.TOP)
+                .position(-innerPadding, 0)
                 .text("Search")
-                .listener(this)
+                .onClick(() -> {
+                    final String itemName = itemSearchField.getText();
+                    final String username = sellerSearchField.getText();
+                    this.currentResults.clear();
+                    System.out.println(String.format("Searching for criteria: itemname=%s, username=%s", itemName, username));
+                    this.getResults(itemName, username, comboBoxSortType.getSelectedValue())
+                            .forEach(o -> {
+                                System.out.println(String.format("Found %d of %s for %1.2f/ea by %s submitted on %s", o.quantity, o.type.getName(),
+                                        o.pricePer, o.username, formatter.format(o.instant)));
+                                this.currentResults.add(o);
+                            });
+                    if (this.currentResults.isEmpty()) {
+                        System.out.println(String.format("No offers found matching criteria: itemname=%s, username=%s", itemName, username));
+                    }
+                })
                 .build("button.search");
 
         // Bottom Page Control - first button
@@ -157,7 +203,8 @@ public final class ExchangeGUI extends SimpleScreen {
                 .build("button.next");
 
         // Add Elements of Search Area
-        searchArea.add(searchLabel, itemSearchField, sellerLabel, sellerSearchField, buttonSearch, buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage);
+        searchArea.add(itemSearchLabel, itemSearchField, sellerSearchLabel, sellerSearchField, buttonSearch, comboBoxSortType, buttonFirstPage,
+                buttonPreviousPage, buttonNextPage, buttonLastPage);
 
         // Economy Pane
         final UIFormContainer economyActionArea = new UIFormContainer(this, 295, 50, "");
@@ -251,7 +298,6 @@ public final class ExchangeGUI extends SimpleScreen {
         inventoryArea.setLeftPadding(3);
 
 
-
         // Bottom Economy Pane - buyStack button
         final UIButton buttonList = new UIButtonBuilder(this)
                 .width(40)
@@ -286,7 +332,7 @@ public final class ExchangeGUI extends SimpleScreen {
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .text(Text.of("almura.guide.button.close"))
-                .listener(this)
+                .onClick(this::close)
                 .build("button.close");
 
         form.add(titleLabel, searchArea, economyActionArea, sellerInventoryArea, inventoryArea, buttonClose);
@@ -294,18 +340,8 @@ public final class ExchangeGUI extends SimpleScreen {
         addToScreen(form);
     }
 
-    @Subscribe
-    public void onUIButtonClickEvent(UIButton.ClickEvent event) {
-        switch (event.getComponent().getName().toLowerCase()) {
-            case "button.close":
-                close();
-                break;
-        }
-    }
-
     protected Consumer<Task> openWindow(String details) {  // Scheduler
         return task -> {
-
             if (details.equalsIgnoreCase("purchaseRequest")) {
                 // Packet to send request.
             }
@@ -315,12 +351,12 @@ public final class ExchangeGUI extends SimpleScreen {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
-        if (unlockMouse && this.lastUpdate == 25) {
+        if (this.unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
-            unlockMouse = false; // Only unlock once per session.
+            this.unlockMouse = false; // Only unlock once per session.
+        } else {
+            ++this.lastUpdate;
         }
-
-        if (++this.lastUpdate > 100) {}
     }
 
     @Override
@@ -338,5 +374,80 @@ public final class ExchangeGUI extends SimpleScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
+    }
+
+    // MOCK DATA METHODS
+    public List<MockOffer> getResults(String itemName, String username, SortType sort) {
+        return this.offers
+                .stream()
+                .filter(o -> {
+                    if (!itemName.isEmpty() && !o.type.getName().toLowerCase().contains(itemName.toLowerCase())) {
+                        return false;
+                    }
+
+                    if (!username.isEmpty() && !o.username.toLowerCase().contains(username.toLowerCase())) {
+                        return false;
+                    }
+
+                    return true;
+                })
+                .sorted((a, b) -> {
+                    switch (sort) {
+                        case OLDEST:
+                            return a.instant.compareTo(b.instant);
+                        case NEWEST:
+                            return b.instant.compareTo(a.instant);
+                        case PRICE_ASC:
+                            return Double.compare(a.pricePer, b.pricePer);
+                        case PRICE_DESC:
+                            return Double.compare(b.pricePer, a.pricePer);
+                        case USERNAME_ASC:
+                            return a.username.compareTo(b.username);
+                        case USERNAME_DESC:
+                            return b.username.compareTo(a.username);
+                        default:
+                            return 0;
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    public MockOffer createMockOffer(ItemType type) {
+        return new MockOffer(Instant.now(), type, ThreadLocalRandom.current().nextInt(0, 999), ThreadLocalRandom.current().nextDouble(0, 999), UUID
+                .randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
+    }
+
+    // MOCK DATA OBJECTS
+    public class MockOffer {
+        public final Instant instant;
+        public final ItemType type;
+        public final int quantity;
+        public final double pricePer;
+        public final UUID playerUuid;
+        public final String username;
+
+        public MockOffer(final Instant instant, final ItemType type, final int quantity,
+                         final double pricePer, final UUID playerUuid, final String username) {
+            this.instant = instant;
+            this.type = type;
+            this.quantity = quantity;
+            this.pricePer = pricePer;
+            this.playerUuid = playerUuid;
+            this.username = username;
+        }
+    }
+
+    public enum SortType {
+        OLDEST("Oldest"),
+        NEWEST("Newest"),
+        PRICE_ASC("Price (Asc.)"),
+        PRICE_DESC("Price (Desc.)"),
+        USERNAME_ASC("Username (Asc.)"),
+        USERNAME_DESC("Username (Desc.)");
+
+        public final String displayName;
+        SortType(String displayName) {
+            this.displayName = displayName;
+        }
     }
 }
