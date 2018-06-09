@@ -46,6 +46,7 @@ public final class TitleModule extends AbstractModule implements CommonBinder {
                 protected void configure() {
                     this.facet().add(ClientTitleManager.class);
                     this.requestStaticInjection(RenderPlayer.class);
+                    this.requestStaticInjection(ClientTitleManager.class);
                 }
             }
             this.install(new ClientModule());

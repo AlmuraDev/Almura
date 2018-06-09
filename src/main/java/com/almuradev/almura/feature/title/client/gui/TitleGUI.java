@@ -9,6 +9,8 @@ package com.almuradev.almura.feature.title.client.gui;
  */
 
 import com.almuradev.almura.feature.nick.ClientNickManager;
+import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
+import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
@@ -45,6 +47,7 @@ public final class TitleGUI extends SimpleScreen {
     private static final int innerPadding = 2;
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
+    private boolean update = true;
     private UILabel titleLabel;
     private UISelect titlesSelector;
     private UIFormContainer form;
@@ -52,7 +55,7 @@ public final class TitleGUI extends SimpleScreen {
     private EntityPlayer player;
     private Set<Text> titles;
 
-
+    @Inject private static ClientTitleManager clientTitleManager;
     @Inject private static PluginContainer container;
 
     public TitleGUI(EntityPlayer player, Set set) {
@@ -83,7 +86,7 @@ public final class TitleGUI extends SimpleScreen {
 
         // Player Render Area
         final UIFormContainer playerArea = new UIFormContainer(this, 75, 85, "");
-        playerArea.setPosition(0, -10, Anchor.RIGHT | Anchor.MIDDLE);
+        playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         playerArea.setMovable(false);
         playerArea.setClosable(false);
         playerArea.setBorder(FontColors.WHITE, 1, 185);
@@ -93,9 +96,9 @@ public final class TitleGUI extends SimpleScreen {
         playerArea.setTopPadding(3);
         playerArea.setLeftPadding(3);
 
-        // Nicknames List Area
+        // Title List Area
         final UIFormContainer listArea = new UIFormContainer(this, 217, 100, "");
-        listArea.setPosition(0, 5, Anchor.LEFT | Anchor.TOP);
+        listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         listArea.setMovable(false);
         listArea.setClosable(false);
         listArea.setBorder(FontColors.WHITE, 1, 185);
@@ -105,7 +108,11 @@ public final class TitleGUI extends SimpleScreen {
         listArea.setTopPadding(3);
         listArea.setLeftPadding(3);
 
-        // Color Selection dropdown
+        final UILabel titleSelectionLabel = new UILabel(this, "Select Title:");
+        titleSelectionLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        titleSelectionLabel.setPosition(5, 10, Anchor.LEFT | Anchor.TOP);
+
+        // Title Selection dropdown
         titlesSelector = new UISelect<>(this,
                 110,
                 titles
@@ -114,6 +121,8 @@ public final class TitleGUI extends SimpleScreen {
         titlesSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
         //titlesSelector.select("§1Dark Blue§f - &1");
         titlesSelector.maxDisplayedOptions(7);
+        titlesSelector.setName("selector");
+        titlesSelector.register(this);
 
         // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
@@ -123,16 +132,34 @@ public final class TitleGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel, listArea, playerArea, titlesSelector, buttonClose);
+        form.add(titleLabel, listArea, playerArea, titleSelectionLabel, titlesSelector, buttonClose);
 
         addToScreen(form);
+    }
+
+    @Subscribe
+    public void onUISelect(UISelect.SelectEvent event) {
+        System.out.println("Click: " + event.getComponent().getName().toUpperCase());
+        switch (event.getComponent().getName().toLowerCase()) {
+            case "selector":
+                if (clientTitleManager == null) {
+                    System.out.println("client title manager null");
+                }
+
+                if (clientTitleManager != null && clientTitleManager.temporaryTitle == null) {
+                    System.out.println("Temporary Title Null");
+                }
+                clientTitleManager.temporaryTitle = titlesSelector.getSelectedOption().getLabel();
+                break;
+        }
     }
 
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.close":
-                close();
+                clientTitleManager.temporaryTitle = titlesSelector.getSelectedOption().getLabel();
+                //close();
                 break;
         }
     }
@@ -147,9 +174,13 @@ public final class TitleGUI extends SimpleScreen {
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
 
+        if (this.update) {
+            //this.setRendererName(this.player, this.titlesSelector.getSelectedOption().getLabel());
+        }
+
         // Set location of Player Entity within Panel
         int i = form.screenX()+210;
-        int j = form.screenY()+75;
+        int j = form.screenY()+25;
 
         // Draw Player
         GuiInventory.drawEntityOnScreen(i + 51, j + 75, 30, (float)(i + 51) - mouseX, (float)(j + 75 - 50) - mouseY, this.mc.player);
@@ -177,5 +208,9 @@ public final class TitleGUI extends SimpleScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
+    }
+
+    private void setRendererName(EntityPlayer player, String name) {
+        ((IMixinEntityPlayer) player).setDisplayName(name);
     }
 }
