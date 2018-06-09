@@ -7,9 +7,11 @@
  */
 package com.almuradev.almura.feature.title.network.handler;
 
+import com.almuradev.almura.feature.title.client.gui.TitleGUI;
 import com.almuradev.almura.feature.title.network.ClientboundPlayerTitlesResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
@@ -33,8 +35,10 @@ public final class ClientboundPlayerTitlesResponsePacketHandler implements Messa
                 for (Text title : titles) {
                     guiTitleDisplay.add(TextSerializers.LEGACY_FORMATTING_CODE.serialize(title));
                 }
+                final Minecraft client = Minecraft.getMinecraft();
+                final EntityPlayerSP player = client.player;
 
-                // TODO Dockter, open the GUI for titles here (using guiTitleDisplay and the selectedTitleIndex)
+                new TitleGUI(player, guiTitleDisplay).display();
             }
         }
     }
