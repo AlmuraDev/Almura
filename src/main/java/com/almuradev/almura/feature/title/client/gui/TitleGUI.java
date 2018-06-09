@@ -8,7 +8,6 @@ package com.almuradev.almura.feature.title.client.gui;
  * All Rights Reserved.
  */
 
-import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
@@ -18,7 +17,6 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
-import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,23 +24,16 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
 public final class TitleGUI extends SimpleScreen {
 
-    private static final int innerPadding = 2;
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
     private UILabel titleLabel;
@@ -52,10 +43,7 @@ public final class TitleGUI extends SimpleScreen {
     private EntityPlayer player;
     private Set<Text> titles;
 
-
-    @Inject private static PluginContainer container;
-
-    public TitleGUI(EntityPlayer player, Set set) {
+    public TitleGUI(EntityPlayer player, Set<Text> set) {
         this.player = player;
         this.titles = set;
     }
