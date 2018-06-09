@@ -8,7 +8,6 @@ package com.almuradev.almura.feature.nick.client.gui;
  * All Rights Reserved.
  */
 
-import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
 import com.almuradev.almura.feature.nick.network.ServerboundNucleusNameChangePacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
@@ -25,17 +24,14 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.renderer.font.FontOptions;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
 import java.util.Arrays;

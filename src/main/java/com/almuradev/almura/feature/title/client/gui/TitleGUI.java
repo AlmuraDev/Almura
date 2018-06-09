@@ -8,8 +8,6 @@ package com.almuradev.almura.feature.title.client.gui;
  * All Rights Reserved.
  */
 
-import com.almuradev.almura.feature.nick.ClientNickManager;
-import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
@@ -20,22 +18,17 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
-import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.renderer.font.FontOptions;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -56,7 +49,6 @@ public final class TitleGUI extends SimpleScreen {
     private Set<String> titles;
 
     @Inject private static ClientTitleManager clientTitleManager;
-    @Inject private static PluginContainer container;
 
     public TitleGUI(EntityPlayer player, Set<String> set) {
         this.player = player;
@@ -69,7 +61,7 @@ public final class TitleGUI extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Master Pane
-        form = new UIFormContainer(this, 300, 150, "");
+        form = new UIFormContainer(this, 300, 130, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -97,7 +89,7 @@ public final class TitleGUI extends SimpleScreen {
         playerArea.setLeftPadding(3);
 
         // Title List Area
-        final UIFormContainer listArea = new UIFormContainer(this, 217, 100, "");
+        final UIFormContainer listArea = new UIFormContainer(this, 217, 85, "");
         listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         listArea.setMovable(false);
         listArea.setClosable(false);
@@ -119,7 +111,7 @@ public final class TitleGUI extends SimpleScreen {
         );
         titlesSelector.setPosition(10, 20, Anchor.LEFT | Anchor.TOP);
         titlesSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
-        //titlesSelector.select("§1Dark Blue§f - &1");
+        titlesSelector.select(clientTitleManager.getTitle(Minecraft.getMinecraft().player.getUniqueID()));
         titlesSelector.maxDisplayedOptions(7);
         titlesSelector.setName("selector");
         titlesSelector.register(this);
@@ -139,17 +131,11 @@ public final class TitleGUI extends SimpleScreen {
 
     @Subscribe
     public void onUISelect(UISelect.SelectEvent event) {
-        System.out.println("Click: " + event.getComponent().getName().toUpperCase());
         switch (event.getComponent().getName().toLowerCase()) {
             case "selector":
-                if (clientTitleManager == null) {
-                    System.out.println("client title manager null");
+                if (event.getNewValue() != null) {
+                    clientTitleManager.temporaryTitle = event.getNewValue().toString();
                 }
-
-                if (clientTitleManager != null && clientTitleManager.temporaryTitle == null) {
-                    System.out.println("Temporary Title Null");
-                }
-                clientTitleManager.temporaryTitle = titlesSelector.getSelectedOption().getLabel();
                 break;
         }
     }
@@ -158,8 +144,7 @@ public final class TitleGUI extends SimpleScreen {
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.close":
-                clientTitleManager.temporaryTitle = titlesSelector.getSelectedOption().getLabel();
-                //close();
+                close();
                 break;
         }
     }
@@ -174,23 +159,20 @@ public final class TitleGUI extends SimpleScreen {
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
 
-        if (this.update) {
-            //this.setRendererName(this.player, this.titlesSelector.getSelectedOption().getLabel());
-        }
-
         // Set location of Player Entity within Panel
-        int i = form.screenX()+210;
-        int j = form.screenY()+25;
+        int i = form.screenX() + 210;
+        int j = form.screenY() + 25;
 
         // Draw Player
-        GuiInventory.drawEntityOnScreen(i + 51, j + 75, 30, (float)(i + 51) - mouseX, (float)(j + 75 - 50) - mouseY, this.mc.player);
+        GuiInventory.drawEntityOnScreen(i + 51, j + 75, 30, (float) (i + 51) - mouseX, (float) (j + 75 - 50) - mouseY, this.mc.player);
 
         if (unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
             unlockMouse = false; // Only unlock once per session.
         }
 
-        if (++this.lastUpdate > 100) {}
+        if (++this.lastUpdate > 100) {
+        }
     }
 
     @Override
@@ -208,9 +190,5 @@ public final class TitleGUI extends SimpleScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
-    }
-
-    private void setRendererName(EntityPlayer player, String name) {
-        ((IMixinEntityPlayer) player).setDisplayName(name);
     }
 }

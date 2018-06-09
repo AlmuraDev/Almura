@@ -33,7 +33,7 @@ import javax.inject.Singleton;
 public final class ClientTitleManager implements Witness {
 
     private final Map<UUID, String> selectedTitlesById = new HashMap<>();
-    public String temporaryTitle;
+    public String temporaryTitle = "";
 
     private final ChannelBinding.IndexedMessageChannel network;
 
