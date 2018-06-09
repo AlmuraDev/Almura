@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange;
 
+import com.almuradev.almura.feature.exchange.client.gui.ExchangeGUI;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeOpenResponsePacketHandler;
@@ -37,6 +38,7 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 protected void configure() {
 
                     this.facet().add(ClientExchangeManager.class);
+                    this.requestStaticInjection(ExchangeGUI.class);
 
                     this.keybinding().key(Keyboard.KEY_H, "key.almura.exchange.open", "key.categories.almura.exchange");
                 }

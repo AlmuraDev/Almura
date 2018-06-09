@@ -26,9 +26,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.slf4j.Logger;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
@@ -64,7 +66,7 @@ public final class ExchangeGUI extends SimpleScreen {
     public List<MockOffer> currentResults = new ArrayList<>();
     // MOCK DATA - END
 
-    @Inject private static PluginContainer container;
+    @Inject private static Logger logger;
 
     public ExchangeGUI(EntityPlayer player, World worldIn, BlockPos blockpos) {
         this.player = player;
@@ -154,15 +156,16 @@ public final class ExchangeGUI extends SimpleScreen {
                     final String itemName = itemSearchField.getText();
                     final String username = sellerSearchField.getText();
                     this.currentResults.clear();
-                    System.out.println(String.format("Searching for criteria: itemname=%s, username=%s", itemName, username));
-                    this.getResults(itemName, username, comboBoxSortType.getSelectedValue())
-                            .forEach(o -> {
-                                System.out.println(String.format("Found %d of %s for %1.2f/ea by %s submitted on %s", o.quantity, o.type.getName(),
-                                        o.pricePer, o.username, formatter.format(o.instant)));
-                                this.currentResults.add(o);
-                            });
+                    logger.info(String.format("Searching for criteria: itemname=%s, playerName=%s", itemName, username));
+                    this.currentResults.addAll(this.getResults(itemName, username, comboBoxSortType.getSelectedValue()));
                     if (this.currentResults.isEmpty()) {
-                        System.out.println(String.format("No offers found matching criteria: itemname=%s, username=%s", itemName, username));
+                        logger.info(String.format("No offers found matching criteria: itemname=%s, playerName=%s", itemName, username));
+                    } else {
+                        this.currentResults.forEach(o -> {
+                            logger.info(String.format("Found %d of %s for %1.2f/ea by %s submitted on %s", o.quantity,
+                                    o.item.getTranslation().get(), o.pricePer, o.playerName,
+                                    formatter.format(o.instant)));
+                        });
                     }
                 })
                 .build("button.search");
@@ -382,11 +385,13 @@ public final class ExchangeGUI extends SimpleScreen {
         return this.offers
                 .stream()
                 .filter(o -> {
-                    if (!itemName.isEmpty() && !o.type.getName().toLowerCase().contains(itemName.toLowerCase())) {
+                    final String itemDisplayName = o.item.getTranslation().get().toLowerCase();
+
+                    if (!itemName.isEmpty() && !itemDisplayName.contains(itemName.toLowerCase())) {
                         return false;
                     }
 
-                    if (!username.isEmpty() && !o.username.toLowerCase().contains(username.toLowerCase())) {
+                    if (!username.isEmpty() && !o.playerName.toLowerCase().contains(username.toLowerCase())) {
                         return false;
                     }
 
@@ -397,27 +402,28 @@ public final class ExchangeGUI extends SimpleScreen {
     }
 
     public MockOffer createMockOffer(ItemType type) {
-        return new MockOffer(Instant.now(), type, ThreadLocalRandom.current().nextInt(0, 999), ThreadLocalRandom.current().nextDouble(0, 999), UUID
-                .randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
+        return new MockOffer(Instant.now(), ItemStack.of(type, 1),
+                ThreadLocalRandom.current().nextInt(0, 999), ThreadLocalRandom.current().nextDouble(0, 999),
+                UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
     }
 
     // MOCK DATA OBJECTS
     public class MockOffer {
         public final Instant instant;
-        public final ItemType type;
+        public final ItemStack item;
         public final int quantity;
         public final double pricePer;
         public final UUID playerUuid;
-        public final String username;
+        public final String playerName;
 
-        public MockOffer(final Instant instant, final ItemType type, final int quantity,
-                         final double pricePer, final UUID playerUuid, final String username) {
+        public MockOffer(final Instant instant, final ItemStack item, final int quantity,
+                         final double pricePer, final UUID playerUuid, final String playerName) {
             this.instant = instant;
-            this.type = type;
+            this.item = item;
             this.quantity = quantity;
             this.pricePer = pricePer;
             this.playerUuid = playerUuid;
-            this.username = username;
+            this.playerName = playerName;
         }
     }
 
@@ -426,10 +432,10 @@ public final class ExchangeGUI extends SimpleScreen {
         NEWEST("Newest", (a, b) -> b.instant.compareTo(a.instant)),
         PRICE_ASC("Price (Asc.)", (a, b) -> Double.compare(a.pricePer, b.pricePer)),
         PRICE_DESC("Price (Desc.)", (a, b) -> Double.compare(b.pricePer, a.pricePer)),
-        ITEM_ASC("Item (Asc.)", (a, b) -> a.type.getName().compareTo(b.type.getName())),
-        ITEM_DESC("Item (Desc.)", (a, b) -> b.type.getName().compareTo(a.type.getName())),
-        PLAYER_ASC("Player (Asc.)", (a, b) -> a.username.compareTo(b.username)),
-        PLAYER_DESC("Player (Desc.)", (a, b) -> b.username.compareTo(a.username));
+        ITEM_ASC("Item (Asc.)", (a, b) -> a.item.getTranslation().get().compareTo(b.item.getTranslation().get())),
+        ITEM_DESC("Item (Desc.)", (a, b) -> b.item.getTranslation().get().compareTo(a.item.getTranslation().get())),
+        PLAYER_ASC("Player (Asc.)", (a, b) -> a.playerName.compareTo(b.playerName)),
+        PLAYER_DESC("Player (Desc.)", (a, b) -> b.playerName.compareTo(a.playerName));
 
         public final String displayName;
         public final Comparator<MockOffer> comparator;
