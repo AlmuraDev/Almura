@@ -50,14 +50,14 @@ public final class TitleGUI extends SimpleScreen {
     private UIFormContainer form;
 
     private EntityPlayer player;
-    Set<Text> titles;
+    private Set<Text> titles;
 
 
     @Inject private static PluginContainer container;
 
-    public TitleGUI(EntityPlayer player, Set titles) {
+    public TitleGUI(EntityPlayer player, Set set) {
         this.player = player;
-        this.titles = titles;
+        this.titles = set;
     }
 
     @Override
@@ -66,7 +66,7 @@ public final class TitleGUI extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Master Pane
-        form = new UIFormContainer(this, 300, 250, "");
+        form = new UIFormContainer(this, 300, 150, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -94,7 +94,7 @@ public final class TitleGUI extends SimpleScreen {
         playerArea.setLeftPadding(3);
 
         // Nicknames List Area
-        final UIFormContainer listArea = new UIFormContainer(this, 217, 150, "");
+        final UIFormContainer listArea = new UIFormContainer(this, 217, 100, "");
         listArea.setPosition(0, 5, Anchor.LEFT | Anchor.TOP);
         listArea.setMovable(false);
         listArea.setClosable(false);
@@ -110,7 +110,7 @@ public final class TitleGUI extends SimpleScreen {
                 110,
                 titles
         );
-        titlesSelector.setPosition(60, -1, Anchor.LEFT | Anchor.TOP);
+        titlesSelector.setPosition(10, 20, Anchor.LEFT | Anchor.TOP);
         titlesSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
         //titlesSelector.select("§1Dark Blue§f - &1");
         titlesSelector.maxDisplayedOptions(7);
