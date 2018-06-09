@@ -17,6 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -25,10 +26,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -40,15 +46,18 @@ public final class TitleGUI extends SimpleScreen {
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
     private UILabel titleLabel;
+    private UISelect titlesSelector;
     private UIFormContainer form;
 
     private EntityPlayer player;
+    Set<Text> titles;
 
 
     @Inject private static PluginContainer container;
 
-    public TitleGUI(EntityPlayer player) {
+    public TitleGUI(EntityPlayer player, Set titles) {
         this.player = player;
+        this.titles = titles;
     }
 
     @Override
@@ -96,6 +105,16 @@ public final class TitleGUI extends SimpleScreen {
         listArea.setTopPadding(3);
         listArea.setLeftPadding(3);
 
+        // Color Selection dropdown
+        titlesSelector = new UISelect<>(this,
+                110,
+                titles
+        );
+        titlesSelector.setPosition(60, -1, Anchor.LEFT | Anchor.TOP);
+        titlesSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
+        //titlesSelector.select("§1Dark Blue§f - &1");
+        titlesSelector.maxDisplayedOptions(7);
+
         // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
                 .width(40)
@@ -104,7 +123,7 @@ public final class TitleGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel, listArea, playerArea, buttonClose);
+        form.add(titleLabel, listArea, playerArea, titlesSelector, buttonClose);
 
         addToScreen(form);
     }
