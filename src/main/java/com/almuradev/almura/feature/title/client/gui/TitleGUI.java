@@ -8,11 +8,15 @@ package com.almuradev.almura.feature.title.client.gui;
  * All Rights Reserved.
  */
 
+import com.almuradev.almura.feature.notification.ClientNotificationManager;
+import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.almuradev.almura.feature.title.network.ServerboundPlayerSetTitlePacket;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -26,6 +30,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.spongepowered.api.network.ChannelBinding;
+import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
@@ -49,6 +55,8 @@ public final class TitleGUI extends SimpleScreen {
     private Set<String> titles;
 
     @Inject private static ClientTitleManager clientTitleManager;
+    @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
+    @Inject private static ClientNotificationManager clientNotificationManager;
 
     public TitleGUI(EntityPlayer player, Set<String> set) {
         this.player = player;
@@ -126,7 +134,16 @@ public final class TitleGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel, listArea, playerArea, titleSelectionLabel, titlesSelector, buttonClose);
+        // Apply button
+        final UIButton buttonApply = new UIButtonBuilder(this)
+                .width(40)
+                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+                .position(-40, 0)
+                .text("Apply")
+                .listener(this)
+                .build("button.apply");
+
+        form.add(titleLabel, listArea, playerArea, titleSelectionLabel, titlesSelector, buttonClose, buttonApply);
 
         addToScreen(form);
     }
@@ -145,6 +162,13 @@ public final class TitleGUI extends SimpleScreen {
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
+            case "button.apply":
+                clientNotificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Updating Nickname on server...."),2));
+                    if (titlesSelector.getSelectedValue() != null) {
+                        System.out.println("Sending Packet to Set Title");
+                        network.sendToServer(new ServerboundPlayerSetTitlePacket(titlesSelector.getSelectedValue().toString().trim()));
+                    }
+
             case "button.close":
                 close();
                 break;
