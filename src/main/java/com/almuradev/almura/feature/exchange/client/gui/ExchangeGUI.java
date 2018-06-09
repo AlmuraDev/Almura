@@ -38,6 +38,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -391,24 +392,7 @@ public final class ExchangeGUI extends SimpleScreen {
 
                     return true;
                 })
-                .sorted((a, b) -> {
-                    switch (sort) {
-                        case OLDEST:
-                            return a.instant.compareTo(b.instant);
-                        case NEWEST:
-                            return b.instant.compareTo(a.instant);
-                        case PRICE_ASC:
-                            return Double.compare(a.pricePer, b.pricePer);
-                        case PRICE_DESC:
-                            return Double.compare(b.pricePer, a.pricePer);
-                        case USERNAME_ASC:
-                            return a.username.compareTo(b.username);
-                        case USERNAME_DESC:
-                            return b.username.compareTo(a.username);
-                        default:
-                            return 0;
-                    }
-                })
+                .sorted(sort.comparator)
                 .collect(Collectors.toList());
     }
 
@@ -438,16 +422,20 @@ public final class ExchangeGUI extends SimpleScreen {
     }
 
     public enum SortType {
-        OLDEST("Oldest"),
-        NEWEST("Newest"),
-        PRICE_ASC("Price (Asc.)"),
-        PRICE_DESC("Price (Desc.)"),
-        USERNAME_ASC("Username (Asc.)"),
-        USERNAME_DESC("Username (Desc.)");
+        OLDEST("Oldest", (a, b) -> a.instant.compareTo(b.instant)),
+        NEWEST("Newest", (a, b) -> b.instant.compareTo(a.instant)),
+        PRICE_ASC("Price (Asc.)", (a, b) -> Double.compare(a.pricePer, b.pricePer)),
+        PRICE_DESC("Price (Desc.)", (a, b) -> Double.compare(b.pricePer, a.pricePer)),
+        ITEM_ASC("Item (Asc.)", (a, b) -> a.type.getName().compareTo(b.type.getName())),
+        ITEM_DESC("Item (Desc.)", (a, b) -> b.type.getName().compareTo(a.type.getName())),
+        PLAYER_ASC("Player (Asc.)", (a, b) -> a.username.compareTo(b.username)),
+        PLAYER_DESC("Player (Desc.)", (a, b) -> b.username.compareTo(a.username));
 
         public final String displayName;
-        SortType(String displayName) {
+        public final Comparator<MockOffer> comparator;
+        SortType(String displayName, Comparator<MockOffer> comparator) {
             this.displayName = displayName;
+            this.comparator = comparator;
         }
     }
 }
