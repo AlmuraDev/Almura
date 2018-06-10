@@ -137,30 +137,31 @@ public final class ExchangeGUI extends SimpleScreen {
 
         final UILabel itemSearchLabel = new UILabel(this, "Item Name:");
         itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
-        itemSearchLabel.setPosition(0, 2, Anchor.LEFT | Anchor.TOP);
+        itemSearchLabel.setPosition(0, 4, Anchor.LEFT | Anchor.TOP);
 
         this.itemSearchField = new UITextField(this, "", false);
         this.itemSearchField.setSize(145, 0);
-        this.itemSearchField.setPosition(itemSearchLabel.getWidth() + innerPadding, 0, Anchor.LEFT | Anchor.TOP);
+        this.itemSearchField.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
         this.itemSearchField.setEditable(true);
         this.itemSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Seller Search Area
         final UILabel sellerSearchLabel = new UILabel(this, "Seller:");
         sellerSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
-        sellerSearchLabel.setPosition(6, getPaddedY(itemSearchLabel, 8), Anchor.LEFT | Anchor.TOP);
+        sellerSearchLabel.setPosition(itemSearchField.getX() - sellerSearchLabel.getWidth() - 1,
+                getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
 
         this.sellerSearchField = new UITextField(this, "", false);
         this.sellerSearchField.setSize(145, 0);
-        this.sellerSearchField.setPosition(this.itemSearchField.getX(), sellerSearchLabel.getY(), Anchor.LEFT | Anchor.TOP);
+        this.sellerSearchField.setPosition(this.itemSearchField.getX(), getPaddedY(this.itemSearchField, 4), Anchor.LEFT | Anchor.TOP);
         this.sellerSearchField.setEditable(true);
         this.sellerSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Sort combobox
-        final UISelect<SortType> comboBoxSortType = new UISelect<>(this, 80, Arrays.asList(SortType.values()));
+        final UISelect<SortType> comboBoxSortType = new UISelect<>(this, 78, Arrays.asList(SortType.values()));
         comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.displayName); // Because that's reasonable.
         comboBoxSortType.selectFirst();
-        comboBoxSortType.setPosition(-innerPadding, sellerSearchLabel.getY(), Anchor.RIGHT | Anchor.TOP);
+        comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchField.getY(), Anchor.RIGHT | Anchor.TOP);
 
         this.resultsList = new UISimpleList<>(this, searchArea.getWidth() - 10, 250);
         this.resultsList.setPosition(innerPadding, getPaddedY(sellerSearchField, 4));
@@ -172,7 +173,7 @@ public final class ExchangeGUI extends SimpleScreen {
         final UIButton buttonSearch = new UIButtonBuilder(this)
                 .width(80)
                 .anchor(Anchor.RIGHT | Anchor.TOP)
-                .position(-innerPadding, 0)
+                .position(-innerPadding, 1)
                 .text("Search")
                 .onClick(() -> {
                     final String itemName = itemSearchField.getText();
