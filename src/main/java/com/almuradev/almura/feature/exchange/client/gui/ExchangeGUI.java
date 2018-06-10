@@ -13,12 +13,14 @@ import com.almuradev.almura.shared.client.ui.component.UISimpleList;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
+import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.UISlot;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
+import net.malisis.core.client.gui.component.container.UIListContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -26,6 +28,8 @@ import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.inventory.MalisisSlot;
 import net.malisis.core.renderer.font.FontOptions;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -43,6 +47,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -69,7 +74,7 @@ public final class ExchangeGUI extends SimpleScreen {
     private World world;
     private EntityPlayer player;
     private BlockPos blockpos;
-    private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage;
+    private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity;
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
     private UISimpleList<ResultListElementData> resultsList;
@@ -106,7 +111,7 @@ public final class ExchangeGUI extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Main Panel
-        final UIFormContainer form = new UIFormContainer(this, 600, 395, "");
+        final UIFormContainer form = new UIFormContainer(this, 600, 370, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -122,7 +127,7 @@ public final class ExchangeGUI extends SimpleScreen {
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Item Search Area
-        final UIFormContainer searchArea = new UIFormContainer(this, 295, 310, "");
+        final UIFormContainer searchArea = new UIFormContainer(this, 295, 313, "");
         searchArea.setPosition(0, 10, Anchor.LEFT | Anchor.TOP);
         searchArea.setMovable(false);
         searchArea.setClosable(false);
@@ -132,23 +137,22 @@ public final class ExchangeGUI extends SimpleScreen {
 
         final UILabel itemSearchLabel = new UILabel(this, "Item Name:");
         itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
-        itemSearchLabel.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
+        itemSearchLabel.setPosition(0, 2, Anchor.LEFT | Anchor.TOP);
 
         this.itemSearchField = new UITextField(this, "", false);
         this.itemSearchField.setSize(145, 0);
-        this.itemSearchField.setPosition(itemSearchLabel.getWidth() + innerPadding, itemSearchLabel.getY(), Anchor.LEFT | Anchor.TOP);
+        this.itemSearchField.setPosition(itemSearchLabel.getWidth() + innerPadding, 0, Anchor.LEFT | Anchor.TOP);
         this.itemSearchField.setEditable(true);
         this.itemSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Seller Search Area
         final UILabel sellerSearchLabel = new UILabel(this, "Seller:");
         sellerSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
-        sellerSearchLabel.setPosition(itemSearchField.getX() - sellerSearchLabel.getWidth() + innerPadding, itemSearchLabel.getY() + 17,
-                Anchor.LEFT | Anchor.TOP);
+        sellerSearchLabel.setPosition(6, getPaddedY(itemSearchLabel, 8), Anchor.LEFT | Anchor.TOP);
 
         this.sellerSearchField = new UITextField(this, "", false);
         this.sellerSearchField.setSize(145, 0);
-        this.sellerSearchField.setPosition(itemSearchField.getX(), sellerSearchLabel.getY(), Anchor.LEFT | Anchor.TOP);
+        this.sellerSearchField.setPosition(this.itemSearchField.getX(), sellerSearchLabel.getY(), Anchor.LEFT | Anchor.TOP);
         this.sellerSearchField.setEditable(true);
         this.sellerSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -188,7 +192,7 @@ public final class ExchangeGUI extends SimpleScreen {
                         logger.info(String.format("No offers found matching criteria: itemname=%s, playerName=%s", itemName, username));
                     } else {
                         this.currentResults.forEach(r -> {
-                            logger.info(String.format("Found %d of %s for %1.2f/ea by %s submitted on %s", r.offer.quantity,
+                            logger.info(String.format("Found %d of %s for %1.2f/ea by %s submitted on %s", r.offer.item.getQuantity(),
                                     r.offer.item.getTranslation().get(), r.offer.pricePer, r.offer.playerName,
                                     formatter.format(r.offer.instant)));
                         });
@@ -245,42 +249,39 @@ public final class ExchangeGUI extends SimpleScreen {
                 this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.resultsList, this.labelSearchPage);
 
         // Economy Pane
-        final UIFormContainer economyActionArea = new UIFormContainer(this, 295, 48, "");
+        final UIFormContainer economyActionArea = new UIFormContainer(this, 295, 20, "");
         economyActionArea.setPosition(0, getPaddedY(searchArea, innerPadding), Anchor.LEFT | Anchor.TOP);
         economyActionArea.setMovable(false);
         economyActionArea.setClosable(false);
         economyActionArea.setBorder(FontColors.WHITE, 1, 185);
         economyActionArea.setBackgroundAlpha(215);
-        economyActionArea.setBottomPadding(3);
-        economyActionArea.setRightPadding(3);
-        economyActionArea.setTopPadding(3);
-        economyActionArea.setLeftPadding(3);
+        economyActionArea.setPadding(2, 0);
 
         // Bottom Economy Pane - buyStack button
-        final UIButton buttonBuyStack = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.LEFT | Anchor.BOTTOM)
-                .position(0,0)
+        this.buttonBuyStack = new UIButtonBuilder(this)
+                .width(60)
+                .anchor(Anchor.LEFT | Anchor.MIDDLE)
+                .position(0, 0)
                 .text("Buy Stack")
-                .listener(this)
+                .enabled(false)
                 .build("button.buyStack");
 
         // Bottom Economy Pane - buyStack button
-        final UIButton buttonBuySingle = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.CENTER | Anchor.BOTTOM)
-                .position(0,0)
+        this.buttonBuySingle = new UIButtonBuilder(this)
+                .width(60)
+                .anchor(Anchor.CENTER | Anchor.MIDDLE)
+                .position(0, 0)
                 .text("Buy 1")
-                .listener(this)
+                .enabled(false)
                 .build("button.buySingle");
 
         // Bottom Economy Pane - buyStack button
-        final UIButton buttonBuyQuantity = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .position(0,0)
+        this.buttonBuyQuantity = new UIButtonBuilder(this)
+                .width(60)
+                .anchor(Anchor.RIGHT | Anchor.MIDDLE)
+                .position(0, 0)
                 .text("Buy Quantity")
-                .listener(this)
+                .enabled(false)
                 .build("button.buyQuantity");
 
         economyActionArea.add(buttonBuyStack, buttonBuySingle, buttonBuyQuantity);
@@ -324,7 +325,7 @@ public final class ExchangeGUI extends SimpleScreen {
         sellerInventoryArea.add(exchangeSlot1, exchangeSlot2, exchangeSlot3, exchangeSlot4, exchangeSlot5, exchangeSlot6);
 
         // Inventory Area Section (right pane)
-        final UIFormContainer inventoryArea = new UIFormContainer(this, 295, 330, "");
+        final UIFormContainer inventoryArea = new UIFormContainer(this, 295, 305, "");
         inventoryArea.setPosition(0, 40, Anchor.RIGHT | Anchor.TOP);
         inventoryArea.setMovable(false);
         inventoryArea.setClosable(false);
@@ -406,6 +407,14 @@ public final class ExchangeGUI extends SimpleScreen {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
     }
 
+    @Subscribe
+    private void onElementSelect(UIListContainer.SelectEvent<ResultListElementData> event) {
+        final boolean isSelected = event.getNewValue() != null;
+        this.buttonBuyStack.setEnabled(isSelected);
+        this.buttonBuySingle.setEnabled(isSelected);
+        this.buttonBuyQuantity.setEnabled(isSelected);
+    }
+
     private void setPage(int page) {
         page = MathUtil.squashi(page, 1, this.pages);
 
@@ -418,6 +427,7 @@ public final class ExchangeGUI extends SimpleScreen {
 
         this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, page, "/", pages)));
 
+        this.resultsList.select(null); // Clear selection
         this.resultsList.setElements(this.currentResults.stream().skip((page - 1) * 10).limit(10).collect(Collectors.toList()));
     }
 
@@ -441,31 +451,30 @@ public final class ExchangeGUI extends SimpleScreen {
                 .collect(Collectors.toList());
     }
 
-    public MockOffer createMockOffer(ItemType type) {
-        return new MockOffer(Instant.now(), ItemStack.of(type, 1),
-                ThreadLocalRandom.current().nextInt(0, 999), ThreadLocalRandom.current().nextDouble(0, 999),
-                UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
+    public MockOffer createMockOffer(final ItemType type) {
+        final int quantity = ThreadLocalRandom.current().nextInt(1, 10000);
+        final BigDecimal pricePer = BigDecimal.valueOf(ThreadLocalRandom.current().nextInt(0, 10000));
+        return new MockOffer(Instant.now(),
+                             ItemStack.of(type, quantity), pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
     }
 
     public class MockOffer {
         public final Instant instant;
         public final ItemStack item;
-        public final int quantity;
-        public final double pricePer;
+        public final BigDecimal pricePer;
         public final UUID playerUuid;
         public final String playerName;
 
-        public MockOffer(final Instant instant, final ItemStack item, final int quantity,
-                         final double pricePer, final UUID playerUuid, final String playerName) {
+        public MockOffer(final Instant instant, final ItemStack item, final BigDecimal pricePer, final UUID playerUuid, final String playerName) {
             this.instant = instant;
             this.item = item;
-            this.quantity = quantity;
             this.pricePer = pricePer;
             this.playerUuid = playerUuid;
             this.playerName = playerName;
         }
     }
 
+    @SuppressWarnings("unchecked, deprecation")
     private static final class ResultListElement extends UIBackgroundContainer {
 
         private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
@@ -475,9 +484,9 @@ public final class ExchangeGUI extends SimpleScreen {
 
         private final ResultListElementData elementData;
         private final UIImage image;
-        private final UILabel itemLabel, quantityLabel, sellerLabel;
+        private final UILabel itemLabel, descriptionLabel, sellerLabel;
 
-        private ResultListElement(MalisisGui gui, ResultListElementData elementData) {
+        private ResultListElement(final MalisisGui gui, final ResultListElementData elementData) {
             super(gui);
 
             this.elementData = elementData;
@@ -494,19 +503,30 @@ public final class ExchangeGUI extends SimpleScreen {
             this.setSize(0, 24);
 
             // Add components
-            this.image = new UIImage(gui, (net.minecraft.item.ItemStack) (Object) elementData.offer.item);
-            this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
+            final net.minecraft.item.ItemStack fakeStack = (net.minecraft.item.ItemStack) (Object) ItemStack.of(elementData.offer.item.getType(), 1);
 
-            this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(elementData.itemText));
+            this.image = new UIImage(gui, fakeStack);
+            this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
+            this.image.setTooltip(String.join("\n", fakeStack.getTooltip(Minecraft.getMinecraft().player, ITooltipFlag.TooltipFlags.NORMAL)));
+
+            this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.WHITE, elementData.offer.item.getTranslation().get(),
+                            TextColors.GRAY, " x ", elementData.offer.item.getQuantity())
+            ));
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.TOP);
 
-            this.quantityLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(elementData.quantityText));
-            this.quantityLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.BOTTOM);
+            this.descriptionLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.DARK_GREEN, elementData.offer.pricePer, TextColors.GRAY, "/ea")
+            ));
+            this.descriptionLabel.setFontOptions(this.descriptionLabel.getFontOptions().toBuilder().scale(0.8f).build());
+            this.descriptionLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.BOTTOM);
 
-            this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(elementData.sellerText));
+            this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.GRAY, TextStyles.ITALIC, elementData.offer.playerName)
+            ));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
-            this.add(this.image, this.itemLabel, this.quantityLabel, this.sellerLabel);
+            this.add(this.image, this.itemLabel, this.descriptionLabel, this.sellerLabel);
         }
 
         private ResultListElementData getElementData() {
@@ -517,7 +537,10 @@ public final class ExchangeGUI extends SimpleScreen {
         public boolean onClick(int x, int y) {
             final UIComponent component = getComponentAt(x, y);
             if (this.equals(component)) {
-                this.elementData.getParent().select(this.elementData);
+                final UIListContainer<ResultListElementData> parent = this.elementData.getParent();
+
+                // Deselect the item if we click it again, select it otherwise.
+                parent.select(parent.isSelected(this.elementData) ? null : this.elementData);
             }
             return true;
         }
@@ -548,17 +571,11 @@ public final class ExchangeGUI extends SimpleScreen {
     private static final class ResultListElementData {
 
         public final UISimpleList<ResultListElementData> parent;
-        public final Text itemText;
-        public final Text sellerText;
-        public final Text quantityText;
         public final MockOffer offer;
 
-        private ResultListElementData(UISimpleList<ResultListElementData> parent, MockOffer offer) {
+        private ResultListElementData(UISimpleList<ResultListElementData> parent, final MockOffer offer) {
             this.parent = parent;
             this.offer = offer;
-            this.itemText = Text.of(TextColors.WHITE, offer.item.getTranslation().get());
-            this.sellerText = Text.of(TextStyles.ITALIC, TextColors.GRAY, offer.playerName);
-            this.quantityText = Text.of(TextColors.GRAY, "x ", offer.quantity);
         }
 
         public UISimpleList<ResultListElementData> getParent() {
@@ -569,8 +586,8 @@ public final class ExchangeGUI extends SimpleScreen {
     public enum SortType {
         OLDEST("Oldest", (a, b) -> a.instant.compareTo(b.instant)),
         NEWEST("Newest", (a, b) -> b.instant.compareTo(a.instant)),
-        PRICE_ASC("Price (Asc.)", (a, b) -> Double.compare(a.pricePer, b.pricePer)),
-        PRICE_DESC("Price (Desc.)", (a, b) -> Double.compare(b.pricePer, a.pricePer)),
+        PRICE_ASC("Price (Asc.)", (a, b) -> a.pricePer.compareTo(b.pricePer)),
+        PRICE_DESC("Price (Desc.)", (a, b) -> b.pricePer.compareTo(a.pricePer)),
         ITEM_ASC("Item (Asc.)", (a, b) -> a.item.getTranslation().get().compareTo(b.item.getTranslation().get())),
         ITEM_DESC("Item (Desc.)", (a, b) -> b.item.getTranslation().get().compareTo(a.item.getTranslation().get())),
         PLAYER_ASC("Player (Asc.)", (a, b) -> a.playerName.compareTo(b.playerName)),
