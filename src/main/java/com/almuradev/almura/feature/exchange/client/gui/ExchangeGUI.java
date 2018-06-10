@@ -70,6 +70,7 @@ public final class ExchangeGUI extends SimpleScreen {
     private EntityPlayer player;
     private BlockPos blockpos;
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage;
+    private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
     private UISimpleList<ResultListElementData> resultsList;
     private final List<MockOffer> offers = new ArrayList<>();
@@ -215,6 +216,10 @@ public final class ExchangeGUI extends SimpleScreen {
                 .onClick(() -> setPage(--this.currentPage))
                 .build("button.previous");
 
+        // Search pages label
+        this.labelSearchPage = new UILabel(this, "");
+        this.labelSearchPage.setPosition(0, -4, Anchor.CENTER | Anchor.BOTTOM);
+
         // Bottom Page Control - last button
         this.buttonLastPage = new UIButtonBuilder(this)
                 .size(20)
@@ -236,8 +241,8 @@ public final class ExchangeGUI extends SimpleScreen {
                 .build("button.next");
 
         // Add Elements of Search Area
-        searchArea.add(itemSearchLabel, itemSearchField, sellerSearchLabel, sellerSearchField, buttonSearch, comboBoxSortType, buttonFirstPage,
-                buttonPreviousPage, buttonNextPage, buttonLastPage, resultsList);
+        searchArea.add(itemSearchLabel, this.itemSearchField, sellerSearchLabel, this.sellerSearchField, buttonSearch, comboBoxSortType,
+                this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.resultsList, this.labelSearchPage);
 
         // Economy Pane
         final UIFormContainer economyActionArea = new UIFormContainer(this, 295, 48, "");
@@ -291,8 +296,6 @@ public final class ExchangeGUI extends SimpleScreen {
         sellerInventoryArea.setRightPadding(3);
         sellerInventoryArea.setTopPadding(3);
         sellerInventoryArea.setLeftPadding(3);
-
-        final ItemStack airStack = ItemStack.of(ItemTypes.AIR, 1);
 
         final UISlot exchangeSlot1 = new UISlot(this, new MalisisSlot());
         exchangeSlot1.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
@@ -412,6 +415,8 @@ public final class ExchangeGUI extends SimpleScreen {
         this.buttonPreviousPage.setEnabled(page != 1);
         this.buttonNextPage.setEnabled(page != this.pages);
         this.buttonLastPage.setEnabled(page != this.pages);
+
+        this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, page, "/", pages)));
 
         this.resultsList.setElements(this.currentResults.stream().skip((page - 1) * 10).limit(10).collect(Collectors.toList()));
     }
@@ -552,7 +557,7 @@ public final class ExchangeGUI extends SimpleScreen {
             this.parent = parent;
             this.offer = offer;
             this.itemText = Text.of(TextColors.WHITE, offer.item.getTranslation().get());
-            this.sellerText = Text.of(TextStyles.ITALIC, TextColors.GRAY, "by ", offer.playerName);
+            this.sellerText = Text.of(TextStyles.ITALIC, TextColors.GRAY, offer.playerName);
             this.quantityText = Text.of(TextColors.GRAY, "x ", offer.quantity);
         }
 
