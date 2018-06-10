@@ -25,10 +25,10 @@ public class MathUtil {
      * @return The value between the minimum and maximum values
      */
     public static int squashi(int value, int min, int max) {
-        if (min >= max) {
-            throw new IllegalArgumentException("Minimum value [" + min + "] cannot be greater than or equal to the maximum value [" + max + "]!");
-        } else if (max <= min) {
-            throw new IllegalArgumentException("Maximum value [" + max + "] cannot be lesser than or equal to the minimum value [" + min + "]!");
+        if (min > max) {
+            throw new IllegalArgumentException("Minimum value [" + min + "] cannot be greater than the maximum value [" + max + "]!");
+        } else if (max < min) {
+            throw new IllegalArgumentException("Maximum value [" + max + "] cannot be lesser than the minimum value [" + min + "]!");
         }
         return Math.min(Math.max(value, min), max);
     }
@@ -42,10 +42,10 @@ public class MathUtil {
      * @return The value between the minimum and maximum values
      */
     public static float squashf(float value, float min, float max) {
-        if (min >= max) {
-            throw new IllegalArgumentException("Minimum value [" + min + "] cannot be greater than or equal to the maximum value [" + max + "]!");
-        } else if (max <= min) {
-            throw new IllegalArgumentException("Maximum value [" + max + "] cannot be lesser than or equal to the minimum value [" + min + "]!");
+        if (min > max) {
+            throw new IllegalArgumentException("Minimum value [" + min + "] cannot be greater than the maximum value [" + max + "]!");
+        } else if (max < min) {
+            throw new IllegalArgumentException("Maximum value [" + max + "] cannot be lesser than the minimum value [" + min + "]!");
         }
         return Math.min(Math.max(value, min), max);
     }

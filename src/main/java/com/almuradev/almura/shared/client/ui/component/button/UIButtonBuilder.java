@@ -84,6 +84,11 @@ public final class UIButtonBuilder {
         return this;
     }
 
+    public UIButtonBuilder size(int size) {
+        this.size(size, size);
+        return this;
+    }
+
     public UIButtonBuilder width(int width) {
         this.width = width;
         return this;
