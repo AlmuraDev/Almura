@@ -11,6 +11,7 @@ import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.UISimpleList;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
@@ -75,9 +76,6 @@ public final class ExchangeGUI extends SimpleScreen {
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
 
-    private World world;
-    private EntityPlayer player;
-    private BlockPos blockpos;
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity;
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
@@ -93,11 +91,7 @@ public final class ExchangeGUI extends SimpleScreen {
     @Inject private static Logger logger;
     @Inject private static ClientNotificationManager clientNotificationManager;
 
-    public ExchangeGUI(EntityPlayer player, World worldIn, BlockPos blockpos) {
-        this.player = player;
-        this.world = worldIn;
-        this.blockpos = blockpos;
-
+    public ExchangeGUI() {
         // ADD MOCK DATA
         offers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
         offers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
@@ -273,7 +267,7 @@ public final class ExchangeGUI extends SimpleScreen {
                 .position(0, 0)
                 .text("Buy Stack")
                 .enabled(false)
-                .build("button.buyStack");
+                .build("button.buy.stack");
 
         // Bottom Economy Pane - buyStack button
         this.buttonBuySingle = new UIButtonBuilder(this)
@@ -282,7 +276,7 @@ public final class ExchangeGUI extends SimpleScreen {
                 .position(0, 0)
                 .text("Buy 1")
                 .enabled(false)
-                .build("button.buySingle");
+                .build("button.buy.single");
 
         // Bottom Economy Pane - buyStack button
         this.buttonBuyQuantity = new UIButtonBuilder(this)
@@ -291,7 +285,7 @@ public final class ExchangeGUI extends SimpleScreen {
                 .position(0, 0)
                 .text("Buy Quantity")
                 .enabled(false)
-                .build("button.buyQuantity");
+                .build("button.buy.quantity");
 
         economyActionArea.add(buttonBuyStack, buttonBuySingle, buttonBuyQuantity);
 
@@ -353,7 +347,7 @@ public final class ExchangeGUI extends SimpleScreen {
                 .position(0,0)
                 .text("List for Sale")
                 .listener(this)
-                .build("button.listForSaleButton");
+                .build("button.list");
 
         // Bottom Economy Pane - buyStack button
         final UIButton buttonSetPrice = new UIButtonBuilder(this)
@@ -362,7 +356,7 @@ public final class ExchangeGUI extends SimpleScreen {
                 .position(0,0)
                 .text("Set Price")
                 .listener(this)
-                .build("button.setPrice");
+                .build("button.setprice");
 
         // Bottom Economy Pane - buyStack button
         final UIButton buttonRemoveItem = new UIButtonBuilder(this)
@@ -371,7 +365,9 @@ public final class ExchangeGUI extends SimpleScreen {
                 .position(0,0)
                 .text("Remove Item")
                 .listener(this)
-                .build("button.removeItem");
+                .tooltip(new UISaneTooltip(this,
+                        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"))
+                .build("button.remove");
 
         inventoryArea.add(buttonList, buttonSetPrice, buttonRemoveItem);
 
@@ -519,10 +515,16 @@ public final class ExchangeGUI extends SimpleScreen {
 
             // Add components
             final net.minecraft.item.ItemStack fakeStack = (net.minecraft.item.ItemStack) (Object) ItemStack.of(elementData.offer.item.getType(), 1);
+            final EntityPlayer player = Minecraft.getMinecraft().player;
+            final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
             this.image = new UIImage(gui, fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.image.setTooltip(String.join("\n", fakeStack.getTooltip(Minecraft.getMinecraft().player, ITooltipFlag.TooltipFlags.NORMAL)));
+            this.image.setTooltip(new UISaneTooltip(gui,
+                    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n" +
+                    String.join("\n", fakeStack.getTooltip(player,
+                    useAdvancedTooltips ? ITooltipFlag.TooltipFlags.ADVANCED
+                                        : ITooltipFlag.TooltipFlags.NORMAL))));
 
             this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
                     Text.of(TextColors.WHITE, elementData.offer.item.getTranslation().get(),
@@ -542,10 +544,6 @@ public final class ExchangeGUI extends SimpleScreen {
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             this.add(this.image, this.itemLabel, this.descriptionLabel, this.sellerLabel);
-        }
-
-        private ResultListElementData getElementData() {
-            return this.elementData;
         }
 
         @Override

@@ -26,11 +26,10 @@ public final class ClientboundExchangeOpenResponsePacketHandler implements Messa
             final Minecraft client = Minecraft.getMinecraft();
             if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
 
-                final EntityPlayerSP player = client.player;
                 final WorldClient world = client.world;
 
                 if (world != null) {
-                    new ExchangeGUI(player, world, player.getPosition()).display();
+                    new ExchangeGUI().display();
                 }
             }
         }
