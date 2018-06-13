@@ -7,6 +7,8 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.feature.notification.ClientNotificationManager;
+import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.UISimpleList;
@@ -29,6 +31,7 @@ import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.inventory.MalisisSlot;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -37,6 +40,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.slf4j.Logger;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
@@ -78,12 +82,16 @@ public final class ExchangeGUI extends SimpleScreen {
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
     private UISimpleList<ResultListElementData> resultsList;
+    private UIFormContainer form;
     private final List<MockOffer> offers = new ArrayList<>();
     private final List<ResultListElementData> currentResults = new ArrayList<>();
     private int currentPage;
     private int pages;
+    private int screenWidth = 600;
+    private int screenHeight = 370;
 
     @Inject private static Logger logger;
+    @Inject private static ClientNotificationManager clientNotificationManager;
 
     public ExchangeGUI(EntityPlayer player, World worldIn, BlockPos blockpos) {
         this.player = player;
@@ -111,7 +119,7 @@ public final class ExchangeGUI extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Main Panel
-        final UIFormContainer form = new UIFormContainer(this, 600, 370, "");
+        form = new UIFormContainer(this, screenWidth, screenHeight, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -369,7 +377,13 @@ public final class ExchangeGUI extends SimpleScreen {
 
         form.add(titleLabel, searchArea, economyActionArea, sellerInventoryArea, inventoryArea);
 
-        addToScreen(form);
+        // Detect if screen area is large enough to display.
+        if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
+            clientNotificationManager.queuePopup(new PopupNotification(Text.of("Exchange Error"), Text.of("Screen area of: " + screenHeight + " x " + screenWidth + " required."), 5));
+            this.close();
+        } else {
+            addToScreen(form);
+        }
     }
 
     protected Consumer<Task> openWindow(String details) {  // Scheduler
