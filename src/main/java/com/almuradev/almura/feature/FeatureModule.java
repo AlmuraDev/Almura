@@ -57,7 +57,6 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 @Override
                 protected void configure() {
                     this.facet().add(OffHandListener.class);
-                    this.facet().add(FirstLaunchOptimization.class);
                 }
             }
             this.install(new ClientModule());
