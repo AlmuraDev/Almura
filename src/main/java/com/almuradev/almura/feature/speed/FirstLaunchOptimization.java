@@ -18,7 +18,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-final class FirstLaunchOptimization implements Witness {
+public final class FirstLaunchOptimization implements Witness {
 
     @SubscribeEvent
     public void configLoad(final ConfigLoadEvent<ClientConfiguration> event) {
@@ -34,22 +34,20 @@ final class FirstLaunchOptimization implements Witness {
      * Called on first launch to optimize the client's GUI settings. Addresses many users lack of knowledge of
      * the various settings that can lead to better FPS. Improves overall experience with Almura.
      */
-    private void optimizeGame() {
-        // TODO Dockter, update your optimization changes
+    public static void optimizeGame() {
         final GameSettings settings = Minecraft.getMinecraft().gameSettings;
         settings.autoJump = false;
-        settings.ambientOcclusion = 0;
+        settings.ambientOcclusion = 1;
+        settings.fancyGraphics = false;
+        settings.useVbo = true;
         settings.mipmapLevels = 0;
-        settings.guiScale = 3;
-        //settings.advancedOpengl = true;
-        //settings.anisotropicFiltering = 0;
+        settings.guiScale = 2;
         settings.limitFramerate = 120;
         settings.enableVsync = false;
-        //settings.clouds = false;
+        settings.clouds = 0;
         settings.snooperEnabled = false;
         settings.renderDistanceChunks = 12;
         settings.viewBobbing = false;
-        settings.resourcePacks.add("Almura Preferred Font.zip");
         settings.saveOptions();
     }
 }

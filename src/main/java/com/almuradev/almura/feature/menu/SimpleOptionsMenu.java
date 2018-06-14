@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.menu;
 import com.almuradev.almura.asm.StaticAccess;
 import com.almuradev.almura.core.client.config.ClientCategory;
 import com.almuradev.almura.feature.hud.HUDType;
+import com.almuradev.almura.feature.speed.FirstLaunchOptimization;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.slider.UISliderBuilder;
@@ -40,7 +41,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
     private static final int CONTROL_WIDTH = 150;
     private static final int CONTROL_PADDING = 5;
 
-    private UIButton buttonHudType;
+    private UIButton buttonHudType, buttonOptimized;
     private UISlider<Integer> sliderOriginHudOpacity;
     @Nullable private UIComponent lastComponent = null;
 
@@ -67,6 +68,13 @@ public class SimpleOptionsMenu extends SimpleScreen {
         /*
          * LEFT COLUMN
          */
+        this.buttonOptimized = new UIButtonBuilder(this)
+                .text("Load Optimized Defaults")
+                .size(CONTROL_WIDTH, CONTROL_HEIGHT)
+                .listener(this)
+                .build("button.optimized");
+        this.updatePosition(this.buttonOptimized, Anchor.LEFT);
+
         this.buttonHudType = new UIButtonBuilder(this)
                 .text("HUD: " + config.hud.substring(0, 1).toUpperCase() + config.hud.substring(1))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -215,7 +223,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 .listener(this)
                 .build("button.done");
 
-        optionsContainer.add(this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget,
+        optionsContainer.add(this.buttonOptimized, this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget,
                 checkboxNumericHUDValues, checkboxDisplayNames, checkboxDisplayHealthbars, checkboxDisableOffhandTorchPlacement,
                 sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, sliderPlayerNameRenderDistance,
                 sliderEnemyNameRenderDistance, sliderAnimalNameRenderDistance, buttonDone);
@@ -242,6 +250,10 @@ public class SimpleOptionsMenu extends SimpleScreen {
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName()) {
+            case "button.optimized":
+                FirstLaunchOptimization.optimizeGame();
+                this.close();
+                break;
             case "button.hudType":
                 // Check if the current HUD is the Origin HUD
                 boolean isOrigin = StaticAccess.config.get().client.hud.equalsIgnoreCase(HUDType.ORIGIN);
