@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.hud;
 
-import com.almuradev.almura.core.client.ClientConfiguration;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
 import com.almuradev.core.event.Witness;

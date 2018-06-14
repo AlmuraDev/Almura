@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.hud;
 
-import com.almuradev.almura.core.server.ServerConfiguration;
+import com.almuradev.almura.core.server.config.ServerConfiguration;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;

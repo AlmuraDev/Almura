@@ -5,11 +5,10 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.core.client;
+package com.almuradev.almura.core.client.config;
 
-import com.almuradev.almura.core.client.config.ClientCategory;
-import com.almuradev.almura.core.client.config.DebugCategory;
 import com.almuradev.almura.shared.config.MappedHoconConfiguration;
+import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.inject.Provides;
 import net.kyori.violet.AbstractModule;
@@ -29,16 +28,16 @@ import javax.inject.Singleton;
 public class ClientConfiguration {
 
     @Setting public final ClientCategory client = new ClientCategory();
-    @Setting public final DebugCategory debug = new DebugCategory();
 
     @SideOnly(Side.CLIENT)
-    static final class Module extends AbstractModule {
+    public static final class Module extends AbstractModule implements CommonBinder {
 
         private static final String FILE_NAME = "client.conf";
         private static final String HEADER = "Almura configuration\n\nFor further assistance, join #almura on EsperNet.";
 
         @Override
         protected void configure() {
+            this.facet().add(ClientConfigurationInstaller.class);
         }
 
         @Provides

@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.core.common;
 
-import com.almuradev.almura.core.server.ServerConfiguration;
+import com.almuradev.almura.core.server.config.ServerConfiguration;
 import com.almuradev.almura.feature.FeatureModule;
 import com.almuradev.almura.registry.BossBarColorRegistryModule;
 import com.almuradev.almura.shared.capability.IMultiSlotItemHandler;

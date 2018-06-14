@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.hud.screen.origin;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinGuiBossOverlay;
-import com.almuradev.almura.core.client.ClientConfiguration;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.core.client.config.ClientCategory;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIBossBarPanel;

@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.speed;
 
-import com.almuradev.almura.core.client.ClientConfiguration;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.core.client.config.ClientCategory;
 import com.almuradev.almura.shared.config.ConfigLoadEvent;
 import com.almuradev.core.event.Witness;
@@ -24,11 +24,11 @@ import java.util.Iterator;
 public final class FirstLaunchOptimization implements Witness {
 
     @SubscribeEvent
-    public void configLoad(final ConfigLoadEvent<ClientConfiguration> event) {
+    public void onConfigLoad(final ConfigLoadEvent<ClientConfiguration> event) {
         final ClientCategory category = event.config().client;
         if (category.firstLaunch) {
             category.firstLaunch = false;
-            this.optimizeGame(true);
+            optimizeGame(true);
             event.adapter().save();
         }
     }
@@ -57,8 +57,8 @@ public final class FirstLaunchOptimization implements Witness {
             settings.resourcePacks.add("Almura Font.zip");
         }
 
-        ResourcePackRepository resourcepackrepository = Minecraft.getMinecraft().getResourcePackRepository();
-        Iterator<String> iterator = settings.resourcePacks.iterator();
+        final ResourcePackRepository resourcepackrepository = Minecraft.getMinecraft().getResourcePackRepository();
+        final Iterator<String> iterator = settings.resourcePacks.iterator();
 
         while (iterator.hasNext()) {
             String name = iterator.next();

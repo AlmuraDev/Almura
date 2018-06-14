@@ -9,6 +9,7 @@ package com.almuradev.almura.core.client;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.asm.StaticAccess;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.core.common.CommonModule;
 import com.almuradev.almura.feature.menu.MainMenuModule;
 import com.almuradev.almura.feature.speed.ClientOptimizationModule;

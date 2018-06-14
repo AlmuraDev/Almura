@@ -5,10 +5,10 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.core.server;
+package com.almuradev.almura.core.server.config;
 
-import com.almuradev.almura.core.server.config.WorldCategory;
-import com.almuradev.almura.shared.config.AbstractPostingMappedConfiguration;
+import com.almuradev.almura.shared.config.MappedHoconConfiguration;
+import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.inject.Provides;
 import net.kyori.violet.AbstractModule;
@@ -28,18 +28,19 @@ public final class ServerConfiguration {
 
     @Setting public final WorldCategory world = new WorldCategory();
 
-    public static final class Module extends AbstractModule {
+    public static final class Module extends AbstractModule implements CommonBinder {
 
         private static final String FILE_NAME = "server.json";
 
         @Override
         protected void configure() {
+            this.facet().add(ServerConfigurationInstaller.class);
         }
 
         @Provides
         @Singleton
         MappedConfiguration<ServerConfiguration> configurationAdapter(@ConfigDir(sharedRoot = false) final Path root) {
-            return new AbstractPostingMappedConfiguration<ServerConfiguration>(ServerConfiguration.class, root.resolve(FILE_NAME)) {
+            return new MappedHoconConfiguration<ServerConfiguration>(ServerConfiguration.class, root.resolve(FILE_NAME)) {
                 @Override
                 protected ConfigurationLoader<? extends ConfigurationNode> createLoader() {
                     return JSONConfigurationLoader.builder()

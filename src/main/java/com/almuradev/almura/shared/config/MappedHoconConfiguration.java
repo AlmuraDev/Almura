@@ -7,9 +7,7 @@
  */
 package com.almuradev.almura.shared.config;
 
-import com.almuradev.almura.core.client.ClientConfiguration;
 import com.typesafe.config.ConfigRenderOptions;
-import net.minecraftforge.common.MinecraftForge;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -17,11 +15,10 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import java.nio.file.Path;
 
-public class MappedHoconConfiguration<T> extends AbstractPostingMappedConfiguration<T> {
+public class MappedHoconConfiguration<T> extends com.almuradev.toolbox.config.map.AbstractMappedConfiguration<T> {
 
-    public MappedHoconConfiguration(final Class<T> type, final Path path) {
+    protected MappedHoconConfiguration(final Class<T> type, final Path path) {
         super(type, path);
-        MinecraftForge.EVENT_BUS.post(new ConfigLoadEvent<>(this.type, this));
     }
 
     @Override
