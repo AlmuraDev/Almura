@@ -15,6 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
 import javax.inject.Inject;
 
@@ -29,7 +30,7 @@ public final class ClientConfigurationInstaller implements Witness {
     }
 
     @Listener
-    public void onGameConstruction(final GameConstructionEvent event) {
+    public void onGamePreinitialization(final GamePreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.post(new ConfigLoadEvent<>(ClientConfiguration.class, this.adapter));
     }
 }
