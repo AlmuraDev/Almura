@@ -251,7 +251,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
     public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName()) {
             case "button.optimized":
-                FirstLaunchOptimization.optimizeGame();
+                FirstLaunchOptimization.optimizeGame(false);
                 this.close();
                 break;
             case "button.hudType":

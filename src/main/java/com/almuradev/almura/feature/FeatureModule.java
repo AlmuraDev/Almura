@@ -20,6 +20,7 @@ import com.almuradev.almura.feature.notification.NotificationModule;
 import com.almuradev.almura.feature.offhand.OffHandListener;
 import com.almuradev.almura.feature.perms.PermsModule;
 import com.almuradev.almura.feature.sign.SignEditFeature;
+import com.almuradev.almura.feature.speed.FirstLaunchOptimization;
 import com.almuradev.almura.feature.storage.StorageModule;
 import com.almuradev.almura.feature.title.TitleModule;
 import com.almuradev.almura.shared.inject.ClientBinder;
@@ -56,6 +57,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 @Override
                 protected void configure() {
                     this.facet().add(OffHandListener.class);
+                    this.facet().add(FirstLaunchOptimization.class);
                 }
             }
             this.install(new ClientModule());
