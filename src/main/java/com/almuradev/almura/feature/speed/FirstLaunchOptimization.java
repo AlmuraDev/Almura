@@ -51,11 +51,14 @@ public final class FirstLaunchOptimization implements Witness {
         settings.snooperEnabled = false;
         settings.renderDistanceChunks = 12;
         settings.viewBobbing = false;
-        settings.resourcePacks.clear();
 
         if (!settings.resourcePacks.contains("Almura Font.zip")) {
             settings.resourcePacks.add("Almura Font.zip");
         }
+
+        // Reminder: this saveOptions() doesn't work when the game is still loading...
+        settings.saveOptions();
+        // We force save every time PanoramicMainmenu is loaded....
 
         final ResourcePackRepository resourcepackrepository = Minecraft.getMinecraft().getResourcePackRepository();
         final Iterator<String> iterator = settings.resourcePacks.iterator();
@@ -72,11 +75,8 @@ public final class FirstLaunchOptimization implements Witness {
                 }
             }
         }
-
-        settings.saveOptions();
-
-        if (!firstLaunch) {
-            Minecraft.getMinecraft().refreshResources();
-        }
+        // Reminder: we have to do this even though we are before the texture pack stitch, the initial refreshResources() is called prior to this being called during FirstLaunch Event.
+        Minecraft.getMinecraft().refreshResources();
+        // Note: it does not cause double texture pack stitch.
     }
 }

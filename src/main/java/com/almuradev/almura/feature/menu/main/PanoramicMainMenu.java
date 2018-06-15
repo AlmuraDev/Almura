@@ -21,10 +21,12 @@ import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.renderer.font.FontOptions;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.relauncher.Side;
@@ -193,6 +195,13 @@ public class PanoramicMainMenu extends PanoramicScreen {
             addToScreen(glWarning1);
             addToScreen(glWarning2);
         }
+
+        //Todo: please tell me there is a better way to do this.
+        //Why: the settings.saveOptions() method has a check to see if the game is still loading, thus the "FirstLaunched" settings are not saved when they are initially ran.
+        final GameSettings settings = Minecraft.getMinecraft().gameSettings;
+        settings.saveOptions();
+        // End stupidity.
+
     }
 
     @Override
