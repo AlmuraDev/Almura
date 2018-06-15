@@ -28,7 +28,7 @@ public final class FirstLaunchOptimization implements Witness {
         final ClientCategory category = event.config().client;
         if (category.firstLaunch) {
             category.firstLaunch = false;
-            optimizeGame(true);
+            optimizeGame();
             event.adapter().save();
         }
     }
@@ -37,7 +37,7 @@ public final class FirstLaunchOptimization implements Witness {
      * Called on first launch to optimize the client's GUI settings. Addresses many users lack of knowledge of
      * the various settings that can lead to better FPS. Improves overall experience with Almura.
      */
-    public static void optimizeGame(boolean firstLaunch) {
+    public static void optimizeGame() {
         final GameSettings settings = Minecraft.getMinecraft().gameSettings;
         settings.autoJump = false;
         settings.ambientOcclusion = 1;
@@ -58,7 +58,7 @@ public final class FirstLaunchOptimization implements Witness {
 
         // Reminder: this saveOptions() doesn't work when the game is still loading...
         settings.saveOptions();
-        // We force save every time PanoramicMainmenu is loaded....
+        // We force save every time PanoramicMainmenu is loaded and here because someone can specifically call this method within our config menu.
 
         final ResourcePackRepository resourcepackrepository = Minecraft.getMinecraft().getResourcePackRepository();
         final Iterator<String> iterator = settings.resourcePacks.iterator();
