@@ -21,7 +21,6 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
-import net.malisis.core.client.gui.component.UISlot;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.container.UIListContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -29,7 +28,6 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
-import net.malisis.core.inventory.MalisisSlot;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -114,6 +112,7 @@ public final class ExchangeGUI extends SimpleScreen {
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
+        form.setTitle("Almura Exchange");
         form.setBorder(FontColors.WHITE, 1, 185);
         form.setBackgroundAlpha(215);
         form.setBottomPadding(3);
@@ -121,13 +120,9 @@ public final class ExchangeGUI extends SimpleScreen {
         form.setTopPadding(20);
         form.setLeftPadding(3);
 
-        final UILabel titleLabel = new UILabel(this, "Almura Exchange");
-        titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
-
         // Item Search Area
-        final UIFormContainer searchArea = new UIFormContainer(this, 295, 313, "");
-        searchArea.setPosition(0, 10, Anchor.LEFT | Anchor.TOP);
+        final UIFormContainer searchArea = new UIFormContainer(this, 295, 323, "");
+        searchArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         searchArea.setMovable(false);
         searchArea.setClosable(false);
         searchArea.setBorder(FontColors.WHITE, 1, 185);
@@ -159,11 +154,11 @@ public final class ExchangeGUI extends SimpleScreen {
         // Sort combobox
         final UISelect<SortType> comboBoxSortType = new UISelect<>(this, 78, Arrays.asList(SortType.values()));
         comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.displayName); // Because that's reasonable.
-        comboBoxSortType.selectFirst();
+        comboBoxSortType.select(SortType.PRICE_ASC);
         comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchField.getY(), Anchor.RIGHT | Anchor.TOP);
 
         this.resultsList = new UISimpleList<>(this, searchArea.getWidth() - 10, 250);
-        this.resultsList.setPosition(innerPadding, getPaddedY(sellerSearchField, 4));
+        this.resultsList.setPosition(innerPadding, getPaddedY(sellerSearchField, 8));
         this.resultsList.setComponentFactory((g, e) -> new ResultListElement(this, e));
         this.resultsList.setElementSpacing(1);
         this.resultsList.register(this);
@@ -286,56 +281,14 @@ public final class ExchangeGUI extends SimpleScreen {
 
         economyActionArea.add(buttonBuyStack, buttonBuySingle, buttonBuyQuantity);
 
-        // Seller Inventory Area
-        final UIFormContainer sellerInventoryArea = new UIFormContainer(this, 295, 28, "");
-        sellerInventoryArea.setPosition(0, 10, Anchor.RIGHT | Anchor.TOP);
-        sellerInventoryArea.setMovable(false);
-        sellerInventoryArea.setClosable(false);
-        sellerInventoryArea.setBorder(FontColors.WHITE, 1, 185);
-        sellerInventoryArea.setBackgroundAlpha(215);
-        sellerInventoryArea.setBottomPadding(3);
-        sellerInventoryArea.setRightPadding(3);
-        sellerInventoryArea.setTopPadding(3);
-        sellerInventoryArea.setLeftPadding(3);
-
-        final UISlot exchangeSlot1 = new UISlot(this, new MalisisSlot());
-        exchangeSlot1.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-        exchangeSlot1.setTooltip("Exchange Slot 1");
-
-        final UISlot exchangeSlot2 = new UISlot(this, new MalisisSlot());
-        exchangeSlot2.setPosition(exchangeSlot1.getX() + exchangeSlot1.getWidth() + 10, 0, Anchor.LEFT | Anchor.MIDDLE);
-        exchangeSlot2.setTooltip("Exchange Slot 2");
-
-        final UISlot exchangeSlot3 = new UISlot(this, new MalisisSlot());
-        exchangeSlot3.setPosition(exchangeSlot2.getX() + exchangeSlot2.getWidth() + 10, 0, Anchor.LEFT | Anchor.MIDDLE);
-        exchangeSlot3.setTooltip("Exchange Slot 3");
-
-        final UISlot exchangeSlot4 = new UISlot(this, new MalisisSlot());
-        exchangeSlot4.setPosition(exchangeSlot3.getX() + exchangeSlot3.getWidth() + 10, 0, Anchor.LEFT | Anchor.MIDDLE);
-        exchangeSlot4.setTooltip("Exchange Slot 4");
-
-        final UISlot exchangeSlot5 = new UISlot(this, new MalisisSlot());
-        exchangeSlot5.setPosition(exchangeSlot4.getX() + exchangeSlot4.getWidth() + 10, 0, Anchor.LEFT | Anchor.MIDDLE);
-        exchangeSlot5.setTooltip("Exchange Slot 5");
-
-        final UISlot exchangeSlot6 = new UISlot(this, new MalisisSlot());
-        exchangeSlot6.setPosition(exchangeSlot5.getX() + exchangeSlot5.getWidth() + 10, 0, Anchor.LEFT | Anchor.MIDDLE);
-        exchangeSlot6.setTooltip("Exchange Slot 6");
-
-        sellerInventoryArea.add(exchangeSlot1, exchangeSlot2, exchangeSlot3, exchangeSlot4, exchangeSlot5, exchangeSlot6);
-
         // Inventory Area Section (right pane)
-        final UIFormContainer inventoryArea = new UIFormContainer(this, 295, 305, "");
-        inventoryArea.setPosition(0, 40, Anchor.RIGHT | Anchor.TOP);
+        final UIFormContainer inventoryArea = new UIFormContainer(this, 295, 345, "");
+        inventoryArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         inventoryArea.setMovable(false);
         inventoryArea.setClosable(false);
         inventoryArea.setBorder(FontColors.WHITE, 1, 185);
         inventoryArea.setBackgroundAlpha(215);
-        inventoryArea.setBottomPadding(3);
-        inventoryArea.setRightPadding(3);
-        inventoryArea.setTopPadding(3);
-        inventoryArea.setLeftPadding(3);
-
+        inventoryArea.setPadding(3, 3);
 
         // Bottom Economy Pane - buyStack button
         final UIButton buttonList = new UIButtonBuilder(this)
@@ -366,7 +319,7 @@ public final class ExchangeGUI extends SimpleScreen {
 
         inventoryArea.add(buttonList, buttonSetPrice, buttonRemoveItem);
 
-        form.add(titleLabel, searchArea, economyActionArea, sellerInventoryArea, inventoryArea);
+        this.form.add(searchArea, economyActionArea, inventoryArea);
 
         // Detect if screen area is large enough to display.
         if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
@@ -524,7 +477,7 @@ public final class ExchangeGUI extends SimpleScreen {
             final int maxPlayerTextWidth = fontRenderer.getStringWidth("9999999999999999");
 
             // Limit item name to prevent over drawing
-            StringBuilder itemTextBuilder = new StringBuilder();
+            final StringBuilder itemTextBuilder = new StringBuilder();
             for (char c : (elementData.offer.item.getTranslation().get()).toCharArray()) {
                 final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c + " x " + elementData.offer.item.getQuantity());
                 if (textWidth > maxItemTextWidth + 4) {
