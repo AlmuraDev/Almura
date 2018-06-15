@@ -68,7 +68,9 @@ public final class FirstLaunchOptimization implements Witness {
             for (ResourcePackRepository.Entry resourcepackrepository$entry : resourcepackrepository.repositoryEntriesAll) {
                 if (resourcepackrepository$entry.getResourcePackName().equals(name)) {
                     if (resourcepackrepository$entry.getPackFormat() == 3 || settings.incompatibleResourcePacks.contains(resourcepackrepository$entry.getResourcePackName())) {
-                        resourcepackrepository.repositoryEntries.add(resourcepackrepository$entry);
+                        if (!resourcepackrepository.repositoryEntries.contains(resourcepackrepository$entry)) {
+                            resourcepackrepository.repositoryEntries.add(resourcepackrepository$entry);
+                        }
                         break;
                     }
                     iterator.remove();
