@@ -32,16 +32,13 @@ import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.inventory.MalisisSlot;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
 import org.slf4j.Logger;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
@@ -365,8 +362,6 @@ public final class ExchangeGUI extends SimpleScreen {
                 .position(0,0)
                 .text("Remove Item")
                 .listener(this)
-                .tooltip(new UISaneTooltip(this,
-                        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"))
                 .build("button.remove");
 
         inventoryArea.add(buttonList, buttonSetPrice, buttonRemoveItem);
@@ -495,7 +490,7 @@ public final class ExchangeGUI extends SimpleScreen {
 
         private final ResultListElementData elementData;
         private final UIImage image;
-        private final UILabel itemLabel, descriptionLabel, sellerLabel;
+        private final UILabel itemLabel, priceLabel, sellerLabel;
 
         private ResultListElement(final MalisisGui gui, final ResultListElementData elementData) {
             super(gui);
@@ -520,30 +515,42 @@ public final class ExchangeGUI extends SimpleScreen {
 
             this.image = new UIImage(gui, fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.image.setTooltip(new UISaneTooltip(gui,
-                    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n" +
-                    String.join("\n", fakeStack.getTooltip(player,
-                    useAdvancedTooltips ? ITooltipFlag.TooltipFlags.ADVANCED
-                                        : ITooltipFlag.TooltipFlags.NORMAL))));
+            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+                    ? ITooltipFlag.TooltipFlags.ADVANCED
+                    : ITooltipFlag.TooltipFlags.NORMAL))));
 
+            final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+            final int maxItemTextWidth =  fontRenderer.getStringWidth("999999999999999999");
+            final int maxPlayerTextWidth = fontRenderer.getStringWidth("9999999999999999");
+
+            // Limit item name to prevent over drawing
+            StringBuilder itemTextBuilder = new StringBuilder();
+            for (char c : (elementData.offer.item.getTranslation().get()).toCharArray()) {
+                final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c + " x " + elementData.offer.item.getQuantity());
+                if (textWidth > maxItemTextWidth + 4) {
+                    itemTextBuilder.replace(itemTextBuilder.length() - 3, itemTextBuilder.length(), "...");
+                    break;
+                }
+                itemTextBuilder.append(c);
+            }
             this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.WHITE, elementData.offer.item.getTranslation().get(),
+                    Text.of(TextColors.WHITE, itemTextBuilder.toString(),
                             TextColors.GRAY, " x ", elementData.offer.item.getQuantity())
             ));
-            this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.TOP);
-
-            this.descriptionLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.DARK_GREEN, elementData.offer.pricePer, TextColors.GRAY, "/ea")
-            ));
-            this.descriptionLabel.setFontOptions(this.descriptionLabel.getFontOptions().toBuilder().scale(0.8f).build());
-            this.descriptionLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.BOTTOM);
+            this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
                     Text.of(TextColors.GRAY, TextStyles.ITALIC, elementData.offer.playerName)
             ));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
-            this.add(this.image, this.itemLabel, this.descriptionLabel, this.sellerLabel);
+            this.priceLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.GOLD, elementData.offer.pricePer, TextColors.GRAY, "/ea")
+            ));
+            this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
+            this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
+
+            this.add(this.image, this.itemLabel, this.priceLabel, this.sellerLabel);
         }
 
         @Override
