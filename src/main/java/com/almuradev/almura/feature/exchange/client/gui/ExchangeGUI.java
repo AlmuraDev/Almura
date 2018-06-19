@@ -74,10 +74,10 @@ public final class ExchangeGUI extends SimpleScreen {
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity;
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
-    private UISimpleList<ResultListElementData> resultsList;
+    private UISimpleList<ListElementData<MockOffer>> resultsList;
     private UIFormContainer form;
     private final List<MockOffer> offers = new ArrayList<>();
-    private final List<ResultListElementData> currentResults = new ArrayList<>();
+    private final List<ListElementData<MockOffer>> currentResults = new ArrayList<>();
     private int currentPage;
     private int pages;
     private int screenWidth = 600;
@@ -178,7 +178,7 @@ public final class ExchangeGUI extends SimpleScreen {
                     logger.info(String.format("Searching for criteria: itemname=%s, playerName=%s", itemName, username));
 
                     this.getResults(itemName, username, comboBoxSortType.getSelectedValue())
-                            .forEach(r -> this.currentResults.add(new ResultListElementData(resultsList, r)));
+                            .forEach(r -> this.currentResults.add(new ListElementData<>(this.resultsList, r)));
                     this.pages = (Math.max(this.currentResults.size() - 1, 1) / 10) + 1;
 
                     this.setPage(1);
@@ -186,11 +186,12 @@ public final class ExchangeGUI extends SimpleScreen {
                     if (this.currentResults.isEmpty()) {
                         logger.info(String.format("No offers found matching criteria: itemname=%s, playerName=%s", itemName, username));
                     } else {
-                        this.currentResults.forEach(r -> {
-                            logger.info(String.format("Found %d of %s for %1.2f/ea by %s submitted on %s", r.offer.item.getQuantity(),
-                                    r.offer.item.getTranslation().get(), r.offer.pricePer, r.offer.playerName,
-                                    formatter.format(r.offer.instant)));
-                        });
+                        this.currentResults.forEach(r -> logger.info(String.format("Found %d of %s for %1.2f/ea by %s submitted on %s",
+                                r.tag.item.getQuantity(),
+                                r.tag.item.getTranslation().get(),
+                                r.tag.pricePer,
+                                r.tag.playerName,
+                                formatter.format(r.tag.instant))));
                     }
                 })
                 .build("button.search");
@@ -295,8 +296,8 @@ public final class ExchangeGUI extends SimpleScreen {
                 .width(40)
                 .anchor(Anchor.LEFT | Anchor.BOTTOM)
                 .position(0,0)
-                .text("List for Sale")
-                .listener(this)
+                .text("List")
+                .enabled(false)
                 .build("button.list");
 
         // Bottom Economy Pane - buyStack button
@@ -305,16 +306,16 @@ public final class ExchangeGUI extends SimpleScreen {
                 .anchor(Anchor.CENTER | Anchor.BOTTOM)
                 .position(0,0)
                 .text("Set Price")
-                .listener(this)
+                .enabled(false)
                 .build("button.setprice");
 
         // Bottom Economy Pane - buyStack button
         final UIButton buttonRemoveItem = new UIButtonBuilder(this)
-                .width(40)
+                .width(30)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
                 .position(0,0)
-                .text("Remove Item")
-                .listener(this)
+                .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
+                .enabled(false)
                 .build("button.remove");
 
         inventoryArea.add(buttonList, buttonSetPrice, buttonRemoveItem);
@@ -367,7 +368,7 @@ public final class ExchangeGUI extends SimpleScreen {
     }
 
     @Subscribe
-    private void onElementSelect(UIListContainer.SelectEvent<ResultListElementData> event) {
+    private void onElementSelect(UIListContainer.SelectEvent<ListElementData> event) {
         final boolean isSelected = event.getNewValue() != null;
         this.buttonBuyStack.setEnabled(isSelected);
         this.buttonBuySingle.setEnabled(isSelected);
@@ -434,23 +435,21 @@ public final class ExchangeGUI extends SimpleScreen {
     }
 
     @SuppressWarnings("unchecked, deprecation")
-    private static final class ResultListElement extends UIBackgroundContainer {
+    private static class ExchangeListElement<T> extends UIBackgroundContainer {
 
         private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
         private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
         private static final int INNER_HOVER_COLOR = org.spongepowered.api.util.Color.ofRgb(40, 40, 40).getRgb();
         private static final int INNER_SELECTED_COLOR = org.spongepowered.api.util.Color.ofRgb(65, 65, 65).getRgb();
 
-        private final ResultListElementData elementData;
-        private final UIImage image;
-        private final UILabel itemLabel, priceLabel, sellerLabel;
+        private final ListElementData data;
 
-        private ResultListElement(final MalisisGui gui, final ResultListElementData elementData) {
+        private ExchangeListElement(final MalisisGui gui, final ListElementData data) {
             super(gui);
 
-            this.elementData = elementData;
+            this.data = data;
 
-            this.parent = this.elementData.getParent();
+            this.parent = this.data.parent;
 
             // Set padding
             this.setPadding(3, 3);
@@ -461,8 +460,59 @@ public final class ExchangeGUI extends SimpleScreen {
 
             this.setSize(0, 24);
 
+            this.construct(gui, data);
+        }
+
+        protected void construct(final MalisisGui gui, final ListElementData<T> data) {}
+
+        @Override
+        public boolean onClick(int x, int y) {
+            final UIComponent component = getComponentAt(x, y);
+            if (this.equals(component)) {
+                final UIListContainer<ListElementData<T>> parent = this.data.parent;
+
+                // Deselect the item if we click it again, select it otherwise.
+                parent.select(parent.isSelected(this.data) ? null : this.data);
+            }
+            return true;
+        }
+
+        @Override
+        public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+            if (this.parent instanceof UISimpleList) {
+                final UISimpleList parent = (UISimpleList) this.parent;
+
+                final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
+
+                setSize(width, getHeight());
+
+
+                if (parent.isSelected(this.data)) {
+                    this.setColor(INNER_SELECTED_COLOR);
+                } else if (this.isHovered()) {
+                    this.setColor(INNER_HOVER_COLOR);
+                } else {
+                    this.setColor(INNER_COLOR);
+                }
+
+                super.drawBackground(renderer, mouseX, mouseY, partialTick);
+            }
+        }
+    }
+
+    private static final class ResultListElement extends ExchangeListElement<MockOffer> {
+
+        private UIImage image;
+        private UILabel itemLabel, priceLabel, sellerLabel;
+
+        private ResultListElement(final MalisisGui gui, final ListElementData data) {
+            super(gui, data);
+        }
+
+        @Override
+        protected void construct(final MalisisGui gui, final ListElementData<MockOffer> data) {
             // Add components
-            final net.minecraft.item.ItemStack fakeStack = (net.minecraft.item.ItemStack) (Object) ItemStack.of(elementData.offer.item.getType(), 1);
+            final net.minecraft.item.ItemStack fakeStack = (net.minecraft.item.ItemStack) (Object) ItemStack.of(data.tag.item.getType(), 1);
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
@@ -478,8 +528,8 @@ public final class ExchangeGUI extends SimpleScreen {
 
             // Limit item name to prevent over drawing
             final StringBuilder itemTextBuilder = new StringBuilder();
-            for (char c : (elementData.offer.item.getTranslation().get()).toCharArray()) {
-                final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c + " x " + elementData.offer.item.getQuantity());
+            for (char c : (data.tag.item.getTranslation().get()).toCharArray()) {
+                final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c + " x " + data.tag.item.getQuantity());
                 if (textWidth > maxItemTextWidth + 4) {
                     itemTextBuilder.replace(itemTextBuilder.length() - 3, itemTextBuilder.length(), "...");
                     break;
@@ -488,71 +538,32 @@ public final class ExchangeGUI extends SimpleScreen {
             }
             this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
                     Text.of(TextColors.WHITE, itemTextBuilder.toString(),
-                            TextColors.GRAY, " x ", elementData.offer.item.getQuantity())
+                            TextColors.GRAY, " x ", data.tag.item.getQuantity())
             ));
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GRAY, TextStyles.ITALIC, elementData.offer.playerName)
+                    Text.of(TextColors.GRAY, TextStyles.ITALIC, data.tag.playerName)
             ));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             this.priceLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GOLD, elementData.offer.pricePer, TextColors.GRAY, "/ea")
+                    Text.of(TextColors.GOLD, data.tag.pricePer, TextColors.GRAY, "/ea")
             ));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             this.add(this.image, this.itemLabel, this.priceLabel, this.sellerLabel);
         }
-
-        @Override
-        public boolean onClick(int x, int y) {
-            final UIComponent component = getComponentAt(x, y);
-            if (this.equals(component)) {
-                final UIListContainer<ResultListElementData> parent = this.elementData.getParent();
-
-                // Deselect the item if we click it again, select it otherwise.
-                parent.select(parent.isSelected(this.elementData) ? null : this.elementData);
-            }
-            return true;
-        }
-
-        @Override
-        public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            if (this.parent instanceof UISimpleList) {
-                final UISimpleList parent = (UISimpleList) this.parent;
-
-                final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
-
-                setSize(width, getHeight());
-
-
-                if (parent.isSelected(this.elementData)) {
-                    this.setColor(INNER_SELECTED_COLOR);
-                } else if (this.isHovered()) {
-                    this.setColor(INNER_HOVER_COLOR);
-                } else {
-                    this.setColor(INNER_COLOR);
-                }
-
-                super.drawBackground(renderer, mouseX, mouseY, partialTick);
-            }
-        }
     }
 
-    private static final class ResultListElementData {
+    private static final class ListElementData<T> {
+        public final UISimpleList<ListElementData<T>> parent;
+        public final T tag;
 
-        public final UISimpleList<ResultListElementData> parent;
-        public final MockOffer offer;
-
-        private ResultListElementData(UISimpleList<ResultListElementData> parent, final MockOffer offer) {
+        private ListElementData(final UISimpleList<ListElementData<T>> parent, final T tag) {
             this.parent = parent;
-            this.offer = offer;
-        }
-
-        public UISimpleList<ResultListElementData> getParent() {
-            return this.parent;
+            this.tag = tag;
         }
     }
 
