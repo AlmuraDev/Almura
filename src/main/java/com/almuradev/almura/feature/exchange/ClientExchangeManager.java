@@ -29,21 +29,11 @@ import javax.inject.Singleton;
 public final class ClientExchangeManager implements Witness {
 
     private final ChannelBinding.IndexedMessageChannel network;
-    private final KeyBinding exchangeOpenBinding;
 
     @Inject
     public ClientExchangeManager(final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network, final Set<KeyBindingEntry>
             keybindings) {
         this.network = network;
-        this.exchangeOpenBinding = keybindings.stream().map(KeyBindingEntry::getKeybinding).filter((keyBinding -> keyBinding
-                .getKeyDescription().equalsIgnoreCase("key.almura.exchange.open"))).findFirst().orElse(null);
-    }
-
-    @SubscribeEvent
-    public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (exchangeOpenBinding.isPressed()) {
-            requestExchangeGUI();
-        }
     }
 
     public void requestExchangeGUI() {
