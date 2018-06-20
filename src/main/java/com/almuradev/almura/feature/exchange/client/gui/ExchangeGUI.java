@@ -112,7 +112,7 @@ public final class ExchangeGUI extends SimpleScreen {
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
-        form.setTitle("Almura Exchange");
+        form.setTitle("Exchange");
         form.setBorder(FontColors.WHITE, 1, 185);
         form.setBackgroundAlpha(215);
         form.setBottomPadding(3);
@@ -485,7 +485,6 @@ public final class ExchangeGUI extends SimpleScreen {
                 final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
 
                 setSize(width, getHeight());
-
 
                 if (parent.isSelected(this.data)) {
                     this.setColor(INNER_SELECTED_COLOR);
