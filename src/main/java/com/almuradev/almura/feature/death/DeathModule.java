@@ -26,7 +26,6 @@ public final class DeathModule extends AbstractModule implements CommonBinder {
                 @Override
                 protected void configure() {
                     this.facet().add(DeathHandler.class);
-                    this.requestStaticInjection(DeathModule.class);
                 }
             }
             this.install(new ServerModule());
@@ -38,7 +37,6 @@ public final class DeathModule extends AbstractModule implements CommonBinder {
                 @SuppressWarnings("UnnecessaryStaticInjection") // HACK: inject into required mixin target classes
                 protected void configure() {
                     this.requestStaticInjection(PlayerDiedGUI.class);
-
                 }
             }
             this.install(new ClientModule());

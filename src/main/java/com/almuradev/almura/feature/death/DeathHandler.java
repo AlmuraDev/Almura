@@ -7,26 +7,26 @@
  */
 package com.almuradev.almura.feature.death;
 
-import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
-import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
-import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.core.event.Witness;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
+import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.Account;
@@ -40,22 +40,28 @@ import javax.inject.Inject;
 @SideOnly(Side.SERVER)
 public final class DeathHandler implements Witness {
 
-    @Inject private static ServerNotificationManager serverNotificationManager;
+    private static final Random RANDOM = new Random();
+    private static final DoubleRange RANGE = DoubleRange.range(25, 75);
+
+    private boolean checkedItemsLoaded = false;
+    private ItemType platinumCoin, goldCoin, silverCoin, copperCoin;
+
+    private final ServerNotificationManager serverNotificationManager;
+
+    @Inject
+    public DeathHandler(final ServerNotificationManager serverNotificationManager) {
+        this.serverNotificationManager = serverNotificationManager;
+    }
 
     @Listener(order = Order.LAST)
-    public void onPlayerDeath(DestructEntityEvent.Death event, @Root DamageSource damageSource) {
-        if (!(event.getTargetEntity() instanceof Player)) {
-            return;
-        }
-
-        final Player player = (Player) event.getTargetEntity();
-        final Server server = Sponge.getServer();
-
-        if (!areCoinsLoaded()) {
-            return;
-        }
-
+    public void onPlayerDeath(final DestructEntityEvent.Death event, @Root final DamageSource damageSource, @Getter("getTargetEntity") final Player player) {
         if (player.hasPermission("almura.admin")) {
+            return;
+        }
+
+        this.cacheItemTypes();
+
+        if (!this.areCoinsLoaded()) {
             return;
         }
 
@@ -64,66 +70,48 @@ public final class DeathHandler implements Witness {
             return;
         }
 
-        if (service != null) {
-            final double deathTax = getDropAmountMultiple();
-            final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
-            BigDecimal balance = BigDecimal.ZERO;
+        final Server server = Sponge.getServer();
 
-            if (account != null) {
-                final Currency currency = service.getDefaultCurrency();
-                balance = account.getBalance(currency);
+        final double deathTax = RANGE.random(RANDOM);
+        final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
+        BigDecimal balance;
 
-                final double dropAmount = balance.doubleValue() - (balance.doubleValue() * deathTax);
-                final BigDecimal deduct = new BigDecimal(dropAmount);
-                account.withdraw(currency, deduct, null);
+        if (account != null) {
+            final Currency currency = service.getDefaultCurrency();
+            balance = account.getBalance(currency);
 
-                server.getOnlinePlayers().forEach(onlinePlayer -> {
-                    if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
-                        // Display nothing, you have already been shamed...
-                    } else {
-                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their death has cost them $" + dropAmount + ", such a waste..."), 5);
-                    }
-                });
-            }
+            final double dropAmount = balance.doubleValue() - (balance.doubleValue() * deathTax);
+            final BigDecimal deduct = new BigDecimal(dropAmount);
+            account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
+            server.getOnlinePlayers().forEach(onlinePlayer -> {
+                if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
+                    // Display nothing, you have already been shamed...
+                } else {
+                    // TODO Dockter you can do better here, have a list of witty phrases to troll players with
+                    serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their death has cost them $" + dropAmount + ", such a waste..."), 5);
+                }
+            });
         }
     }
 
-    protected double getDropAmountMultiple() {
-        final Random random = new Random();
-        final String raw = "25-75";
-        final String[] parsed = raw.split("-");
-        double lower, upper = 0;
+    private void cacheItemTypes() {
+        if (!this.checkedItemsLoaded) {
+            final GameRegistry registry = Sponge.getRegistry();
 
-        try {
-            lower = Double.parseDouble(parsed[0]);
-        } catch (Exception e) {
-            lower = 0;
+            this.platinumCoin = registry.getType(ItemType.class, "almura:normal/currency/platinumcoin").orElse(null);
+            this.goldCoin = registry.getType(ItemType.class, "almura:normal/currency/goldcoin").orElse(null);
+            this.silverCoin = registry.getType(ItemType.class, "almura:normal/currency/silvercoin").orElse(null);
+            this.copperCoin = registry.getType(ItemType.class, "almura:normal/currency/coppercoin").orElse(null);
+
+            this.checkedItemsLoaded = true;
         }
-
-        if (parsed.length == 2) {
-            try {
-                upper = Double.parseDouble(parsed[1]);
-            } catch (Exception e) {
-                upper = 0;
-            }
-        }
-
-        return (lower + (upper - lower) * random.nextDouble()) / 100;
     }
 
-    protected boolean areCoinsLoaded() {
-        if (GameRegistry.makeItemStack("almura:normal/currency/platinumcoin", 0, 64, null) == null)
-            return false;
-        if (GameRegistry.makeItemStack("almura:normal/currency/goldcoin", 0, 64, null) == null)
-            return false;
-        if (GameRegistry.makeItemStack("almura:normal/currency/silvercoin", 0, 64, null) == null)
-            return false;
-        if (GameRegistry.makeItemStack("almura:normal/currency/coppercoin", 0, 64, null) == null)
-            return false;
-        return true;
+    private boolean areCoinsLoaded() {
+        return platinumCoin != null && goldCoin != null && silverCoin != null && copperCoin != null;
     }
 
-    protected double dropAmount(EntityPlayer player, double amount) {
+    private double dropAmount(Player player, double amount) {
         double remainingMoney = amount;
         int platinum = (int) (remainingMoney / 1000000);
         remainingMoney -= platinum * 1000000;
@@ -136,48 +124,40 @@ public final class DeathHandler implements Witness {
 
         while (platinum > 0) {
             if (platinum > 64) {
-                ItemStack coins = GameRegistry.makeItemStack("almura:normal/currency/platinumcoin", 0, 64, null);
-                dropItems(player, coins);
-                platinum-=64;
+                this.dropStack(player, ItemStack.of(this.platinumCoin, 64));
+                platinum -= 64;
             } else {
-                ItemStack coins = GameRegistry.makeItemStack("almura:normal/currency/platinumcoin", platinum, 64, null);
-                dropItems(player, coins);
+                this.dropStack(player, ItemStack.of(this.platinumCoin, platinum));
                 break;
             }
         }
 
         while (gold > 0) {
             if (gold > 64) {
-                ItemStack coins = GameRegistry.makeItemStack("almura:normal/currency/goldcoin", 0, 64, null);
-                dropItems(player, coins);
-                gold-=64;
+                this.dropStack(player, ItemStack.of(this.goldCoin, 64));
+                gold -= 64;
             } else {
-                ItemStack coins = GameRegistry.makeItemStack("almura:normal/currency/goldcoin", gold, 64, null);
-                dropItems(player, coins);
+                this.dropStack(player, ItemStack.of(this.goldCoin, gold));
                 break;
             }
         }
 
         while (silver > 0) {
             if (silver > 64) {
-                ItemStack coins = GameRegistry.makeItemStack("almura:normal/currency/silvercoin", 0, 64, null);
-                dropItems(player, coins);
-                silver-=64;
+                this.dropStack(player, ItemStack.of(this.silverCoin, 64));
+                silver -= 64;
             } else {
-                ItemStack coins = GameRegistry.makeItemStack("almura:normal/currency/silvercoin", silver, 64, null);
-                dropItems(player, coins);
+                this.dropStack(player, ItemStack.of(this.silverCoin, silver));
                 break;
             }
         }
 
         while (copper > 0) {
             if (copper > 64) {
-                ItemStack coins = GameRegistry.makeItemStack("almura:normal/currency/coppercoin", 0, 64, null);
-                dropItems(player, coins);
-                copper-=64;
+                this.dropStack(player, ItemStack.of(this.copperCoin, 64));
+                copper -= 64;
             } else {
-                ItemStack coins = GameRegistry.makeItemStack("almura:normal/currency/coppercoin", copper, 64, null);
-                dropItems(player, coins);
+                this.dropStack(player, ItemStack.of(this.copperCoin, copper));
                 break;
             }
         }
@@ -185,8 +165,9 @@ public final class DeathHandler implements Witness {
         return remainingMoney;
     }
 
-    protected void dropItems(EntityPlayer player, ItemStack itemStack) {
-        EntityItem item = new EntityItem(player.world, player.posX, player.posY, player.posZ, itemStack);
-        player.world.spawnEntity(item);
+    private void dropStack(Player player, ItemStack itemStack) {
+        final Item entity = (Item) player.getWorld().createEntity(EntityTypes.ITEM, player.getLocation().getPosition());
+        entity.offer(Keys.REPRESENTED_ITEM, itemStack.createSnapshot());
+        player.getWorld().spawnEntity(entity);
     }
 }
