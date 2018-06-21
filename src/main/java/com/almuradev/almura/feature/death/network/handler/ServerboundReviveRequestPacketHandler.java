@@ -8,8 +8,6 @@
 package com.almuradev.almura.feature.death.network.handler;
 
 import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
-import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.server.MinecraftServer;
