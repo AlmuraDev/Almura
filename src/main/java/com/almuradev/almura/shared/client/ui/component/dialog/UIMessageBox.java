@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.shared.client.ui.component.dialog;
 
-import com.almuradev.almura.asm.StaticAccess;
+import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
@@ -159,7 +159,7 @@ public class UIMessageBox extends UIForm {
             try {
                 this.consumer.accept(this.result);
             } catch (Exception e) {
-                StaticAccess.logger.error("An exception occurred while executing the consumer!", e);
+                ClientStaticAccess.logger.error("An exception occurred while executing the consumer!", e);
             }
         }
         super.onClose();

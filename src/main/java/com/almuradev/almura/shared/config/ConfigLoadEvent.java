@@ -12,18 +12,18 @@ import net.minecraftforge.fml.common.eventhandler.GenericEvent;
 
 public final class ConfigLoadEvent<C> extends GenericEvent<C> {
 
-    private final MappedConfiguration<C> config;
+    private final MappedConfiguration<C> configAdapter;
 
-    public ConfigLoadEvent(final Class<C> type, final MappedConfiguration<C> config) {
+    public ConfigLoadEvent(final Class<C> type, final MappedConfiguration<C> configAdapter) {
         super(type);
-        this.config = config;
+        this.configAdapter = configAdapter;
     }
 
     public MappedConfiguration<C> adapter() {
-        return this.config;
+        return this.configAdapter;
     }
 
-    public C config() {
-        return this.config.get();
+    public C configAdapter() {
+        return this.configAdapter.get();
     }
 }

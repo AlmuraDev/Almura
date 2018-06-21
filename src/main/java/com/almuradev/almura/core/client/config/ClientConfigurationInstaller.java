@@ -14,7 +14,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
 import javax.inject.Inject;
@@ -22,15 +21,16 @@ import javax.inject.Inject;
 @SideOnly(Side.CLIENT)
 public final class ClientConfigurationInstaller implements Witness {
 
-    private final MappedConfiguration<ClientConfiguration> adapter;
+    private final MappedConfiguration<ClientConfiguration> configAdapter;
 
     @Inject
-    public ClientConfigurationInstaller(final MappedConfiguration<ClientConfiguration> adapter) {
-        this.adapter = adapter;
+    public ClientConfigurationInstaller(final MappedConfiguration<ClientConfiguration> configAdapter) {
+        this.configAdapter = configAdapter;
     }
 
     @Listener
     public void onGamePreinitialization(final GamePreInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.post(new ConfigLoadEvent<>(ClientConfiguration.class, this.adapter));
+        this.configAdapter.load();
+        MinecraftForge.EVENT_BUS.post(new ConfigLoadEvent<>(ClientConfiguration.class, this.configAdapter));
     }
 }

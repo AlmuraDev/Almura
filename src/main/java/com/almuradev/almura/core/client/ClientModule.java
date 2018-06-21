@@ -8,10 +8,11 @@
 package com.almuradev.almura.core.client;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.asm.StaticAccess;
-import com.almuradev.almura.core.client.config.ClientConfiguration;
+import com.almuradev.almura.asm.ClientStaticAccess;
+import com.almuradev.almura.core.client.config.ClientConfigurationModule;
 import com.almuradev.almura.core.common.CommonModule;
 import com.almuradev.almura.feature.menu.MainMenuModule;
+import com.almuradev.almura.feature.menu.SimpleOptionsMenu;
 import com.almuradev.almura.feature.speed.ClientOptimizationModule;
 import com.almuradev.almura.shared.client.keyboard.binder.KeyBindingInstaller;
 import com.almuradev.almura.shared.inject.ClientBinder;
@@ -44,16 +45,17 @@ public final class ClientModule extends AbstractModule implements ClientBinder {
     @Override
     protected void configure() {
         this.install(new CommonModule(this.plugin));
-        this.install(new VanillaModule());
+        this.install(new VanillaClientFeaturesModule());
         this.install(new MainMenuModule());
         this.install(new ClientOptimizationModule());
-        this.install(new ClientConfiguration.Module());
+        this.install(new ClientConfigurationModule());
         this.facet().add(KeyBindingInstaller.class);
         this.model().loader(OBJModelLoader.class, binder -> binder.domains(Almura.ID));
-        this.requestStaticInjection(StaticAccess.class);
+        this.requestStaticInjection(ClientStaticAccess.class);
+        this.requestStaticInjection(SimpleOptionsMenu.class);
     }
 
-    private static class VanillaModule extends AbstractModule {
+    private static class VanillaClientFeaturesModule extends AbstractModule {
         @Override
         protected void configure() {
             this.requestInjection(this);

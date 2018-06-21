@@ -47,21 +47,19 @@ import java.math.BigDecimal;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-public class ServerHeadUpDisplayManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
+public final class ServerHeadUpDisplayManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
 
     private final Game game;
     private final PluginContainer container;
     private final ChannelBinding.IndexedMessageChannel network;
-    private final MappedConfiguration<ServerConfiguration> config;
     private final ServerNotificationManager manager;
 
     @Inject
     private ServerHeadUpDisplayManager(final Game game, final PluginContainer container, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
-            .IndexedMessageChannel network, final MappedConfiguration<ServerConfiguration> config, final ServerNotificationManager manager) {
+            .IndexedMessageChannel network, final ServerNotificationManager manager) {
         this.game = game;
         this.container = container;
         this.network = network;
-        this.config = config;
         this.manager = manager;
     }
 
@@ -160,7 +158,7 @@ public class ServerHeadUpDisplayManager extends Witness.Impl implements Activata
     }
 
     private ClientboundWorldNamePacket createWorldNamePacket(final Transform<World> transform) {
-        return new ClientboundWorldNamePacket(this.getWorldName(transform));
+        return new ClientboundWorldNamePacket(transform.getExtent().getName());
     }
 
     @Nullable
@@ -179,11 +177,6 @@ public class ServerHeadUpDisplayManager extends Witness.Impl implements Activata
         }
 
         return null;
-    }
-
-    private String getWorldName(final Transform<World> transform) {
-        final String name = transform.getExtent().getName();
-        return this.config.get().world.friendlyNames.getOrDefault(name, name);
     }
 
     private static boolean differentExtent(final Transform<World> from, final Transform<World> to) {

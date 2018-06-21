@@ -1,5 +1,0 @@
-This file is part of ${name}.
-
-Copyright (c) ${organization} <${url}/>
-
-All Rights Reserved.

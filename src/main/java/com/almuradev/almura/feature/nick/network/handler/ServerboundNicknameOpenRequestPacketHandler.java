@@ -39,7 +39,7 @@ public final class ServerboundNicknameOpenRequestPacketHandler implements Messag
             if (PacketUtil.checkThreadAndEnqueue(threadListener, message, this, connection, side)) {
                 final Player player = ((PlayerConnection) connection).getPlayer();
 
-                // Check perms here
+                // Check permission here
                 // I added the notification manager above in-case you want to say you were denied opening via the GUI
 
                 this.network.sendTo(player, new ClientboundNicknameOpenResponsePacket());

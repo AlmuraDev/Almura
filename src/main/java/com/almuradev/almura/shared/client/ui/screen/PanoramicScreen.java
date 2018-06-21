@@ -8,7 +8,7 @@
 package com.almuradev.almura.shared.client.ui.screen;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.asm.StaticAccess;
+import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -67,12 +67,12 @@ public abstract class PanoramicScreen extends SimpleScreen {
                         try {
                             bundles.get(daypart).add(new PanoramicBundle(path));
                         } catch (FileNotFoundException e) {
-                            StaticAccess.logger.warn("Unable to load panoramic for [" + path + "]", e);
+                            ClientStaticAccess.logger.warn("Unable to load panoramic for [" + path + "]", e);
                         }
                     }
                 }
             } catch (IOException e) {
-                StaticAccess.logger.warn("Unable to load panoramics.", e);
+                ClientStaticAccess.logger.warn("Unable to load panoramics.", e);
             }
         }
     }
@@ -89,7 +89,7 @@ public abstract class PanoramicScreen extends SimpleScreen {
 
         // Add the vanilla panorama locations if we have none to load, otherwise choose a random one
         if (bundles.isEmpty() || daypartBundles == null || daypartBundles.isEmpty()) {
-            StaticAccess.logger.warn("No custom panoramics found. Defaulting to vanilla panoramic.");
+            ClientStaticAccess.logger.warn("No custom panoramics found. Defaulting to vanilla panoramic.");
             this.bundle = new PanoramicBundle(new ResourceLocation("textures/gui/title/background/panorama_0.png"));
         } else {
             this.bundle = daypartBundles.get(random.nextInt(daypartBundles.size()));

@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.shared.client.texture;
 
-import com.almuradev.almura.asm.StaticAccess;
+import com.almuradev.almura.asm.ClientStaticAccess;
 import net.malisis.core.client.gui.GuiTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
@@ -48,7 +48,7 @@ public class GuiRemoteTexture extends GuiTexture {
                     return httpURLConnection.getInputStream();
                 }
             } catch (IOException e) {
-                StaticAccess.logger.warn("Malformed stream", e);
+                ClientStaticAccess.logger.warn("Malformed stream", e);
                 if (httpURLConnection != null) {
                     httpURLConnection.disconnect();
                 }
@@ -59,14 +59,14 @@ public class GuiRemoteTexture extends GuiTexture {
             final InputStream effStream = stream;
 
             if (stream == null) {
-                StaticAccess.logger.error("The specified resource at [" + this.targetUrl + "] could not be found.");
+                ClientStaticAccess.logger.error("The specified resource at [" + this.targetUrl + "] could not be found.");
             }
 
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 try {
                     this.resourceLocation = registerTexture(targetResourceLocation, effStream);
                 } catch (IOException e) {
-                    StaticAccess.logger.warn("Unable to register texture from [" + this.targetUrl + "]", e);
+                    ClientStaticAccess.logger.warn("Unable to register texture from [" + this.targetUrl + "]", e);
                 }
             });
         });

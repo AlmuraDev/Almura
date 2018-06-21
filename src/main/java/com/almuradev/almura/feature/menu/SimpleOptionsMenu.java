@@ -7,16 +7,19 @@
  */
 package com.almuradev.almura.feature.menu;
 
-import com.almuradev.almura.asm.StaticAccess;
-import com.almuradev.almura.core.client.config.ClientCategory;
+import com.almuradev.almura.asm.ClientStaticAccess;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
+import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.hud.HUDType;
 import com.almuradev.almura.feature.speed.FirstLaunchOptimization;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.slider.UISliderBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.common.base.Converter;
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -34,7 +37,9 @@ import java.util.Arrays;
 
 import javax.annotation.Nullable;
 
-public class SimpleOptionsMenu extends SimpleScreen {
+public final class SimpleOptionsMenu extends SimpleScreen {
+
+    @Inject private static MappedConfiguration<ClientConfiguration> configAdapter;
 
     private static final OptionsConverter OPTIONS_CONVERTER = new OptionsConverter();
     private static final int CONTROL_HEIGHT = 20;
@@ -45,16 +50,16 @@ public class SimpleOptionsMenu extends SimpleScreen {
     private UISlider<Integer> sliderOriginHudOpacity;
     @Nullable private UIComponent lastComponent = null;
 
-    public SimpleOptionsMenu(GuiOptions parentOptions) {
+    public SimpleOptionsMenu(final GuiOptions parentOptions) {
         super(parentOptions);
     }
 
     @SuppressWarnings({"unchecked"})
     @Override
     public void construct() {
-        final ClientCategory config = StaticAccess.config.get().client;
         this.saveAndLoad();
 
+        final GeneralCategory general = configAdapter.get().general;
         final UILabel titleLabel = new UILabel(this, I18n.format("almura.menu_button.options"));
         titleLabel.setFontOptions(FontColors.WHITE_FO);
         titleLabel.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
@@ -76,14 +81,14 @@ public class SimpleOptionsMenu extends SimpleScreen {
         this.updatePosition(this.buttonOptimized, Anchor.LEFT);
 
         this.buttonHudType = new UIButtonBuilder(this)
-                .text("HUD: " + config.hud.substring(0, 1).toUpperCase() + config.hud.substring(1))
+                .text("HUD: " + general.hud.substring(0, 1).toUpperCase() + general.hud.substring(1))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .listener(this)
                 .build("button.hudType");
         this.updatePosition(this.buttonHudType, Anchor.LEFT);
 
         // TODO: Add builder for checkbox component
-        final boolean displayWorldCompassWidget = config.displayWorldCompassWidget;
+        final boolean displayWorldCompassWidget = general.displayWorldCompassWidget;
         final UICheckBox checkboxWorldCompassWidget = new UICheckBox(this);
         checkboxWorldCompassWidget.setText(TextFormatting.WHITE + "Display World Compass Widget");
         checkboxWorldCompassWidget.setChecked(displayWorldCompassWidget);
@@ -91,7 +96,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         checkboxWorldCompassWidget.register(this);
         this.updatePosition(checkboxWorldCompassWidget, Anchor.LEFT);
 
-        final boolean displayLocationWidget = config.displayLocationWidget;
+        final boolean displayLocationWidget = general.displayLocationWidget;
         final UICheckBox checkboxLocationWidget = new UICheckBox(this);
         checkboxLocationWidget.setText(TextFormatting.WHITE + "Display Location Widget");
         checkboxLocationWidget.setChecked(displayLocationWidget);
@@ -99,7 +104,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         checkboxLocationWidget.register(this);
         this.updatePosition(checkboxLocationWidget, Anchor.LEFT);
 
-        final boolean displayNumericHUDValues = config.displayNumericHUDValues;
+        final boolean displayNumericHUDValues = general.displayNumericHUDValues;
         final UICheckBox checkboxNumericHUDValues = new UICheckBox(this);
         checkboxNumericHUDValues.setText(TextFormatting.WHITE + "Display Numeric HUD Values");
         checkboxNumericHUDValues.setChecked(displayNumericHUDValues);
@@ -107,7 +112,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         checkboxNumericHUDValues.register(this);
         this.updatePosition(checkboxNumericHUDValues, Anchor.LEFT);
 
-        final boolean displayNames = config.displayNames;
+        final boolean displayNames = general.displayNames;
         final UICheckBox checkboxDisplayNames = new UICheckBox(this);
         checkboxDisplayNames.setText(TextFormatting.WHITE + "Display Entity Names");
         checkboxDisplayNames.setChecked(displayNames);
@@ -115,7 +120,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         checkboxDisplayNames.register(this);
         this.updatePosition(checkboxDisplayNames, Anchor.LEFT);
 
-        final boolean displayHealthbars = config.displayHealthbars;
+        final boolean displayHealthbars = general.displayHealthbars;
         final UICheckBox checkboxDisplayHealthbars = new UICheckBox(this);
         checkboxDisplayHealthbars.setText(TextFormatting.WHITE + "Display Entity Healthbars");
         checkboxDisplayHealthbars.setChecked(displayHealthbars);
@@ -123,7 +128,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         checkboxDisplayHealthbars.register(this);
         this.updatePosition(checkboxDisplayHealthbars, Anchor.LEFT);
 
-        final boolean disableOffhandTorchPlacement = config.disableOffhandTorchPlacement;
+        final boolean disableOffhandTorchPlacement = general.disableOffhandTorchPlacement;
         final UICheckBox checkboxDisableOffhandTorchPlacement = new UICheckBox(this);
         checkboxDisableOffhandTorchPlacement.setText(TextFormatting.WHITE + "Disable Offhand Torch Placement");
         checkboxDisableOffhandTorchPlacement.setChecked(disableOffhandTorchPlacement);
@@ -137,10 +142,10 @@ public class SimpleOptionsMenu extends SimpleScreen {
         /*
          * RIGHT COLUMN
          */
-        final boolean isOrigin = config.hud.equalsIgnoreCase(HUDType.ORIGIN);
+        final boolean isOrigin = general.hud.equalsIgnoreCase(HUDType.ORIGIN);
         this.sliderOriginHudOpacity = new UISliderBuilder(this, Converter.<Float, Integer>from(f -> (int) (f * 255), i -> (float) i / 255))
                 .text("HUD Opacity: %d")
-                .value(config.originHudOpacity)
+                .value(general.originHudOpacity)
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .listener(this)
                 .enabled(isOrigin)
@@ -151,7 +156,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         final UISlider<OptionsConverter.Options> sliderChestDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
                 .text("Chest Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == config.chestRenderDistance)
+                        .filter(o -> o.value == general.chestRenderDistance)
                         .findFirst()
                         .orElse(OptionsConverter.Options.DEFAULT))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -162,7 +167,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         final UISlider<OptionsConverter.Options> sliderSignTextDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
                 .text("Sign Text Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == config.signTextRenderDistance)
+                        .filter(o -> o.value == general.signTextRenderDistance)
                         .findFirst()
                         .orElse(OptionsConverter.Options.DEFAULT))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -173,7 +178,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         final UISlider<OptionsConverter.Options> sliderItemFrameDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
                 .text("Item Frame Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == config.itemFrameRenderDistance)
+                        .filter(o -> o.value == general.itemFrameRenderDistance)
                         .findFirst()
                         .orElse(OptionsConverter.Options.DEFAULT))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -184,7 +189,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         final UISlider<OptionsConverter.Options> sliderPlayerNameRenderDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
                 .text("Player Name Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == config.playerNameRenderDistance)
+                        .filter(o -> o.value == general.playerNameRenderDistance)
                         .findFirst()
                         .orElse(OptionsConverter.Options.DEFAULT))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -195,7 +200,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         final UISlider<OptionsConverter.Options> sliderEnemyNameRenderDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
                 .text("Enemy Name Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == config.enemyNameRenderDistance)
+                        .filter(o -> o.value == general.enemyNameRenderDistance)
                         .findFirst()
                         .orElse(OptionsConverter.Options.DEFAULT))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -206,7 +211,7 @@ public class SimpleOptionsMenu extends SimpleScreen {
         final UISlider<OptionsConverter.Options> sliderAnimalNameRenderDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
                 .text("Animal Name Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == config.animalNameRenderDistance)
+                        .filter(o -> o.value == general.animalNameRenderDistance)
                         .findFirst()
                         .orElse(OptionsConverter.Options.DEFAULT))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -243,8 +248,8 @@ public class SimpleOptionsMenu extends SimpleScreen {
     }
 
     private void saveAndLoad() {
-        StaticAccess.config.save();
-        StaticAccess.config.load();
+        ClientStaticAccess.configAdapter.save();
+        ClientStaticAccess.configAdapter.load();
     }
 
     @Subscribe
@@ -255,9 +260,10 @@ public class SimpleOptionsMenu extends SimpleScreen {
                 this.close();
                 break;
             case "button.hudType":
+                final ClientConfiguration configuration = configAdapter.get();
                 // Check if the current HUD is the Origin HUD
-                boolean isOrigin = StaticAccess.config.get().client.hud.equalsIgnoreCase(HUDType.ORIGIN);
-                StaticAccess.config.get().client.hud = isOrigin ? HUDType.VANILLA : HUDType.ORIGIN;
+                boolean isOrigin = configuration.general.hud.equalsIgnoreCase(HUDType.ORIGIN);
+                configuration.general.hud = isOrigin ? HUDType.VANILLA : HUDType.ORIGIN;
                 // Flip the boolean since we're now on the vanilla HUD
                 isOrigin = !isOrigin;
 
@@ -282,45 +288,47 @@ public class SimpleOptionsMenu extends SimpleScreen {
 
     @Subscribe
     public void onValueChange(ComponentEvent.ValueChange event) {
+        final ClientConfiguration configuration = configAdapter.get();
+
         switch (event.getComponent().getName()) {
             case "slider.originHudOpacity":
-                StaticAccess.config.get().client.originHudOpacity = (int) event.getNewValue();
+                configuration.general.originHudOpacity = (int) event.getNewValue();
                 break;
             case "slider.chestRenderDistance" :
-                StaticAccess.config.get().client.chestRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.chestRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "slider.signTextRenderDistance" :
-                StaticAccess.config.get().client.signTextRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.signTextRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "slider.itemFrameRenderDistance" :
-                StaticAccess.config.get().client.itemFrameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.itemFrameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "slider.playerNameRenderDistance" :
-                StaticAccess.config.get().client.playerNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.playerNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "slider.enemyNameRenderDistance" :
-                StaticAccess.config.get().client.enemyNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.enemyNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "slider.animalNameRenderDistance" :
-                StaticAccess.config.get().client.animalNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.animalNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
                 break;
             case "checkbox.world_compass_widget" :
-                StaticAccess.config.get().client.displayWorldCompassWidget = (boolean) event.getNewValue();
+                configuration.general.displayWorldCompassWidget = (boolean) event.getNewValue();
                 break;
             case "checkbox.location_widget" :
-                StaticAccess.config.get().client.displayLocationWidget = (boolean) event.getNewValue();
+                configuration.general.displayLocationWidget = (boolean) event.getNewValue();
                 break;
             case "checkbox.numeric_hud_values" :
-                StaticAccess.config.get().client.displayNumericHUDValues = (boolean) event.getNewValue();
+                configuration.general.displayNumericHUDValues = (boolean) event.getNewValue();
                 break;
             case "checkbox.display_names" :
-                StaticAccess.config.get().client.displayNames = (boolean) event.getNewValue();
+                configuration.general.displayNames = (boolean) event.getNewValue();
                 break;
             case "checkbox.display_healthbars" :
-                StaticAccess.config.get().client.displayHealthbars = (boolean) event.getNewValue();
+                configuration.general.displayHealthbars = (boolean) event.getNewValue();
                 break;
             case "checkbox.disable_offhand_torch_placement":
-                StaticAccess.config.get().client.disableOffhandTorchPlacement = (boolean) event.getNewValue();
+                configuration.general.disableOffhandTorchPlacement = (boolean) event.getNewValue();
                 break;
         }
 

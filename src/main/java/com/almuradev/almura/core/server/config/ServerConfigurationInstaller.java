@@ -18,16 +18,16 @@ import javax.inject.Inject;
 
 public final class ServerConfigurationInstaller implements Witness {
 
-    private final MappedConfiguration<ServerConfiguration> adapter;
+    private final MappedConfiguration<ServerConfiguration> configAdapter;
 
     @Inject
-    public ServerConfigurationInstaller(final MappedConfiguration<ServerConfiguration> adapter) {
-        this.adapter = adapter;
+    public ServerConfigurationInstaller(final MappedConfiguration<ServerConfiguration> configAdapter) {
+        this.configAdapter = configAdapter;
     }
 
     @Listener
     public void onGameStartingServer(final GameStartingServerEvent event) {
-        this.adapter.load();
-        MinecraftForge.EVENT_BUS.post(new ConfigLoadEvent<>(ServerConfiguration.class, this.adapter));
+        this.configAdapter.load();
+        MinecraftForge.EVENT_BUS.post(new ConfigLoadEvent<>(ServerConfiguration.class, this.configAdapter));
     }
 }

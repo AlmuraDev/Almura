@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.speed;
 
 import com.almuradev.almura.core.client.config.ClientConfiguration;
-import com.almuradev.almura.core.client.config.ClientCategory;
+import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.shared.config.ConfigLoadEvent;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
@@ -25,9 +25,9 @@ public final class FirstLaunchOptimization implements Witness {
 
     @SubscribeEvent
     public void onConfigLoad(final ConfigLoadEvent<ClientConfiguration> event) {
-        final ClientCategory category = event.config().client;
-        if (category.firstLaunch) {
-            category.firstLaunch = false;
+        final GeneralCategory general = event.configAdapter().general;
+        if (general.firstLaunch) {
+            general.firstLaunch = false;
             optimizeGame();
             event.adapter().save();
         }

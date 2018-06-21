@@ -31,21 +31,21 @@ import javax.inject.Singleton;
 public class ClientHeadUpDisplayManager implements Witness {
 
     private final Injector injector;
-    private final MappedConfiguration<ClientConfiguration> config;
+    private final MappedConfiguration<ClientConfiguration> configAdapter;
     private final HeadUpDisplay hudData;
 
     @Nullable private AbstractHUD hud;
 
     @Inject
-    public ClientHeadUpDisplayManager(final Injector injector, final MappedConfiguration<ClientConfiguration> config, final HeadUpDisplay hudData) {
+    public ClientHeadUpDisplayManager(final Injector injector, final MappedConfiguration<ClientConfiguration> configAdapter, final HeadUpDisplay hudData) {
         this.injector = injector;
-        this.config = config;
+        this.configAdapter = configAdapter;
         this.hudData = hudData;
     }
 
     @SubscribeEvent
     public void onRenderGameOverlayPre(final RenderGameOverlayEvent.Pre event) {
-        switch (this.config.get().client.hud.toLowerCase()) {
+        switch (this.configAdapter.get().general.hud.toLowerCase()) {
             case HUDType.ORIGIN:
                 if (!(this.hud instanceof OriginHUD)) {
                     if (this.hud != null) {
@@ -82,7 +82,7 @@ public class ClientHeadUpDisplayManager implements Witness {
 
     @SubscribeEvent
     public void onMouse(final MouseEvent event) {
-        if (this.hud != null && this.hud instanceof OriginHUD) {
+        if (this.hud instanceof OriginHUD) {
             event.setCanceled(((OriginHUD) this.hud).handleScroll());
         }
     }

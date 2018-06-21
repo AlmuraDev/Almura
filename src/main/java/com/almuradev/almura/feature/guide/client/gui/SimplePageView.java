@@ -95,7 +95,7 @@ public class SimplePageView extends SimpleScreen {
         this.buttonDetails = new UIButtonBuilder(this)
                 .width(10)
                 .text(Text.of(TextColors.YELLOW, "?"))
-                .tooltip(Text.of(I18n.format("almura.guide.view.button.details.tooltip")))
+                .tooltip(Text.of("almura.guide.view.button.details.tooltip"))
                 .anchor(Anchor.TOP | Anchor.RIGHT)
                 .visible(hasAnyPermission())
                 .listener(this)
@@ -185,7 +185,7 @@ public class SimplePageView extends SimpleScreen {
         final UIButton buttonClose = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .text(Text.of("almura.guide.button.close"))
+                .text(Text.of("almura.button.close"))
                 .listener(this)
                 .build("button.close");
 
@@ -194,7 +194,7 @@ public class SimplePageView extends SimpleScreen {
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .x(SimpleScreen.getPaddedX(buttonClose, innerPadding, Anchor.RIGHT))
-                .text(Text.of("almura.guide.button.save"))
+                .text(Text.of("almura.button.save"))
                 .visible(hasAnyPermission())
                 .enabled(hasModifyPermission())
                 .listener(this)
@@ -277,17 +277,12 @@ public class SimplePageView extends SimpleScreen {
                         // Save the postSnapshot to the manager so it can be accessed within manager.
                         manager.postSnapshot = this.contentField.getText();
                         UIMessageBox.showDialog(this, I18n.format("almura.guide.view.form.title"), "Changes detected to current guide, do you wish to save?"
-                                , MessageBoxButtons.YES_NO_CANCEL, new MessageBoxConsumer() {
-                                    @Override
-                                    public void accept(MessageBoxResult messageBoxResult) {
-                                        if (messageBoxResult == MessageBoxResult.YES) {
-                                            manager.getPage().setContent(manager.postSnapshot);
-                                            manager.requestSavePage();
-                                        } else if (messageBoxResult == MessageBoxResult.CANCEL) {
-                                            return;
-                                        } else if (messageBoxResult == MessageBoxResult.NO) {
-                                            Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("closeGUI")).submit(container);
-                                        }
+                                , MessageBoxButtons.YES_NO_CANCEL, messageBoxResult -> {
+                                    if (messageBoxResult == MessageBoxResult.YES) {
+                                        manager.getPage().setContent(manager.postSnapshot);
+                                        manager.requestSavePage();
+                                    } else if (messageBoxResult == MessageBoxResult.NO) {
+                                        Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("closeGUI")).submit(container);
                                     }
                                 });
                     } else {

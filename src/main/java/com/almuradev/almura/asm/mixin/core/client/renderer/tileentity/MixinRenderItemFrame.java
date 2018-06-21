@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.asm.mixin.core.client.renderer.tileentity;
 
-import com.almuradev.almura.asm.StaticAccess;
+import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.core.client.config.ClientConfiguration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
@@ -28,11 +28,11 @@ public abstract class MixinRenderItemFrame extends Render {
     }
 
     @Inject(method = "doRender", at = @At(value = "HEAD"), cancellable = true)
-    public void onDoRender(EntityItemFrame entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
+    private void onDoRender(EntityItemFrame entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
         // 0 means perform Minecraft logic only, we do not interfere
-        final ClientConfiguration config = StaticAccess.config.get();
+        final ClientConfiguration configuration = ClientStaticAccess.configAdapter.get();
 
-        if (config.client.itemFrameRenderDistance == 0) {
+        if (configuration.general.itemFrameRenderDistance == 0) {
             return;
         }
 
@@ -41,7 +41,7 @@ public abstract class MixinRenderItemFrame extends Render {
             viewer = Minecraft.getMinecraft().player;
         }
 
-        if (viewer != null && entity.getDistance(viewer) > config.client.itemFrameRenderDistance) {
+        if (viewer != null && entity.getDistance(viewer) > configuration.general.itemFrameRenderDistance) {
             ci.cancel();
         }
     }

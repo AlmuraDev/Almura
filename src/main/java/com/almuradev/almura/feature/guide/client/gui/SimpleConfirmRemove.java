@@ -58,7 +58,7 @@ public class SimpleConfirmRemove extends SimpleScreen {
     }
 
     @Subscribe
-    public void onButtonClick(UIButton.ClickEvent event) throws IOException, URISyntaxException, AWTException {
+    public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.yes":
                 SimplePageView.manager.requestRemovePage(SimplePageView.manager.getPage().getId());

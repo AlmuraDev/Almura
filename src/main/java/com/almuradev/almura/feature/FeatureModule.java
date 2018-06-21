@@ -20,8 +20,8 @@ import com.almuradev.almura.feature.menu.ingame.FeaturesModule;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
 import com.almuradev.almura.feature.offhand.OffHandListener;
-import com.almuradev.almura.feature.perms.PermsModule;
 import com.almuradev.almura.feature.store.StoreModule;
+import com.almuradev.almura.feature.permission.PermissionsModule;
 import com.almuradev.almura.feature.sign.SignEditFeature;
 import com.almuradev.almura.feature.storage.StorageModule;
 import com.almuradev.almura.feature.title.TitleModule;
@@ -72,7 +72,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 @SideOnly(Side.SERVER)
                 @Override
                 protected void configure() {
-                    this.install(new PermsModule());
+                    this.install(new PermissionsModule());
                 }
             }
             this.install(new ServerModule());

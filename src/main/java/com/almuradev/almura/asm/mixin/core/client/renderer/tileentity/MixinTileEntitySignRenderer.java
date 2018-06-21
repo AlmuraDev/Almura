@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.asm.mixin.core.client.renderer.tileentity;
 
-import com.almuradev.almura.asm.StaticAccess;
+import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.core.client.config.ClientConfiguration;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -41,7 +41,7 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
      */
     @Overwrite
     public void render(TileEntitySign te, double x, double y, double z, float partialTicks, int destroyStage, float val) {
-        final ClientConfiguration config = StaticAccess.config.get();
+        final ClientConfiguration configuration = ClientStaticAccess.configAdapter.get();
         Block block = te.getBlockType();
         GlStateManager.pushMatrix();
         float f = 0.6666667F;
@@ -111,14 +111,14 @@ public abstract class MixinTileEntitySignRenderer extends TileEntitySpecialRende
 
         if (renderText) {
             // Greater than 0 means the client has selected a non-Vanilla render distance
-            if (config.client.signTextRenderDistance > 0) {
+            if (configuration.general.signTextRenderDistance > 0) {
                 EntityLivingBase viewer = (EntityLivingBase) Minecraft.getMinecraft().getRenderViewEntity();
                 if (viewer == null) {
                     viewer = Minecraft.getMinecraft().player;
                 }
 
-                if (viewer == null || !te.hasWorld() || te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) > (config.client
-                        .signTextRenderDistance * 16)) {
+                if (viewer == null || !te.hasWorld() || te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) >
+                  (configuration.general.signTextRenderDistance * 16)) {
                     renderText = false;
                 }
             }

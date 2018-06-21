@@ -9,20 +9,24 @@ package com.almuradev.almura.feature.title;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlePacket;
-import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlesPacket;
+import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.notification.ServerNotificationManager;
+import com.almuradev.almura.feature.title.database.TitleQueries;
+import com.almuradev.almura.feature.title.network.ClientboundAvailableTitlesResponsePacket;
+import com.almuradev.almura.feature.title.network.ClientboundSelectedTitleBulkPacket;
+import com.almuradev.almura.feature.title.network.ClientboundSelectedTitlePacket;
+import com.almuradev.almura.feature.title.network.ClientboundTitlesRegistryPacket;
+import com.almuradev.almura.shared.database.DatabaseManager;
+import com.almuradev.almura.shared.database.DatabaseUtils;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
-import com.typesafe.config.ConfigRenderOptions;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
+import com.almuradev.generated.title.tables.records.TitleSelectRecord;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Results;
 import org.slf4j.Logger;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
-import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
@@ -30,50 +34,47 @@ import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
-import org.spongepowered.api.network.Message;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.common.text.SpongeTexts;
-import org.spongepowered.common.text.serializer.LegacyTexts;
+import org.spongepowered.api.scheduler.Scheduler;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-@SuppressWarnings("deprecation")
 public final class ServerTitleManager extends Witness.Impl implements Witness.Lifecycle {
 
-    private final Game game;
     private final PluginContainer container;
+    private final Scheduler scheduler;
     private final Logger logger;
     private final ChannelBinding.IndexedMessageChannel network;
-    private final Path configRoot;
-    private final Map<String, Text> titlesByPermission = new LinkedHashMap<>();
+    private final ServerNotificationManager notificationManager;
+    private final DatabaseManager databaseManager;
 
-    private final Map<UUID, Text> selectedTitlesById = new HashMap<>();
+    private final Map<String, Title> titles = new HashMap<>();
+    private final Map<UUID, Set<Title>> availableTitles = new HashMap<>();
+    private final Map<UUID, Title> selectedTitles = new HashMap<>();
 
     @Inject
-    public ServerTitleManager(final Game game, final PluginContainer container, Logger logger, @ChannelId(NetworkConfig.CHANNEL) final
-    ChannelBinding.IndexedMessageChannel network, @ConfigDir(sharedRoot = false) final Path configRoot) {
-        this.game = game;
+    public ServerTitleManager(final PluginContainer container, final Scheduler scheduler, final Logger logger,
+        @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final ServerNotificationManager notificationManager,
+        final DatabaseManager databaseManager) {
         this.container = container;
+        this.scheduler = scheduler;
         this.logger = logger;
         this.network = network;
-        this.configRoot = configRoot;
+        this.notificationManager = notificationManager;
+        this.databaseManager = databaseManager;
     }
 
     @Override
@@ -82,202 +83,347 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
     }
 
     @Listener
-    public void onServerStarting(GameStartingServerEvent event) {
-        this.titlesByPermission.clear();
-
-        try {
-            this.loadTitles();
-            this.logger.info("Loaded {} title(s)", this.titlesByPermission.size());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void onServerStarting(final GameStartingServerEvent event) {
+        this.loadTitles();
     }
 
     @Listener
-    public void onClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-        // Send joining player's title to everyone
-        Text selectedTitle = this.getSelectedTitleFor(player).orElse(null);
-        if (selectedTitle == null) {
-            selectedTitle = this.getTitlesFor(player).stream().findFirst().orElse(null);
-            if (selectedTitle != null) {
-                this.putSelectedTitle(player.getUniqueId(), selectedTitle);
-            }
-        }
+    public void onClientConnectionEventJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
 
-        Task.builder()
-                .async()
-                .delayTicks(40)
-                .execute(() -> this.createPlayerSelectedTitlesPacket().ifPresent((packet) -> {
-                    // Send joining player everyone's title (including itself)
-                    this.network.sendTo(player, packet);
-                })).submit(this.container);
+        // Clear everything out for joining player
+        this.selectedTitles.remove(player.getUniqueId());
 
-        if (selectedTitle != null) {
-            // Java, just why
-            final Text found = selectedTitle;
-            this.game.getServer().getOnlinePlayers().stream().filter((p) -> !p.getUniqueId().equals(player.getUniqueId())).forEach((p) ->
-                    this.network.sendTo(p, this.createAddPlayerSelectedTitlePacket(player.getUniqueId(), found)));
-        }
+        // Send titles to joiner
+        this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
+            this.titles
+                .values()
+                .stream()
+                .filter(title -> !title.isHidden())
+                .collect(Collectors.toSet())
+            )
+        );
+
+        // Send selected titles to joiner
+        this.network.sendTo(player, new ClientboundSelectedTitleBulkPacket(
+            this.selectedTitles
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().getId()))
+            )
+        );
+
+        // Cache available titles for the joiner
+        this.calculateAvailableTitlesFor(player);
+
+        // Query database for selected title for joiner
+        this.scheduler.createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final TitleSelectRecord record = TitleQueries
+                        .createFetchSelectedTitleFor(player.getUniqueId())
+                        .build(context)
+                        .keepStatement(false)
+                        .fetchOne();
+
+                    if (record != null) {
+                        final String titleId = record.getTitle();
+
+                        this.scheduler.createTaskBuilder()
+                            .execute(() -> {
+                                final Title selectedTitle = this.getTitle(titleId).orElse(null);
+
+                                if (this.verifySelectedTitle(player, selectedTitle)) {
+                                    this.selectedTitles.put(player.getUniqueId(), selectedTitle);
+
+                                    // Send everyone joiner's selected title
+                                    this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), titleId));
+                                }
+                            })
+                            .submit(this.container);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
-    @Listener
-    public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
-        this.removeSelectedTitle(player.getUniqueId());
-        this.network.sendToAll(this.createRemovePlayerSelectedTitlePacket(player.getUniqueId()));
+    public Optional<Title> getTitle(final String titleId) {
+        return Optional.ofNullable(this.titles.get(titleId));
     }
 
-    public Map<String, Text> getAllTitles() {
-        return Collections.unmodifiableMap(this.titlesByPermission);
+    public Optional<Set<Title>> getAvailableTitlesFor(final Player holder) {
+        checkNotNull(holder);
+
+        return Optional.ofNullable(this.availableTitles.get(holder.getUniqueId()));
     }
 
-    public Set<Text> getTitlesFor(Player player) {
+    public boolean loadTitles() {
+
+        this.availableTitles.clear();
+
+        this.logger.info("Querying database for titles, please wait...");
+
+        this.scheduler.createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final Results results = TitleQueries
+                        .createFetchAllTitles()
+                        .build(context)
+                        .keepStatement(false)
+                        .fetchMany();
+
+                    final Map<String, Title> titles = new HashMap<>();
+
+                    results.forEach(result -> {
+                        for (Record record : result) {
+                            final String id = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.ID);
+                            final Timestamp created = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.CREATED);
+                            final UUID creator = DatabaseUtils.fromBytes(record.getValue(com.almuradev.generated.title.tables.Title.TITLE
+                                .CREATOR));
+                            final String name = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.NAME);
+                            final String permission = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.PERMISSION);
+                            final boolean isHidden = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.IS_HIDDEN);
+                            final String content = record.getValue(com.almuradev.generated.title.tables
+                                .Title.TITLE.CONTENT);
+
+                            titles.put(id, new Title(created, creator, id, name, permission, isHidden, content));
+                        }
+                    });
+
+                    this.scheduler.createTaskBuilder()
+                        .execute(() -> {
+                            this.titles.clear();
+
+                            if (!titles.isEmpty()) {
+                                this.titles.putAll(titles);
+                            }
+
+                            this.logger.info("Loaded {} title(s).", this.titles.size());
+
+                            // Re-send titles to everyone
+                            this.network.sendToAll(new ClientboundTitlesRegistryPacket(this.titles.isEmpty() ? null : new HashSet<>(this.titles
+                                .values())));
+
+                            // Re-calculate available titles
+                            Sponge.getServer().getOnlinePlayers().forEach(player -> {
+                                this.calculateAvailableTitlesFor(player);
+
+                                this.verifySelectedTitle(player, null);
+                            });
+
+
+                        })
+                        .submit(this.container);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
+
+        return true;
+    }
+
+    public void calculateAvailableTitlesFor(final Player player) {
         checkNotNull(player);
 
-        final Set<Text> playerTitles = new LinkedHashSet<>();
+        this.availableTitles.remove(player.getUniqueId());
 
-        this.titlesByPermission.forEach((permission, title) -> {
-            if (player.hasPermission(permission)) {
-                playerTitles.add(title);
+        if (this.titles.isEmpty()) {
+            return;
+        }
+
+        final Set<Title> availableTitles = this.titles
+            .entrySet()
+            .stream()
+            .filter(kv -> {
+                if (kv.getValue().isHidden()) {
+                    return player.hasPermission(Almura.ID + ".title.admin");
+                }
+                return player.hasPermission(kv.getValue().getId());
+            })
+            .map(Map.Entry::getValue)
+            .collect(Collectors.toCollection(HashSet::new));
+
+        if (availableTitles.isEmpty()) {
+            return;
+        }
+
+        this.availableTitles.put(player.getUniqueId(), availableTitles);
+    }
+
+    public boolean verifySelectedTitle(final Player player, @Nullable Title selectedTitle) {
+        checkNotNull(player);
+
+        boolean remove = false;
+
+        if (selectedTitle == null) {
+            selectedTitle = this.selectedTitles.get(player.getUniqueId());
+
+            if (selectedTitle == null) {
+                remove = true;
             }
-        });
-
-        return playerTitles;
-    }
-
-    public Optional<Text> getSelectedTitleFor(Player player) {
-        return Optional.ofNullable(this.selectedTitlesById.get(player.getUniqueId()));
-    }
-
-    public void refreshSelectedTitles() {
-        this.createPlayerSelectedTitlesPacket()
-                .ifPresent(packet -> this.game.getServer().getOnlinePlayers().forEach((player) -> this.network.sendTo(player, packet)));
-    }
-
-    public void refreshSelectedTitleFor(Player player, boolean add) {
-        final Message message;
-        if (add) {
-            message = this.createAddPlayerSelectedTitlePacket(player.getUniqueId(), this.selectedTitlesById.get(player.getUniqueId()));
-        } else {
-            message = this.createRemovePlayerSelectedTitlePacket(player.getUniqueId());
-        }
-        this.network.sendToAll(message);
-    }
-
-    public boolean loadTitles() throws IOException {
-
-        this.titlesByPermission.clear();
-
-        final Path titlePath = this.configRoot.resolve(TitleConfig.CONFIG_NAME);
-        boolean exists = this.createConfigIfNeeded(titlePath);
-
-        final ConfigurationLoader<CommentedConfigurationNode> loader = this.createLoader(titlePath);
-        if (!exists) {
-            final ConfigurationNode defaultNode = loader.createEmptyNode();
-            defaultNode.getNode(TitleConfig.TITLES).setValue(Collections.emptyMap());
-            loader.save(defaultNode);
         }
 
-        final ConfigurationNode root = loader.load();
+        if (!remove) {
+            final Title foundTitle = this.titles.get(selectedTitle.getId());
 
-        final ConfigurationNode titleNode = root.getNode(TitleConfig.TITLES);
-        if (!titleNode.isVirtual()) {
-            titleNode.getChildrenMap().forEach((permission, node) -> {
-                final String title = node.getString("");
-                if (!title.isEmpty()) {
-                    this.titlesByPermission.put(permission.toString(), Text.of(LegacyTexts.replace(title, '&', SpongeTexts.COLOR_CHAR)));
-                }
-            });
+            if (foundTitle == null) {
+                remove = true;
+            }
+
+            if (!remove && !player.hasPermission(selectedTitle.getPermission())) {
+                remove = true;
+            }
         }
 
-        // Re-set selected titlesByPermission (they may have a title they no longer have permission for)
-        this.recalculateSelectedTitles();
-
-        return !this.titlesByPermission.isEmpty();
-    }
-
-    @Deprecated
-    public void recalculateSelectedTitles() {
-        this.selectedTitlesById.clear();
-
-        if (!this.titlesByPermission.isEmpty()) {
-            this.game.getServer().getOnlinePlayers().forEach((player) -> {
-                Text selectedTitle = this.getSelectedTitleFor(player).orElse(null);
-                final Set<Text> availableTitles = this.getTitlesFor(player);
-
-                if (selectedTitle == null) {
-                    selectedTitle = availableTitles.stream().findFirst().orElse(null);
-                } else {
-                    if (!availableTitles.contains(selectedTitle)) {
-                        selectedTitle = null;
+        if (remove) {
+            this.scheduler.createTaskBuilder()
+                .async()
+                .execute(() -> {
+                        try (final DSLContext context = this.databaseManager.createContext(true)) {
+                            TitleQueries
+                                .createDeleteSelectedTitleFor(player.getUniqueId())
+                                .build(context)
+                                .execute();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-
-                if (selectedTitle != null) {
-                    this.selectedTitlesById.put(player.getUniqueId(), selectedTitle);
-                }
-            });
-        }
-    }
-
-    private boolean createConfigIfNeeded(Path path) throws IOException {
-        checkNotNull(path);
-
-        boolean exists = true;
-        // Ensure our file exists
-        if (Files.notExists(path)) {
-            Files.createDirectories(path.getParent());
-            exists = false;
-        }
-
-        return exists;
-    }
-
-    private ConfigurationLoader<CommentedConfigurationNode> createLoader(Path path) {
-        checkNotNull(path);
-
-        return HoconConfigurationLoader.builder()
-                .setPath(path)
-                .setDefaultOptions(ConfigurationOptions.defaults().setHeader(TitleConfig.CONFIG_HEADER))
-                .setRenderOptions(
-                        ConfigRenderOptions.defaults()
-                                .setFormatted(true)
-                                .setComments(true)
-                                .setOriginComments(false)
                 )
-                .build();
-    }
-
-    private Optional<ClientboundPlayerSelectedTitlesPacket> createPlayerSelectedTitlesPacket() {
-        if (this.selectedTitlesById.isEmpty()) {
-            return Optional.empty();
+                .submit(this.container);
         }
 
-        return Optional.of(new ClientboundPlayerSelectedTitlesPacket(Collections.unmodifiableMap(this.selectedTitlesById)));
+        return !remove;
     }
 
-    private ClientboundPlayerSelectedTitlePacket createAddPlayerSelectedTitlePacket(UUID uniqueId, Text title) {
-        checkNotNull(uniqueId);
-        checkNotNull(title);
+    public void setSelectedTitleFor(final Player player, @Nullable final String titleId) {
+        checkNotNull(player);
 
-        return new ClientboundPlayerSelectedTitlePacket(uniqueId, title);
+        boolean remove = titleId == null;
+
+        Title title;
+
+        if (!remove) {
+            title = this.getTitle(titleId).orElse(null);
+
+            if (title != null) {
+                final Set<Title> availableTitles = this.getAvailableTitlesFor(player).orElse(null);
+                if (availableTitles == null || !availableTitles.contains(title)) {
+                    this.network.sendTo(player, new ClientboundTitlesRegistryPacket(new HashSet<>(this.titles.values())));
+                    this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles));
+                } else {
+
+                    final Title previousTitle = this.selectedTitles.remove(player.getUniqueId());
+
+                    this.selectedTitles.put(player.getUniqueId(), title);
+
+                    this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), titleId));
+
+                    this.scheduler.createTaskBuilder()
+                        .async()
+                        .execute(() -> {
+                            try (final DSLContext context = this.databaseManager.createContext(true)) {
+                                if (previousTitle != null) {
+                                    TitleQueries
+                                        .createDeleteSelectedTitleFor(player.getUniqueId())
+                                        .build(context)
+                                        .execute();
+
+                                    TitleQueries
+                                        .createInsertSelectedTitleHistoryFor(player.getUniqueId(), previousTitle.getId())
+                                        .build(context)
+                                        .execute();
+                                }
+
+                                TitleQueries
+                                    .createInsertSelectedTitleFor(player.getUniqueId(), titleId)
+                                    .build(context)
+                                    .execute();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        })
+                        .submit(this.container);
+                }
+            } else {
+                remove = true;
+            }
+        }
+
+        if (remove) {
+            this.scheduler.createTaskBuilder()
+                .async()
+                .execute(() -> {
+                        try (final DSLContext context = this.databaseManager.createContext(true)) {
+                            TitleQueries
+                                .createDeleteSelectedTitleFor(player.getUniqueId())
+                                .build(context)
+                                .execute();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                )
+                .submit(this.container);
+        }
     }
 
-    private ClientboundPlayerSelectedTitlePacket createRemovePlayerSelectedTitlePacket(UUID uniqueId) {
-        checkNotNull(uniqueId);
+    public void addTitle(final Player player, final String id, final String name, final String permission, final String content) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkNotNull(name);
+        checkNotNull(permission);
+        checkNotNull(content);
 
-        return new ClientboundPlayerSelectedTitlePacket(uniqueId);
-    }
+        if (!player.hasPermission(Almura.ID + ".title.create")) {
+            // TODO Dockter, handle this
+            return;
+        }
 
-    public void putSelectedTitle(UUID uniqueId, Text title) {
-        checkNotNull(uniqueId);
-        checkNotNull(title);
+        if (this.getTitle(id).isPresent()) {
+            // TODO Dockter, we're in a desync...either send them a notification that title insertion failed as it already exists or remove this TODO
 
-        this.selectedTitlesById.put(uniqueId, title);
-    }
+            this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
+                    this.titles
+                        .values()
+                        .stream()
+                        .filter(title -> !title.isHidden())
+                        .collect(Collectors.toSet())
+                )
+            );
+        } else {
+            this.scheduler.createTaskBuilder()
+                .async()
+                .execute(() -> {
+                    try (final DSLContext context = this.databaseManager.createContext(true)) {
+                        final int result = TitleQueries
+                            .createInsertTitle(player.getUniqueId(), id, name, permission, content)
+                            .build(context)
+                            .keepStatement(false)
+                            .execute();
 
-    public void removeSelectedTitle(UUID uniqueId) {
-        checkNotNull(uniqueId);
+                        final Runnable runnable;
 
-        this.selectedTitlesById.remove(uniqueId);
+                        if (result == 0) {
+                            runnable = () -> {
+                                // TODO Dockter, send a notification down to the player that insertion failed
+                                System.err.println("Insertion failed!");
+                            };
+                        } else {
+                            runnable = this::loadTitles;
+                        }
+
+                        this.scheduler.createTaskBuilder()
+                            .execute(runnable)
+                            .submit(this.container);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .submit(this.container);
+        }
     }
 }

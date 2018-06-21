@@ -9,7 +9,7 @@ package com.almuradev.almura.feature.hud.screen.origin;
 
 import com.almuradev.almura.asm.mixin.interfaces.IMixinGuiBossOverlay;
 import com.almuradev.almura.core.client.config.ClientConfiguration;
-import com.almuradev.almura.core.client.config.ClientCategory;
+import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIBossBarPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
@@ -40,7 +40,7 @@ public class OriginHUD extends AbstractHUD {
     private static final int PADDING = 1;
     private final Minecraft client = Minecraft.getMinecraft();
     private final Game game;
-    private final MappedConfiguration<ClientConfiguration> config;
+    private final MappedConfiguration<ClientConfiguration> configAdapter;
     private final ClientNotificationManager manager;
     private UIBossBarPanel bossBarPanel;
     private InformationDebugPanel debugDetailsPanel;
@@ -52,9 +52,9 @@ public class OriginHUD extends AbstractHUD {
     public UINotificationPanel notificationPanel;
 
     @Inject
-    private OriginHUD(final Game game, final MappedConfiguration<ClientConfiguration> config, final ClientNotificationManager manager) {
+    private OriginHUD(final Game game, final MappedConfiguration<ClientConfiguration> configAdapter, final ClientNotificationManager manager) {
         this.game = game;
-        this.config = config;
+        this.configAdapter = configAdapter;
         this.manager = manager;
     }
 
@@ -111,18 +111,18 @@ public class OriginHUD extends AbstractHUD {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        final ClientCategory category = this.config.get().client;
+        final GeneralCategory general = this.configAdapter.get().general;
 
-        this.userPanel.setAlpha(category.originHudOpacity);
+        this.userPanel.setAlpha(general.originHudOpacity);
 
-        this.detailsPanel.setVisible(this.config.get().client.displayLocationWidget);
-        this.detailsPanel.setAlpha(category.originHudOpacity);
+        this.detailsPanel.setVisible(general.displayLocationWidget);
+        this.detailsPanel.setAlpha(general.originHudOpacity);
 
-        this.worldPanel.setVisible(this.config.get().client.displayWorldCompassWidget);
+        this.worldPanel.setVisible(general.displayWorldCompassWidget);
 
         if (manager.getCurrent() == null) {
             this.notificationPanel.setAlpha(Math.max(this.notificationPanel.getAlpha() - 2, 0));
-            this.worldPanel.setAlpha(Math.min(this.worldPanel.getAlpha() + 2, category.originHudOpacity));
+            this.worldPanel.setAlpha(Math.min(this.worldPanel.getAlpha() + 2, general.originHudOpacity));
         } else {
             this.notificationPanel.setAlpha(Math.min(this.notificationPanel.getAlpha() + 5, 255));
             this.worldPanel.setAlpha(Math.max(this.worldPanel.getAlpha() - 20, 0));
@@ -148,18 +148,18 @@ public class OriginHUD extends AbstractHUD {
             }
             // Debug block panel
             this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
-            this.debugBlockPanel.setAlpha(category.originHudOpacity);
+            this.debugBlockPanel.setAlpha(general.originHudOpacity);
 
             // Debug details panel
             this.debugDetailsPanel.setPosition(0, yOffset);
-            this.debugDetailsPanel.setAlpha(category.originHudOpacity);
+            this.debugDetailsPanel.setAlpha(general.originHudOpacity);
         }
 
         // Show boss panel if necessary
         final GuiIngame guiIngame = this.client.ingameGUI;
         if (guiIngame != null) {
             this.bossBarPanel.setVisible(!((IMixinGuiBossOverlay) guiIngame.getBossOverlay()).getBossInfo().isEmpty());
-            this.bossBarPanel.setAlpha(category.originHudOpacity);
+            this.bossBarPanel.setAlpha(general.originHudOpacity);
         }
 
         // Show player list if necessary

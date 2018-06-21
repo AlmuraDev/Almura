@@ -1,3 +1,10 @@
+/*
+ * This file is part of Almura.
+ *
+ * Copyright (c) AlmuraDev <https://github.com/AlmuraDev/>
+ *
+ * All Rights Reserved.
+ */
 package com.almuradev.almura.feature.menu.ingame;
 
 /*
@@ -14,7 +21,6 @@ import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreListScreen;
 import com.almuradev.almura.feature.title.ClientTitleManager;
-import com.almuradev.almura.feature.title.client.gui.ManageTitlesGUI;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
@@ -105,7 +111,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 .text("Set a Title")
                 .position(0, nicknameButton.getY() + 18)
                 .listener(this)
-                .build("button.title");
+                .build("button.title.select");
 
        // Manage Titles button
        manageTitleButton = new UIButtonBuilder(this)
@@ -114,7 +120,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 .text("Manage Titles")
                 .position(0, titleButton.getY() + 18)
                 .listener(this)
-                .build("button.managetitle");
+                .build("button.title.manage");
 
        // Exchange button
        exchangeButton = new UIButtonBuilder(this)
@@ -160,7 +166,7 @@ public final class FeaturesGUI extends SimpleScreen {
         final UIButton buttonClose = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .text(Text.of("almura.guide.button.close"))
+                .text(Text.of("almura.button.close"))
                 .listener(this)
                 .build("button.close");
 
@@ -183,9 +189,9 @@ public final class FeaturesGUI extends SimpleScreen {
                 // Todo: need packet based request here.
                 new StoreListScreen().display();
                 break;
-            case "button.managetitle":
+            case "button.title.manage":
                 // Todo: need packet based request here.
-                new ManageTitlesGUI().display();
+                titleManager.requestManageTitlesGUI();
                 break;
             case "button.guide":
                 guideManager.requestGuideGUI();
@@ -193,11 +199,11 @@ public final class FeaturesGUI extends SimpleScreen {
             case "button.nickname":
                 nickManager.requestNicknameGUI();
                 break;
-            case "button.title":
-                titleManager.requestTitleGUI();
+            case "button.title.select":
+                titleManager.requestSelectTitleGUI();
                 break;
             case "button.close":
-                close();
+                this.close();
                 break;
         }
     }

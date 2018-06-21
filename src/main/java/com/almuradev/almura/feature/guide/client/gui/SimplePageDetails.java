@@ -147,14 +147,14 @@ public class SimplePageDetails extends SimpleScreen {
 
         // Save/Cancel
         final UIButton buttonSave = new UIButtonBuilder(this)
-                .text(Text.of("almura.guide.button.close"))
+                .text(Text.of("almura.button.close"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .width(40)
                 .listener(this)
                 .build("button.close");
 
         final UIButton buttonCancel = new UIButtonBuilder(this)
-                .text(Text.of("almura.guide.button.save"))
+                .text(Text.of("almura.button.save"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(SimpleScreen.getPaddedX(buttonSave, 2, Anchor.RIGHT), 0)
                 .width(40)

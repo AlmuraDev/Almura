@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
-import com.almuradev.almura.asm.StaticAccess;
+import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.feature.hud.screen.origin.UIAvatarImage;
 import com.almuradev.almura.feature.hud.screen.origin.component.UIXPOrbImage;
@@ -272,7 +272,7 @@ public class UIUserPanel extends AbstractPanel {
 
     private void updateBarProperties(UIPropertyBar propertyBar, float value, float maxValue, boolean updatePosition, boolean updateLastVisible) {
         // Update text
-        Text text = StaticAccess.config.get().client.displayNumericHUDValues
+        Text text = ClientStaticAccess.configAdapter.get().general.displayNumericHUDValues
                 ? Text.of(this.df.format(value) + "/" + this.df.format(maxValue))
                 : Text.EMPTY;
         propertyBar.setText(text);

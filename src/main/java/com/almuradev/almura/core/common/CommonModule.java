@@ -7,7 +7,8 @@
  */
 package com.almuradev.almura.core.common;
 
-import com.almuradev.almura.core.server.config.ServerConfiguration;
+import com.almuradev.almura.core.server.config.ServerConfigurationModule;
+import com.almuradev.almura.core.server.config.category.DatabaseCategory;
 import com.almuradev.almura.feature.FeatureModule;
 import com.almuradev.almura.registry.BossBarColorRegistryModule;
 import com.almuradev.almura.shared.capability.IMultiSlotItemHandler;
@@ -16,6 +17,7 @@ import com.almuradev.almura.shared.capability.binder.CapabilityInstaller;
 import com.almuradev.almura.shared.capability.impl.MultiSlotItemHandler;
 import com.almuradev.almura.shared.capability.impl.SingleSlotItemHandler;
 import com.almuradev.almura.shared.command.binder.CommandInstaller;
+import com.almuradev.almura.shared.database.DatabaseModule;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.almura.shared.network.NetworkModule;
 import com.almuradev.almura.shared.plugin.Plugin;
@@ -54,8 +56,9 @@ public final class CommonModule extends AbstractModule implements CommonBinder {
         this.install(new WitnessModule());
         this.install(new ContentModule());
         this.install(new FeatureModule());
+        this.install(new ServerConfigurationModule());
+        this.install(new DatabaseModule());
         this.facet()
                 .add(ContentLoader.class);
-        this.install(new ServerConfiguration.Module());
     }
 }

@@ -7,9 +7,12 @@
  */
 package com.almuradev.almura.feature.healthbar.asm.mixin.client.renderer.entity;
 
-import com.almuradev.almura.asm.StaticAccess;
+import com.almuradev.almura.asm.ClientStaticAccess;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.almuradev.almura.feature.title.Title;
 import com.google.inject.Inject;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBase;
@@ -35,6 +38,7 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
 
     @Inject private static ClientTitleManager manager;
+
     @Shadow protected ModelBase mainModel;
 
     public MixinRenderLivingBase(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn) {
@@ -50,16 +54,18 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
 
     @Overwrite // Was override but synthetic bridge conflict occurred.
     public void renderName(EntityLivingBase entity, double x, double y, double z) {
-        if (entity instanceof AbstractClientPlayer && StaticAccess.config.get().client.playerNameRenderDistance > 0) {
-            this.renderLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.playerNameRenderDistance, StaticAccess.config.get().client.displayNames, StaticAccess.config.get().client.displayHealthbars);
+        final ClientConfiguration configuration = ClientStaticAccess.configAdapter.get();
+        
+        if (entity instanceof AbstractClientPlayer && configuration.general.playerNameRenderDistance > 0) {
+            this.renderLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, configuration.general.playerNameRenderDistance, configuration.general.displayNames, configuration.general.displayHealthbars);
         }
 
-        if (entity instanceof Monster && StaticAccess.config.get().client.enemyNameRenderDistance > 0) {
-            this.renderLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.enemyNameRenderDistance, StaticAccess.config.get().client.displayNames, StaticAccess.config.get().client.displayHealthbars);
+        if (entity instanceof Monster && configuration.general.enemyNameRenderDistance > 0) {
+            this.renderLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, configuration.general.enemyNameRenderDistance, configuration.general.displayNames, configuration.general.displayHealthbars);
         }
 
-        if (entity instanceof Animal && StaticAccess.config.get().client.animalNameRenderDistance > 0) {
-            this.renderLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, StaticAccess.config.get().client.animalNameRenderDistance, StaticAccess.config.get().client.displayNames, StaticAccess.config.get().client.displayHealthbars);
+        if (entity instanceof Animal && configuration.general.animalNameRenderDistance > 0) {
+            this.renderLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, configuration.general.animalNameRenderDistance, configuration.general.displayNames, configuration.general.displayHealthbars);
         }
     }
 
@@ -91,7 +97,11 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
 
-        final String title = manager.getTitle(entityIn.getUniqueID());
+        Title title = manager.getTitleContentForDisplay();
+
+        if (title == null) {
+            title = manager.getSelectedTitleFor(Minecraft.getMinecraft().player.getUniqueID());
+        }
 
         if (!isSneaking) {
             GlStateManager.disableDepth();
@@ -113,7 +123,7 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
 
         if (showName) {
             if (title != null) {
-                int t = fontRendererIn.getStringWidth(title) / 2;
+                int t = fontRendererIn.getStringWidth(title.getContent()) / 2;
                 int m = t;
 
                 if (t > i) {
@@ -163,7 +173,8 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
         if (!isSneaking) {
             if (showName) {
                 if (title != null) {
-                    fontRendererIn.drawString(title, -fontRendererIn.getStringWidth(title) / 2, verticalShift + 10, 553648127);
+                    fontRendererIn.drawString(title.getContent(), -fontRendererIn.getStringWidth(title.getContent()) / 2, verticalShift + 10,
+                        553648127);
                 }
                 fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, 553648127);
             }
@@ -173,7 +184,9 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
         GlStateManager.depthMask(true);
         if (showName) {
             if (title != null) {
-                fontRendererIn.drawString(title, -fontRendererIn.getStringWidth(title) / 2, verticalShift + 10, isSneaking ? 553648127 : -1);
+                fontRendererIn.drawString(title.getContent(), -fontRendererIn.getStringWidth(title.getContent()) / 2, verticalShift + 10,
+                    isSneaking ?
+                    553648127 : -1);
             }
             fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, isSneaking ? 553648127 : -1);
         }

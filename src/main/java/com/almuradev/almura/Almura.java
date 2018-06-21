@@ -33,7 +33,7 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     @SidedProxy(
             modId = ID,
             clientSide = "com.almuradev.almura.core.client.ClientProxy",
-            serverSide = "com.almuradev.almura.core.server.ServerProxy"
+            serverSide = "com.almuradev.almura.core.server.DedicatedServerProxy"
     )
     private static CommonProxy proxy;
     @Inject private Injector injector;
