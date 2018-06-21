@@ -167,6 +167,8 @@ public final class TitleGUI extends SimpleScreen {
                     if (titlesSelector.getSelectedValue() != null) {
                         network.sendToServer(new ServerboundPlayerSetTitlePacket(titlesSelector.getSelectedValue().toString().trim()));
                     }
+                    close();
+                    break;
 
             case "button.close":
                 close();
