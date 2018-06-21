@@ -7,12 +7,6 @@
  */
 package com.almuradev.almura.feature.shop;
 
-import com.almuradev.almura.feature.exchange.ClientExchangeManager;
-import com.almuradev.almura.feature.exchange.client.gui.ExchangeGUI;
-import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
-import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeOpenResponsePacketHandler;
-import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeOpenRequestPacketHandler;
 import com.almuradev.almura.feature.shop.gui.ModifyItemsGUI;
 import com.almuradev.almura.feature.shop.gui.ShopGUI;
 import com.almuradev.almura.feature.shop.gui.ShopListGUI;
@@ -21,7 +15,6 @@ import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 import org.spongepowered.api.Platform;
 
 public final class ShopModule extends AbstractModule implements CommonBinder {
