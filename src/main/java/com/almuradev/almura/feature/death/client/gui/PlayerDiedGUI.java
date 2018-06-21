@@ -81,7 +81,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
         buttonRevive = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
-                .position(-40, 0)
+                .position(-50, 0)
                 .text("Revive")
                 .listener(this)
                 .build("button.revive");
@@ -99,7 +99,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
         buttonRagequit = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
-                .position(40, 0)
+                .position(55, 0)
                 .text("Give up...")
                 .listener(this)
                 .build("button.ragequit");
@@ -112,9 +112,10 @@ public final class PlayerDiedGUI extends SimpleScreen {
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
+            // Note: you have the schedule the close() otherwise for some reason its ignored during respawn.
             case "button.respawn":
+                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("respawnPlayer")).submit(container);
                 this.mc.player.respawnPlayer();
-                close();
                break;
 
             case "button.revive":
@@ -130,13 +131,18 @@ public final class PlayerDiedGUI extends SimpleScreen {
 
                 this.mc.loadWorld((WorldClient)null);
                 this.mc.displayGuiScreen(new GuiMainMenu());
+                break;
         }
     }
 
     protected Consumer<Task> delayedTask(String details) {  // Scheduler
         return task -> {
             if (details.equalsIgnoreCase("revivePlayer")) {
+                close();
                 //Todo: send packet to server asking player to be sent back to previous coords.
+            }
+            if (details.equalsIgnoreCase("respawnPlayer")) {
+                close();
             }
         };
     }

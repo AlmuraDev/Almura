@@ -24,11 +24,17 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class MainMenuManager implements Witness {
 
+    boolean debug = false;
+
     @SubscribeEvent
     public void onGuiOpen(final GuiOpenEvent event) {
         final GuiScreen screen = event.getGui();
         final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
         if (screen != null) {
+            if (currentScreen != null && debug) {
+                System.out.println("MainMenuManager: current: " + currentScreen.getClass().getSimpleName() + " requested: " + screen.getClass().getSimpleName());
+            }
+
             if (screen.getClass().equals(GuiMainMenu.class)) {
                 event.setCanceled(true);
                 new PanoramicMainMenu(null).display();
@@ -36,11 +42,12 @@ public class MainMenuManager implements Witness {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();
             } else if (screen.getClass().equals(GuiGameOver.class)) {
-                System.out.println("Fired");
                 event.setCanceled(true);
-                if (!currentScreen.getClass().equals(PlayerDiedGUI.class)) {
-                    System.out.println("Oepning New");
+                if (currentScreen == null ||(currentScreen != null && !currentScreen.getClass().equals(PlayerDiedGUI.class))) {
                     new PlayerDiedGUI(Minecraft.getMinecraft().player).display();
+                }
+                if (currentScreen != null && currentScreen.getClass().equals(PlayerDiedGUI.class)) {
+                    // Ignore request, something internally tries to fire this more than once.
                 }
             }
         }
