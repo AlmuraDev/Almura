@@ -82,6 +82,7 @@ public final class DeathHandler implements Witness {
 
             final double dropAmount = balance.doubleValue() - (balance.doubleValue() * deathTax);
             final BigDecimal deduct = new BigDecimal(dropAmount);
+            this.dropAmount(player, dropAmount);
             account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
             server.getOnlinePlayers().forEach(onlinePlayer -> {
                 if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {

@@ -8,6 +8,10 @@
 package com.almuradev.almura.feature.death;
 
 import com.almuradev.almura.feature.death.client.gui.PlayerDiedGUI;
+import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
+import com.almuradev.almura.feature.death.network.handler.ServerboundReviveRequestPacketHandler;
+import com.almuradev.almura.feature.title.network.*;
+import com.almuradev.almura.feature.title.network.handler.*;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -19,6 +23,9 @@ public final class DeathModule extends AbstractModule implements CommonBinder {
 
     @Override
     protected void configure() {
+        this.packet()
+                .bind(ServerboundReviveRequestPacket.class, binder -> binder.handler(ServerboundReviveRequestPacketHandler.class, Platform.Type.SERVER));
+
         this.on(Platform.Type.SERVER, () -> {
             final class ServerModule extends AbstractModule implements CommonBinder {
 
