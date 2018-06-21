@@ -13,6 +13,7 @@ import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResp
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeOpenResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeOpenRequestPacketHandler;
+import com.almuradev.almura.feature.shop.gui.ModifyItemsGUI;
 import com.almuradev.almura.feature.shop.gui.ShopGUI;
 import com.almuradev.almura.feature.shop.gui.ShopListGUI;
 import com.almuradev.almura.shared.inject.ClientBinder;
@@ -36,6 +37,7 @@ public final class ShopModule extends AbstractModule implements CommonBinder {
                 protected void configure() {
                     this.requestStaticInjection(ShopGUI.class);
                     this.requestStaticInjection(ShopListGUI.class);
+                    this.requestStaticInjection(ModifyItemsGUI.class);
                 }
             }
             this.install(new ClientModule());
