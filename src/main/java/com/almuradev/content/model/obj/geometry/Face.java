@@ -11,13 +11,14 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.base.MoreObjects;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Face {
-    private final LinkedList<VertexDefinition> vertices;
+    private final List<VertexDefinition> vertices;
     private int index;
 
-    private Face(final LinkedList<VertexDefinition> vertices) {
+    private Face(final List<VertexDefinition> vertices) {
         this.vertices = vertices;
     }
 
@@ -37,7 +38,7 @@ public final class Face {
         this.index = index;
     }
 
-    public LinkedList<VertexDefinition> getVertices() {
+    public List<VertexDefinition> getVertices() {
         return this.vertices;
     }
 
@@ -60,7 +61,7 @@ public final class Face {
     }
 
     public static final class Builder {
-        private LinkedList<VertexDefinition> vertices = new LinkedList<>();
+        private List<VertexDefinition> vertices = new ArrayList<>();
 
         public Builder vertex(final VertexDefinition vertex) {
             this.vertices.add(vertex);
@@ -71,7 +72,16 @@ public final class Face {
         public Face build() {
             checkState(!this.vertices.isEmpty(), "Vertex definitions cannot be empty!");
 
+            this.quadifyFace();
+
             return new Face(this.vertices);
+        }
+
+        private void quadifyFace() {
+            if (this.vertices.size() == 3) {
+                final VertexDefinition v4 = VertexDefinition.builder().from(this.vertices.get(2)).build();
+                this.vertices.add(v4);
+            }
         }
     }
 }

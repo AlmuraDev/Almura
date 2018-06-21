@@ -12,13 +12,14 @@ import static com.google.common.base.Preconditions.checkState;
 import com.google.common.base.MoreObjects;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class MaterialDefinition {
     private final String name;
-    private final ResourceLocation diffuseTexture;
+    @Nullable private final ResourceLocation diffuseTexture;
 
-    private MaterialDefinition(final String name, final ResourceLocation diffuseTexture) {
+    private MaterialDefinition(final String name, @Nullable final ResourceLocation diffuseTexture) {
         this.name = name;
         this.diffuseTexture = diffuseTexture;
     }
@@ -55,7 +56,7 @@ public class MaterialDefinition {
 
     public static final class Builder {
 
-        private ResourceLocation diffuseTexture;
+        @Nullable private ResourceLocation diffuseTexture;
 
         public Builder diffuseTexture(final ResourceLocation location) {
             this.diffuseTexture = location;

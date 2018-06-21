@@ -198,6 +198,8 @@ public class OBJBakedModel implements IBakedModel {
                                 case NORMAL:
                                     if (normal != null) {
                                         quadBuilder.put(e, normal.getX(), normal.getY(), normal.getZ());
+                                    } else {
+                                        quadBuilder.put(e, 0f, 0f, 0f);
                                     }
                                     break;
                                 case COLOR:
@@ -213,7 +215,8 @@ public class OBJBakedModel implements IBakedModel {
                         quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
                     }
 
-                    this.quads.add(quadBuilder.build());
+                    final UnpackedBakedQuad quad = quadBuilder.build();
+                    this.quads.add(quad);
                 }
             }
 

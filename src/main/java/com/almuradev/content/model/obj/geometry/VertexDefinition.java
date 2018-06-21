@@ -12,6 +12,7 @@ import static com.google.common.base.Preconditions.checkState;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -22,11 +23,11 @@ import java.util.Optional;
  */
 public class VertexDefinition {
     private final Vertex vertex;
-    private final VertexTextureCoordinate textureCoordinate;
-    private final VertexNormal normal;
+    @Nullable private final VertexTextureCoordinate textureCoordinate;
+    @Nullable private final VertexNormal normal;
     private int index;
 
-    private VertexDefinition(final Vertex vertex, final VertexTextureCoordinate textureCoordinate, final VertexNormal normal) {
+    private VertexDefinition(final Vertex vertex, @Nullable final VertexTextureCoordinate textureCoordinate, @Nullable final VertexNormal normal) {
         this.vertex = vertex;
         this.textureCoordinate = textureCoordinate;
         this.normal = normal;
@@ -82,9 +83,9 @@ public class VertexDefinition {
     }
 
     public static class Builder {
-        private Vertex vertex;
-        private VertexTextureCoordinate textureCoordinate;
-        private VertexNormal normal;
+        @Nullable private Vertex vertex;
+        @Nullable private VertexTextureCoordinate textureCoordinate;
+        @Nullable private VertexNormal normal;
 
         public Builder vertex(final Vertex vertex) {
             this.vertex = vertex;
@@ -98,6 +99,14 @@ public class VertexDefinition {
 
         public Builder normal(final VertexNormal normal) {
             this.normal = normal;
+            return this;
+        }
+
+        public Builder from(final VertexDefinition vertexDefinition) {
+            this.vertex = vertexDefinition.vertex;
+            this.textureCoordinate = vertexDefinition.textureCoordinate;
+            this.normal = vertexDefinition.normal;
+
             return this;
         }
 

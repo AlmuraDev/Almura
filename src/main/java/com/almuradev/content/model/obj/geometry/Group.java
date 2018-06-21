@@ -12,15 +12,16 @@ import static com.google.common.base.Preconditions.checkState;
 import com.almuradev.content.model.obj.material.MaterialDefinition;
 import com.google.common.base.MoreObjects;
 
+import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 
 public class Group {
     private final String name;
-    private final MaterialDefinition materialDefinition;
+    @Nullable private final MaterialDefinition materialDefinition;
     private final LinkedHashSet<Face> faces;
 
-    private Group(final String name, final MaterialDefinition materialDefinition, final LinkedHashSet<Face> faces) {
+    private Group(final String name, @Nullable final MaterialDefinition materialDefinition, final LinkedHashSet<Face> faces) {
         this.name = name;
         this.materialDefinition = materialDefinition;
         this.faces = faces;
@@ -62,7 +63,7 @@ public class Group {
     }
 
     public static final class Builder {
-        private MaterialDefinition materialDefinition;
+        @Nullable private MaterialDefinition materialDefinition;
         private LinkedHashSet<Face> faces = new LinkedHashSet<>();
 
         public Builder materialDefinition(final MaterialDefinition materialDefinition) {

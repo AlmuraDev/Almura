@@ -231,12 +231,12 @@ public class OBJModelParser {
                                     }
 
                                     if (textureCoordinate == null) {
-                                        throw new MalformedGeometryException("Illegal face encountered! The face has a texture coordinate index "
-                                                + "which is out of bounds. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString
-                                                (combinedLineContents));
+//                                        throw new MalformedGeometryException("Illegal face encountered! The face has a texture coordinate index "
+//                                                + "which is out of bounds. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString
+//                                                (combinedLineContents));
+                                    } else {
+                                        vertexDefBuilder.textureCoordinate(textureCoordinate);
                                     }
-
-                                    vertexDefBuilder.textureCoordinate(textureCoordinate);
                                 }
 
                                 if (normalIndex != -1) {
@@ -250,11 +250,11 @@ public class OBJModelParser {
                                     }
 
                                     if (normal == null) {
-                                        throw new MalformedGeometryException("Illegal face encountered! The face has a normal index which is out of"
-                                                + " bounds. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents));
+//                                        throw new MalformedGeometryException("Illegal face encountered! The face has a normal index which is out of"
+//                                                + " bounds. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents));
+                                    } else {
+                                        vertexDefBuilder.normal(normal);
                                     }
-
-                                    vertexDefBuilder.normal(normal);
                                 }
                             } catch (final Exception e) {
                                 if (e instanceof MalformedGeometryException) {

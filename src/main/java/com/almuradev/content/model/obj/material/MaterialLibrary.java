@@ -88,8 +88,8 @@ public class MaterialLibrary {
         }
 
         public MaterialLibrary build(final ResourceLocation source, final String name) {
-            checkState(source != null, "Source cannot be null!");
-            checkState(name != null, "Name cannot be null!");
+            checkNotNull(source);
+            checkNotNull(name);
             checkState(!name.isEmpty(), "Name cannot be empty!");
             checkState(!this.materialDefinitions.isEmpty(), "A material library must have at least one material definition!");
 
