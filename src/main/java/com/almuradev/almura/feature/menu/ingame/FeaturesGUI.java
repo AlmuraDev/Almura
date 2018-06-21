@@ -14,6 +14,7 @@ import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.shop.gui.ShopGUI;
 import com.almuradev.almura.feature.shop.gui.ShopListGUI;
 import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.almuradev.almura.feature.title.client.gui.ManageTitlesGUI;
 import com.almuradev.almura.feature.title.client.gui.TitleGUI;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
@@ -44,7 +45,7 @@ public final class FeaturesGUI extends SimpleScreen {
     private boolean unlockMouse = true;
     private boolean isAdmin = false;
     private UILabel titleLabel;
-    private UIButton guideButton, titleButton, nicknameButton, exchangeButton, serverShopButton, npcShopButton, accessoriesButton;
+    private UIButton guideButton, titleButton, manageTitleButton, nicknameButton, exchangeButton, serverShopButton, npcShopButton, accessoriesButton;
 
     private World world;
     private EntityPlayerSP player;
@@ -99,17 +100,26 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.nickname");
 
-        // Title button
+       // Title button
        titleButton = new UIButtonBuilder(this)
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
-                .text("Titles")
+                .text("Set a Title")
                 .position(0, nicknameButton.getY() + 18)
                 .listener(this)
                 .build("button.title");
 
-        // Exchange button
-        exchangeButton = new UIButtonBuilder(this)
+       // Manage Titles button
+       manageTitleButton = new UIButtonBuilder(this)
+                .width(100)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .text("Manage Titles")
+                .position(0, titleButton.getY() + 18)
+                .listener(this)
+                .build("button.managetitle");
+
+       // Exchange button
+       exchangeButton = new UIButtonBuilder(this)
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, titleButton.getY() + 18)
@@ -118,8 +128,8 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.exchange");
 
-        // Server Shop Configuration GUI button
-        serverShopButton = new UIButtonBuilder(this)
+       // Server Shop Configuration GUI button
+       serverShopButton = new UIButtonBuilder(this)
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, exchangeButton.getY() + 18)
@@ -128,8 +138,8 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.servershop");
 
-        // Server Shop - NPC Shop GUI button
-        npcShopButton = new UIButtonBuilder(this)
+       // Server Shop - NPC Shop GUI button
+       npcShopButton = new UIButtonBuilder(this)
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, serverShopButton.getY() + 18)
@@ -138,7 +148,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.npcshop");
 
-        // Accessories button
+       // Accessories button
        accessoriesButton = new UIButtonBuilder(this)
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -156,7 +166,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel, guideButton, exchangeButton, titleButton, nicknameButton, accessoriesButton, serverShopButton, npcShopButton, buttonClose);
+        form.add(titleLabel, guideButton, exchangeButton, titleButton, manageTitleButton, nicknameButton, accessoriesButton, serverShopButton, npcShopButton, buttonClose);
 
         addToScreen(form);
     }
@@ -168,10 +178,16 @@ public final class FeaturesGUI extends SimpleScreen {
                 exchangeManager.requestExchangeGUI();
                 break;
             case "button.npcshop":
+                // Todo: need packet based request here.
                 new ShopGUI(true).display(); //isAdmin TRUE
                 break;
             case "button.servershop":
+                // Todo: need packet based request here.
                 new ShopListGUI().display();
+                break;
+            case "button.managetitle":
+                // Todo: need packet based request here.
+                new ManageTitlesGUI().display();
                 break;
             case "button.guide":
                 guideManager.requestGuideGUI();
