@@ -11,6 +11,7 @@ import com.almuradev.almura.feature.death.client.gui.PlayerDiedGUI;
 import com.almuradev.almura.feature.menu.game.SimpleIngameMenu;
 import com.almuradev.almura.feature.menu.main.PanoramicMainMenu;
 import com.almuradev.core.event.Witness;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -26,6 +27,7 @@ public class MainMenuManager implements Witness {
     @SubscribeEvent
     public void onGuiOpen(final GuiOpenEvent event) {
         final GuiScreen screen = event.getGui();
+        final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
         if (screen != null) {
             if (screen.getClass().equals(GuiMainMenu.class)) {
                 event.setCanceled(true);
@@ -34,7 +36,12 @@ public class MainMenuManager implements Witness {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();
             } else if (screen.getClass().equals(GuiGameOver.class)) {
-                new PlayerDiedGUI(event.getGui().mc.player).display();
+                System.out.println("Fired");
+                event.setCanceled(true);
+                if (!currentScreen.getClass().equals(PlayerDiedGUI.class)) {
+                    System.out.println("Oepning New");
+                    new PlayerDiedGUI(Minecraft.getMinecraft().player).display();
+                }
             }
         }
     }

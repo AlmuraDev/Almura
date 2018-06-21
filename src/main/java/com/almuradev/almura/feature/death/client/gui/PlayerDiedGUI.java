@@ -8,7 +8,6 @@ package com.almuradev.almura.feature.death.client.gui;
  * All Rights Reserved.
  */
 
-import com.almuradev.almura.feature.guide.client.gui.SimplePageDetails;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
@@ -21,7 +20,6 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -34,9 +32,8 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 
-import java.util.function.Consumer;
-
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
 public final class PlayerDiedGUI extends SimpleScreen {
