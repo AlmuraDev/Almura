@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.sign;
 
 import com.almuradev.core.event.Witness;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketSignEditorOpen;
 import net.minecraft.tileentity.TileEntitySign;
@@ -34,6 +35,8 @@ public final class SignEditFeature implements Witness {
         if (type == BlockTypes.STANDING_SIGN || type == BlockTypes.WALL_SIGN) {
             snapshot.getLocation().flatMap(Location::getTileEntity).ifPresent((be) -> {
                 if (be instanceof TileEntitySign) {
+                    ((TileEntitySign) be).setEditable(true);
+                    ((TileEntitySign) be).setPlayer((EntityPlayer)player);
                     ((EntityPlayerMP) player).connection.sendPacket(new SPacketSignEditorOpen(VecHelper.toBlockPos(snapshot.getPosition())));
                 }
             });
