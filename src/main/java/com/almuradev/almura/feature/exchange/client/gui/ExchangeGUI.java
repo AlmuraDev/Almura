@@ -14,6 +14,8 @@ import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.UISimpleList;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
+import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
@@ -76,8 +78,9 @@ public final class ExchangeGUI extends SimpleScreen {
     private UITextField itemSearchField, sellerSearchField;
     private UISimpleList<ListElementData<MockOffer>> resultsList;
     private UIFormContainer form;
-    private final List<MockOffer> offers = new ArrayList<>();
+    private final List<MockOffer> allOffers = new ArrayList<>();
     private final List<ListElementData<MockOffer>> currentResults = new ArrayList<>();
+    private final List<MockOffer> playerOffers = new ArrayList<>();
     private int currentPage;
     private int pages;
     private int screenWidth = 600;
@@ -88,18 +91,18 @@ public final class ExchangeGUI extends SimpleScreen {
 
     public ExchangeGUI() {
         // ADD MOCK DATA
-        offers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
-        offers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
-        offers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
-        offers.add(createMockOffer(ItemTypes.SNOWBALL));
-        offers.add(createMockOffer(ItemTypes.WATER_BUCKET));
-        offers.add(createMockOffer(ItemTypes.GOLDEN_AXE));
-        offers.add(createMockOffer(ItemTypes.STONE));
-        offers.add(createMockOffer(ItemTypes.PUMPKIN));
-        offers.add(createMockOffer(ItemTypes.END_ROD));
-        offers.add(createMockOffer(ItemTypes.APPLE));
-        offers.add(createMockOffer(ItemTypes.BAKED_POTATO));
-        offers.add(createMockOffer(ItemTypes.CARROT));
+        allOffers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
+        allOffers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
+        allOffers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
+        allOffers.add(createMockOffer(ItemTypes.SNOWBALL));
+        allOffers.add(createMockOffer(ItemTypes.WATER_BUCKET));
+        allOffers.add(createMockOffer(ItemTypes.GOLDEN_AXE));
+        allOffers.add(createMockOffer(ItemTypes.STONE));
+        allOffers.add(createMockOffer(ItemTypes.PUMPKIN));
+        allOffers.add(createMockOffer(ItemTypes.END_ROD));
+        allOffers.add(createMockOffer(ItemTypes.APPLE));
+        allOffers.add(createMockOffer(ItemTypes.BAKED_POTATO));
+        allOffers.add(createMockOffer(ItemTypes.CARROT));
     }
 
     @Override
@@ -178,20 +181,14 @@ public final class ExchangeGUI extends SimpleScreen {
                     logger.info(String.format("Searching for criteria: itemname=%s, playerName=%s", itemName, username));
 
                     this.getResults(itemName, username, comboBoxSortType.getSelectedValue())
-                            .forEach(r -> this.currentResults.add(new ListElementData<>(this.resultsList, r)));
+                            .forEach(r -> this.currentResults.add(new ListElementData<>(r)));
                     this.pages = (Math.max(this.currentResults.size() - 1, 1) / 10) + 1;
 
                     this.setPage(1);
 
                     if (this.currentResults.isEmpty()) {
-                        logger.info(String.format("No offers found matching criteria: itemname=%s, playerName=%s", itemName, username));
-                    } else {
-                        this.currentResults.forEach(r -> logger.info(String.format("Found %d of %s for %1.2f/ea by %s submitted on %s",
-                                r.tag.item.getQuantity(),
-                                r.tag.item.getTranslation().get(),
-                                r.tag.pricePer,
-                                r.tag.playerName,
-                                formatter.format(r.tag.instant))));
+                        final String message = String.format("No offers found matching criteria: itemname=%s, playerName=%s", itemName, username);
+                        UIMessageBox.showDialog(this, "", message, MessageBoxButtons.OK);
                     }
                 })
                 .build("button.search");
@@ -375,6 +372,7 @@ public final class ExchangeGUI extends SimpleScreen {
         this.buttonBuyQuantity.setEnabled(isSelected);
     }
 
+    @SuppressWarnings("deprecation")
     private void setPage(int page) {
         page = MathUtil.squashi(page, 1, this.pages);
 
@@ -392,7 +390,7 @@ public final class ExchangeGUI extends SimpleScreen {
     }
 
     public List<MockOffer> getResults(String itemName, String username, SortType sort) {
-        return this.offers
+        return this.allOffers
                 .stream()
                 .filter(o -> {
                     final String itemDisplayName = o.item.getTranslation().get().toLowerCase();
@@ -449,8 +447,6 @@ public final class ExchangeGUI extends SimpleScreen {
 
             this.data = data;
 
-            this.parent = this.data.parent;
-
             // Set padding
             this.setPadding(3, 3);
 
@@ -458,6 +454,7 @@ public final class ExchangeGUI extends SimpleScreen {
             this.setColor(INNER_COLOR);
             this.setBorder(BORDER_COLOR, 1, 255);
 
+            // Set default size
             this.setSize(0, 24);
 
             this.construct(gui, data);
@@ -468,8 +465,8 @@ public final class ExchangeGUI extends SimpleScreen {
         @Override
         public boolean onClick(int x, int y) {
             final UIComponent component = getComponentAt(x, y);
-            if (this.equals(component)) {
-                final UIListContainer<ListElementData<T>> parent = this.data.parent;
+            if (this.equals(component) && this.parent instanceof UIListContainer) {
+                final UIListContainer parent = (UIListContainer) this.parent;
 
                 // Deselect the item if we click it again, select it otherwise.
                 parent.select(parent.isSelected(this.data) ? null : this.data);
@@ -508,6 +505,7 @@ public final class ExchangeGUI extends SimpleScreen {
             super(gui, data);
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         protected void construct(final MalisisGui gui, final ListElementData<MockOffer> data) {
             // Add components
@@ -522,7 +520,7 @@ public final class ExchangeGUI extends SimpleScreen {
                     : ITooltipFlag.TooltipFlags.NORMAL))));
 
             final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-            final int maxItemTextWidth =  fontRenderer.getStringWidth("999999999999999999");
+            final int maxItemTextWidth = fontRenderer.getStringWidth("999999999999999999");
             final int maxPlayerTextWidth = fontRenderer.getStringWidth("9999999999999999");
 
             // Limit item name to prevent over drawing
@@ -557,11 +555,9 @@ public final class ExchangeGUI extends SimpleScreen {
     }
 
     private static final class ListElementData<T> {
-        public final UISimpleList<ListElementData<T>> parent;
         public final T tag;
 
-        private ListElementData(final UISimpleList<ListElementData<T>> parent, final T tag) {
-            this.parent = parent;
+        private ListElementData(final T tag) {
             this.tag = tag;
         }
     }
