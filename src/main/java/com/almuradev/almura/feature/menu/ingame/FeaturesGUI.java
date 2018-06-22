@@ -122,7 +122,7 @@ public final class FeaturesGUI extends SimpleScreen {
        exchangeButton = new UIButtonBuilder(this)
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
-                .position(0, titleButton.getY() + 18)
+                .position(0, manageTitleButton.getY() + 18)
                 .visible(isAdmin)
                 .text("Exchange")
                 .listener(this)
