@@ -7,11 +7,10 @@
  */
 package com.almuradev.almura.feature.exchange.network.handler;
 
-import com.almuradev.almura.feature.exchange.client.gui.ExchangeGUI;
+import com.almuradev.almura.feature.exchange.client.gui.SimpleExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
@@ -29,7 +28,7 @@ public final class ClientboundExchangeOpenResponsePacketHandler implements Messa
                 final WorldClient world = client.world;
 
                 if (world != null) {
-                    new ExchangeGUI().display();
+                    new SimpleExchangeScreen().display();
                 }
             }
         }

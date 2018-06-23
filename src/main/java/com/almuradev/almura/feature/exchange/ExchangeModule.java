@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange;
 
-import com.almuradev.almura.feature.exchange.client.gui.ExchangeGUI;
+import com.almuradev.almura.feature.exchange.client.gui.SimpleExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeOpenResponsePacketHandler;
@@ -17,7 +17,6 @@ import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 import org.spongepowered.api.Platform;
 
 public final class ExchangeModule extends AbstractModule implements CommonBinder {
@@ -37,7 +36,7 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 @Override
                 protected void configure() {
                     this.facet().add(ClientExchangeManager.class);
-                    this.requestStaticInjection(ExchangeGUI.class);
+                    this.requestStaticInjection(SimpleExchangeScreen.class);
                 }
             }
             this.install(new ClientModule());

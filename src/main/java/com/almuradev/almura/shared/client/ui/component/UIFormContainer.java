@@ -25,7 +25,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class UIFormContainer extends UIBackgroundContainer {
     private UISimpleButton closeButton;
     private boolean closable, movable;
-    private final UIBackgroundContainer contentContainer;
 
     public UIFormContainer(MalisisGui gui, int width, int height) {
         this(gui, width, height, "");
@@ -33,8 +32,6 @@ public class UIFormContainer extends UIBackgroundContainer {
 
     public UIFormContainer(MalisisGui gui, int width, int height, String title) {
         super(gui, title, width, height);
-        contentContainer = new UIBackgroundContainer(gui);
-        contentContainer.setBackgroundAlpha(0);
         setColor(Integer.MIN_VALUE);
         setBackgroundAlpha(175);
         this.construct();

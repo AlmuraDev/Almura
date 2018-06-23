@@ -55,6 +55,10 @@ public final class UIButtonBuilder {
         return this;
     }
 
+    public UIButtonBuilder tooltip(String text) {
+        return this.tooltip(Text.of(text));
+    }
+
     @SuppressWarnings("deprecation")
     public UIButtonBuilder tooltip(Text text) {
         return this.tooltip(new UITooltip(this.gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text), 15));

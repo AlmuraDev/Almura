@@ -48,6 +48,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -66,7 +67,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public final class ExchangeGUI extends SimpleScreen {
+public final class SimpleExchangeScreen extends SimpleScreen {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
     private static final int innerPadding = 2;
@@ -76,10 +77,10 @@ public final class ExchangeGUI extends SimpleScreen {
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity;
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
-    private UISimpleList<ListElementData<MockOffer>> resultsList;
+    private UISimpleList<MockOffer> resultsList;
     private UIFormContainer form;
     private final List<MockOffer> allOffers = new ArrayList<>();
-    private final List<ListElementData<MockOffer>> currentResults = new ArrayList<>();
+    private final List<MockOffer> currentResults = new ArrayList<>();
     private final List<MockOffer> playerOffers = new ArrayList<>();
     private int currentPage;
     private int pages;
@@ -89,7 +90,7 @@ public final class ExchangeGUI extends SimpleScreen {
     @Inject private static Logger logger;
     @Inject private static ClientNotificationManager clientNotificationManager;
 
-    public ExchangeGUI() {
+    public SimpleExchangeScreen() {
         // ADD MOCK DATA
         allOffers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
         allOffers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
@@ -180,8 +181,7 @@ public final class ExchangeGUI extends SimpleScreen {
 
                     logger.info(String.format("Searching for criteria: itemname=%s, playerName=%s", itemName, username));
 
-                    this.getResults(itemName, username, comboBoxSortType.getSelectedValue())
-                            .forEach(r -> this.currentResults.add(new ListElementData<>(r)));
+                    this.currentResults.addAll(this.getResults(itemName, username, comboBoxSortType.getSelectedValue()));
                     this.pages = (Math.max(this.currentResults.size() - 1, 1) / 10) + 1;
 
                     this.setPage(1);
@@ -312,8 +312,9 @@ public final class ExchangeGUI extends SimpleScreen {
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
                 .position(0,0)
                 .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
-                .enabled(false)
-                .build("button.remove");
+                .enabled(true)
+                .onClick(() -> new SimpleExchangeOfferScreen(this).display())
+                .build("button.add_remove");
 
         inventoryArea.add(buttonList, buttonSetPrice, buttonRemoveItem);
 
@@ -365,7 +366,7 @@ public final class ExchangeGUI extends SimpleScreen {
     }
 
     @Subscribe
-    private void onElementSelect(UIListContainer.SelectEvent<ListElementData> event) {
+    private void onElementSelect(UIListContainer.SelectEvent event) {
         final boolean isSelected = event.getNewValue() != null;
         this.buttonBuyStack.setEnabled(isSelected);
         this.buttonBuySingle.setEnabled(isSelected);
@@ -410,7 +411,7 @@ public final class ExchangeGUI extends SimpleScreen {
     }
 
     public MockOffer createMockOffer(final ItemType type) {
-        final int quantity = ThreadLocalRandom.current().nextInt(1, 10000);
+        final int quantity = ThreadLocalRandom.current().nextInt(1, 64);
         final BigDecimal pricePer = BigDecimal.valueOf(ThreadLocalRandom.current().nextInt(0, 10000));
         return new MockOffer(Instant.now(),
                              ItemStack.of(type, quantity), pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
@@ -433,19 +434,19 @@ public final class ExchangeGUI extends SimpleScreen {
     }
 
     @SuppressWarnings("unchecked, deprecation")
-    private static class ExchangeListElement<T> extends UIBackgroundContainer {
+    public static class ExchangeListElement<T> extends UIBackgroundContainer {
 
         private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
         private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
         private static final int INNER_HOVER_COLOR = org.spongepowered.api.util.Color.ofRgb(40, 40, 40).getRgb();
         private static final int INNER_SELECTED_COLOR = org.spongepowered.api.util.Color.ofRgb(65, 65, 65).getRgb();
 
-        private final ListElementData data;
+        private final T tag;
 
-        private ExchangeListElement(final MalisisGui gui, final ListElementData data) {
+        public ExchangeListElement(final MalisisGui gui, final T tag) {
             super(gui);
 
-            this.data = data;
+            this.tag = tag;
 
             // Set padding
             this.setPadding(3, 3);
@@ -457,10 +458,10 @@ public final class ExchangeGUI extends SimpleScreen {
             // Set default size
             this.setSize(0, 24);
 
-            this.construct(gui, data);
+            this.construct(gui, tag);
         }
 
-        protected void construct(final MalisisGui gui, final ListElementData<T> data) {}
+        protected void construct(final MalisisGui gui, final T tag) {}
 
         @Override
         public boolean onClick(int x, int y) {
@@ -469,7 +470,7 @@ public final class ExchangeGUI extends SimpleScreen {
                 final UIListContainer parent = (UIListContainer) this.parent;
 
                 // Deselect the item if we click it again, select it otherwise.
-                parent.select(parent.isSelected(this.data) ? null : this.data);
+                parent.select(parent.isSelected(this.tag) ? null : this.tag);
             }
             return true;
         }
@@ -483,7 +484,7 @@ public final class ExchangeGUI extends SimpleScreen {
 
                 setSize(width, getHeight());
 
-                if (parent.isSelected(this.data)) {
+                if (parent.isSelected(this.tag)) {
                     this.setColor(INNER_SELECTED_COLOR);
                 } else if (this.isHovered()) {
                     this.setColor(INNER_HOVER_COLOR);
@@ -496,20 +497,20 @@ public final class ExchangeGUI extends SimpleScreen {
         }
     }
 
-    private static final class ResultListElement extends ExchangeListElement<MockOffer> {
+    public static final class ResultListElement extends ExchangeListElement<MockOffer> {
 
         private UIImage image;
         private UILabel itemLabel, priceLabel, sellerLabel;
 
-        private ResultListElement(final MalisisGui gui, final ListElementData data) {
-            super(gui, data);
+        private ResultListElement(final MalisisGui gui, final MockOffer tag) {
+            super(gui, tag);
         }
 
         @SuppressWarnings("deprecation")
         @Override
-        protected void construct(final MalisisGui gui, final ListElementData<MockOffer> data) {
+        protected void construct(final MalisisGui gui, final MockOffer tag) {
             // Add components
-            final net.minecraft.item.ItemStack fakeStack = (net.minecraft.item.ItemStack) (Object) ItemStack.of(data.tag.item.getType(), 1);
+            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(tag.item);
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
@@ -525,40 +526,29 @@ public final class ExchangeGUI extends SimpleScreen {
 
             // Limit item name to prevent over drawing
             final StringBuilder itemTextBuilder = new StringBuilder();
-            for (char c : (data.tag.item.getTranslation().get()).toCharArray()) {
-                final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c + " x " + data.tag.item.getQuantity());
+            for (char c : (tag.item.getTranslation().get()).toCharArray()) {
+                final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c);
                 if (textWidth > maxItemTextWidth + 4) {
                     itemTextBuilder.replace(itemTextBuilder.length() - 3, itemTextBuilder.length(), "...");
                     break;
                 }
                 itemTextBuilder.append(c);
             }
-            this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.WHITE, itemTextBuilder.toString(),
-                            TextColors.GRAY, " x ", data.tag.item.getQuantity())
-            ));
+            this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, itemTextBuilder.toString())));
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GRAY, TextStyles.ITALIC, data.tag.playerName)
+                    Text.of(TextColors.GRAY, TextStyles.ITALIC, tag.playerName)
             ));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             this.priceLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GOLD, data.tag.pricePer, TextColors.GRAY, "/ea")
+                    Text.of(TextColors.GOLD, tag.pricePer, TextColors.GRAY, "/ea")
             ));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             this.add(this.image, this.itemLabel, this.priceLabel, this.sellerLabel);
-        }
-    }
-
-    private static final class ListElementData<T> {
-        public final T tag;
-
-        private ListElementData(final T tag) {
-            this.tag = tag;
         }
     }
 
