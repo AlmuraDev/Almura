@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.feature.exchange.MockOffer;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
@@ -107,11 +108,11 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
     private final class SwapContainer extends UIBackgroundContainer {
 
-        private final List<ExchangeScreen.MockOffer> pendingOffers = new ArrayList<>();
-        private final List<ExchangeScreen.MockOffer> inventoryOffers = new ArrayList<>();
+        private final List<MockOffer> pendingOffers = new ArrayList<>();
+        private final List<MockOffer> inventoryOffers = new ArrayList<>();
         private final UIButton buttonToLeft, buttonAllToLeft, buttonToRight, buttonAllToRight;
         private final UIBackgroundContainer middleContainer;
-        private final UISimpleList<ExchangeScreen.MockOffer> leftItemList, rightItemList;
+        private final UISimpleList<MockOffer> leftItemList, rightItemList;
         private final Consumer<SwapContainer> onActionConsumer;
 
         @SuppressWarnings("deprecation")
@@ -143,7 +144,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
             final EntityPlayer player = Minecraft.getMinecraft().player;
             this.inventoryOffers.addAll(player.inventory.mainInventory.stream()
                     .filter(i -> i.item != Items.AIR)
-                    .map(i -> new ExchangeScreen.MockOffer((ItemStack) (Object) i, player))
+                    .map(i -> new MockOffer((ItemStack) (Object) i, player))
                     .collect(Collectors.toList()));
 
             this.leftItemList.setElements(this.inventoryOffers);
@@ -244,18 +245,18 @@ public class ExchangeOfferScreen extends SimpleScreen {
         }
 
         @Subscribe
-        private void onElementSelect(UIListContainer.SelectEvent<ExchangeScreen.MockOffer> event) {
+        private void onElementSelect(UIListContainer.SelectEvent<MockOffer> event) {
             this.updateControls(event.getNewValue(), event.getComponent());
         }
 
-        private void migrateOne(List<ExchangeScreen.MockOffer> fromList, List<ExchangeScreen.MockOffer> toList, ExchangeScreen.MockOffer offer) {
+        private void migrateOne(List<MockOffer> fromList, List<MockOffer> toList, MockOffer offer) {
             toList.add(offer);
             fromList.remove(offer);
             this.updateControls(null, null);
         }
 
-        private void migrateAll(List<ExchangeScreen.MockOffer> fromList, List<ExchangeScreen.MockOffer> toList, int max) {
-            final List<ExchangeScreen.MockOffer> limitedItemList = fromList.stream()
+        private void migrateAll(List<MockOffer> fromList, List<MockOffer> toList, int max) {
+            final List<MockOffer> limitedItemList = fromList.stream()
                     .limit(max)
                     .collect(Collectors.toList());
             toList.addAll(limitedItemList);
@@ -263,7 +264,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
             this.updateControls(null, null);
         }
 
-        private void updateControls(@Nullable ExchangeScreen.MockOffer selectedValue, @Nullable UIListContainer container) {
+        private void updateControls(@Nullable MockOffer selectedValue, @Nullable UIListContainer container) {
             final boolean isSelected = selectedValue != null;
             final boolean isLeft = container != null && container.getName().equalsIgnoreCase("list.left");
             final boolean isOffersFull = this.pendingOffers.size() == maxOfferSlots;
@@ -288,17 +289,17 @@ public class ExchangeOfferScreen extends SimpleScreen {
         }
     }
 
-    private static final class InventoryListElement extends ExchangeScreen.ExchangeListElement<ExchangeScreen.MockOffer> {
+    private static final class InventoryListElement extends ExchangeScreen.ExchangeListElement<MockOffer> {
         private UIImage image;
         private UILabel itemLabel;
 
-        private InventoryListElement(final MalisisGui gui, final ExchangeScreen.MockOffer tag) {
+        private InventoryListElement(final MalisisGui gui, final MockOffer tag) {
             super(gui, tag);
         }
 
         @SuppressWarnings("deprecation")
         @Override
-        protected void construct(final MalisisGui gui, final ExchangeScreen.MockOffer tag) {
+        protected void construct(final MalisisGui gui, final MockOffer tag) {
             // Add components
             final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(tag.item);
             final EntityPlayer player = Minecraft.getMinecraft().player;

@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.feature.exchange.MockOffer;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
@@ -415,26 +416,6 @@ public final class ExchangeScreen extends SimpleScreen {
         final BigDecimal pricePer = BigDecimal.valueOf(ThreadLocalRandom.current().nextInt(0, 10000));
         return new MockOffer(Instant.now(),
                              ItemStack.of(type, quantity), pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
-    }
-
-    public static class MockOffer {
-        public final Instant instant;
-        public final ItemStack item;
-        public final BigDecimal pricePer;
-        public final UUID playerUuid;
-        public final String playerName;
-
-        public MockOffer(final ItemStack item, final EntityPlayer player) {
-            this(Instant.now(), item, BigDecimal.valueOf(0), player.getUniqueID(), player.getName());
-        }
-
-        public MockOffer(final Instant instant, final ItemStack item, final BigDecimal pricePer, final UUID playerUuid, final String playerName) {
-            this.instant = instant;
-            this.item = item;
-            this.pricePer = pricePer;
-            this.playerUuid = playerUuid;
-            this.playerName = playerName;
-        }
     }
 
     @SuppressWarnings("unchecked, deprecation")
