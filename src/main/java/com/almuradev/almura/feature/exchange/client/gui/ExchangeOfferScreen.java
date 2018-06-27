@@ -24,13 +24,11 @@ import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.container.UIListContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.client.gui.component.decoration.UIProgressBar;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -50,12 +48,12 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public class SimpleExchangeOfferScreen extends SimpleScreen {
+public class ExchangeOfferScreen extends SimpleScreen {
 
     private final int maxOfferSlots = ThreadLocalRandom.current().nextInt(2, 5);
     private UIPropertyBar progressBar;
 
-    public SimpleExchangeOfferScreen(SimpleExchangeScreen parent) {
+    public ExchangeOfferScreen(ExchangeScreen parent) {
         super(parent, true);
     }
 
@@ -98,8 +96,8 @@ public class SimpleExchangeOfferScreen extends SimpleScreen {
         final SwapContainer swapContainer = new SwapContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
                 Text.of(TextColors.WHITE, "Inventory"), Text.of(TextColors.WHITE, "Offers"),
                 (sc) -> {
-                    this.progressBar.setAmount(MathUtil.convertToRange(sc.offeredItemStacks.size(), 1, this.maxOfferSlots, 0f, 1f));
-                    this.progressBar.setText(Text.of(sc.offeredItemStacks.size(), "/", this.maxOfferSlots));
+                    this.progressBar.setAmount(MathUtil.convertToRange(sc.pendingOffers.size(), 0, this.maxOfferSlots, 0f, 1f));
+                    this.progressBar.setText(Text.of(sc.pendingOffers.size(), "/", this.maxOfferSlots));
                 });
 
         form.add(this.progressBar, swapContainer, buttonOk, buttonCancel);
@@ -109,11 +107,11 @@ public class SimpleExchangeOfferScreen extends SimpleScreen {
 
     private final class SwapContainer extends UIBackgroundContainer {
 
-        private final List<ItemStack> offeredItemStacks = new ArrayList<>();
-        private final List<ItemStack> inventoryItemStacks = new ArrayList<>();
+        private final List<ExchangeScreen.MockOffer> pendingOffers = new ArrayList<>();
+        private final List<ExchangeScreen.MockOffer> inventoryOffers = new ArrayList<>();
         private final UIButton buttonToLeft, buttonAllToLeft, buttonToRight, buttonAllToRight;
         private final UIBackgroundContainer middleContainer;
-        private final UISimpleList<ItemStack> leftItemList, rightItemList;
+        private final UISimpleList<ExchangeScreen.MockOffer> leftItemList, rightItemList;
         private final Consumer<SwapContainer> onActionConsumer;
 
         @SuppressWarnings("deprecation")
@@ -142,13 +140,13 @@ public class SimpleExchangeOfferScreen extends SimpleScreen {
             this.leftItemList.register(this);
 
             // THIS IS TEST CODE
-            final InventoryPlayer inventoryPlayer = Minecraft.getMinecraft().player.inventory;
-            this.inventoryItemStacks.addAll(inventoryPlayer.mainInventory.stream()
+            final EntityPlayer player = Minecraft.getMinecraft().player;
+            this.inventoryOffers.addAll(player.inventory.mainInventory.stream()
                     .filter(i -> i.item != Items.AIR)
-                    .map(i -> ((ItemStack) (Object) i))
+                    .map(i -> new ExchangeScreen.MockOffer((ItemStack) (Object) i, player))
                     .collect(Collectors.toList()));
 
-            this.leftItemList.setElements(this.inventoryItemStacks);
+            this.leftItemList.setElements(this.inventoryOffers);
             // NO LONGER TEST CODE
 
             leftContainer.add(leftContainerLabel, this.leftItemList);
@@ -185,14 +183,7 @@ public class SimpleExchangeOfferScreen extends SimpleScreen {
                     .anchor(Anchor.TOP | Anchor.CENTER)
                     .text("->|")
                     .tooltip("Move all to right container")
-                    .onClick(() -> {
-                        final List<ItemStack> limitedItemList = this.inventoryItemStacks.stream()
-                                .limit(maxOfferSlots - this.offeredItemStacks.size())
-                                .collect(Collectors.toList());
-                        this.offeredItemStacks.addAll(limitedItemList);
-                        this.inventoryItemStacks.removeAll(limitedItemList);
-                        this.updateControls(null, null);
-                    })
+                    .onClick(() -> this.migrateAll(this.inventoryOffers, this.pendingOffers, maxOfferSlots - this.pendingOffers.size()))
                     .enabled(false)
                     .build("button.all_to_right");
 
@@ -202,12 +193,7 @@ public class SimpleExchangeOfferScreen extends SimpleScreen {
                     .anchor(Anchor.TOP | Anchor.CENTER)
                     .text("->")
                     .tooltip("Move to right container")
-                    .onClick(() -> {
-                        final ItemStack selectedStack = this.leftItemList.getSelected();
-                        this.offeredItemStacks.add(selectedStack);
-                        this.inventoryItemStacks.remove(selectedStack);
-                        this.updateControls(null, null);
-                    })
+                    .onClick(() -> this.migrateOne(this.inventoryOffers, this.pendingOffers, this.leftItemList.getSelected()))
                     .enabled(false)
                     .build("button.to_right");
 
@@ -217,12 +203,7 @@ public class SimpleExchangeOfferScreen extends SimpleScreen {
                     .anchor(Anchor.TOP | Anchor.CENTER)
                     .text("<-")
                     .tooltip("Move to left container")
-                    .onClick(() -> {
-                        final ItemStack selectedStack = this.rightItemList.getSelected();
-                        this.inventoryItemStacks.add(selectedStack);
-                        this.offeredItemStacks.remove(selectedStack);
-                        this.updateControls(null, null);
-                    })
+                    .onClick(() -> this.migrateOne(this.pendingOffers, this.inventoryOffers, this.rightItemList.getSelected()))
                     .enabled(false)
                     .build("button.to_left");
 
@@ -232,11 +213,7 @@ public class SimpleExchangeOfferScreen extends SimpleScreen {
                     .anchor(Anchor.TOP | Anchor.CENTER)
                     .text("|<-")
                     .tooltip("Move all to left container")
-                    .onClick(() -> {
-                        this.inventoryItemStacks.addAll(this.offeredItemStacks);
-                        this.offeredItemStacks.clear();
-                        this.updateControls(null, null);
-                    })
+                    .onClick(() -> this.migrateAll(this.pendingOffers, this.inventoryOffers, this.pendingOffers.size()))
                     .enabled(false)
                     .build("button.all_to_left");
 
@@ -267,22 +244,37 @@ public class SimpleExchangeOfferScreen extends SimpleScreen {
         }
 
         @Subscribe
-        private void onElementSelect(UIListContainer.SelectEvent<ItemStack> event) {
+        private void onElementSelect(UIListContainer.SelectEvent<ExchangeScreen.MockOffer> event) {
             this.updateControls(event.getNewValue(), event.getComponent());
         }
 
-        private void updateControls(@Nullable ItemStack selectedValue, @Nullable UIListContainer container) {
+        private void migrateOne(List<ExchangeScreen.MockOffer> fromList, List<ExchangeScreen.MockOffer> toList, ExchangeScreen.MockOffer offer) {
+            toList.add(offer);
+            fromList.remove(offer);
+            this.updateControls(null, null);
+        }
+
+        private void migrateAll(List<ExchangeScreen.MockOffer> fromList, List<ExchangeScreen.MockOffer> toList, int max) {
+            final List<ExchangeScreen.MockOffer> limitedItemList = fromList.stream()
+                    .limit(max)
+                    .collect(Collectors.toList());
+            toList.addAll(limitedItemList);
+            fromList.removeAll(limitedItemList);
+            this.updateControls(null, null);
+        }
+
+        private void updateControls(@Nullable ExchangeScreen.MockOffer selectedValue, @Nullable UIListContainer container) {
             final boolean isSelected = selectedValue != null;
             final boolean isLeft = container != null && container.getName().equalsIgnoreCase("list.left");
-            final boolean isOffersFull = this.offeredItemStacks.size() == maxOfferSlots;
+            final boolean isOffersFull = this.pendingOffers.size() == maxOfferSlots;
 
             this.buttonToLeft.setEnabled(!isLeft && isSelected);
             this.buttonToRight.setEnabled(isLeft && isSelected && !isOffersFull);
-            this.buttonAllToLeft.setEnabled(!this.offeredItemStacks.isEmpty());
-            this.buttonAllToRight.setEnabled(!this.inventoryItemStacks.isEmpty() && !isOffersFull);
+            this.buttonAllToLeft.setEnabled(!this.pendingOffers.isEmpty());
+            this.buttonAllToRight.setEnabled(!this.inventoryOffers.isEmpty() && !isOffersFull);
 
-            this.leftItemList.setElements(this.inventoryItemStacks);
-            this.rightItemList.setElements(this.offeredItemStacks);
+            this.leftItemList.setElements(this.inventoryOffers);
+            this.rightItemList.setElements(this.pendingOffers);
 
             // Unregister and re-register to avoid firing this event when deselecting from the other list
             this.leftItemList.unregister(this);
@@ -296,19 +288,19 @@ public class SimpleExchangeOfferScreen extends SimpleScreen {
         }
     }
 
-    private static final class InventoryListElement extends SimpleExchangeScreen.ExchangeListElement<ItemStack> {
+    private static final class InventoryListElement extends ExchangeScreen.ExchangeListElement<ExchangeScreen.MockOffer> {
         private UIImage image;
         private UILabel itemLabel;
 
-        private InventoryListElement(final MalisisGui gui, final ItemStack tag) {
+        private InventoryListElement(final MalisisGui gui, final ExchangeScreen.MockOffer tag) {
             super(gui, tag);
         }
 
         @SuppressWarnings("deprecation")
         @Override
-        protected void construct(final MalisisGui gui, final ItemStack tag) {
+        protected void construct(final MalisisGui gui, final ExchangeScreen.MockOffer tag) {
             // Add components
-            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(tag);
+            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(tag.item);
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
@@ -323,7 +315,7 @@ public class SimpleExchangeOfferScreen extends SimpleScreen {
 
             // Limit item name to prevent over drawing
             final StringBuilder itemTextBuilder = new StringBuilder();
-            for (char c : (tag.getTranslation().get()).toCharArray()) {
+            for (char c : (tag.item.getTranslation().get()).toCharArray()) {
                 final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c);
                 if (textWidth > maxItemTextWidth + 4) {
                     itemTextBuilder.replace(itemTextBuilder.length() - 3, itemTextBuilder.length(), "...");

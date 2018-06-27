@@ -67,7 +67,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public final class SimpleExchangeScreen extends SimpleScreen {
+public final class ExchangeScreen extends SimpleScreen {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
     private static final int innerPadding = 2;
@@ -90,7 +90,7 @@ public final class SimpleExchangeScreen extends SimpleScreen {
     @Inject private static Logger logger;
     @Inject private static ClientNotificationManager clientNotificationManager;
 
-    public SimpleExchangeScreen() {
+    public ExchangeScreen() {
         // ADD MOCK DATA
         allOffers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
         allOffers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
@@ -313,7 +313,7 @@ public final class SimpleExchangeScreen extends SimpleScreen {
                 .position(0,0)
                 .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
                 .enabled(true)
-                .onClick(() -> new SimpleExchangeOfferScreen(this).display())
+                .onClick(() -> new ExchangeOfferScreen(this).display())
                 .build("button.add_remove");
 
         inventoryArea.add(buttonList, buttonSetPrice, buttonRemoveItem);
@@ -417,12 +417,16 @@ public final class SimpleExchangeScreen extends SimpleScreen {
                              ItemStack.of(type, quantity), pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
     }
 
-    public class MockOffer {
+    public static class MockOffer {
         public final Instant instant;
         public final ItemStack item;
         public final BigDecimal pricePer;
         public final UUID playerUuid;
         public final String playerName;
+
+        public MockOffer(final ItemStack item, final EntityPlayer player) {
+            this(Instant.now(), item, BigDecimal.valueOf(0), player.getUniqueID(), player.getName());
+        }
 
         public MockOffer(final Instant instant, final ItemStack item, final BigDecimal pricePer, final UUID playerUuid, final String playerName) {
             this.instant = instant;

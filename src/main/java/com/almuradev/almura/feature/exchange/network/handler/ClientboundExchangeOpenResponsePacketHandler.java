@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.network.handler;
 
-import com.almuradev.almura.feature.exchange.client.gui.SimpleExchangeScreen;
+import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -28,7 +28,7 @@ public final class ClientboundExchangeOpenResponsePacketHandler implements Messa
                 final WorldClient world = client.world;
 
                 if (world != null) {
-                    new SimpleExchangeScreen().display();
+                    new ExchangeScreen().display();
                 }
             }
         }
