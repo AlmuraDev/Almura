@@ -11,6 +11,8 @@ import com.almuradev.almura.feature.exchange.MockOffer;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
+import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.UISimpleList;
@@ -23,10 +25,7 @@ import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.client.gui.component.UIComponent;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.container.UIListContainer;
-import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
@@ -78,7 +77,7 @@ public final class ExchangeScreen extends SimpleScreen {
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity;
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
-    private UISimpleList<MockOffer> resultsList;
+    private UIDynamicList<MockOffer> resultsDynamicList;
     private UIFormContainer form;
     private final List<MockOffer> allOffers = new ArrayList<>();
     private final List<MockOffer> currentResults = new ArrayList<>();
@@ -162,11 +161,12 @@ public final class ExchangeScreen extends SimpleScreen {
         comboBoxSortType.select(SortType.PRICE_ASC);
         comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchField.getY(), Anchor.RIGHT | Anchor.TOP);
 
-        this.resultsList = new UISimpleList<>(this, searchArea.getWidth() - 10, 250);
-        this.resultsList.setPosition(innerPadding, getPaddedY(sellerSearchField, 8));
-        this.resultsList.setComponentFactory((g, e) -> new ResultListElement(this, e));
-        this.resultsList.setElementSpacing(1);
-        this.resultsList.register(this);
+        this.resultsDynamicList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 250);
+        this.resultsDynamicList.setPosition(innerPadding, getPaddedY(sellerSearchField, 8));
+        this.resultsDynamicList.setItemComponentFactory((g, e) -> new ResultItemComponent(this, e));
+        this.resultsDynamicList.setItemSpacing(1);
+        this.resultsDynamicList.setCanDeselect(true);
+        this.resultsDynamicList.register(this);
 
         // Search button
         final UIButton buttonSearch = new UIButtonBuilder(this)
@@ -240,7 +240,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Add Elements of Search Area
         searchArea.add(itemSearchLabel, this.itemSearchField, sellerSearchLabel, this.sellerSearchField, buttonSearch, comboBoxSortType,
-                this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.resultsList, this.labelSearchPage);
+                this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.resultsDynamicList, this.labelSearchPage);
 
         // Economy Pane
         final UIFormContainer economyActionArea = new UIFormContainer(this, 295, 20, "");
@@ -387,8 +387,8 @@ public final class ExchangeScreen extends SimpleScreen {
 
         this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, page, "/", pages)));
 
-        this.resultsList.select(null); // Clear selection
-        this.resultsList.setElements(this.currentResults.stream().skip((page - 1) * 10).limit(10).collect(Collectors.toList()));
+        this.resultsDynamicList.setSelectedItem(null); // Clear selection
+        this.resultsDynamicList.setItems(this.currentResults.stream().skip((page - 1) * 10).limit(10).collect(Collectors.toList()));
     }
 
     public List<MockOffer> getResults(String itemName, String username, SortType sort) {
@@ -419,19 +419,15 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     @SuppressWarnings("unchecked, deprecation")
-    public static class ExchangeListElement<T> extends UIBackgroundContainer {
+    public static class ExchangeItemComponent<T> extends UIDynamicList.ItemComponent {
 
         private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
         private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
         private static final int INNER_HOVER_COLOR = org.spongepowered.api.util.Color.ofRgb(40, 40, 40).getRgb();
         private static final int INNER_SELECTED_COLOR = org.spongepowered.api.util.Color.ofRgb(65, 65, 65).getRgb();
 
-        private final T tag;
-
-        public ExchangeListElement(final MalisisGui gui, final T tag) {
-            super(gui);
-
-            this.tag = tag;
+        public ExchangeItemComponent(final MalisisGui gui, final T item) {
+            super(gui, item);
 
             // Set padding
             this.setPadding(3, 3);
@@ -443,33 +439,21 @@ public final class ExchangeScreen extends SimpleScreen {
             // Set default size
             this.setSize(0, 24);
 
-            this.construct(gui, tag);
+            this.construct(gui, item);
         }
 
-        protected void construct(final MalisisGui gui, final T tag) {}
-
-        @Override
-        public boolean onClick(int x, int y) {
-            final UIComponent component = getComponentAt(x, y);
-            if (this.equals(component) && this.parent instanceof UIListContainer) {
-                final UIListContainer parent = (UIListContainer) this.parent;
-
-                // Deselect the item if we click it again, select it otherwise.
-                parent.select(parent.isSelected(this.tag) ? null : this.tag);
-            }
-            return true;
-        }
+        protected void construct(final MalisisGui gui, final T item) {}
 
         @Override
         public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            if (this.parent instanceof UISimpleList) {
-                final UISimpleList parent = (UISimpleList) this.parent;
+            if (this.parent instanceof UIDynamicList) {
+                final UIDynamicList parent = (UIDynamicList) this.parent;
 
                 final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
 
                 setSize(width, getHeight());
 
-                if (parent.isSelected(this.tag)) {
+                if (parent.getSelectedItem() == this.item) {
                     this.setColor(INNER_SELECTED_COLOR);
                 } else if (this.isHovered()) {
                     this.setColor(INNER_HOVER_COLOR);
@@ -482,12 +466,12 @@ public final class ExchangeScreen extends SimpleScreen {
         }
     }
 
-    public static final class ResultListElement extends ExchangeListElement<MockOffer> {
+    public static final class ResultItemComponent extends ExchangeItemComponent<MockOffer> {
 
-        private UIImage image;
+        private UIComplexImage image;
         private UILabel itemLabel, priceLabel, sellerLabel;
 
-        private ResultListElement(final MalisisGui gui, final MockOffer tag) {
+        private ResultItemComponent(final MalisisGui gui, final MockOffer tag) {
             super(gui, tag);
         }
 
@@ -499,7 +483,7 @@ public final class ExchangeScreen extends SimpleScreen {
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
-            this.image = new UIImage(gui, fakeStack);
+            this.image = new UIComplexImage(gui, fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
             this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                     ? ITooltipFlag.TooltipFlags.ADVANCED
