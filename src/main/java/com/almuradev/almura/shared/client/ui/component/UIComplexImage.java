@@ -24,8 +24,7 @@ public class UIComplexImage extends UIImage {
 
 
     @Override
-    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick)
-    {
+    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         if (itemStack != null) {
             float originalZLevel = Minecraft.getMinecraft().getRenderItem().zLevel;  // Save existing value
             Minecraft.getMinecraft().getRenderItem().zLevel = this.getZIndex();  // Set the value to the current zIndex of the current component.
