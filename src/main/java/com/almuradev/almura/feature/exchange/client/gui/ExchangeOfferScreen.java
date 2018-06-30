@@ -14,8 +14,11 @@ import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
+import com.almuradev.almura.shared.client.ui.component.container.UISwapContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
+import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -83,32 +86,36 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.progressBar.setText(Text.of(0, "/", this.maxOfferSlots));
 
         // Swap container
-        final UISwapContainer<MockOffer> swapContainer = UISwapContainer.<MockOffer>builder()
-                .title("Inventory", "Offers")
-                .itemLimit(0, this.maxOfferSlots)
-                .componentFactory(InventoryItemComponent::new)
-                .onInitialize((sc) -> {
-                    final EntityPlayer player = Minecraft.getMinecraft().player;
-                    sc.setItems(player.inventory.mainInventory.stream()
-                            .filter(i -> i.item != Items.AIR)
-                            .map(i -> new MockOffer((ItemStack) (Object) i, player))
-                            .collect(Collectors.toList()),
-                            UISwapContainer.ContainerSide.LEFT);
-                    final int size = sc.getItems(UISwapContainer.ContainerSide.RIGHT).size();
-                    this.progressBar.setAmount(
-                            MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
-                    this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
-                })
-                .onUpdate((sc) -> {
-                    final int size = sc.getItems(UISwapContainer.ContainerSide.RIGHT).size();
-                    this.progressBar.setAmount(
-                            MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
-                    this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
-                }).build(this, getPaddedWidth(form), getPaddedHeight(form) - 20);
+        final UISwapContainer<MockOffer> itemSwapContainer = new UISwapContainer<>(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
+                Text.of(TextColors.WHITE, "Inventory"),
+                Text.of(TextColors.WHITE, "Held Items"),
+                InventoryItemComponent::new,
+                InventoryItemComponent::new);
+        itemSwapContainer.setItemLimit(this.maxOfferSlots, UIDualListContainer.ContainerSide.RIGHT);
+        itemSwapContainer.register(this);
 
-        form.add(this.progressBar, swapContainer, buttonOk, buttonCancel);
+        // Populate swap container
+        final EntityPlayer player = Minecraft.getMinecraft().player;
+        itemSwapContainer.setItems(player.inventory.mainInventory.stream()
+                        .filter(i -> i.item != Items.AIR)
+                        .map(i -> new MockOffer((ItemStack) (Object) i, player))
+                        .collect(Collectors.toList()),
+                UIDualListContainer.ContainerSide.LEFT);
+        final int size = itemSwapContainer.getItems(UIDualListContainer.ContainerSide.RIGHT).size();
+        this.progressBar.setAmount(
+                MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
+        this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
+
+        form.add(this.progressBar, itemSwapContainer, buttonOk, buttonCancel);
 
         addToScreen(form);
+    }
+
+    @Subscribe
+    private void onUpdate(UIDualListContainer.UpdateEvent<UIDualListContainer<MockOffer>> event) {
+        final int size = event.getComponent().getItems(UIDualListContainer.ContainerSide.RIGHT).size();
+        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
+        this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
     }
 
     private static final class InventoryItemComponent extends ExchangeScreen.ExchangeItemComponent<MockOffer> {

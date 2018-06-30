@@ -15,7 +15,6 @@ import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
-import com.almuradev.almura.shared.client.ui.component.UISimpleList;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
@@ -164,7 +163,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.resultsDynamicList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 250);
         this.resultsDynamicList.setPosition(innerPadding, getPaddedY(sellerSearchField, 8));
         this.resultsDynamicList.setItemComponentFactory((g, e) -> new ResultItemComponent(this, e));
-        this.resultsDynamicList.setItemSpacing(1);
+        this.resultsDynamicList.setItemComponentSpacing(1);
         this.resultsDynamicList.setCanDeselect(true);
         this.resultsDynamicList.register(this);
 
@@ -449,7 +448,7 @@ public final class ExchangeScreen extends SimpleScreen {
             if (this.parent instanceof UIDynamicList) {
                 final UIDynamicList parent = (UIDynamicList) this.parent;
 
-                final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
+                final int width = parent.getWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
 
                 setSize(width, getHeight());
 

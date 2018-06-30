@@ -43,51 +43,86 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         this.scrollbar.setAutoHide(true);
     }
 
+    /**
+     * Gets an unmodifiable list of items
+     * @return The unmodifiable list of items
+     */
     public List<T> getItems() {
         return Collections.unmodifiableList(this.items);
     }
 
-    public UIDynamicList<T> addItem(T item) {
-        this.items.add(item);
-        this.isDirty = true;
-        this.fireEvent(new ItemsChangedEvent<>(this));
+    /**
+     * Adds the provided item to the list
+     * @param item The item to add
+     * @return True if the item was added, otherwise false
+     */
+    public boolean addItem(T item) {
+        final boolean result = this.items.add(item);
 
-        return this;
+        if (result) {
+            this.isDirty = true;
+            this.fireEvent(new ItemsChangedEvent<>(this));
+        }
+
+        return result;
     }
 
-    public UIDynamicList<T> addItems(List<T> items) {
-        this.items.addAll(items);
-        this.isDirty = true;
-        this.fireEvent(new ItemsChangedEvent<>(this));
+    /**
+     * Adds provided items to the list
+     * @param items The items to add
+     * @return True if all items were added, otherwise false
+     */
+    public boolean addItems(List<T> items) {
+        final boolean result = this.items.addAll(items);
 
-        return this;
+        if (result) {
+            this.isDirty = true;
+            this.fireEvent(new ItemsChangedEvent<>(this));
+        }
+
+        return result;
     }
 
-    public UIDynamicList<T> setItems(List<T> items) {
+    /**
+     * Clears current items and adds provided items, restricted by max limit if previously set
+     * @param items The items to set
+     * @return True if all items were added, otherwise false
+     */
+    public boolean setItems(List<T> items) {
         this.items.clear();
-        this.items.addAll(items);
+        return this.addItems(items);
+    }
+
+    /**
+     * Removes specified item from the list
+     * @param item The item to remove
+     * @return True if the item was removed, otherwise false
+     */
+    public boolean removeItem(T item) {
+        final boolean result = this.items.remove(item);
         this.isDirty = true;
         this.fireEvent(new ItemsChangedEvent<>(this));
 
-        return this;
+        return result;
     }
 
-    public UIDynamicList<T> removeItem(T item) {
-        this.items.remove(item);
+    /**
+     * REmoves specified items from the list
+     * @param items The items to remove
+     * @return True if all items were removed, otherwise false
+     */
+    public boolean removeItems(List<T> items) {
+        final boolean result = this.items.removeAll(items);
         this.isDirty = true;
         this.fireEvent(new ItemsChangedEvent<>(this));
 
-        return this;
+        return result;
     }
 
-    public UIDynamicList<T> removeItems(List<T> items) {
-        this.items.removeAll(items);
-        this.isDirty = true;
-        this.fireEvent(new ItemsChangedEvent<>(this));
-
-        return this;
-    }
-
+    /**
+     * Clears the list of items
+     * @return The {@link UIDynamicList<T>}
+     */
     public UIDynamicList<T> clearItems() {
         this.items.clear();
         this.isDirty = true;
@@ -96,11 +131,20 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         return this;
     }
 
+    /**
+     * Gets the selected item if present
+     * @return The selected item if present, null otherwise
+     */
     @Nullable
     public T getSelectedItem() {
         return this.selectedItem;
     }
 
+    /**
+     * Sets the selected item (if list is not read-only)
+     * @param item The item to select
+     * @return The {@link UIDynamicList<T>}
+     */
     public UIDynamicList<T> setSelectedItem(@Nullable T item) {
         if (!this.readOnly) {
             if (this.fireEvent(new SelectEvent<>(this, this.selectedItem, item))) {
@@ -112,37 +156,73 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         return this;
     }
 
-    public int getItemSpacing() {
+    /**
+     * Gets the spacing between {@link ItemComponent}s
+     * @return The spacing
+     */
+    public int getItemComponentSpacing() {
         return this.itemSpacing;
     }
 
-    public UIDynamicList<T> setItemSpacing(int spacing) {
+    /**
+     * Sets the spacing between {@link ItemComponent}s
+     * @param spacing The space to use between components
+     * @return The {@link UIDynamicList<T>}
+     */
+    public UIDynamicList<T> setItemComponentSpacing(int spacing) {
         this.itemSpacing = spacing;
         return this;
     }
 
+    /**
+     * Gets read-only status
+     * @return True if read-only, otherwise false
+     */
     public boolean isReadOnly() {
         return this.readOnly;
     }
 
+    /**
+     * Sets read-only status
+     * @param readOnly The value to set the status as
+     * @return The {@link UIDynamicList<T>}
+     */
     public UIDynamicList<T> setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
         return this;
     }
 
+    /**
+     * Gets deselect status
+     * @return True if items can be deselected, otherwise false
+     */
     public boolean canDeselect() {
         return this.canDeselect;
     }
 
+    /**
+     * Sets deselect status
+     * @param canDeselect The value to set the status as
+     * @return The {@link UIDynamicList<T>}
+     */
     public UIDynamicList<T> setCanDeselect(boolean canDeselect) {
         this.canDeselect = canDeselect;
         return this;
     }
 
+    /**
+     * Gets the item component factory
+     * @return The item component factory
+     */
     public BiFunction<MalisisGui, T, ? extends ItemComponent<?>> getItemComponentFactory() {
         return this.itemComponentFactory;
     }
 
+    /**
+     * Sets the item component factory
+     * @param factory The component factory
+     * @return The {@link UIDynamicList<T>}
+     */
     public UIDynamicList<T> setItemComponentFactory(BiFunction<MalisisGui, T, ? extends ItemComponent<?>> factory) {
         this.itemComponentFactory = factory;
         return this;
