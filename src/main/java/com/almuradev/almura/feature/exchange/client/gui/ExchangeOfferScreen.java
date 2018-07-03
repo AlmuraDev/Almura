@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.exchange.client.gui;
 
 import com.almuradev.almura.feature.exchange.MockOffer;
+import com.almuradev.almura.feature.exchange.client.gui.component.UIExchangeOfferContainer;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
@@ -15,7 +16,6 @@ import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
-import com.almuradev.almura.shared.client.ui.component.container.UISwapContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
@@ -30,6 +30,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -86,27 +87,28 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.progressBar.setText(Text.of(0, "/", this.maxOfferSlots));
 
         // Swap container
-        final UISwapContainer<MockOffer> itemSwapContainer = new UISwapContainer<>(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
+        final UIExchangeOfferContainer offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
                 Text.of(TextColors.WHITE, "Inventory"),
                 Text.of(TextColors.WHITE, "Held Items"),
                 InventoryItemComponent::new,
                 InventoryItemComponent::new);
-        itemSwapContainer.setItemLimit(this.maxOfferSlots, UIDualListContainer.ContainerSide.RIGHT);
-        itemSwapContainer.register(this);
+        offerContainer.setItemLimit(this.maxOfferSlots, UIDualListContainer.ContainerSide.RIGHT);
+        offerContainer.register(this);
 
         // Populate swap container
         final EntityPlayer player = Minecraft.getMinecraft().player;
-        itemSwapContainer.setItems(player.inventory.mainInventory.stream()
-                        .filter(i -> i.item != Items.AIR)
-                        .map(i -> new MockOffer((ItemStack) (Object) i, player))
+        offerContainer.setItems(player.inventory.mainInventory.stream()
+                        .map(ItemStackUtil::fromNative)
+                        .filter(i -> i.getType() != ItemTypes.AIR)
+                        .map(i -> new MockOffer(i, player))
                         .collect(Collectors.toList()),
                 UIDualListContainer.ContainerSide.LEFT);
-        final int size = itemSwapContainer.getItems(UIDualListContainer.ContainerSide.RIGHT).size();
+        final int size = offerContainer.getItems(UIDualListContainer.ContainerSide.RIGHT).size();
         this.progressBar.setAmount(
                 MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
         this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
 
-        form.add(this.progressBar, itemSwapContainer, buttonOk, buttonCancel);
+        form.add(this.progressBar, offerContainer, buttonOk, buttonCancel);
 
         addToScreen(form);
     }
