@@ -5,7 +5,11 @@
         "transform": "forge:default-block"
     },
     "variants": {
-        "inventory": [ { } ],
+        "inventory": [
+            {
+                "model": "almura:cache/item"
+            }
+        ],
         "facing": {
             "south": {
                 "y": 180.0

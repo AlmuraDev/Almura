@@ -170,7 +170,7 @@ public final class CacheBlock extends BlockContainer {
 
         final TileEntity te = world.getTileEntity(pos);
 
-        if (te == null || !(te instanceof SingleSlotTileEntity)) {
+        if (!(te instanceof SingleSlotTileEntity)) {
             return;
         }
 
@@ -189,7 +189,7 @@ public final class CacheBlock extends BlockContainer {
             return;
         }
 
-        int amountToExtract = 0;
+        final int amountToExtract;
 
         if (player.isSneaking()) {
             amountToExtract =1;
@@ -235,7 +235,7 @@ public final class CacheBlock extends BlockContainer {
         }
 
         final TileEntity te = world.getTileEntity(pos);
-        if (te == null || !(te instanceof SingleSlotTileEntity)) {
+        if (!(te instanceof SingleSlotTileEntity)) {
             return false;
         }
 
@@ -345,7 +345,7 @@ public final class CacheBlock extends BlockContainer {
     {
         this.onBlockHarvested(world, pos, state, player);
 
-        cacheTe = world.getTileEntity(pos);
+        this.cacheTe = world.getTileEntity(pos);
 
         return world.setBlockState(pos, net.minecraft.init.Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
     }
@@ -363,18 +363,18 @@ public final class CacheBlock extends BlockContainer {
         TileEntity te = world.getTileEntity(pos);
 
         if (te == null) {
-            te = cacheTe;
+            te = this.cacheTe;
         }
 
-        if (te == null || !(te instanceof SingleSlotTileEntity)) {
+        if (!(te instanceof SingleSlotTileEntity)) {
             return;
         }
 
         final SingleSlotTileEntity cte = (SingleSlotTileEntity) te;
 
-        this.addCacheToStack(toDrop, cte);
+        addCacheToStack(toDrop, cte);
 
-        cacheTe = null;
+        this.cacheTe = null;
     }
 
     @Override
@@ -382,17 +382,17 @@ public final class CacheBlock extends BlockContainer {
         final ItemStack pickStack = new ItemStack(this, 1, 0);
 
         final TileEntity te = world.getTileEntity(pos);
-        if (te != null && te instanceof SingleSlotTileEntity) {
+        if (te instanceof SingleSlotTileEntity) {
             final SingleSlotTileEntity cte = (SingleSlotTileEntity) te;
 
             // Alright, we have a Cache...need to put it on a stack now
-            this.addCacheToStack(pickStack, cte);
+            addCacheToStack(pickStack, cte);
         }
 
         return pickStack;
     }
 
-    private ItemStack addCacheToStack(ItemStack targetStack, SingleSlotTileEntity cte) {
+    private static ItemStack addCacheToStack(ItemStack targetStack, SingleSlotTileEntity cte) {
         final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
                 null);
 
@@ -420,34 +420,35 @@ public final class CacheBlock extends BlockContainer {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 
         if (!worldIn.isRemote) {
-
-            final NBTTagCompound tagCompound = stack.getSubCompound("tag");
-
-            if (tagCompound == null) {
-                return;
-            }
-
-            if (!tagCompound.hasKey("Cache")) {
-                return;
-            }
-
-            final NBTTagCompound cacheCompound = tagCompound.getCompoundTag("Cache");
-
             final TileEntity te = worldIn.getTileEntity(pos);
 
-            if (te == null || !(te instanceof SingleSlotTileEntity)) {
+            if (!(te instanceof SingleSlotTileEntity)) {
                 return;
             }
 
             final SingleSlotTileEntity cte = (SingleSlotTileEntity) te;
-            final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
-                    null);
 
-            if (itemHandler == null) {
-                return;
-            }
-
-            SharedCapabilities.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, cacheCompound.getCompoundTag(Almura.ID + ":single_slot"));
+            addStackToCache(stack, cte);
         }
+    }
+
+    public static void addStackToCache(final ItemStack stack, final SingleSlotTileEntity cte) {
+        final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
+                null);
+
+        if (itemHandler == null) {
+            return;
+        }
+
+        final NBTTagCompound tagCompound = stack.getSubCompound("tag");
+
+        if (tagCompound == null || !tagCompound.hasKey("Cache")) {
+            itemHandler.setStackInSlot(0, ItemStack.EMPTY);
+            return;
+        }
+
+        final NBTTagCompound cacheCompound = tagCompound.getCompoundTag("Cache");
+
+        SharedCapabilities.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, cacheCompound.getCompoundTag(Almura.ID + ":single_slot"));
     }
 }

@@ -21,17 +21,17 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<SingleSlotTileEntity> {
 
-    private static final int MAX_LINE_WIDTH = 84;
-    private static final String ZERO_QUANTITY = "0";
+    static final int MAX_LINE_WIDTH = 84;
+    static final String ZERO_QUANTITY = "0";
 
     private final Minecraft client = Minecraft.getMinecraft();
-
 
     @Override
     public void render(SingleSlotTileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
@@ -148,7 +148,7 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Sin
                 firstLineLength--;
             }
             final String firstLine = displayName.substring(0, firstLineLength);
-            final String secondLine = displayName.substring(firstLineLength, displayName.length());
+            final String secondLine = displayName.substring(firstLineLength);
             fontRenderer.drawString(firstLine, -fontRenderer.getStringWidth(firstLine) / 2, (int) y -80, 0);
             fontRenderer.drawString(secondLine, -fontRenderer.getStringWidth(secondLine) / 2, (int) y - 70, 0);
         } else {
