@@ -28,14 +28,25 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<SingleSlotTileEntity> {
 
+    public static final CacheTileEntityRenderer INSTANCE = new CacheTileEntityRenderer();
     static final int MAX_LINE_WIDTH = 84;
     static final String ZERO_QUANTITY = "0";
 
     private final Minecraft client = Minecraft.getMinecraft();
 
-    @Override
-    public void render(SingleSlotTileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+    private CacheTileEntityRenderer() {
+    }
 
+    @Override
+    public void render(final SingleSlotTileEntity te, final double x, final double y, final double z, final float partialTicks, final int destroyStage, final float alpha) {
+        final BlockPos pos = te.getPos();
+        final World world = te.getWorld();
+        final IBlockState blockState = world.getBlockState(pos);
+
+        render(te, x, y, z, blockState);
+    }
+
+    void render(final SingleSlotTileEntity te, final double x, final double y, final double z, final IBlockState blockState) {
         final ISingleSlotItemHandler
                 itemHandler = (ISingleSlotItemHandler) te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
@@ -46,62 +57,55 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Sin
         final ItemStack cache = itemHandler.getStackInSlot(0);
 
         final BlockPos pos = te.getPos();
-        final World world = te.getWorld();
-        final IBlockState blockState = world.getBlockState(pos);
 
         if (!(blockState.getBlock() instanceof CacheBlock)) {
             return;
         }
 
         final CacheBlock block = (CacheBlock) blockState.getBlock();
-        final int blockX = pos.getX();
-        final int blockY = pos.getY();
-        final int blockZ = pos.getZ();
 
         GlStateManager.pushMatrix();
 
         float angle = 0f;
         double translatedX = x;
         double translatedZ = z;
-        float brightness = 0f;
+        final EnumFacing facing = blockState.getValue(BlockHorizontal.FACING);
 
-        switch (blockState.getValue(BlockHorizontal.FACING)) {
+        switch (facing) {
             case SOUTH:
                 angle = 0f;
                 translatedX += 0.5;
                 translatedZ += 1.025;
-                brightness = blockState.getPackedLightmapCoords(world, new BlockPos(blockX, blockY, blockZ + 1));
                 break;
             case WEST:
                 angle = -90f;
                 translatedX -= 0.025;
                 translatedZ += 0.5;
-                brightness = blockState.getPackedLightmapCoords(world, new BlockPos(blockX - 1, blockY, blockZ));
                 break;
             case NORTH:
                 angle = 180f;
                 translatedX += 0.5;
                 translatedZ -= 0.025;
-                brightness = blockState.getPackedLightmapCoords(world, new BlockPos(blockX, blockY, blockZ - 1));
                 break;
             case EAST:
                 angle = 90f;
                 translatedX += 1.025;
                 translatedZ += 0.5;
-                brightness = blockState.getPackedLightmapCoords(world, new BlockPos(blockX + 1, blockY, blockZ));
                 break;
         }
+
+        final int brightness = te.hasWorld() ? blockState.getPackedLightmapCoords(te.getWorld(), pos.offset(facing)) : 15 << 20 | 15 << 4;
 
         // Move the matrix to the front face, in the center
         GlStateManager.translate(translatedX, y + 0.525f, translatedZ);
         GlStateManager.rotate(angle, 0f, 1f, 0f);
 
         // Set lightmap coordinates to the skylight value of the block in front of the cache item model
-        float j = brightness % 65536;
-        float k = brightness / 65536;
+        int j = brightness % 65536;
+        int k = brightness / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j / 1.0F, k / 1.0F);
         GlStateManager.color(1f, 1f, 1f, 1f);
-        
+
         // Rotate cache item model to fit default Vanilla cache icon look. We do not support rotating the item model
         GlStateManager.rotate(180f, 0.0F, 1f, 0f);
         GlStateManager.scale(0.5F, 0.5F, 0.5F);

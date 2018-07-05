@@ -272,7 +272,7 @@ public final class CacheBlock extends BlockContainer {
 
             isDirty = true;
         } else if (!cacheStack.isEmpty()) {
-            if (!handStack.isEmpty() && !ItemStack.areItemsEqual(handStack, cacheStack)) {
+            if (!handStack.isEmpty() && (!ItemStack.areItemsEqual(handStack, cacheStack) || !ItemStack.areItemStackTagsEqual(handStack, cacheStack))) {
                 ((Player) player).sendMessage(Text.of("This cache does not support this item! Try emptying the cache first."));
                 return true;
             }
@@ -392,7 +392,7 @@ public final class CacheBlock extends BlockContainer {
         return pickStack;
     }
 
-    private static ItemStack addCacheToStack(ItemStack targetStack, SingleSlotTileEntity cte) {
+    private static ItemStack addCacheToStack(final ItemStack targetStack, final SingleSlotTileEntity cte) {
         final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
                 null);
 
@@ -450,5 +450,16 @@ public final class CacheBlock extends BlockContainer {
         final NBTTagCompound cacheCompound = tagCompound.getCompoundTag("Cache");
 
         SharedCapabilities.SINGLE_SLOT_ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, cacheCompound.getCompoundTag(Almura.ID + ":single_slot"));
+    }
+
+    public static ItemStack getFromCache(final SingleSlotTileEntity cte) {
+        final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
+                null);
+
+        if (itemHandler == null) {
+            return ItemStack.EMPTY;
+        }
+
+        return itemHandler.getStackInSlot(0);
     }
 }

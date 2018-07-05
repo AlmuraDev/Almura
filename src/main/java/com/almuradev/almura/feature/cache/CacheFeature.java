@@ -15,12 +15,9 @@ import com.almuradev.almura.feature.cache.client.tileentity.renderer.CacheTileEn
 import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
 import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -31,9 +28,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.IForgeRegistry;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
 import java.text.NumberFormat;
@@ -61,19 +58,20 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
 
     @SubscribeEvent
     public void onRegisterItems(final RegistryEvent.Register<Item> event) {
-        registerItem(event, CacheBlocks.WOOD);
-        registerItem(event, CacheBlocks.IRON);
-        registerItem(event, CacheBlocks.GOLD);
-        registerItem(event, CacheBlocks.DIAMOND);
-        registerItem(event, CacheBlocks.NETHER);
-        registerItem(event, CacheBlocks.ENDER);
+        final IForgeRegistry<Item> registry = event.getRegistry();
+        registerItem(registry, CacheBlocks.WOOD);
+        registerItem(registry, CacheBlocks.IRON);
+        registerItem(registry, CacheBlocks.GOLD);
+        registerItem(registry, CacheBlocks.DIAMOND);
+        registerItem(registry, CacheBlocks.NETHER);
+        registerItem(registry, CacheBlocks.ENDER);
     }
 
-    private void registerItem(final RegistryEvent.Register<Item> event, final CacheBlock cacheBlock) {
+    private void registerItem(final IForgeRegistry<Item> registry, final CacheBlock cacheBlock) {
         final ResourceLocation registryName = requireNonNull(cacheBlock.getRegistryName());
         final ItemBlock item = (ItemBlock) new ItemBlock(cacheBlock).setRegistryName(registryName);
 
-        event.getRegistry().register(item);
+        registry.register(item);
     }
 
     @SubscribeEvent
@@ -104,20 +102,11 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
 
     @SideOnly(Side.CLIENT)
     private void bindBlockRenderer() {
-        ClientRegistry.bindTileEntitySpecialRenderer(SingleSlotTileEntity.class, new CacheTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(SingleSlotTileEntity.class, CacheTileEntityRenderer.INSTANCE);
     }
 
     @SideOnly(Side.CLIENT)
     private void registerInventoryModel(Item item, ResourceLocation blockName) {
         ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(blockName, "inventory"));
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Listener
-    public void loadComplete(GameLoadCompleteEvent event) {
-        IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(new ItemStack(CacheBlocks.DIAMOND), null, null);
-        if (!model.isBuiltInRenderer()) {
-            throw new RuntimeException("NOT Builtin");
-        }
     }
 }
