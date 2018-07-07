@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.shared.client.ui.component.container;
 
+import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.google.common.eventbus.Subscribe;
@@ -36,8 +37,7 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
 
     @SuppressWarnings("deprecation")
     public UIDualListContainer(MalisisGui gui, int width, int height,
-            Text leftTitle,
-            Text rightTitle,
+            Text leftTitle, Text rightTitle,
             BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
             BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory) {
         super(gui, width, height);
@@ -68,8 +68,6 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         this.leftDynamicList.setCanDeselect(true);
         this.leftDynamicList.setName("list.left");
         this.leftDynamicList.register(this);
-
-        leftContainer.add(leftContainerLabel, this.leftDynamicList);
 
         // Create right container
         final UIContainer<?> rightContainer = new UIContainer(gui, (this.width - middleContainerWidth - 5) / 2, UIComponent.INHERITED);

@@ -11,10 +11,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.UUID;
 
 public class MockOffer {
+
+    private static final DecimalFormat FORMAT = new DecimalFormat("0.00");
+
     public final Instant instant;
     public final ItemStack item;
     public final BigDecimal pricePer;
@@ -31,5 +35,11 @@ public class MockOffer {
         this.pricePer = pricePer;
         this.playerUuid = playerUuid;
         this.playerName = playerName;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("MockOffer[instant=%s, item=%s, pricePer=%s, uuid=%s, playerName=%s",
+                this.instant, this.item, FORMAT.format(this.pricePer), this.playerUuid, this.playerName);
     }
 }

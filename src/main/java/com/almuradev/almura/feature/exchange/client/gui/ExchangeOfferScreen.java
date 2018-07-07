@@ -27,11 +27,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -99,8 +96,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         offerContainer.setItems(player.inventory.mainInventory.stream()
                         .map(ItemStackUtil::fromNative)
-                        .filter(i -> i.getType() != ItemTypes.AIR)
-                        .map(i -> new MockOffer(i, player))
+                        .filter(i -> !i.isEmpty())
+                        .map(i -> new MockOffer(i.copy(), player))
                         .collect(Collectors.toList()),
                 UIDualListContainer.ContainerSide.LEFT);
         final int size = offerContainer.getItems(UIDualListContainer.ContainerSide.RIGHT).size();
