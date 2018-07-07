@@ -69,6 +69,8 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         this.leftDynamicList.setName("list.left");
         this.leftDynamicList.register(this);
 
+        leftContainer.add(leftContainerLabel, this.leftDynamicList);
+
         // Create right container
         final UIContainer<?> rightContainer = new UIContainer(gui, (this.width - middleContainerWidth - 5) / 2, UIComponent.INHERITED);
         rightContainer.setBackgroundAlpha(0);
