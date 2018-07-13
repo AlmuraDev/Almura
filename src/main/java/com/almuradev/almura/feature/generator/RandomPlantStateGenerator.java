@@ -80,7 +80,7 @@ public class RandomPlantStateGenerator {
             plantAge = 5;
         } else if (plant == 18) {
             plantName = "almura:crop/coffee_bean";
-            plantAge = 4;
+            plantAge = 5;
         } else if (plant == 19) {
             plantName = "almura:crop/concord_grape";
             plantAge = 3;
