@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
 
     protected UIButton buttonOne, buttonStack, buttonItem, buttonAll, buttonDirection;
-    protected int leftItemLimit = -1, rightItemLimit = -1;
+    protected long leftItemLimit = -1, rightItemLimit = -1;
     private ContainerSide targetSide = ContainerSide.RIGHT;
 
     public UIExchangeOfferContainer(MalisisGui gui, int width, int height, Text leftTitle, Text rightTitle,
@@ -121,7 +121,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
         super.updateControls(selectedValue, containerSide);
     }
 
-    public UIExchangeOfferContainer setItemLimit(int limit, ContainerSide target) {
+    public UIExchangeOfferContainer setItemLimit(long limit, ContainerSide target) {
         if (target == ContainerSide.LEFT) {
             this.leftItemLimit = limit;
         } else {
@@ -140,7 +140,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
                 break;
             case STACK:
                 if (offer == null) break;
-                this.transferQuantity(target, offer, offer.item.getQuantity());
+                this.transferQuantity(target, offer, offer.quantity);
                 break;
             case ITEM:
                 if (offer == null) break;
@@ -157,10 +157,10 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
         this.fireEvent(new TransactionEvent<>(this, target, type));
     }
 
-    private void transferQuantity(ContainerSide target, MockOffer offer, int quantity) {
+    private void transferQuantity(ContainerSide target, MockOffer offer, long quantity) {
         final UIDynamicList<MockOffer> targetList = this.getListFromSide(target);
         final UIDynamicList<MockOffer> sourceList = this.getOpposingListFromSide(target);
-        final int targetSideLimit = this.getLimitFromSide(target);
+        final long targetSideLimit = this.getLimitFromSide(target);
 
         if (offer == null
                 || targetList.getItems().stream().noneMatch(o -> ItemStackComparators.IGNORE_SIZE.compare(o.item, offer.item) == 0)
@@ -169,19 +169,19 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
             return;
         }
 
-        final int targetStackMaxQuantity = target == ContainerSide.LEFT ? offer.item.getMaxStackQuantity() : Integer.MAX_VALUE;
+        final long targetStackMaxQuantity = target == ContainerSide.LEFT ? offer.item.getMaxStackQuantity() : Long.MAX_VALUE;
 
         final MockOffer targetOffer = targetList.getItems().stream()
-                .filter(o -> ItemStackComparators.IGNORE_SIZE.compare(o.item, offer.item) == 0 && o.item.getQuantity() < targetStackMaxQuantity)
+                .filter(o -> ItemStackComparators.IGNORE_SIZE.compare(o.item, offer.item) == 0 && o.quantity < targetStackMaxQuantity)
                 .findFirst()
                 .orElseGet(() -> {
                     final MockOffer newOffer = new MockOffer(offer.item.copy(), Minecraft.getMinecraft().player);
-                    newOffer.item.setQuantity(0);
+                    newOffer.quantity = 0;
                     targetList.addItem(newOffer);
                     return newOffer;
                 });
 
-        final int remainder;
+        final long remainder;
         remainder = this.addQuantity(targetList, targetOffer, quantity, targetStackMaxQuantity);
         this.removeQuantity(sourceList, offer, quantity - remainder);
         if (remainder > 0) {
@@ -191,10 +191,10 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
 
     private void transferAll(ContainerSide target) {
         final List<MockOffer> toCopy = new ArrayList<>(this.getOpposingListFromSide(target).getItems());
-        toCopy.forEach(o -> this.transferQuantity(target, o, o.item.getQuantity()));
+        toCopy.forEach(o -> this.transferQuantity(target, o, o.quantity));
     }
 
-    private int getLimitFromSide(ContainerSide side) {
+    private long getLimitFromSide(ContainerSide side) {
         if (side == ContainerSide.LEFT) {
             return this.leftItemLimit;
         }
@@ -202,23 +202,23 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
         return this.rightItemLimit;
     }
 
-    private int addQuantity(UIDynamicList<MockOffer> list, MockOffer offer, int quantity, int max) {
-        final int initialQuantity = offer.item.getQuantity();
-        final int rawTotalQuantity = initialQuantity + quantity;
-        final int newQuantity = Math.min(rawTotalQuantity, max);
-        final int remainder = rawTotalQuantity - newQuantity;
+    private long addQuantity(UIDynamicList<MockOffer> list, MockOffer offer, long quantity, long max) {
+        final long initialQuantity = offer.quantity;
+        final long rawTotalQuantity = initialQuantity + quantity;
+        final long newQuantity = Math.min(rawTotalQuantity, max);
+        final long remainder = rawTotalQuantity - newQuantity;
 
-        offer.item.setQuantity(newQuantity);
+        offer.quantity = newQuantity;
 
         this.fireEvent(new UIDynamicList.ItemsChangedEvent<>(list));
 
         return remainder;
     }
 
-    private int removeQuantity(UIDynamicList<MockOffer> list, MockOffer offer, int quantity) {
-        final int initialQuantity = offer.item.getQuantity();
-        final int newQuantity = initialQuantity - quantity;
-        offer.item.setQuantity(Math.max(0, newQuantity));
+    private long removeQuantity(UIDynamicList<MockOffer> list, MockOffer offer, long quantity) {
+        final long initialQuantity = offer.quantity;
+        final long newQuantity = initialQuantity - quantity;
+        offer.quantity = Math.max(0, newQuantity);
 
         if (newQuantity <= 0) {
             list.removeItem(offer);

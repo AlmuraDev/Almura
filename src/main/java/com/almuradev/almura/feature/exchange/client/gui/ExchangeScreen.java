@@ -16,15 +16,15 @@ import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
-import com.google.common.eventbus.Subscribe;
+import com.google.common.collect.Lists;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.client.gui.component.container.UIListContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
@@ -50,6 +50,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -68,41 +69,50 @@ import javax.inject.Inject;
 @SideOnly(Side.CLIENT)
 public final class ExchangeScreen extends SimpleScreen {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
+    private static final DecimalFormat defaultDecimalFormat = new DecimalFormat("#,##0.##");
+    private static final double MILLION = 1000000.0;
+    private static final double BILLION = 1000000000.0;
+    private static final double TRILLION = 1000000000000.0;
+    private static final int minScreenWidth = 600;
+    private static final int minScreenHeight = 370;
     private static final int innerPadding = 2;
+
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
-
-    private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity;
+    private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
+            buttonList, buttonSetPrice;
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
-    private UIDynamicList<MockOffer> resultsDynamicList;
-    private UIFormContainer form;
+    private UIDynamicList<MockOffer> resultsList, sellingList;
     private final List<MockOffer> allOffers = new ArrayList<>();
     private final List<MockOffer> currentResults = new ArrayList<>();
     private final List<MockOffer> playerOffers = new ArrayList<>();
     private int currentPage;
     private int pages;
-    private int screenWidth = 600;
-    private int screenHeight = 370;
 
     @Inject private static Logger logger;
     @Inject private static ClientNotificationManager clientNotificationManager;
 
     public ExchangeScreen() {
         // ADD MOCK DATA
-        allOffers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
-        allOffers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
-        allOffers.add(createMockOffer(ItemTypes.ACACIA_BOAT));
-        allOffers.add(createMockOffer(ItemTypes.SNOWBALL));
-        allOffers.add(createMockOffer(ItemTypes.WATER_BUCKET));
-        allOffers.add(createMockOffer(ItemTypes.GOLDEN_AXE));
-        allOffers.add(createMockOffer(ItemTypes.STONE));
-        allOffers.add(createMockOffer(ItemTypes.PUMPKIN));
-        allOffers.add(createMockOffer(ItemTypes.END_ROD));
-        allOffers.add(createMockOffer(ItemTypes.APPLE));
-        allOffers.add(createMockOffer(ItemTypes.BAKED_POTATO));
-        allOffers.add(createMockOffer(ItemTypes.CARROT));
+        final List<List<MockOffer>> testList = Lists.newArrayList(this.allOffers, this.playerOffers);
+
+        for (List<MockOffer> list : testList) {
+            list.add(createMockOffer(ItemTypes.ACACIA_BOAT));
+            list.add(createMockOffer(ItemTypes.ACACIA_BOAT));
+            list.add(createMockOffer(ItemTypes.ACACIA_BOAT));
+            list.add(createMockOffer(ItemTypes.SNOWBALL));
+            list.add(createMockOffer(ItemTypes.WATER_BUCKET));
+            list.add(createMockOffer(ItemTypes.GOLDEN_AXE));
+            list.add(createMockOffer(ItemTypes.STONE));
+            list.add(createMockOffer(ItemTypes.PUMPKIN));
+            list.add(createMockOffer(ItemTypes.END_ROD));
+            list.add(createMockOffer(ItemTypes.APPLE));
+            list.add(createMockOffer(ItemTypes.BAKED_POTATO));
+            list.add(createMockOffer(ItemTypes.CARROT));
+
+        }
     }
 
     @Override
@@ -110,8 +120,15 @@ public final class ExchangeScreen extends SimpleScreen {
         guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
+        // Detect if screen area is large enough to display.
+        if (minScreenWidth > resolution.getScaledWidth() || minScreenHeight > resolution.getScaledHeight()) {
+            clientNotificationManager.queuePopup(new PopupNotification(Text.of("Exchange Error"),
+                    Text.of("Screen area of: " + minScreenHeight + " x " + minScreenWidth + " required."), 5));
+            this.close();
+        }
+
         // Main Panel
-        form = new UIFormContainer(this, screenWidth, screenHeight, "");
+        final UIFormContainer form = new UIFormContainer(this, minScreenWidth, minScreenHeight, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -160,12 +177,12 @@ public final class ExchangeScreen extends SimpleScreen {
         comboBoxSortType.select(SortType.PRICE_ASC);
         comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchField.getY(), Anchor.RIGHT | Anchor.TOP);
 
-        this.resultsDynamicList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 250);
-        this.resultsDynamicList.setPosition(innerPadding, getPaddedY(sellerSearchField, 8));
-        this.resultsDynamicList.setItemComponentFactory((g, e) -> new ResultItemComponent(this, e));
-        this.resultsDynamicList.setItemComponentSpacing(1);
-        this.resultsDynamicList.setCanDeselect(true);
-        this.resultsDynamicList.register(this);
+        this.resultsList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 250);
+        this.resultsList.setPosition(innerPadding, getPaddedY(sellerSearchField, 8));
+        this.resultsList.setItemComponentFactory((g, e) -> new ResultItemComponent(this, e));
+        this.resultsList.setItemComponentSpacing(1);
+        this.resultsList.setCanDeselect(true);
+        this.resultsList.setSelectConsumer((i) -> this.updateControls());
 
         // Search button
         final UIButton buttonSearch = new UIButtonBuilder(this)
@@ -239,7 +256,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Add Elements of Search Area
         searchArea.add(itemSearchLabel, this.itemSearchField, sellerSearchLabel, this.sellerSearchField, buttonSearch, comboBoxSortType,
-                this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.resultsDynamicList, this.labelSearchPage);
+                this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.resultsList, this.labelSearchPage);
 
         // Economy Pane
         final UIFormContainer economyActionArea = new UIFormContainer(this, 295, 20, "");
@@ -277,7 +294,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .enabled(false)
                 .build("button.buy.quantity");
 
-        economyActionArea.add(buttonBuyStack, buttonBuySingle, buttonBuyQuantity);
+        economyActionArea.add(this.buttonBuyStack, this.buttonBuySingle, this.buttonBuyQuantity);
 
         // Inventory Area Section (right pane)
         final UIFormContainer inventoryArea = new UIFormContainer(this, 295, 345, "");
@@ -288,20 +305,35 @@ public final class ExchangeScreen extends SimpleScreen {
         inventoryArea.setBackgroundAlpha(215);
         inventoryArea.setPadding(3, 3);
 
+        this.sellingList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 315);
+        this.sellingList.setPosition(innerPadding, innerPadding);
+        this.sellingList.setItemComponentFactory(ListingItemComponent::new);
+        this.sellingList.setItems(this.playerOffers);
+        this.sellingList.setItemComponentSpacing(1);
+        this.sellingList.setCanDeselect(true);
+        this.sellingList.setSelectConsumer((i) -> this.updateControls());
+
         // Bottom Economy Pane - buyStack button
-        final UIButton buttonList = new UIButtonBuilder(this)
+        this.buttonList = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.LEFT | Anchor.BOTTOM)
-                .position(0,0)
+                .position(0, 0)
                 .text("List")
                 .enabled(false)
+                .onClick(() -> {
+                    final MockOffer offer = this.sellingList.getSelectedItem();
+                    if (offer != null) {
+                        offer.listed = !offer.listed;
+                    }
+                    this.updateControls();
+                })
                 .build("button.list");
 
         // Bottom Economy Pane - buyStack button
-        final UIButton buttonSetPrice = new UIButtonBuilder(this)
+        this.buttonSetPrice = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.CENTER | Anchor.BOTTOM)
-                .position(0,0)
+                .position(0, 0)
                 .text("Set Price")
                 .enabled(false)
                 .build("button.setprice");
@@ -310,23 +342,17 @@ public final class ExchangeScreen extends SimpleScreen {
         final UIButton buttonRemoveItem = new UIButtonBuilder(this)
                 .width(30)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .position(0,0)
+                .position(0, 0)
                 .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
                 .enabled(true)
                 .onClick(() -> new ExchangeOfferScreen(this).display())
                 .build("button.add_remove");
 
-        inventoryArea.add(buttonList, buttonSetPrice, buttonRemoveItem);
+        inventoryArea.add(sellingList, buttonList, buttonSetPrice, buttonRemoveItem);
 
-        this.form.add(searchArea, economyActionArea, inventoryArea);
+        form.add(searchArea, economyActionArea, inventoryArea);
 
-        // Detect if screen area is large enough to display.
-        if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
-            clientNotificationManager.queuePopup(new PopupNotification(Text.of("Exchange Error"), Text.of("Screen area of: " + screenHeight + " x " + screenWidth + " required."), 5));
-            this.close();
-        } else {
-            addToScreen(form);
-        }
+        addToScreen(form);
     }
 
     protected Consumer<Task> openWindow(String details) {  // Scheduler
@@ -365,14 +391,6 @@ public final class ExchangeScreen extends SimpleScreen {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
     }
 
-    @Subscribe
-    private void onElementSelect(UIListContainer.SelectEvent event) {
-        final boolean isSelected = event.getNewValue() != null;
-        this.buttonBuyStack.setEnabled(isSelected);
-        this.buttonBuySingle.setEnabled(isSelected);
-        this.buttonBuyQuantity.setEnabled(isSelected);
-    }
-
     @SuppressWarnings("deprecation")
     private void setPage(int page) {
         page = MathUtil.squashi(page, 1, this.pages);
@@ -386,8 +404,27 @@ public final class ExchangeScreen extends SimpleScreen {
 
         this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, page, "/", pages)));
 
-        this.resultsDynamicList.setSelectedItem(null); // Clear selection
-        this.resultsDynamicList.setItems(this.currentResults.stream().skip((page - 1) * 10).limit(10).collect(Collectors.toList()));
+        this.resultsList.setSelectedItem(null); // Clear selection
+        this.resultsList.setItems(this.currentResults.stream().skip((page - 1) * 10).limit(10).collect(Collectors.toList()));
+    }
+
+    private void updateControls() {
+
+        // Results list
+        final boolean isResultSelected = this.resultsList.getSelectedItem() != null;
+        // TODO: Logic for buying buttons
+
+        // Selling list
+        final boolean isSellingItemSelected = this.sellingList.getSelectedItem() != null;
+
+        this.buttonList.setEnabled(isSellingItemSelected);
+        this.buttonSetPrice.setEnabled(isSellingItemSelected);
+
+        if (isSellingItemSelected && this.sellingList.getSelectedItem().listed) {
+            this.buttonList.setText("Unlist");
+        } else {
+            buttonList.setText("List");
+        }
     }
 
     public List<MockOffer> getResults(String itemName, String username, SortType sort) {
@@ -411,14 +448,26 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public MockOffer createMockOffer(final ItemType type) {
-        final int quantity = ThreadLocalRandom.current().nextInt(1, 64);
+        final long quantity = ThreadLocalRandom.current().nextLong(1, 2000000000);
         final BigDecimal pricePer = BigDecimal.valueOf(ThreadLocalRandom.current().nextInt(0, 10000));
         return new MockOffer(Instant.now(),
-                             ItemStack.of(type, quantity), pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
+                             ItemStack.of(type, 1), quantity, pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
+    }
+
+    public static String withSuffix(long value) {
+        if (value < 1000000) {
+            return defaultDecimalFormat.format(value);
+        } else if (value < BILLION) {
+            return defaultDecimalFormat.format(value / MILLION) + "m";
+        } else if (value < TRILLION) {
+            return defaultDecimalFormat.format(value / BILLION) + "b";
+        }
+
+        return defaultDecimalFormat.format(value / TRILLION) + "t";
     }
 
     @SuppressWarnings("unchecked, deprecation")
-    public static class ExchangeItemComponent<T> extends UIDynamicList.ItemComponent {
+    public static class ExchangeItemComponent<T> extends UIDynamicList.ItemComponent<T> {
 
         private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
         private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
@@ -450,7 +499,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
                 final int width = parent.getWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
 
-                setSize(width, getHeight());
+                this.setSize(width, getHeight());
 
                 if (parent.getSelectedItem() == this.item) {
                     this.setColor(INNER_SELECTED_COLOR);
@@ -465,20 +514,21 @@ public final class ExchangeScreen extends SimpleScreen {
         }
     }
 
-    public static final class ResultItemComponent extends ExchangeItemComponent<MockOffer> {
+    public static class BaseItemComponent extends ExchangeItemComponent<MockOffer> {
 
         private UIComplexImage image;
-        private UILabel itemLabel, priceLabel, sellerLabel;
+        private UILabel itemLabel;
 
-        private ResultItemComponent(final MalisisGui gui, final MockOffer tag) {
-            super(gui, tag);
+        public BaseItemComponent(final MalisisGui gui, final MockOffer offer) {
+            super(gui, offer);
         }
 
         @SuppressWarnings("deprecation")
         @Override
-        protected void construct(final MalisisGui gui, final MockOffer tag) {
+        protected void construct(final MalisisGui gui, final MockOffer offer) {
             // Add components
-            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(tag.item);
+            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(offer.item.copy());
+            fakeStack.setCount(1);
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
@@ -490,11 +540,10 @@ public final class ExchangeScreen extends SimpleScreen {
 
             final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
             final int maxItemTextWidth = fontRenderer.getStringWidth("999999999999999999");
-            final int maxPlayerTextWidth = fontRenderer.getStringWidth("9999999999999999");
 
             // Limit item name to prevent over drawing
             final StringBuilder itemTextBuilder = new StringBuilder();
-            for (char c : (tag.item.getTranslation().get()).toCharArray()) {
+            for (char c : offer.item.getTranslation().get().toCharArray()) {
                 final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c);
                 if (textWidth > maxItemTextWidth + 4) {
                     itemTextBuilder.replace(itemTextBuilder.length() - 3, itemTextBuilder.length(), "...");
@@ -502,21 +551,108 @@ public final class ExchangeScreen extends SimpleScreen {
                 }
                 itemTextBuilder.append(c);
             }
-            this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, itemTextBuilder.toString())));
+            this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.WHITE, itemTextBuilder.toString(), TextColors.GRAY, " x ", withSuffix(offer.quantity))));
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
+            this.itemLabel.setTooltip(new UISaneTooltip(gui, defaultDecimalFormat.format(offer.quantity)));
+
+            this.add(this.image, this.itemLabel);
+        }
+
+        @Override
+        public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+            super.draw(renderer, mouseX, mouseY, partialTick);
+
+            // UILabel doesn't support tooltips out of the box, this is a hack that doesn't work 100% (gets clipped)
+            // but is better than nothing.
+            if (this.itemLabel.isInsideBounds(mouseX, mouseY)) {
+                this.itemLabel.getTooltip().draw(renderer, mouseX, mouseY, partialTick);
+            }
+        }
+    }
+
+    public static final class ResultItemComponent extends BaseItemComponent {
+
+        private UILabel priceLabel, sellerLabel;
+
+        private ResultItemComponent(MalisisGui gui, MockOffer offer) {
+            super(gui, offer);
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        protected void construct(final MalisisGui gui, final MockOffer offer) {
+            super.construct(gui, offer);
+
+            final int maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
 
             this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GRAY, TextStyles.ITALIC, tag.playerName)
+                    Text.of(TextColors.GRAY, TextStyles.ITALIC, offer.playerName)
             ));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             this.priceLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GOLD, tag.pricePer, TextColors.GRAY, "/ea")
+                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")
             ));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
+            this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(offer.quantity).multiply(offer.pricePer)));
 
-            this.add(this.image, this.itemLabel, this.priceLabel, this.sellerLabel);
+            this.add(this.sellerLabel, this.priceLabel);
+        }
+
+        @Override
+        public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+            super.draw(renderer, mouseX, mouseY, partialTick);
+
+            // UILabel doesn't support tooltips out of the box, this is a hack that doesn't work 100% (gets clipped)
+            // but is better than nothing.
+            if (this.priceLabel.isInsideBounds(mouseX, mouseY)) {
+                this.priceLabel.getTooltip().draw(renderer, mouseX, mouseY, partialTick);
+            }
+        }
+    }
+
+    public static final class ListingItemComponent extends BaseItemComponent {
+
+        private UIContainer<?> statusContainer;
+        private UILabel priceLabel;
+        private MockOffer item;
+
+        private ListingItemComponent(MalisisGui gui, MockOffer offer) {
+            super(gui, offer);
+            this.item = offer;
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        protected void construct(final MalisisGui gui, final MockOffer offer) {
+            super.construct(gui, offer);
+
+            this.statusContainer = new UIContainer<>(gui, 5, this.height - (this.borderSize * 2));
+            this.statusContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
+            this.statusContainer.setColor(FontColors.DARK_GREEN);
+
+            this.priceLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")
+            ));
+            this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
+            this.priceLabel.setPosition(-(this.statusContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
+            this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(offer.quantity).multiply(offer.pricePer)));
+
+            this.add(this.statusContainer, this.priceLabel);
+        }
+
+        @Override
+        public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+            this.statusContainer.setAlpha(this.item.listed ? 255 : 0);
+            super.draw(renderer, mouseX, mouseY, partialTick);
+
+            // UILabel doesn't support tooltips out of the box, this is a hack that doesn't work 100% (gets clipped)
+            // but is better than nothing.
+            if (this.priceLabel.isInsideBounds(mouseX, mouseY)) {
+                this.priceLabel.getTooltip().draw(renderer, mouseX, mouseY, partialTick);
+            }
         }
     }
 

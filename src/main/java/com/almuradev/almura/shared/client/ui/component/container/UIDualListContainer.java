@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.shared.client.ui.component.container;
 
-import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.google.common.eventbus.Subscribe;

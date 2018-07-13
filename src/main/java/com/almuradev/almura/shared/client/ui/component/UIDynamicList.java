@@ -7,12 +7,11 @@
  */
 package com.almuradev.almura.shared.client.ui.component;
 
+import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import net.malisis.core.client.gui.ClipArea;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
 import net.malisis.core.client.gui.event.ComponentEvent;
@@ -23,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
@@ -35,12 +35,15 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     private int itemSpacing = 0;
     private BiFunction<MalisisGui, T, ? extends ItemComponent<?>> itemComponentFactory = DefaultItemComponent::new;
     @Nullable private T selectedItem;
+    @Nullable Consumer<T> onSelectConsumer;
 
     public UIDynamicList(MalisisGui gui, int width, int height) {
         super(gui, width, height);
 
         this.scrollbar = new UISlimScrollbar(gui, this, UIScrollBar.Type.VERTICAL);
         this.scrollbar.setAutoHide(true);
+
+        this.setBackgroundAlpha(0);
     }
 
     /**
@@ -150,6 +153,9 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
             if (this.fireEvent(new SelectEvent<>(this, this.selectedItem, item))) {
                 this.selectedItem = item;
                 this.isDirty = true;
+                if (this.onSelectConsumer != null) {
+                    this.onSelectConsumer.accept(item);
+                }
             }
         }
 
@@ -228,6 +234,16 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         return this;
     }
 
+    @Nullable
+    public Consumer<T> getSelectConsumer() {
+        return this.onSelectConsumer;
+    }
+
+    public UIDynamicList<T> setSelectConsumer(Consumer<T> onSelectConsumer) {
+        this.onSelectConsumer = onSelectConsumer;
+        return this;
+    }
+
     public UIScrollBar getScrollBar() {
         return this.scrollbar;
     }
@@ -274,7 +290,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         super.draw(renderer, mouseX, mouseY, partialTick);
     }
 
-    public static class ItemComponent<T> extends UIBackgroundContainer {
+    public static class ItemComponent<T> extends UIContainer<ItemComponent<T>> {
         protected T item;
 
         public ItemComponent(MalisisGui gui, T item) {

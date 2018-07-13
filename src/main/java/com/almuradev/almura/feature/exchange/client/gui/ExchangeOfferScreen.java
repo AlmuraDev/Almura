@@ -87,8 +87,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
         final UIExchangeOfferContainer offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
                 Text.of(TextColors.WHITE, "Inventory"),
                 Text.of(TextColors.WHITE, "Held Items"),
-                InventoryItemComponent::new,
-                InventoryItemComponent::new);
+                ExchangeScreen.BaseItemComponent::new,
+                ExchangeScreen.BaseItemComponent::new);
         offerContainer.setItemLimit(this.maxOfferSlots, UIDualListContainer.ContainerSide.RIGHT);
         offerContainer.register(this);
 
@@ -115,47 +115,5 @@ public class ExchangeOfferScreen extends SimpleScreen {
         final int size = event.getComponent().getItems(UIDualListContainer.ContainerSide.RIGHT).size();
         this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
         this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
-    }
-
-    private static final class InventoryItemComponent extends ExchangeScreen.ExchangeItemComponent<MockOffer> {
-        private UIComplexImage image;
-        private UILabel itemLabel;
-
-        private InventoryItemComponent(final MalisisGui gui, final MockOffer tag) {
-            super(gui, tag);
-        }
-
-        @SuppressWarnings("deprecation")
-        @Override
-        protected void construct(final MalisisGui gui, final MockOffer tag) {
-            // Add components
-            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(tag.item);
-            final EntityPlayer player = Minecraft.getMinecraft().player;
-            final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
-
-            this.image = new UIComplexImage(gui, fakeStack);
-            this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
-                    ? ITooltipFlag.TooltipFlags.ADVANCED
-                    : ITooltipFlag.TooltipFlags.NORMAL))));
-
-            final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-            final int maxItemTextWidth = fontRenderer.getStringWidth("999999999999999999");
-
-            // Limit item name to prevent over drawing
-            final StringBuilder itemTextBuilder = new StringBuilder();
-            for (char c : (tag.item.getTranslation().get()).toCharArray()) {
-                final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c);
-                if (textWidth > maxItemTextWidth + 4) {
-                    itemTextBuilder.replace(itemTextBuilder.length() - 3, itemTextBuilder.length(), "...");
-                    break;
-                }
-                itemTextBuilder.append(c);
-            }
-            this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, itemTextBuilder.toString())));
-            this.itemLabel.setPosition(SimpleScreen.getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
-
-            this.add(this.image, this.itemLabel);
-        }
     }
 }
