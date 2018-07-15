@@ -39,6 +39,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.item.ItemType;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Random;
 
@@ -294,7 +297,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
             final DoubleRange temperatureRequiredRange = growth.getOrLoadTemperatureRequiredRangeForBiome(biome);
 
             if (temperatureRequiredRange != null) {
-                final float biomeTemperature = biome.getTemperature(pos);
+                float biomeTemperature = this.round(biome.getTemperature(pos),2);
 
                 if (!temperatureRequiredRange.contains(biomeTemperature)) {
                     rollback = true; // Range Check
@@ -385,5 +388,11 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
             }
         }
         return true;
+    }
+
+    private static float round(float number, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(number);
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 }

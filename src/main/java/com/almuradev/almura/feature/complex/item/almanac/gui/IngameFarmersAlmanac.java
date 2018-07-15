@@ -40,6 +40,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
@@ -50,6 +51,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Tuple;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Optional;
@@ -66,10 +68,14 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     private final Minecraft client = Minecraft.getMinecraft();
     private final ClientboundWorldPositionInformationPacket message;
     private UIBackgroundContainer propertyContainer;
+    private UILabel cropStatusLabel;
     private int lastPropertyY = 4;
 
     private boolean unlockMouse = true;
     private int lastUpdate = 0;
+
+    private boolean growing = true;
+    private boolean readyForHarvest = false;
 
     public IngameFarmersAlmanac(ClientboundWorldPositionInformationPacket message) {
         this.message = message;
@@ -95,6 +101,12 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         final IBlockState blockState = getState(world, blockPos);
         final Block block = blockState.getBlock();
 
+        // Line separator
+        final UISeparator separator = new UISeparator(this);
+        separator.setSize(form.getWidth(), 1);
+        separator.setPosition(0, -5, Anchor.TOP | Anchor.CENTER);
+        form.add(separator);
+
         // Block image
         final ItemStack pickStack = blockState.getBlock().getPickBlock(blockState, omo, this.client.world, omo.getBlockPos(), this.client.player);
         final UIImage blockImage = new UIImage(this, pickStack);
@@ -115,24 +127,48 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         form.add(labelRegistryName);
 
         // Line separator
-        final UISeparator separator = new UISeparator(this);
-        separator.setSize(form.getWidth() - 15, 1);
-        separator.setPosition(0, SimpleScreen.getPaddedY(labelRegistryName, 3), Anchor.TOP | Anchor.CENTER);
-        form.add(separator);
+        final UISeparator separator2 = new UISeparator(this);
+        separator2.setSize(form.getWidth(), 1);
+        separator2.setPosition(0, SimpleScreen.getPaddedY(labelRegistryName, 3), Anchor.TOP | Anchor.CENTER);
+        form.add(separator2);
 
         // Property container
         this.propertyContainer = new UIBackgroundContainer(this);
         new UISlimScrollbar(this, this.propertyContainer, UIScrollBar.Type.VERTICAL).setAutoHide(true);
         this.propertyContainer.setBackgroundAlpha(50);
-        this.propertyContainer.setPosition(0, SimpleScreen.getPaddedY(separator, 5));
+        this.propertyContainer.setPosition(0, SimpleScreen.getPaddedY(separator2, 5));
 
         form.add(this.propertyContainer);
+
+        this.cropStatusLabel = new UILabel(this); // Init this early so we can load stuff to it later.
 
         // Get all displayed properties
         loadProperties(world, blockState, blockPos);
 
         // Adjust the size of the container to reach at most the specified max height
-        propertyContainer.setSize(UIComponent.INHERITED, Math.min(propertyContainerMaxHeight, propertyContainer.getContentHeight()));
+        this.propertyContainer.setSize(UIComponent.INHERITED, Math.min(propertyContainerMaxHeight, propertyContainer.getContentHeight()));
+
+        // Line separator
+        final UISeparator separator3 = new UISeparator(this);
+        separator3.setSize(form.getWidth(), 1);
+        separator3.setPosition(0,-22, Anchor.BOTTOM | Anchor.CENTER);
+        form.add(separator3);
+
+        // Localized name
+
+        if (this.growing) {
+            this.cropStatusLabel.setText(TextFormatting.DARK_GREEN + "Growing...");
+        } else {
+            this.cropStatusLabel.setText(TextFormatting.RED + "Dying!");
+        }
+
+        if (this.readyForHarvest) {
+            this.cropStatusLabel.setText(TextFormatting.GREEN + "Ready for Harvest!");
+        }
+
+        this.cropStatusLabel.setFontOptions(FontColors.WHITE_FO);
+        this.cropStatusLabel.setPosition(5,-5, Anchor.BOTTOM | Anchor.LEFT);
+        form.add(cropStatusLabel);
 
         final UIButton closeButton = new UIButtonBuilder(this)
                 .text("Close")
@@ -146,7 +182,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         form.setSize(form.getContentWidth() + leftPad, form.getContentHeight() + closeButton.getHeight() + 10);
 
         // Readjust size for width because MalisisCore doesn't account for the scrollbar with UIComponent.INHERITED
-        propertyContainer.setSize(propertyContainer.getWidth() - 1, propertyContainer.getHeight());
+        this.propertyContainer.setSize(propertyContainer.getWidth() - 1, propertyContainer.getHeight());
 
         addToScreen(form);
 
@@ -156,9 +192,9 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
-        if (unlockMouse && this.lastUpdate == 25) {
+        if (this.unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
-            unlockMouse = false; // Only unlock once per session.
+            this.unlockMouse = false; // Only unlock once per session.
         }
         if (++this.lastUpdate > 100) {
             // I am winning now.
@@ -190,55 +226,78 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
         // Growth stage
         getGrowthStage(blockState)
-                .ifPresent(growthStage -> this.addLineLabel(this.getGenericPropertyText("Growth Stage",
-                                String.format("%d of %d", growthStage.getFirst(), growthStage.getSecond()))));
+                .ifPresent(growthStage ->
+                        this.addLineLabel(this.getGenericPropertyText("Growth Stage",String.format("%d of %d", growthStage.getFirst(), growthStage.getSecond()))));
+
+        getGrowthStage(blockState)
+                .ifPresent(growthStage ->
+                        readyForHarvest = growthStage.getFirst() == growthStage.getSecond());
 
         // Ground moisture
         final IBlockState moistureBlockStateTarget = blockState.getBlock() instanceof BlockCrops ? world.getBlockState(targetBlockPos.down()) : blockState;
         final int moistureLevel = getMoistureLevel(moistureBlockStateTarget);
         final boolean isFertile = moistureLevel > 0;
         final TextColor fertileColor = isFertile ? TextColors.DARK_GREEN : TextColors.RED;
-        this.addLineLabel(Text.of(TextColors.WHITE, "Moisture: ", fertileColor, isFertile ? "Fertile" : "Too dry"));
+        this.addLineLabel(Text.of(TextColors.WHITE, "Soil Quality: ", fertileColor, isFertile ? "Fertile" : "Too dry"));
+        if (isFertile) {
+            final TextColor moistureColor = moistureLevel > 3 ? TextColors.DARK_GREEN : TextColors.YELLOW;
+            this.addLineLabel(Text.of(TextColors.WHITE, "Moisture Level: ", moistureColor, moistureLevel), 2);
+        }
 
         // Ground temperature
         final DoubleRange temperatureRange = getTemperatureRange(world, blockState, targetBlockPos).orElse(null);
+
         if (temperatureRange != null) {
-            final TextColor temperatureColor = MathUtil.withinRange(message.biomeTemperature, temperatureRange.min(), temperatureRange.max())
+            if (!MathUtil.withinRange(this.round(message.biomeTemperature,2), temperatureRange.min(), temperatureRange.max())) {
+                this.growing = false;
+            }
+            final TextColor temperatureColor = MathUtil.withinRange(this.round(message.biomeTemperature,2), temperatureRange.min(), temperatureRange.max())
                     ? TextColors.DARK_GREEN
                     : TextColors.RED;
             this.addLineLabel(Text.of(TextColors.WHITE, "Ground Temperature: ", temperatureColor, numberFormat.format(message.biomeTemperature)));
             this.addLineLabel(this.getGenericPropertyText("Required",
                     String.format("%s-%s", numberFormat.format(temperatureRange.min()), numberFormat.format(temperatureRange.max()))), 2);
+        } else { //Is a farmland block
+            this.addLineLabel(Text.of(TextColors.WHITE, "Ground Temperature: ", TextColors.DARK_GREEN, numberFormat.format(message.biomeTemperature)));
         }
 
         // Biome rain
         this.addLineLabel(Text.of(TextColors.WHITE, "Rain: ",
-                        message.biomeRainfall > 0.4 ? TextColors.DARK_GREEN : TextColors.RED, numberFormat.format(message.biomeRainfall)));
+                        message.biomeRainfall > 0.5 ? TextColors.DARK_GREEN : TextColors.RED, numberFormat.format(message.biomeRainfall)));
 
-        // Sunlight value
-        final int sunlight = world.getLightFor(EnumSkyBlock.SKY, targetBlockPos) - world.getSkylightSubtracted();
-        final TextColor sunlightColor = sunlight < 6 ? TextColors.RED : TextColors.DARK_GREEN;
-        this.addLineLabel(Text.of(TextColors.WHITE, "Sunlight: ", sunlightColor, String.valueOf(sunlight)));
+        // Server light values, can't trust client world. lookups.
+        final int sunlight = message.skyLight;
+        final int areaLight = message.blockLight;
+        final int combinedLightValue = message.combinedLight;
 
         // Area light value
         final DoubleRange lightRange = getLightRange(world, blockState, targetBlockPos).orElse(null);
         if (lightRange != null) {
-            final int lightValue = world.getLightFromNeighbors(targetBlockPos);
-            final TextColor lightColor = MathUtil.withinRange(lightValue, lightRange.min(), lightRange.max())
-                    ? TextColors.DARK_GREEN
-                    : TextColors.RED;
-            this.addLineLabel(Text.of(TextColors.WHITE, "Area light: ", lightColor, String.valueOf(lightValue)));
+            if (!MathUtil.withinRange(combinedLightValue, lightRange.min(), lightRange.max())) {
+                this.growing = false;
+            }
+
+            final TextColor combinedlightColor = MathUtil.withinRange(combinedLightValue, lightRange.min(), lightRange.max()) ? TextColors.DARK_GREEN : TextColors.RED;
+            this.addLineLabel(Text.of(TextColors.WHITE, "Combined Light: ", combinedlightColor, String.valueOf(combinedLightValue)));
             this.addLineLabel(this.getGenericPropertyText("Required",
                     String.format("%s-%s", numberFormat.format(lightRange.min()), numberFormat.format(lightRange.max()))), 2);
+            this.addLineLabel(Text.of(TextColors.WHITE, "Sunlight: ", TextColors.YELLOW, String.valueOf(sunlight)),4);
+            this.addLineLabel(Text.of(TextColors.WHITE, "Area light: ", TextColors.YELLOW, String.valueOf(areaLight)),4);
+        } else { // is farmland
+            this.addLineLabel(Text.of(TextColors.WHITE, "Combined Light: ", TextColors.DARK_GREEN, String.valueOf(combinedLightValue)));
         }
 
         // Can Die
-        this.addLineLabel(this.getGenericPropertyText("Can Die", String.valueOf(canRollback(blockState))));
+        if (!(blockState.getBlock() instanceof BlockFarmland)) {
+            this.addLineLabel(this.getGenericPropertyText("Can Die", String.valueOf(canRollback(blockState))));
+        } else {
+            this.cropStatusLabel.setVisible(false);
+        }
 
         // Harvest Tool
         final String harvestTool = blockState.getBlock().getHarvestTool(blockState);
         if (harvestTool != null && !harvestTool.isEmpty()) {
-            addLineLabel(this.getGenericPropertyText("Harvested by", harvestTool));
+            this.addLineLabel(this.getGenericPropertyText("Harvested by", harvestTool));
         }
     }
 
@@ -273,6 +332,12 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         }
 
         return 0;
+    }
+
+    private static float round(float number, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(number);
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 
     private static Optional<Tuple<Integer, Integer>> getGrowthStage(IBlockState blockState) {

@@ -16,14 +16,14 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
     public float hitX, hitY, hitZ;
     public String biomeId;
     public float biomeTemperature, biomeRainfall; // TODO One day we will have the client know all of the biome's information if from TC
-    public int blockLight, skyLight;
+    public int blockLight, skyLight, combinedLight;
 
     public ClientboundWorldPositionInformationPacket() {
 
     }
 
     public ClientboundWorldPositionInformationPacket(int x, int y, int z, float hitX, float hitY, float hitZ, String biomeId, float
-            biomeTemperature, float biomeRainfall, int blockLight, int skyLight) {
+            biomeTemperature, float biomeRainfall, int blockLight, int skyLight, int combinedLight) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -39,6 +39,7 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
 
         this.blockLight = blockLight;
         this.skyLight = skyLight;
+        this.combinedLight = combinedLight;
     }
 
     @Override
@@ -58,6 +59,7 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
 
         this.blockLight = buf.readInteger();
         this.skyLight = buf.readInteger();
+        this.combinedLight = buf.readInteger();
     }
 
     @Override
@@ -77,5 +79,6 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
 
         buf.writeInteger(this.blockLight);
         buf.writeInteger(this.skyLight);
+        buf.writeInteger(this.combinedLight);
     }
 }
