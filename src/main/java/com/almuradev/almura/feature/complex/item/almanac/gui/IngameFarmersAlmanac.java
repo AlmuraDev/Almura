@@ -269,16 +269,26 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         final int sunlight = message.skyLight;
         final int areaLight = message.blockLight;
         final int combinedLightValue = message.combinedLight;
+        final boolean isDaytime = message.isDaytime;
+        final boolean canSeeSky = message.canSeeSky;
 
         // Area light value
         final DoubleRange lightRange = getLightRange(world, blockState, targetBlockPos).orElse(null);
         if (lightRange != null) {
             if (!MathUtil.withinRange(combinedLightValue, lightRange.min(), lightRange.max())) {
+                if (!isDaytime && !canSeeSky) // Its night time and the crop is NOT exposed to direct sunlight
                 this.growing = false;
             }
 
-            final TextColor combinedlightColor = MathUtil.withinRange(combinedLightValue, lightRange.min(), lightRange.max()) ? TextColors.DARK_GREEN : TextColors.RED;
+            TextColor combinedlightColor = MathUtil.withinRange(combinedLightValue, lightRange.min(), lightRange.max()) ? TextColors.DARK_GREEN : TextColors.RED;
+            if (!isDaytime && canSeeSky) {
+                combinedlightColor = TextColors.YELLOW; // Night time and the crop IS exposed to direct sunlight.
+            }
+
             this.addLineLabel(Text.of(TextColors.WHITE, "Combined Light: ", combinedlightColor, String.valueOf(combinedLightValue)));
+            if (!isDaytime && canSeeSky && !readyForHarvest) {
+                this.addLineLabel(Text.of(TextColors.GRAY, "[Night Time Growth]"),3);
+            }
             this.addLineLabel(this.getGenericPropertyText("Required",
                     String.format("%s-%s", numberFormat.format(lightRange.min()), numberFormat.format(lightRange.max()))), 2);
             this.addLineLabel(Text.of(TextColors.WHITE, "Sunlight: ", TextColors.YELLOW, String.valueOf(sunlight)),4);
