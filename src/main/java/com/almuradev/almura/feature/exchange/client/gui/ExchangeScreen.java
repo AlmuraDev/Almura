@@ -13,6 +13,7 @@ import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
+import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
@@ -364,17 +365,6 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
-        if (this.unlockMouse && this.lastUpdate == 25) {
-            Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
-            this.unlockMouse = false; // Only unlock once per session.
-        } else if (this.unlockMouse) {
-            this.lastUpdate++;
-        }
-    }
-
-    @Override
     protected void keyTyped(char keyChar, int keyCode) {
         super.keyTyped(keyChar, keyCode);
         this.lastUpdate = 0; // Reset the timer when key is typed.
@@ -517,7 +507,7 @@ public final class ExchangeScreen extends SimpleScreen {
     public static class BaseItemComponent extends ExchangeItemComponent<MockOffer> {
 
         private UIComplexImage image;
-        private UILabel itemLabel;
+        private UIExpandingLabel itemLabel;
 
         public BaseItemComponent(final MalisisGui gui, final MockOffer offer) {
             super(gui, offer);
@@ -551,10 +541,13 @@ public final class ExchangeScreen extends SimpleScreen {
                 }
                 itemTextBuilder.append(c);
             }
-            this.itemLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.WHITE, itemTextBuilder.toString(), TextColors.GRAY, " x ", withSuffix(offer.quantity))));
+            this.itemLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.WHITE, itemTextBuilder.toString(), TextColors.GRAY, " x ", withSuffix(offer.quantity))), true);
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.itemLabel.setTooltip(new UISaneTooltip(gui, defaultDecimalFormat.format(offer.quantity)));
+
+            if (offer.quantity >= (long) MILLION) {
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, defaultDecimalFormat.format(offer.quantity)));
+            }
 
             this.add(this.image, this.itemLabel);
         }
@@ -562,18 +555,13 @@ public final class ExchangeScreen extends SimpleScreen {
         @Override
         public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
             super.draw(renderer, mouseX, mouseY, partialTick);
-
-            // UILabel doesn't support tooltips out of the box, this is a hack that doesn't work 100% (gets clipped)
-            // but is better than nothing.
-            if (this.itemLabel.isInsideBounds(mouseX, mouseY)) {
-                this.itemLabel.getTooltip().draw(renderer, mouseX, mouseY, partialTick);
-            }
         }
     }
 
     public static final class ResultItemComponent extends BaseItemComponent {
 
-        private UILabel priceLabel, sellerLabel;
+        private UILabel sellerLabel;
+        private UIExpandingLabel priceLabel;
 
         private ResultItemComponent(MalisisGui gui, MockOffer offer) {
             super(gui, offer);
@@ -591,32 +579,21 @@ public final class ExchangeScreen extends SimpleScreen {
             ));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
-            this.priceLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")
-            ));
+            this.priceLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")), true
+            );
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
             this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(offer.quantity).multiply(offer.pricePer)));
 
             this.add(this.sellerLabel, this.priceLabel);
         }
-
-        @Override
-        public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            super.draw(renderer, mouseX, mouseY, partialTick);
-
-            // UILabel doesn't support tooltips out of the box, this is a hack that doesn't work 100% (gets clipped)
-            // but is better than nothing.
-            if (this.priceLabel.isInsideBounds(mouseX, mouseY)) {
-                this.priceLabel.getTooltip().draw(renderer, mouseX, mouseY, partialTick);
-            }
-        }
     }
 
     public static final class ListingItemComponent extends BaseItemComponent {
 
         private UIContainer<?> statusContainer;
-        private UILabel priceLabel;
+        private UIExpandingLabel priceLabel;
         private MockOffer item;
 
         private ListingItemComponent(MalisisGui gui, MockOffer offer) {
@@ -633,9 +610,9 @@ public final class ExchangeScreen extends SimpleScreen {
             this.statusContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.statusContainer.setColor(FontColors.DARK_GREEN);
 
-            this.priceLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")
-            ));
+            this.priceLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")), true
+            );
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(this.statusContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
             this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(offer.quantity).multiply(offer.pricePer)));
@@ -647,12 +624,6 @@ public final class ExchangeScreen extends SimpleScreen {
         public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
             this.statusContainer.setAlpha(this.item.listed ? 255 : 0);
             super.draw(renderer, mouseX, mouseY, partialTick);
-
-            // UILabel doesn't support tooltips out of the box, this is a hack that doesn't work 100% (gets clipped)
-            // but is better than nothing.
-            if (this.priceLabel.isInsideBounds(mouseX, mouseY)) {
-                this.priceLabel.getTooltip().draw(renderer, mouseX, mouseY, partialTick);
-            }
         }
     }
 

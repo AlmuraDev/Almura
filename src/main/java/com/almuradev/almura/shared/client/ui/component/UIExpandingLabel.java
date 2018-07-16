@@ -10,6 +10,7 @@ package com.almuradev.almura.shared.client.ui.component;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.util.bbcode.BBString;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -56,13 +57,16 @@ public class UIExpandingLabel extends UILabel {
     @Override
     protected void calculateSize() {
         this.textWidth = 0;
+        int lines = 0;
         for (String line : this.text.split("\\n")) {
             int lineWidth = (int) this.font.getStringWidth(line, this.fontOptions) + 5;
             if (this.textWidth < lineWidth) {
                 this.textWidth = lineWidth;
             }
+            lines++;
         }
-        this.textHeight = this.getContentHeight();
+        this.textHeight = lines * (int) this.font.getStringHeight(this.fontOptions) + 1;
         setSize(this.textWidth, this.textHeight);
+        setPosition(this.x, this.y, this.anchor);
     }
 }
