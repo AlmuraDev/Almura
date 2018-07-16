@@ -13,6 +13,7 @@ import com.almuradev.content.type.block.facet.BlockExperience;
 import com.almuradev.content.type.block.processor.AABBProcessor;
 import com.almuradev.content.type.block.processor.BlockFaceShapeProcessor;
 import com.almuradev.content.type.block.processor.DestroyActionProcessor;
+import com.almuradev.content.type.block.processor.EffectiveToolsProcessor;
 import com.almuradev.content.type.block.processor.FireSpreadSpeedProcessor;
 import com.almuradev.content.type.block.processor.FlammabilityProcessor;
 import com.almuradev.content.type.block.processor.HardnessProcessor;
@@ -59,6 +60,7 @@ public final class BlockModule extends AbstractModule implements CoreBinder {
                 this.processors()
                         .all(AABBProcessor.class)
                         .all(DestroyActionProcessor.class)
+                        .all(EffectiveToolsProcessor.class)
                         .all(BlockFaceShapeProcessor.class)
                         .all(HardnessProcessor.class)
                         .all(ItemGroupProcessor.class)

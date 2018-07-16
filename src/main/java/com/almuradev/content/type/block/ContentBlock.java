@@ -8,6 +8,7 @@
 package com.almuradev.content.type.block;
 
 import com.almuradev.content.component.delegate.Delegate;
+import com.almuradev.content.component.delegate.DelegateSet;
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.content.type.itemgroup.ItemGroup;
@@ -22,6 +23,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.util.PEBKACException;
 
 import java.util.Map;
@@ -69,6 +71,8 @@ public interface ContentBlock extends CatalogedContent, ItemGrouped {
         void itemGroup(final Delegate<ItemGroup> itemGroup);
 
         void renderLayer(final BlockRenderLayer renderLayer);
+
+        void effectiveTools(final DelegateSet<ItemType, Item> effectiveTools);
 
         // Definitions
 

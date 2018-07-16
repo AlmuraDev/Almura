@@ -8,18 +8,24 @@
 package com.almuradev.content.type.block;
 
 import com.almuradev.content.component.delegate.Delegate;
+import com.almuradev.content.component.delegate.DelegateSet;
 import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
+import com.almuradev.content.type.item.mixin.EffectiveOn;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import com.almuradev.content.type.itemgroup.mixin.iface.IMixinLazyItemGroup;
 import com.almuradev.content.type.mapcolor.MapColor;
 import com.almuradev.content.type.material.Material;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import org.spongepowered.api.item.ItemType;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends BlockStateDefinition, B extends BlockStateDefinition.Builder<D>> extends ContentBuilder.Impl<C> implements ContentBlock.Builder<C, D, B> {
     private final Map<String, B> stateBuilders = new HashMap<>();
@@ -28,6 +34,7 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
     public Delegate<Material> material;
     private Delegate<ItemGroup> itemGroup;
     private BlockRenderLayer renderLayer = BlockRenderLayer.CUTOUT_MIPPED;
+    private @Nullable DelegateSet<ItemType, Item> effectiveTools;
 
     public AbstractBlockBuilder(final BlockGenre genre) {
         this.genre = genre;
@@ -59,6 +66,11 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
     }
 
     @Override
+    public void effectiveTools(final DelegateSet<ItemType, Item> effectiveTools) {
+        this.effectiveTools = effectiveTools;
+    }
+
+    @Override
     public Map<String, B> stateBuilders() {
         return this.stateBuilders;
     }
@@ -76,5 +88,6 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
         ((Block) entry).setUnlocalizedName(this.string(StringType.TRANSLATION).replace('/', '.'));
         ((IMixinLazyItemGroup) entry).itemGroup(this.itemGroup);
         ((IMixinContentBlock) entry).setRenderLayer(this.renderLayer);
+        ((EffectiveOn) entry).effectiveTools(this.effectiveTools);
     }
 }

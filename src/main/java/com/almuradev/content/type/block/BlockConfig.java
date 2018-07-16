@@ -18,6 +18,8 @@ public interface BlockConfig {
     String MAP_COLOR = "map_color";
     String MATERIAL = "material";
 
+    String EFFECTIVE_TOOLS = "effective_tools";
+
     String ITEM_GROUP = "item_group";
     String RENDER_LAYER = "render_layer";
 
