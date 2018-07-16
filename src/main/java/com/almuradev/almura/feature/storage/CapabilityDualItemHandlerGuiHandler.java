@@ -31,7 +31,7 @@ public final class CapabilityDualItemHandlerGuiHandler implements IGuiHandler {
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         final TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
-        if (te == null || !(te instanceof MultiSlotTileEntity)) {
+        if (!(te instanceof MultiSlotTileEntity)) {
             return null;
         }
 
@@ -58,7 +58,7 @@ public final class CapabilityDualItemHandlerGuiHandler implements IGuiHandler {
         final Block block = world.getBlockState(pos).getBlock();
 
         final TileEntity te = world.getTileEntity(pos);
-        if (te == null || !(te instanceof MultiSlotTileEntity)) {
+        if (!(te instanceof MultiSlotTileEntity)) {
             return null;
         }
 

@@ -37,8 +37,7 @@ import javax.inject.Inject;
 
 public final class StorageBlock extends BlockContainer {
 
-    @Inject
-    private static Almura plugin;
+    @Inject private static Almura plugin;
 
     private final int slotAmount;
 

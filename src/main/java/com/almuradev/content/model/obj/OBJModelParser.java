@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class OBJModelParser {
+public final class OBJModelParser {
     private final Logger logger;
     private final IResourceManager resourceManager;
     private final ResourceLocation source;
@@ -231,9 +231,7 @@ public class OBJModelParser {
                                     }
 
                                     if (textureCoordinate == null) {
-//                                        throw new MalformedGeometryException("Illegal face encountered! The face has a texture coordinate index "
-//                                                + "which is out of bounds. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString
-//                                                (combinedLineContents));
+                                        this.logger.debug("Vertex Texture Coordinate index specified was not found. Renderer will default to using entire texture. Source -> Line: {}, Content: {}", (i + 1), Arrays.toString(combinedLineContents));
                                     } else {
                                         vertexDefBuilder.textureCoordinate(textureCoordinate);
                                     }
@@ -250,8 +248,7 @@ public class OBJModelParser {
                                     }
 
                                     if (normal == null) {
-//                                        throw new MalformedGeometryException("Illegal face encountered! The face has a normal index which is out of"
-//                                                + " bounds. Source -> Line: " + (i + 1) + ", Content: " + Arrays.toString(combinedLineContents));
+                                        this.logger.debug("Vertex Normal index specified was not found. Renderer will default to using (0, 0, 0). Source -> Line: {}, Content: {}", (i + 1), Arrays.toString(combinedLineContents));
                                     } else {
                                         vertexDefBuilder.normal(normal);
                                     }

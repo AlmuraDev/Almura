@@ -7,14 +7,16 @@
  */
 package com.almuradev.content.model.obj.geometry;
 
-import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.MoreObjects;
 
-public class VertexTextureCoordinate extends Vector3f {
+public final class VertexTextureCoordinate {
     private int index;
+    private final float u, v, w;
 
     public VertexTextureCoordinate(final float u, final float v, final float w) {
-        super(u, v, w);
+        this.u = u;
+        this.v = v;
+        this.w = w;
     }
 
     public int getIndex() {
@@ -30,24 +32,34 @@ public class VertexTextureCoordinate extends Vector3f {
     }
 
     public float getU() {
-        return this.getX();
+        return this.u;
     }
 
     public float getV() {
-        return this.getY();
+        return this.v;
     }
 
     public float getW() {
-        return this.getZ();
+        return this.w;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof VertexTextureCoordinate)) {
+            return false;
+        }
+
+        final VertexTextureCoordinate other = (VertexTextureCoordinate) obj;
+        return this.u == other.u && this.v == other.v && this.w == other.w;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("index", this.index)
-                .add("u", this.getX())
-                .add("v", this.getY())
-                .add("w", this.getZ())
+                .add("u", this.u)
+                .add("v", this.v)
+                .add("w", this.w)
                 .toString();
     }
 }

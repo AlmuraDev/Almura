@@ -7,14 +7,16 @@
  */
 package com.almuradev.content.model.obj.geometry;
 
-import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.MoreObjects;
 
-public class VertexNormal extends Vector3f {
+public final class VertexNormal {
     private int index;
+    private final float x, y, z;
 
     public VertexNormal(final float x, final float y, final float z) {
-        super(x, y, z);
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public int getIndex() {
@@ -29,13 +31,35 @@ public class VertexNormal extends Vector3f {
         this.index = index;
     }
 
+    public float getX() {
+        return this.x;
+    }
+
+    public float getY() {
+        return this.y;
+    }
+
+    public float getZ() {
+        return this.z;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof VertexNormal)) {
+            return false;
+        }
+
+        final VertexNormal other = (VertexNormal) obj;
+        return this.x == other.x && this.y == other.y && this.z == other.z;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("index", this.index)
-                .add("x", this.getX())
-                .add("y", this.getY())
-                .add("z", this.getZ())
+                .add("x", this.x)
+                .add("y", this.y)
+                .add("z", this.z)
                 .toString();
     }
 }

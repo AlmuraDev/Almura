@@ -40,44 +40,44 @@ public final class StorageFeature extends Witness.Impl implements Witness.Lifecy
     }
 
     @Override
-    public boolean lifecycleSubscribable(GameState state) {
+    public boolean lifecycleSubscribable(final GameState state) {
         return state == GameState.PRE_INITIALIZATION;
     }
 
     @Listener
-    public void onGamePreInitialization(GamePreInitializationEvent event) {
-//        NetworkRegistry.INSTANCE.registerGuiHandler(this.plugin, new CapabilityDualItemHandlerGuiHandler());
-//        GameRegistry.registerTileEntity(MultiSlotTileEntity.class, Almura.ID + ":storage");
+    public void onGamePreInitialization(final GamePreInitializationEvent event) {
+        NetworkRegistry.INSTANCE.registerGuiHandler(this.plugin, new CapabilityDualItemHandlerGuiHandler());
+        GameRegistry.registerTileEntity(MultiSlotTileEntity.class, Almura.ID + ":storage");
     }
 
     @SubscribeEvent
     public void onRegisterItems(RegistryEvent.Register<Item> event) {
         ItemBlock item = null;
 
-//        for (int j = 0; j < 4; ++j) {
-//            if (j == 0)
-//                item = (ItemBlock) new ItemBlock(StorageBlocks.DOCK_CHEST).setRegistryName(StorageBlocks.DOCK_CHEST.getRegistryName());
-//            if (j == 1)
-//                item = (ItemBlock) new ItemBlock(StorageBlocks.BIRCH_STORAGE_CRATE).setRegistryName(StorageBlocks.BIRCH_STORAGE_CRATE.getRegistryName());
-//            if (j == 2)
-//                item = (ItemBlock) new ItemBlock(StorageBlocks.OAK_STORAGE_CRATE).setRegistryName(StorageBlocks.OAK_STORAGE_CRATE.getRegistryName());
-//            if (j == 3)
-//                item = (ItemBlock) new ItemBlock(StorageBlocks.SPRUCE_STORAGE_CRATE).setRegistryName(StorageBlocks.SPRUCE_STORAGE_CRATE.getRegistryName());
-//
-//            event.getRegistry().register(item);
-//
-//            if (FMLCommonHandler.instance().getSide().isClient()) {
-//                this.registerInventoryModel(item, item.getRegistryName());
-//            }
-//        }
+        for (int j = 0; j < 4; ++j) {
+            if (j == 0)
+                item = (ItemBlock) new ItemBlock(StorageBlocks.DOCK_CHEST).setRegistryName(StorageBlocks.DOCK_CHEST.getRegistryName());
+            if (j == 1)
+                item = (ItemBlock) new ItemBlock(StorageBlocks.BIRCH_STORAGE_CRATE).setRegistryName(StorageBlocks.BIRCH_STORAGE_CRATE.getRegistryName());
+            if (j == 2)
+                item = (ItemBlock) new ItemBlock(StorageBlocks.OAK_STORAGE_CRATE).setRegistryName(StorageBlocks.OAK_STORAGE_CRATE.getRegistryName());
+            if (j == 3)
+                item = (ItemBlock) new ItemBlock(StorageBlocks.SPRUCE_STORAGE_CRATE).setRegistryName(StorageBlocks.SPRUCE_STORAGE_CRATE.getRegistryName());
+
+            event.getRegistry().register(item);
+
+            if (FMLCommonHandler.instance().getSide().isClient()) {
+                this.registerInventoryModel(item, item.getRegistryName());
+            }
+        }
     }
 
     @SubscribeEvent
     public void onRegisterBlocks(RegistryEvent.Register<Block> event) {
-//        event.getRegistry().register(StorageBlocks.DOCK_CHEST);
-//        event.getRegistry().register(StorageBlocks.BIRCH_STORAGE_CRATE);
-//        event.getRegistry().register(StorageBlocks.OAK_STORAGE_CRATE);
-//        event.getRegistry().register(StorageBlocks.SPRUCE_STORAGE_CRATE);
+        event.getRegistry().register(StorageBlocks.DOCK_CHEST);
+        event.getRegistry().register(StorageBlocks.BIRCH_STORAGE_CRATE);
+        event.getRegistry().register(StorageBlocks.OAK_STORAGE_CRATE);
+        event.getRegistry().register(StorageBlocks.SPRUCE_STORAGE_CRATE);
     }
 
     @SideOnly(Side.CLIENT)

@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 
-public class Group {
+public final class Group {
     private final String name;
     @Nullable private final MaterialDefinition materialDefinition;
     private final LinkedHashSet<Face> faces;

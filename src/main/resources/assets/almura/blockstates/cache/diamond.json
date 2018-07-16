@@ -1,7 +1,7 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model": "almura:cache/test.obj",
+        "model": "almura:cache/diamond.obj",
         "transform": "forge:default-block"
     },
     "variants": {

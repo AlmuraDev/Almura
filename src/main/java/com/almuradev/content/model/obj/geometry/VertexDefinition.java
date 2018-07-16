@@ -21,7 +21,7 @@ import java.util.Optional;
  * This data comprises of {@link Vertex}, an optional {@link VertexTextureCoordinate} and an
  * optional {@link VertexNormal}.
  */
-public class VertexDefinition {
+public final class VertexDefinition {
     private final Vertex vertex;
     @Nullable private final VertexTextureCoordinate textureCoordinate;
     @Nullable private final VertexNormal normal;
