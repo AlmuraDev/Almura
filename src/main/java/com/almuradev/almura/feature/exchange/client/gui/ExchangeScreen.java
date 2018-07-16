@@ -438,8 +438,8 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public MockOffer createMockOffer(final ItemType type) {
-        final long quantity = ThreadLocalRandom.current().nextLong(1, 2000000000);
-        final BigDecimal pricePer = BigDecimal.valueOf(ThreadLocalRandom.current().nextInt(0, 10000));
+        final long quantity = ThreadLocalRandom.current().nextLong(1, 500000);
+        final BigDecimal pricePer = BigDecimal.valueOf(ThreadLocalRandom.current().nextInt(1, 10000));
         return new MockOffer(Instant.now(),
                              ItemStack.of(type, 1), quantity, pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
     }
