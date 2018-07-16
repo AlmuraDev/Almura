@@ -208,7 +208,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
             this.addLineLabel(Text.of(TextColors.WHITE, "Hydrated by:"));
 
             hydration.blockStates().forEach(bs -> {
-                this.addLineLabel(Text.of(TextColors.WHITE, "- ", bs.block().getLocalizedName()), 2);
+                this.addLineLabel(Text.of(TextColors.WHITE, "- ", TextColors.YELLOW, bs.block().getLocalizedName()), 2);
                 bs.properties().forEach(property -> bs.value(property).ifPresent(stateValue -> {
                     final String formattedValue;
                     if (stateValue instanceof RangeStateValue) {
@@ -220,8 +220,34 @@ public class IngameFarmersAlmanac extends SimpleScreen {
                     }
                     this.addLineLabel(this.getGenericPropertyText("- " + property.getName(), formattedValue), 6);
                 }));
+                //Todo: this MAX radius check, is it intended to be per block or per hydration or per crop?
+                if (hydration.getMaxRadius()> 0) {  //Range > 0 for only things such as water, never farmland.
+                    this.addLineLabel(this.getGenericPropertyText("- radius", String.valueOf(hydration.getMaxRadius())), 6);
+
+                    boolean found = false;
+                    for (final BlockPos.MutableBlockPos inRange : BlockPos.getAllInBoxMutable(
+                            targetBlockPos.add(-hydration.getMaxRadius(), -1, -hydration.getMaxRadius()),
+                            targetBlockPos.add(hydration.getMaxRadius(), -1, hydration.getMaxRadius())
+                    )) {
+                        IBlockState inRangeState = null;
+                        if (inRange.equals(targetBlockPos)) {
+                            inRangeState = null;
+                        } else {
+                            inRangeState = world.getBlockState(inRange);
+                        }
+                        if (inRangeState != null && hydration.doesStateMatch(inRangeState)) {
+                            found = true;
+                        }
+                    }
+                    if (found) {
+                        this.addLineLabel(Text.of(TextColors.WHITE, "- found: ", TextColors.DARK_GREEN, "Yes"), 6);
+                    } else {
+                        this.addLineLabel(Text.of(TextColors.WHITE, "- found: ", TextColors.RED, "No"), 6);
+                        this.growing = false;
+                        //ToDo: this design only allows for ONE hydration block to be used before this breaks.
+                    }
+                }
             });
-            this.addLineLabel(this.getGenericPropertyText("Hydration Radius", String.valueOf(hydration.getMaxRadius())));
         }
 
         // Growth stage
@@ -236,12 +262,14 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         // Ground moisture
         final IBlockState moistureBlockStateTarget = blockState.getBlock() instanceof BlockCrops ? world.getBlockState(targetBlockPos.down()) : blockState;
         final int moistureLevel = getMoistureLevel(moistureBlockStateTarget);
-        final boolean isFertile = moistureLevel > 0;
+        final boolean isFertile = (moistureLevel > 0) || (hydration != null && growing);  //Todo: theoretically this should work.
         final TextColor fertileColor = isFertile ? TextColors.DARK_GREEN : TextColors.RED;
         this.addLineLabel(Text.of(TextColors.WHITE, "Soil Quality: ", fertileColor, isFertile ? "Fertile" : "Too dry"));
         if (isFertile) {
-            final TextColor moistureColor = moistureLevel > 3 ? TextColors.DARK_GREEN : TextColors.YELLOW;
-            this.addLineLabel(Text.of(TextColors.WHITE, "Moisture Level: ", moistureColor, moistureLevel), 2);
+                final TextColor moistureColor = moistureLevel > 3 ? TextColors.DARK_GREEN : TextColors.YELLOW;
+                this.addLineLabel(Text.of(TextColors.WHITE, "Moisture Level: ", moistureColor, moistureLevel), 2);
+        } else {
+            this.growing = false;
         }
 
         // Ground temperature
@@ -403,4 +431,6 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
         return Optional.empty();
     }
+
+
 }
