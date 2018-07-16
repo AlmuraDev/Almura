@@ -31,7 +31,7 @@ public final class EffectiveToolsProcessor implements BlockContentProcessor.AnyT
 
     @Override
     public boolean required() {
-        return true;
+        return false;
     }
 
     @Override
