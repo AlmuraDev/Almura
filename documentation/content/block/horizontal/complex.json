@@ -32,6 +32,8 @@
                     "max": [ 1.0, 1.0, 1.0 ]
                 }
             },
+            // See BlockFaceShape enum for possible values, defaults to 'undefined'
+            "block_face_shape": "solid",
             // The hardness.
             "hardness": 0.5,
             // The light.

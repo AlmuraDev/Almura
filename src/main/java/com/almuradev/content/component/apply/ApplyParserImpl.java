@@ -8,7 +8,10 @@
 package com.almuradev.content.component.apply;
 
 import com.almuradev.content.component.apply.impl.ApplyExhaustion;
+import com.almuradev.content.component.apply.impl.FoodLevelChangeApply;
+import com.almuradev.content.component.apply.impl.HealthChangeApply;
 import com.almuradev.content.component.apply.impl.ReduceDurability;
+import com.almuradev.content.component.apply.impl.SaturationChangeApply;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -25,12 +28,14 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class ApplyParserImpl implements ApplyParser {
-
     private final Map<String, ConfigurationNodeDeserializer<? extends Apply>> parsers = new HashMap<>();
 
     @Inject
     public ApplyParserImpl() {
         this.parsers.put("apply_exhaustion", ApplyExhaustion.PARSER);
+        this.parsers.put("food_level_change", FoodLevelChangeApply.PARSER);
+        this.parsers.put("health_change", HealthChangeApply.PARSER);
+        this.parsers.put("saturation_change", SaturationChangeApply.PARSER);
         this.parsers.put("reduce_durability", ReduceDurability.PARSER);
     }
 

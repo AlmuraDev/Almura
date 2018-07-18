@@ -20,7 +20,6 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 public final class SoundBlockSoundGroupContentProcessor implements TaggedConfigProcessor<BlockSoundGroup.Builder, ConfigTag> {
-
     private static final ConfigTag TAG = ConfigTag.create(BlockSoundGroupConfig.SOUND);
     private final GameRegistry gr;
 

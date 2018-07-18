@@ -7,15 +7,18 @@
  */
 package com.almuradev.content.loader;
 
-import com.almuradev.almura.shared.event.Witness;
-import com.almuradev.almura.shared.util.Environment;
 import com.almuradev.content.ContentConfig;
 import com.almuradev.content.ContentType;
+import com.almuradev.core.event.Witness;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.google.inject.Injector;
 import net.kyori.indigo.DetailedReportedException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.slf4j.Logger;
@@ -27,6 +30,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,22 +38,24 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class RootContentLoader implements Witness {
-
-    private static final boolean FORCE_SEARCH_JARS = Boolean.getBoolean("almura.cl.searchJars");
+    private static final boolean FORCE_SEARCH_JARS = Boolean.getBoolean(ContentConfig.SYSTEM_PROPERTY_PREFIX + "loader.searchJars");
     public static final String FILESYSTEM_ASSETS = "fs";
     public static final String MANAGED_ASSETS = "managed";
     private final Path assets;
     private final Injector injector;
     private final Logger logger;
+    private final Set<ContentType> types;
     private final AssetState state;
     private final List<SearchEntry> entries = new ArrayList<>();
     private final MutableGraph<JarSearchEntry> graph = GraphBuilder.directed().build();
+    @Inject private RecipeManager recipeManager; // HACK
 
     @Inject
-    public RootContentLoader(@Named("assets") final Path assets, final Injector injector, final Logger logger) {
+    public RootContentLoader(@Named("assets") final Path assets, final Injector injector, final Logger logger, final Set<ContentType> types) {
         this.assets = assets;
         this.injector = injector;
         this.logger = logger;
+        this.types = types;
         this.state = AssetState.resolve(logger, assets);
     }
 
@@ -99,10 +105,10 @@ public final class RootContentLoader implements Witness {
     }
 
     private boolean shouldLoadJar(final Path path) {
-        if (FORCE_SEARCH_JARS || Environment.get() == Environment.PRODUCTION) {
+        if (FORCE_SEARCH_JARS || !((boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment"))) {
             return true;
         }
-        this.logger.info("Skipping asset JAR '{}' - JAR loading is not supported in Environment.{}", path, Environment.DEVELOPMENT);
+        this.logger.info("Skipping asset JAR '{}' - JAR loading is not supported in a deobfuscated environment.", path);
         return false;
     }
 
@@ -119,8 +125,6 @@ public final class RootContentLoader implements Witness {
     }
 
     private void resolve() {
-        this.state.write(this.logger, this.assets);
-
         final List<JarSearchEntry> jars = this.entries(JarSearchEntry.class);
         if (!jars.isEmpty()) {
             this.resolveJars(jars, this.assets.resolve(MANAGED_ASSETS));
@@ -128,15 +132,23 @@ public final class RootContentLoader implements Witness {
 
         final List<SearchableSearchEntry> searchable = this.entries(SearchableSearchEntry.class);
         for (final SearchableSearchEntry entry : searchable) {
-            entry.search(this.injector, this.logger);
+            entry.search(this.injector, this.logger, this.types);
         }
 
         this.logger.debug("Processing queued content...");
-        for (final ContentType type : ContentType.values()) {
-            this.logger.debug("    Processing queued '{}' content...", type.id);
-            for (final SearchableSearchEntry entry : searchable) {
-                entry.process(this.injector, this.logger, type);
-            }
+        for (final ContentType type : this.types) {
+            this.logger.debug("    Processing queued '{}' content...", type.id());
+            this.process(type);
+        }
+
+        this.state.write(this.logger, this.assets);
+    }
+
+    private void process(final ContentType type) {
+        try {
+            type.loader(this.injector).process();
+        } catch (final DetailedReportedException e) {
+            this.logger.error("{}:\n {}", e.getMessage(), e.report().toString());
         }
     }
 
@@ -185,16 +197,25 @@ public final class RootContentLoader implements Witness {
         this.resolve();
 
         this.logger.debug("Loading content...");
-        for (final ContentType type : ContentType.values()) {
-            this.logger.debug("    Loading '{}' content...", type.id);
+        for (final ContentType type : this.types) {
+            this.logger.debug("    Loading '{}' content...", type.id());
             try {
-                final int loaded = this.injector.getInstance(type.loader).load();
+                final int loaded = type.loader(this.injector).load();
                 this.logger.debug("        Loaded '{}' asset{}", loaded, loaded == 1 ? "" : "s");
             } catch (final IOException e) {
-                this.logger.error("Encountered an exception while searching for '{}' content", type.id);
+                this.logger.error("Encountered an exception while searching for '{}' content", type.id());
             } catch (final DetailedReportedException e) {
                 this.logger.error("{}:\n {}", e.getMessage(), e.report().toString());
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void recipes(final RegistryEvent.Register<IRecipe> event) {
+        try {
+            this.recipeManager.load();
+        } catch (final IOException e) {
+            this.logger.error("Encountered an exception while loading recipes");
         }
     }
 }

@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 public final class BlockDestroyActionContentProcessor implements ArrayConfigProcessor<BlockDestroyAction.Builder>, AbstractArrayConfigProcessor.EqualTreatment<BlockDestroyAction.Builder>, ActionContentProcessor<BlockDestroyAction, BlockDestroyAction.Builder> {
-
     private final ApplyParser action;
     private final DropParser drop;
 

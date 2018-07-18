@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel.debug;
 
+import com.almuradev.almura.Almura;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.client.Minecraft;
@@ -18,27 +19,41 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import org.apache.commons.lang3.StringUtils;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.Platform;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
+import javax.annotation.Nullable;
+
+@SuppressWarnings("deprecation")
 public class InformationDebugPanel extends AbstractDebugPanel {
-
-    private static final String GAME_NAME = "Minecraft";
     private static final double XYZ_SINGLE_LINE_MAX = 100000d;
+    private static final String DEFAULT_VERSION = "dev";
     private final Text title;
     private final int titleWidth;
 
-    public InformationDebugPanel(final MalisisGui gui, final int width, final int height) {
+    public InformationDebugPanel(final MalisisGui gui, final int width, final int height, final Game game) {
         super(gui, width, height);
-
-        final String title = GAME_NAME + ' ' + this.client.getVersion();
-        this.title = Text.of(TextColors.GOLD, title);
-        this.titleWidth = this.client.fontRenderer.getStringWidth(title) / 2;
+        this.title = Text.of(
+                Text.of(TextStyles.UNDERLINE, TextColors.GREEN, 'm' + game.getPlatform().getMinecraftVersion().getName()),
+                TextStyles.NONE, " ",
+                Text.of(TextStyles.UNDERLINE, TextColors.RED, 'f' + StringUtils.substringAfterLast(pluginVersion(game, "forge"), ".")),
+                TextStyles.NONE, " ",
+                Text.of(TextStyles.UNDERLINE, TextColors.GOLD, 's' + StringUtils.substringAfterLast(platformContainerVersion(game, Platform.Component.IMPLEMENTATION), "-")),
+                TextStyles.NONE, " ",
+                Text.of(TextStyles.UNDERLINE, TextColors.DARK_AQUA, 'b' + StringUtils.substringAfterLast(pluginVersion(game, Almura.ID), "-b"))
+        );
+        this.titleWidth = this.client.fontRenderer.getStringWidth(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.title)) / 2;
     }
 
     @Override
     public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-        final Entity view = this.getView();
+        @Nullable final Entity view = this.cameraView();
         if (view == null) {
             return;
         }
@@ -47,11 +62,7 @@ public class InformationDebugPanel extends AbstractDebugPanel {
 
         this.client.mcProfiler.startSection("debug");
 
-        this.drawText(this.title, (Math.max(this.autoWidth, this.baseWidth) / 2) - this.titleWidth - 2, 4);
-        // Reset autoWidth after we've drawn the title
-        if (this.autoSize) {
-            this.autoWidth = 0;
-        }
+        this.renderTitle();
 
         // Position
         final double x = view.posX;
@@ -67,19 +78,21 @@ public class InformationDebugPanel extends AbstractDebugPanel {
         // ...but the rest depends on the reduced debug value.
         final boolean reducedDebug = this.client.isReducedDebug();
         if (reducedDebug) {
-            this.drawProperty("Chunk-relative", String.format("%d %d %d", fx & 0xf, fy & 0xf, fz & 0xf), 4, this.autoHeight);
+            this.drawProperty("Chunk-relative", String.format("%d %d %d", fx & 0xf, fy & 0xf, fz & 0xf), 4);
         } else {
             final BlockPos pos = new BlockPos(x, y, z);
             final Chunk chunk = view.getEntityWorld().getChunkFromBlockCoords(pos);
 
             this.renderXYZ(x, y, z);
             this.renderFacing(view.getHorizontalFacing(), view.rotationYaw, view.rotationPitch);
-            this.drawProperty("Block", fx + ", " + fy + ", " + fz, 4, this.autoHeight);
-            this.drawProperty("Chunk", String.format("%d, %d, %d in %d, %d, %d", fx & 0xf, fy & 0xf, fz & 0xf, fx >> 4, fy >> 4, fz >> 4), 4, this.autoHeight);
+            this.drawProperty("Block", fx + ", " + fy + ", " + fz, 4);
+            this.drawProperty("Chunk", String.format("%d, %d, %d in %d, %d, %d", fx & 0xf, fy & 0xf, fz & 0xf, fx >> 4, fy >> 4, fz >> 4), 4);
             if (view.getEntityWorld().isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !chunk.isEmpty()) {
                 final Biome biome = chunk.getBiome(pos, this.client.world.getBiomeProvider());
-                this.drawProperty("Biome", biome.getBiomeName(), 4, this.autoHeight);
-                this.drawProperty("Light", getLightDetails(pos, chunk), 4, this.autoHeight);
+                this.drawProperty("Biome", this.getBiomeName(biome, pos), 4);
+                this.drawProperty("Temperature", "" + this.getTemperature(biome, pos),4);
+                this.drawProperty("Rainfall", "" + this.getRainfall(biome, pos), 4);
+                this.drawProperty("Light", getLightDetails(pos, chunk), 4);
             }
         }
 
@@ -94,43 +107,59 @@ public class InformationDebugPanel extends AbstractDebugPanel {
             }
         }
 
-        if (this.autoSize) {
-            this.setSize(Math.max(this.autoSizeWidth(), this.baseWidth), Math.max(this.autoHeight, this.baseHeight));
-            this.autoHeight = 0;
-        }
+        this.autoSize();
 
         this.client.mcProfiler.endSection();
     }
 
+    private String getBiomeName(Biome biome, BlockPos pos) {
+        return biome.getRegistryName().toString();
+    }
+
+    private float getTemperature(Biome biome, BlockPos pos) {
+        return biome.getTemperature(pos);
+    }
+
+    private float getRainfall(Biome biome, BlockPos pos) {
+        return biome.getRainfall();
+    }
+
+    private void renderTitle() {
+        this.drawText(this.title, (Math.max(this.autoWidth, this.baseWidth) / 2) - this.titleWidth, this.autoHeight);
+        if (this.autoSize) {
+            this.autoWidth = 0;
+        }
+    }
+
     private void renderGame() {
         this.drawProperty("Java", this.getJavaDetails(), 4, this.autoHeight += 4);
-        this.drawProperty("Memory", getMemoryDetails(), 4, this.autoHeight);
-        this.drawProperty("FPS", String.valueOf(Minecraft.getDebugFPS()), 4, this.autoHeight);
+        this.drawProperty("Memory", getMemoryDetails(), 4);
+        this.drawProperty("FPS", String.valueOf(Minecraft.getDebugFPS()), 4);
     }
 
     private void renderXYZ(final double x, final double y, final double z) {
         if (x >= XYZ_SINGLE_LINE_MAX || y >= XYZ_SINGLE_LINE_MAX || z >= XYZ_SINGLE_LINE_MAX) {
-            this.drawProperty("X", String.format("%.3f", x), 4, this.autoHeight);
-            this.drawProperty("Y", String.format("%.3f", y), 4, this.autoHeight);
-            this.drawProperty("Z", String.format("%.3f", z), 4, this.autoHeight);
+            this.drawProperty("X", String.format("%.3f", x), 4);
+            this.drawProperty("Y", String.format("%.3f", y), 4);
+            this.drawProperty("Z", String.format("%.3f", z), 4);
         } else {
-            this.drawProperty("XYZ", String.format("%.3f, %.3f, %.3f", x, y, z), 4, this.autoHeight);
+            this.drawProperty("XYZ", String.format("%.3f, %.3f, %.3f", x, y, z), 4);
         }
     }
 
     private void renderFacing(final EnumFacing facing, final float yaw, final float pitch) {
         final String facingTowards = describeFacing(facing);
         this.drawProperty("Facing", String.format("%s%s (%.1f, %.1f)", facing.name().charAt(0), facingTowards,
-                MathHelper.wrapDegrees(yaw), MathHelper.wrapDegrees(pitch)), 4, this.autoHeight);
+                MathHelper.wrapDegrees(yaw), MathHelper.wrapDegrees(pitch)), 4);
     }
 
     private void renderLook(final int x, final int y, final int z) {
         if (x >= XYZ_SINGLE_LINE_MAX || y >= XYZ_SINGLE_LINE_MAX || z >= XYZ_SINGLE_LINE_MAX) {
-            this.drawProperty("Look X", String.format("%d", x), 4, this.autoHeight);
-            this.drawProperty("Look Y", String.format("%d", y), 4, this.autoHeight);
-            this.drawProperty("Look Z", String.format("%d", z), 4, this.autoHeight);
+            this.drawProperty("Look X", String.format("%d", x), 4);
+            this.drawProperty("Look Y", String.format("%d", y), 4);
+            this.drawProperty("Look Z", String.format("%d", z), 4);
         } else {
-            this.drawProperty("Look", String.format("%d, %d, %d", x, y, z), 4, this.autoHeight);
+            this.drawProperty("Look", String.format("%d, %d, %d", x, y, z), 4);
         }
     }
 
@@ -169,5 +198,13 @@ public class InformationDebugPanel extends AbstractDebugPanel {
 
     private static long convertBytesToMegabytes(final long bytes) {
         return bytes / 1024L / 1024L;
+    }
+
+    private static String pluginVersion(final Game game, final String id) {
+        return game.getPluginManager().getPlugin(id).flatMap(PluginContainer::getVersion).orElse(DEFAULT_VERSION);
+    }
+
+    private static String platformContainerVersion(final Game game, final Platform.Component component) {
+        return game.getPlatform().getContainer(component).getVersion().orElse(DEFAULT_VERSION);
     }
 }

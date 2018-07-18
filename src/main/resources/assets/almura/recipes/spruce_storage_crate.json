@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " A ",
+        "ABA",
+        " A "
+    ],
+    "key": {
+        "A": {
+            "item": "minecraft:planks",
+            "data": 1
+        },
+        "B": {
+            "item": "minecraft:chest"
+        }
+    },
+    "result": {
+        "item": "almura:storage/spruce_storage_crate"
+    }
+}

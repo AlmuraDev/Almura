@@ -12,7 +12,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import javax.annotation.Nullable;
 
 final class NormalBox extends BlockAABB.Impl implements BlockAABB.Box, BlockAABB.Collision, BlockAABB.WireFrame {
-
     NormalBox(@Nullable final AxisAlignedBB bb) {
         super(bb);
     }

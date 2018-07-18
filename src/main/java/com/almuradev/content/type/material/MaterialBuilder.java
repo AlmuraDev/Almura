@@ -12,7 +12,6 @@ import com.almuradev.content.type.mapcolor.MapColor;
 import net.minecraft.block.material.EnumPushReaction;
 
 public final class MaterialBuilder extends ContentBuilder.Impl<Material> implements Material.Builder {
-
     private boolean blocksLight;
     private boolean blocksMovement;
     private boolean liquid;

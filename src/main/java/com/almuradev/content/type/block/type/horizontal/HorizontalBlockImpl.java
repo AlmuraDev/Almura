@@ -31,8 +31,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("deprecation")
 public final class HorizontalBlockImpl extends BlockHorizontal implements HorizontalBlock {
-
     private final Map<EnumFacing, HorizontalBlockStateDefinition> states = new EnumMap<>(EnumFacing.class);
 
     HorizontalBlockImpl(final HorizontalBlockBuilder builder, final List<HorizontalBlockStateDefinition> states) {
@@ -43,11 +43,12 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
         }
     }
 
-    private HorizontalBlockStateDefinition state(final IBlockState state) {
-        return this.state(state.getValue(FACING));
+    @Override
+    public HorizontalBlockStateDefinition definition(final IBlockState state) {
+        return this.definition(state.getValue(FACING));
     }
 
-    private HorizontalBlockStateDefinition state(final EnumFacing facing) {
+    private HorizontalBlockStateDefinition definition(final EnumFacing facing) {
         return this.states.get(facing);
     }
 
@@ -61,7 +62,7 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @SuppressWarnings("ConstantConditions")
     public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
         final EnumFacing facing = state.getValue(FACING);
-        final AxisAlignedBB box = this.state(facing).box(facing);
+        final AxisAlignedBB box = this.definition(facing).box(facing);
         return box != null ? box : super.getBoundingBox(state, world, pos);
     }
 
@@ -70,7 +71,11 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @Override
     public AxisAlignedBB getCollisionBoundingBox(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
         final EnumFacing facing = state.getValue(FACING);
-        final AxisAlignedBB collisionBox = this.state(facing).collisionBox(facing);
+        final HorizontalBlockStateDefinition definition = this.definition(facing);
+        if (definition.nullCollisionBox) {
+            return null;
+        }
+        final AxisAlignedBB collisionBox = definition.collisionBox(facing);
         return collisionBox != null ? collisionBox : super.getCollisionBoundingBox(state, world, pos);
     }
 
@@ -79,28 +84,28 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getSelectedBoundingBox(final IBlockState state, final World world, final BlockPos pos) {
         final EnumFacing facing = state.getValue(FACING);
-        final AxisAlignedBB wireFrame = this.state(facing).wireFrame(facing, pos);
+        final AxisAlignedBB wireFrame = this.definition(facing).wireFrame(facing, pos);
         return wireFrame != null ? wireFrame : super.getSelectedBoundingBox(state, world, pos);
     }
 
     @Deprecated
     @Override
     public float getBlockHardness(final IBlockState state, final World world, final BlockPos pos) {
-        final HorizontalBlockStateDefinition definition = this.state(state);
+        final HorizontalBlockStateDefinition definition = this.definition(state);
         return definition.hardness.isPresent() ? (float) definition.hardness.getAsDouble() : super.getBlockHardness(state, world, pos);
     }
 
     @Deprecated
     @Override
     public int getLightOpacity(final IBlockState state) {
-        final HorizontalBlockStateDefinition definition = this.state(state);
+        final HorizontalBlockStateDefinition definition = this.definition(state);
         return definition.lightOpacity.orElseGet(() -> super.getLightOpacity(state));
     }
 
     @Deprecated
     @Override
     public int getLightValue(final IBlockState state) {
-        final HorizontalBlockStateDefinition definition = this.state(state);
+        final HorizontalBlockStateDefinition definition = this.definition(state);
         return PrimitiveOptionals.mapToInt(definition.lightEmission, value -> (int) (15f * value))
                 .orElseGet(() -> super.getLightValue(state));
     }
@@ -119,7 +124,7 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @Override
     public float getExplosionResistance(final World world, final BlockPos pos, @Nullable final Entity exploder, final Explosion explosion) {
         final IBlockState state = world.getBlockState(pos);
-        final HorizontalBlockStateDefinition definition = this.state(state);
+        final HorizontalBlockStateDefinition definition = this.definition(state);
         return definition.resistance.isPresent() ? (float) definition.resistance.getAsDouble() : super.getExplosionResistance(exploder);
     }
 

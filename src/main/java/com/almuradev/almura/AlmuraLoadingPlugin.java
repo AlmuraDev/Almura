@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura;
 
-import com.almuradev.almura.shared.util.Environment;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
@@ -22,8 +21,23 @@ public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
         Mixins.addConfigurations(
                 "mixins.almura.core.json",
                 "mixins.almura.content.json",
-                "mixins.almura.title.json",
-                "mixins.almura.animal.json"
+                "mixins.almura.content.block.json",
+                "mixins.almura.content.block.horizontal.json",
+                "mixins.almura.content.blocksoundgroup.json",
+                "mixins.almura.content.item.food.json",
+                "mixins.almura.content.item.json",
+                "mixins.almura.content.item.seed.json",
+                "mixins.almura.content.itemgroup.json",
+                "mixins.almura.content.mapcolor.json",
+                "mixins.almura.content.material.json",
+                "mixins.almura.feature.cache.json",
+                "mixins.almura.feature.healthbar.json",
+                "mixins.almura.feature.almanac.json",
+                "mixins.almura.feature.sign.json",
+                "mixins.almura.feature.title.json",
+                "mixins.almura.feature.biome.json",
+                "mixins.almura.feature.offhand.json",
+                "mixins.almura.feature.nick.json"
         );
     }
 
@@ -43,8 +57,7 @@ public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
     }
 
     @Override
-    public void injectData(Map<String, Object> data) {
-        Environment.environment = ((Boolean) data.get("runtimeDeobfuscationEnabled")) ? Environment.DEVELOPMENT : Environment.PRODUCTION;
+    public void injectData(final Map<String, Object> data) {
     }
 
     @Override

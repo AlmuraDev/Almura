@@ -8,7 +8,7 @@
 package com.almuradev.content.type.item.type.seed;
 
 public interface SeedItemConfig {
-
     String CROP = "crop";
+    String GRASS = "grass";
     String SOIL = "soil";
 }

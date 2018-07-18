@@ -1,24 +1,15 @@
 {
     "required": true,
     "minVersion": "0.7.4",
-    "package": "com.almuradev.content.asm.mixin",
+    "package": "com.almuradev.content.mixin.impl",
     "refmap": "mixins.almura.refmap.json",
     "target": "@env(DEFAULT)",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
-        "block.material.MixinMapColor",
-        "block.material.MixinMaterial",
-        "block.MixinBlock",
-        "block.MixinBlockHorizontal",
-        "block.MixinContentBlock",
-        "block.MixinSoundType",
-        "item.MixinContentItem",
-        "item.MixinItem",
-        "item.MixinItemGroup",
-        "item.MixinItemSeeds",
         "MixinSetCatalogTypeId"
     ],
     "client": [
-        "client.renderer.block.statemap.MixinBlockStateMapper"
+        "MixinForgeHooksClient",
+        "MixinTextureAtlasSprite"
     ]
 }

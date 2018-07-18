@@ -17,18 +17,21 @@ import org.spongepowered.api.plugin.Plugin;
 
 import javax.inject.Inject;
 
-@Plugin(id = Almura.ID, dependencies = {
-        @Dependency(id = "nucleus", optional = true)
-})
-public class Almura {
-
-    public static Almura instance;
+@Plugin(
+    id = Almura.ID,
+    dependencies = {
+        @Dependency(id = "nucleus", optional = true),
+        @Dependency(id = "terraincontrol", optional = true)
+    }
+)
+public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
 
     public static final String ID = "almura";
     public static final String NAME = "Almura";
+    public static boolean debug = true;
 
     @SidedProxy(
-            modId = Almura.ID,
+            modId = ID,
             clientSide = "com.almuradev.almura.core.client.ClientProxy",
             serverSide = "com.almuradev.almura.core.server.ServerProxy"
     )
@@ -36,12 +39,12 @@ public class Almura {
     @Inject private Injector injector;
 
     @Listener
-    public void onGameConstruction(GameConstructionEvent event) {
-        proxy.construct(this.injector);
+    public void gameConstruct(final GameConstructionEvent event) {
+        proxy.construct(this, this.injector);
     }
 
     @Listener
-    public void gameStopping(final GameStoppingEvent event) {
+    public void gameDestruct(final GameStoppingEvent event) {
         proxy.destruct();
     }
 }

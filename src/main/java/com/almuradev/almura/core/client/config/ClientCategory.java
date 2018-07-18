@@ -35,6 +35,15 @@ public final class ClientCategory {
     @Setting(value = "item-frame-render-distance", comment = "Controls an item frame's render distance. Valid options are 0|16|32|64|128 (blocks)")
     public int itemFrameRenderDistance = 16;
 
+    @Setting(value = "player-name-render-distance", comment = "Controls the Player Name render distance")
+    public int playerNameRenderDistance = 8;
+
+    @Setting(value = "enemy-name-render-distance", comment = "Controls the Enemy Name render distance")
+    public int enemyNameRenderDistance = 8;
+
+    @Setting(value = "animal-name-render-distance", comment = "Controls the Animal Name render distance")
+    public int animalNameRenderDistance = 4;
+
     @Setting(value = "sign-text-render-distance", comment = "Controls a sign text's render distance. Valid options are 0|16|32|64|128 (blocks)")
     public int signTextRenderDistance = 16;
 
@@ -49,4 +58,13 @@ public final class ClientCategory {
 
     @Setting(value = "display-numeric-hud-values", comment = "Toggles the display of numeric values in the Origin HUD")
     public boolean displayNumericHUDValues = true;
+
+    @Setting(value = "display-names", comment = "Toggles the display of Entity Names")
+    public boolean displayNames = true;
+
+    @Setting(value = "display-healthbars", comment = "Toggles the display Entity Healthbars")
+    public boolean displayHealthbars = true;
+
+    @Setting(value = "disable-offhand-torch-placement", comment = "When enabled the player is unable to place torches with their offhand.")
+    public boolean disableOffhandTorchPlacement = false;
 }

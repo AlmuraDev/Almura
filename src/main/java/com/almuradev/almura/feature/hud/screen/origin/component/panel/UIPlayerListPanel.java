@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.feature.hud.screen.origin.UIAvatarImage;
+import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.shared.client.ui.component.UISimpleList;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
@@ -21,13 +22,18 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.GameType;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.common.text.SpongeTexts;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
-public class UIPlayerListPanel extends UIHUDPanel {
+public class UIPlayerListPanel extends AbstractPanel {
+
+    @Inject private static ClientNickManager manager;
 
     private static final Ordering<NetworkPlayerInfo> ORDERING = Ordering.from((p1, p2) -> {
         final ScorePlayerTeam t1 = p1.getPlayerTeam();
@@ -44,14 +50,14 @@ public class UIPlayerListPanel extends UIHUDPanel {
     private static final int MAX_DISPLAY_NAME_LENGTH_SUBSTRING = MAX_DISPLAY_NAME_LENGTH - DISPLAY_NAME_TRAILING_DOTS_AMOUNT;
     private static final int MAX_HEIGHT = 175;
     private static final TextFormatting DEFAULT_COLOR = TextFormatting.WHITE;
-    private final Minecraft client = Minecraft.getMinecraft();
-    private final UISimpleList playerList;
+    private final UISimpleList<PlayerListElementData> playerList;
 
     @SuppressWarnings("unchecked")
     public UIPlayerListPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
 
-        this.playerList = new UISimpleList(gui, 0, 0);
+        this.playerList = new UISimpleList<>(gui, 0, 0);
+        this.playerList.setComponentFactory(PlayerListElement::new);
         this.playerList.getScrollBar().setAutoHide(false);
         this.playerList.setElementSpacing(2);
         this.playerList.register(this);
@@ -79,14 +85,13 @@ public class UIPlayerListPanel extends UIHUDPanel {
         // Get maximum column width
         final int maxColumnWidth = this.getMaxColumnWidth(entries);
 
-        final List<PlayerListElement> elementList = new ArrayList<>();
+        final List<PlayerListElementData> elementList = new ArrayList<>();
         for (int i = 0; i < entries.size(); i += 2) {
             final NetworkPlayerInfo player1 = entries.get(i);
             final NetworkPlayerInfo player2 = i + 1 < entries.size() ? entries.get(i + 1) : null;
 
-            // Add a new element tot he list
-            elementList.add(new PlayerListElement(this.getGui(), this.playerList, player1, player2,
-                    maxColumnWidth));
+            // Add a new element to the list
+            elementList.add(new PlayerListElementData(this.getGui(), this.playerList, player1, player2, maxColumnWidth));
         }
 
         // Set elements
@@ -112,7 +117,6 @@ public class UIPlayerListPanel extends UIHUDPanel {
         return maxWidth + 11;
     }
 
-    // TODO: this does not properly take colours into account
     private static String getTrimmedDisplayName(final NetworkPlayerInfo player) {
         String name = DEFAULT_COLOR + getDisplayName(player);
         if (player.getGameType() == GameType.SPECTATOR) {
@@ -122,9 +126,27 @@ public class UIPlayerListPanel extends UIHUDPanel {
     }
 
     private static String getDisplayName(final NetworkPlayerInfo player) {
+
+        if (player.getDisplayName() != null) {
+            // TODO This is a bruteforce hack to fix race conditions where our tab list won't have the right info or gets wiped out by Vanilla
+            // Basically username = displayname, lookup their nick in the manager
+            if (player.getGameProfile().getName().equals(player.getDisplayName().getUnformattedText())) {
+                final Text nick = manager.getNicknameFor(player.getGameProfile().getId());
+                if (nick != null) {
+                    player.setDisplayName(SpongeTexts.toComponent(nick));
+                }
+            }
+        } else {
+            final Text nick = manager.getNicknameFor(player.getGameProfile().getId());
+            if (nick != null) {
+                player.setDisplayName(SpongeTexts.toComponent(nick));
+            }
+        }
+
         if (player.getDisplayName() != null) {
             return player.getDisplayName().getFormattedText();
         }
+
         return ScorePlayerTeam.formatPlayerName(player.getPlayerTeam(), player.getGameProfile().getName());
     }
 
@@ -132,34 +154,25 @@ public class UIPlayerListPanel extends UIHUDPanel {
 
         private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
         private static final int ICON_SIZE = 12;
-        private final UIAvatarImage avatarImage1;
-        private final int maxColumnWidth;
-        private final NetworkPlayerInfo player1;
-        @Nullable private final NetworkPlayerInfo player2;
-        @Nullable private UIAvatarImage avatarImage2;
+        private final PlayerListElementData elementData;
 
         @SuppressWarnings("deprecation")
-        private PlayerListElement(MalisisGui gui, UISimpleList parent, NetworkPlayerInfo player1, @Nullable NetworkPlayerInfo player2, int maxColumnWidth) {
+        private PlayerListElement(MalisisGui gui, PlayerListElementData elementData) {
             super(gui);
-            this.parent = parent;
-            this.maxColumnWidth = maxColumnWidth;
+            this.parent = elementData.getParent();
+            this.elementData = elementData;
 
-            this.player1 = player1;
-            this.player2 = player2;
+            this.add(this.elementData.getPlayer1Image());
 
-            this.avatarImage1 = new UIAvatarImage(gui, this.player1);
-            this.avatarImage1.setSize(12, 12);
-            this.add(this.avatarImage1);
-
-            if (this.player2 != null) {
-                this.avatarImage2 = new UIAvatarImage(gui, this.player2);
-                this.avatarImage2.setSize(12, 12);
-                this.avatarImage2.setPosition(this.x + this.maxColumnWidth + 6, 0);
-                this.add(this.avatarImage2);
+            if (this.elementData.getPlayer2Info() != null && this.elementData.getPlayer2Image() != null) {
+                this.elementData.getPlayer2Image().setPosition(this.x + this.elementData.getMaxColumnWidth() + 6, 0);
+                this.add(this.elementData.getPlayer2Image());
             }
 
             // Auto size
-            final int width = player2 == null ? this.maxColumnWidth + 6 : this.maxColumnWidth * 2 + 13;
+            final int width = this.elementData.getPlayer2Info() == null
+                    ? this.elementData.getMaxColumnWidth() + 6
+                    : this.elementData.getMaxColumnWidth() * 2 + 13;
             this.setSize(width, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT + 5);
 
             // Set padding
@@ -185,23 +198,73 @@ public class UIPlayerListPanel extends UIHUDPanel {
             // Call to the super and draw
             super.drawBackground(renderer, mouseX, mouseY, partialTick);
 
-            int x = this.getLeftPadding() + 2;
-            final int y = this.getTopPadding() + 2;
+            int x = getLeftPadding() + 2;
+            final int y = getTopPadding() + 2;
 
             // Text
-            renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player1), x + ICON_SIZE, y, this.zIndex);
+            renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.elementData.getPlayer1Info()), x + ICON_SIZE, y, this.zIndex);
 
             // Draw player 2 if needed
-            if (this.player2 != null) {
-                x += this.maxColumnWidth + 4;
+            if (this.elementData.getPlayer2Info() != null) {
+                x += this.elementData.getMaxColumnWidth() + 4;
 
                 // Text
-                renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.player2), x + ICON_SIZE + 2, y, this.zIndex);
+                renderer.drawText(UIPlayerListPanel.getTrimmedDisplayName(this.elementData.getPlayer2Info()), x + ICON_SIZE + 2, y, this.zIndex);
 
                 // Separator
-                renderer.drawRectangle(this.maxColumnWidth + 5 + this.getLeftPadding(), 1, this.zIndex, 1,
-                        this.height - 2, BORDER_COLOR, 75);
+                renderer.drawRectangle(this.elementData.getMaxColumnWidth() + 5 + this.getLeftPadding(), 1, this.zIndex, 1, this.height - 2,
+                        BORDER_COLOR, 75);
             }
+        }
+    }
+
+    protected static class PlayerListElementData {
+
+        private final UISimpleList parent;
+        private final int maxColumnWidth;
+        private final UIAvatarImage player1Image;
+        private final NetworkPlayerInfo player1Info;
+        @Nullable private NetworkPlayerInfo player2Info;
+        @Nullable private UIAvatarImage player2Image;
+
+        protected PlayerListElementData(MalisisGui gui, UISimpleList parent, NetworkPlayerInfo player1Info, @Nullable NetworkPlayerInfo player2Info,
+                int maxColumnWidth) {
+            this.parent = parent;
+            this.maxColumnWidth = maxColumnWidth;
+            this.player1Info = player1Info;
+            this.player2Info = player2Info;
+            this.player1Image = new UIAvatarImage(gui, this.player1Info);
+            this.player1Image.setSize(12, 12);
+            if (this.player2Info != null) {
+                this.player2Image = new UIAvatarImage(gui, this.player2Info);
+                this.player2Image.setSize(12, 12);
+            }
+        }
+
+        public UISimpleList getParent() {
+            return this.parent;
+        }
+
+        public UIAvatarImage getPlayer1Image() {
+            return this.player1Image;
+        }
+
+        @Nullable
+        public UIAvatarImage getPlayer2Image() {
+            return this.player2Image;
+        }
+
+        public NetworkPlayerInfo getPlayer1Info() {
+            return this.player1Info;
+        }
+
+        @Nullable
+        public NetworkPlayerInfo getPlayer2Info() {
+            return this.player2Info;
+        }
+
+        public int getMaxColumnWidth() {
+            return this.maxColumnWidth;
         }
     }
 }

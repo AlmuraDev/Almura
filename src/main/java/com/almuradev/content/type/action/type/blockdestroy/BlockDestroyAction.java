@@ -17,16 +17,13 @@ import org.spongepowered.api.item.ItemType;
 import java.util.List;
 
 public interface BlockDestroyAction extends ActionContentType {
-
     List<Entry> entries();
 
     interface Builder extends ActionContentType.Builder<BlockDestroyAction> {
-
         Entry.Builder entry(final int index);
     }
 
     interface Entry {
-
         boolean test(final ItemStack stack);
 
         boolean test(final ItemType type);
@@ -36,7 +33,6 @@ public interface BlockDestroyAction extends ActionContentType {
         List<? extends Drop> drops();
 
         interface Builder {
-
             void apply(final List<Apply> apply);
 
             void drop(final List<? extends Drop> drop);

@@ -24,7 +24,6 @@ import java.util.function.Function;
 import javax.inject.Inject;
 
 public final class MaterialProcessor implements ConfigProcessor<Material.Builder> {
-
     private static final Function<String, EnumPushReaction> PUSH = id -> EnumPushReaction.valueOf(id.toUpperCase(Locale.ENGLISH));
     private final GameRegistry gr;
 

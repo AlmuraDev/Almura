@@ -10,7 +10,6 @@ package com.almuradev.content.loader;
 import javax.annotation.Nullable;
 
 abstract class SearchEntry {
-
     @Nullable String description;
 
     SearchEntry(final String description) {

@@ -15,7 +15,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class HorizontalBoxFactory implements BlockAABBFactory<HorizontalBox, HorizontalBox.Collision, HorizontalBox> {
-
     private static final HorizontalBox.Collision NULL_COLLISION = new HorizontalBox.Collision(null);
 
     @Override

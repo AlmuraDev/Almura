@@ -12,7 +12,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 public final class SupplierDelegate<T> extends LazyDelegate<T> {
-
     private final Supplier<T> supplier;
 
     SupplierDelegate(final Supplier<T> supplier) {
@@ -23,5 +22,10 @@ public final class SupplierDelegate<T> extends LazyDelegate<T> {
     @Override
     protected T load() {
         return this.supplier.get();
+    }
+
+    @Override
+    public T require() {
+        return this.optional().orElseThrow(() -> new DelegateNotSatisfiedException(this.supplier.toString()));
     }
 }

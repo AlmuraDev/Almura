@@ -8,15 +8,20 @@
 package com.almuradev.content.type.item.type.seed;
 
 import com.almuradev.content.component.delegate.Delegate;
-import com.almuradev.content.type.item.ContentItemType;
+import com.almuradev.content.type.item.ContentItem;
+import com.almuradev.content.type.item.type.seed.processor.grass.Grass;
 import org.spongepowered.api.block.BlockType;
 
-public interface SeedItem extends ContentItemType {
+import javax.annotation.Nullable;
 
-    interface Builder extends ContentItemType.Builder<SeedItem> {
+public interface SeedItem extends ContentItem {
+    @Nullable Grass getGrass();
 
+    interface Builder extends ContentItem.Builder<SeedItem> {
         void crop(final Delegate<BlockType> crop);
 
         void soil(final Delegate<BlockType> soil);
+
+        void grass(final Grass grass);
     }
 }

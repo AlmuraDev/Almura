@@ -7,9 +7,7 @@
  */
 package com.almuradev.almura.shared.client.ui.component;
 
-import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.container.UIListContainer;
 import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
@@ -18,11 +16,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class UISimpleList<S extends UIContainer<S>> extends UIListContainer<UISimpleList<S>, S> {
+public class UISimpleList<S> extends UIListContainer<S> {
 
     public UISimpleList(MalisisGui gui, int width, int height) {
         super(gui, width, height);
 
+        this.removeControlComponent(this.scrollbar);
         this.scrollbar = new UISlimScrollbar(gui, self(), UIScrollBar.Type.VERTICAL);
         this.scrollbar.setAutoHide(true);
     }
@@ -34,20 +33,6 @@ public class UISimpleList<S extends UIContainer<S>> extends UIListContainer<UISi
     @Override
     public int getContentWidth() {
         return super.getWidth() - (this.scrollbar.isVisible() ? this.scrollbar.getWidth() + 2 : 0);
-    }
-
-    @Override
-    public int getElementHeight(UIContainer element) {
-        return element.getHeight();
-    }
-
-    @Override
-    public void drawElementBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick, UIContainer element, boolean isHovered) {
-    }
-
-    @Override
-    public void drawElementForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick, UIContainer element, boolean isHovered) {
-        element.draw(renderer, mouseX, mouseY, partialTick);
     }
 
     @Override

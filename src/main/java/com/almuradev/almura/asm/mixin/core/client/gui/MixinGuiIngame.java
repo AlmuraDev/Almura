@@ -32,7 +32,8 @@ public abstract class MixinGuiIngame extends Gui {
     @Inject private static ClientHeadUpDisplayManager hud;
 
     /**
-     * @author Steven Downer (Grinch)
+     * @author Grinch - Steven Downer
+     * @reason Move down where PotionEffects render to not conflict with the far right element of the OriginHUD
      */
     @Overwrite
     protected void renderPotionEffects(ScaledResolution resolution)
@@ -57,6 +58,7 @@ public abstract class MixinGuiIngame extends Gui {
                 if (potioneffect.doesShowParticles())
                 {
                     int k = resolution.getScaledWidth();
+                    // TODO Figure out how to do this without overwrite
                     // Almura start
                     int l = hud.getHUD().map(AbstractHUD::getPotionOffsetY).orElse(1);
                     // Almura end

@@ -7,11 +7,10 @@
  */
 package com.almuradev.content.type.mapcolor;
 
-import com.almuradev.almura.shared.inject.CommonBinder;
+import com.almuradev.core.CoreBinder;
 import net.kyori.violet.AbstractModule;
 
-public final class MapColorModule extends AbstractModule implements CommonBinder {
-
+public final class MapColorModule extends AbstractModule implements CoreBinder {
     @Override
     protected void configure() {
         this.registry().module(MapColor.class, MapColorRegistryModule.class);

@@ -15,33 +15,25 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 
 abstract class SearchableSearchEntry extends SearchEntry {
-
     SearchableSearchEntry(final String description) {
         super(description);
     }
 
-    abstract void search(final Injector injector, final Logger logger);
+    abstract void search(final Injector injector, final Logger logger, final Set<ContentType> types);
 
-    protected void search(final Injector injector, final Logger logger, final String namespace, final Path path) {
-        for (final ContentType type : ContentType.values()) {
-            logger.debug("    Searching for '{}' content...", type.id);
+    protected void search(final Injector injector, final Logger logger, final Set<ContentType> types, final String namespace, final Path path) {
+        for (final ContentType type : types) {
+            logger.debug("    Searching for '{}' content...", type.id());
             try {
-                injector.getInstance(type.loader).search(namespace, path.resolve(type.id));
+                type.loader(injector).search(namespace, path.resolve(type.id()));
             } catch (final IOException e) {
-                logger.error("Encountered an exception while searching for '{}' content", type.id);
+                logger.error("Encountered an exception while searching for '{}' content", type.id());
             } catch (final DetailedReportedException e) {
                 logger.error("{}:\n {}", e.getMessage(), e.report().toString());
             }
-        }
-    }
-
-    void process(final Injector injector, final Logger logger, final ContentType type) {
-        try {
-            injector.getInstance(type.loader).process();
-        } catch (final DetailedReportedException e) {
-            logger.error("{}:\n {}", e.getMessage(), e.report().toString());
         }
     }
 

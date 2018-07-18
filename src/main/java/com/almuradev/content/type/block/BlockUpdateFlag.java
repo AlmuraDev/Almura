@@ -8,7 +8,7 @@
 package com.almuradev.content.type.block;
 
 public interface BlockUpdateFlag {
-
     int UPDATE_NEIGHBORS = 0x1;
     int UPDATE_CLIENTS = 0x2;
+    int PREVENT_RENDER = 0x4; // TODO(kashike): better name
 }

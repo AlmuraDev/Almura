@@ -33,7 +33,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 final class JarSearchEntry extends SearchEntry {
-
     private static final JsonParser PARSER = new JsonParser();
     private final URI uri;
     final AssetStateEntry state;
@@ -169,6 +168,7 @@ final class JarSearchEntry extends SearchEntry {
                 logger.error("Encountered an exception while visiting '{}' to copy assets", path, e);
             }
         });
+        this.state.to(AssetStateEntry.State.EXTRACTED);
     }
 
     void revert(final Logger logger, final Path target) {

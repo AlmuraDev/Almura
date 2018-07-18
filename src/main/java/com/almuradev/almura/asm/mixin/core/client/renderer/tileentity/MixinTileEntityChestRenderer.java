@@ -8,7 +8,7 @@
 package com.almuradev.almura.asm.mixin.core.client.renderer.tileentity;
 
 import com.almuradev.almura.asm.StaticAccess;
-import com.almuradev.almura.core.client.ClientConfiguration;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntityChestRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

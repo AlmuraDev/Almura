@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.asm;
 
-import com.almuradev.almura.core.client.ClientConfiguration;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

@@ -18,7 +18,6 @@ import javax.inject.Singleton;
 @SideOnly(Side.CLIENT)
 @Singleton
 public final class BlockStateMapper extends StateMapperBase {
-
     public static final BlockStateMapper INSTANCE = new BlockStateMapper();
 
     @Override

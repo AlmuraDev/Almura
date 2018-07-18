@@ -7,14 +7,13 @@
  */
 package com.almuradev.content.type.block.type.container;
 
+import com.almuradev.content.type.block.AbstractBlockBuilder;
 import com.almuradev.content.type.block.BlockGenre;
-import com.almuradev.content.type.block.ContentBlockType;
 import com.almuradev.content.type.block.type.container.state.ContainerBlockStateDefinition;
 import com.almuradev.content.type.block.type.container.state.ContainerBlockStateDefinitionBuilder;
 import com.almuradev.content.type.block.type.container.state.ContainerBlockStateDefinitionBuilderImpl;
 
-public final class ContainerBlockBuilder extends ContentBlockType.Builder.Impl<ContainerBlock, ContainerBlockStateDefinition, ContainerBlockStateDefinitionBuilder> implements ContainerBlock.Builder {
-
+public final class ContainerBlockBuilder extends AbstractBlockBuilder<ContainerBlock, ContainerBlockStateDefinition, ContainerBlockStateDefinitionBuilder> implements ContainerBlock.Builder {
     int limit;
 
     public ContainerBlockBuilder() {

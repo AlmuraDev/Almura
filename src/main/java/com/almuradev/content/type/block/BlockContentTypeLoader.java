@@ -7,9 +7,9 @@
  */
 package com.almuradev.content.type.block;
 
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.content.loader.MultiTypeContentLoader;
 import com.almuradev.content.registry.ContentBuilder;
+import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -29,8 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGenre, ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockContentProcessor<ContentBlockType, ContentBlockType.Builder<ContentBlockType, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> implements Witness {
-
+public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGenre, ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockContentProcessor<ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> implements Witness, MultiTypeContentLoader.Translated<BlockGenre> {
     private final GameRegistry gr;
 
     @Inject
@@ -55,10 +54,10 @@ public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGe
         final IForgeRegistry<Item> registry = event.getRegistry();
         this.entries.values().forEach(entry -> {
             // TODO(kashike): configurable
-            if (!(entry.value instanceof ContentBlockType.InInventory)) {
+            if (!(entry.value instanceof ContentBlock.InInventory)) {
                 return;
             }
-            final Item item = ((ContentBlockType.InInventory) entry.value).asBlockItem();
+            final Item item = ((ContentBlock.InInventory) entry.value).asBlockItem();
             registry.register(item);
         });
     }
@@ -67,16 +66,29 @@ public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGe
     @SubscribeEvent
     public void models(final ModelRegistryEvent event) {
         this.entries.values().forEach(entry -> {
+            final ContentBlock block = entry.value;
             final ResourceLocation path = new ResourceLocation(
                     entry.builder.string(ContentBuilder.StringType.NAMESPACE),
                     entry.builder.string(ContentBuilder.StringType.SEMI_ABSOLUTE_PATH)
             );
-            ((SpecialBlockStateBlock) entry.value).blockStateDefinitionLocation(path);
+
+            if (block instanceof SpecialBlockStateBlock) {
+                ((SpecialBlockStateBlock) entry.value).blockStateDefinitionLocation(path);
+            }
+
+            if (block instanceof StateMappedBlock) {
+                ModelLoader.setCustomStateMapper((Block) block, ((StateMappedBlock) block).createStateMapper());
+            }
 
             @Nullable final ItemType item = this.gr.getType(ItemType.class, entry.value.getId()).orElse(null);
             if (item != null) {
                 ModelLoader.setCustomModelResourceLocation((Item) item, 0, new ModelResourceLocation(path, "inventory"));
             }
         });
+    }
+
+    @Override
+    public String buildTranslationKey(final String namespace, final BlockGenre type, final Iterable<String> components,final String key) {
+        return this.buildTranslationKey("tile", namespace, type, components, key);
     }
 }

@@ -7,20 +7,15 @@
  */
 package com.almuradev.almura.shared.command.binder;
 
-import com.google.inject.Injector;
 import org.spongepowered.api.command.CommandCallable;
-import org.spongepowered.api.command.spec.CommandSpec;
 
-public final class CommandEntry {
+public abstract class CommandEntry {
 
-    private final CommandCallable command;
-    private final String[] aliases;
+    protected final CommandCallable callable;
+    protected final String[] aliases;
 
-    CommandEntry(CommandCallable command, String... aliases) {
-        this.command = command;
+    CommandEntry(final CommandCallable callable, final String[] aliases) {
+        this.callable = callable;
         this.aliases = aliases;
-    }
-    public void install(final Injector injector, final CommandSpec.Builder rootCommand) {
-        rootCommand.child(this.command, this.aliases);
     }
 }

@@ -8,22 +8,57 @@
 package com.almuradev.content.type.item;
 
 import com.almuradev.content.ContentType;
+import com.almuradev.content.type.item.type.food.FoodItem;
 import com.almuradev.content.type.item.type.normal.NormalItem;
 import com.almuradev.content.type.item.type.seed.SeedItem;
+import com.almuradev.content.type.item.type.slab.SlabItem;
+import com.almuradev.content.type.item.type.tool.type.axe.AxeToolItem;
+import com.almuradev.content.type.item.type.tool.type.hoe.HoeToolItem;
+import com.almuradev.content.type.item.type.tool.type.pickaxe.PickaxeToolItem;
+import com.almuradev.content.type.item.type.tool.type.shovel.ShovelToolItem;
+import com.almuradev.content.type.item.type.tool.type.sickle.SickleToolItem;
 
 /**
  * An enumeration of item types.
  */
 @ContentType.MultiType.Name("items")
-public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentItemType.Builder<ContentItemType>> {
+public enum ItemGenre implements ContentType.MultiType<ContentItem, ContentItem.Builder<ContentItem>> {
     /**
      * An item type representing a normal item.
      */
     NORMAL("normal", NormalItem.Builder.class),
     /**
+     * An item type representing a piece of food.
+     */
+    FOOD("food", FoodItem.Builder.class),
+    /**
      * An item type representing a seed.
      */
-    SEED("seed", SeedItem.Builder.class);
+    SEED("seed", SeedItem.Builder.class),
+    /**
+     * An item type representing a slab.
+     */
+    SLAB("slab", SlabItem.Builder.class),
+    /**
+     * An item type representing an axe.
+     */
+    TOOL_AXE("tool_axe", AxeToolItem.Builder.class),
+    /**
+     * HOE HOE HOE
+     */
+    TOOL_HOE("tool_hoe", HoeToolItem.Builder.class),
+    /**
+     * An item type representing a pickaxe.
+     */
+    TOOL_PICKAXE("tool_pickaxe", PickaxeToolItem.Builder.class),
+    /**
+     * An item type representing a shovel.
+     */
+    TOOL_SHOVEL("tool_shovel", ShovelToolItem.Builder.class),
+    /**
+     * An item type representing a sickle.
+     */
+    TOOL_SICKLE("tool_sickle", SickleToolItem.Builder.class);;
 
     /**
      * The id of this item type.
@@ -31,9 +66,9 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
      * <p>The id is used for identification and loading.</p>
      */
     private final String id;
-    private final Class<? extends ContentItemType.Builder<? extends ContentItemType>> builder;
+    private final Class<? extends ContentItem.Builder<? extends ContentItem>> builder;
 
-    ItemGenre(final String id, final Class<? extends ContentItemType.Builder<? extends ContentItemType>> builder) {
+    ItemGenre(final String id, final Class<? extends ContentItem.Builder<? extends ContentItem>> builder) {
         this.id = id;
         this.builder = builder;
     }
@@ -45,7 +80,7 @@ public enum ItemGenre implements ContentType.MultiType<ContentItemType, ContentI
 
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ContentItemType.Builder<ContentItemType>> builder() {
-        return (Class<ContentItemType.Builder<ContentItemType>>) this.builder;
+    public Class<ContentItem.Builder<ContentItem>> builder() {
+        return (Class<ContentItem.Builder<ContentItem>>) this.builder;
     }
 }

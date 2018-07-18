@@ -7,6 +7,8 @@
  */
 package com.almuradev.content.loader;
 
+import com.google.common.base.Joiner;
+
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -14,6 +16,7 @@ import java.nio.file.Path;
  * A content loader.
  */
 public interface ContentLoader {
+    Joiner DOT_JOINER = Joiner.on('.');
 
     /**
      * Search for content in the specified path.

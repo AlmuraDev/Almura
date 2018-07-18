@@ -15,6 +15,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@SuppressWarnings("deprecation")
 public final class ClientboundPlayerTitlesResponsePacket implements Message {
 
     public int selectedIndex;

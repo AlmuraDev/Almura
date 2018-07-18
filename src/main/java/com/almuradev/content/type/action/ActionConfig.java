@@ -7,12 +7,17 @@
  */
 package com.almuradev.content.type.action;
 
+import com.almuradev.content.type.action.type.blockdecay.BlockDecayActionConfig;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyActionConfig;
 
 public interface ActionConfig {
-
     /**
      * @see BlockDestroyActionConfig
      */
     String DESTROY = "destroy";
+
+    /**
+     * @see BlockDecayActionConfig
+     */
+    String DECAY = "decay";
 }

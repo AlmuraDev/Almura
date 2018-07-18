@@ -16,25 +16,36 @@ import org.spongepowered.api.item.ItemType;
 import java.util.List;
 
 public final class BlockDestroyActionEntry implements BlockDestroyAction.Entry {
-
     private final List<Apply> apply;
     private final List<? extends Drop> drop;
     private final List<ItemDefinition> with;
+    private final boolean emptyWith;
 
     private BlockDestroyActionEntry(final Builder builder) {
         this.apply = builder.apply;
         this.drop = builder.drop;
         this.with = builder.with;
+        this.emptyWith = this.with.isEmpty();
     }
 
     @Override
     public boolean test(final ItemStack stack) {
-        return this.with.stream().anyMatch(item -> item.test(stack));
+        return this.emptyWith || this.with.stream().anyMatch(item -> item.test(stack));
     }
 
     @Override
     public boolean test(final ItemType type) {
-        return this.with.stream().anyMatch(item -> item.test(type));
+        final boolean match = this.with.stream().anyMatch(item -> item.test(type));
+
+        if (match) {
+            return true;
+        }
+
+        if (this.emptyWith) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -48,7 +59,6 @@ public final class BlockDestroyActionEntry implements BlockDestroyAction.Entry {
     }
 
     public static class Builder implements BlockDestroyAction.Entry.Builder {
-
         private List<Apply> apply;
         private List<? extends Drop> drop;
         private List<ItemDefinition> with;

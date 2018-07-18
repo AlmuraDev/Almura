@@ -17,7 +17,6 @@ import net.kyori.violet.FriendlyTypeLiteral;
 import net.kyori.violet.TypeArgument;
 
 public final class SingleTypeProcessorBinder<C extends CatalogedContent, B extends ContentBuilder<C>, P extends ConfigProcessor<? extends B>> {
-
     private final Multibinder<P> processors;
 
     public SingleTypeProcessorBinder(final Binder binder, final TypeLiteral<P> processor) {

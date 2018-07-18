@@ -30,7 +30,6 @@ import javax.inject.Inject;
  * An abstract implementation of a content loader that has a single type.
  */
 public abstract class SingleTypeContentLoader<C extends CatalogedContent, B extends ContentBuilder<C>> extends ContentLoaderImpl<C, B, ContentLoaderImpl.Entry<C, B>> implements SingleTypeExternalContentProcessor<C, B> {
-
     private final TypeToken<B> builder = new TypeToken<B>(this.getClass()) {};
     @Inject private Set<ConfigProcessor<? extends B>> processors;
     private final Set<Entry<C, B>> queue = new HashSet<>();
@@ -38,6 +37,7 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
     @Override
     public final void search(final String namespace, final Path path) throws IOException {
         checkState(this.stage == Stage.SEARCH, "loader is not searching");
+        final boolean translations = this instanceof Translated;
         Files.walkFileTree(path, new ContentVisitor(this.logger) {
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
@@ -45,6 +45,21 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
                     final Entry<C, B> entry = SingleTypeContentLoader.this.entry(namespace, file);
                     if (entry != null) {
                         SingleTypeContentLoader.this.queue.add(entry);
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult preVisitDirectory(final Path directory, final BasicFileAttributes attributes) throws IOException {
+                if (directory.getFileName().toString().equals(RecipeManager.DIRECTORY)) {
+                    SingleTypeContentLoader.this.recipeManager.push(directory);
+                }
+                if (translations) {
+                    if (directory.getFileName().toString().equals(TranslationManager.DIRECTORY)) {
+                        final Iterable<String> components = SLASH_SPLITTER.split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
+                        SingleTypeContentLoader.this.translationManager.pushSource(directory, key -> ((Translated) SingleTypeContentLoader.this).buildTranslationKey(namespace, components, key));
+                        return FileVisitResult.SKIP_SUBTREE;
                     }
                 }
                 return FileVisitResult.CONTINUE;
@@ -66,6 +81,7 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
     @Override
     public void process() {
         this.queue.forEach(entry -> {
+            // WARNING: IntelliJ is dumb - this CANNOT be replaced with a method reference.
             this.catching(() -> this.process(entry.config, entry.builder), "Encountered an exception while processing content", (dr) -> entry.populate(dr));
             this.entries.put(entry.id, entry);
         });
@@ -108,5 +124,9 @@ public abstract class SingleTypeContentLoader<C extends CatalogedContent, B exte
         for (final ConfigProcessor<? extends B> processor : this.processors) {
             ((ConfigProcessor<B>) processor).postProcess(config, builder);
         }
+    }
+
+    public interface Translated {
+        String buildTranslationKey(final String namespace, final Iterable<String> components, final String key);
     }
 }

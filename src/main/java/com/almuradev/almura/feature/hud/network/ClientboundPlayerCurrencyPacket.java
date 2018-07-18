@@ -16,7 +16,8 @@ public final class ClientboundPlayerCurrencyPacket implements Message {
 
     public BigDecimal money;
 
-    public ClientboundPlayerCurrencyPacket() {}
+    public ClientboundPlayerCurrencyPacket() {
+    }
 
     public ClientboundPlayerCurrencyPacket(BigDecimal money) {
         this.money = money;

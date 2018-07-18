@@ -10,7 +10,6 @@ package com.almuradev.content.component.predicate;
 import java.util.function.Function;
 
 public final class NotFunctionPredicate<I, O> extends AbstractFunctionPredicate<I, O> {
-
     static final String ID = "not";
     private final FunctionPredicate<I, O> parent;
 

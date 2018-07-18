@@ -10,6 +10,7 @@ package com.almuradev.content.loader;
 import com.almuradev.content.ContentConfig;
 import com.almuradev.content.registry.CatalogedContent;
 import com.almuradev.content.registry.ContentBuilder;
+import com.google.common.base.Splitter;
 import com.google.inject.Injector;
 import net.kyori.indigo.DetailedReport;
 import net.kyori.indigo.DetailedReportCategory;
@@ -22,8 +23,11 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -33,10 +37,12 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBuilder<C>, E extends ContentLoaderImpl.Entry<C, B>> implements ContentFinder<C, B>, ContentLoader {
-
     private static final PathMatcher JSON_MATCHER = FileSystems.getDefault().getPathMatcher("glob:**.json");
+    static final Splitter SLASH_SPLITTER = Splitter.on('/').trimResults().omitEmptyStrings();
     @Inject Injector injector;
     @Inject protected Logger logger;
+    @Inject TranslationManager translationManager;
+    @Inject RecipeManager recipeManager;
     private final Set<String> names = new HashSet<>();
     protected final Map<String, E> entries = new HashMap<>();
     protected Stage stage = Stage.SEARCH;
@@ -67,9 +73,18 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
     }
 
     public final boolean build() {
+        return this.build(BuildType.NORMAL);
+    }
+
+    public final boolean build(final BuildType type) {
         if (this.stage == Stage.SEARCH) {
-            for (final E entry : this.entries.values()) {
+            final List<E> entries = new ArrayList<>(this.entries.values());
+            if (type == BuildType.SORTED) {
+                Collections.sort(entries);
+            }
+            for (final E entry : entries) {
                 final B builder = entry.builder;
+                // WARNING: IntelliJ is dumb - this CANNOT be replaced with a method reference.
                 this.catching(() -> entry.value = builder.build(), "Encountered a critical exception while constructing game content.", dr -> entry.populate(dr));
             }
             this.clean();
@@ -99,7 +114,7 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
 
     protected final boolean queue(final Path path, final boolean longIndent) {
         final String indent = longIndent ? "            " : "        ";
-        if (JSON_MATCHER.matches(path)) {
+        if (JSON_MATCHER.matches(path) && !path.getParent().getFileName().toString().equals("_recipes")) {
             if (this.names.add(pathName(path))) {
                 this.logger.debug("{}Found {}", indent, path.toAbsolutePath());
                 return true;
@@ -135,9 +150,13 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
         return string;
     }
 
-    public static class Entry<C extends CatalogedContent, B extends ContentBuilder<C>> {
+    public enum BuildType {
+        NORMAL,
+        SORTED;
+    }
 
-        @Nullable private final Path path;
+    public static class Entry<C extends CatalogedContent, B extends ContentBuilder<C>> implements Comparable<Entry<C, B>> {
+        @Nullable final Path path;
         final String id;
         public final B builder;
         final ConfigurationNode config;
@@ -151,13 +170,21 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
         }
 
         void populate(final DetailedReport dr) {
-            final DetailedReportCategory drc = dr.category("asset");
+            this.populate(dr.category("asset"));
+        }
+
+        void populate(final DetailedReportCategory drc) {
             drc.detail("id", this.id);
             drc.detail("type", this.path != null ? "physical" : "virtual");
             if (this.path != null) {
                 drc.detail("path", this.path.toAbsolutePath().toString());
             }
             drc.detail("builder", this.builder.getClass());
+        }
+
+        @Override
+        public int compareTo(final Entry<C, B> that) {
+            return this.id.compareTo(that.id);
         }
     }
 

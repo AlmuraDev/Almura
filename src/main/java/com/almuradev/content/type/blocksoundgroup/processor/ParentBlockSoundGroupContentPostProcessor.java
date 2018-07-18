@@ -17,7 +17,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import javax.inject.Inject;
 
 public final class ParentBlockSoundGroupContentPostProcessor implements TaggedConfigProcessor<BlockSoundGroup.Builder, ConfigTag> {
-
     private static final ConfigTag TAG = ConfigTag.create(BlockSoundGroupConfig.PARENT);
     private final ContentFinder<BlockSoundGroup, BlockSoundGroup.Builder> finder;
 

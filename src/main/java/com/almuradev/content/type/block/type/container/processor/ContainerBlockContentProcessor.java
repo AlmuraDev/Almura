@@ -15,12 +15,9 @@ import com.almuradev.toolbox.config.processor.TaggedConfigProcessor;
 import com.almuradev.toolbox.config.tag.ConfigTag;
 
 public interface ContainerBlockContentProcessor extends BlockContentProcessor<ContainerBlock, ContainerBlock.Builder, ContainerBlockStateDefinition, ContainerBlockStateDefinitionBuilder> {
-
     interface Tagged extends ContainerBlockContentProcessor, TaggedConfigProcessor<ContainerBlock.Builder, ConfigTag> {
-
     }
 
     interface State extends BlockContentProcessor.State<ContainerBlock, ContainerBlock.Builder, ContainerBlockStateDefinition, ContainerBlockStateDefinitionBuilder> {
-
     }
 }

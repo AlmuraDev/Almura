@@ -7,14 +7,13 @@
  */
 package com.almuradev.content.type.block.type.normal;
 
+import com.almuradev.content.type.block.AbstractBlockBuilder;
 import com.almuradev.content.type.block.BlockGenre;
-import com.almuradev.content.type.block.ContentBlockType;
 import com.almuradev.content.type.block.type.normal.state.NormalBlockStateDefinition;
 import com.almuradev.content.type.block.type.normal.state.NormalBlockStateDefinitionBuilder;
 import com.almuradev.content.type.block.type.normal.state.NormalBlockStateDefinitionBuilderImpl;
 
-public final class NormalBlockBuilder extends ContentBlockType.Builder.Impl<NormalBlock, NormalBlockStateDefinition, NormalBlockStateDefinitionBuilder> implements NormalBlock.Builder {
-
+public final class NormalBlockBuilder extends AbstractBlockBuilder<NormalBlock, NormalBlockStateDefinition, NormalBlockStateDefinitionBuilder> implements NormalBlock.Builder {
     public NormalBlockBuilder() {
         super(BlockGenre.NORMAL);
     }

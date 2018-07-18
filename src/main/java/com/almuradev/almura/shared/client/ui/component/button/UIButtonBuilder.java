@@ -7,6 +7,8 @@
  */
 package com.almuradev.almura.shared.client.ui.component.button;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.UIContainer;
@@ -36,7 +38,9 @@ public final class UIButtonBuilder {
     @Nullable private Text text;
     @Nullable private UIImage image;
     @Nullable private UITooltip tooltip;
+    @Nullable private Runnable onClickRunnable;
     private boolean enabled = true;
+    private boolean visible = true;
 
     public UIButtonBuilder(MalisisGui gui) {
         this.gui = gui;
@@ -49,6 +53,10 @@ public final class UIButtonBuilder {
     public UIButtonBuilder text(Text text) {
         this.text = text;
         return this;
+    }
+
+    public UIButtonBuilder tooltip(String text) {
+        return this.tooltip(Text.of(text));
     }
 
     @SuppressWarnings("deprecation")
@@ -80,6 +88,11 @@ public final class UIButtonBuilder {
         return this;
     }
 
+    public UIButtonBuilder size(int size) {
+        this.size(size, size);
+        return this;
+    }
+
     public UIButtonBuilder width(int width) {
         this.width = width;
         return this;
@@ -107,6 +120,11 @@ public final class UIButtonBuilder {
 
     public UIButtonBuilder enabled(boolean enabled) {
         this.enabled = enabled;
+        return this;
+    }
+
+    public UIButtonBuilder visible(boolean visible) {
+        this.visible = visible;
         return this;
     }
 
@@ -151,13 +169,19 @@ public final class UIButtonBuilder {
         return this;
     }
 
+    public UIButtonBuilder onClick(Runnable onClickRunnable) {
+        this.onClickRunnable = onClickRunnable;
+        return this;
+    }
+
     @SuppressWarnings({"deprecation", "unchecked"})
     public UIButton build(String id) {
+        checkNotNull(id);
+
         final UIButton button = new UIButton(this.gui);
         button.setPosition(this.x, this.y);
-        if (id != null) {
-            button.setName(id);
-        }
+        button.setName(id);
+
         if (this.text != null) {
             button.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.text));
         }
@@ -191,7 +215,11 @@ public final class UIButtonBuilder {
         if (this.container != null) {
             this.container.add(button);
         }
+        if (this.onClickRunnable != null) {
+            button.onClick(this.onClickRunnable);
+        }
         button.setEnabled(this.enabled);
+        button.setVisible(this.visible);
         button.setZIndex(this.z);
 
         return button;

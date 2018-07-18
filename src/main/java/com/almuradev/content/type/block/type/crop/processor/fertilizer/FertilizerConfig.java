@@ -8,8 +8,6 @@
 package com.almuradev.content.type.block.type.crop.processor.fertilizer;
 
 public interface FertilizerConfig {
-
     String CHANCE = "chance";
-
     String ITEM = "item";
 }

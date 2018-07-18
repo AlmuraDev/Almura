@@ -14,13 +14,19 @@ import org.spongepowered.api.text.Text;
 @SideOnly(Side.CLIENT)
 public abstract class Notification {
 
-    protected final Text text;
+    protected final Text title;
+    protected final Text message;
 
-    Notification(Text text) {
-        this.text = text;
+    Notification(Text title, Text message) {
+        this.title = title;
+        this.message = message;
     }
 
-    public Text getText() {
-        return this.text;
+    public Text getTitle() {
+        return this.title;
+    }
+
+    public Text getMessage() {
+        return this.message;
     }
 }

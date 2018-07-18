@@ -15,9 +15,9 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import java.nio.file.Path;
 
-public class MappedHoconConfiguration<T> extends AbstractPostingMappedConfiguration<T> {
+public class MappedHoconConfiguration<T> extends com.almuradev.toolbox.config.map.AbstractMappedConfiguration<T> {
 
-    public MappedHoconConfiguration(final Class<T> type, final Path path) {
+    protected MappedHoconConfiguration(final Class<T> type, final Path path) {
         super(type, path);
     }
 

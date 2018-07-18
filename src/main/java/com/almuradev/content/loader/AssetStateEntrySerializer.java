@@ -18,7 +18,6 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
 final class AssetStateEntrySerializer implements JsonDeserializer<AssetStateEntry>, JsonSerializer<AssetStateEntry> {
-
     @Override
     public AssetStateEntry deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
         final JsonObject object = (JsonObject) json;

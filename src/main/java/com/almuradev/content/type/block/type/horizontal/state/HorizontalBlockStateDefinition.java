@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.block.type.horizontal.state;
 
-import com.almuradev.content.type.block.BlockStateDefinition;
+import com.almuradev.content.type.block.AbstractBlockStateDefinition;
 import com.almuradev.content.type.block.type.horizontal.component.aabb.HorizontalBox;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -15,13 +15,14 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 
-public final class HorizontalBlockStateDefinition extends BlockStateDefinition.Impl<HorizontalBox, HorizontalBox.Collision, HorizontalBox> {
-
+public final class HorizontalBlockStateDefinition extends AbstractBlockStateDefinition<HorizontalBox, HorizontalBox.Collision, HorizontalBox> {
     public final EnumFacing facing;
+    public final boolean nullCollisionBox;
 
     HorizontalBlockStateDefinition(final HorizontalBlockStateDefinitionBuilderImpl builder) {
         super(builder);
         this.facing = builder.facing;
+        this.nullCollisionBox = this.collisionBox != null && this.collisionBox.box() == null;
     }
 
     @Nullable

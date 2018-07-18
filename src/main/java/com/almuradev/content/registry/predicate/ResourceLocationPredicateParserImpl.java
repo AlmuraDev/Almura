@@ -7,9 +7,9 @@
  */
 package com.almuradev.content.registry.predicate;
 
-import com.almuradev.almura.shared.registry.ResourceLocations;
 import com.almuradev.content.component.predicate.AbstractFunctionPredicateParser;
 import com.almuradev.content.component.predicate.FunctionPredicate;
+import com.almuradev.content.registry.ResourceLocations;
 import net.minecraft.util.ResourceLocation;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.Types;
@@ -21,8 +21,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 final class ResourceLocationPredicateParserImpl<T> extends AbstractFunctionPredicateParser<T, ResourceLocation> implements ResourceLocationPredicateParser<T> {
-
-    ResourceLocationPredicateParserImpl(Function<T, ResourceLocation> function) {
+    ResourceLocationPredicateParserImpl(final Function<T, ResourceLocation> function) {
         super(function);
     }
 
@@ -52,5 +51,20 @@ final class ResourceLocationPredicateParserImpl<T> extends AbstractFunctionPredi
             default:
                 throw new IllegalArgumentException("Could not find deserialization method for '" + key + "'");
         }
+    }
+
+    @Override
+    public FunctionPredicate<T, ResourceLocation> alwaysTrue() {
+        return new FunctionPredicate<T, ResourceLocation>() {
+            @Override
+            public boolean test0(final ResourceLocation value) {
+                return true;
+            }
+
+            @Override
+            public boolean test(final T value) {
+                return true;
+            }
+        };
     }
 }

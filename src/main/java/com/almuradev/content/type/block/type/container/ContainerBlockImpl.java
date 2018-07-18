@@ -10,11 +10,12 @@ package com.almuradev.content.type.block.type.container;
 import com.almuradev.content.type.block.type.container.state.ContainerBlockStateDefinition;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 public final class ContainerBlockImpl extends BlockContainer implements ContainerBlock {
-
+    private final ContainerBlockStateDefinition definition;
     private final int limit;
 
     ContainerBlockImpl(final ContainerBlockBuilder builder) {
@@ -24,7 +25,13 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
 
     private ContainerBlockImpl(final ContainerBlockBuilder builder, final ContainerBlockStateDefinition definition) {
         super((Material) builder.material.get());
+        this.definition = definition;
         this.limit = builder.limit;
+    }
+
+    @Override
+    public ContainerBlockStateDefinition definition(final IBlockState state) {
+        return this.definition;
     }
 
     @Override

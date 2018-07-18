@@ -14,5 +14,4 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class ActionContentTypeLoader extends MultiTypeContentLoader<ActionGenre, ActionContentType, ActionContentType.Builder<ActionContentType>, ActionContentProcessor<ActionContentType, ActionContentType.Builder<ActionContentType>>> implements MultiTypeExternalContentProcessor<ActionGenre, ActionContentType, ActionContentType.Builder<ActionContentType>> {
-
 }

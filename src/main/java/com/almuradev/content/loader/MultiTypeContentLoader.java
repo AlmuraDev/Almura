@@ -15,6 +15,7 @@ import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -34,8 +35,8 @@ import javax.inject.Inject;
 /**
  * An abstract implementation of a content loader that has a multiple types.
  */
+@SuppressWarnings("deprecation")
 public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.MultiType<C, B>, C extends CatalogedContent, B extends ContentBuilder<C>, P extends ConfigProcessor<B>> extends ContentLoaderImpl<C, B, MultiTypeContentLoader.Entry<T, C, B>> implements MultiTypeExternalContentProcessor<T, C, B> {
-
     private final TypeToken<T> type = new TypeToken<T>(this.getClass()) {};
     private final SetMultimap<T, Entry<T, C, B>> queue = HashMultimap.create();
     private final T[] types;
@@ -51,7 +52,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
     public final void search(final String namespace, final Path path) throws IOException {
         checkState(this.stage == Stage.SEARCH, "loader is not searching");
         for (final T type : this.types) {
-            this.logger.debug("        Searching for '{}' {}...", type.id(), this.name);
+            this.logger.debug("        Searching for '{}' {}...", type.friendlyName(), this.name);
             this.walk(namespace, type, path.resolve(type.id()));
         }
     }
@@ -71,6 +72,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
     public void process() {
         for (final T type : this.queue.keySet()) {
             this.queue.get(type).forEach(entry -> {
+                // WARNING: IntelliJ is dumb - this CANNOT be replaced with a method reference.
                 this.catching(() -> this.process(type, entry.config, entry.builder), "Encountered an exception while processing content", (dr) -> entry.populate(dr));
                 this.entries.put(entry.id, entry);
             });
@@ -117,6 +119,7 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
     }
 
     private void walk(final String namespace, final T type, final Path path) throws IOException {
+        final boolean translations = this instanceof Translated<?>;
         Files.walkFileTree(path, new ContentVisitor(this.logger) {
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
@@ -128,11 +131,39 @@ public abstract class MultiTypeContentLoader<T extends Enum<T> & ContentType.Mul
                 }
                 return FileVisitResult.CONTINUE;
             }
+
+            @Override
+            public FileVisitResult preVisitDirectory(final Path directory, final BasicFileAttributes attributes) throws IOException {
+                if (directory.getFileName().toString().equals(RecipeManager.DIRECTORY)) {
+                    MultiTypeContentLoader.this.recipeManager.push(directory);
+                }
+                if (translations) {
+                    if (directory.getFileName().toString().equals(TranslationManager.DIRECTORY)) {
+                        final Iterable<String> components = SLASH_SPLITTER.split(path.relativize(directory.getParent()).toString().replace('\\', '/'));
+                        MultiTypeContentLoader.this.translationManager.pushSource(directory, key -> ((Translated<T>) MultiTypeContentLoader.this).buildTranslationKey(namespace, type, components, key));
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
         });
     }
 
-    public static class Entry<T extends Enum<T> & ContentType.MultiType, C extends CatalogedContent, B extends ContentBuilder<C>> extends ContentLoaderImpl.Entry<C, B> {
+    public interface Translated<T extends Enum<T> & ContentType.MultiType> {
+        String buildTranslationKey(final String namespace, final T type, final Iterable<String> components, final String key);
 
+        default String buildTranslationKey(final String what, final String namespace, final T type, final Iterable<String> components, final String key) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append(what).append('.').append(namespace).append('.').append(type.id()).append('.');
+            if (!Iterables.isEmpty(components)) {
+                sb.append(DOT_JOINER.join(components)).append('.');
+            }
+            sb.append(key);
+            return sb.toString();
+        }
+    }
+
+    public static class Entry<T extends Enum<T> & ContentType.MultiType, C extends CatalogedContent, B extends ContentBuilder<C>> extends ContentLoaderImpl.Entry<C, B> {
         final T type;
 
         public Entry(final String id, final T type, final B builder, @Nullable final Path path, final ConfigurationNode config) {

@@ -14,7 +14,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class NormalBoxFactory implements BlockAABBFactory<BlockAABB.Box, BlockAABB.Collision, BlockAABB.WireFrame> {
-
     private static final NormalBox NULL_COLLISION = new NormalBox(null);
 
     @Override

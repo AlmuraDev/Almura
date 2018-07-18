@@ -13,11 +13,11 @@ import com.almuradev.content.type.item.definition.ItemDefinition;
 import net.minecraft.item.ItemStack;
 
 public interface ItemGroup extends CatalogedContent {
-
     ItemStack icon();
 
     interface Builder extends ContentBuilder<ItemGroup> {
-
         void icon(final ItemDefinition icon);
+
+        void sort(final boolean sort);
     }
 }

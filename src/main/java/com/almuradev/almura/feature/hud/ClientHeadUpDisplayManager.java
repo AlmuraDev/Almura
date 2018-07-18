@@ -7,10 +7,10 @@
  */
 package com.almuradev.almura.feature.hud;
 
-import com.almuradev.almura.core.client.ClientConfiguration;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.inject.Injector;
 import net.minecraftforge.client.event.MouseEvent;
@@ -91,6 +91,11 @@ public class ClientHeadUpDisplayManager implements Witness {
     public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.hudData.isEconomyPresent = false;
         this.hudData.economyAmount = "";
+    }
+
+    @Nullable
+    public AbstractHUD getHUDDirect() {
+        return this.hud;
     }
 
     public Optional<AbstractHUD> getHUD() {

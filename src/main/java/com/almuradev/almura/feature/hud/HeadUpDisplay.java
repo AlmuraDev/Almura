@@ -31,7 +31,8 @@ public class HeadUpDisplay {
     public Text getCompass() {
         final int position = (int) ((((Minecraft.getMinecraft().player.rotationYaw + 5.25) % 360 + 360) % 360) / 360 * 32);
 
-        return Text.of(TextColors.DARK_GRAY,
+        return Text.of(
+                TextColors.DARK_GRAY,
                 COMPASS_CHARACTERS.charAt((position - 8) & 31),
                 COMPASS_CHARACTERS.charAt((position - 7) & 31),
                 COMPASS_CHARACTERS.charAt((position - 6) & 31),
@@ -42,7 +43,8 @@ public class HeadUpDisplay {
                 TextColors.GRAY, COMPASS_CHARACTERS.charAt((position - 1) & 31),
                 TextColors.WHITE, COMPASS_CHARACTERS.charAt((position) & 31),
                 TextColors.GRAY, COMPASS_CHARACTERS.charAt((position + 1) & 31),
-                TextColors.DARK_GRAY, COMPASS_CHARACTERS.charAt((position + 2) & 31),
+                TextColors.DARK_GRAY,
+                COMPASS_CHARACTERS.charAt((position + 2) & 31),
                 COMPASS_CHARACTERS.charAt((position + 3) & 31),
                 COMPASS_CHARACTERS.charAt((position + 4) & 31),
                 COMPASS_CHARACTERS.charAt((position + 5) & 31),

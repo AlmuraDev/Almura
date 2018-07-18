@@ -18,7 +18,6 @@ import net.kyori.violet.FriendlyTypeLiteral;
 import net.kyori.violet.TypeArgument;
 
 public final class MultiTypeProcessorBinder<T extends ContentType.MultiType<C, B>, C extends CatalogedContent, B extends ContentBuilder<C>, P extends ConfigProcessor<? extends B>> {
-
     private final T[] types;
     private final MapBinder<T, P> processors;
 

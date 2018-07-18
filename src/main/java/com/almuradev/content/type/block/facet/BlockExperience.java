@@ -7,12 +7,13 @@
  */
 package com.almuradev.content.type.block.facet;
 
-import com.almuradev.almura.shared.event.Witness;
-import com.almuradev.content.asm.iface.IMixinAlmuraBlock;
 import com.almuradev.content.type.action.component.drop.Drop;
 import com.almuradev.content.type.action.component.drop.ExperienceDrop;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
+import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
+import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -23,7 +24,6 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import java.util.Random;
 
 public final class BlockExperience implements Witness {
-
     private static final int NO_EXPERIENCE = -1;
 
     // This is only necessary to get xp handled correctly for Player breaks in the Forge ecosystem
@@ -31,16 +31,31 @@ public final class BlockExperience implements Witness {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void destroy(final BlockEvent.BreakEvent event) {
         final World world = event.getWorld();
-        final Block block = world.getBlockState(event.getPos()).getBlock();
-        if (!(block instanceof IMixinAlmuraBlock) || ((IMixinAlmuraBlock) block).destroyAction() == null) {
+        final IBlockState state = world.getBlockState(event.getPos());
+        final Block block = state.getBlock();
+        if (world.isRemote) {
             return;
         }
 
-        int experience = this.calculate((ItemType) event.getPlayer().getActiveItemStack().getItem(), (IMixinAlmuraBlock) block, world.rand);
+        if (event.getPlayer().isCreative()) {
+            return;
+        }
+
+        if (!(block instanceof IMixinContentBlock)) {
+            return;
+        }
+
+        final BlockDestroyAction destroyAction = ((IMixinContentBlock) block).destroyAction(state);
+
+        if (destroyAction == null) {
+            return;
+        }
+
+        int experience = this.calculate((ItemType) event.getPlayer().getActiveItemStack().getItem(), destroyAction, world.rand);
 
         if (experience == NO_EXPERIENCE) {
             // if no exp for this itemstack, fallback to empty hand and check again
-            experience = this.calculate(ItemStack.empty().getType(), (IMixinAlmuraBlock) block, world.rand);
+            experience = this.calculate(ItemStack.empty().getType(), destroyAction, world.rand);
         }
 
         if (experience != NO_EXPERIENCE) {
@@ -48,9 +63,9 @@ public final class BlockExperience implements Witness {
         }
     }
 
-    private int calculate(final ItemType with, final IMixinAlmuraBlock block, final Random random) {
+    private int calculate(final ItemType with, final BlockDestroyAction destroyAction, final Random random) {
         int experience = NO_EXPERIENCE;
-        for (final BlockDestroyAction.Entry entry : block.destroyAction().entries()) {
+        for (final BlockDestroyAction.Entry entry : destroyAction.entries()) {
             if (entry.test(with)) {
                 for (final Drop drop : entry.drops()) {
                     if (drop instanceof ExperienceDrop) {

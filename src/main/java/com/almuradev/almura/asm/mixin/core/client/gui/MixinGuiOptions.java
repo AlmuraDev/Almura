@@ -30,7 +30,7 @@ public abstract class MixinGuiOptions extends GuiScreen {
     // Add our button to the list and move the Done button lower
     @Inject(method = "initGui", at = @At("RETURN"))
     public void onInitGui(CallbackInfo ci) {
-        final GuiButton almuraButton = new GuiButton(300, this.width / 2 - 155, this.height / 6 + 144 - 6, 150, 20, "Almura");
+        final GuiButton almuraButton = new GuiButton(301, this.width / 2 - 155, this.height / 6 + 144 - 6, 150, 20, "Almura");
         this.buttonList.add(almuraButton);
 
         /*
@@ -50,7 +50,7 @@ public abstract class MixinGuiOptions extends GuiScreen {
     // Open our screen when our button is pressed
     @Inject(method = "actionPerformed", at = @At("RETURN"))
     protected void actionPerformed(GuiButton button, CallbackInfo ci) throws IOException {
-        if (button.enabled && button.id == 300) { // Almura button
+        if (button.enabled && button.id == 301) { // Almura button
             new SimpleOptionsMenu((GuiOptions) (Object) this).display();
         }
     }

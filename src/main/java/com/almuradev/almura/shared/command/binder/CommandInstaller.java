@@ -7,8 +7,6 @@
  */
 package com.almuradev.almura.shared.command.binder;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
 import net.kyori.membrane.facet.Enableable;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandResult;
@@ -18,33 +16,44 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Set;
 
+import javax.inject.Inject;
+
 public final class CommandInstaller implements Enableable {
 
-    private final Injector injector;
     private final PluginContainer container;
     private final CommandManager manager;
-    private final Set<CommandEntry> commands;
+    private final Set<RootCommandEntry> root;
+    private final Set<ChildCommandEntry> children;
 
     @Inject
-    public CommandInstaller(final Injector injector, PluginContainer container, CommandManager manager, final Set<CommandEntry> commands) {
-        this.injector = injector;
+    private CommandInstaller(final PluginContainer container, final CommandManager manager, final Set<RootCommandEntry> root, final Set<ChildCommandEntry> children) {
         this.container = container;
         this.manager = manager;
-        this.commands = commands;
+        this.root = root;
+        this.children = children;
     }
 
     @Override
     public void enable() {
-        final CommandSpec.Builder rootCommand = CommandSpec.builder()
+        this.registerRoot();
+        this.registerChildren();
+    }
+
+    private void registerRoot() {
+        this.root.forEach((entry) -> this.manager.register(this.container, entry.callable, entry.aliases));
+    }
+
+    private void registerChildren() {
+        final CommandSpec.Builder builder = CommandSpec.builder()
                 .permission("almura.command.help")
                 .executor((src, arguments) -> CommandResult.success())
                 .description(Text.of("Almura commands"));
-        this.commands.forEach((entry) -> entry.install(this.injector, rootCommand));
-        this.manager.register(container, rootCommand.build(), "almura", "am");
+        this.children.forEach((entry) -> entry.insert(builder));
+        this.manager.register(this.container, builder.build(), "almura", "am");
     }
 
     @Override
     public void disable() {
-        // Commands cannot be removed
+        // TODO(kashike): removal?
     }
 }

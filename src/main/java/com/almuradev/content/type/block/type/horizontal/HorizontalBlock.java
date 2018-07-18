@@ -7,13 +7,15 @@
  */
 package com.almuradev.content.type.block.type.horizontal;
 
-import com.almuradev.content.type.block.ContentBlockType;
+import com.almuradev.content.type.block.ContentBlock;
 import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinition;
 import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinitionBuilder;
+import net.minecraft.block.state.IBlockState;
 
-public interface HorizontalBlock extends ContentBlockType.InInventory {
+public interface HorizontalBlock extends ContentBlock.InInventory {
+    @Override
+    HorizontalBlockStateDefinition definition(final IBlockState state);
 
-    interface Builder extends ContentBlockType.Builder<HorizontalBlock, HorizontalBlockStateDefinition, HorizontalBlockStateDefinitionBuilder> {
-
+    interface Builder extends ContentBlock.Builder<HorizontalBlock, HorizontalBlockStateDefinition, HorizontalBlockStateDefinitionBuilder> {
     }
 }

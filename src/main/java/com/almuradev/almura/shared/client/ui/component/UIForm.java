@@ -16,7 +16,6 @@ import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIContainer;
 import net.malisis.core.client.gui.component.container.UIWindow;
-import net.malisis.core.client.gui.component.control.IControlComponent;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.util.MouseButton;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,7 +24,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class UIForm extends UIWindow {
     private UISimpleButton closeButton;
-    private int topPadding, bottomPadding, leftPadding, rightPadding;
     private boolean closable, movable;
 
     public UIForm(MalisisGui gui, int width, int height) {
@@ -39,15 +37,15 @@ public class UIForm extends UIWindow {
     }
 
     private void construct() {
-        this.setTopPadding(20);
+        setTopPadding(20);
 
         this.closeButton = new UISimpleButton(getGui(), "x");
         this.closeButton.setName("button.form.close");
-        this.closeButton.setPosition(-this.rightPadding, -(this.topPadding + 3), Anchor.TOP | Anchor.RIGHT);
+        this.closeButton.setPosition(2, -(getTopPadding() - 1), Anchor.TOP | Anchor.RIGHT);
         this.closeButton.register(this);
 
         if (this.titleLabel != null) {
-            this.titleLabel.setPosition(0, -this.topPadding, Anchor.TOP | Anchor.CENTER);
+            this.titleLabel.setPosition(0, -getTopPadding() + 5, Anchor.TOP | Anchor.CENTER);
         }
     }
 
@@ -76,48 +74,15 @@ public class UIForm extends UIWindow {
         return this;
     }
 
-    public int getTopPadding() {
-        return this.topPadding;
-    }
-
-    public UIForm setTopPadding(int topPadding) {
-        this.topPadding = topPadding;
-        return this;
-    }
-
-    public int getBottomPadding() {
-        return this.bottomPadding;
-    }
-
-    public UIForm setBottomPadding(int bottomPadding) {
-        this.bottomPadding = bottomPadding;
-        return this;
-    }
-
-    public int getLeftPadding() {
-        return this.leftPadding;
-    }
-
-    public UIForm setLeftPadding(int leftPadding) {
-        this.leftPadding = leftPadding;
-        return this;
-    }
-
-    public int getRightPadding() {
-        return this.rightPadding;
-    }
-
-    public UIForm setRightPadding(int rightPadding) {
-        this.rightPadding = rightPadding;
-        return this;
-    }
-
-    public UIForm setPadding(int topPadding, int bottomPadding, int leftPadding, int rightPadding) {
-        this.topPadding = topPadding;
-        this.bottomPadding = bottomPadding;
-        this.leftPadding = leftPadding;
-        this.rightPadding = rightPadding;
-        return this;
+    public void onClose() {
+        final MalisisGui currentGui = getGui();
+        if (currentGui != null) {
+            if (currentGui.isOverlay()) {
+                currentGui.closeOverlay();
+            } else {
+                currentGui.close();
+            }
+        }
     }
 
     @Override
@@ -146,6 +111,7 @@ public class UIForm extends UIWindow {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.form.close":
                 if (this.closeButton.isInsideBounds(event.getX(), event.getY())) {
+                    this.onClose();
                     ((UIContainer) this.getParent()).remove(this);
                 }
                 break;
@@ -160,41 +126,6 @@ public class UIForm extends UIWindow {
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
-        this.closeButton.setFontOptions(this.closeButton.isInsideBounds(mouseX, mouseY) ?
-                FontColors.FRO_WHITE : FontColors.FRO_GRAY);
-    }
-
-    @Override
-    public int componentX(UIComponent<?> component) {
-        int x = super.componentX(component);
-        int a = Anchor.horizontal(component.getAnchor());
-        if (a == Anchor.LEFT || a == Anchor.NONE) {
-            x += this.leftPadding;
-        } else if (a == Anchor.RIGHT) {
-            x -= this.rightPadding;
-        }
-
-        if (!(component instanceof IControlComponent)) {
-            x -= this.xOffset;
-        }
-
-        return x;
-    }
-
-    @Override
-    public int componentY(UIComponent<?> component)
-    {
-        int y = super.componentY(component);
-        int a = Anchor.vertical(component.getAnchor());
-        if (a == Anchor.TOP || a == Anchor.NONE) {
-            y += this.topPadding;
-        } else if (a == Anchor.BOTTOM) {
-            y -= this.bottomPadding;
-        }
-
-        if (!(component instanceof IControlComponent)) {
-            y -= this.yOffset;
-        }
-        return y;
+        this.closeButton.setFontOptions(this.closeButton.isInsideBounds(mouseX, mouseY) ? FontColors.WHITE_FO : FontColors.GRAY_FO);
     }
 }

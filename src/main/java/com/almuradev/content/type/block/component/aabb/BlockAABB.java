@@ -12,7 +12,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import javax.annotation.Nullable;
 
 public interface BlockAABB {
-
     AxisAlignedBB box();
 
     BlockAABB copy();
@@ -28,7 +27,6 @@ public interface BlockAABB {
     }
 
     abstract class Impl implements BlockAABB {
-
         @Nullable protected final AxisAlignedBB bb;
         protected int shares;
 
@@ -49,13 +47,11 @@ public interface BlockAABB {
     }
 
     interface Box extends BlockAABB {
-
         @Override
         Box copy();
     }
 
     interface Collision extends BlockAABB {
-
         @Nullable
         @Override
         @SuppressWarnings("NullableProblems")
@@ -66,7 +62,6 @@ public interface BlockAABB {
     }
 
     interface WireFrame extends BlockAABB {
-
         @Override
         WireFrame copy();
     }

@@ -7,12 +7,11 @@
  */
 package com.almuradev.content.type.block.type.normal.state;
 
-import com.almuradev.content.type.block.BlockStateDefinition;
+import com.almuradev.content.type.block.AbstractBlockStateDefinitionBuilder;
 
-public final class NormalBlockStateDefinitionBuilderImpl extends BlockStateDefinition.Builder.Impl<NormalBlockStateDefinition> implements NormalBlockStateDefinitionBuilder {
-
+public final class NormalBlockStateDefinitionBuilderImpl extends AbstractBlockStateDefinitionBuilder<NormalBlockStateDefinition, NormalBlockStateDefinitionBuilderImpl> implements NormalBlockStateDefinitionBuilder {
     @Override
-    public NormalBlockStateDefinition build() {
+    public NormalBlockStateDefinition build0() {
         return new NormalBlockStateDefinition(this);
     }
 }

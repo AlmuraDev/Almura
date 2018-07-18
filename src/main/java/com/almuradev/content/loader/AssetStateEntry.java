@@ -10,14 +10,15 @@ package com.almuradev.content.loader;
 import com.google.common.base.MoreObjects;
 
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 final class AssetStateEntry {
-
     final String id;
     final boolean enabled;
     State state = State.NEW;
@@ -59,12 +60,6 @@ final class AssetStateEntry {
         EXTRACTED,
         ROLLED_BACK;
 
-        static final Map<String, State> STATES = new HashMap<>();
-
-        static {
-            for (final State state : values()) {
-                STATES.put(state.name().toUpperCase(Locale.ENGLISH), state);
-            }
-        }
+        static final Map<String, State> STATES = Arrays.stream(values()).collect(Collectors.toMap(input -> input.name().toUpperCase(Locale.ENGLISH), Function.identity()));
     }
 }

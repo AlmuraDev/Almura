@@ -63,26 +63,33 @@ public class PacketBinder {
     public interface Entry<M extends Message> {
 
         /**
-         * Sets the channel id.
+         * Sets the packet handler.
          *
-         * @param channel the channel id
+         * @param handler the handler
+         * @param side the side
          */
-        void channel(final int channel);
+        default void handler(final Class<? extends MessageHandler<M>> handler, final Platform.Type side) {
+            this.handler(handler, side, false);
+        }
 
         /**
          * Sets the packet handler.
          *
          * @param handler the handler
          * @param side the side
+         * @param strictSide if the side is strict
          */
-        void handler(final Class<? extends MessageHandler<M>> handler, final Platform.Type side);
+        void handler(final Class<? extends MessageHandler<M>> handler, final Platform.Type side, final boolean strictSide);
     }
 
     public static final class EntryImpl<M extends Message> implements Entry<M> {
 
+        // State-of-the-art proprietary sequential numbering system
+        private static int nextChannel;
+        private final int channel = nextChannel++;
         private final Class<M> packet;
-        @Nullable private Integer channel;
         @Nullable private Platform.Type side;
+        private boolean strictSide;
         @Nullable private Class<? extends MessageHandler<M>> handler;
 
         EntryImpl(final Class<M> packet) {
@@ -90,26 +97,23 @@ public class PacketBinder {
         }
 
         public void register(final ChannelBinding.IndexedMessageChannel channel, final Platform.Type side, final Injector injector) {
-            if (this.channel != null) {
-                channel.registerMessage(this.packet, this.channel);
-            }
-
             checkState(this.side != null, "side not provided");
             checkState(this.handler != null, "handler not provided");
-            if (this.side == side) {
+            channel.registerMessage(this.packet, this.channel);
+            if (this.compatibleWith(side)) {
                 channel.addHandler(this.packet, this.side, injector.getInstance(this.handler));
             }
         }
 
-        @Override
-        public void channel(final int channel) {
-            this.channel = channel;
+        private boolean compatibleWith(final Platform.Type side) {
+            return this.side == side || (!this.strictSide && side == Platform.Type.CLIENT);
         }
 
         @Override
-        public void handler(final Class<? extends MessageHandler<M>> handler, final Platform.Type side) {
+        public void handler(final Class<? extends MessageHandler<M>> handler, final Platform.Type side, final boolean strictSide) {
             this.handler = handler;
             this.side = side;
+            this.strictSide = strictSide;
         }
     }
 }

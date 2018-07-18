@@ -7,11 +7,16 @@
  */
 package com.almuradev.almura.feature.animal;
 
-import com.almuradev.almura.shared.event.Witness;
+import com.almuradev.core.event.Witness;
 import net.kyori.membrane.facet.Activatable;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.entity.living.animal.Animal;
@@ -20,7 +25,6 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.scheduler.Task;
 
 import javax.inject.Inject;
 
@@ -49,16 +53,36 @@ public final class ServerAnimalManager extends Witness.Impl implements Activatab
     public void onSpawnEntity(SpawnEntityEvent event) {
         // Tell all farm animals to render their nameplates
         event.getEntities().stream().filter((entity) -> entity instanceof Animal).forEach((entity) -> ((EntityLiving) entity).setAlwaysRenderNameTag(true));
+
     }
 
     @Listener(order = Order.LAST)
     public void onInteractEntity(InteractEntityEvent.Secondary.MainHand event) {
+        System.out.println("Listening to Animals");
         if (event.getTargetEntity() instanceof EntityAnimal) {
             final EntityAnimal animal = (EntityAnimal) event.getTargetEntity();
-
-            if (!animal.isChild() && animal.isInLove() && !animal.hasCustomName()) {
+            System.out.println("isChild: " + animal.isChild() + " inLove: " + animal.isInLove());
+            if (!animal.isChild() && animal.isInLove()) { // && !animal.hasCustomName()) {
                 animal.setCustomNameTag(TextFormatting.DARK_AQUA + animal.getName());
+            } else {
+                animal.setCustomNameTag(TextFormatting.WHITE + animal.getName());
             }
         }
     }
+
+    /*@SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void render(RenderLivingEvent.Pre event) {
+        float health = event.getEntity().getHealth();
+        String name = event.getEntity().getDisplayName().getFormattedText();
+        //System.out.println(name + ", " + health);
+        //event.getEntity().setCustomNameTag("" + health + "§c❤");
+        if (event.getEntity() instanceof EntityCow) {
+            System.out.println("Cow");
+            System.out.println("inLove: " + ((EntityCow) event.getEntity()).isInLove());
+        }
+        event.getEntity().setAlwaysRenderNameTag(true);
+
+        return;
+    }*/
 }

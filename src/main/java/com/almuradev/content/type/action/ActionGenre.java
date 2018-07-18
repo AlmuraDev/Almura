@@ -8,6 +8,7 @@
 package com.almuradev.content.type.action;
 
 import com.almuradev.content.ContentType;
+import com.almuradev.content.type.action.type.blockdecay.BlockDecayAction;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 
 /**
@@ -15,6 +16,11 @@ import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
  */
 @ContentType.MultiType.Name("actions")
 public enum ActionGenre implements ContentType.MultiType<ActionContentType, ActionContentType.Builder<ActionContentType>> {
+    /**
+     * An action representing block decay.
+     */
+    BLOCK_DECAY("block_decay", BlockDecayAction.Builder.class),
+
     /**
      * An action representing block destruction.
      */

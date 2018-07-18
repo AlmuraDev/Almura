@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": {
+            "item": "minecraft:diamond_block"
+        },
+        "B": {
+            "item": "almura:cache/gold"
+        }
+    },
+    "result": {
+        "item": "almura:cache/diamond"
+    }
+}

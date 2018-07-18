@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "minVersion": "0.7.4",
+    "package": "com.almuradev.almura.feature.healthbar.asm.mixin",
+    "refmap": "mixins.almura.refmap.json",
+    "target": "@env(DEFAULT)",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [
+    ],
+    "client": [
+        "client.renderer.entity.MixinRenderLivingBase"
+    ]
+}

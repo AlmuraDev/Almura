@@ -13,9 +13,7 @@ import com.almuradev.content.type.mapcolor.MapColor;
 import net.minecraft.block.material.EnumPushReaction;
 
 public interface Material extends CatalogedContent {
-
     interface Builder extends ContentBuilder<Material> {
-
         void blocksLight(final boolean blocksLight);
 
         void blocksMovement(final boolean blocksMovement);

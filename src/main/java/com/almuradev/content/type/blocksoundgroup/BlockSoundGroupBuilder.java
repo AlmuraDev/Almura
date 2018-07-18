@@ -10,7 +10,7 @@ package com.almuradev.content.type.blocksoundgroup;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.content.asm.iface.IMixinSetCatalogTypeId;
+import com.almuradev.content.mixin.iface.IMixinSetCatalogTypeId;
 import com.almuradev.content.registry.ContentBuilder;
 import net.minecraft.util.SoundEvent;
 import org.spongepowered.api.effect.sound.SoundType;
@@ -18,7 +18,6 @@ import org.spongepowered.api.effect.sound.SoundType;
 import javax.annotation.Nullable;
 
 final class BlockSoundGroupBuilder extends ContentBuilder.Impl<BlockSoundGroup> implements BlockSoundGroup.Builder {
-
     @Nullable private Double volume;
     @Nullable private Double pitch;
     @Nullable private SoundType breakSound;

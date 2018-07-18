@@ -12,7 +12,6 @@ import com.almuradev.almura.asm.mixin.interfaces.IMixinGuiBossOverlay;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.BossInfoClient;
 import org.spongepowered.api.boss.BossBar;
 import org.spongepowered.api.boss.BossBarOverlay;
@@ -23,10 +22,9 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Collection;
 
-public class UIBossBarPanel extends UIHUDPanel {
+public class UIBossBarPanel extends AbstractPanel {
 
     private static final int BAR_HEIGHT = 5;
-    private final Minecraft client = Minecraft.getMinecraft();
 
     public UIBossBarPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);

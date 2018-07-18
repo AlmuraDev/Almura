@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 public final class ClientboundPlayerSelectedTitlesPacket implements Message {
 
     public Map<UUID, Text> titles;

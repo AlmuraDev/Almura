@@ -15,14 +15,15 @@ import org.spongepowered.api.text.Text;
 @SideOnly(Side.CLIENT)
 public final class WindowNotification extends Notification {
 
-    public WindowNotification(Text text) {
-        super(text);
+    public WindowNotification(Text title, Text message) {
+        super(title, message);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("message", this.text)
+                .add("title", this.title)
+                .add("message", this.message)
                 .toString();
     }
 }

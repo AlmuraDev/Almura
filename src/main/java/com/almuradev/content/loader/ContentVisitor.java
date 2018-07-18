@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
 abstract class ContentVisitor implements FileVisitor<Path> {
-
     private final Logger logger;
 
     ContentVisitor(final Logger logger) {

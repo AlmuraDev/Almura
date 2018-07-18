@@ -23,7 +23,6 @@ import java.util.ListIterator;
 import java.util.Map;
 
 final class AssetStateSerializer implements JsonDeserializer<AssetState>, JsonSerializer<AssetState> {
-
     @Override
     public AssetState deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
         final JsonObject object = (JsonObject) json;

@@ -10,5 +10,4 @@ package com.almuradev.content.type.block.type.normal.state;
 import com.almuradev.content.type.block.BlockStateDefinition;
 
 public interface NormalBlockStateDefinitionBuilder extends BlockStateDefinition.Builder<NormalBlockStateDefinition> {
-
 }

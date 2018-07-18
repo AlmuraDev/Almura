@@ -13,7 +13,6 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -21,7 +20,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class UIWorldPanel extends UIHUDPanel {
+public class UIWorldPanel extends AbstractPanel {
 
     @Inject private static HeadUpDisplay hudData;
 
@@ -35,14 +34,14 @@ public class UIWorldPanel extends UIHUDPanel {
 
         this.worldLabel = new UILabel(gui, "");
         this.worldLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
-        this.worldLabel.setFontOptions(FontColors.FRO_WHITE);
+        this.worldLabel.setFontOptions(FontColors.WHITE_FO);
 
         this.add(this.compassLabel, this.worldLabel);
     }
 
     @Override
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        if (Minecraft.getMinecraft().player == null || Minecraft.getMinecraft().player.world == null) {
+        if (this.client.player == null || this.client.player.world == null) {
             return;
         }
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
@@ -59,10 +58,6 @@ public class UIWorldPanel extends UIHUDPanel {
     private void updateWorld() {
         this.worldLabel.setText(hudData.worldName);
         this.worldLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
-        if (this.worldLabel.getWidth() + 15 <= this.compassLabel.getWidth() + 10) {
-            this.width = this.compassLabel.getWidth() + 10;
-        } else {
-            this.width = this.worldLabel.getWidth() + 15;
-        }
+        this.width = Math.max(this.worldLabel.getWidth() + 10, 60);
     }
 }

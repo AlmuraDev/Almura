@@ -23,7 +23,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.util.Color;
 
 import javax.annotation.Nullable;
 
@@ -36,7 +35,7 @@ public class UIPropertyBar extends UIComponent {
     private int color;
     private float amount = 1.0f;
     private Text text = Text.EMPTY;
-    private FontOptions fontOptions = FontColors.FRO_WHITE;
+    private FontOptions fontOptions = FontColors.WHITE_FO;
     private GuiTexture spritesheet = GuiConfig.SpriteSheet.VANILLA_ICON;
 
     @Nullable private GuiIcon backgroundIcon, foregroundIcon;
@@ -80,9 +79,9 @@ public class UIPropertyBar extends UIComponent {
             barX = ICON_SIZE + 2;
         }
 
-        final int alpha = (int) MathUtil.squash(this.getAlpha() - 75, 0, 255);
-        renderer.drawRectangle(barX, 1, this.zIndex, barWidth, barHeight, 0, alpha);
-        renderer.drawRectangle(barX + 1, 2, this.zIndex, this.getConvertedFill(), barHeight - 2, this.color, this.getAlpha());
+        final int alpha = MathUtil.squashi(this.getAlpha() - 75, 0, 255);
+        renderer.drawRectangle(barX, 1, getZIndex(), barWidth, barHeight, 0, alpha);
+        renderer.drawRectangle(barX + 1, 2, getZIndex(), this.getConvertedFill(), barHeight - 2, this.color, this.getAlpha());
     }
 
     public Text getText() {
@@ -103,7 +102,7 @@ public class UIPropertyBar extends UIComponent {
 
             int x = (((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE + 4 + this.width : this.width) - textWidth) / 2;
 
-            int y = (ICON_SIZE - textHeight) / 2;
+            int y = (this.height - textHeight) / 2;
 
             if (x == 0) {
                 x = 1;
@@ -111,7 +110,7 @@ public class UIPropertyBar extends UIComponent {
             if (y == 0) {
                 y = 1;
             }
-            renderer.drawText(Fonts.MINECRAFT, rawText, x, y, this.zIndex, this.fontOptions);
+            renderer.drawText(Fonts.MINECRAFT, rawText, x, y, getZIndex(), this.fontOptions);
         }
     }
 

@@ -9,58 +9,76 @@ package com.almuradev.almura.core.client;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.asm.StaticAccess;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.core.common.CommonModule;
-import com.almuradev.almura.feature.hud.ClientHeadUpDisplayManager;
-import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
-import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPanel;
-import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
-import com.almuradev.almura.feature.menu.MainMenuManager;
-import com.almuradev.almura.feature.nick.ClientNickManager;
-import com.almuradev.almura.feature.notification.ClientNotificationManager;
-import com.almuradev.almura.feature.speed.FirstLaunchClientOptimization;
-import com.almuradev.almura.feature.title.ClientTitleManager;
-import com.almuradev.almura.shared.client.model.ModelBinder;
-import com.almuradev.almura.shared.client.model.obj.OBJModelLoader;
-import com.almuradev.almura.shared.client.model.obj.OBJModelParser;
+import com.almuradev.almura.feature.menu.MainMenuModule;
+import com.almuradev.almura.feature.speed.ClientOptimizationModule;
+import com.almuradev.almura.shared.client.keyboard.binder.KeyBindingInstaller;
 import com.almuradev.almura.shared.inject.ClientBinder;
+import com.almuradev.almura.shared.plugin.Plugin;
+import com.almuradev.content.model.obj.OBJModelLoader;
+import com.google.inject.Inject;
+import com.google.inject.Provides;
 import net.kyori.violet.AbstractModule;
-import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.client.resources.LanguageManager;
+import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Set;
 
 /**
  * The root module for the client.
  */
 @SideOnly(Side.CLIENT)
 public final class ClientModule extends AbstractModule implements ClientBinder {
+    private final Plugin plugin;
+
+    public ClientModule(final Plugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     protected void configure() {
-        this.install(new CommonModule());
-        this.facet()
-                .add(ModelBinder.Installer.class)
-                .add(FirstLaunchClientOptimization.class)
-                .add(MainMenuManager.class)
-                .add(ClientHeadUpDisplayManager.class)
-                .add(ClientNickManager.class)
-                .add(ClientTitleManager.class)
-                .add(ClientNotificationManager.class);
+        this.install(new CommonModule(this.plugin));
+        this.install(new VanillaModule());
+        this.install(new MainMenuModule());
+        this.install(new ClientOptimizationModule());
         this.install(new ClientConfiguration.Module());
-        this.model()
-                .loader(OBJModelLoader.class, binder -> {
-                    binder.domains(Almura.ID);
-                });
+        this.facet().add(KeyBindingInstaller.class);
+        this.model().loader(OBJModelLoader.class, binder -> binder.domains(Almura.ID));
         this.requestStaticInjection(StaticAccess.class);
-        this.requestStaticInjection(UIDetailsPanel.class);
-        this.requestStaticInjection(UIWorldPanel.class);
-        this.requestStaticInjection(UIUserPanel.class);
-        this.requestMixinInjection();
-        this.installFactory(OBJModelParser.Factory.class);
     }
 
-    // HACK: inject into required mixin target classes
-    @SuppressWarnings("UnnecessaryStaticInjection")
-    private void requestMixinInjection() {
-        this.requestStaticInjection(GuiIngame.class);
+    private static class VanillaModule extends AbstractModule {
+        @Override
+        protected void configure() {
+            this.requestInjection(this);
+        }
+
+        @Provides
+        Minecraft client() {
+            return Minecraft.getMinecraft();
+        }
+
+        @Provides
+        LanguageManager languageManager(final Minecraft client) {
+            return client.getLanguageManager();
+        }
+
+        @Provides
+        IResourceManager resourceManager(final Minecraft client) {
+            return client.getResourceManager();
+        }
+
+        @Inject
+        private void configureListeners(final IResourceManager manager, final Set<IResourceManagerReloadListener> listeners) {
+            for (final IResourceManagerReloadListener listener : listeners) {
+                ((SimpleReloadableResourceManager) manager).registerReloadListener(listener);
+            }
+        }
     }
 }

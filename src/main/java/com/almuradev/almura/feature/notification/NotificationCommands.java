@@ -35,10 +35,12 @@ public final class NotificationCommands {
                         optional(playerOrSource(Text.of("target"))),
                         optional(integer(Text.of("seconds_to_live"))),
                         optional(bool(Text.of("is_window"))),
+                        text(Text.of("title"), TextSerializers.FORMATTING_CODE, false),
                         text(Text.of("notification"), TextSerializers.FORMATTING_CODE, true))
                 .executor((source, args) -> {
                     final int secondsToLive = args.<Integer>getOne("seconds_to_live").orElse(5);
                     final boolean isWindow = args.<Boolean>getOne("is_window").orElse(false);
+                    final Text title = args.<Text>getOne("title").orElse(null);
                     final Text notification = args.<Text>getOne("notification").orElse(null);
                     Collection<Player> targets = args.getAll("target");
                     if (targets.isEmpty()) {
@@ -47,9 +49,9 @@ public final class NotificationCommands {
                     if (!targets.isEmpty()) {
                         targets.forEach((player) -> {
                             if (isWindow) {
-                                manager.sendWindowMessage(player, notification);
+                                manager.sendWindowMessage(player, title, notification);
                             } else {
-                                manager.sendPopupNotification(player, notification, secondsToLive);
+                                manager.sendPopupNotification(player, title, notification, secondsToLive);
                             }
                         });
                     }

@@ -11,12 +11,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlePacket;
 import com.almuradev.almura.feature.title.network.ClientboundPlayerSelectedTitlesPacket;
-import com.almuradev.almura.shared.event.Witness;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.core.event.Witness;
 import com.typesafe.config.ConfigRenderOptions;
-import net.kyori.membrane.facet.Activatable;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -38,6 +35,8 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.common.text.SpongeTexts;
+import org.spongepowered.common.text.serializer.LegacyTexts;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,12 +50,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ServerTitleManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
+@SuppressWarnings("deprecation")
+public final class ServerTitleManager extends Witness.Impl implements Witness.Lifecycle {
 
     private final Game game;
     private final PluginContainer container;
@@ -75,11 +74,6 @@ public final class ServerTitleManager extends Witness.Impl implements Activatabl
         this.logger = logger;
         this.network = network;
         this.configRoot = configRoot;
-    }
-
-    @Override
-    public boolean active() {
-        return this.game.isServerAvailable();
     }
 
     @Override
@@ -190,13 +184,19 @@ public final class ServerTitleManager extends Witness.Impl implements Activatabl
             titleNode.getChildrenMap().forEach((permission, node) -> {
                 final String title = node.getString("");
                 if (!title.isEmpty()) {
-                    this.titlesByPermission.put(permission.toString(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(title));
+                    this.titlesByPermission.put(permission.toString(), Text.of(LegacyTexts.replace(title, '&', SpongeTexts.COLOR_CHAR)));
                 }
             });
         }
 
         // Re-set selected titlesByPermission (they may have a title they no longer have permission for)
+        this.recalculateSelectedTitles();
 
+        return !this.titlesByPermission.isEmpty();
+    }
+
+    @Deprecated
+    public void recalculateSelectedTitles() {
         this.selectedTitlesById.clear();
 
         if (!this.titlesByPermission.isEmpty()) {
@@ -217,8 +217,6 @@ public final class ServerTitleManager extends Witness.Impl implements Activatabl
                 }
             });
         }
-
-        return !this.titlesByPermission.isEmpty();
     }
 
     private boolean createConfigIfNeeded(Path path) throws IOException {
