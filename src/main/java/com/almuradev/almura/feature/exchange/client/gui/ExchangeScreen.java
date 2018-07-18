@@ -456,7 +456,6 @@ public final class ExchangeScreen extends SimpleScreen {
         return defaultDecimalFormat.format(value / TRILLION) + "t";
     }
 
-    @SuppressWarnings("unchecked, deprecation")
     public static class ExchangeItemComponent<T> extends UIDynamicList.ItemComponent<T> {
 
         private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
@@ -575,13 +574,11 @@ public final class ExchangeScreen extends SimpleScreen {
             final int maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
 
             this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GRAY, TextStyles.ITALIC, offer.playerName)
-            ));
+                    Text.of(TextColors.GRAY, TextStyles.ITALIC, offer.playerName)));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             this.priceLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")), true
-            );
+                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")), true);
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
             this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(offer.quantity).multiply(offer.pricePer)));
@@ -611,8 +608,7 @@ public final class ExchangeScreen extends SimpleScreen {
             this.statusContainer.setColor(FontColors.DARK_GREEN);
 
             this.priceLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")), true
-            );
+                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")), true);
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(this.statusContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
             this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(offer.quantity).multiply(offer.pricePer)));

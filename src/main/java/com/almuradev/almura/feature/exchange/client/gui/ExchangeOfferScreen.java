@@ -61,7 +61,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
                 .text("OK")
                 .x(1)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .onClick(this::close)
+                .onClick(this::lightenPockets)
                 .build("button.ok");
         final UIButton buttonCancel = new UIButtonBuilder(this)
                 .width(40)
@@ -108,5 +108,9 @@ public class ExchangeOfferScreen extends SimpleScreen {
         final int size = event.getComponent().getItems(UIDualListContainer.ContainerSide.RIGHT).size();
         this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
         this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
+    }
+
+    private void lightenPockets() {
+        this.close();
     }
 }

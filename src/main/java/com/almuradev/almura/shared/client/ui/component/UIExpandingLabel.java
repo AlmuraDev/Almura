@@ -65,7 +65,12 @@ public class UIExpandingLabel extends UILabel {
             }
             lines++;
         }
-        this.textHeight = lines * (int) this.font.getStringHeight(this.fontOptions) + 1;
+
+        // May be a saner way of handling but it appears working.
+        // We take the line height based on the font/fontoptions and add it to the fontscale (as a means to determine line spacing, probably wrong
+        // but it works for the moment) and then multiply by the total number of lines and tada!
+        this.textHeight = Math.round(lines * (this.font.getStringHeight(this.fontOptions) + this.fontOptions.getFontScale()));
+
         setSize(this.textWidth, this.textHeight);
         setPosition(this.x, this.y, this.anchor);
     }
