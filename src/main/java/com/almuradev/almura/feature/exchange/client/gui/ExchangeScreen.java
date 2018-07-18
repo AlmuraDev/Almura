@@ -38,7 +38,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.slf4j.Logger;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
@@ -541,7 +540,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 itemTextBuilder.append(c);
             }
             this.itemLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.WHITE, itemTextBuilder.toString(), TextColors.GRAY, " x ", withSuffix(offer.quantity))), true);
+                    Text.of(TextColors.WHITE, itemTextBuilder.toString(), TextColors.GRAY, " x ", withSuffix(offer.quantity))));
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             if (offer.quantity >= (long) MILLION) {
@@ -577,8 +576,7 @@ public final class ExchangeScreen extends SimpleScreen {
                     Text.of(TextColors.GRAY, TextStyles.ITALIC, offer.playerName)));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
-            this.priceLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")), true);
+            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea"));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
             this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(offer.quantity).multiply(offer.pricePer)));
@@ -607,8 +605,7 @@ public final class ExchangeScreen extends SimpleScreen {
             this.statusContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.statusContainer.setColor(FontColors.DARK_GREEN);
 
-            this.priceLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea")), true);
+            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea"));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(this.statusContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
             this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(offer.quantity).multiply(offer.pricePer)));
