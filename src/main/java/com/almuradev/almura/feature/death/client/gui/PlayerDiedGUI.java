@@ -18,6 +18,7 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -44,7 +45,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
     private boolean update = true;
-    private UILabel titleLabel, messageLabel;
+    private UILabel messageLabel, dropsLabel;
     private UIFormContainer form;
     private UIButton buttonRespawn, buttonRevive, buttonRagequit;
 
@@ -71,7 +72,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
         guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        form = new UIFormContainer(this, 200, 100, "");
+        form = new UIFormContainer(this, 50, 150, "You have died.");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(false);
         form.setClosable(false);
@@ -82,16 +83,26 @@ public final class PlayerDiedGUI extends SimpleScreen {
         form.setTopPadding(20);
         form.setLeftPadding(3);
 
-        titleLabel = new UILabel(this, "sarcastic message here.");
-        titleLabel.setText(getMessage());
-        titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
-
-        messageLabel = new UILabel(this, "");
-        messageLabel.setText("You lost: " + dropAmount + " to death tax.");
-        messageLabel.setVisible(dropCoins);
+        messageLabel = new UILabel(this, getMessage());
         messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        messageLabel.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
+        messageLabel.setPosition(0, 25, Anchor.CENTER | Anchor.MIDDLE);
+
+        dropsLabel = new UILabel(this, "You lost: " + dropAmount + " to death tax.");
+        //dropsLabel.setVisible(dropCoins);
+        dropsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        dropsLabel.setPosition(0, 40, Anchor.CENTER | Anchor.MIDDLE);
+
+        form.setSize(messageLabel.getWidth() + 20, form.getHeight());
+
+        final UISeparator separator = new UISeparator(this);
+        separator.setSize(form.getWidth() -5, 1);
+        separator.setPosition(0, -5, Anchor.TOP | Anchor.CENTER);
+        form.add(separator);
+
+        final UISeparator separator2 = new UISeparator(this);
+        separator2.setSize(form.getWidth() -5, 1);
+        separator2.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
+        form.add(separator2);
 
         // Revive button
         buttonRevive = new UIButtonBuilder(this)
@@ -121,7 +132,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.ragequit");
 
-        form.add(titleLabel, messageLabel, buttonRespawn, buttonRevive, buttonRagequit);
+        form.add(messageLabel, dropsLabel, buttonRespawn, buttonRevive, buttonRagequit);
 
         addToScreen(form);
     }
@@ -242,11 +253,11 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 break;
 
             case 14:
-                message = "Shhh. Only dreams now.";
+                message = "Shhh. Only dreams now....";
                 break;
 
             default:
-                message = "You have died...";
+                message = "You have died...again";
                 break;
         }
         return message;
