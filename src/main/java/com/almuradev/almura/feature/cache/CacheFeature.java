@@ -95,6 +95,7 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
         registerModel(Item.getItemFromBlock(CacheBlocks.ENDER));
     }
 
+    @SideOnly(Side.CLIENT)
     private void registerModel(Item item) {
         item.setTileEntityItemStackRenderer(CacheItemRenderer.INSTANCE);
         this.registerInventoryModel(item, requireNonNull(item.getRegistryName()));
