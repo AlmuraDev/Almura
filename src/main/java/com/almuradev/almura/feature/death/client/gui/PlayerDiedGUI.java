@@ -197,7 +197,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
     private String getMessage() {
         Random random = new Random();
         String message;
-        int selection = random.nextInt(12) + 1;
+        int selection = random.nextInt(14) + 1;
 
         switch (selection) {
             case 1:
@@ -213,7 +213,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 message = "Oohhh, I'm sure that's gonna be fine...";
                 break;
             case 5:
-                message = "Ouch.  I'll bet that leaves a scare.";
+                message = "Ouch.  I'll bet that leaves a scar.";
                 break;
             case 6:
                 message = "Seriously...";
@@ -235,6 +235,14 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 break;
             case 12:
                 message = "Failure is the fog from which we all glimpse triumph";
+                break;
+
+            case 13:
+                message = "Get up and walk it off... geez.";
+                break;
+
+            case 14:
+                message = "Shhh. Only dreams now.";
                 break;
 
             default:
