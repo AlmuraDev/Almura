@@ -42,7 +42,7 @@ public class MainMenuManager implements Witness {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();
             } else if (screen.getClass().equals(GuiGameOver.class)) {
-                //event.setCanceled(true);
+                event.setCanceled(true);
                 if (currentScreen == null ||(currentScreen != null && !currentScreen.getClass().equals(PlayerDiedGUI.class))) {
                     //new PlayerDiedGUI(Minecraft.getMinecraft().player).display();
                 }

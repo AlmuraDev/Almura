@@ -27,6 +27,7 @@ import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.network.ChannelBinding;
@@ -41,7 +42,6 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
-@SideOnly(Side.SERVER)
 public final class DeathHandler implements Witness {
 
     private static final Random RANDOM = new Random();
@@ -51,22 +51,28 @@ public final class DeathHandler implements Witness {
     private ItemType platinumCoin, goldCoin, silverCoin, copperCoin;
 
     private final ServerNotificationManager serverNotificationManager;
-
-    @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
+    private final ChannelBinding.IndexedMessageChannel network;
 
     @Inject
-    public DeathHandler(final ServerNotificationManager serverNotificationManager) {
+    public DeathHandler(final ServerNotificationManager serverNotificationManager, final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network) {
         this.serverNotificationManager = serverNotificationManager;
+        this.network = network;
+    }
+
+    @Listener(order = Order.LAST)
+    public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
+        if (player.health().get() == 0) {
+            this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00));
+        }
     }
 
     @Listener(order = Order.LAST)
     public void onPlayerDeath(final DestructEntityEvent.Death event, @Root final DamageSource damageSource, @Getter("getTargetEntity") final Player player) {
-       System.out.println("Player Death Detected");
 
         this.cacheItemTypes();
 
         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
-        if (service == null) {
+        if (service != null) {
             final Server server = Sponge.getServer();
 
             final double deathTax = RANGE.random(RANDOM);
@@ -83,18 +89,21 @@ public final class DeathHandler implements Witness {
                 account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
                 server.getOnlinePlayers().forEach(onlinePlayer -> {
                     if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
-                        this.network.sendToServer(new ClientboundPlayerDiedPacket(dropAmount));
+                        this.network.sendTo(player, new ClientboundPlayerDiedPacket(dropAmount));
+                        System.out.println("Sending 1");
                     } else {
                         // TODO Dockter you can do better here, have a list of witty phrases to troll players with
                         serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their death has cost them $" + dropAmount + ", such a waste..."), 5);
                     }
                 });
             } else {
-                this.network.sendToServer(new ClientboundPlayerDiedPacket(0.00));
+                System.out.println("Sending 2");
+                this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00));
             }
         } else {
             // Account was null (true in single player)
-            this.network.sendToServer(new ClientboundPlayerDiedPacket(0.00));
+            System.out.println("Sending 3");
+            this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00));
         }
     }
 

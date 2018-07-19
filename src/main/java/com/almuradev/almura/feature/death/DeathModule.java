@@ -30,18 +30,7 @@ public final class DeathModule extends AbstractModule implements CommonBinder {
         this.packet()
                 .bind(ClientboundPlayerDiedPacket.class, binder -> binder.handler(ClientboundPlayerDiedPacketHandler.class, Platform.Type.CLIENT));
 
-        this.on(Platform.Type.SERVER, () -> {
-            final class ServerModule extends AbstractModule implements CommonBinder {
-
-                @SideOnly(Side.SERVER)
-                @Override
-                protected void configure() {
-                    this.facet().add(DeathHandler.class);
-                    this.requestStaticInjection(DeathHandler.class);
-                }
-            }
-            this.install(new ServerModule());
-        });
+        this.facet().add(DeathHandler.class);
 
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {

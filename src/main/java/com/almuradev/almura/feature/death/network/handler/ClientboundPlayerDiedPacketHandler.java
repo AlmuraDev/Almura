@@ -35,14 +35,16 @@ public final class ClientboundPlayerDiedPacketHandler implements MessageHandler<
 
     @Override
     public void handleMessage(ClientboundPlayerDiedPacket message, RemoteConnection connection, Platform.Type side) {
+        System.out.println("Received died packet");
         if (side.isClient()) {
+            System.out.println("On Client");
             final Minecraft client = Minecraft.getMinecraft();
             if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
 
                 final EntityPlayerSP player = client.player;
                 final WorldClient world = client.world;
-
-                new PlayerDiedGUI(player, message.dropAmount);
+                System.out.println("About to fire GUI");
+                new PlayerDiedGUI(player, message.dropAmount).display();
             }
         }
     }
