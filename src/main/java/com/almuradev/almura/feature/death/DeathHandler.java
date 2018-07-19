@@ -12,8 +12,6 @@ import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.util.math.DoubleRange;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
@@ -37,10 +35,9 @@ import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.Account;
 import org.spongepowered.api.text.Text;
 
+import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Random;
-
-import javax.inject.Inject;
 
 public final class DeathHandler implements Witness {
 
@@ -61,20 +58,18 @@ public final class DeathHandler implements Witness {
 
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-        if (player.health().get() == 0) {
-            this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00));
+        if (player.health().get() == 0) { // Catch if the player is login into server and is currently dead.
+            this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00, false));
         }
     }
 
     @Listener(order = Order.LAST)
     public void onPlayerDeath(final DestructEntityEvent.Death event, @Root final DamageSource damageSource, @Getter("getTargetEntity") final Player player) {
-
         this.cacheItemTypes();
-
         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
+
         if (service != null) {
             final Server server = Sponge.getServer();
-
             final double deathTax = RANGE.random(RANDOM);
             final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
             BigDecimal balance;
@@ -89,22 +84,18 @@ public final class DeathHandler implements Witness {
                 account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
                 server.getOnlinePlayers().forEach(onlinePlayer -> {
                     if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
-                        this.network.sendTo(player, new ClientboundPlayerDiedPacket(dropAmount));
-                        System.out.println("Sending 1");
+                        this.network.sendTo(player, new ClientboundPlayerDiedPacket(dropAmount, true));
                     } else {
                         // TODO Dockter you can do better here, have a list of witty phrases to troll players with
                         serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their death has cost them $" + dropAmount + ", such a waste..."), 5);
                     }
                 });
-            } else {
-                System.out.println("Sending 2");
-                this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00));
+                return;
             }
-        } else {
-            // Account was null (true in single player)
-            System.out.println("Sending 3");
-            this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00));
         }
+
+        // Service or Account was null, fallback.
+        this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00, false));
     }
 
     private void cacheItemTypes() {

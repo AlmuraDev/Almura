@@ -9,7 +9,6 @@ package com.almuradev.almura.feature.death.client.gui;
  */
 
 import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
-import com.almuradev.almura.feature.menu.ingame.network.ServerboundFeaturesOpenRequestPacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
@@ -35,8 +34,6 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 
 import javax.inject.Inject;
-
-import java.io.IOException;
 import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
@@ -52,13 +49,15 @@ public final class PlayerDiedGUI extends SimpleScreen {
 
     private EntityPlayer player;
     private double dropAmount;
+    private boolean dropCoins;
 
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientNotificationManager clientNotificationManager;
     @Inject private static PluginContainer container;
 
-    public PlayerDiedGUI(EntityPlayer player, double dropAmount) {
+    public PlayerDiedGUI(EntityPlayer player, boolean dropCoins, double dropAmount) {
         this.player = player;
+        this.dropCoins = dropCoins;
         this.dropAmount = dropAmount;
     }
 
@@ -84,6 +83,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
 
         messageLabel = new UILabel(this, "");
         messageLabel.setText("You lost: " + dropAmount + " to death tax.");
+        messageLabel.setVisible(dropCoins);
         messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         messageLabel.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
 

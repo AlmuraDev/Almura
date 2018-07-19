@@ -12,13 +12,9 @@ import com.almuradev.almura.feature.death.network.ClientboundPlayerDiedPacket;
 import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
 import com.almuradev.almura.feature.death.network.handler.ClientboundPlayerDiedPacketHandler;
 import com.almuradev.almura.feature.death.network.handler.ServerboundReviveRequestPacketHandler;
-import com.almuradev.almura.feature.title.network.*;
-import com.almuradev.almura.feature.title.network.handler.*;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 
 public final class DeathModule extends AbstractModule implements CommonBinder {
