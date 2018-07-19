@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.cache;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.cache.block.CacheBlock;
 import com.almuradev.almura.feature.cache.block.CacheBlocks;
+import com.almuradev.almura.feature.cache.client.tileentity.renderer.CacheItemRenderer;
 import com.almuradev.almura.feature.cache.client.tileentity.renderer.CacheTileEntityRenderer;
 import com.almuradev.almura.shared.tileentity.SingleSlotTileEntity;
 import com.almuradev.core.event.Witness;
@@ -17,9 +18,8 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -28,15 +28,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.IForgeRegistry;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.item.inventory.CraftItemEvent;
-import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
-import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.text.NumberFormat;
 import java.util.Locale;
+
+import static java.util.Objects.requireNonNull;
 
 public final class CacheFeature extends Witness.Impl implements Witness.Lifecycle {
 
@@ -49,7 +49,7 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
 
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
-        GameRegistry.registerTileEntity(SingleSlotTileEntity.class, Almura.ID + ":cache");
+        GameRegistry.registerTileEntity(SingleSlotTileEntity.class, new ResourceLocation(Almura.ID, "cache"));
 
         if (FMLCommonHandler.instance().getSide().isClient()) {
             this.bindBlockRenderer();
@@ -57,56 +57,21 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
     }
 
     @SubscribeEvent
-    public void onRegisterItems(RegistryEvent.Register<Item> event) {
-        // TODO do this better
+    public void onRegisterItems(final RegistryEvent.Register<Item> event) {
+        final IForgeRegistry<Item> registry = event.getRegistry();
+        registerItem(registry, CacheBlocks.WOOD);
+        registerItem(registry, CacheBlocks.IRON);
+        registerItem(registry, CacheBlocks.GOLD);
+        registerItem(registry, CacheBlocks.DIAMOND);
+        registerItem(registry, CacheBlocks.NETHER);
+        registerItem(registry, CacheBlocks.ENDER);
+    }
 
-        ItemBlock item = (ItemBlock) new ItemBlock(CacheBlocks.WOOD).setRegistryName(CacheBlocks.WOOD.getRegistryName());
+    private void registerItem(final IForgeRegistry<Item> registry, final CacheBlock cacheBlock) {
+        final ResourceLocation registryName = requireNonNull(cacheBlock.getRegistryName());
+        final ItemBlock item = (ItemBlock) new ItemBlock(cacheBlock).setRegistryName(registryName);
 
-        event.getRegistry().register(item);
-
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            this.registerInventoryModel(item, item.getRegistryName());
-        }
-
-        item = (ItemBlock) new ItemBlock(CacheBlocks.IRON).setRegistryName(CacheBlocks.IRON.getRegistryName());
-
-        event.getRegistry().register(item);
-
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            this.registerInventoryModel(item, item.getRegistryName());
-        }
-
-        item = (ItemBlock) new ItemBlock(CacheBlocks.GOLD).setRegistryName(CacheBlocks.GOLD.getRegistryName());
-
-        event.getRegistry().register(item);
-
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            this.registerInventoryModel(item, item.getRegistryName());
-        }
-
-        item = (ItemBlock) new ItemBlock(CacheBlocks.DIAMOND).setRegistryName(CacheBlocks.DIAMOND.getRegistryName());
-
-        event.getRegistry().register(item);
-
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            this.registerInventoryModel(item, item.getRegistryName());
-        }
-
-        item = (ItemBlock) new ItemBlock(CacheBlocks.NETHER).setRegistryName(CacheBlocks.NETHER.getRegistryName());
-
-        event.getRegistry().register(item);
-
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            this.registerInventoryModel(item, item.getRegistryName());
-        }
-
-        item = (ItemBlock) new ItemBlock(CacheBlocks.ENDER).setRegistryName(CacheBlocks.ENDER.getRegistryName());
-
-        event.getRegistry().register(item);
-
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            this.registerInventoryModel(item, item.getRegistryName());
-        }
+        registry.register(item);
     }
 
     @SubscribeEvent
@@ -119,75 +84,29 @@ public final class CacheFeature extends Witness.Impl implements Witness.Lifecycl
         event.getRegistry().register(CacheBlocks.ENDER);
     }
 
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public void onModelRegistry(ModelRegistryEvent event) {
+        registerModel(Item.getItemFromBlock(CacheBlocks.WOOD));
+        registerModel(Item.getItemFromBlock(CacheBlocks.IRON));
+        registerModel(Item.getItemFromBlock(CacheBlocks.GOLD));
+        registerModel(Item.getItemFromBlock(CacheBlocks.DIAMOND));
+        registerModel(Item.getItemFromBlock(CacheBlocks.NETHER));
+        registerModel(Item.getItemFromBlock(CacheBlocks.ENDER));
+    }
+
+    private void registerModel(Item item) {
+        item.setTileEntityItemStackRenderer(CacheItemRenderer.INSTANCE);
+        this.registerInventoryModel(item, requireNonNull(item.getRegistryName()));
+    }
+
     @SideOnly(Side.CLIENT)
     private void bindBlockRenderer() {
-        ClientRegistry.bindTileEntitySpecialRenderer(SingleSlotTileEntity.class, new CacheTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(SingleSlotTileEntity.class, CacheTileEntityRenderer.INSTANCE);
     }
 
     @SideOnly(Side.CLIENT)
-    private void registerInventoryModel(ItemBlock item, ResourceLocation blockStateLocation) {
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(blockStateLocation, "inventory"));
-    }
-
-    @Listener
-    public void onPlayerCraftedItem(CraftItemEvent.Preview event) {
-        final ItemStack result = ItemStackUtil.toNative(event.getPreview().getFinal().createStack());;
-        final Item resultItemType = result.getItem();
-
-        // We only care about caches
-        if (!(resultItemType instanceof ItemBlock) || !(((ItemBlock) resultItemType).getBlock() instanceof CacheBlock)) {
-            return;
-        }
-
-        final CacheBlock resultCacheBlock = (CacheBlock) ((ItemBlock) resultItemType).getBlock();
-
-        final ItemStack cacheStack = ItemStackUtil.toNative(event.getCraftingInventory().getCraftingGrid()
-                .query(QueryOperationTypes.ITEM_STACK_CUSTOM.of(stack -> ((Block) stack.getType().getBlock().orElse(null)) instanceof CacheBlock))
-                .peek()
-                .orElse(org.spongepowered.api.item.inventory.ItemStack.empty()));
-
-        // Safety check to ensure the cache stack is in the middle
-        if (cacheStack.isEmpty() || !(cacheStack.getItem() instanceof ItemBlock) || !(((ItemBlock) cacheStack.getItem()).getBlock() instanceof
-                CacheBlock)) {
-            return;
-        }
-
-        final NBTTagCompound compound = cacheStack.getSubCompound("tag");
-
-        if (compound == null) {
-            return;
-        }
-
-        if (!compound.hasKey("Cache")) {
-            return;
-        }
-
-        final NBTTagCompound cacheCompound = compound.getCompoundTag("Cache");
-
-        if (!cacheCompound.hasKey(Almura.ID + ":single_slot")) {
-            return;
-        }
-
-        final NBTTagCompound slotCompound = cacheCompound.getCompoundTag(Almura.ID + ":single_slot");
-
-        if (!slotCompound.hasKey("Slot")) {
-            return;
-        }
-
-        // Phew, we made it...
-
-        // Set the new slot limit
-        final int newSlotLimit = resultCacheBlock.getSlotLimit();
-        final NBTTagCompound newSlotCompound = slotCompound.copy();
-        newSlotCompound.setInteger("SlotLimit", newSlotLimit);
-
-        // Copy the old compound and set the new single slot compound
-        final NBTTagCompound newCompound = cacheStack.getTagCompound().copy();
-
-        // Really not clean but its late and I'll make it better later..
-        newCompound.getCompoundTag("tag").getCompoundTag("Cache").setTag(Almura.ID + ":single_slot", newSlotCompound);
-
-        result.setTagCompound(newCompound);
-        event.getPreview().setCustom(ItemStackUtil.fromNative(result));
+    private void registerInventoryModel(Item item, ResourceLocation blockName) {
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(blockName, "inventory"));
     }
 }
