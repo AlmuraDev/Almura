@@ -16,7 +16,8 @@ import net.kyori.indigo.DetailedReport;
 import net.kyori.indigo.DetailedReportCategory;
 import net.kyori.lunar.function.ThrowingRunnable;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.json.JSONConfigurationLoader;
+
+import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -50,7 +51,7 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
     @Nullable
     final ConfigurationNode config(final Path path) {
         try {
-            return JSONConfigurationLoader.builder()
+            return GsonConfigurationLoader.builder()
                     .setPath(path)
                     .build()
                     .load();

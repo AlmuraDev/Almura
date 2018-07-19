@@ -33,6 +33,8 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 
 import javax.inject.Inject;
+
+import java.io.IOException;
 import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
@@ -59,13 +61,14 @@ public final class PlayerDiedGUI extends SimpleScreen {
 
     @Override
     public void construct() {
+        System.out.println("Construct PlayerDiedGUI");
         guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
         form = new UIFormContainer(this, 200, 100, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        form.setMovable(true);
-        form.setClosable(true);
+        form.setMovable(false);
+        form.setClosable(false);
         form.setBorder(FontColors.WHITE, 1, 185);
         form.setBackgroundAlpha(215);
         form.setBottomPadding(3);
@@ -84,6 +87,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 .position(-50, 0)
                 .text("Revive")
                 .listener(this)
+                .enabled(false)
                 .build("button.revive");
 
         // Respawn button
@@ -111,20 +115,21 @@ public final class PlayerDiedGUI extends SimpleScreen {
 
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
+
         switch (event.getComponent().getName().toLowerCase()) {
             // Note: you have the schedule the close() otherwise for some reason its ignored during respawn.
+
             case "button.respawn":
-                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("respawnPlayer")).submit(container);
-                this.mc.player.respawnPlayer();
+               Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("respawnPlayer")).submit(container); // delay the close call.
+               this.mc.player.respawnPlayer();
                break;
 
             case "button.revive":
-                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("revivePlayer")).submit(container);
-                this.mc.player.respawnPlayer();
-                close();
+
                 break;
 
             case "button.ragequit":
+                form.setClosable(true);
                 if (this.mc.world != null) {
                     this.mc.world.sendQuittingDisconnectingPacket();
                 }
@@ -155,13 +160,13 @@ public final class PlayerDiedGUI extends SimpleScreen {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
             unlockMouse = false; // Only unlock once per session.
         }
-
-        if (++this.lastUpdate > 100) {
-        }
     }
 
     @Override
     protected void keyTyped(char keyChar, int keyCode) {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            return; // ignore escape key to prevent false-close to parent.
+        }
         super.keyTyped(keyChar, keyCode);
         this.lastUpdate = 0; // Reset the timer when key is typed.
     }
