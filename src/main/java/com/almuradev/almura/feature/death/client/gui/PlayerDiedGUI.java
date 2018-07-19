@@ -34,6 +34,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 
 import javax.inject.Inject;
+import java.util.Random;
 import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
@@ -51,9 +52,13 @@ public final class PlayerDiedGUI extends SimpleScreen {
     private double dropAmount;
     private boolean dropCoins;
 
-    @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
-    @Inject private static ClientNotificationManager clientNotificationManager;
-    @Inject private static PluginContainer container;
+    @Inject
+    @ChannelId(NetworkConfig.CHANNEL)
+    private static ChannelBinding.IndexedMessageChannel network;
+    @Inject
+    private static ClientNotificationManager clientNotificationManager;
+    @Inject
+    private static PluginContainer container;
 
     public PlayerDiedGUI(EntityPlayer player, boolean dropCoins, double dropAmount) {
         this.player = player;
@@ -77,7 +82,8 @@ public final class PlayerDiedGUI extends SimpleScreen {
         form.setTopPadding(20);
         form.setLeftPadding(3);
 
-        titleLabel = new UILabel(this, "You have died...");
+        titleLabel = new UILabel(this, "sarcastic message here.");
+        titleLabel.setText(getMessage());
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
@@ -125,11 +131,10 @@ public final class PlayerDiedGUI extends SimpleScreen {
 
         switch (event.getComponent().getName().toLowerCase()) {
             // Note: you have the schedule the close() otherwise for some reason its ignored during respawn.
-
             case "button.respawn":
-               Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("respawnPlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); // delay the close call.
-               this.mc.player.respawnPlayer();
-               break;
+                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("respawnPlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); // delay the close call.
+                this.mc.player.respawnPlayer();
+                break;
 
             case "button.revive":
                 Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("revivePlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); // delay the close call.
@@ -141,7 +146,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
                     this.mc.world.sendQuittingDisconnectingPacket();
                 }
 
-                this.mc.loadWorld((WorldClient)null);
+                this.mc.loadWorld((WorldClient) null);
                 this.mc.displayGuiScreen(new GuiMainMenu());
                 break;
         }
@@ -187,5 +192,55 @@ public final class PlayerDiedGUI extends SimpleScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
+    }
+
+    private String getMessage() {
+        Random random = new Random();
+        String message;
+        int selection = random.nextInt(12) + 1;
+
+        switch (selection) {
+            case 1:
+                message = "I can't believe you died again...";
+                break;
+            case 2:
+                message = "Death is only the beginning...";
+                break;
+            case 3:
+                message = "The PLEBIAN... has died...";
+                break;
+            case 4:
+                message = "Oohhh, I'm sure that's gonna be fine...";
+                break;
+            case 5:
+                message = "Ouch.  I'll bet that leaves a scare.";
+                break;
+            case 6:
+                message = "Seriously...";
+                break;
+            case 7:
+                message = "Why does this keep happening?";
+                break;
+            case 8:
+                message = "What is going on exactly?";
+                break;
+            case 9:
+                message = "Repeating death only bring more death...";
+                break;
+            case 10:
+                message = "Try, try, try try try Again?!?";
+                break;
+            case 11:
+                message = "Sigh... this is getting aggravating.";
+                break;
+            case 12:
+                message = "Failure is the fog from which we all glimpse triumph";
+                break;
+
+            default:
+                message = "You have died...";
+                break;
+        }
+        return message;
     }
 }
