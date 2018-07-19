@@ -7,8 +7,6 @@
  */
 package com.almuradev.almura.feature.perms;
 
-import com.almuradev.almura.feature.guide.network.GuideOpenType;
-import com.almuradev.almura.feature.nick.ServerNickManager;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.core.event.Witness;
@@ -18,23 +16,19 @@ import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.api.event.user.track.UserTrackEvent;
 import org.apache.commons.lang3.text.WordUtils;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
-import java.util.UUID;
-
 import javax.inject.Inject;
+import java.util.UUID;
 
 public final class PermsFeature implements Witness {
 

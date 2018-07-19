@@ -7,7 +7,9 @@
  */
 package com.almuradev.almura.feature.death;
 
+import com.almuradev.almura.feature.death.network.ClientboundPlayerDiedPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
+import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraftforge.fml.relauncher.Side;
@@ -27,6 +29,8 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.network.ChannelBinding;
+import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.Account;
@@ -48,6 +52,8 @@ public final class DeathHandler implements Witness {
 
     private final ServerNotificationManager serverNotificationManager;
 
+    @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
+
     @Inject
     public DeathHandler(final ServerNotificationManager serverNotificationManager) {
         this.serverNotificationManager = serverNotificationManager;
@@ -55,43 +61,40 @@ public final class DeathHandler implements Witness {
 
     @Listener(order = Order.LAST)
     public void onPlayerDeath(final DestructEntityEvent.Death event, @Root final DamageSource damageSource, @Getter("getTargetEntity") final Player player) {
-        if (player.hasPermission("almura.admin")) {
-            return;
-        }
+       System.out.println("Player Death Detected");
 
         this.cacheItemTypes();
 
-        if (!this.areCoinsLoaded()) {
-            return;
-        }
-
         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
         if (service == null) {
-            return;
-        }
+            final Server server = Sponge.getServer();
 
-        final Server server = Sponge.getServer();
+            final double deathTax = RANGE.random(RANDOM);
+            final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
+            BigDecimal balance;
 
-        final double deathTax = RANGE.random(RANDOM);
-        final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
-        BigDecimal balance;
+            if (account != null && this.areCoinsLoaded()) {
+                final Currency currency = service.getDefaultCurrency();
+                balance = account.getBalance(currency);
 
-        if (account != null) {
-            final Currency currency = service.getDefaultCurrency();
-            balance = account.getBalance(currency);
-
-            final double dropAmount = balance.doubleValue() - (balance.doubleValue() * deathTax);
-            final BigDecimal deduct = new BigDecimal(dropAmount);
-            this.dropAmount(player, dropAmount);
-            account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
-            server.getOnlinePlayers().forEach(onlinePlayer -> {
-                if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
-                    // Display nothing, you have already been shamed...
-                } else {
-                    // TODO Dockter you can do better here, have a list of witty phrases to troll players with
-                    serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their death has cost them $" + dropAmount + ", such a waste..."), 5);
-                }
-            });
+                final double dropAmount = balance.doubleValue() - (balance.doubleValue() * deathTax);
+                final BigDecimal deduct = new BigDecimal(dropAmount);
+                this.dropAmount(player, dropAmount);
+                account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
+                server.getOnlinePlayers().forEach(onlinePlayer -> {
+                    if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
+                        this.network.sendToServer(new ClientboundPlayerDiedPacket(dropAmount));
+                    } else {
+                        // TODO Dockter you can do better here, have a list of witty phrases to troll players with
+                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their death has cost them $" + dropAmount + ", such a waste..."), 5);
+                    }
+                });
+            } else {
+                this.network.sendToServer(new ClientboundPlayerDiedPacket(0.00));
+            }
+        } else {
+            // Account was null (true in single player)
+            this.network.sendToServer(new ClientboundPlayerDiedPacket(0.00));
         }
     }
 

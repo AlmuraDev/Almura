@@ -7,10 +7,12 @@
  */
 package com.almuradev.almura.feature.death.network.handler;
 
+import com.almuradev.almura.feature.death.client.gui.PlayerDiedGUI;
 import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.WorldServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -19,6 +21,9 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
+import org.spongepowered.common.world.WorldManager;
 
 import javax.inject.Inject;
 
@@ -50,8 +55,28 @@ public final class ServerboundReviveRequestPacketHandler implements MessageHandl
                             TextColors.WHITE, "."));
                     return;
                 }
-                // Todo: teleport player back to previous loc?
 
+                int dimID = message.dimID;
+                double x = message.x;
+                double y = message.y;
+                double z = message.z;
+
+                WorldServer worldServer = WorldManager.getWorldByDimensionId(dimID).orElse(null);
+
+                if (worldServer == null) {
+                    System.out.println("Invalid packet value returned within ServerboundReviveRequestPacketHandler");
+                    return;
+                }
+
+                World world = (World)worldServer;
+                Location<World> location = new Location<>(world, x, y, z);
+
+                if (location == null) {
+                    System.out.println("Invalid packet value returned within ServerboundReviveRequestPacketHandler");
+                    return;
+                }
+
+                player.setLocation(location);
             }
         }
     }

@@ -8,6 +8,8 @@ package com.almuradev.almura.feature.death.client.gui;
  * All Rights Reserved.
  */
 
+import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
+import com.almuradev.almura.feature.menu.ingame.network.ServerboundFeaturesOpenRequestPacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
@@ -44,24 +46,24 @@ public final class PlayerDiedGUI extends SimpleScreen {
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
     private boolean update = true;
-    private UILabel titleLabel;
+    private UILabel titleLabel, messageLabel;
     private UIFormContainer form;
     private UIButton buttonRespawn, buttonRevive, buttonRagequit;
 
     private EntityPlayer player;
+    private double dropAmount;
 
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientNotificationManager clientNotificationManager;
     @Inject private static PluginContainer container;
 
-    public PlayerDiedGUI(EntityPlayer player) {
+    public PlayerDiedGUI(EntityPlayer player, double dropAmount) {
         this.player = player;
-
+        this.dropAmount = dropAmount;
     }
 
     @Override
     public void construct() {
-        System.out.println("Construct PlayerDiedGUI");
         guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
@@ -80,6 +82,11 @@ public final class PlayerDiedGUI extends SimpleScreen {
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
+        messageLabel = new UILabel(this, "");
+        messageLabel.setText("You lost: " + dropAmount + " to death tax.");
+        messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        messageLabel.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
+
         // Revive button
         buttonRevive = new UIButtonBuilder(this)
                 .width(40)
@@ -87,7 +94,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 .position(-50, 0)
                 .text("Revive")
                 .listener(this)
-                .enabled(false)
+                .enabled(true)
                 .build("button.revive");
 
         // Respawn button
@@ -108,7 +115,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.ragequit");
 
-        form.add(titleLabel, buttonRespawn, buttonRevive, buttonRagequit);
+        form.add(titleLabel, messageLabel, buttonRespawn, buttonRevive, buttonRagequit);
 
         addToScreen(form);
     }
@@ -120,16 +127,16 @@ public final class PlayerDiedGUI extends SimpleScreen {
             // Note: you have the schedule the close() otherwise for some reason its ignored during respawn.
 
             case "button.respawn":
-               Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("respawnPlayer")).submit(container); // delay the close call.
+               Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("respawnPlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); // delay the close call.
                this.mc.player.respawnPlayer();
                break;
 
             case "button.revive":
-
+                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("revivePlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); // delay the close call.
+                this.mc.player.respawnPlayer();
                 break;
 
             case "button.ragequit":
-                form.setClosable(true);
                 if (this.mc.world != null) {
                     this.mc.world.sendQuittingDisconnectingPacket();
                 }
@@ -140,11 +147,11 @@ public final class PlayerDiedGUI extends SimpleScreen {
         }
     }
 
-    protected Consumer<Task> delayedTask(String details) {  // Scheduler
+    protected Consumer<Task> delayedTask(final String details, final int dimID, final double x, final double y, final double z) {  // Scheduler
         return task -> {
             if (details.equalsIgnoreCase("revivePlayer")) {
+                this.network.sendToServer(new ServerboundReviveRequestPacket(dimID, x, y, z));
                 close();
-                //Todo: send packet to server asking player to be sent back to previous coords.
             }
             if (details.equalsIgnoreCase("respawnPlayer")) {
                 close();
