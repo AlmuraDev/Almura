@@ -1,8 +1,9 @@
 {
     "textures": {
-        "particle": "almura:block/cache/gold_cache_side",
-        "0": "almura:block/cache/gold_cache_front",
-        "1": "almura:block/cache/gold_cache_side"
+        "particle": "almura:block/storage/dock_chest_sides",
+        "0": "almura:block/storage/dock_chest_front_green",
+        "1": "almura:block/storage/dock_chest_sides",
+		"2": "almura:block/storage/dock_chest_top_bottom"
     },
     "display": {
         "gui": {
@@ -51,8 +52,8 @@
                 "east": { "texture": "#1", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
                 "south": { "texture": "#1", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
                 "west": { "texture": "#1", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
-                "up": { "texture": "#1", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
-                "down": { "texture": "#1", "uv": [ 0.00, 0.00, 16.00, 16.00 ] }
+                "up": { "texture": "#2", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
+                "down": { "texture": "#2", "uv": [ 0.00, 0.00, 16.00, 16.00 ] }
             }
         }
     ]

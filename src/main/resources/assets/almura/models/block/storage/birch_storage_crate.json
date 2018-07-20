@@ -1,8 +1,8 @@
 {
     "textures": {
-        "particle": "almura:block/cache/gold_cache_side",
-        "0": "almura:block/cache/gold_cache_front",
-        "1": "almura:block/cache/gold_cache_side"
+        "particle": "almura:block/storage/birch_storage_crate_side",
+        "0": "almura:block/storage/birch_storage_crate_side",
+        "1": "almura:block/storage/birch_storage_crate_top_bottom"
     },
     "display": {
         "gui": {
@@ -48,9 +48,9 @@
             "to": [ 16.00, 16.00, 16.00 ], 
             "faces": {
                 "north": { "texture": "#0", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
-                "east": { "texture": "#1", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
-                "south": { "texture": "#1", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
-                "west": { "texture": "#1", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
+                "east": { "texture": "#0", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
+                "south": { "texture": "#0", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
+                "west": { "texture": "#0", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
                 "up": { "texture": "#1", "uv": [ 0.00, 0.00, 16.00, 16.00 ] },
                 "down": { "texture": "#1", "uv": [ 0.00, 0.00, 16.00, 16.00 ] }
             }

@@ -1,0 +1,22 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "almura:storage/birch_storage_crate",
+        "transform": "forge:default-block"
+    },
+    "variants": {
+        "inventory": [ { } ],
+        "facing": {
+            "south": {
+                "y": 180.0
+            },
+            "west": {
+                "y": 270.0
+            },
+            "north": {},
+            "east": {
+                "y": 90.0
+            }
+        }
+    }
+}

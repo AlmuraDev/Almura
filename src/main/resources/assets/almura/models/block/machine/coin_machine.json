@@ -1,8 +1,8 @@
 {
     "textures": {
-        "particle": "almura:block/cache/gold_cache_side",
-        "0": "almura:block/cache/gold_cache_front",
-        "1": "almura:block/cache/gold_cache_side"
+        "particle": "almura:block/machine/coin_machine_sides",
+        "0": "almura:block/machine/coin_machine_front",
+        "1": "almura:block/machine/coin_machine_sides"
     },
     "display": {
         "gui": {
