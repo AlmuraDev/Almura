@@ -28,7 +28,15 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.type.HandTypes;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.service.economy.Currency;
+import org.spongepowered.api.service.economy.EconomyService;
+import org.spongepowered.api.service.economy.account.Account;
+
+import java.math.BigDecimal;
 
 public final class CoinMachine extends ComplexBlock {
 
@@ -39,7 +47,7 @@ public final class CoinMachine extends ComplexBlock {
         this.setHardness(hardness);
         this.setResistance(resistance);
 
-        Sponge.getRegistry().getType(ItemGroup.class, Almura.ID + ":machine").ifPresent((itemGroup) -> setCreativeTab((CreativeTabs) itemGroup));
+        Sponge.getRegistry().getType(ItemGroup.class, Almura.ID + ":currency").ifPresent((itemGroup) -> setCreativeTab((CreativeTabs) itemGroup));
     }
 
     @Override
@@ -84,20 +92,59 @@ public final class CoinMachine extends ComplexBlock {
         if (world.isRemote) {
             return;
         }
-        System.out.println("How dare you left click me!");
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing,
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer mcPlayer, EnumHand hand, EnumFacing facing,
             float hitX, float hitY, float hitZ) {
 
         if (world.isRemote) {
             return true;
         }
 
-        System.out.println("Right click feels soo much better.");
+        final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
 
-        return true;
+        if (service != null) {
+            final Player player = (Player) mcPlayer;
+            final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
+
+            if (account != null) {
+                final Currency currency = service.getDefaultCurrency();
+                final double coinValue = getCoinValue(player.getItemInHand(HandTypes.MAIN_HAND).get());
+
+                if (coinValue == 0 ) {
+                    //Todo: fancy notification response of no valued item.
+                    return false;  // Not Coins
+                }
+
+                final BigDecimal depositAmount = new BigDecimal((coinValue * player.getItemInHand(HandTypes.MAIN_HAND).get().getQuantity()));
+                account.deposit(currency, depositAmount, Sponge.getCauseStackManager().getCurrentCause());
+
+                ((Player) mcPlayer).setItemInHand(HandTypes.MAIN_HAND, null); // Clear ItemStack from Players hand.
+            }
+        }
+
+       return false;
+    }
+
+    private double getCoinValue(org.spongepowered.api.item.inventory.ItemStack item) {
+
+        String name = item.getType().getName();
+        switch (name) {
+            case "almura:normal/currency/coppercoin":
+                return 100;
+
+            case "almura:normal/currency/silvercoin":
+                return 1000;
+
+            case "almura:normal/currency/goldcoin":
+                return 100000;
+
+            case "almura:normal/currency/platinumcoin":
+                return 1000000;
+
+        }
+        return 0;
     }
 
     @Override
