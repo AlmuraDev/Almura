@@ -89,8 +89,7 @@ public final class DeathHandler implements Witness {
                     if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
                         this.network.sendTo(player, new ClientboundPlayerDiedPacket(dropAmount, true));
                     } else {
-                        // TODO Dockter you can do better here, have a list of witty phrases to troll players with
-                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their death has cost them $" + TextFormatting.RED + "$" + dFormat.format(dropAmount) + TextFormatting.RESET + "."),5);
+                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their failure has cost them $" + TextFormatting.RED + "$" + dFormat.format(dropAmount) + TextFormatting.RESET + "."),5);
                     }
                 });
                 return;

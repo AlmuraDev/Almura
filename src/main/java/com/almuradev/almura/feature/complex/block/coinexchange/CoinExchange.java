@@ -130,7 +130,7 @@ public final class CoinExchange extends ComplexBlock {
                 final double coinValue = getCoinValue(player.getItemInHand(HandTypes.MAIN_HAND).get());
 
                 if (coinValue == 0 ) {
-                    //Todo: fancy notification response of no valued item.
+                    serverNotificationManager.sendPopupNotification(player, Text.of("Coin Exchange"), Text.of("This item is not a coin..."),5);
                     return false;  // Not Coins
                 }
 
