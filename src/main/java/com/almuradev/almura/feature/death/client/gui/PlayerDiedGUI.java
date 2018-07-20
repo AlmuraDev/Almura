@@ -74,8 +74,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
     public PlayerDiedGUI(EntityPlayer player, boolean dropCoins, double dropAmount) {
         this.player = player;
         this.dropCoins = dropCoins;
-        //this.dropAmount = dropAmount;
-        this.dropAmount = 1256.94;
+        this.dropAmount = dropAmount;
     }
 
     @Override
