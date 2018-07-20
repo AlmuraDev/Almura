@@ -66,6 +66,7 @@ public interface GuiConfig {
         ResourceLocation SPONGEPOWERED_LOGO = new ResourceLocation(Almura.ID, "textures/gui/spongepowered_logo.png");
         ResourceLocation SPONGEPOWERED_SPONGIE = new ResourceLocation(Almura.ID, "textures/gui/spongie.png");
         ResourceLocation GENERIC_AVATAR = new ResourceLocation(Almura.ID, "textures/gui/skins/avatars/generic.png");
+        ResourceLocation DEAD_STEVE = new ResourceLocation(Almura.ID, "textures/gui/dead_steve.png");
     }
 
     @SideOnly(Side.CLIENT)

@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.death.client.gui;
 
 import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
+import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
@@ -17,13 +18,17 @@ import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
@@ -33,8 +38,13 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import javax.inject.Inject;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -64,7 +74,8 @@ public final class PlayerDiedGUI extends SimpleScreen {
     public PlayerDiedGUI(EntityPlayer player, boolean dropCoins, double dropAmount) {
         this.player = player;
         this.dropCoins = dropCoins;
-        this.dropAmount = dropAmount;
+        //this.dropAmount = dropAmount;
+        this.dropAmount = 1256.94;
     }
 
     @Override
@@ -72,7 +83,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
         guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        form = new UIFormContainer(this, 50, 150, "You have died.");
+        form = new UIFormContainer(this, 50, 180, "You have died.");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(false);
         form.setClosable(false);
@@ -83,16 +94,31 @@ public final class PlayerDiedGUI extends SimpleScreen {
         form.setTopPadding(20);
         form.setLeftPadding(3);
 
-        messageLabel = new UILabel(this, getMessage());
+        // Almura header
+        final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.DEAD_STEVE), null);
+        almuraHeader.setSize(99, 99);
+        almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
+
+        messageLabel = new UILabel(this, getMessage(player.getName()));
         messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        messageLabel.setPosition(0, 25, Anchor.CENTER | Anchor.MIDDLE);
+        messageLabel.setPosition(0, 102, Anchor.CENTER | Anchor.TOP);
 
-        dropsLabel = new UILabel(this, "You lost: " + dropAmount + " to death tax.");
-        //dropsLabel.setVisible(dropCoins);
+        DecimalFormat dFormat = new DecimalFormat("###,###,###,###.00");
+
+        dropsLabel = new UILabel(this, "You lost: " + TextFormatting.RED + "$" + dFormat.format(dropAmount) + TextFormatting.RESET + " to death tax.");
+        dropsLabel.setVisible(dropCoins);
         dropsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        dropsLabel.setPosition(0, 40, Anchor.CENTER | Anchor.MIDDLE);
+        dropsLabel.setPosition(0, -23, Anchor.CENTER | Anchor.BOTTOM);
 
-        form.setSize(messageLabel.getWidth() + 20, form.getHeight());
+        form.setSize(messageLabel.getWidth() + 30, form.getHeight());
+
+        if (form.getWidth() < dropsLabel.getWidth() + 30) {
+            form.setSize(dropsLabel.getWidth() + 20, form.getHeight()); // Account for the width possibly being too small.
+        }
+
+        if (!dropCoins) {
+            form.setSize(form.getWidth(), 160);
+        }
 
         final UISeparator separator = new UISeparator(this);
         separator.setSize(form.getWidth() -5, 1);
@@ -104,11 +130,17 @@ public final class PlayerDiedGUI extends SimpleScreen {
         separator2.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
         form.add(separator2);
 
+        final UISeparator separator3 = new UISeparator(this);
+        separator3.setSize(form.getWidth() -5, 1);
+        separator3.setPosition(0, 50, Anchor.CENTER | Anchor.MIDDLE);
+        separator3.setVisible(dropCoins);
+        form.add(separator3);
+
         // Revive button
         buttonRevive = new UIButtonBuilder(this)
                 .width(40)
-                .anchor(Anchor.BOTTOM | Anchor.CENTER)
-                .position(-50, 0)
+                .anchor(Anchor.BOTTOM | Anchor.LEFT)
+                //.position(-65, 0)
                 .text("Revive")
                 .listener(this)
                 .enabled(true)
@@ -126,13 +158,13 @@ public final class PlayerDiedGUI extends SimpleScreen {
         // Rage Quit button
         buttonRagequit = new UIButtonBuilder(this)
                 .width(40)
-                .anchor(Anchor.BOTTOM | Anchor.CENTER)
-                .position(55, 0)
-                .text("Give up...")
+                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+                .text(Text.of(I18n.format("almura.menu_button.quit")))
+                .fro(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
                 .listener(this)
                 .build("button.ragequit");
 
-        form.add(messageLabel, dropsLabel, buttonRespawn, buttonRevive, buttonRagequit);
+        form.add(almuraHeader, messageLabel, dropsLabel, buttonRespawn, buttonRevive, buttonRagequit);
 
         addToScreen(form);
     }
@@ -205,10 +237,14 @@ public final class PlayerDiedGUI extends SimpleScreen {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
     }
 
-    private String getMessage() {
+    private String getMessage(String player) {
         Random random = new Random();
-        String message;
+        String message = "";
         int selection = random.nextInt(14) + 1;
+
+        if (player.equalsIgnoreCase("chimwolfeye")) {
+            return "You have become one with the Sisko, rejoice!";
+        }
 
         switch (selection) {
             case 1:
@@ -260,6 +296,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 message = "You have died...again";
                 break;
         }
+
         return message;
     }
 }
