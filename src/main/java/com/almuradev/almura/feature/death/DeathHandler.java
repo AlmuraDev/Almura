@@ -61,7 +61,7 @@ public final class DeathHandler implements Witness {
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
         if (player.health().get() == 0) { // Catch if the player is login into server and is currently dead.
-            this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00, false));
+            this.network.sendTo(player, new ClientboundPlayerDiedPacket());
         }
     }
 
@@ -76,20 +76,29 @@ public final class DeathHandler implements Witness {
             final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
             BigDecimal balance;
 
-            if (account != null && this.areCoinsLoaded()) {
+            if (account != null && this.areCoinsLoaded()) {                ;
                 final Currency currency = service.getDefaultCurrency();
                 balance = account.getBalance(currency);
+                double dropAmount = balance.doubleValue() - (balance.doubleValue() * (deathTax/100));
 
-                final double dropAmount = balance.doubleValue() - (balance.doubleValue() * deathTax);
-                final BigDecimal deduct = new BigDecimal(dropAmount);
-                this.dropAmount(player, dropAmount);
-                final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.00");
+                if (dropAmount > balance.doubleValue()) {
+                    dropAmount = balance.doubleValue();
+                }
+
+                BigDecimal deduct = new BigDecimal(dropAmount);
+
+                final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.##");
                 account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
+
+                final double deathTaxAmount = this.dropAmountReturnChange(player, dropAmount);
+                final double droppedAmount = (dropAmount - deathTaxAmount);
+
                 server.getOnlinePlayers().forEach(onlinePlayer -> {
                     if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
-                        this.network.sendTo(player, new ClientboundPlayerDiedPacket(dropAmount, true));
+                        this.network.sendTo(player, new ClientboundPlayerDiedPacket(droppedAmount, deathTaxAmount, true));
                     } else {
-                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their failure has cost them $" + TextFormatting.RED + "$" + dFormat.format(dropAmount) + TextFormatting.RESET + "."),5);
+                        //ToDo: broke atm.
+                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Dropped: " + TextFormatting.GOLD + "$" + dFormat.format(droppedAmount) + TextFormatting.RESET + " and lost: "+ TextFormatting.RED + "$" + dFormat.format(deathTaxAmount) + TextFormatting.RESET + " to death taxes."),5);
                     }
                 });
                 return;
@@ -97,7 +106,7 @@ public final class DeathHandler implements Witness {
         }
 
         // Service or Account was null, fallback.
-        this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00, false));
+        this.network.sendTo(player, new ClientboundPlayerDiedPacket());
     }
 
     private void cacheItemTypes() {
@@ -117,7 +126,7 @@ public final class DeathHandler implements Witness {
         return platinumCoin != null && goldCoin != null && silverCoin != null && copperCoin != null;
     }
 
-    private double dropAmount(Player player, double amount) {
+    private double dropAmountReturnChange(Player player, double amount) {
         double remainingMoney = amount;
         int platinum = (int) (remainingMoney / 1000000);
         remainingMoney -= platinum * 1000000;

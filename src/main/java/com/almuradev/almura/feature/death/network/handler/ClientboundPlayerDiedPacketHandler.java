@@ -28,7 +28,7 @@ public final class ClientboundPlayerDiedPacketHandler implements MessageHandler<
                 final EntityPlayerSP player = client.player;
                 final WorldClient world = client.world;
 
-                new PlayerDiedGUI(player, message.dropCoins, message.dropAmount).display();
+                new PlayerDiedGUI(player, message.droppedAmount, message.deathTaxAmount, message.dropCoins).display();
             }
         }
     }
