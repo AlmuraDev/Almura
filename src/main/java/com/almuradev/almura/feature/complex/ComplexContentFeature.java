@@ -36,21 +36,57 @@ import net.minecraftforge.registries.IForgeRegistryModifiable;
 public final class ComplexContentFeature implements Witness {
 
     @SubscribeEvent
+    public void onRegisterBlocks(RegistryEvent.Register<Block> event) {
+        // Register Complex Blocks Here
+        event.getRegistry().register(ComplexBlocks.COIN_EXCHANGE);
+    }
+
+    @SubscribeEvent
     public void onRegisterItem(RegistryEvent.Register<Item> event) {
+        // Register Complex Items Here
         event.getRegistry().register(new LightRepairWand());
         event.getRegistry().register(new FarmersAlmanacItem());
 
-        // Register CoinExchange Items
-        final IForgeRegistry<Item> registry = event.getRegistry();
-        registerItem(registry, ComplexBlocks.COIN_EXCHANGE);
+        // Register Complex Block; ItemBlocks Here
+        registerItem(event.getRegistry(), ComplexBlocks.COIN_EXCHANGE);
     }
 
-    // Note: This section is a complete hack to remove the vanilla recipe for stone brick because it includes 4 variants.  We add mossy and cracked stone brick
-    //       so in order for this to work correctly we remove the vanilla recipe that includes all the variants and re-add back just the single recipe.  Re-adding
-    //       is required here in order to prevent Advancments from breaking.
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public void onModelRegistry(ModelRegistryEvent event) {
+        // Register Complex Block Models
+        // Note: Complex Item Models register within their creation class because their registration order isn't important.
+        registerModel(Item.getItemFromBlock(ComplexBlocks.COIN_EXCHANGE));
+    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+        // Register Complex Block & Item Recipes Here
+       this.fixStoneBrickMadness(event);
+    }
+
+    // Supporting Methods Below
+    private void registerItem(final IForgeRegistry<Item> registry, final ComplexBlock complexBlock) {
+        final ResourceLocation registryName = requireNonNull(complexBlock.getRegistryName());
+        final ItemBlock item = (ItemBlock) new ItemBlock(complexBlock).setRegistryName(registryName);
+        registry.register(item);
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void registerModel(Item item) {
+        this.registerInventoryModel(item, requireNonNull(item.getRegistryName()));
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void registerInventoryModel(Item item, ResourceLocation blockName) {
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(blockName, "inventory"));
+    }
+
+    // Utility Methods
+    private void fixStoneBrickMadness(RegistryEvent.Register<IRecipe> event) {
+        // Note: This section is a complete hack to remove the vanilla recipe for stone brick because it includes 4 variants.  We add mossy and cracked stone brick
+        //       so in order for this to work correctly we remove the vanilla recipe that includes all the variants and re-add back just the single recipe.  Re-adding
+        //       is required here in order to prevent Advancments from breaking.
         ResourceLocation StoneBrick = new ResourceLocation("minecraft:stone_brick_stairs");
         IForgeRegistryModifiable modRegistry = (IForgeRegistryModifiable) event.getRegistry();
         modRegistry.remove(StoneBrick);
@@ -63,33 +99,5 @@ public final class ComplexContentFeature implements Witness {
                 'A', Blocks.STONEBRICK,
                 'X', Blocks.AIR
         );
-    }
-
-    private void registerItem(final IForgeRegistry<Item> registry, final ComplexBlock complexBlock) {
-        final ResourceLocation registryName = requireNonNull(complexBlock.getRegistryName());
-        final ItemBlock item = (ItemBlock) new ItemBlock(complexBlock).setRegistryName(registryName);
-
-        registry.register(item);
-    }
-
-    @SubscribeEvent
-    public void onRegisterBlocks(RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(ComplexBlocks.COIN_EXCHANGE);
-    }
-
-    @SubscribeEvent
-    @SideOnly(Side.CLIENT)
-    public void onModelRegistry(ModelRegistryEvent event) {
-        registerModel(Item.getItemFromBlock(ComplexBlocks.COIN_EXCHANGE));
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void registerModel(Item item) {
-        this.registerInventoryModel(item, requireNonNull(item.getRegistryName()));
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void registerInventoryModel(Item item, ResourceLocation blockName) {
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(blockName, "inventory"));
     }
 }
