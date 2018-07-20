@@ -9,6 +9,9 @@ package com.almuradev.almura.feature.complex.block.coinexchange;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.complex.block.ComplexBlock;
+import com.almuradev.almura.feature.notification.ClientNotificationManager;
+import com.almuradev.almura.feature.notification.ServerNotificationManager;
+import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -25,6 +28,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -32,13 +36,20 @@ import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.network.ChannelBinding;
+import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.Account;
+import org.spongepowered.api.text.Text;
 
+import javax.inject.Inject;
 import java.math.BigDecimal;
 
 public final class CoinExchange extends ComplexBlock {
+
+    @Inject
+    private static ServerNotificationManager serverNotificationManager;
 
     public CoinExchange(ResourceLocation registryName, float hardness, float resistance) {
         super(Material.GROUND);
@@ -101,11 +112,17 @@ public final class CoinExchange extends ComplexBlock {
         if (world.isRemote) {
             return true;
         }
+        final Player player = (Player) mcPlayer;
+
+        if (mcPlayer.getHeldItemMainhand().isEmpty()) {
+            serverNotificationManager.sendPopupNotification(player, Text.of("Coin Exchange"), Text.of("Place coins in hand prior to clicking on Coin Exchange"),5);
+            return false;
+        }
 
         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
 
         if (service != null) {
-            final Player player = (Player) mcPlayer;
+
             final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
 
             if (account != null) {
