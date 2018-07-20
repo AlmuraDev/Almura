@@ -7,19 +7,30 @@
  */
 package com.almuradev.almura.feature.complex;
 
+import static java.util.Objects.requireNonNull;
+
+import com.almuradev.almura.feature.complex.block.ComplexBlock;
+import com.almuradev.almura.feature.complex.block.ComplexBlocks;
 import com.almuradev.almura.feature.complex.item.almanac.item.FarmersAlmanacItem;
 import com.almuradev.almura.feature.complex.item.wand.LightRepairWand;
 import com.almuradev.core.event.Witness;
-import net.minecraft.client.Minecraft;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
 
 public final class ComplexContentFeature implements Witness {
@@ -28,6 +39,10 @@ public final class ComplexContentFeature implements Witness {
     public void onRegisterItem(RegistryEvent.Register<Item> event) {
         event.getRegistry().register(new LightRepairWand());
         event.getRegistry().register(new FarmersAlmanacItem());
+
+        // Register CoinMachine Items
+        final IForgeRegistry<Item> registry = event.getRegistry();
+        registerItem(registry, ComplexBlocks.COIN_MACHINE);
     }
 
     // Note: This section is a complete hack to remove the vanilla recipe for stone brick because it includes 4 variants.  We add mossy and cracked stone brick
@@ -48,5 +63,33 @@ public final class ComplexContentFeature implements Witness {
                 'A', Blocks.STONEBRICK,
                 'X', Blocks.AIR
         );
+    }
+
+    private void registerItem(final IForgeRegistry<Item> registry, final ComplexBlock complexBlock) {
+        final ResourceLocation registryName = requireNonNull(complexBlock.getRegistryName());
+        final ItemBlock item = (ItemBlock) new ItemBlock(complexBlock).setRegistryName(registryName);
+
+        registry.register(item);
+    }
+
+    @SubscribeEvent
+    public void onRegisterBlocks(RegistryEvent.Register<Block> event) {
+        event.getRegistry().register(ComplexBlocks.COIN_MACHINE);
+    }
+
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public void onModelRegistry(ModelRegistryEvent event) {
+        registerModel(Item.getItemFromBlock(ComplexBlocks.COIN_MACHINE));
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void registerModel(Item item) {
+        this.registerInventoryModel(item, requireNonNull(item.getRegistryName()));
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void registerInventoryModel(Item item, ResourceLocation blockName) {
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(blockName, "inventory"));
     }
 }

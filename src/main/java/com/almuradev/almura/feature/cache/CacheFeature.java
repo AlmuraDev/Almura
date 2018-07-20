@@ -7,6 +7,8 @@
  */
 package com.almuradev.almura.feature.cache;
 
+import static java.util.Objects.requireNonNull;
+
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.cache.block.CacheBlock;
 import com.almuradev.almura.feature.cache.block.CacheBlocks;
@@ -35,8 +37,6 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
 import java.text.NumberFormat;
 import java.util.Locale;
-
-import static java.util.Objects.requireNonNull;
 
 public final class CacheFeature extends Witness.Impl implements Witness.Lifecycle {
 

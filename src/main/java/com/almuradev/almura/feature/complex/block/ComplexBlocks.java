@@ -8,8 +8,9 @@
 package com.almuradev.almura.feature.complex.block;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.complex.block.coinexchange.CoinMachine;
 import net.minecraft.util.ResourceLocation;
 
 public class ComplexBlocks {
-    public static ComplexBlock COIN_EXCHANGE = new ComplexBlock(new ResourceLocation(Almura.ID, "machine/coin_exchange"), 3F, 1000F);
+    public static ComplexBlock COIN_MACHINE = new CoinMachine(new ResourceLocation(Almura.ID, "machine/coin_machine"), 3F, 1000F);
 }
