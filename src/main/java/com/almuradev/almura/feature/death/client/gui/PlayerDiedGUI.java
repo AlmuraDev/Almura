@@ -139,7 +139,6 @@ public final class PlayerDiedGUI extends SimpleScreen {
         buttonRevive = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
-                //.position(-65, 0)
                 .text("Revive")
                 .listener(this)
                 .enabled(true)
