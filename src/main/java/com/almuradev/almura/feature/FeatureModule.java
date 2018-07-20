@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature;
 
+import com.almuradev.almura.feature.animal.AnimalModule;
 import com.almuradev.almura.feature.biome.BiomeModule;
 import com.almuradev.almura.feature.cache.CacheModule;
 import com.almuradev.almura.feature.complex.ComplexContentModule;
@@ -50,6 +51,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new StorageModule());
         this.install(new BiomeModule());
         this.install(new FeaturesModule());
+        this.install(new AnimalModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         nerfVanillaFood();
