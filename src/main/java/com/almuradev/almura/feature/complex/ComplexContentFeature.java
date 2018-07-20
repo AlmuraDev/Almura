@@ -40,9 +40,9 @@ public final class ComplexContentFeature implements Witness {
         event.getRegistry().register(new LightRepairWand());
         event.getRegistry().register(new FarmersAlmanacItem());
 
-        // Register CoinMachine Items
+        // Register CoinExchange Items
         final IForgeRegistry<Item> registry = event.getRegistry();
-        registerItem(registry, ComplexBlocks.COIN_MACHINE);
+        registerItem(registry, ComplexBlocks.COIN_EXCHANGE);
     }
 
     // Note: This section is a complete hack to remove the vanilla recipe for stone brick because it includes 4 variants.  We add mossy and cracked stone brick
@@ -74,13 +74,13 @@ public final class ComplexContentFeature implements Witness {
 
     @SubscribeEvent
     public void onRegisterBlocks(RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(ComplexBlocks.COIN_MACHINE);
+        event.getRegistry().register(ComplexBlocks.COIN_EXCHANGE);
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void onModelRegistry(ModelRegistryEvent event) {
-        registerModel(Item.getItemFromBlock(ComplexBlocks.COIN_MACHINE));
+        registerModel(Item.getItemFromBlock(ComplexBlocks.COIN_EXCHANGE));
     }
 
     @SideOnly(Side.CLIENT)

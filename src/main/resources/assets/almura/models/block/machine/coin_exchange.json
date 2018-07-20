@@ -1,8 +1,8 @@
 {
     "textures": {
-        "particle": "almura:block/machine/coin_machine_sides",
-        "0": "almura:block/machine/coin_machine_front",
-        "1": "almura:block/machine/coin_machine_sides"
+        "particle": "almura:block/machine/coin_exchange_sides",
+        "0": "almura:block/machine/coin_exchange_front",
+        "1": "almura:block/machine/coin_exchange_sides"
     },
     "display": {
         "gui": {

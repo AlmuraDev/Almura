@@ -1,13 +1,13 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model": "almura:machine/coin_machine",
+        "model": "almura:machine/coin_exchange",
         "transform": "forge:default-block"
     },
     "variants": {
         "inventory": [
             {
-                "model": "almura:machine/coin_machine"
+                "model": "almura:machine/coin_exchange"
             }
         ],
         "facing": {

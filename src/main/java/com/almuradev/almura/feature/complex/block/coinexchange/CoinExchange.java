@@ -38,9 +38,9 @@ import org.spongepowered.api.service.economy.account.Account;
 
 import java.math.BigDecimal;
 
-public final class CoinMachine extends ComplexBlock {
+public final class CoinExchange extends ComplexBlock {
 
-    public CoinMachine(ResourceLocation registryName, float hardness, float resistance) {
+    public CoinExchange(ResourceLocation registryName, float hardness, float resistance) {
         super(Material.GROUND);
         this.setRegistryName(registryName);
         this.setUnlocalizedName(registryName.getResourcePath().replace('/', '.'));
