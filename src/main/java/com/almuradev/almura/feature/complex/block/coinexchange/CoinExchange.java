@@ -116,7 +116,7 @@ public final class CoinExchange extends ComplexBlock {
 
         if (mcPlayer.getHeldItemMainhand().isEmpty()) {
             serverNotificationManager.sendPopupNotification(player, Text.of("Coin Exchange"), Text.of("Place coins in hand prior to clicking on Coin Exchange"),5);
-            return false;
+            return true;
         }
 
         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
@@ -131,7 +131,7 @@ public final class CoinExchange extends ComplexBlock {
 
                 if (coinValue == 0 ) {
                     serverNotificationManager.sendPopupNotification(player, Text.of("Coin Exchange"), Text.of("This item is not a coin..."),5);
-                    return false;  // Not Coins
+                    return true;  // Not Coins
                 }
 
                 final BigDecimal depositAmount = new BigDecimal((coinValue * player.getItemInHand(HandTypes.MAIN_HAND).get().getQuantity()));
@@ -141,7 +141,7 @@ public final class CoinExchange extends ComplexBlock {
             }
         }
 
-       return false;
+       return true;
     }
 
     private double getCoinValue(org.spongepowered.api.item.inventory.ItemStack item) {
