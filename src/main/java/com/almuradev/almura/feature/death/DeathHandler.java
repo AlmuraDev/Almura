@@ -76,7 +76,7 @@ public final class DeathHandler implements Witness {
             final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
             BigDecimal balance;
 
-            if (account != null && this.areCoinsLoaded()) {                ;
+            if (account != null && this.areCoinsLoaded()) {
                 final Currency currency = service.getDefaultCurrency();
                 balance = account.getBalance(currency);
                 double dropAmount = balance.doubleValue() - (balance.doubleValue() * (deathTax/100));
