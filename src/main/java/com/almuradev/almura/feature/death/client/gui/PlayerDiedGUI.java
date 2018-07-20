@@ -102,7 +102,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
         messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         messageLabel.setPosition(0, 102, Anchor.CENTER | Anchor.TOP);
 
-        DecimalFormat dFormat = new DecimalFormat("###,###,###,###.00");
+        final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.00");
 
         dropsLabel = new UILabel(this, "You lost: " + TextFormatting.RED + "$" + dFormat.format(dropAmount) + TextFormatting.RESET + " to death tax.");
         dropsLabel.setVisible(dropCoins);
@@ -236,9 +236,9 @@ public final class PlayerDiedGUI extends SimpleScreen {
     }
 
     private String getMessage(String player) {
-        Random random = new Random();
+        final Random random = new Random();
         String message = "";
-        int selection = random.nextInt(14) + 1;
+        final int selection = random.nextInt(14) + 1;
 
         if (player.equalsIgnoreCase("chimwolfeye")) {
             return "You have become one with the Sisko, rejoice!";

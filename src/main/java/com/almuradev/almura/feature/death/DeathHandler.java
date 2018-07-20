@@ -12,6 +12,7 @@ import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.util.math.DoubleRange;
+import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
@@ -37,6 +38,7 @@ import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Random;
 
 public final class DeathHandler implements Witness {
@@ -81,13 +83,14 @@ public final class DeathHandler implements Witness {
                 final double dropAmount = balance.doubleValue() - (balance.doubleValue() * deathTax);
                 final BigDecimal deduct = new BigDecimal(dropAmount);
                 this.dropAmount(player, dropAmount);
+                final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.00");
                 account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
                 server.getOnlinePlayers().forEach(onlinePlayer -> {
                     if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
                         this.network.sendTo(player, new ClientboundPlayerDiedPacket(dropAmount, true));
                     } else {
                         // TODO Dockter you can do better here, have a list of witty phrases to troll players with
-                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their death has cost them $" + dropAmount + ", such a waste..."), 5);
+                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Their death has cost them $" + TextFormatting.RED + "$" + dFormat.format(dropAmount) + TextFormatting.RESET + "."),5);
                     }
                 });
                 return;
