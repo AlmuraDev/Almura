@@ -33,9 +33,9 @@ public final class ServerAnimalManager extends Witness.Impl  {
                 .forEach(e -> {
 
                     Sponge.getScheduler().createTaskBuilder()
-                            .delayTicks(5) // Delay this because the animals age isn't set yet.
+                            .delayTicks(1) // Delay this because the animals age isn't set yet.
                             .execute(() -> {
-                                if (e.getAgeData().age().get() != 0) {
+                                if (!e.isRemoved() && e.getAgeData().age().get() != 0) {
                                     // Todo: this shouldn't be needed.
                                     e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.DARK_GRAY, e.getTranslation().get()));
                                 }
