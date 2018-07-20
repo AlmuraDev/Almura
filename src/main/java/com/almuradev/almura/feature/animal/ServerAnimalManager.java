@@ -8,16 +8,22 @@
 package com.almuradev.almura.feature.animal;
 
 import com.almuradev.core.event.Witness;
+import com.google.inject.Inject;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.BreedEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 public final class ServerAnimalManager extends Witness.Impl  {
+
+    @Inject
+    private PluginContainer container;
 
     @Listener
     public void onSpawnEntity(SpawnEntityEvent event) {
@@ -25,10 +31,17 @@ public final class ServerAnimalManager extends Witness.Impl  {
                 .filter(e -> e instanceof Animal)
                 .map(e -> (Animal) e)
                 .forEach(e -> {
-                    if (e.getAgeData().age().get() != 0) {
-                        // Todo: this shouldn't be needed.
-                        e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.GRAY, e.getTranslation().get()));
-                    }
+
+                    Sponge.getScheduler().createTaskBuilder()
+                            .delayTicks(5) // Delay this because the animals age isn't set yet.
+                            .execute(() -> {
+                                if (e.getAgeData().age().get() != 0) {
+                                    // Todo: this shouldn't be needed.
+                                    e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.DARK_GRAY, e.getTranslation().get()));
+                                }
+                            })
+                            .submit(this.container);
+
                     e.offer(Keys.CUSTOM_NAME_VISIBLE, true);
                 });
     }
