@@ -9,12 +9,15 @@ package com.almuradev.almura.feature.animal;
 
 import com.almuradev.core.event.Witness;
 import com.google.inject.Inject;
+import net.minecraft.entity.passive.EntityChicken;
+import net.minecraft.entity.passive.EntityCow;
+import net.minecraft.entity.passive.EntityHorse;
+import net.minecraft.entity.passive.EntityPig;
+import net.minecraft.entity.passive.EntitySheep;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.entity.BreedEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
@@ -31,18 +34,21 @@ public final class ServerAnimalManager extends Witness.Impl  {
                 .filter(e -> e instanceof Animal)
                 .map(e -> (Animal) e)
                 .forEach(e -> {
+                    if (e instanceof EntityCow || e instanceof EntityChicken || e instanceof EntityHorse || e instanceof EntityPig || e instanceof EntitySheep) {
+                        Sponge.getScheduler().createTaskBuilder()
+                                .delayTicks(1) // Delay this because the animals age isn't set yet.
+                                .execute(() -> {
+                                            if (!e.isRemoved() && e.getAgeData().age().get() != 0) {
+                                                e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, e.getType().getTranslation().get()));
+                                                // Bug 1: bug here, using .getTranslation().get() for MoCreatures returns "unknown"
+                                                // Bug 2: e.getType().getName() returns a lowerCase name of animals.
+                                            }
+                                        }
+                                )
+                                .submit(this.container);
 
-                    Sponge.getScheduler().createTaskBuilder()
-                            .delayTicks(1) // Delay this because the animals age isn't set yet.
-                            .execute(() -> {
-                                if (!e.isRemoved() && e.getAgeData().age().get() != 0) {
-                                    // Todo: this shouldn't be needed.
-                                    e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.DARK_GRAY, e.getTranslation().get()));
-                                }
-                            })
-                            .submit(this.container);
-
-                    e.offer(Keys.CUSTOM_NAME_VISIBLE, true);
+                        e.offer(Keys.CUSTOM_NAME_VISIBLE, true);
+                    }
                 });
     }
 
