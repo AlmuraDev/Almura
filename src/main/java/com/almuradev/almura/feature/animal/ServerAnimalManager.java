@@ -28,7 +28,8 @@ public final class ServerAnimalManager extends Witness.Impl  {
     @Inject
     private PluginContainer container;
 
-    @Listener
+    // Todo: Re-enable this once SpongeCommon is updated.
+    /*@Listener
     public void onSpawnEntity(SpawnEntityEvent event) {
         event.getEntities().stream()
                 .filter(e -> e instanceof Animal)
@@ -39,20 +40,19 @@ public final class ServerAnimalManager extends Witness.Impl  {
                                 .delayTicks(1) // Delay this because the animals age isn't set yet.
                                 .execute(() -> {
                                             if (!e.isRemoved() && e.getAgeData().age().get() != 0) {
-                                                e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, e.getType().getTranslation().get()));
+                                                //e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, e.getType().getTranslation().get()));
+                                                // Todo: The below bugs may affect this feature.
                                                 // Bug 1: bug here, using .getTranslation().get() for MoCreatures returns "unknown"
                                                 // Bug 2: e.getType().getName() returns a lowerCase name of animals.
                                             }
                                         }
                                 )
                                 .submit(this.container);
-
                         e.offer(Keys.CUSTOM_NAME_VISIBLE, true);
                     }
                 });
     }
 
-    /* // This event isn't 100% implemented on SpongeCommon yet.
     @Listener
     public void onBreedEntityReadyToMate(final BreedEntityEvent.ReadyToMate event) {
         final Animal animal = event.getTargetEntity();
