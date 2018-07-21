@@ -109,7 +109,7 @@ public final class DeathHandler implements Witness {
                         this.network.sendTo(player, new ClientboundPlayerDiedPacket(finalDroppedAmount, finalDeathTaxAmount, finalDisplayDrops));
                     } else {
                         //ToDo: broke atm.
-                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Dropped: " + TextFormatting.GOLD + "$" + dFormat.format(finalDroppedAmount) + TextFormatting.RESET + " and "
+                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + " has died!"), Text.of("Dropped: " + TextFormatting.GOLD + "$" + dFormat.format(finalDroppedAmount) + TextFormatting.RESET + " and "
                                 + "lost: "+ TextFormatting.RED + "$" + dFormat.format(finalDeathTaxAmount) + TextFormatting.RESET + " to death taxes."),5);
                     }
                 });

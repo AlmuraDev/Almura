@@ -183,12 +183,14 @@ public final class PlayerDiedGUI extends SimpleScreen {
         switch (event.getComponent().getName().toLowerCase()) {
             // Note: you have the schedule the close() otherwise for some reason its ignored during respawn.
             case "button.respawn":
-                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("respawnPlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); // delay the close call.
+                Sponge.getScheduler().createTaskBuilder().delayTicks(30).execute(delayedTask("respawnPlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); //
+                // delay the close call.
                 this.mc.player.respawnPlayer();
                 break;
 
             case "button.revive":
-                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("revivePlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); // delay the close call.
+                Sponge.getScheduler().createTaskBuilder().delayTicks(30).execute(delayedTask("revivePlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); // delay
+                // the close call.
                 this.mc.player.respawnPlayer();
                 break;
 
@@ -228,7 +230,12 @@ public final class PlayerDiedGUI extends SimpleScreen {
     @Override
     protected void keyTyped(char keyChar, int keyCode) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
-            return; // ignore escape key to prevent false-close to parent.
+            if (this.player.isDead) {
+                return;
+            } else {
+                this.close();
+            }
+
         }
         super.keyTyped(keyChar, keyCode);
         this.lastUpdate = 0; // Reset the timer when key is typed.
