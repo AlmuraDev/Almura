@@ -78,27 +78,39 @@ public final class DeathHandler implements Witness {
 
             if (account != null && this.areCoinsLoaded()) {
                 final Currency currency = service.getDefaultCurrency();
-                balance = account.getBalance(currency);
-                double dropAmount = balance.doubleValue() - (balance.doubleValue() * (deathTax/100));
 
-                if (dropAmount > balance.doubleValue()) {
-                    dropAmount = balance.doubleValue();
+                double deathTaxAmount = 0;
+                double droppedAmount = 0;
+                boolean displayDrops = false;
+                final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.##");
+                balance = account.getBalance(currency);
+
+                if (balance.doubleValue() > 0) {
+                    double dropAmount = balance.doubleValue() - (balance.doubleValue() * (deathTax / 100));
+
+                    if (dropAmount > balance.doubleValue()) {
+                        dropAmount = balance.doubleValue();
+                    }
+
+                    BigDecimal deduct = new BigDecimal(dropAmount);
+                    account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
+
+                    deathTaxAmount = this.dropAmountReturnChange(player, dropAmount);
+                    droppedAmount = (dropAmount - deathTaxAmount);
+                    displayDrops = true;
                 }
 
-                BigDecimal deduct = new BigDecimal(dropAmount);
-
-                final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.##");
-                account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
-
-                final double deathTaxAmount = this.dropAmountReturnChange(player, dropAmount);
-                final double droppedAmount = (dropAmount - deathTaxAmount);
+                final double finalDroppedAmount = droppedAmount;
+                final double finalDeathTaxAmount = deathTaxAmount;
+                final boolean finalDisplayDrops = displayDrops;
 
                 server.getOnlinePlayers().forEach(onlinePlayer -> {
                     if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
-                        this.network.sendTo(player, new ClientboundPlayerDiedPacket(droppedAmount, deathTaxAmount, true));
+                        this.network.sendTo(player, new ClientboundPlayerDiedPacket(finalDroppedAmount, finalDeathTaxAmount, finalDisplayDrops));
                     } else {
                         //ToDo: broke atm.
-                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Dropped: " + TextFormatting.GOLD + "$" + dFormat.format(droppedAmount) + TextFormatting.RESET + " and lost: "+ TextFormatting.RED + "$" + dFormat.format(deathTaxAmount) + TextFormatting.RESET + " to death taxes."),5);
+                        serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + "has died!"), Text.of("Dropped: " + TextFormatting.GOLD + "$" + dFormat.format(finalDroppedAmount) + TextFormatting.RESET + " and "
+                                + "lost: "+ TextFormatting.RED + "$" + dFormat.format(finalDeathTaxAmount) + TextFormatting.RESET + " to death taxes."),5);
                     }
                 });
                 return;
