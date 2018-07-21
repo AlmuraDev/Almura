@@ -122,6 +122,7 @@ public class UIPlayerListPanel extends AbstractPanel {
         if (player.getGameType() == GameType.SPECTATOR) {
             name = TextFormatting.ITALIC + name;
         }
+
         return name.length() >= MAX_DISPLAY_NAME_LENGTH ? name.substring(0, MAX_DISPLAY_NAME_LENGTH_SUBSTRING) + DISPLAY_NAME_TRAILING_DOTS : name;
     }
 
@@ -144,7 +145,13 @@ public class UIPlayerListPanel extends AbstractPanel {
         }
 
         if (player.getDisplayName() != null) {
-            return player.getDisplayName().getFormattedText();
+            // The below is to fix the odd RESET value stored within the Nickname from Nucleus that causes issues with this module.
+            String fixedFormattedDisplayName = player.getDisplayName().getFormattedText();
+            if (fixedFormattedDisplayName.substring(0,1).equalsIgnoreCase("~")) {
+                fixedFormattedDisplayName = "~" + fixedFormattedDisplayName.substring(3, fixedFormattedDisplayName.length());
+            }
+
+            return fixedFormattedDisplayName;
         }
 
         return ScorePlayerTeam.formatPlayerName(player.getPlayerTeam(), player.getGameProfile().getName());
