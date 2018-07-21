@@ -185,12 +185,13 @@ public class UIUserPanel extends AbstractPanel {
 
     private void updateCurrency() {
         if (hudData.isEconomyPresent) {
-            this.currencyImage.setVisible(true);
+            //this.currencyImage.setVisible(true);
             this.currencyLabel.setVisible(true);
-            this.currencyLabel.setText(hudData.economyAmount);
+            this.currencyLabel.setText("$ " + hudData.economyAmount);
             this.currencyLabel.setFontOptions(Fonts.colorAndScale(FontColors.GOLD, 0.7F));
-            this.currencyLabel.setPosition(-3, SimpleScreen.getPaddedY(this.usernameLabel, 1),Anchor.TOP | Anchor.RIGHT);
-            this.currencyImage.setPosition(-(this.currencyLabel.getWidth() + 5), SimpleScreen.getPaddedY(this.usernameLabel, -1), Anchor.TOP | Anchor.RIGHT);
+            this.currencyLabel.setPosition(-4, SimpleScreen.getPaddedY(this.usernameLabel, 1),Anchor.TOP | Anchor.RIGHT);
+            this.currencyImage.setPosition(-(this.currencyLabel.getWidth() + 10), SimpleScreen.getPaddedY(this.usernameLabel, -1), Anchor.TOP | Anchor.RIGHT);
+            this.currencyImage.setVisible(false);
         }
     }
 

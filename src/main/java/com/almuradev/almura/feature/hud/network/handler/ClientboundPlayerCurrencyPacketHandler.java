@@ -36,7 +36,7 @@ public final class ClientboundPlayerCurrencyPacketHandler implements MessageHand
         if (side.isClient()) {
 
             if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-                final DecimalFormat format = new DecimalFormat("###,###.##");
+                final DecimalFormat format = new DecimalFormat("#,##0.00");
 
                 hudData.isEconomyPresent = true;
                 hudData.economyAmount = format.format(message.money);
