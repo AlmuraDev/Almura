@@ -329,9 +329,9 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         if (!(blockState.getBlock() instanceof BlockFarmland)) {
             if (!this.readyForHarvest) {
                 if (String.valueOf(canRollback(blockState)).equalsIgnoreCase("true")) {
-                    this.addLineLabel((Text.of("Can Die: ", TextColors.RED, "Yes")));
+                    this.addLineLabel((Text.of(TextColors.WHITE, "Can Die: ", TextColors.RED, "Yes")));
                 } else {
-                    this.addLineLabel((Text.of("Can Die: ", TextColors.DARK_GREEN, "No")));
+                    this.addLineLabel((Text.of(TextColors.WHITE, "Can Die: ", TextColors.DARK_GREEN, "No")));
                 }
             }
 
