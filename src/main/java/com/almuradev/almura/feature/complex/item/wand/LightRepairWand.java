@@ -8,6 +8,8 @@
 package com.almuradev.almura.feature.complex.item.wand;
 
 import com.almuradev.almura.Almura;
+import net.malisis.core.MalisisCore;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -33,7 +35,7 @@ public final class LightRepairWand extends WandItem {
         if (!worldIn.isRemote) {
             final Player spongePlayer = (org.spongepowered.api.entity.living.player.Player) player;
 
-            if (!spongePlayer.hasPermission("almura.item.light_repair_wand")) {
+            if (!spongePlayer.hasPermission("almura.item.light_repair_wand") || (Minecraft.getMinecraft().isSingleplayer() && MalisisCore.isObfEnv)) {
                 spongePlayer.sendMessage(Text.of(TextColors.WHITE + "Access denied, missing permission: ", TextColors.AQUA, "almura.item.light_repair_wand", TextColors.WHITE, "."));
                 return new ActionResult<>(EnumActionResult.FAIL, player.getHeldItem(handIn));
             } else {

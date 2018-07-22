@@ -11,7 +11,12 @@ import com.almuradev.almura.feature.menu.ingame.network.ClientboundFeaturesOpenR
 import com.almuradev.almura.feature.menu.ingame.network.ServerboundFeaturesOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
+import net.malisis.core.MalisisCore;
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -50,7 +55,7 @@ public final class ServerboundFeaturesOpenRequestPacketHandler implements Messag
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
 
-                if (!player.hasPermission("almura.admin")) {
+                if (!player.hasPermission("almura.admin") || (Minecraft.getMinecraft().isSingleplayer() && MalisisCore.isObfEnv)) {
                     player.sendMessage(Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.admin",
                             TextColors.WHITE, "."));
                     return;

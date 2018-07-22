@@ -16,6 +16,8 @@ import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import com.typesafe.config.ConfigRenderOptions;
+import net.malisis.core.MalisisCore;
+import net.minecraft.client.Minecraft;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -87,7 +89,7 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
 
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-        if (!player.hasPermission("almura.guide.open_at_login")) {
+        if (!player.hasPermission("almura.guide.open_at_login") || (Minecraft.getMinecraft().isSingleplayer() && MalisisCore.isObfEnv)) {
             return;
         }
         

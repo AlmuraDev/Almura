@@ -11,6 +11,8 @@ import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResp
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
+import net.malisis.core.MalisisCore;
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
@@ -50,7 +52,7 @@ public final class ServerboundExchangeOpenRequestPacketHandler implements Messag
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
 
-                if (!player.hasPermission("almura.exchange.open")) {
+                if (!player.hasPermission("almura.exchange.open") || (Minecraft.getMinecraft().isSingleplayer() && MalisisCore.isObfEnv)) {
                     player.sendMessage(Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.exchange.open",
                             TextColors.WHITE, "."));
                     return;
