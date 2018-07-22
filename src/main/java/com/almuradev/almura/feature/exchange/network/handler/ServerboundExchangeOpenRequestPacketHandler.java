@@ -52,7 +52,7 @@ public final class ServerboundExchangeOpenRequestPacketHandler implements Messag
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
 
-                if (!player.hasPermission("almura.exchange.open") || (Minecraft.getMinecraft().isSingleplayer() && MalisisCore.isObfEnv)) {
+                if (!player.hasPermission("almura.exchange.open")) {
                     player.sendMessage(Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.exchange.open",
                             TextColors.WHITE, "."));
                     return;
