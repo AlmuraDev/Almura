@@ -266,8 +266,8 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         final TextColor fertileColor = isFertile ? TextColors.DARK_GREEN : TextColors.RED;
         this.addLineLabel(Text.of(TextColors.WHITE, "Soil Quality: ", fertileColor, isFertile ? "Fertile" : "Too dry"));
         if (isFertile) {
-                final TextColor moistureColor = moistureLevel > 3 ? TextColors.DARK_GREEN : TextColors.YELLOW;
-                this.addLineLabel(Text.of(TextColors.WHITE, "Moisture Level: ", moistureColor, moistureLevel), 2);
+            final TextColor moistureColor = moistureLevel > 3 ? TextColors.DARK_GREEN : TextColors.YELLOW;
+            this.addLineLabel(Text.of(TextColors.WHITE, "Moisture Level: ", moistureColor, moistureLevel), 2);
         } else {
             this.growing = false;
         }
@@ -291,7 +291,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
         // Biome rain
         this.addLineLabel(Text.of(TextColors.WHITE, "Rain: ",
-                        message.biomeRainfall > 0.5 ? TextColors.DARK_GREEN : TextColors.RED, numberFormat.format(message.biomeRainfall)));
+                message.biomeRainfall > 0.5 ? TextColors.DARK_GREEN : TextColors.RED, numberFormat.format(message.biomeRainfall)));
 
         // Server light values, can't trust client world. lookups.
         final int sunlight = message.skyLight;
@@ -305,7 +305,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         if (lightRange != null) {
             if (!MathUtil.withinRange(combinedLightValue, lightRange.min(), lightRange.max())) {
                 if (!isDaytime && !canSeeSky) // Its night time and the crop is NOT exposed to direct sunlight
-                this.growing = false;
+                    this.growing = false;
             }
 
             TextColor combinedlightColor = MathUtil.withinRange(combinedLightValue, lightRange.min(), lightRange.max()) ? TextColors.DARK_GREEN : TextColors.RED;
@@ -327,7 +327,14 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
         // Can Die
         if (!(blockState.getBlock() instanceof BlockFarmland)) {
-            this.addLineLabel(this.getGenericPropertyText("Can Die", String.valueOf(canRollback(blockState))));
+            if (!this.readyForHarvest) {
+                if (String.valueOf(canRollback(blockState)).equalsIgnoreCase("true")) {
+                    this.addLineLabel((Text.of("Can Die: ", TextColors.RED, "Yes")));
+                } else {
+                    this.addLineLabel((Text.of("Can Die: ", TextColors.DARK_GREEN, "No")));
+                }
+            }
+
         } else {
             this.cropStatusLabel.setVisible(false);
         }
