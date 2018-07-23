@@ -253,7 +253,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         // Growth stage
         getGrowthStage(blockState)
                 .ifPresent(growthStage ->
-                        this.addLineLabel(this.getGenericPropertyText("Growth Stage",String.format("%d of %d", growthStage.getFirst(), growthStage.getSecond()))));
+                        this.addLineLabel(this.getGenericPropertyText("Growth Stage",String.format("%d of %d", growthStage.getFirst() + 1, growthStage.getSecond() + 1))));
 
         getGrowthStage(blockState)
                 .ifPresent(growthStage ->

@@ -151,7 +151,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .text("Revive")
                 .listener(this)
-                .enabled(true)
+                .enabled(false)
                 .build("button.revive");
 
         // Respawn button
