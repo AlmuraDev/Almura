@@ -153,8 +153,6 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
                 this.transferAll(target);
                 break;
         }
-
-        this.fireEvent(new TransactionEvent<>(this, target, type));
     }
 
     private void transferQuantity(ContainerSide target, MockOffer offer, long quantity) {
@@ -175,15 +173,15 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
                 .filter(o -> ItemStackComparators.IGNORE_SIZE.compare(o.item, offer.item) == 0 && o.quantity < targetStackMaxQuantity)
                 .findFirst()
                 .orElseGet(() -> {
-                    final MockOffer newOffer = new MockOffer(offer.item.copy(), Minecraft.getMinecraft().player);
+                    final MockOffer newOffer = new MockOffer(offer.slotId, offer.item.copy(), Minecraft.getMinecraft().player);
                     newOffer.quantity = 0;
                     targetList.addItem(newOffer);
                     return newOffer;
                 });
 
         final long remainder;
-        remainder = this.addQuantity(targetList, targetOffer, quantity, targetStackMaxQuantity);
-        this.removeQuantity(sourceList, offer, quantity - remainder);
+        remainder = this.addQuantity(targetList, offer.slotId, targetOffer, quantity, targetStackMaxQuantity);
+        this.removeQuantity(sourceList, offer.slotId, offer, quantity - remainder);
         if (remainder > 0) {
             this.transferQuantity(target, offer, remainder);
         }
@@ -202,7 +200,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
         return this.rightItemLimit;
     }
 
-    private long addQuantity(UIDynamicList<MockOffer> list, MockOffer offer, long quantity, long max) {
+    private long addQuantity(UIDynamicList<MockOffer> list, int originatingSlotId, MockOffer offer, long quantity, long max) {
         final long initialQuantity = offer.quantity;
         final long rawTotalQuantity = initialQuantity + quantity;
         final long newQuantity = Math.min(rawTotalQuantity, max);
@@ -210,20 +208,21 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
 
         offer.quantity = newQuantity;
 
+        this.fireEvent(new TransactionEvent<>(this, getTargetFromList(list), originatingSlotId, offer, quantity - remainder));
         this.fireEvent(new UIDynamicList.ItemsChangedEvent<>(list));
 
         return remainder;
     }
 
-    private long removeQuantity(UIDynamicList<MockOffer> list, MockOffer offer, long quantity) {
-        final long initialQuantity = offer.quantity;
-        final long newQuantity = initialQuantity - quantity;
-        offer.quantity = Math.max(0, newQuantity);
+    private long removeQuantity(UIDynamicList<MockOffer> list, int originatingSlotId, MockOffer offer, long quantity) {
+        final long newQuantity = offer.quantity - quantity;
+        offer.quantity = newQuantity;
 
         if (newQuantity <= 0) {
             list.removeItem(offer);
         }
 
+        this.fireEvent(new TransactionEvent<>(this, getTargetFromList(list), originatingSlotId, offer, -quantity));
         this.fireEvent(new UIDynamicList.ItemsChangedEvent<>(list));
 
         return newQuantity < 0 ? Math.abs(newQuantity) : 0;
@@ -248,12 +247,16 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
     public static class TransactionEvent<T> extends ComponentEvent<UIDualListContainer<T>> {
 
         public final ContainerSide side;
-        public final TransferType type;
+        public final MockOffer offer;
+        public final int originatingSlotId;
+        public final long quantity;
 
-        public TransactionEvent(UIDualListContainer<T> component, ContainerSide side, TransferType type) {
+        public TransactionEvent(UIDualListContainer<T> component, ContainerSide side, int originatingSlotId, MockOffer offer, long quantity) {
             super(component);
             this.side = side;
-            this.type = type;
+            this.originatingSlotId = originatingSlotId;
+            this.offer = offer;
+            this.quantity = quantity;
         }
     }
 

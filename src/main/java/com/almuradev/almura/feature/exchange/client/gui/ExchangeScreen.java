@@ -78,16 +78,14 @@ public final class ExchangeScreen extends SimpleScreen {
     private static final int minScreenHeight = 370;
     private static final int innerPadding = 2;
 
-    private int lastUpdate = 0;
-    private boolean unlockMouse = true;
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
             buttonList, buttonSetPrice;
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
-    private UIDynamicList<MockOffer> resultsList, sellingList;
+    public UIDynamicList<MockOffer> resultsList, sellingList;
     private final List<MockOffer> allOffers = new ArrayList<>();
-    private final List<MockOffer> currentResults = new ArrayList<>();
     private final List<MockOffer> playerOffers = new ArrayList<>();
+    private final List<MockOffer> currentResults = new ArrayList<>();
     private int currentPage;
     private int pages;
 
@@ -364,18 +362,6 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     @Override
-    protected void keyTyped(char keyChar, int keyCode) {
-        super.keyTyped(keyChar, keyCode);
-        this.lastUpdate = 0; // Reset the timer when key is typed.
-    }
-
-    @Override
-    protected void mouseClicked(int x, int y, int button) {
-        super.mouseClicked(x, y, button);
-        this.lastUpdate = 0; // Reset the timer when mouse is pressed.
-    }
-
-    @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
     }
@@ -439,7 +425,7 @@ public final class ExchangeScreen extends SimpleScreen {
     public MockOffer createMockOffer(final ItemType type) {
         final long quantity = ThreadLocalRandom.current().nextLong(1, 500000);
         final BigDecimal pricePer = BigDecimal.valueOf(ThreadLocalRandom.current().nextInt(1, 10000));
-        return new MockOffer(Instant.now(),
+        return new MockOffer(Instant.now(), -1,
                              ItemStack.of(type, 1), quantity, pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
     }
 

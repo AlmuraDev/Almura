@@ -24,16 +24,18 @@ public class MockOffer {
     public final BigDecimal pricePer;
     public final UUID playerUuid;
     public final String playerName;
+    public final int slotId;
     public long quantity;
     public boolean listed;
 
-    public MockOffer(final ItemStack item, final EntityPlayer player) {
-        this(Instant.now(), item, item.getQuantity(), BigDecimal.valueOf(0), player.getUniqueID(), player.getName());
+    public MockOffer(final int slotId, final ItemStack item, final EntityPlayer player) {
+        this(Instant.now(), slotId, item, item.getQuantity(), BigDecimal.valueOf(0), player.getUniqueID(), player.getName());
     }
 
-    public MockOffer(final Instant instant, final ItemStack item, final long quantity,
-            final BigDecimal pricePer, final UUID playerUuid, final String playerName) {
+    public MockOffer(final Instant instant, final int slotId, final ItemStack item, final long quantity, final BigDecimal pricePer,
+            final UUID playerUuid, final String playerName) {
         this.instant = instant;
+        this.slotId = slotId;
         this.item = item;
         this.quantity = quantity;
         this.pricePer = pricePer;
