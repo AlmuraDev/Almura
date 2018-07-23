@@ -73,7 +73,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
                 .text("OK")
                 .x(1)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .onClick(this::lightenPockets)
+                .onClick(this::transact)
                 .build("button.ok");
         final UIButton buttonCancel = new UIButtonBuilder(this)
                 .width(40)
@@ -160,7 +160,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
     }
 
-    private void lightenPockets() {
+    private void transact() {
         // Only add for now
         if (parent.isPresent() && parent.get() instanceof ExchangeScreen) {
             final ExchangeScreen excParent = (ExchangeScreen) parent.get();
