@@ -62,7 +62,7 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
             if (PacketUtil.checkThreadAndEnqueue(server, message, this, connection, side)) {
                 final Player player = ((PlayerConnection) connection).getPlayer();
 
-                if (!player.hasPermission("almura.guide.open")) {
+                if (!player.hasPermission("almura.guide.open") || player.hasPermission("almura.singleplayer") && MalisisCore.isObfEnv) {
                     player.sendMessage(
                             Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.guide.open", TextColors.WHITE,
                                     "."));

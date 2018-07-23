@@ -35,7 +35,7 @@ public final class LightRepairWand extends WandItem {
         if (!worldIn.isRemote) {
             final Player spongePlayer = (org.spongepowered.api.entity.living.player.Player) player;
 
-            if (!spongePlayer.hasPermission("almura.item.light_repair_wand")) {
+            if (!spongePlayer.hasPermission("almura.item.light_repair_wand") || spongePlayer.hasPermission("almura.singleplayer") && MalisisCore.isObfEnv) {
                 spongePlayer.sendMessage(Text.of(TextColors.WHITE + "Access denied, missing permission: ", TextColors.AQUA, "almura.item.light_repair_wand", TextColors.WHITE, "."));
                 return new ActionResult<>(EnumActionResult.FAIL, player.getHeldItem(handIn));
             } else {
