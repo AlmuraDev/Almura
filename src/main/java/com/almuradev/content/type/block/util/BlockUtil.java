@@ -7,6 +7,8 @@
  */
 package com.almuradev.content.type.block.util;
 
+import static net.minecraft.block.Block.spawnAsEntity;
+
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ApplyContext;
 import com.almuradev.content.component.apply.context.EverythingApplyContext;
@@ -22,6 +24,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
@@ -55,52 +58,63 @@ public class BlockUtil {
 
         player.addStat(StatList.getBlockStats(mcBlock));
 
-        // Almura Start - For now, our custom blocks don't do silk harvest
-/*
-            if (this.canSilkHarvest(world, pos, state, player) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0)
-            {
-                java.util.List<ItemStack> items = new java.util.ArrayList<ItemStack>();
-                ItemStack itemstack = this.getSilkTouchDrop(state);
+        if (canSilkHarvest(state) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
+            java.util.List<ItemStack> items = new java.util.ArrayList<ItemStack>();
+            ItemStack itemstack = getSilkTouchDrop(state);
 
-                if (!itemstack.isEmpty())
-                {
-                    items.add(itemstack);
-                }
-
-                net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(items, world, pos, state, 0, 1.0f, true, player);
-                for (ItemStack item : items)
-                {
-                    spawnAsEntity(world, pos, item);
-                }
+            if (!itemstack.isEmpty()) {
+                items.add(itemstack);
             }
-            else
-            {
- */
-        // Almura End
 
-        block.getHarvesters().set(player);
+            net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(items, world, pos, state, 0, 1.0f, true, player);
+            for (ItemStack item : items) {
+                spawnAsEntity(world, pos, item);
+            }
+        } else {
 
-        // Almura Start - Run through the kitkats and break!
-        if (!fireBreakActions((ItemType) stack.getItem(), state, player, pos, world.rand, stack, blockDestroyAction)) {
-            // Fallback to empty action block if nothing overrides it
-            fireBreakActions(org.spongepowered.api.item.inventory.ItemStack.empty().getType(), state, player, pos, world.rand, stack,
-                    blockDestroyAction);
+            // Almura End
+
+            block.getHarvesters().set(player);
+
+            // Almura Start - Run through the kitkats and break!
+            if (!fireBreakActions((ItemType) stack.getItem(), state, player, pos, world.rand, stack, blockDestroyAction)) {
+                // Fallback to empty action block if nothing overrides it
+                fireBreakActions(org.spongepowered.api.item.inventory.ItemStack.empty().getType(), state, player, pos, world.rand, stack,
+                        blockDestroyAction);
+            }
+
+            // TODO Expose fortune to config and see if admin wants to let it use it
+            final int fortune = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
+            if (!fireHarvestAndDrop(block, (ItemType) stack.getItem(), world, pos, state, 1f, fortune, blockDestroyAction)) {
+                // Fallback to empty drop block if nothing overrides it
+                fireHarvestAndDrop(block, org.spongepowered.api.item.inventory.ItemStack.empty().getType(), world, pos, state, 1f, fortune,
+                        blockDestroyAction);
+            }
+
+            // Almura End
+
+            block.getHarvesters().set(null);
         }
-
-        // TODO Expose fortune to config and see if admin wants to let it use it
-        final int fortune = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
-        if (!fireHarvestAndDrop(block, (ItemType) stack.getItem(), world, pos, state, 1f, fortune, blockDestroyAction)) {
-            // Fallback to empty drop block if nothing overrides it
-            fireHarvestAndDrop(block, org.spongepowered.api.item.inventory.ItemStack.empty().getType(), world, pos, state, 1f, fortune,
-                    blockDestroyAction);
-        }
-
-        // Almura End
-
-        block.getHarvesters().set(null);
-        //}
     }
 
+    // Almura Start -> Handle lookup of Silk Properties
+    // ToDo: Make this configurable per Block
+
+    private static boolean canSilkHarvest(IBlockState state) {
+        return state.getBlock().getDefaultState().isFullCube() && !state.getBlock().hasTileEntity(state);
+    }
+
+    private static ItemStack getSilkTouchDrop(IBlockState state) {
+        Item item = Item.getItemFromBlock(state.getBlock());
+        int i = 0;
+
+        if (item.getHasSubtypes()) {
+            i = state.getBlock().getMetaFromState(state);
+        }
+
+        return new ItemStack(item, 1, i);
+    }
+    // Almura End
 
     public static void handleDropBlockAsItemWithChance(final IMixinContentBlock block, final World world, final BlockPos pos, final IBlockState
             state, float chance, final int fortune) {
@@ -150,7 +164,7 @@ public class BlockUtil {
                 if (chance == 0) {
                     return;
                 }
-                
+
                 drop(world, pos, chance, drops);
             }
         }
@@ -217,7 +231,7 @@ public class BlockUtil {
     private static void drop(final World world, final BlockPos pos, final float chance, final List<ItemStack> drops) {
         for (final ItemStack drop : drops) {
             if (world.rand.nextFloat() <= chance) {
-                Block.spawnAsEntity(world, pos, drop);
+                spawnAsEntity(world, pos, drop);
             }
         }
     }
