@@ -59,7 +59,7 @@ public class BlockUtil {
         player.addStat(StatList.getBlockStats(mcBlock));
 
         if (canSilkHarvest(state) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
-            java.util.List<ItemStack> items = new java.util.ArrayList<ItemStack>();
+            List<ItemStack> items = new java.util.ArrayList<ItemStack>();
             ItemStack itemstack = getSilkTouchDrop(state);
 
             if (!itemstack.isEmpty()) {
@@ -101,18 +101,12 @@ public class BlockUtil {
     // ToDo: Make this configurable per Block
 
     private static boolean canSilkHarvest(IBlockState state) {
-        return state.getBlock().getDefaultState().isFullCube() && !state.getBlock().hasTileEntity(state);
+        return !state.getBlock().hasTileEntity(state);
     }
 
     private static ItemStack getSilkTouchDrop(IBlockState state) {
         Item item = Item.getItemFromBlock(state.getBlock());
-        int i = 0;
-
-        if (item.getHasSubtypes()) {
-            i = state.getBlock().getMetaFromState(state);
-        }
-
-        return new ItemStack(item, 1, i);
+        return new ItemStack(item, 1, 0);
     }
     // Almura End
 
