@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.shop.gui;
+package com.almuradev.almura.feature.store.client.gui;
 
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
@@ -37,13 +37,13 @@ import org.spongepowered.api.text.format.TextColors;
 
 import javax.inject.Inject;
 
-public class ShopGUI extends SimpleScreen {
+public class StoreScreen extends SimpleScreen {
 
     private static final int innerPadding = 2;
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
     private boolean update = true;
-    private UILabel titleLabel, shopFunctionTitle;
+    private UILabel titleLabel, storeFunctionTitle;
     private UIButton buttonAdd, buttonRemove, buttonDetails;
     private UIFormContainer form;
     private UIPanel panel;
@@ -57,7 +57,7 @@ public class ShopGUI extends SimpleScreen {
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientNotificationManager clientNotificationManager;
 
-    public ShopGUI (boolean isAdmin) {
+    public StoreScreen(boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
 
@@ -65,6 +65,13 @@ public class ShopGUI extends SimpleScreen {
     public void construct() {
         guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
+
+        // Detect if screen area is large enough to display.
+        if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
+            clientNotificationManager.queuePopup(new PopupNotification(Text.of("NPC Store Error"),
+                    Text.of("Screen area of: " + screenHeight + " x " + screenWidth + " required."), 5));
+            this.close();
+        }
 
         form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
@@ -74,10 +81,9 @@ public class ShopGUI extends SimpleScreen {
         form.setBackgroundAlpha(215);
         form.setBottomPadding(3);
         form.setRightPadding(3);
-        form.setTopPadding(20);
         form.setLeftPadding(3);
 
-        titleLabel = new UILabel(this, "Shop Name Here");
+        titleLabel = new UILabel(this, "Store Name Here");
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
@@ -148,13 +154,7 @@ public class ShopGUI extends SimpleScreen {
 
         form.add(titleLabel, tabArea, tabs, panel, buttonAdd, buttonDetails, buttonRemove, buttonClose);
 
-        // Detect if screen area is large enough to display.
-        if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
-            clientNotificationManager.queuePopup(new PopupNotification(Text.of("NPC Shop Error"), Text.of("Screen area of: " + screenHeight + " x " + screenWidth + " required."), 5));
-            this.close();
-        } else {
-            addToScreen(form);
-        }
+        this.addToScreen(this.form);
     }
 
     private UIContainer buyTab() {
@@ -191,7 +191,7 @@ public class ShopGUI extends SimpleScreen {
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.details":
-                new ModifyItemsGUI(Minecraft.getMinecraft().player, new ItemStack(Items.APPLE,2), 2, 10, 2.5, false).display();
+                new StoreItemsModifyScreen(Minecraft.getMinecraft().player, new ItemStack(Items.APPLE,2), 2, 10, 2.5, false).display();
                 break;
             case "button.close":
                 close();

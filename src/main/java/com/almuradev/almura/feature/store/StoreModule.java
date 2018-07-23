@@ -5,11 +5,11 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.shop;
+package com.almuradev.almura.feature.store;
 
-import com.almuradev.almura.feature.shop.gui.ModifyItemsGUI;
-import com.almuradev.almura.feature.shop.gui.ShopGUI;
-import com.almuradev.almura.feature.shop.gui.ShopListGUI;
+import com.almuradev.almura.feature.store.client.gui.StoreItemsModifyScreen;
+import com.almuradev.almura.feature.store.client.gui.StoreScreen;
+import com.almuradev.almura.feature.store.client.gui.StoreListScreen;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 
-public final class ShopModule extends AbstractModule implements CommonBinder {
+public final class StoreModule extends AbstractModule implements CommonBinder {
 
     @Override
     protected void configure() {
@@ -28,9 +28,9 @@ public final class ShopModule extends AbstractModule implements CommonBinder {
                 @SideOnly(Side.CLIENT)
                 @Override
                 protected void configure() {
-                    this.requestStaticInjection(ShopGUI.class);
-                    this.requestStaticInjection(ShopListGUI.class);
-                    this.requestStaticInjection(ModifyItemsGUI.class);
+                    this.requestStaticInjection(StoreScreen.class);
+                    this.requestStaticInjection(StoreListScreen.class);
+                    this.requestStaticInjection(StoreItemsModifyScreen.class);
                 }
             }
             this.install(new ClientModule());

@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.shop.gui;
+package com.almuradev.almura.feature.store.client.gui;
 
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
@@ -30,7 +30,7 @@ import org.spongepowered.api.text.format.TextColors;
 
 import javax.inject.Inject;
 
-public class ShopListGUI extends SimpleScreen {
+public class StoreListScreen extends SimpleScreen {
 
     private static final int innerPadding = 2;
     private int lastUpdate = 0;
@@ -51,6 +51,13 @@ public class ShopListGUI extends SimpleScreen {
         guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
+        // Detect if screen area is large enough to display.
+        if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
+            clientNotificationManager.queuePopup(new PopupNotification(Text.of("NPC Store Error"),
+                    Text.of("Screen area of: " + screenHeight + " x " + screenWidth + " required."), 5));
+            this.close();
+        }
+
         form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
@@ -59,27 +66,26 @@ public class ShopListGUI extends SimpleScreen {
         form.setBackgroundAlpha(215);
         form.setBottomPadding(3);
         form.setRightPadding(3);
-        form.setTopPadding(20);
         form.setLeftPadding(3);
 
-        titleLabel = new UILabel(this, "Server Shops");
+        titleLabel = new UILabel(this, "Server Stores");
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Tab Area
-        final UIFormContainer shopListArea = new UIFormContainer(this, 285, 260, "");
-        shopListArea.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
-        shopListArea.setMovable(false);
-        shopListArea.setClosable(false);
-        shopListArea.setBorder(FontColors.WHITE, 1, 185);
-        shopListArea.setBackgroundAlpha(215);
-        shopListArea.setPadding(3, 3);
+        final UIFormContainer storeListArea = new UIFormContainer(this, 285, 260, "");
+        storeListArea.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
+        storeListArea.setMovable(false);
+        storeListArea.setClosable(false);
+        storeListArea.setBorder(FontColors.WHITE, 1, 185);
+        storeListArea.setBackgroundAlpha(215);
+        storeListArea.setPadding(3, 3);
 
-        nameLabel = new UILabel(this, "Shop Name");
+        nameLabel = new UILabel(this, "Store Name");
         nameLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         nameLabel.setPosition(-50, 10, Anchor.CENTER | Anchor.TOP);
 
-        idLabel = new UILabel(this, "Shop ID");
+        idLabel = new UILabel(this, "Store ID");
         idLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         idLabel.setPosition(50, 10, Anchor.CENTER | Anchor.TOP);
 
@@ -117,15 +123,9 @@ public class ShopListGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel, shopListArea, nameLabel, idLabel, buttonAdd, buttonDetails, buttonRemove, buttonClose);
+        form.add(titleLabel, storeListArea, nameLabel, idLabel, buttonAdd, buttonDetails, buttonRemove, buttonClose);
 
-        // Detect if screen area is large enough to display.
-        if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
-            clientNotificationManager.queuePopup(new PopupNotification(Text.of("Admin Shop Error"), Text.of("Screen area of: " + screenHeight + " x " + screenWidth + " required."), 5));
-            this.close();
-        } else {
-            addToScreen(form);
-        }
+        this.addToScreen(this.form);
     }
 
     private UIContainer buyTab() {

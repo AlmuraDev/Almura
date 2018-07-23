@@ -11,11 +11,10 @@ package com.almuradev.almura.feature.menu.ingame;
 import com.almuradev.almura.feature.exchange.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
-import com.almuradev.almura.feature.shop.gui.ShopGUI;
-import com.almuradev.almura.feature.shop.gui.ShopListGUI;
+import com.almuradev.almura.feature.store.client.gui.StoreScreen;
+import com.almuradev.almura.feature.store.client.gui.StoreListScreen;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.almuradev.almura.feature.title.client.gui.ManageTitlesGUI;
-import com.almuradev.almura.feature.title.client.gui.TitleGUI;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
@@ -31,7 +30,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
@@ -179,11 +177,11 @@ public final class FeaturesGUI extends SimpleScreen {
                 break;
             case "button.npcshop":
                 // Todo: need packet based request here.
-                new ShopGUI(true).display(); //isAdmin TRUE
+                new StoreScreen(true).display(); //isAdmin TRUE
                 break;
             case "button.servershop":
                 // Todo: need packet based request here.
-                new ShopListGUI().display();
+                new StoreListScreen().display();
                 break;
             case "button.managetitle":
                 // Todo: need packet based request here.

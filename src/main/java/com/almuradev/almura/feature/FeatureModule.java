@@ -21,7 +21,7 @@ import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
 import com.almuradev.almura.feature.offhand.OffHandListener;
 import com.almuradev.almura.feature.perms.PermsModule;
-import com.almuradev.almura.feature.shop.ShopModule;
+import com.almuradev.almura.feature.store.StoreModule;
 import com.almuradev.almura.feature.sign.SignEditFeature;
 import com.almuradev.almura.feature.storage.StorageModule;
 import com.almuradev.almura.feature.title.TitleModule;
@@ -46,7 +46,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new ComplexContentModule());
         this.install(new CacheModule());
         this.install(new ExchangeModule());
-        this.install(new ShopModule());
+        this.install(new StoreModule());
         this.install(new DeathModule());
         this.install(new StorageModule());
         this.install(new BiomeModule());

@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.shop.gui;
+package com.almuradev.almura.feature.store.client.gui;
 
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
@@ -33,7 +33,7 @@ import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
 
-public class ModifyItemsGUI extends SimpleScreen {
+public class StoreItemsModifyScreen extends SimpleScreen {
     private static final int innerPadding = 2;
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
@@ -56,7 +56,7 @@ public class ModifyItemsGUI extends SimpleScreen {
     @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientNotificationManager clientNotificationManager;
 
-    public ModifyItemsGUI (EntityPlayer player, ItemStack itemStack, int type, int quantity, double price, boolean isNew) {
+    public StoreItemsModifyScreen(EntityPlayer player, ItemStack itemStack, int type, int quantity, double price, boolean isNew) {
         this.itemStack = itemStack;
         this.quantity = quantity;
         this.isNew = isNew;
@@ -70,6 +70,13 @@ public class ModifyItemsGUI extends SimpleScreen {
         guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
+        // Detect if screen area is large enough to display.
+        if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
+            clientNotificationManager.queuePopup(new PopupNotification(Text.of("NPC Store Error"),
+                    Text.of("Screen area of: " + screenHeight + " x " + screenWidth + " required."), 5));
+            this.close();
+        }
+
         form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
@@ -78,7 +85,6 @@ public class ModifyItemsGUI extends SimpleScreen {
         form.setBackgroundAlpha(215);
         form.setBottomPadding(3);
         form.setRightPadding(3);
-        form.setTopPadding(20);
         form.setLeftPadding(3);
         form.setClipContent(false);
 
@@ -122,13 +128,7 @@ public class ModifyItemsGUI extends SimpleScreen {
 
         form.add(titleLabel, itemArea, itemSlot, itemNameLabel, buttonOk, buttonCancel, playerInv);
 
-        // Detect if screen area is large enough to display.
-        if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
-            clientNotificationManager.queuePopup(new PopupNotification(Text.of("NPC Shop Error"), Text.of("Screen area of: " + screenHeight + " x " + screenWidth + " required."), 5));
-            this.close();
-        } else {
-            addToScreen(form);
-        }
+        this.addToScreen(form);
     }
 
     @Subscribe
