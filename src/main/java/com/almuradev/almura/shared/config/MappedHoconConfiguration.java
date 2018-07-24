@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.shared.config;
 
-import com.typesafe.config.ConfigRenderOptions;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -24,14 +23,8 @@ public class MappedHoconConfiguration<T> extends com.almuradev.toolbox.config.ma
     @Override
     protected ConfigurationLoader<? extends ConfigurationNode> createLoader() {
         return HoconConfigurationLoader.builder()
-                .setDefaultOptions(this.createDefaultOptions())
                 .setPath(this.path)
-                .setRenderOptions(
-                        ConfigRenderOptions.defaults()
-                                .setFormatted(true)
-                                .setComments(true)
-                                .setOriginComments(false)
-                )
+                .setDefaultOptions(ConfigurationOptions.defaults())
                 .build();
     }
 

@@ -33,6 +33,7 @@ import net.minecraft.item.ItemFood;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
+import org.spongepowered.api.Sponge;
 
 public final class FeatureModule extends AbstractModule implements CommonBinder {
 
@@ -54,7 +55,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new AnimalModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
-        nerfVanillaFood();
+        this.nerfVanillaFood();
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {
 
@@ -72,7 +73,9 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 @SideOnly(Side.SERVER)
                 @Override
                 protected void configure() {
-                    this.install(new PermissionsModule());
+                    if (Sponge.getPluginManager().isLoaded("luckperms")) {
+                        this.install(new PermissionsModule());
+                    }
                 }
             }
             this.install(new ServerModule());

@@ -275,14 +275,14 @@ jooq {
             }
         }
     }
-    shopDdl(sourceSets.main) {
+    storeDdl(sourceSets.main) {
         generator {
             database {
                 name = 'org.jooq.meta.extensions.ddl.DDLDatabase'
                 properties {
                     property {
                         key = 'scripts'
-                        value = 'src/main/resources/db/shop/database.sql'
+                        value = 'src/main/resources/db/store/database.sql'
                     }
                 }
 
@@ -297,7 +297,7 @@ jooq {
                 fluentSetters = true
             }
             target {
-                packageName = 'com.almuradev.generated.shop'
+                packageName = 'com.almuradev.generated.store'
                 directory = generatedDir
             }
         }
@@ -337,11 +337,11 @@ generateAxsDdlJooqSchemaSource.dependsOn 'cleanDatabaseClasses'
 
 project.tasks.getByName('compileJava').dependsOn -= 'generateAxsDdlJooqSchemaSource'
 
-generateDatabaseClasses.dependsOn 'generateShopDdlJooqSchemaSource'
+generateDatabaseClasses.dependsOn 'generateStoreDdlJooqSchemaSource'
 
-generateShopDdlJooqSchemaSource.dependsOn 'cleanDatabaseClasses'
+generateStoreDdlJooqSchemaSource.dependsOn 'cleanDatabaseClasses'
 
-project.tasks.getByName('compileJava').dependsOn -= 'generateShopDdlJooqSchemaSource'
+project.tasks.getByName('compileJava').dependsOn -= 'generateStoreDdlJooqSchemaSource'
 
 generateDatabaseClasses.dependsOn 'generateTitleDdlJooqSchemaSource'
 

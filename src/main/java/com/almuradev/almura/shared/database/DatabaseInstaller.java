@@ -12,6 +12,7 @@ import com.almuradev.core.event.Witness;
 import com.google.common.base.Charsets;
 import org.jooq.DSLContext;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
@@ -35,9 +36,9 @@ public final class DatabaseInstaller implements Witness {
     this.manager = manager;
   }
 
-  @Listener
+  @Listener(order = Order.FIRST)
   public void onGameStartingServer(final GameStartingServerEvent event) {
-    try (final DSLContext context = manager.createContext(false)) {
+    try (final DSLContext context = this.manager.createContext(false)) {
       context.createSchemaIfNotExists(this.manager.getConfiguration().getDatabase()).execute();
     } catch (final Exception ex) {
       throw new RuntimeException(ex);

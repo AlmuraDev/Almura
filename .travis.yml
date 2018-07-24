@@ -11,7 +11,7 @@ git:
 before_install: scripts/travis-initialize-submodules
 
 install: ./gradlew setupDecompWorkspace
-script: ./gradlew build
+script: ./gradlew generateDatabaseClasses build
 
 notifications:
   email: false

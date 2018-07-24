@@ -4,10 +4,11 @@ create table if not exists "axs"
   "created"          timestamp    default current_timestamp not null,
   "creator"          binary(16)   not null,
   "id"               varchar(255) primary key,
-  "name"             varchar(255) not null
+  "name"             varchar(255) not null,
+  "is_hidden"        bit          default 0 not null
 );
 
-create table if not exists "axs_store_item"
+create table if not exists "axs_item"
 (
   "rec_no"           int          primary key auto_increment,
   "created"          timestamp    default current_timestamp not null,
@@ -21,22 +22,22 @@ create table if not exists "axs_store_item"
   foreign key ("axs") references "axs"("id") on update cascade on delete cascade
 );
 
-create table if not exists "axs_store_item_data"
+create table if not exists "axs_item_data"
 (
   "rec_no"           int          auto_increment,
-  "store_item"       int          primary key,
+  "axs_item"         int          primary key,
   "data"             varbinary    not null,
-  foreign key ("store_item") references "axs_store_item"("rec_no") on update cascade on delete cascade
+  foreign key ("axs_item") references "axs_item"("rec_no") on update cascade on delete cascade
 );
 
 create table if not exists "axs_list_item"
 (
   "rec_no"           int          auto_increment,
   "created"          timestamp    default current_timestamp not null,
-  "store_item"       int          primary key auto_increment,
+  "axs_item"         int          primary key auto_increment,
   "is_hidden"        bit          default 0 not null,
   "quantity"         int          default 1 not null,
-  foreign key ("store_item") references "axs_store_item"("rec_no") on update cascade on delete cascade
+  foreign key ("axs_item") references "axs_item"("rec_no") on update cascade on delete cascade
 );
 
 create table if not exists "axs_transaction"
@@ -46,5 +47,5 @@ create table if not exists "axs_transaction"
   "list_item"        int          not null,
   "buyer"            binary(16)   not null,
   "quantity"         int          default 1 not null,
-  foreign key ("list_item") references "axs_store_item"("rec_no") on update cascade on delete cascade
+  foreign key ("list_item") references "axs_item"("rec_no") on update cascade on delete cascade
 );

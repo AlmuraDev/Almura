@@ -6,8 +6,8 @@ create table if not exists "title"
   "id"         varchar(255) primary key,
   "name"       varchar(255) not null,
   "permission" varchar(255) not null,
-  "is_hidden"  bit          default 0 not null,
-  "content"    varchar(255) not null
+  "content"    varchar(255) not null,
+  "is_hidden"  bit          default 0 not null
 );
 
 create table if not exists "title_select"
