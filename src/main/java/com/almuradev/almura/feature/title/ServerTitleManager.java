@@ -68,8 +68,9 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
     @Inject
     public ServerTitleManager(final PluginContainer container, final Scheduler scheduler, final Logger logger,
-            @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final ServerNotificationManager serverNotificationManager,
-            final DatabaseManager databaseManager) {
+        @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network,
+        final ServerNotificationManager serverNotificationManager,
+        final DatabaseManager databaseManager) {
         this.container = container;
         this.scheduler = scheduler;
         this.logger = logger;
@@ -96,27 +97,27 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
         // Send titles to joiner
         this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
-                        this.titles
-                                .values()
-                                .stream()
-                                .filter(title -> {
-                                    if (!title.isHidden()) {
-                                        return true;
-                                    }
+                this.titles
+                    .values()
+                    .stream()
+                    .filter(title -> {
+                        if (!title.isHidden()) {
+                            return true;
+                        }
 
-                                    return player.hasPermission(Almura.ID + ".title.admin");
-                                })
-                                .collect(Collectors.toSet())
-                )
+                        return player.hasPermission(Almura.ID + ".title.admin");
+                    })
+                    .collect(Collectors.toSet())
+            )
         );
 
         // Send selected titles to joiner
         this.network.sendTo(player, new ClientboundSelectedTitleBulkPacket(
-                        this.selectedTitles
-                                .entrySet()
-                                .stream()
-                                .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().getId()))
-                )
+                this.selectedTitles
+                    .entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().getId()))
+            )
         );
 
         // Cache available titles for the joiner
@@ -124,38 +125,38 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
         // Query database for selected title for joiner
         this.scheduler.createTaskBuilder()
-                .async()
-                .execute(() -> {
-                    try (final DSLContext context = this.databaseManager.createContext(true)) {
-                        final TitleSelectRecord record = TitleQueries
-                                .createFetchSelectedTitleFor(player.getUniqueId())
-                                .build(context)
-                                .keepStatement(false)
-                                .fetchOne();
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final TitleSelectRecord record = TitleQueries
+                        .createFetchSelectedTitleFor(player.getUniqueId())
+                        .build(context)
+                        .keepStatement(false)
+                        .fetchOne();
 
-                        if (record != null) {
-                            final String titleId = record.getTitle();
+                    if (record != null) {
+                        final String titleId = record.getTitle();
 
-                            this.scheduler
-                                    .createTaskBuilder()
-                                    .delayTicks(5)
-                                    .execute(() -> {
-                                        final Title selectedTitle = this.getTitle(titleId).orElse(null);
+                        this.scheduler
+                            .createTaskBuilder()
+                            .delayTicks(5)
+                            .execute(() -> {
+                                final Title selectedTitle = this.getTitle(titleId).orElse(null);
 
-                                        if (this.verifySelectedTitle(player, selectedTitle)) {
-                                            this.selectedTitles.put(player.getUniqueId(), selectedTitle);
+                                if (this.verifySelectedTitle(player, selectedTitle)) {
+                                    this.selectedTitles.put(player.getUniqueId(), selectedTitle);
 
-                                            // Send everyone joiner's selected title
-                                            this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), titleId));
-                                        }
-                                    })
-                                    .submit(this.container);
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+                                    // Send everyone joiner's selected title
+                                    this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), titleId));
+                                }
+                            })
+                            .submit(this.container);
                     }
-                })
-                .submit(this.container);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     public Optional<Title> getTitle(final String titleId) {
@@ -175,62 +176,62 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         this.logger.info("Querying database for titles, please wait...");
 
         this.scheduler.createTaskBuilder()
-                .async()
-                .execute(() -> {
-                    try (final DSLContext context = this.databaseManager.createContext(true)) {
-                        final Results results = TitleQueries
-                                .createFetchAllTitles()
-                                .build(context)
-                                .keepStatement(false)
-                                .fetchMany();
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final Results results = TitleQueries
+                        .createFetchAllTitles()
+                        .build(context)
+                        .keepStatement(false)
+                        .fetchMany();
 
-                        final Map<String, Title> titles = new HashMap<>();
+                    final Map<String, Title> titles = new HashMap<>();
 
-                        results.forEach(result -> {
-                            for (Record record : result) {
-                                final String id = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.ID);
-                                final Timestamp created = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.CREATED);
-                                final UUID creator = DatabaseUtils.fromBytes(record.getValue(com.almuradev.generated.title.tables.Title.TITLE
-                                        .CREATOR));
-                                final String name = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.NAME);
-                                final String permission = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.PERMISSION);
-                                final boolean isHidden = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.IS_HIDDEN);
-                                final String content = record.getValue(com.almuradev.generated.title.tables
-                                        .Title.TITLE.CONTENT);
+                    results.forEach(result -> {
+                        for (Record record : result) {
+                            final String id = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.ID);
+                            final Timestamp created = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.CREATED);
+                            final UUID creator = DatabaseUtils.fromBytes(record.getValue(com.almuradev.generated.title.tables.Title.TITLE
+                                .CREATOR));
+                            final String name = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.NAME);
+                            final String permission = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.PERMISSION);
+                            final boolean isHidden = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.IS_HIDDEN);
+                            final String content = record.getValue(com.almuradev.generated.title.tables
+                                .Title.TITLE.CONTENT);
 
-                                titles.put(id, new Title(created, creator, id, name, permission, isHidden, content));
+                            titles.put(id, new Title(created, creator, id, name, permission, isHidden, content));
+                        }
+                    });
+
+                    this.scheduler.createTaskBuilder()
+                        .execute(() -> {
+                            this.titles.clear();
+
+                            if (!titles.isEmpty()) {
+                                this.titles.putAll(titles);
                             }
-                        });
 
-                        this.scheduler.createTaskBuilder()
-                                .execute(() -> {
-                                    this.titles.clear();
+                            this.logger.info("Loaded {} title(s).", this.titles.size());
 
-                                    if (!titles.isEmpty()) {
-                                        this.titles.putAll(titles);
-                                    }
+                            // Re-send titles to everyone
+                            this.network.sendToAll(new ClientboundTitlesRegistryPacket(this.titles.isEmpty() ? null : new HashSet<>(this.titles
+                                .values())));
 
-                                    this.logger.info("Loaded {} title(s).", this.titles.size());
+                            // Re-calculate available titles
+                            Sponge.getServer().getOnlinePlayers().forEach(player -> {
+                                this.calculateAvailableTitlesFor(player);
 
-                                    // Re-send titles to everyone
-                                    this.network.sendToAll(new ClientboundTitlesRegistryPacket(this.titles.isEmpty() ? null : new HashSet<>(this.titles
-                                            .values())));
-
-                                    // Re-calculate available titles
-                                    Sponge.getServer().getOnlinePlayers().forEach(player -> {
-                                        this.calculateAvailableTitlesFor(player);
-
-                                        this.verifySelectedTitle(player, null);
-                                    });
+                                this.verifySelectedTitle(player, null);
+                            });
 
 
-                                })
-                                .submit(this.container);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                })
-                .submit(this.container);
+                        })
+                        .submit(this.container);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
 
         return true;
     }
@@ -245,16 +246,16 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         }
 
         final Set<Title> availableTitles = this.titles
-                .entrySet()
-                .stream()
-                .filter(kv -> {
-                    if (kv.getValue().isHidden()) {
-                        return player.hasPermission(Almura.ID + ".title.admin");
-                    }
-                    return player.hasPermission(kv.getValue().getId());
-                })
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toCollection(HashSet::new));
+            .entrySet()
+            .stream()
+            .filter(kv -> {
+                if (kv.getValue().isHidden()) {
+                    return player.hasPermission(Almura.ID + ".title.admin");
+                }
+                return player.hasPermission(kv.getValue().getId());
+            })
+            .map(Map.Entry::getValue)
+            .collect(Collectors.toCollection(HashSet::new));
 
         if (availableTitles.isEmpty()) {
             return;
@@ -293,20 +294,20 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
         if (remove) {
             this.scheduler.createTaskBuilder()
-                    .async()
-                    .execute(() -> {
-                                try (final DSLContext context = this.databaseManager.createContext(true)) {
-                                    TitleQueries
-                                            .createDeleteSelectedTitleFor(player.getUniqueId())
-                                            .build(context)
-                                            .keepStatement(false)
-                                            .execute();
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                    )
-                    .submit(this.container);
+                .async()
+                .execute(() -> {
+                        try (final DSLContext context = this.databaseManager.createContext(true)) {
+                            TitleQueries
+                                .createDeleteSelectedTitleFor(player.getUniqueId())
+                                .build(context)
+                                .keepStatement(false)
+                                .execute();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                )
+                .submit(this.container);
         }
 
         return !remove;
@@ -336,33 +337,33 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                     this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), titleId));
 
                     this.scheduler.createTaskBuilder()
-                            .async()
-                            .execute(() -> {
-                                try (final DSLContext context = this.databaseManager.createContext(true)) {
-                                    if (previousTitle != null) {
-                                        TitleQueries
-                                                .createDeleteSelectedTitleFor(player.getUniqueId())
-                                                .build(context)
-                                                .keepStatement(false)
-                                                .execute();
-
-                                        TitleQueries
-                                                .createInsertSelectedTitleHistoryFor(player.getUniqueId(), previousTitle.getId())
-                                                .build(context)
-                                                .keepStatement(false)
-                                                .execute();
-                                    }
+                        .async()
+                        .execute(() -> {
+                            try (final DSLContext context = this.databaseManager.createContext(true)) {
+                                if (previousTitle != null) {
+                                    TitleQueries
+                                        .createDeleteSelectedTitleFor(player.getUniqueId())
+                                        .build(context)
+                                        .keepStatement(false)
+                                        .execute();
 
                                     TitleQueries
-                                            .createInsertSelectedTitleFor(player.getUniqueId(), titleId)
-                                            .build(context)
-                                            .keepStatement(false)
-                                            .execute();
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
+                                        .createInsertSelectedTitleHistoryFor(player.getUniqueId(), previousTitle.getId())
+                                        .build(context)
+                                        .keepStatement(false)
+                                        .execute();
                                 }
-                            })
-                            .submit(this.container);
+
+                                TitleQueries
+                                    .createInsertSelectedTitleFor(player.getUniqueId(), titleId)
+                                    .build(context)
+                                    .keepStatement(false)
+                                    .execute();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        })
+                        .submit(this.container);
                 }
             } else {
                 remove = true;
@@ -371,20 +372,20 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
         if (remove) {
             this.scheduler.createTaskBuilder()
-                    .async()
-                    .execute(() -> {
-                                try (final DSLContext context = this.databaseManager.createContext(true)) {
-                                    TitleQueries
-                                            .createDeleteSelectedTitleFor(player.getUniqueId())
-                                            .build(context)
-                                            .keepStatement(false)
-                                            .execute();
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                    )
-                    .submit(this.container);
+                .async()
+                .execute(() -> {
+                        try (final DSLContext context = this.databaseManager.createContext(true)) {
+                            TitleQueries
+                                .createDeleteSelectedTitleFor(player.getUniqueId())
+                                .build(context)
+                                .keepStatement(false)
+                                .execute();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                )
+                .submit(this.container);
         }
     }
 
@@ -397,56 +398,59 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         checkNotNull(content);
 
         if (!player.hasPermission(Almura.ID + ".title.create")) {
-            serverNotificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("Insufficient Permission!, Title addition failed."),5);
+            serverNotificationManager
+                .sendPopupNotification(player, Text.of("Title Manager"), Text.of("Insufficient Permission!, Title addition failed."), 5);
             return;
         }
 
         if (this.getTitle(id).isPresent()) {
-            serverNotificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("This Title already exists!"),5);
+            serverNotificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("This Title already exists!"), 5);
 
             this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
-                            this.titles
-                                    .values()
-                                    .stream()
-                                    .filter(title -> {
-                                        if (!title.isHidden()) {
-                                            return true;
-                                        }
+                    this.titles
+                        .values()
+                        .stream()
+                        .filter(title -> {
+                            if (!title.isHidden()) {
+                                return true;
+                            }
 
-                                        return player.hasPermission(Almura.ID + ".title.admin");
-                                    })
-                                    .collect(Collectors.toSet())
-                    )
+                            return player.hasPermission(Almura.ID + ".title.admin");
+                        })
+                        .collect(Collectors.toSet())
+                )
             );
         } else {
             this.scheduler
-                    .createTaskBuilder()
-                    .async()
-                    .execute(() -> {
-                        try (final DSLContext context = this.databaseManager.createContext(true)) {
-                            final int result = TitleQueries
-                                    .createInsertTitle(player.getUniqueId(), id, name, permission, content, isHidden)
-                                    .build(context)
-                                    .keepStatement(false)
-                                    .execute();
+                .createTaskBuilder()
+                .async()
+                .execute(() -> {
+                    try (final DSLContext context = this.databaseManager.createContext(true)) {
+                        final int result = TitleQueries
+                            .createInsertTitle(player.getUniqueId(), id, name, permission, content, isHidden)
+                            .build(context)
+                            .keepStatement(false)
+                            .execute();
 
-                            final Runnable runnable;
+                        final Runnable runnable;
 
-                            if (result == 0) {
-                                runnable = () -> serverNotificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("Thread execution to add Title to database Failed!"),5);
-                            } else {
-                                runnable = this::loadTitles;
-                            }
-
-                            this.scheduler
-                                    .createTaskBuilder()
-                                    .execute(runnable)
-                                    .submit(this.container);
-                        } catch (SQLException e) {
-                            e.printStackTrace();
+                        if (result == 0) {
+                            runnable = () -> serverNotificationManager
+                                .sendPopupNotification(player, Text.of("Title Manager"), Text.of("Thread execution to add Title to database Failed!"),
+                                    5);
+                        } else {
+                            runnable = this::loadTitles;
                         }
-                    })
-                    .submit(this.container);
+
+                        this.scheduler
+                            .createTaskBuilder()
+                            .execute(runnable)
+                            .submit(this.container);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .submit(this.container);
         }
     }
 
@@ -469,52 +473,53 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
             // TODO Dockter, we're in a desync...either send them a notification that title modify failed as it doesn't exist or remove this TODO
 
             this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
-                            this.titles
-                                    .values()
-                                    .stream()
-                                    .filter(t -> {
-                                        if (!t.isHidden()) {
-                                            return true;
-                                        }
+                    this.titles
+                        .values()
+                        .stream()
+                        .filter(t -> {
+                            if (!t.isHidden()) {
+                                return true;
+                            }
 
-                                        return player.hasPermission(Almura.ID + ".title.admin");
-                                    })
-                                    .collect(Collectors.toSet())
-                    )
+                            return player.hasPermission(Almura.ID + ".title.admin");
+                        })
+                        .collect(Collectors.toSet())
+                )
             );
         } else {
             this.scheduler.createTaskBuilder()
-                    .async()
-                    .execute(() -> {
-                        try (final DSLContext context = this.databaseManager.createContext(true)) {
-                            final int result = TitleQueries
-                                    .createUpdateTitle(id, name, permission, content, isHidden)
-                                    .build(context)
-                                    .keepStatement(false)
-                                    .execute();
+                .async()
+                .execute(() -> {
+                    try (final DSLContext context = this.databaseManager.createContext(true)) {
+                        final int result = TitleQueries
+                            .createUpdateTitle(id, name, permission, content, isHidden)
+                            .build(context)
+                            .keepStatement(false)
+                            .execute();
 
-                            final Runnable runnable;
+                        final Runnable runnable;
 
-                            if (result == 0) {
-                                runnable = () -> {
-                                    // TODO Dockter, send a notification down to the player that modify failed
-                                    System.err.println("Modify failed!");
-                                };
-                            } else {
-                                runnable = this::loadTitles;
-                            }
-
-                            this.scheduler
-                                    .createTaskBuilder()
-                                    .execute(runnable)
-                                    .submit(this.container);
-                        } catch (SQLException e) {
-                            e.printStackTrace();
+                        if (result == 0) {
+                            runnable = () -> {
+                                // TODO Dockter, send a notification down to the player that modify failed
+                                System.err.println("Modify failed!");
+                            };
+                        } else {
+                            runnable = this::loadTitles;
                         }
-                    })
-                    .submit(this.container);
+
+                        this.scheduler
+                            .createTaskBuilder()
+                            .execute(runnable)
+                            .submit(this.container);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .submit(this.container);
         }
     }
+
     public void deleteTitle(final Player player, final String id) {
         checkNotNull(player);
         checkNotNull(id);
@@ -522,51 +527,51 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         if (!this.getTitle(id).isPresent()) {
             // TODO Dockter, we're in a desync...either send them a notification that title deletion failed as it doesn't exist or remove this TODO
             this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
-                            this.titles
-                                    .values()
-                                    .stream()
-                                    .filter(title -> {
-                                        if (!title.isHidden()) {
-                                            return true;
-                                        }
+                    this.titles
+                        .values()
+                        .stream()
+                        .filter(title -> {
+                            if (!title.isHidden()) {
+                                return true;
+                            }
 
-                                        return player.hasPermission(Almura.ID + ".title.admin");
-                                    })
-                                    .collect(Collectors.toSet())
-                    )
+                            return player.hasPermission(Almura.ID + ".title.admin");
+                        })
+                        .collect(Collectors.toSet())
+                )
             );
         } else {
             this.scheduler
-                    .createTaskBuilder()
-                    .async()
-                    .execute(() -> {
-                        try (final DSLContext context = this.databaseManager.createContext(true)) {
-                            final int result = TitleQueries
-                                    .createDeleteTitle(id)
-                                    .build(context)
-                                    .keepStatement(false)
-                                    .execute();
+                .createTaskBuilder()
+                .async()
+                .execute(() -> {
+                    try (final DSLContext context = this.databaseManager.createContext(true)) {
+                        final int result = TitleQueries
+                            .createDeleteTitle(id)
+                            .build(context)
+                            .keepStatement(false)
+                            .execute();
 
-                            final Runnable runnable;
+                        final Runnable runnable;
 
-                            if (result == 0) {
-                                runnable = () -> {
-                                    // TODO Dockter, send a notification down to the player that changing title visibility failed
-                                    System.err.println("Deletion failed!");
-                                };
-                            } else {
-                                runnable = this::loadTitles;
-                            }
-
-                            this.scheduler
-                                    .createTaskBuilder()
-                                    .execute(runnable)
-                                    .submit(this.container);
-                        } catch (SQLException e) {
-                            e.printStackTrace();
+                        if (result == 0) {
+                            runnable = () -> {
+                                // TODO Dockter, send a notification down to the player that changing title visibility failed
+                                System.err.println("Deletion failed!");
+                            };
+                        } else {
+                            runnable = this::loadTitles;
                         }
-                    })
-                    .submit(this.container);
+
+                        this.scheduler
+                            .createTaskBuilder()
+                            .execute(runnable)
+                            .submit(this.container);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .submit(this.container);
         }
     }
 }

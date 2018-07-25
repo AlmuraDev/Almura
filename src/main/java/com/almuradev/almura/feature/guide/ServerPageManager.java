@@ -14,6 +14,7 @@ import com.almuradev.almura.feature.guide.network.ClientboundPageListingsPacket;
 import com.almuradev.almura.feature.guide.network.GuideOpenType;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.almura.shared.util.TextUtil;
 import com.almuradev.core.event.Witness;
 import com.typesafe.config.ConfigRenderOptions;
 import net.malisis.core.MalisisCore;
@@ -291,7 +292,7 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
         createdNode.getNode(GuideConfig.Created.TIME).setValue(page.getCreated().toString());
 
         // Packet sends up as sectional, since I am a nice guy I'll let them save as ampersand
-        rootNode.getNode(GuideConfig.CONTENT).setValue(Page.asFriendlyText(page.getContent()));
+        rootNode.getNode(GuideConfig.CONTENT).setValue(TextUtil.asFriendlyText(page.getContent()));
 
         if (notify) {
             for (final Player player : this.game.getServer().getOnlinePlayers()) {

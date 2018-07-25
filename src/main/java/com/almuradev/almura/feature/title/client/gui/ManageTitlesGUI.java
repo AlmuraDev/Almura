@@ -20,7 +20,7 @@ import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
-import com.google.common.collect.Lists;
+import com.almuradev.almura.shared.util.TextUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -38,20 +38,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.common.text.SpongeTexts;
-import org.spongepowered.common.text.serializer.LegacyTexts;
+
+import java.util.Arrays;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
 public final class ManageTitlesGUI extends SimpleScreen {
@@ -63,16 +58,12 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
-    private UILabel titleLabel, modeNameLabel, titleNameLabel, permissionNodeLabel, titleIdLabel, titleContextLabel;
-    private UIFormContainer form;
+    private UILabel modeNameLabel;
     private UITextField nameField, permissionField, titleIdField, titleContentField;
-    private UIButton buttonAdd, buttonRemove, buttonRefresh, saveChangesButton, buttonColor;
+    private UIButton buttonRemove, buttonColor;
     private UIDynamicList<Title> titleList;
     private UICheckBox hiddenCheckbox, formattedCheckbox;
-    private UISelect colorSelector;
-
-    //Todo: WTF.
-    //private final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> titleListFactory;
+    private UISelect<String> colorSelector;
 
     private int screenWidth = 450;
     private int screenHeight = 300;
@@ -86,25 +77,25 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
 
         // Master Pane
-        this.form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
-        this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        this.form.setMovable(true);
-        this.form.setClosable(true);
-        this.form.setBorder(FontColors.WHITE, 1, 185);
-        this.form.setBackgroundAlpha(215);
-        this.form.setBottomPadding(3);
-        this.form.setRightPadding(3);
-        this.form.setTopPadding(20);
-        this.form.setLeftPadding(3);
+        final UIFormContainer form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
+        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        form.setMovable(true);
+        form.setClosable(true);
+        form.setBorder(FontColors.WHITE, 1, 185);
+        form.setBackgroundAlpha(215);
+        form.setBottomPadding(3);
+        form.setRightPadding(3);
+        form.setTopPadding(20);
+        form.setLeftPadding(3);
 
-        this.titleLabel = new UILabel(this, "Title Manager")
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(true)
-                        .scale(1.1F)
-                        .build()
-                )
-                .setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
+        final UILabel titleLabel = new UILabel(this, "Title Manager")
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(true)
+                .scale(1.1F)
+                .build()
+            )
+            .setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Title List Area
         final UIFormContainer listArea = new UIFormContainer(this, 220, 260, "");
@@ -121,7 +112,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
         // Create left container
         final UIContainer<?> titleContainer = new UIContainer(this, 200, UIComponent.INHERITED);
         titleContainer.setBackgroundAlpha(0);
-        titleContainer.setPosition(0,0, Anchor.CENTER | Anchor.TOP);
+        titleContainer.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
         titleContainer.setPadding(4, 4);
         titleContainer.setTopPadding(20);
 
@@ -151,125 +142,125 @@ public final class ManageTitlesGUI extends SimpleScreen {
         editArea.setLeftPadding(3);
 
         this.modeNameLabel = new UILabel(this, "Modify Title")
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(true)
-                        .underline(false)
-                        .scale(1.2F)
-                        .build()
-                )
-                .setVisible(false)
-                .setPosition(0, 05, Anchor.CENTER | Anchor.TOP);
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(true)
+                .underline(false)
+                .scale(1.2F)
+                .build()
+            )
+            .setVisible(false)
+            .setPosition(0, 05, Anchor.CENTER | Anchor.TOP);
 
-        this.titleNameLabel = new UILabel(this, "Name:")
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(true)
-                        .scale(1.0F)
-                        .build()
-                )
-                .setPosition(0, 15, Anchor.LEFT | Anchor.TOP);
+        final UILabel titleNameLabel = new UILabel(this, "Name:")
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(true)
+                .scale(1.0F)
+                .build()
+            )
+            .setPosition(0, 15, Anchor.LEFT | Anchor.TOP);
 
         this.nameField = new UITextField(this, "", false)
-                .setSize(200, 0)
-                .setPosition(10, 30, Anchor.LEFT | Anchor.TOP)
-                .setEditable(false)
-                .setEnabled(false)
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(false)
-                        .build()
-                );
+            .setSize(200, 0)
+            .setPosition(10, 30, Anchor.LEFT | Anchor.TOP)
+            .setEditable(false)
+            .setEnabled(false)
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(false)
+                .build()
+            );
 
-        this.permissionNodeLabel = new UILabel(this, "Permission:")
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(true)
-                        .scale(1.0F)
-                        .build()
-                ).setPosition(0, 55, Anchor.LEFT | Anchor.TOP);
+        final UILabel permissionNodeLabel = new UILabel(this, "Permission:")
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(true)
+                .scale(1.0F)
+                .build()
+            ).setPosition(0, 55, Anchor.LEFT | Anchor.TOP);
 
         this.permissionField = new UITextField(this, "", false)
-                .setSize(200, 0)
-                .setPosition(10, 70, Anchor.LEFT | Anchor.TOP)
-                .setEditable(false)
-                .setEnabled(false)
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(false)
-                        .build()
-                );
+            .setSize(200, 0)
+            .setPosition(10, 70, Anchor.LEFT | Anchor.TOP)
+            .setEditable(false)
+            .setEnabled(false)
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(false)
+                .build()
+            );
 
-        this.titleIdLabel = new UILabel(this, "ID:")
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(true)
-                        .scale(1.0F)
-                        .build()
-                ).setPosition(0, 95, Anchor.LEFT | Anchor.TOP);
+        final UILabel titleIdLabel = new UILabel(this, "ID:")
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(true)
+                .scale(1.0F)
+                .build()
+            ).setPosition(0, 95, Anchor.LEFT | Anchor.TOP);
 
         this.titleIdField = new UITextField(this, "", false)
-                .setSize(200, 0)
-                .setPosition(10, 110, Anchor.LEFT | Anchor.TOP)
-                .setEditable(false)
-                .setEnabled(false)
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(false)
-                        .build()
-                );
+            .setSize(200, 0)
+            .setPosition(10, 110, Anchor.LEFT | Anchor.TOP)
+            .setEditable(false)
+            .setEnabled(false)
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(false)
+                .build()
+            );
 
-        this.titleContextLabel = new UILabel(this, "Context:")
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(true)
-                        .scale(1.0F)
-                        .build()
-                ).setPosition(0, 135, Anchor.LEFT | Anchor.TOP);
+        final UILabel titleContextLabel = new UILabel(this, "Content:")
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(true)
+                .scale(1.0F)
+                .build()
+            ).setPosition(0, 135, Anchor.LEFT | Anchor.TOP);
 
         this.titleContentField = new UITextField(this, "", false)
-                .setSize(200, 0)
-                .setPosition(10, 150, Anchor.LEFT | Anchor.TOP)
-                .setEditable(true)
-                .setEnabled(false)
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
+            .setSize(200, 0)
+            .setPosition(10, 150, Anchor.LEFT | Anchor.TOP)
+            .setEditable(true)
+            .setEnabled(false)
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
 
-                        .shadow(false)
-                        .build()
-                );
+                .shadow(false)
+                .build()
+            );
 
         // Color Selection dropdown
         this.colorSelector = new UISelect<>(this,
-                110,
-                Arrays.asList(
-                        "§1Dark Blue§f - &1",
-                        "§9Blue§f - &9",
-                        "§3Dark Aqua§f - &3",
-                        "§bAqua§f - &b",
-                        "§4Dark Red§f - &4",
-                        "§cRed§f - &c",
-                        "§eYellow§f - &e",
-                        "§6Gold§f - &6",
-                        "§2Dark Green§f - &2",
-                        "§aGreen§f - &a",
-                        "§5Dark Purple§f - &5",
-                        "§dLight Purple§f - &d",
-                        "§fWhite§f - &f",
-                        "§7Gray§f - &7",
-                        "§8Dark Gray§f - &8",
-                        "§0Black§f - &0,",
-                        "§lBold§f - &l",
-                        "§mStrikethrough§f - &m",
-                        "§nUnderline§f - &n",
-                        "§oItalic§f - &o")
+            110,
+            Arrays.asList(
+                "§1Dark Blue§f - &1",
+                "§9Blue§f - &9",
+                "§3Dark Aqua§f - &3",
+                "§bAqua§f - &b",
+                "§4Dark Red§f - &4",
+                "§cRed§f - &c",
+                "§eYellow§f - &e",
+                "§6Gold§f - &6",
+                "§2Dark Green§f - &2",
+                "§aGreen§f - &a",
+                "§5Dark Purple§f - &5",
+                "§dLight Purple§f - &d",
+                "§fWhite§f - &f",
+                "§7Gray§f - &7",
+                "§8Dark Gray§f - &8",
+                "§0Black§f - &0,",
+                "§lBold§f - &l",
+                "§mStrikethrough§f - &m",
+                "§nUnderline§f - &n",
+                "§oItalic§f - &o")
         );
 
         this.colorSelector.setPosition(10, 166, Anchor.LEFT | Anchor.TOP);
         this.colorSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
         this.colorSelector.setFontOptions(FontOptions.builder()
-                .shadow(false)
-                .build()
+            .shadow(false)
+            .build()
         );
         this.colorSelector.select("§1Dark Blue§f - &1");
         this.colorSelector.setEnabled(false);
@@ -277,12 +268,12 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
         // Add Color character button
         buttonColor = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.TOP | Anchor.LEFT)
-                .position(130, 165)
-                .text(Text.of("Add"))
-                .listener(this)
-                .build("button.color");
+            .width(40)
+            .anchor(Anchor.TOP | Anchor.LEFT)
+            .position(130, 165)
+            .text(Text.of("Add"))
+            .listener(this)
+            .build("button.color");
 
         this.formattedCheckbox = new UICheckBox(this);
         this.formattedCheckbox.setText(TextFormatting.WHITE + "Formatted");
@@ -299,68 +290,67 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.hiddenCheckbox.register(this);
 
         // Save Changes button
-        this.saveChangesButton = new UIButtonBuilder(this)
-                .width(30)
-                .text(Text.of("almura.button.save"))
-                .position(0,-5)
-                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .listener(this)
-                .build("button.save");
+        final UIButton saveChangesButton = new UIButtonBuilder(this)
+            .width(30)
+            .text(Text.of("almura.button.save"))
+            .position(0, -5)
+            .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+            .listener(this)
+            .build("button.save");
 
-        editArea.add(this.modeNameLabel, this.titleNameLabel, this.nameField, this.permissionNodeLabel,
-                this.permissionField, this.titleIdLabel, this.titleIdField, this.titleContextLabel, this.titleContentField,
-                this.colorSelector, this.buttonColor, this.formattedCheckbox, this.hiddenCheckbox, this
-                        .saveChangesButton);
+        editArea.add(this.modeNameLabel, titleNameLabel, this.nameField, permissionNodeLabel,
+            this.permissionField, titleIdLabel, this.titleIdField, titleContextLabel, this.titleContentField,
+            this.colorSelector, this.buttonColor, this.formattedCheckbox, this.hiddenCheckbox, saveChangesButton);
 
         final UILabel titleSelectionLabel = new UILabel(this, "Server Titles:")
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(true)
-                        .scale(1.1F)
-                        .build()
-                )
-                .setPosition(5, 10, Anchor.LEFT | Anchor.TOP);
+            .setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(true)
+                .scale(1.1F)
+                .build()
+            )
+            .setPosition(5, 10, Anchor.LEFT | Anchor.TOP);
 
         // Add button
-        this.buttonAdd = new UIButtonBuilder(this)
-                .width(10)
-                .text(Text.of(TextColors.GREEN, "+"))
-                .anchor(Anchor.BOTTOM | Anchor.LEFT)
-                .tooltip("Add New Title")
-                .listener(this)
-                .build("button.add");
+        final UIButton buttonAdd = new UIButtonBuilder(this)
+            .width(10)
+            .text(Text.of(TextColors.GREEN, "+"))
+            .anchor(Anchor.BOTTOM | Anchor.LEFT)
+            .tooltip("Add New Title")
+            .listener(this)
+            .build("button.add");
 
         // Remove button
         this.buttonRemove = new UIButtonBuilder(this)
-                .width(10)
-                .x(15)
-                .text(Text.of(TextColors.RED, "-"))
-                .anchor(Anchor.BOTTOM | Anchor.LEFT)
-                .tooltip("Remove Title")
-                .listener(this)
-                .build("button.remove");
+            .width(10)
+            .x(15)
+            .text(Text.of(TextColors.RED, "-"))
+            .anchor(Anchor.BOTTOM | Anchor.LEFT)
+            .tooltip("Remove Title")
+            .listener(this)
+            .build("button.remove");
 
         // Refresh button
-        this.buttonRefresh = new UIButtonBuilder(this)
-                .width(10)
-                .x(35)
-                .text(Text.of(TextColors.WHITE, "Refresh List"))
-                .anchor(Anchor.BOTTOM | Anchor.LEFT)
-                .tooltip("Refresh Titles List")
-                .listener(this)
-                .build("button.refresh");
+        final UIButton buttonRefresh = new UIButtonBuilder(this)
+            .width(10)
+            .x(35)
+            .text(Text.of(TextColors.WHITE, "Refresh List"))
+            .anchor(Anchor.BOTTOM | Anchor.LEFT)
+            .tooltip("Refresh Titles List")
+            .listener(this)
+            .build("button.refresh");
 
         // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .text(Text.of("almura.button.close"))
-                .listener(this)
-                .build("button.close");
+            .width(40)
+            .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+            .text(Text.of("almura.button.close"))
+            .listener(this)
+            .build("button.close");
 
-        this.form.add(this.titleLabel, listArea, editArea, titleSelectionLabel, this.buttonAdd, this.buttonRemove, this.buttonRefresh, buttonClose);
+        form.add(titleLabel, listArea, editArea, titleSelectionLabel, buttonAdd, this.buttonRemove, buttonRefresh, buttonClose);
 
-        this.addToScreen(this.form);
+        this.addToScreen(form);
     }
 
     @Subscribe
@@ -395,6 +385,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
     public void onValueChange(ComponentEvent.ValueChange event) {
         switch (event.getComponent().getName()) {
             case "checkbox.hidden":
+                // TODO Finish this or delete this case
                 break;
 
             case "checkbox.formatted":
@@ -405,9 +396,8 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
-        String currentTitleContent;
-        String colorCode = this.colorSelector.getSelectedOption().getLabel().substring(0,2);
-        UITextField.CursorPosition cursorPos = this.titleContentField.getCursorPosition();
+        final String colorCode = this.colorSelector.getSelectedOption().getLabel().substring(0, 2);
+        final UITextField.CursorPosition cursorPos = this.titleContentField.getCursorPosition();
 
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.color":
@@ -452,6 +442,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 this.mode = TitleModifyType.DELETE;
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Removing selected title"), 2));
                 titleManager.deleteTitle(this.titleIdField.getText().toLowerCase().trim());
+                this.lockForm();
                 break;
 
             case "button.save":
@@ -460,33 +451,17 @@ public final class ManageTitlesGUI extends SimpleScreen {
                         notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Adding new Title"), 2));
 
                         titleManager.addTitle(this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField
-                                .getText().toLowerCase().trim(), this.titleContentField.getText().trim(), this.hiddenCheckbox.isChecked());
+                            .getText().toLowerCase().trim(), this.titleContentField.getText().trim(), this.hiddenCheckbox.isChecked());
                         break;
                     case MODIFY:
                         notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Saving Title Changes"), 2));
 
-                        titleManager.modifyTitle(this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField.getText
+                        titleManager.modifyTitle(this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(),
+                            this.permissionField.getText
                                 ().toLowerCase().trim(), this.titleContentField.getText().trim(), this.hiddenCheckbox.isChecked());
                         break;
                 }
-                this.nameField.setEditable(false);
-                this.nameField.setEnabled(false);
-                this.nameField.setText("");
-                this.permissionField.setEditable(false);
-                this.permissionField.setEnabled(false);
-                this.permissionField.setText("");
-                this.titleIdField.setEditable(false);
-                this.titleIdField.setEnabled(false);
-                this.titleIdField.setText("");
-                this.titleContentField.setEditable(false);
-                this.titleContentField.setEnabled(false);
-                this.titleContentField.setText("");
-                this.modeNameLabel.setVisible(false);
-                this.buttonColor.setEnabled(false);
-                this.colorSelector.setEnabled(false);
-                this.formattedCheckbox.setEnabled(false);
-                this.hiddenCheckbox.setEnabled(false);
-                this.buttonRemove.setEnabled(false);
+                this.lockForm();
                 break;
             case "button.close":
                 this.close();
@@ -495,27 +470,40 @@ public final class ManageTitlesGUI extends SimpleScreen {
     }
 
     private void formatContent(boolean value) {
-        String currentTitleContent = this.titleContentField.getText();
-        UITextField.CursorPosition cursorPos = this.titleContentField.getCursorPosition();
+        final String currentTitleContent = this.titleContentField.getText();
+        final UITextField.CursorPosition cursorPos = this.titleContentField.getCursorPosition();
 
         if (!value) {
             // Need to convert the content from sectional -> ampersand
-            this.titleContentField.setText(this.asUglyText(currentTitleContent));
+            this.titleContentField.setText(TextUtil.asUglyText(currentTitleContent));
         } else {
             // Need to convert the content from ampersand -> sectional
-            this.titleContentField.setText(this.asFriendlyText(currentTitleContent));
+            this.titleContentField.setText(TextUtil.asFriendlyText(currentTitleContent));
         }
 
         this.titleContentField.setCursorPosition(cursorPos.getXOffset(), cursorPos.getYOffset());
         this.titleContentField.setFocused(true);
     }
 
-    public static String asFriendlyText(final String string) {
-        return LegacyTexts.replace(string, '&', SpongeTexts.COLOR_CHAR);
-    }
-
-    public static String asUglyText(final String string) {
-        return LegacyTexts.replace(string, SpongeTexts.COLOR_CHAR, '&');
+    private void lockForm() {
+        this.nameField.setEditable(false);
+        this.nameField.setEnabled(false);
+        this.nameField.setText("");
+        this.permissionField.setEditable(false);
+        this.permissionField.setEnabled(false);
+        this.permissionField.setText("");
+        this.titleIdField.setEditable(false);
+        this.titleIdField.setEnabled(false);
+        this.titleIdField.setText("");
+        this.titleContentField.setEditable(false);
+        this.titleContentField.setEnabled(false);
+        this.titleContentField.setText("");
+        this.modeNameLabel.setVisible(false);
+        this.buttonColor.setEnabled(false);
+        this.colorSelector.setEnabled(false);
+        this.formattedCheckbox.setEnabled(false);
+        this.hiddenCheckbox.setEnabled(false);
+        this.buttonRemove.setEnabled(false);
     }
 
     @Override
@@ -534,6 +522,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
             if (this.nameField.isFocused()) {
                 this.nameField.setFocused(false);
                 this.permissionField.setFocused(true);
+                this.permissionField.setCursorPosition(this.permissionField.getContentWidth() + 1, 0);  // Set position to last character
                 return;
             }
 
@@ -541,8 +530,10 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 this.permissionField.setFocused(false);
                 if (this.titleIdField.isEnabled()) {
                     this.titleIdField.setFocused(true);
+                    this.titleIdField.setCursorPosition(0, 0);//Prevents IndexOutofBounds
                 } else {
                     this.titleContentField.setFocused(true);
+                    this.titleContentField.setCursorPosition(0, 0);
                 }
                 return;
             }
@@ -550,6 +541,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
             if (this.titleIdField.isFocused()) {
                 this.titleIdField.setFocused(false);
                 this.titleContentField.setFocused(true);
+                this.titleContentField.setCursorPosition(0, 0);
                 return;
             }
         }
@@ -583,7 +575,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
         private UIExpandingLabel titleLabel;
 
-        public TitleItemComponent(final MalisisGui gui, final Title title) {
+        TitleItemComponent(final MalisisGui gui, final Title title) {
             super(gui, title);
 
             // Set padding

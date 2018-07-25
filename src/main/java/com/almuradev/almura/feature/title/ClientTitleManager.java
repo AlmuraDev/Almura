@@ -21,14 +21,11 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -164,6 +161,7 @@ public final class ClientTitleManager implements Witness {
     }
 
     public void refreshTitles() {
-        // TODO You would only be out of date now if you manually added a title via db and a command added the title and somehow you never got the title registry packet.
+        // TODO You would only be out of date now if you manually added a title via db and a command added the title and somehow you never got the
+        // title registry packet.
     }
 }

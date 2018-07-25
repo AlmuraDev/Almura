@@ -140,7 +140,7 @@ public final class SelectTitleGUI extends SimpleScreen {
 
         this.form.add(titleLabel, listArea, playerArea, titleSelectionLabel, this.titlesSelector, buttonClose, buttonApply);
 
-        addToScreen(this.form);
+        this.addToScreen(this.form);
     }
 
     @Subscribe

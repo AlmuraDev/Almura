@@ -18,6 +18,7 @@ import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxConsumer
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.util.TextUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -226,10 +227,10 @@ public class SimplePageView extends SimpleScreen {
                 currentContent = this.contentField.getText();
                 if (showRaw) {
                     // Need to convert the content from sectional -> ampersand
-                    this.contentField.setText(Page.asUglyText(currentContent));
+                    this.contentField.setText(TextUtil.asUglyText(currentContent));
                 } else {
                     // Need to convert the content from ampersand -> sectional
-                    this.contentField.setText(Page.asFriendlyText(currentContent));
+                    this.contentField.setText(TextUtil.asFriendlyText(currentContent));
                 }
                 contentField.getScrollbar().scrollTo(scrollPos);
                 contentField.setCursorPosition(cursorPos.getXOffset(), cursorPos.getYOffset());
@@ -247,10 +248,10 @@ public class SimplePageView extends SimpleScreen {
                 currentContent = this.contentField.getText();
                 if (showRaw) {
                     // Need to convert the content from sectional -> ampersand
-                    this.contentField.setText(Page.asUglyText(currentContent));
+                    this.contentField.setText(TextUtil.asUglyText(currentContent));
                 } else {
                     // Need to convert the content from ampersand -> sectional
-                    this.contentField.setText(Page.asFriendlyText(currentContent));
+                    this.contentField.setText(TextUtil.asFriendlyText(currentContent));
                 }
                 contentField.getScrollbar().scrollTo(scrollPos);
                 contentField.setCursorPosition(cursorPos.getXOffset(), cursorPos.getYOffset());
@@ -407,7 +408,7 @@ public class SimplePageView extends SimpleScreen {
     }
 
     public void refreshPage() {
-        this.contentField.setText(Page.asFriendlyText(manager.getPage() == null ? "" : manager.getPage().getContent()));
+        this.contentField.setText(TextUtil.asFriendlyText(manager.getPage() == null ? "" : manager.getPage().getContent()));
         manager.preSnapshot = this.contentField.getText();
 
         this.updateButtons();

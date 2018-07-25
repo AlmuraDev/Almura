@@ -45,7 +45,7 @@ public class SimplePageDetails extends SimpleScreen {
 
     private UITextField textFieldIndex, textFieldName;
 
-    public SimplePageDetails(GuiScreen parent) {
+    SimplePageDetails(GuiScreen parent) {
         super(parent, true);
     }
 
@@ -100,7 +100,6 @@ public class SimplePageDetails extends SimpleScreen {
         labelCreator.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelCreator.setPosition(0, SimpleScreen.getPaddedY(this.textFieldName, padding));
 
-        // TODO: Show username in format of: Username (UUID)
         final UITextField textFieldCreator = new UITextField(this, manager.getPage().getCreator().toString());
         textFieldCreator.setAnchor(Anchor.TOP | Anchor.LEFT);
         textFieldCreator.setPosition(0, SimpleScreen.getPaddedY(labelCreator, 1));
@@ -125,7 +124,6 @@ public class SimplePageDetails extends SimpleScreen {
         labelLastModifier.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelLastModifier.setPosition(0, SimpleScreen.getPaddedY(textFieldCreated, padding));
 
-        // TODO: Show username in format of: Username (UUID)
         final UITextField textFieldLastModifier = new UITextField(this, manager.getPage().getLastModifier().toString());
         textFieldLastModifier.setAnchor(Anchor.TOP | Anchor.LEFT);
         textFieldLastModifier.setPosition(0, SimpleScreen.getPaddedY(labelLastModifier, 1));
@@ -173,34 +171,38 @@ public class SimplePageDetails extends SimpleScreen {
         addToScreen(form);
     }
 
-    private void validatePage() {
+    private boolean validatePage() {
         if (manager.getPage() == null) {
             UIMessageBox.showDialog(this,
                     I18n.format("almura.guide.dialog.error.page.title"),
                     I18n.format("almura.guide.dialog.error.page.content"),
                     MessageBoxButtons.OK);
-            close();
+            this.close();
+
+            return false;
         }
+
+        return true;
     }
 
     @Subscribe
     public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.close":
-                close();
+                this.close();
                 break;
             case "button.save":
                 final String rawIndex = textFieldIndex.getText();
                 final int index = rawIndex.isEmpty() ? 0 : Integer.valueOf(rawIndex);
 
-                this.validatePage();
+                if (this.validatePage()) {
+                    manager.getPage().setIndex(index);
+                    manager.getPage().setName(this.textFieldName.getText().trim());
+                    manager.requestSavePage();
 
-                assert manager.getPage() != null;
-                manager.getPage().setIndex(index);
-                manager.getPage().setName(this.textFieldName.getText().trim());
-                manager.requestSavePage();
+                    this.close();
+                }
 
-                close();
                 break;
         }
     }

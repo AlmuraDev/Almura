@@ -14,10 +14,10 @@ import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.almura.feature.title.Title;
+import com.almuradev.almura.feature.title.TitleGuiType;
 import com.almuradev.almura.feature.title.network.ClientboundAvailableTitlesResponsePacket;
 import com.almuradev.almura.feature.title.network.ClientboundTitleGuiResponsePacket;
 import com.almuradev.almura.feature.title.network.ServerboundTitleGuiRequestPacket;
-import com.almuradev.almura.feature.title.TitleGuiType;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.server.MinecraftServer;
@@ -60,7 +60,8 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
 
             if (message.type == TitleGuiType.MANAGE) {
                 if (!player.hasPermission(Almura.ID + ".title.manage")) {
-                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Insufficient Permissions to change Title!"),2));
+                    clientNotificationManager
+                        .queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Insufficient Permissions to change Title!"), 2));
                     return;
                 }
 
@@ -72,7 +73,8 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
                 final Set<Title> availableTitles = this.manager.getAvailableTitlesFor(player).orElse(null);
 
                 if (availableTitles == null) {
-                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("You have no Titles available at this time."),5));
+                    clientNotificationManager
+                        .queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("You have no Titles available at this time."), 5));
                     return;
                 } else {
                     this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles));
