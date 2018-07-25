@@ -10,16 +10,17 @@ package com.almuradev.almura.feature.title.client.gui;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ClientTitleManager;
-import com.almuradev.almura.feature.title.Title;
-import com.almuradev.almura.feature.title.network.ServerboundCreateTitlePacket;
-import com.almuradev.almura.feature.title.network.ServerboundSelectedTitlePacket;
 import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
@@ -33,6 +34,10 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiFunction;
+
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
@@ -40,13 +45,19 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
-    private UILabel titleLabel, titleNameLabel, permissionNodeLabel;
+    private UILabel titleLabel,  functionNameLabel, titleNameLabel, permissionNodeLabel, titleIdLabel, titleContextLabel;
     private UIFormContainer form;
-    private UITextField nameField, permissionField;
+    private UITextField nameField, permissionField, titleIdField, titleContextField;
     private UIButton buttonAdd, buttonRemove, saveChangesButton;
+    private UIDynamicList<Set> titleList = null;
+
+    //Todo: WTF.
+    //private final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> titleListFactory;
 
     private int screenWidth = 450;
     private int screenHeight = 300;
+
+    private int function = 0;
 
     @Inject private static ClientTitleManager titleManager;
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
@@ -90,6 +101,23 @@ public final class ManageTitlesGUI extends SimpleScreen {
         listArea.setTopPadding(3);
         listArea.setLeftPadding(3);
 
+        // Create left container
+        final UIContainer<?> titleContainer = new UIContainer(this, 200, UIComponent.INHERITED);
+        titleContainer.setBackgroundAlpha(0);
+        titleContainer.setPadding(4, 4);
+        titleContainer.setTopPadding(20);
+
+        this.titleList = new UIDynamicList<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
+        //this.titleList.setItemComponentFactory(this.titleListFactory);
+        this.titleList.setItemComponentSpacing(1);
+        this.titleList.setCanDeselect(true);
+        this.titleList.setName("list.left");
+        this.titleList.setItems((List)titleManager.getAvailableTitles());
+        this.titleList.register(this);
+
+        titleContainer.add(this.titleList);
+        form.add(titleContainer);
+
         // Edit Container
         final UIFormContainer editArea = new UIFormContainer(this, 220, 260, "");
         editArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
@@ -102,18 +130,28 @@ public final class ManageTitlesGUI extends SimpleScreen {
         editArea.setTopPadding(3);
         editArea.setLeftPadding(3);
 
-        this.titleNameLabel = new UILabel(this, "Title:")
+        this.functionNameLabel = new UILabel(this, "Modify Title")
+                .setFontOptions(FontOptions.builder()
+                        .from(FontColors.WHITE_FO)
+                        .shadow(true)
+                        .underline(true)
+                        .scale(1.1F)
+                        .build()
+                )
+                .setPosition(0, 05, Anchor.CENTER | Anchor.TOP);
+
+        this.titleNameLabel = new UILabel(this, "Name:")
             .setFontOptions(FontOptions.builder()
                 .from(FontColors.WHITE_FO)
                 .shadow(true)
-                .scale(1.1F)
+                .scale(1.0F)
                 .build()
             )
-            .setPosition(0, 5, Anchor.LEFT | Anchor.TOP);
+            .setPosition(0, 15, Anchor.LEFT | Anchor.TOP);
 
-        this.nameField = new UITextField(this, "Title Here", false)
+        this.nameField = new UITextField(this, "", false)
             .setSize(200, 0)
-            .setPosition(10, 20, Anchor.LEFT | Anchor.TOP)
+            .setPosition(10, 30, Anchor.LEFT | Anchor.TOP)
             .setEditable(true)
             .setFontOptions(FontOptions.builder()
                 .from(FontColors.WHITE_FO)
@@ -125,19 +163,58 @@ public final class ManageTitlesGUI extends SimpleScreen {
             .setFontOptions(FontOptions.builder()
                 .from(FontColors.WHITE_FO)
                 .shadow(true)
-                .scale(1.1F)
+                .scale(1.0F)
                 .build()
-            ).setPosition(0, 45, Anchor.LEFT | Anchor.TOP);
+            ).setPosition(0, 55, Anchor.LEFT | Anchor.TOP);
 
-        this.permissionField = new UITextField(this, "Permission Here", false)
+        this.permissionField = new UITextField(this, "", false)
             .setSize(200, 0)
-            .setPosition(10, 60, Anchor.LEFT | Anchor.TOP)
+            .setPosition(10, 70, Anchor.LEFT | Anchor.TOP)
             .setEditable(true)
             .setFontOptions(FontOptions.builder()
                 .from(FontColors.WHITE_FO)
+
                 .shadow(false)
                 .build()
             );
+
+        this.titleIdLabel = new UILabel(this, "ID:")
+                .setFontOptions(FontOptions.builder()
+                        .from(FontColors.WHITE_FO)
+                        .shadow(true)
+                        .scale(1.0F)
+                        .build()
+                ).setPosition(0, 95, Anchor.LEFT | Anchor.TOP);
+
+        this.titleIdField = new UITextField(this, "", false)
+                .setSize(200, 0)
+                .setPosition(10, 110, Anchor.LEFT | Anchor.TOP)
+                .setEditable(true)
+                .setFontOptions(FontOptions.builder()
+                        .from(FontColors.WHITE_FO)
+
+                        .shadow(false)
+                        .build()
+                );
+
+        this.titleContextLabel = new UILabel(this, "Context:")
+                .setFontOptions(FontOptions.builder()
+                        .from(FontColors.WHITE_FO)
+                        .shadow(true)
+                        .scale(1.0F)
+                        .build()
+                ).setPosition(0, 135, Anchor.LEFT | Anchor.TOP);
+
+        this.titleContextField = new UITextField(this, "", false)
+                .setSize(200, 0)
+                .setPosition(10, 150, Anchor.LEFT | Anchor.TOP)
+                .setEditable(true)
+                .setFontOptions(FontOptions.builder()
+                        .from(FontColors.WHITE_FO)
+
+                        .shadow(false)
+                        .build()
+                );
 
         // Save Changes button
         this.saveChangesButton = new UIButtonBuilder(this)
@@ -148,7 +225,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.save");
 
-        editArea.add(this.titleNameLabel, this.nameField, this.permissionNodeLabel, this.permissionField, this.saveChangesButton);
+        editArea.add(this.functionNameLabel, this.titleNameLabel, this.nameField, this.permissionNodeLabel, this.permissionField, this.titleIdLabel, this.titleIdField, this.titleContextLabel, this.titleContextField, this.saveChangesButton);
 
         final UILabel titleSelectionLabel = new UILabel(this, "Server Titles:")
             .setFontOptions(FontOptions.builder()
@@ -164,6 +241,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 .width(10)
                 .text(Text.of(TextColors.GREEN, "+"))
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
+                .tooltip("Add New Title")
                 .listener(this)
                 .build("button.add");
 
@@ -173,6 +251,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 .x(15)
                 .text(Text.of(TextColors.RED, "-"))
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
+                .tooltip("Remove Title")
                 .listener(this)
                 .build("button.remove");
 
@@ -192,12 +271,24 @@ public final class ManageTitlesGUI extends SimpleScreen {
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
-            case "button.apply":
-                notificationManager.queuePopup(new PopupNotification(Text.of("Title"), Text.of("Updating Title on server..."), 2));
-                titleManager.setTitleContentForDisplay(null);
+            case "button.add":
+                notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Adding new Title"), 2));
+                this.functionNameLabel.setText("Add New Title");
+                this.function = 2; // 0 = nothing, 1 = save changes, 2 = add new, 3 = delete
+                //network.sendToServer(new ServerboundCreateTitlePacket("test1", "Test1", "almura.title.test1", "Test 1!"));
+                //titleManager.setTitleContentForDisplay(null);
+                break;
 
-                // TODO Dockter, finish this as this is test code
-                network.sendToServer(new ServerboundCreateTitlePacket("test1", "Test1", "almura.title.test1", "Test 1!"));
+            case "button.remove":
+                notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Removing selected title"), 2));
+                this.function = 3; // 0 = nothing, 1 = save changes, 2 = add new, 3 = delete
+                break;
+
+            case "button.save":
+                notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Save title changes"), 2));
+                this.function = 1; // 0 = nothing, 1 = save changes, 2 = add new, 3 = delete
+                break;
+
             case "button.close":
                 this.close();
                 break;
