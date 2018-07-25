@@ -20,19 +20,18 @@ public final class Title implements Serializable {
 
     private final Timestamp created;
     private final UUID creator;
-    private final String id, name, permission;
+    private final String id, permission;
     private final String content;
     private final boolean isHidden;
 
     private transient final Text apiContent;
 
-    public Title(final Timestamp created, final UUID creator, final String id, final String name, final String permission, final boolean isHidden,
+    public Title(final Timestamp created, final UUID creator, final String id, final String permission, final boolean isHidden,
         final String content) {
 
         this.created = created;
         this.creator = creator;
         this.id = id;
-        this.name = name;
         this.permission = permission;
         this.isHidden = isHidden;
         this.content = content;
@@ -52,10 +51,6 @@ public final class Title implements Serializable {
         return this.id;
     }
 
-    public String getName() {
-        return this.name;
-    }
-
     public String getPermission() {
         return this.permission;
     }
@@ -73,7 +68,7 @@ public final class Title implements Serializable {
     }
 
     public Title copy() {
-        return new Title(this.created, this.creator, this.id, this.name, this.permission, this.isHidden, this.content);
+        return new Title(this.created, this.creator, this.id, this.permission, this.isHidden, this.content);
     }
 
     @Override
@@ -99,7 +94,6 @@ public final class Title implements Serializable {
             .addValue(this.id)
             .addValue(this.created)
             .addValue(this.creator)
-            .addValue(this.name)
             .addValue(this.permission)
             .addValue(this.content)
             .toString();

@@ -193,13 +193,12 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             final Timestamp created = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.CREATED);
                             final UUID creator = DatabaseUtils.fromBytes(record.getValue(com.almuradev.generated.title.tables.Title.TITLE
                                 .CREATOR));
-                            final String name = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.NAME);
                             final String permission = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.PERMISSION);
                             final boolean isHidden = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.IS_HIDDEN);
                             final String content = record.getValue(com.almuradev.generated.title.tables
                                 .Title.TITLE.CONTENT);
 
-                            titles.put(id, new Title(created, creator, id, name, permission, isHidden, content));
+                            titles.put(id, new Title(created, creator, id, permission, isHidden, content));
                         }
                     });
 
@@ -389,11 +388,10 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         }
     }
 
-    public void addTitle(final Player player, final String id, final String name, final String permission, final String content, final boolean
+    public void addTitle(final Player player, final String id, final String permission, final String content, final boolean
         isHidden) {
         checkNotNull(player);
         checkNotNull(id);
-        checkNotNull(name);
         checkNotNull(permission);
         checkNotNull(content);
 
@@ -427,7 +425,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                 .execute(() -> {
                     try (final DSLContext context = this.databaseManager.createContext(true)) {
                         final int result = TitleQueries
-                            .createInsertTitle(player.getUniqueId(), id, name, permission, content, isHidden)
+                            .createInsertTitle(player.getUniqueId(), id, permission, content, isHidden)
                             .build(context)
                             .keepStatement(false)
                             .execute();
@@ -454,11 +452,10 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         }
     }
 
-    public void modifyTitle(final Player player, final String id, final String name, final String permission, final String content, final boolean
+    public void modifyTitle(final Player player, final String id, final String permission, final String content, final boolean
         isHidden) {
         checkNotNull(player);
         checkNotNull(id);
-        checkNotNull(name);
         checkNotNull(permission);
         checkNotNull(content);
 
@@ -492,7 +489,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                 .execute(() -> {
                     try (final DSLContext context = this.databaseManager.createContext(true)) {
                         final int result = TitleQueries
-                            .createUpdateTitle(id, name, permission, content, isHidden)
+                            .createUpdateTitle(id, permission, content, isHidden)
                             .build(context)
                             .keepStatement(false)
                             .execute();

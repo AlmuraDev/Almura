@@ -356,9 +356,6 @@ public final class ManageTitlesGUI extends SimpleScreen {
     @Subscribe
     public void onUIListClickEvent(UIDynamicList.SelectEvent<Title> event) {
         if (event.getNewValue() != null) {
-            this.nameField.setText(event.getNewValue().getName());
-            this.nameField.setEditable(true);
-            this.nameField.setEnabled(true);
             this.permissionField.setText(event.getNewValue().getPermission());
             this.permissionField.setEditable(true);
             this.permissionField.setEnabled(true);
@@ -411,9 +408,6 @@ public final class ManageTitlesGUI extends SimpleScreen {
             case "button.add":
                 this.modeNameLabel.setText("Add New Title");
                 // Clear Fields & Unlock
-                this.nameField.setText("");
-                this.nameField.setEditable(true);
-                this.nameField.setEnabled(true);
                 this.titleIdField.setText("");
                 this.titleIdField.setEditable(true);
                 this.titleIdField.setEnabled(true);
@@ -432,12 +426,6 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 this.modeNameLabel.setVisible(true);
                 this.buttonRemove.setEnabled(false);
                 break;
-
-            case "button.refresh":
-                notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Refreshing Titles List..."), 2));
-                titleManager.refreshTitles();
-                break;
-
             case "button.remove":
                 this.mode = TitleModifyType.DELETE;
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Removing selected title"), 2));
@@ -450,15 +438,12 @@ public final class ManageTitlesGUI extends SimpleScreen {
                     case ADD:
                         notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Adding new Title"), 2));
 
-                        titleManager.addTitle(this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField
-                            .getText().toLowerCase().trim(), this.titleContentField.getText().trim(), this.hiddenCheckbox.isChecked());
+                        titleManager.addTitle(this.titleIdField.getText().toLowerCase().trim(), this.permissionField.getText().toLowerCase().trim(), this.titleContentField.getText().trim(), this.hiddenCheckbox.isChecked());
                         break;
                     case MODIFY:
                         notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Saving Title Changes"), 2));
 
-                        titleManager.modifyTitle(this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(),
-                            this.permissionField.getText
-                                ().toLowerCase().trim(), this.titleContentField.getText().trim(), this.hiddenCheckbox.isChecked());
+                        titleManager.modifyTitle(this.titleIdField.getText().toLowerCase().trim(), this.permissionField.getText().toLowerCase().trim(), this.titleContentField.getText().trim(), this.hiddenCheckbox.isChecked());
                         break;
                 }
                 this.lockForm();
@@ -486,9 +471,6 @@ public final class ManageTitlesGUI extends SimpleScreen {
     }
 
     private void lockForm() {
-        this.nameField.setEditable(false);
-        this.nameField.setEnabled(false);
-        this.nameField.setText("");
         this.permissionField.setEditable(false);
         this.permissionField.setEnabled(false);
         this.permissionField.setText("");

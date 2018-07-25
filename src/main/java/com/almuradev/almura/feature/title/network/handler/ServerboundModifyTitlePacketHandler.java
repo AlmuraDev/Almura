@@ -42,10 +42,10 @@ public final class ServerboundModifyTitlePacketHandler implements MessageHandler
 
             switch (message.type) {
                 case ADD:
-                    this.manager.addTitle(player, message.id, message.name, message.permission, message.content, message.isHidden);
+                    this.manager.addTitle(player, message.id, message.permission, message.content, message.isHidden);
                     break;
                 case MODIFY:
-                    this.manager.modifyTitle(player, message.id, message.name, message.permission, message.content, message.isHidden);
+                    this.manager.modifyTitle(player, message.id, message.permission, message.content, message.isHidden);
                     break;
                 case DELETE:
                     this.manager.deleteTitle(player, message.id);

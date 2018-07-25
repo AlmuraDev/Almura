@@ -136,32 +136,25 @@ public final class ClientTitleManager implements Witness {
         this.titleContentForDisplay = titleContentForDisplay;
     }
 
-    public void addTitle(final String id, final String name, final String permission, final String content, final boolean isHidden) {
+    public void addTitle(final String id, final String permission, final String content, final boolean isHidden) {
         checkNotNull(id);
-        checkNotNull(name);
         checkNotNull(permission);
         checkNotNull(content);
 
-        this.network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.ADD, id, name, permission, content, isHidden));
+        this.network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.ADD, id, permission, content, isHidden));
     }
 
-    public void modifyTitle(final String id, final String name, final String permission, final String content, final boolean isHidden) {
+    public void modifyTitle(final String id, final String permission, final String content, final boolean isHidden) {
         checkNotNull(id);
-        checkNotNull(name);
         checkNotNull(permission);
         checkNotNull(content);
 
-        this.network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.MODIFY, id, name, permission, content, isHidden));
+        this.network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.MODIFY, id, permission, content, isHidden));
     }
 
     public void deleteTitle(final String id) {
         checkNotNull(id);
 
         this.network.sendToServer(new ServerboundModifyTitlePacket(id));
-    }
-
-    public void refreshTitles() {
-        // TODO You would only be out of date now if you manually added a title via db and a command added the title and somehow you never got the
-        // title registry packet.
     }
 }

@@ -4,7 +4,6 @@ create table if not exists "title"
   "created"    timestamp    default current_timestamp not null,
   "creator"    binary(16)   not null,
   "id"         varchar(255) primary key,
-  "name"       varchar(255) not null,
   "permission" varchar(255) not null,
   "content"    varchar(255) not null,
   "is_hidden"  bit          default 0 not null
