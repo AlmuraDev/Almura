@@ -36,6 +36,7 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Scheduler;
+import org.spongepowered.api.text.Text;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -58,7 +59,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
     private final Scheduler scheduler;
     private final Logger logger;
     private final ChannelBinding.IndexedMessageChannel network;
-    private final ServerNotificationManager notificationManager;
+    private final ServerNotificationManager serverNotificationManager;
     private final DatabaseManager databaseManager;
 
     private final Map<String, Title> titles = new HashMap<>();
@@ -67,13 +68,13 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
     @Inject
     public ServerTitleManager(final PluginContainer container, final Scheduler scheduler, final Logger logger,
-        @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final ServerNotificationManager notificationManager,
+        @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final ServerNotificationManager serverNotificationManager,
         final DatabaseManager databaseManager) {
         this.container = container;
         this.scheduler = scheduler;
         this.logger = logger;
         this.network = network;
-        this.notificationManager = notificationManager;
+        this.serverNotificationManager = serverNotificationManager;
         this.databaseManager = databaseManager;
     }
 
@@ -379,12 +380,12 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         checkNotNull(content);
 
         if (!player.hasPermission(Almura.ID + ".title.create")) {
-            // TODO Dockter, handle this
+            serverNotificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("Insufficient Permission!, Title addition failed."),5);
             return;
         }
 
         if (this.getTitle(id).isPresent()) {
-            // TODO Dockter, we're in a desync...either send them a notification that title insertion failed as it already exists or remove this TODO
+            serverNotificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("This Title already exists!"),5);
 
             this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
                     this.titles
@@ -409,8 +410,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
                         if (result == 0) {
                             runnable = () -> {
-                                // TODO Dockter, send a notification down to the player that insertion failed
-                                System.err.println("Insertion failed!");
+                                serverNotificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("Thread execution to add Title to database Failed!"),5);
                             };
                         } else {
                             runnable = this::loadTitles;

@@ -184,16 +184,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        // Apply button
-        final UIButton buttonApply = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .position(-40, 0)
-                .text(Text.of("almura.button.apply"))
-                .listener(this)
-                .build("button.apply");
-
-        this.form.add(this.titleLabel, listArea, editArea, titleSelectionLabel, this.buttonAdd, this.buttonRemove, buttonClose, buttonApply);
+        this.form.add(this.titleLabel, listArea, editArea, titleSelectionLabel, this.buttonAdd, this.buttonRemove, buttonClose);
 
         this.addToScreen(this.form);
     }

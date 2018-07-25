@@ -9,7 +9,11 @@ package com.almuradev.almura.feature.title.network.handler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import ca.weblite.objc.Client;
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.notification.ClientNotificationManager;
+import com.almuradev.almura.feature.notification.ServerNotificationManager;
+import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.almura.feature.title.Title;
 import com.almuradev.almura.feature.title.network.ClientboundAvailableTitlesResponsePacket;
@@ -27,6 +31,7 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.PlayerConnection;
 import org.spongepowered.api.network.RemoteConnection;
+import org.spongepowered.api.text.Text;
 
 import java.util.Set;
 
@@ -36,12 +41,14 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
 
     private final ServerTitleManager manager;
     private final ChannelBinding.IndexedMessageChannel network;
+    private final ClientNotificationManager clientNotificationManager;
 
     @Inject
     public ServerboundTitleGuiRequestPacketHandler(final ServerTitleManager manager, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
-        .IndexedMessageChannel network) {
+        .IndexedMessageChannel network, final ClientNotificationManager clientNotificationManager) {
         this.manager = manager;
         this.network = network;
+        this.clientNotificationManager = clientNotificationManager;
     }
 
     @Override
@@ -55,7 +62,7 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
 
             if (message.type == TitleGuiType.MANAGE) {
                 if (!player.hasPermission(Almura.ID + ".title.manage")) {
-                    // TODO Dockter Tell the player they have no permission to manage titles
+                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Insufficient Permissions to change Title!"),2));
                     return;
                 }
 
@@ -63,7 +70,7 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
                 final Set<Title> availableTitles = this.manager.getAvailableTitlesFor(player).orElse(null);
 
                 if (availableTitles == null) {
-                    // TODO Dockter Tell the player they have no available titles :'(
+                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("You have no Titles available at this time."),5));
                     return;
                 } else {
                     this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles));
