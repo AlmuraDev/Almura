@@ -64,6 +64,10 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
                     return;
                 }
 
+                // TODO Remove me, test code
+                this.manager.getAvailableTitlesFor(player)
+                    .ifPresent(availableTitles -> this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
+
             } else if (message.type == TitleGuiType.SELECT) {
                 final Set<Title> availableTitles = this.manager.getAvailableTitlesFor(player).orElse(null);
 

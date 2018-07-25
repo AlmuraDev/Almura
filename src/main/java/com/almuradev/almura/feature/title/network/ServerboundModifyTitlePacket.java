@@ -26,7 +26,7 @@ public final class ServerboundModifyTitlePacket implements Message {
     }
 
     public ServerboundModifyTitlePacket(final TitleModifyType type, final String id, @Nullable final String name, @Nullable final String
-        permission, @Nullable final String content) {
+        permission, @Nullable final String content, final boolean isHidden) {
         checkNotNull(type);
         checkNotNull(id);
 
@@ -41,11 +41,11 @@ public final class ServerboundModifyTitlePacket implements Message {
         this.name = name;
         this.permission = permission;
         this.content = content;
+        this.isHidden = isHidden;
     }
 
-    public ServerboundModifyTitlePacket(final String id, final boolean isHidden) {
-        this(TitleModifyType.DELETE, id, null, null, null);
-        this.isHidden = isHidden;
+    public ServerboundModifyTitlePacket(final String id) {
+        this(TitleModifyType.DELETE, id, null, null, null, false);
     }
 
     @Override
@@ -57,7 +57,6 @@ public final class ServerboundModifyTitlePacket implements Message {
             this.name = buf.readString();
             this.permission = buf.readString();
             this.content = buf.readString();
-        } else if (this.type == TitleModifyType.DELETE) {
             this.isHidden = buf.readBoolean();
         }
     }
@@ -80,7 +79,6 @@ public final class ServerboundModifyTitlePacket implements Message {
             buf.writeString(this.name);
             buf.writeString(this.permission);
             buf.writeString(this.content);
-        } else if (this.type == TitleModifyType.DELETE) {
             buf.writeBoolean(this.isHidden);
         }
     }

@@ -9,6 +9,8 @@ package com.almuradev.almura.feature.permission;
 
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.title.ServerTitleManager;
+import com.almuradev.almura.feature.title.network.ClientboundAvailableTitlesResponsePacket;
+import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
 import me.lucko.luckperms.api.LuckPermsApi;
@@ -24,6 +26,8 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
+import org.spongepowered.api.network.ChannelBinding;
+import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
@@ -36,6 +40,7 @@ public final class PermissionsManager implements Witness {
 
     private static final String LUCK_PERMS_DEFAULT_GROUP = "default";
 
+    private final ChannelBinding.IndexedMessageChannel network;
     private final CommandManager commandManager;
     private final ServerNotificationManager notificationManager;
     private final ServerTitleManager titleManager;
@@ -44,8 +49,9 @@ public final class PermissionsManager implements Witness {
     private NucleusNicknameService nickApi;
 
     @Inject
-    public PermissionsManager(final CommandManager commandManager, final ServerNotificationManager notificationManager, final ServerTitleManager
-        titleManager) {
+    public PermissionsManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final CommandManager
+        commandManager, final ServerNotificationManager notificationManager, final ServerTitleManager titleManager) {
+        this.network = network;
         this.commandManager = commandManager;
         this.notificationManager = notificationManager;
         this.titleManager = titleManager;
@@ -100,6 +106,7 @@ public final class PermissionsManager implements Witness {
                     }
 
                     this.titleManager.calculateAvailableTitlesFor(target);
+
                     this.titleManager.verifySelectedTitle(target, null);
                 }
             });

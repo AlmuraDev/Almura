@@ -94,20 +94,6 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         // Clear everything out for joining player
         this.selectedTitles.remove(player.getUniqueId());
 
-        // Send available titles to joiing player, send as delayed here in order to prevent race condition.
-        // Todo: Zidane; why is a race condition of this.getAvailableTitlesFor() return null if not ran within scheduled task at this point.
-        this.scheduler
-                .createTaskBuilder()
-                .delayTicks(5)
-                .execute(() -> {
-                    final Set<Title> availableTitles = this.getAvailableTitlesFor(player).orElse(null);
-                    if (availableTitles != null) {
-                        this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles));
-                    }
-                })
-                .submit(this.container);
-
-
         // Send titles to joiner
         this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
                         this.titles
@@ -307,6 +293,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                                     TitleQueries
                                             .createDeleteSelectedTitleFor(player.getUniqueId())
                                             .build(context)
+                                            .keepStatement(false)
                                             .execute();
                                 } catch (SQLException e) {
                                     e.printStackTrace();
@@ -350,17 +337,20 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                                         TitleQueries
                                                 .createDeleteSelectedTitleFor(player.getUniqueId())
                                                 .build(context)
+                                                .keepStatement(false)
                                                 .execute();
 
                                         TitleQueries
                                                 .createInsertSelectedTitleHistoryFor(player.getUniqueId(), previousTitle.getId())
                                                 .build(context)
+                                                .keepStatement(false)
                                                 .execute();
                                     }
 
                                     TitleQueries
                                             .createInsertSelectedTitleFor(player.getUniqueId(), titleId)
                                             .build(context)
+                                            .keepStatement(false)
                                             .execute();
                                 } catch (SQLException e) {
                                     e.printStackTrace();
@@ -381,6 +371,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                                     TitleQueries
                                             .createDeleteSelectedTitleFor(player.getUniqueId())
                                             .build(context)
+                                            .keepStatement(false)
                                             .execute();
                                 } catch (SQLException e) {
                                     e.printStackTrace();
@@ -391,7 +382,8 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         }
     }
 
-    public void addTitle(final Player player, final String id, final String name, final String permission, final String content) {
+    public void addTitle(final Player player, final String id, final String name, final String permission, final String content, final boolean
+        isHidden) {
         checkNotNull(player);
         checkNotNull(id);
         checkNotNull(name);
@@ -421,7 +413,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                     .execute(() -> {
                         try (final DSLContext context = this.databaseManager.createContext(true)) {
                             final int result = TitleQueries
-                                    .createInsertTitle(player.getUniqueId(), id, name, permission, content)
+                                    .createInsertTitle(player.getUniqueId(), id, name, permission, content, isHidden)
                                     .build(context)
                                     .keepStatement(false)
                                     .execute();
@@ -448,7 +440,8 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         }
     }
 
-    public void modifyTitle(final Player player, final String id, final String name, final String permission, final String content) {
+    public void modifyTitle(final Player player, final String id, final String name, final String permission, final String content, final boolean
+        isHidden) {
         checkNotNull(player);
         checkNotNull(id);
         checkNotNull(name);
@@ -479,8 +472,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                     .execute(() -> {
                         try (final DSLContext context = this.databaseManager.createContext(true)) {
                             final int result = TitleQueries
-                                    //TODO: Zidane, this should take into consideration isHidden since there is no real "delete".
-                                    .createUpdateTitle(id, name, permission, content)
+                                    .createUpdateTitle(id, name, permission, content, isHidden)
                                     .build(context)
                                     .keepStatement(false)
                                     .execute();
@@ -507,12 +499,12 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                     .submit(this.container);
         }
     }
-    public void setTitleVisibility(final Player player, final String id, final boolean isHidden) {
+    public void deleteTitle(final Player player, final String id) {
         checkNotNull(player);
         checkNotNull(id);
 
         if (!this.getTitle(id).isPresent()) {
-            // TODO Dockter, we're in a desync...either send them a notification that title visibility changing failed as it doesn't exist or remove this TODO
+            // TODO Dockter, we're in a desync...either send them a notification that title deletion failed as it doesn't exist or remove this TODO
             this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
                             this.titles
                                     .values()
@@ -528,7 +520,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                     .execute(() -> {
                         try (final DSLContext context = this.databaseManager.createContext(true)) {
                             final int result = TitleQueries
-                                    .createSetTitleHidden(id, isHidden)
+                                    .createDeleteTitle(id)
                                     .build(context)
                                     .keepStatement(false)
                                     .execute();
@@ -538,7 +530,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             if (result == 0) {
                                 runnable = () -> {
                                     // TODO Dockter, send a notification down to the player that changing title visibility failed
-                                    System.err.println("Modify failed!");
+                                    System.err.println("Deletion failed!");
                                 };
                             } else {
                                 runnable = this::loadTitles;

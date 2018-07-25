@@ -19,8 +19,7 @@ import com.almuradev.generated.title.tables.records.TitleSelectHistoryRecord;
 import com.almuradev.generated.title.tables.records.TitleSelectRecord;
 import org.jooq.DeleteConditionStep;
 import org.jooq.InsertValuesStep2;
-import org.jooq.InsertValuesStep3;
-import org.jooq.InsertValuesStep5;
+import org.jooq.InsertValuesStep6;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectWhereStep;
 import org.jooq.UpdateConditionStep;
@@ -37,8 +36,8 @@ public final class TitleQueries {
         return context -> context.selectFrom(TITLE);
     }
 
-    public static DatabaseQuery<InsertValuesStep5<TitleRecord, byte[], String, String, String, String>> createInsertTitle(final UUID creator,
-        final String id, final String name, final String permission, final String content) {
+    public static DatabaseQuery<InsertValuesStep6<TitleRecord, byte[], String, String, String, String, Boolean>> createInsertTitle(final UUID creator,
+        final String id, final String name, final String permission, final String content, final boolean isHidden) {
         checkNotNull(creator);
         checkNotNull(id);
         checkNotNull(name);
@@ -48,21 +47,12 @@ public final class TitleQueries {
         final byte[] creatorData = DatabaseUtils.toBytes(creator);
 
         return context -> context
-            .insertInto(TITLE, TITLE.CREATOR, TITLE.ID, TITLE.NAME, TITLE.PERMISSION, TITLE.CONTENT)
-            .values(creatorData, id, name, permission, content);
-    }
-
-    public static DatabaseQuery<UpdateConditionStep<TitleRecord>> createSetTitleHidden(final String id, final boolean isHidden) {
-        checkNotNull(id);
-
-        return context -> context
-            .update(TITLE)
-            .set(TITLE.IS_HIDDEN, isHidden)
-            .where(TITLE.ID.eq(id));
+            .insertInto(TITLE, TITLE.CREATOR, TITLE.ID, TITLE.NAME, TITLE.PERMISSION, TITLE.CONTENT, TITLE.IS_HIDDEN)
+            .values(creatorData, id, name, permission, content, isHidden);
     }
 
     public static DatabaseQuery<UpdateConditionStep<TitleRecord>> createUpdateTitle(final String id, final String name, final String permission,
-        final String content) {
+        final String content, final boolean isHidden) {
         checkNotNull(id);
         checkNotNull(name);
         checkNotNull(permission);
@@ -73,7 +63,14 @@ public final class TitleQueries {
             .set(TITLE.NAME, name)
             .set(TITLE.PERMISSION, permission)
             .set(TITLE.CONTENT, content)
+            .set(TITLE.IS_HIDDEN, isHidden)
             .where(TITLE.ID.eq(id));
+    }
+
+    public static DatabaseQuery<DeleteConditionStep<TitleRecord>> createDeleteTitle(final String id) {
+        checkNotNull(id);
+
+        return context -> context.deleteFrom(TITLE).where(TITLE.ID.eq(id));
     }
 
     /**

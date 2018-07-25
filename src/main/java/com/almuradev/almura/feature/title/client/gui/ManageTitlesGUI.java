@@ -7,27 +7,17 @@
  */
 package com.almuradev.almura.feature.title.client.gui;
 
-import com.almuradev.almura.feature.guide.client.gui.SimpleConfirmRemove;
-import com.almuradev.almura.feature.guide.client.gui.SimplePageCreate;
-import com.almuradev.almura.feature.guide.client.gui.SimplePageDetails;
-import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.almuradev.almura.feature.title.Title;
 import com.almuradev.almura.feature.title.TitleModifyType;
-import com.almuradev.almura.feature.title.network.ServerboundAvailableTitlesRequestPacket;
-import com.almuradev.almura.feature.title.network.ServerboundModifyTitlePacket;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxConsumer;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
-import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.collect.Lists;
@@ -42,8 +32,6 @@ import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -56,16 +44,19 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
 public final class ManageTitlesGUI extends SimpleScreen {
+
+    @Inject private static ClientTitleManager titleManager;
+    @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
+    @Inject private static ClientNotificationManager notificationManager;
+    @Inject private static PluginContainer container;
 
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
@@ -83,12 +74,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
     private int screenWidth = 450;
     private int screenHeight = 300;
 
-    private int function = 1;
-
-    @Inject private static ClientTitleManager titleManager;
-    @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
-    @Inject private static ClientNotificationManager notificationManager;
-    @Inject private static PluginContainer container;
+    private TitleModifyType mode;
 
     @Override
     public void construct() {
@@ -137,10 +123,8 @@ public final class ManageTitlesGUI extends SimpleScreen {
         titleContainer.setTopPadding(20);
 
         this.masterTitleList = Lists.newArrayList(titleManager.getTitles());
-        List<Title> playerTitlesList = Lists.newArrayList(titleManager.getAvailableTitles());
 
         System.out.println("All Titles: " + masterTitleList.size());
-        System.out.println("Player Titles: " + playerTitlesList.size());
 
         this.titleList = new UIDynamicList<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
         this.titleList.setItemComponentFactory(TitleItemComponent::new);
@@ -322,7 +306,6 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
     @Subscribe
     public void onValueChange(ComponentEvent.ValueChange event) {
-
         switch (event.getComponent().getName()) {
             case "checkbox.hidden":
                 break;
@@ -331,17 +314,17 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
     @Subscribe
     public void onUIListClickEvent(UIDynamicList.SelectEvent<Title> event) {
-        this.nameField.setText(((Title)event.getNewValue()).getName());
+        this.nameField.setText(event.getNewValue().getName());
         this.nameField.setEditable(false);
-        this.permissionField.setText(((Title)event.getNewValue()).getPermission());
+        this.permissionField.setText(event.getNewValue().getPermission());
         this.permissionField.setEditable(true);
-        this.titleIdField.setText(((Title)event.getNewValue()).getId());
+        this.titleIdField.setText(event.getNewValue().getId());
         this.titleIdField.setEditable(false);
-        this.titleContextField.setText(((Title)event.getNewValue()).getContent());
+        this.titleContextField.setText(event.getNewValue().getContent());
         this.titleContextField.setEditable(true);
         this.functionNameLabel.setText("Modify Title");
-        this.hiddenCheckbox.setChecked(((Title)event.getNewValue()).isHidden());
-        this.function = 1;
+        this.hiddenCheckbox.setChecked(event.getNewValue().isHidden());
+        this.mode = TitleModifyType.MODIFY;
     }
 
     @Subscribe
@@ -358,53 +341,38 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 this.permissionField.setEditable(true);
                 this.titleContextField.setText("");
                 this.titleContextField.setEditable(true);
-                this.function = 2; // 0 = nothing, 1 = save changes, 2 = add new, 3 = delete
-
-                //titleManager.setTitleContentForDisplay(null);
+                this.mode = TitleModifyType.ADD;
                 break;
-
             case "button.refresh":
-                List<Title> titleList = Lists.newArrayList(titleManager.getTitles());
+                final List<Title> titleList = Lists.newArrayList(titleManager.getTitles());
                 this.titleList.setItems(titleList);
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Refreshing Titles List..."), 2));
                 break;
+            case "button.remove":
+                this.mode = TitleModifyType.DELETE;
 
-
-                case "button.remove":
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Removing selected title"), 2));
-                this.function = 3; // 0 = nothing, 1 = save changes, 2 = add new, 3 = delete
-                network.sendToServer(new ServerboundModifyTitlePacket(this.titleIdField.getText().toLowerCase().trim(), this.hiddenCheckbox.isChecked()));
-
+                titleManager.deleteTitle(this.titleIdField.getText().toLowerCase().trim());
                 break;
-
             case "button.save":
-                if (this.function == 1) {
-                    notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Saving Title Changes"), 2));
+                switch (this.mode) {
+                    case ADD:
+                        notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Adding new Title"), 2));
 
-                    network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.MODIFY, this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField.getText().toLowerCase().trim(), this
-                            .titleContextField.getText()
-                            .trim()));
-                    network.sendToServer(new ServerboundModifyTitlePacket(this.titleIdField.getText().toLowerCase().trim(), this.hiddenCheckbox.isChecked()));
-                    Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("refreshList")).submit(container);
+                        titleManager.addTitle(this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField
+                            .getText().toLowerCase().trim(), this.titleContextField.getText().trim(), this.hiddenCheckbox.isChecked());
+
+                        Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("refreshList")).submit(container);
+                        break;
+                    case MODIFY:
+                        notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Saving Title Changes"), 2));
+
+                        titleManager.modifyTitle(this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField.getText
+                            ().toLowerCase().trim(), this.titleContextField.getText().trim(), this.hiddenCheckbox.isChecked());
+
+                        Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("refreshList")).submit(container);
+                        break;
                 }
-
-                if (this.function == 2) {
-                    notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Adding new Title"), 2));
-                    //TODO: Zidane, shouldn't need to do this, one packet should do both things...
-                    network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.ADD, this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField.getText().toLowerCase().trim(), this.titleContextField.getText()
-                            .trim()));
-                    //ToDO: Zidane,  this double call back to back seems to cause the DB connection to go to crap, all future connections die.
-                    network.sendToServer(new ServerboundModifyTitlePacket(this.titleIdField.getText().toLowerCase().trim(), this.hiddenCheckbox.isChecked()));
-                    Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("refreshList")).submit(container);
-                }
-
-                //notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Save title changes"), 2));
-                //network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.MODIFY, this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField.getText().toLowerCase().trim(), this
-                //    .titleContextField
-                //        .getText()
-                //        .trim()));
-
-                this.function = 1; // 0 = nothing, 1 = save changes, 2 = add new, 3 = delete
                 break;
             case "button.close":
                 this.close();

@@ -128,27 +128,27 @@ public final class ClientTitleManager implements Witness {
         this.titleContentForDisplay = titleContentForDisplay;
     }
 
-    public void addTitle(final String id, final String name, final String permission, final String content) {
+    public void addTitle(final String id, final String name, final String permission, final String content, final boolean isHidden) {
         checkNotNull(id);
         checkNotNull(name);
         checkNotNull(permission);
         checkNotNull(content);
 
-        this.network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.ADD, id, name, permission, content));
+        this.network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.ADD, id, name, permission, content, isHidden));
     }
 
-    public void modifyTitle(final String id, final String name, final String permission, final String content) {
+    public void modifyTitle(final String id, final String name, final String permission, final String content, final boolean isHidden) {
         checkNotNull(id);
         checkNotNull(name);
         checkNotNull(permission);
         checkNotNull(content);
 
-        this.network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.MODIFY, id, name, permission, content));
+        this.network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.MODIFY, id, name, permission, content, isHidden));
     }
 
-    public void setTitleVisibility(final String id, final boolean isHidden) {
+    public void deleteTitle(final String id) {
         checkNotNull(id);
 
-        this.network.sendToServer(new ServerboundModifyTitlePacket(id, isHidden));
+        this.network.sendToServer(new ServerboundModifyTitlePacket(id));
     }
 }
