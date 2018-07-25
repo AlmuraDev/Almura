@@ -99,7 +99,13 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                         this.titles
                                 .values()
                                 .stream()
-                                .filter(title -> !title.isHidden())
+                                .filter(title -> {
+                                    if (!title.isHidden()) {
+                                        return true;
+                                    }
+
+                                    return player.hasPermission(Almura.ID + ".title.admin");
+                                })
                                 .collect(Collectors.toSet())
                 )
         );
@@ -402,7 +408,13 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             this.titles
                                     .values()
                                     .stream()
-                                    .filter(title -> !title.isHidden())
+                                    .filter(title -> {
+                                        if (!title.isHidden()) {
+                                            return true;
+                                        }
+
+                                        return player.hasPermission(Almura.ID + ".title.admin");
+                                    })
                                     .collect(Collectors.toSet())
                     )
             );
@@ -421,9 +433,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             final Runnable runnable;
 
                             if (result == 0) {
-                                runnable = () -> {
-                                    serverNotificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("Thread execution to add Title to database Failed!"),5);
-                                };
+                                runnable = () -> serverNotificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("Thread execution to add Title to database Failed!"),5);
                             } else {
                                 runnable = this::loadTitles;
                             }
@@ -462,7 +472,13 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             this.titles
                                     .values()
                                     .stream()
-                                    .filter(t -> !t.isHidden())
+                                    .filter(t -> {
+                                        if (!t.isHidden()) {
+                                            return true;
+                                        }
+
+                                        return player.hasPermission(Almura.ID + ".title.admin");
+                                    })
                                     .collect(Collectors.toSet())
                     )
             );
@@ -509,7 +525,13 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             this.titles
                                     .values()
                                     .stream()
-                                    .filter(title -> !title.isHidden())
+                                    .filter(title -> {
+                                        if (!title.isHidden()) {
+                                            return true;
+                                        }
+
+                                        return player.hasPermission(Almura.ID + ".title.admin");
+                                    })
                                     .collect(Collectors.toSet())
                     )
             );
