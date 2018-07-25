@@ -14,7 +14,7 @@ import com.almuradev.almura.feature.title.network.ClientboundSelectedTitlePacket
 import com.almuradev.almura.feature.title.network.ClientboundSelectedTitleBulkPacket;
 import com.almuradev.almura.feature.title.network.ClientboundTitleGuiResponsePacket;
 import com.almuradev.almura.feature.title.network.ClientboundTitlesRegistryPacket;
-import com.almuradev.almura.feature.title.network.ServerboundCreateTitlePacket;
+import com.almuradev.almura.feature.title.network.ServerboundModifyTitlePacket;
 import com.almuradev.almura.feature.title.network.ServerboundSelectedTitlePacket;
 import com.almuradev.almura.feature.title.network.ServerboundAvailableTitlesRequestPacket;
 import com.almuradev.almura.feature.title.network.ServerboundTitleGuiRequestPacket;
@@ -24,7 +24,7 @@ import com.almuradev.almura.feature.title.network.handler.ClientboundSelectedTit
 import com.almuradev.almura.feature.title.network.handler.ClientboundTitleGuiResponsePacketHandler;
 import com.almuradev.almura.feature.title.network.handler.ClientboundTitlesRegistryPacketHandler;
 import com.almuradev.almura.feature.title.network.handler.ServerboundAvailableTitlesRequestPacketHandler;
-import com.almuradev.almura.feature.title.network.handler.ServerboundCreateTitlePacketHandler;
+import com.almuradev.almura.feature.title.network.handler.ServerboundModifyTitlePacketHandler;
 import com.almuradev.almura.feature.title.network.handler.ServerboundSelectedTitlePacketHandler;
 import com.almuradev.almura.feature.title.network.handler.ServerboundTitleGuiRequestPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
@@ -47,8 +47,8 @@ public final class TitleModule extends AbstractModule implements CommonBinder {
             .bind(ClientboundTitleGuiResponsePacket.class,
                 binder -> binder.handler(ClientboundTitleGuiResponsePacketHandler.class, Platform.Type.CLIENT))
 
-            .bind(ServerboundCreateTitlePacket.class,
-                binder -> binder.handler(ServerboundCreateTitlePacketHandler.class, Platform.Type.SERVER))
+            .bind(ServerboundModifyTitlePacket.class,
+                binder -> binder.handler(ServerboundModifyTitlePacketHandler.class, Platform.Type.SERVER))
 
             .bind(ClientboundSelectedTitlePacket.class,
                 binder -> binder.handler(ClientboundSelectedTitlePacketHandler.class, Platform.Type.CLIENT))

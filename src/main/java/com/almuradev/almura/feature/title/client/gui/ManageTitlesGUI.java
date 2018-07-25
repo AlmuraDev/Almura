@@ -10,6 +10,9 @@ package com.almuradev.almura.feature.title.client.gui;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.almuradev.almura.feature.title.TitleModifyType;
+import com.almuradev.almura.feature.title.network.ServerboundAvailableTitlesRequestPacket;
+import com.almuradev.almura.feature.title.network.ServerboundModifyTitlePacket;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
@@ -17,9 +20,9 @@ import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -36,7 +39,6 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 import javax.inject.Inject;
 
@@ -57,7 +59,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
     private int screenWidth = 450;
     private int screenHeight = 300;
 
-    private int function = 0;
+    private int function = 1;
 
     @Inject private static ClientTitleManager titleManager;
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
@@ -67,6 +69,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
     public void construct() {
         this.guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
+
 
         // Master Pane
         this.form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
@@ -104,19 +107,26 @@ public final class ManageTitlesGUI extends SimpleScreen {
         // Create left container
         final UIContainer<?> titleContainer = new UIContainer(this, 200, UIComponent.INHERITED);
         titleContainer.setBackgroundAlpha(0);
+        titleContainer.setPosition(0,0, Anchor.CENTER | Anchor.TOP);
         titleContainer.setPadding(4, 4);
         titleContainer.setTopPadding(20);
+
+        List titleList = Lists.newArrayList(titleManager.getTitles());
+        List playerTitlesList = Lists.newArrayList(titleManager.getAvailableTitles());
+
+        System.out.println("All Titles: " + titleList.size());
+        System.out.println("Player Titles: " + playerTitlesList.size());
 
         this.titleList = new UIDynamicList<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
         //this.titleList.setItemComponentFactory(this.titleListFactory);
         this.titleList.setItemComponentSpacing(1);
         this.titleList.setCanDeselect(true);
         this.titleList.setName("list.left");
-        this.titleList.setItems((List)titleManager.getAvailableTitles());
+        this.titleList.setItems(titleList);
         this.titleList.register(this);
 
         titleContainer.add(this.titleList);
-        form.add(titleContainer);
+        listArea.add(titleContainer);
 
         // Edit Container
         final UIFormContainer editArea = new UIFormContainer(this, 220, 260, "");
@@ -152,7 +162,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.nameField = new UITextField(this, "", false)
             .setSize(200, 0)
             .setPosition(10, 30, Anchor.LEFT | Anchor.TOP)
-            .setEditable(true)
+            .setEditable(false)
             .setFontOptions(FontOptions.builder()
                 .from(FontColors.WHITE_FO)
                 .shadow(false)
@@ -170,10 +180,9 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.permissionField = new UITextField(this, "", false)
             .setSize(200, 0)
             .setPosition(10, 70, Anchor.LEFT | Anchor.TOP)
-            .setEditable(true)
+            .setEditable(false)
             .setFontOptions(FontOptions.builder()
                 .from(FontColors.WHITE_FO)
-
                 .shadow(false)
                 .build()
             );
@@ -189,10 +198,9 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.titleIdField = new UITextField(this, "", false)
                 .setSize(200, 0)
                 .setPosition(10, 110, Anchor.LEFT | Anchor.TOP)
-                .setEditable(true)
+                .setEditable(false)
                 .setFontOptions(FontOptions.builder()
                         .from(FontColors.WHITE_FO)
-
                         .shadow(false)
                         .build()
                 );
@@ -272,10 +280,18 @@ public final class ManageTitlesGUI extends SimpleScreen {
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.add":
-                notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Adding new Title"), 2));
                 this.functionNameLabel.setText("Add New Title");
+                // Clear Fields & Unlock
+                this.nameField.setText("");
+                this.nameField.setEditable(true);
+                this.titleIdField.setText("");
+                this.titleIdField.setEditable(true);
+                this.permissionField.setText("");
+                this.permissionField.setEditable(true);
+                this.titleContextField.setText("");
+                this.titleContextField.setEditable(true);
                 this.function = 2; // 0 = nothing, 1 = save changes, 2 = add new, 3 = delete
-                //network.sendToServer(new ServerboundCreateTitlePacket("test1", "Test1", "almura.title.test1", "Test 1!"));
+
                 //titleManager.setTitleContentForDisplay(null);
                 break;
 
@@ -285,10 +301,27 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 break;
 
             case "button.save":
-                notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Save title changes"), 2));
+                if (this.function == 1) {
+                    notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Saving Title Changes"), 2));
+                    network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.MODIFY, this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField.getText().toLowerCase().trim(), this
+                            .titleContextField.getText()
+                            .trim()));
+                }
+
+                if (this.function == 2) {
+                    notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Adding new Title"), 2));
+                    network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.ADD, this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField.getText().toLowerCase().trim(), this.titleContextField.getText()
+                            .trim()));
+                }
+
+                //notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Save title changes"), 2));
+                //network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.MODIFY, this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField.getText().toLowerCase().trim(), this
+                //    .titleContextField
+                //        .getText()
+                //        .trim()));
+
                 this.function = 1; // 0 = nothing, 1 = save changes, 2 = add new, 3 = delete
                 break;
-
             case "button.close":
                 this.close();
                 break;

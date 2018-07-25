@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.title.network;
+package com.almuradev.almura.feature.title;
 
 public enum TitleGuiType {
     MANAGE,

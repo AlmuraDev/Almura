@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.title.network;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.almuradev.almura.feature.title.TitleGuiType;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 

@@ -9,17 +9,15 @@ package com.almuradev.almura.feature.title.network.handler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import ca.weblite.objc.Client;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
-import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.almura.feature.title.Title;
 import com.almuradev.almura.feature.title.network.ClientboundAvailableTitlesResponsePacket;
 import com.almuradev.almura.feature.title.network.ClientboundTitleGuiResponsePacket;
 import com.almuradev.almura.feature.title.network.ServerboundTitleGuiRequestPacket;
-import com.almuradev.almura.feature.title.network.TitleGuiType;
+import com.almuradev.almura.feature.title.TitleGuiType;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.server.MinecraftServer;

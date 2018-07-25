@@ -9,8 +9,8 @@ package com.almuradev.almura.feature.title;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.almuradev.almura.feature.title.network.ServerboundModifyTitlePacket;
 import com.almuradev.almura.feature.title.network.ServerboundTitleGuiRequestPacket;
-import com.almuradev.almura.feature.title.network.TitleGuiType;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -126,5 +126,29 @@ public final class ClientTitleManager implements Witness {
 
     public void setTitleContentForDisplay(@Nullable final Title titleContentForDisplay) {
         this.titleContentForDisplay = titleContentForDisplay;
+    }
+
+    public void addTitle(final String id, final String name, final String permission, final String content) {
+        checkNotNull(id);
+        checkNotNull(name);
+        checkNotNull(permission);
+        checkNotNull(content);
+
+        this.network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.ADD, id, name, permission, content));
+    }
+
+    public void modifyTitle(final String id, final String name, final String permission, final String content) {
+        checkNotNull(id);
+        checkNotNull(name);
+        checkNotNull(permission);
+        checkNotNull(content);
+
+        this.network.sendToServer(new ServerboundModifyTitlePacket(TitleModifyType.MODIFY, id, name, permission, content));
+    }
+
+    public void setTitleVisibility(final String id, final boolean isHidden) {
+        checkNotNull(id);
+
+        this.network.sendToServer(new ServerboundModifyTitlePacket(id, isHidden));
     }
 }

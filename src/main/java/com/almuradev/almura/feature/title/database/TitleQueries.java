@@ -37,9 +37,8 @@ public final class TitleQueries {
         return context -> context.selectFrom(TITLE);
     }
 
-    public static DatabaseQuery<InsertValuesStep5<TitleRecord, byte[], String, String, String, String>> createInsertTitle(final UUID creator, final
-    String
-        id, final String name, final String permission, final String content) {
+    public static DatabaseQuery<InsertValuesStep5<TitleRecord, byte[], String, String, String, String>> createInsertTitle(final UUID creator,
+        final String id, final String name, final String permission, final String content) {
         checkNotNull(creator);
         checkNotNull(id);
         checkNotNull(name);
@@ -59,6 +58,21 @@ public final class TitleQueries {
         return context -> context
             .update(TITLE)
             .set(TITLE.IS_HIDDEN, isHidden)
+            .where(TITLE.ID.eq(id));
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<TitleRecord>> createUpdateTitle(final String id, final String name, final String permission,
+        final String content) {
+        checkNotNull(id);
+        checkNotNull(name);
+        checkNotNull(permission);
+        checkNotNull(content);
+
+        return context -> context
+            .update(TITLE)
+            .set(TITLE.NAME, name)
+            .set(TITLE.PERMISSION, permission)
+            .set(TITLE.CONTENT, content)
             .where(TITLE.ID.eq(id));
     }
 
