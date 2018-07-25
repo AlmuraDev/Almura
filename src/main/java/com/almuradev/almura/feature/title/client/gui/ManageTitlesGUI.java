@@ -10,11 +10,13 @@ package com.almuradev.almura.feature.title.client.gui;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.almuradev.almura.feature.title.Title;
 import com.almuradev.almura.feature.title.TitleModifyType;
 import com.almuradev.almura.feature.title.network.ServerboundAvailableTitlesRequestPacket;
 import com.almuradev.almura.feature.title.network.ServerboundModifyTitlePacket;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
+import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
@@ -23,6 +25,8 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -36,6 +40,7 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.List;
 import java.util.Set;
@@ -51,7 +56,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
     private UIFormContainer form;
     private UITextField nameField, permissionField, titleIdField, titleContextField;
     private UIButton buttonAdd, buttonRemove, saveChangesButton;
-    private UIDynamicList<Set> titleList = null;
+    private UIDynamicList<Title> titleList;
 
     //Todo: WTF.
     //private final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> titleListFactory;
@@ -111,14 +116,14 @@ public final class ManageTitlesGUI extends SimpleScreen {
         titleContainer.setPadding(4, 4);
         titleContainer.setTopPadding(20);
 
-        List titleList = Lists.newArrayList(titleManager.getTitles());
-        List playerTitlesList = Lists.newArrayList(titleManager.getAvailableTitles());
+        List<Title> titleList = Lists.newArrayList(titleManager.getTitles());
+        List<Title> playerTitlesList = Lists.newArrayList(titleManager.getAvailableTitles());
 
         System.out.println("All Titles: " + titleList.size());
         System.out.println("Player Titles: " + playerTitlesList.size());
 
         this.titleList = new UIDynamicList<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
-        //this.titleList.setItemComponentFactory(this.titleListFactory);
+        this.titleList.setItemComponentFactory(TitleItemComponent::new);
         this.titleList.setItemComponentSpacing(1);
         this.titleList.setCanDeselect(true);
         this.titleList.setName("list.left");
@@ -353,5 +358,62 @@ public final class ManageTitlesGUI extends SimpleScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
+    }
+
+    // TODO: Merge this with the ExchangeItemComponent class as a new default style
+    public static class TitleItemComponent extends UIDynamicList.ItemComponent<Title> {
+
+        private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
+        private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
+        private static final int INNER_HOVER_COLOR = org.spongepowered.api.util.Color.ofRgb(40, 40, 40).getRgb();
+        private static final int INNER_SELECTED_COLOR = org.spongepowered.api.util.Color.ofRgb(65, 65, 65).getRgb();
+
+        private UIExpandingLabel titleLabel;
+
+        public TitleItemComponent(final MalisisGui gui, final Title title) {
+            super(gui, title);
+
+            // Set padding
+            this.setPadding(3, 3);
+
+            // Set colors
+            this.setColor(INNER_COLOR);
+            this.setBorder(BORDER_COLOR, 1, 255);
+
+            // Set default size
+            this.setSize(0, 20);
+
+            this.construct(gui, item);
+        }
+
+        @SuppressWarnings("deprecation")
+        protected void construct(final MalisisGui gui, final Title title) {
+
+            this.titleLabel = new UIExpandingLabel(gui, Text.of(TextColors.WHITE, title.getContent()));
+            this.titleLabel.setPosition(2, 0, Anchor.LEFT | Anchor.MIDDLE);
+
+            this.add(this.titleLabel);
+        }
+
+        @Override
+        public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+            if (this.parent instanceof UIDynamicList) {
+                final UIDynamicList parent = (UIDynamicList) this.parent;
+
+                final int width = parent.getWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
+
+                this.setSize(width, getHeight());
+
+                if (parent.getSelectedItem() == this.item) {
+                    this.setColor(INNER_SELECTED_COLOR);
+                } else if (this.isHovered()) {
+                    this.setColor(INNER_HOVER_COLOR);
+                } else {
+                    this.setColor(INNER_COLOR);
+                }
+
+                super.drawBackground(renderer, mouseX, mouseY, partialTick);
+            }
+        }
     }
 }

@@ -328,11 +328,12 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
         public DefaultItemComponent(MalisisGui gui, T item) {
             super(gui, item);
+            setSize(UIComponent.INHERITED, 15);
         }
 
         @Override
         public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            renderer.drawText(item.toString());
+            renderer.drawText(item.toString(), 2, 3, 0);
         }
     }
 
