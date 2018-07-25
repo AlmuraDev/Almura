@@ -100,12 +100,12 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
 
         Title title = null;
 
-        if (entityIn instanceof EntityPlayer) {
+        if (entityIn == Minecraft.getMinecraft().player) {
             title = manager.getTitleContentForDisplay();
+        }
 
-            if (title == null) {
-                title = manager.getSelectedTitleFor(Minecraft.getMinecraft().player.getUniqueID());
-            }
+        if (title == null) {
+            title = manager.getSelectedTitleFor(entityIn.getUniqueID());
         }
 
         if (!isSneaking) {

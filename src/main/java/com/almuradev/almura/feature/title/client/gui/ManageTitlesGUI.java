@@ -270,6 +270,10 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
         this.colorSelector.setPosition(10, 166, Anchor.LEFT | Anchor.TOP);
         this.colorSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
+        this.colorSelector.setFontOptions(FontOptions.builder()
+                .shadow(false)
+                .build()
+        );
         this.colorSelector.select("§1Dark Blue§f - &1");
         this.colorSelector.setEnabled(false);
         this.colorSelector.maxDisplayedOptions(7);

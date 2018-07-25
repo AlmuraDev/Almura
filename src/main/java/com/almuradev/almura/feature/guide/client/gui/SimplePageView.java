@@ -23,6 +23,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
@@ -167,6 +168,10 @@ public class SimplePageView extends SimpleScreen {
         );
         this.colorSelector.setPosition(60, -1, Anchor.BOTTOM | Anchor.LEFT);
         this.colorSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
+        this.colorSelector.setFontOptions(FontOptions.builder()
+                .shadow(false)
+                .build()
+        );
         this.colorSelector.select("§1Dark Blue§f - &1");
         this.colorSelector.setVisible((hasAnyPermission()));
         this.colorSelector.maxDisplayedOptions(7);
