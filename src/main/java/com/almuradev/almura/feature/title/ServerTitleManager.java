@@ -246,8 +246,6 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
     public void calculateAvailableTitlesFor(final Player player) {
         checkNotNull(player);
 
-        System.out.println("HasPerms: " + player.hasPermission("almura.title.admin"));
-
         this.availableTitles.remove(player.getUniqueId());
 
         if (this.titles.isEmpty()) {
@@ -259,20 +257,16 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                 .stream()
                 .filter(kv -> {
                     if (kv.getValue().isHidden()) {
-                        System.out.println("Check 1");
                         return player.hasPermission(Almura.ID + ".title.admin");
                     }
-                    System.out.println("Check 2");
                     return player.hasPermission(kv.getValue().getId());
                 })
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toCollection(HashSet::new));
 
         if (availableTitles.isEmpty()) {
-            System.out.println("Available Titles SM empty");
             return;
         }
-        System.out.println("Returned List of Titles");
         this.availableTitles.put(player.getUniqueId(), availableTitles);
     }
 
@@ -485,6 +479,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                     .execute(() -> {
                         try (final DSLContext context = this.databaseManager.createContext(true)) {
                             final int result = TitleQueries
+                                    //TODO: Zidane, this should take into consideration isHidden since there is no real "delete".
                                     .createUpdateTitle(id, name, permission, content)
                                     .build(context)
                                     .keepStatement(false)
@@ -518,7 +513,6 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
         if (!this.getTitle(id).isPresent()) {
             // TODO Dockter, we're in a desync...either send them a notification that title visibility changing failed as it doesn't exist or remove this TODO
-
             this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
                             this.titles
                                     .values()
