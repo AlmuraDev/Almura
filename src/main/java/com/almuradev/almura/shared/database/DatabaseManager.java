@@ -17,6 +17,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.sql.SqlService;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.annotation.Nullable;
@@ -43,14 +44,20 @@ public final class DatabaseManager implements Witness {
     boolean existingDataSource = includeSchema ? this.dataSource != null : this.connectionSource != null;
 
     if (existingDataSource) {
+      Connection connection = null;
+
       try {
         if (includeSchema) {
-          this.dataSource.getConnection();
+          connection = this.dataSource.getConnection();
         } else {
-          this.connectionSource.getConnection();
+          connection = this.connectionSource.getConnection();
         }
       } catch (SQLException ignored) {
         existingDataSource = false;
+      } finally {
+        if (connection != null) {
+          connection.close();
+        }
       }
     }
 
