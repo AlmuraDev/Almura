@@ -68,7 +68,6 @@ public final class ManageTitlesGUI extends SimpleScreen {
     private UITextField nameField, permissionField, titleIdField, titleContentField;
     private UIButton buttonAdd, buttonRemove, buttonRefresh, saveChangesButton, buttonColor;
     private UIDynamicList<Title> titleList;
-    private List<Title> masterTitleList = null;
     private UICheckBox hiddenCheckbox, formattedCheckbox;
     private UISelect colorSelector;
 
@@ -126,16 +125,14 @@ public final class ManageTitlesGUI extends SimpleScreen {
         titleContainer.setPadding(4, 4);
         titleContainer.setTopPadding(20);
 
-        this.masterTitleList = Lists.newArrayList(titleManager.getTitles());
-
-        System.out.println("All Titles: " + masterTitleList.size());
+        System.out.println("All Titles: " + titleManager.getTitles());
 
         this.titleList = new UIDynamicList<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
         this.titleList.setItemComponentFactory(TitleItemComponent::new);
         this.titleList.setItemComponentSpacing(1);
         this.titleList.setCanDeselect(true);
         this.titleList.setName("list.left");
-        this.titleList.setItems(this.masterTitleList);
+        this.titleList.setItems(titleManager.getTitles());
         this.titleList.register(this);
 
         titleContainer.add(this.titleList);
@@ -447,16 +444,14 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 break;
 
             case "button.refresh":
-                final List<Title> titleList = Lists.newArrayList(titleManager.getTitles());
-                this.titleList.setItems(titleList);
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Refreshing Titles List..."), 2));
+                titleManager.refreshTitles();
                 break;
 
             case "button.remove":
                 this.mode = TitleModifyType.DELETE;
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Removing selected title"), 2));
                 titleManager.deleteTitle(this.titleIdField.getText().toLowerCase().trim());
-                Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("refreshList")).submit(container);
                 break;
 
             case "button.save":
@@ -466,16 +461,12 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
                         titleManager.addTitle(this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField
                                 .getText().toLowerCase().trim(), this.titleContentField.getText().trim(), this.hiddenCheckbox.isChecked());
-
-                        Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("refreshList")).submit(container);
                         break;
                     case MODIFY:
                         notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Saving Title Changes"), 2));
 
                         titleManager.modifyTitle(this.titleIdField.getText().toLowerCase().trim(), this.nameField.getText().trim(), this.permissionField.getText
                                 ().toLowerCase().trim(), this.titleContentField.getText().trim(), this.hiddenCheckbox.isChecked());
-
-                        Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(delayedTask("refreshList")).submit(container);
                         break;
                 }
                 this.nameField.setEditable(false);
@@ -501,15 +492,6 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 this.close();
                 break;
         }
-    }
-
-    private Consumer<Task> delayedTask(String details) {
-        return task -> {
-            if (details.equalsIgnoreCase("refreshList")) {
-                this.masterTitleList = Lists.newArrayList(titleManager.getTitles());
-                this.titleList.setItems(masterTitleList);
-            }
-        };
     }
 
     private void formatContent(boolean value) {
@@ -584,6 +566,11 @@ public final class ManageTitlesGUI extends SimpleScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
+    }
+
+    // Ordi's or Grinch's GUI System is beyond retarded as the list reference NEVER CHANGES YET IT NEEDS TO BE RESET? REALLY?
+    public void refreshTitles() {
+        this.titleList.clearItems().setItems(titleManager.getTitles());
     }
 
     // TODO: Merge this with the ExchangeItemComponent class as a new default style

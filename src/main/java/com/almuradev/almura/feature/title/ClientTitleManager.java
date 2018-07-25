@@ -20,9 +20,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -38,8 +40,8 @@ public final class ClientTitleManager implements Witness {
 
     private final ChannelBinding.IndexedMessageChannel network;
 
-    private final Map<String, Title> titles = new HashMap<>();
-    private final Set<Title> availableTitles = new HashSet<>();
+    private final List<Title> titles = new ArrayList<>();
+    private final List<Title> availableTitles = new ArrayList<>();
     private final Map<UUID, Title> selectedTitles = new HashMap<>();
 
     @Nullable private Title titleContentForDisplay;
@@ -63,12 +65,17 @@ public final class ClientTitleManager implements Witness {
         this.network.sendToServer(new ServerboundTitleGuiRequestPacket(TitleGuiType.SELECT));
     }
 
-    public Set<Title> getTitles() {
-        return Collections.unmodifiableSet(new HashSet<>(this.titles.values()));
+    @Nullable
+    public Title getTitle(final String id) {
+        return this.titles.stream().filter(title -> title.getId().equalsIgnoreCase(id)).findAny().orElse(null);
     }
 
-    public Set<Title> getAvailableTitles() {
-        return Collections.unmodifiableSet(this.availableTitles);
+    public List<Title> getTitles() {
+        return this.titles;
+    }
+
+    public List<Title> getAvailableTitles() {
+        return this.availableTitles;
     }
 
     @Nullable
@@ -82,7 +89,7 @@ public final class ClientTitleManager implements Witness {
         this.titles.clear();
 
         if (titles != null) {
-            this.titles.putAll(titles.stream().collect(Collectors.toMap(Title::getId, e -> e)));
+            this.titles.addAll(titles);
         }
     }
 
@@ -99,7 +106,7 @@ public final class ClientTitleManager implements Witness {
 
         if (titles != null) {
             for (Map.Entry<UUID, String> titleCandidate : titles.entrySet()) {
-                final Title title = this.titles.get(titleCandidate.getValue());
+                final Title title = this.getTitle(titleCandidate.getValue());
 
                 if (title != null) {
                     this.selectedTitles.put(titleCandidate.getKey(), title);
@@ -111,12 +118,16 @@ public final class ClientTitleManager implements Witness {
     public void putSelectedTitleFor(final UUID uniqueId, @Nullable final String titleId) {
         checkNotNull(uniqueId);
 
-        final Title title = this.titles.get(titleId);
-        if (title == null) {
-            return;
-        }
+        if (titleId == null) {
+            this.selectedTitles.remove(uniqueId);
+        } else {
+            final Title title = this.getTitle(titleId);
+            if (title == null) {
+                return;
+            }
 
-        this.selectedTitles.put(uniqueId, title);
+            this.selectedTitles.put(uniqueId, title);
+        }
     }
 
     @Nullable
@@ -150,5 +161,9 @@ public final class ClientTitleManager implements Witness {
         checkNotNull(id);
 
         this.network.sendToServer(new ServerboundModifyTitlePacket(id));
+    }
+
+    public void refreshTitles() {
+        // TODO You would only be out of date now if you manually added a title via db and a command added the title and somehow you never got the title registry packet.
     }
 }

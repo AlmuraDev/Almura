@@ -8,9 +8,11 @@
 package com.almuradev.almura.feature.title.network.handler;
 
 import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.almuradev.almura.feature.title.client.gui.ManageTitlesGUI;
 import com.almuradev.almura.feature.title.network.ClientboundTitlesRegistryPacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -34,6 +36,11 @@ public final class ClientboundTitlesRegistryPacketHandler implements MessageHand
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
 
             this.manager.putTitles(message.titles);
+
+            final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+            if (currentScreen instanceof ManageTitlesGUI) {
+                ((ManageTitlesGUI) currentScreen).refreshTitles();
+            }
         }
     }
 }
