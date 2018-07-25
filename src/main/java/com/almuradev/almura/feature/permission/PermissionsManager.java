@@ -107,6 +107,10 @@ public final class PermissionsManager implements Witness {
 
                     this.titleManager.calculateAvailableTitlesFor(target);
 
+                    // Just in-case the GUI is open currently, send this down. If it isn't, the data will be overriden by a request anyways..
+                    this.titleManager.getAvailableTitlesFor(target)
+                        .ifPresent(availableTitles -> this.network.sendTo(target, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
+                    
                     this.titleManager.verifySelectedTitle(target, null);
                 }
             });
