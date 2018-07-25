@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.entity.living.animal.Animal;
@@ -97,10 +98,14 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
 
-        Title title = manager.getTitleContentForDisplay();
+        Title title = null;
 
-        if (title == null) {
-            title = manager.getSelectedTitleFor(Minecraft.getMinecraft().player.getUniqueID());
+        if (entityIn instanceof EntityPlayer) {
+            title = manager.getTitleContentForDisplay();
+
+            if (title == null) {
+                title = manager.getSelectedTitleFor(Minecraft.getMinecraft().player.getUniqueID());
+            }
         }
 
         if (!isSneaking) {
