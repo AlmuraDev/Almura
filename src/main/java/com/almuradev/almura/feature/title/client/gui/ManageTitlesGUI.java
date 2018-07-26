@@ -476,15 +476,15 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
             case "button.apply":
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title"), Text.of("Setting Title on server..."), 2));
-                final Title selectedTitle = this.titleList.getSelectedItem();
-                titleManager.putSelectedTitleFor(this.mc.player.getUniqueID(), selectedTitle.getContent().trim());
+                titleManager.setTitleContentForDisplay(null);
+                titleManager.requestSelectedTitle(this.titleList.getSelectedItem());
                 this.close();
                 break;
 
             case "button.remove":
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title"), Text.of("Removing Title on server..."), 2));
                 titleManager.setTitleContentForDisplay(null);
-                titleManager.putSelectedTitleFor(this.mc.player.getUniqueID(), null);
+                titleManager.requestSelectedTitle(this.titleList.getSelectedItem());
                 this.close();
                 break;
 

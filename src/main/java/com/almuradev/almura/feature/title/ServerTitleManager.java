@@ -347,7 +347,8 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
                     this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), titleId));
 
-                    this.scheduler.createTaskBuilder()
+                    this.scheduler
+                        .createTaskBuilder()
                         .async()
                         .execute(() -> {
                             try (final DSLContext context = this.databaseManager.createContext(true)) {

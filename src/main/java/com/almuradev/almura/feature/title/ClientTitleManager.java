@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.title;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.title.network.ServerboundModifyTitlePacket;
+import com.almuradev.almura.feature.title.network.ServerboundSelectedTitlePacket;
 import com.almuradev.almura.feature.title.network.ServerboundTitleGuiRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
@@ -153,5 +154,9 @@ public final class ClientTitleManager implements Witness {
         checkNotNull(id);
 
         this.network.sendToServer(new ServerboundModifyTitlePacket(id));
+    }
+
+    public void requestSelectedTitle(@Nullable final Title title) {
+        this.network.sendToServer(new ServerboundSelectedTitlePacket(title == null ? null : title.getId()));
     }
 }
