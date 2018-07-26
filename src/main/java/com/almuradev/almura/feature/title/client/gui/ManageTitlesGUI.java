@@ -130,7 +130,17 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.titleList.setName("list.left");
         this.titleList.setItems(titleManager.getAvailableTitles());
         if (!titleManager.getAvailableTitles().isEmpty()) {
-            this.titleList.setSelectedItem(titleManager.getAvailableTitles().get(0));
+            System.out.println("Availables not Empty" + " UNID: " + this.mc.player.getUniqueID());
+            if (titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()) != null) {
+                System.out.println("got selected title");
+                titleManager.setTitleContentForDisplay(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()));
+                this.titleList.setSelectedItem(titleManager.getTitle(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()).getContent()));
+            } else {
+                System.out.println("got top");
+                this.titleList.setSelectedItem(titleManager.getAvailableTitles().get(0));
+                titleManager.setTitleContentForDisplay(titleManager.getAvailableTitles().get(0));
+            }
+
         }
         this.titleList.register(this);
 
