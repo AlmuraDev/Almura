@@ -45,7 +45,7 @@ public final class DatabaseInstaller implements Witness {
     }
 
     // TODO DO NOT UNCOMMENT THESE UNTIL ZIDANE SAYS SO
-    //this.setupTablesForFeature("axs");
+    this.setupTablesForFeature("axs");
     //this.setupTablesForFeature("shop");
     this.setupTablesForFeature("title");
   }

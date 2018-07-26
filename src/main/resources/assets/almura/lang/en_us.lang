@@ -84,16 +84,30 @@ tile.storage.spruce_storage_crate.name=Spruce Storage Crate
 # ---------------
 # ---- gui ----
 # ---------------
+
 almura.button.add=Add
 almura.button.apply=Apply
 almura.button.cancel=Cancel
 almura.button.close=Close
-almura.button.save=Save
+almura.button.ok=OK
 almura.button.reset=Reset
+almura.button.save=Save
+almura.button.search=Search
+
+# ---------------
+# -- exchange ---
+# ---------------
+almura.button.exchange.buy.stack=Buy Stack
+almura.button.exchange.buy.one=Buy One
+almura.button.exchange.buy.quantity=Buy Quantity
+almura.button.exchange.list=List
+almura.button.exchange.unlist=Unlist
+almura.button.exchange.price.set=Set Price
 
 # ---------------
 # ---- guide ----
 # ---------------
+
 almura.guide.view.button.formatted=Formatted
 almura.guide.view.button.formatted.tooltip=Showing formatted text
 almura.guide.view.button.raw=Raw

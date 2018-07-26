@@ -24,12 +24,14 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
     @Override
     protected void configure() {
         this.packet()
-                .bind(ServerboundExchangeOpenRequestPacket.class, binder -> binder.handler(ServerboundExchangeOpenRequestPacketHandler.class, Platform
-                        .Type.SERVER))
-                .bind(ClientboundExchangeOpenResponsePacket.class, binder -> binder.handler(ClientboundExchangeOpenResponsePacketHandler.class, Platform
-                        .Type.CLIENT));
+            .bind(ServerboundExchangeOpenRequestPacket.class, binder -> binder.handler(ServerboundExchangeOpenRequestPacketHandler.class, Platform
+                .Type.SERVER))
+            .bind(ClientboundExchangeOpenResponsePacket.class, binder -> binder.handler(ClientboundExchangeOpenResponsePacketHandler.class, Platform
+                .Type.CLIENT));
 
         this.on(Platform.Type.CLIENT, () -> {
+
+            @SideOnly(Side.CLIENT)
             final class ClientModule extends AbstractModule implements ClientBinder {
 
                 @SideOnly(Side.CLIENT)

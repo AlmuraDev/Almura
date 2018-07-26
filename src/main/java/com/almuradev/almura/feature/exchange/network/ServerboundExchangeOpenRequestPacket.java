@@ -13,12 +13,12 @@ import org.spongepowered.api.network.Message;
 public final class ServerboundExchangeOpenRequestPacket implements Message {
 
     @Override
-    public void readFrom(ChannelBuf buf) {
+    public void readFrom(final ChannelBuf buf) {
 
     }
 
     @Override
-    public void writeTo(ChannelBuf buf) {
+    public void writeTo(final ChannelBuf buf) {
 
     }
 }

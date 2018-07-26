@@ -68,19 +68,19 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
         // OK/Cancel buttons
         final UIButton buttonOk = new UIButtonBuilder(this)
-                .width(40)
-                .text("OK")
-                .x(1)
-                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .onClick(this::transact)
-                .build("button.ok");
+            .width(40)
+            .text("OK")
+            .x(1)
+            .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+            .onClick(this::transact)
+            .build("button.ok");
         final UIButton buttonCancel = new UIButtonBuilder(this)
-                .width(40)
-                .text("Cancel")
-                .x(getPaddedX(buttonOk, 2, Anchor.RIGHT))
-                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .onClick(this::close)
-                .build("button.cancel");
+            .width(40)
+            .text("Cancel")
+            .x(getPaddedX(buttonOk, 2, Anchor.RIGHT))
+            .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+            .onClick(this::close)
+            .build("button.cancel");
 
         this.progressBar = new UIPropertyBar(this, getPaddedWidth(form) - buttonOk.getWidth() - buttonCancel.getWidth() - 4, 15);
         this.progressBar.setColor(Color.ofRgb(0, 130, 0).getRgb());
@@ -89,10 +89,10 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
         // Swap container
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
-                Text.of(TextColors.WHITE, "Inventory"),
-                Text.of(TextColors.WHITE, "Held Items"),
-                ExchangeScreen.ExchangeItemComponent::new,
-                ExchangeScreen.ExchangeItemComponent::new);
+            Text.of(TextColors.WHITE, "Inventory"),
+            Text.of(TextColors.WHITE, "Held Items"),
+            ExchangeScreen.ExchangeItemComponent::new,
+            ExchangeScreen.ExchangeItemComponent::new);
         this.offerContainer.setItemLimit(this.maxOfferSlots, UIDualListContainer.ContainerSide.RIGHT);
         this.offerContainer.register(this);
 
@@ -125,8 +125,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
     private void onTransaction(UIExchangeOfferContainer.TransactionEvent event) {
         if (event.side == UIDualListContainer.ContainerSide.RIGHT) {
             final TransactionRecord record = Optional.ofNullable(this.toTakeMap.putIfAbsent(event.originatingSlotId,
-                                                        new TransactionRecord(event.offer.item.copy(), 0)))
-                                                     .orElse(this.toTakeMap.get(event.originatingSlotId));
+                new TransactionRecord(event.offer.item.copy(), 0)))
+                .orElse(this.toTakeMap.get(event.originatingSlotId));
 
             record.quantity += event.quantity;
 
@@ -139,8 +139,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
             System.out.println("==========");
         } else {
             Optional<TransactionRecord> optRecord = this.toRegainList.stream()
-                    .filter(r -> ItemStackComparators.IGNORE_SIZE.compare(r.itemStack, event.offer.item) == 0)
-                    .findFirst();
+                .filter(r -> ItemStackComparators.IGNORE_SIZE.compare(r.itemStack, event.offer.item) == 0)
+                .findFirst();
             if (!optRecord.isPresent()) {
                 optRecord = Optional.of(new TransactionRecord(event.offer.item.copy(), 0));
                 this.toRegainList.add(optRecord.get());
@@ -182,9 +182,9 @@ public class ExchangeOfferScreen extends SimpleScreen {
         @Override
         public String toString() {
             return MoreObjects.toStringHelper(this)
-                    .addValue(this.itemStack.getType().getName())
-                    .addValue(this.quantity)
-                    .toString();
+                .addValue(this.itemStack.getType().getName())
+                .addValue(this.quantity)
+                .toString();
         }
     }
 }

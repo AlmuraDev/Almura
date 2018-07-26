@@ -49,3 +49,6 @@ create table if not exists "axs_transaction"
   "quantity"         int          default 1 not null,
   foreign key ("list_item") references "axs_item"("rec_no") on update cascade on delete cascade
 );
+
+drop index if exists idx_axs_item_axs;
+create index idx_axs_item_axs ON "axs_item"("axs");

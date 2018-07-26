@@ -79,7 +79,7 @@ public final class ExchangeScreen extends SimpleScreen {
     private static final int innerPadding = 2;
 
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
-            buttonList, buttonSetPrice;
+        buttonList, buttonSetPrice;
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
     public UIDynamicList<MockOffer> resultsList, sellingList;
@@ -121,7 +121,7 @@ public final class ExchangeScreen extends SimpleScreen {
         // Detect if screen area is large enough to display.
         if (minScreenWidth > resolution.getScaledWidth() || minScreenHeight > resolution.getScaledHeight()) {
             clientNotificationManager.queuePopup(new PopupNotification(Text.of("Exchange Error"),
-                    Text.of("Screen area of: " + minScreenHeight + " x " + minScreenWidth + " required."), 5));
+                Text.of("Screen area of: " + minScreenHeight + " x " + minScreenWidth + " required."), 5));
             this.close();
         }
 
@@ -161,7 +161,7 @@ public final class ExchangeScreen extends SimpleScreen {
         final UILabel sellerSearchLabel = new UILabel(this, "Seller:");
         sellerSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         sellerSearchLabel.setPosition(itemSearchField.getX() - sellerSearchLabel.getWidth() - 1,
-                getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
+            getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
 
         this.sellerSearchField = new UITextField(this, "", false);
         this.sellerSearchField.setSize(145, 0);
@@ -185,49 +185,49 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Search button
         final UIButton buttonSearch = new UIButtonBuilder(this)
-                .width(80)
-                .anchor(Anchor.RIGHT | Anchor.TOP)
-                .position(-innerPadding, 1)
-                .text("Search")
-                .onClick(() -> {
-                    final String itemName = itemSearchField.getText();
-                    final String username = sellerSearchField.getText();
+            .width(80)
+            .anchor(Anchor.RIGHT | Anchor.TOP)
+            .position(-innerPadding, 1)
+            .text("Search")
+            .onClick(() -> {
+                final String itemName = itemSearchField.getText();
+                final String username = sellerSearchField.getText();
 
-                    this.currentResults.clear();
+                this.currentResults.clear();
 
-                    logger.info(String.format("Searching for criteria: itemname=%s, playerName=%s", itemName, username));
+                logger.info(String.format("Searching for criteria: itemname=%s, playerName=%s", itemName, username));
 
-                    this.currentResults.addAll(this.getResults(itemName, username, comboBoxSortType.getSelectedValue()));
-                    this.pages = (Math.max(this.currentResults.size() - 1, 1) / 10) + 1;
+                this.currentResults.addAll(this.getResults(itemName, username, comboBoxSortType.getSelectedValue()));
+                this.pages = (Math.max(this.currentResults.size() - 1, 1) / 10) + 1;
 
-                    this.setPage(1);
+                this.setPage(1);
 
-                    if (this.currentResults.isEmpty()) {
-                        final String message = String.format("No offers found matching criteria: itemname=%s, playerName=%s", itemName, username);
-                        UIMessageBox.showDialog(this, "", message, MessageBoxButtons.OK);
-                    }
-                })
-                .build("button.search");
+                if (this.currentResults.isEmpty()) {
+                    final String message = String.format("No offers found matching criteria: itemname=%s, playerName=%s", itemName, username);
+                    UIMessageBox.showDialog(this, "", message, MessageBoxButtons.OK);
+                }
+            })
+            .build("button.search");
 
         // Bottom Page Control - first button
         this.buttonFirstPage = new UIButtonBuilder(this)
-                .size(20)
-                .anchor(Anchor.LEFT | Anchor.BOTTOM)
-                .position(0, 0)
-                .text("|<")
-                .enabled(false)
-                .onClick(() -> setPage(1))
-                .build("button.first");
+            .size(20)
+            .anchor(Anchor.LEFT | Anchor.BOTTOM)
+            .position(0, 0)
+            .text("|<")
+            .enabled(false)
+            .onClick(() -> setPage(1))
+            .build("button.first");
 
         // Bottom Page Control - previous button
         this.buttonPreviousPage = new UIButtonBuilder(this)
-                .size(20)
-                .anchor(Anchor.LEFT | Anchor.BOTTOM)
-                .position(getPaddedX(this.buttonFirstPage, innerPadding), 0)
-                .text("<")
-                .enabled(false)
-                .onClick(() -> setPage(--this.currentPage))
-                .build("button.previous");
+            .size(20)
+            .anchor(Anchor.LEFT | Anchor.BOTTOM)
+            .position(getPaddedX(this.buttonFirstPage, innerPadding), 0)
+            .text("<")
+            .enabled(false)
+            .onClick(() -> setPage(--this.currentPage))
+            .build("button.previous");
 
         // Search pages label
         this.labelSearchPage = new UILabel(this, "");
@@ -235,27 +235,27 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Bottom Page Control - last button
         this.buttonLastPage = new UIButtonBuilder(this)
-                .size(20)
-                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .position(0,0)
-                .text(">|")
-                .enabled(false)
-                .onClick(() -> setPage(this.pages))
-                .build("button.last");
+            .size(20)
+            .anchor(Anchor.RIGHT | Anchor.BOTTOM)
+            .position(0,0)
+            .text(">|")
+            .enabled(false)
+            .onClick(() -> setPage(this.pages))
+            .build("button.last");
 
         // Bottom Page Control - next button
         this.buttonNextPage = new UIButtonBuilder(this)
-                .size(20)
-                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .position(getPaddedX(this.buttonLastPage, innerPadding, Anchor.RIGHT),0)
-                .text(">")
-                .enabled(false)
-                .onClick(() -> setPage(++this.currentPage))
-                .build("button.next");
+            .size(20)
+            .anchor(Anchor.RIGHT | Anchor.BOTTOM)
+            .position(getPaddedX(this.buttonLastPage, innerPadding, Anchor.RIGHT),0)
+            .text(">")
+            .enabled(false)
+            .onClick(() -> setPage(++this.currentPage))
+            .build("button.next");
 
         // Add Elements of Search Area
         searchArea.add(itemSearchLabel, this.itemSearchField, sellerSearchLabel, this.sellerSearchField, buttonSearch, comboBoxSortType,
-                this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.resultsList, this.labelSearchPage);
+            this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.resultsList, this.labelSearchPage);
 
         // Economy Pane
         final UIFormContainer economyActionArea = new UIFormContainer(this, 295, 20, "");
@@ -268,30 +268,30 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Bottom Economy Pane - buyStack button
         this.buttonBuyStack = new UIButtonBuilder(this)
-                .width(60)
-                .anchor(Anchor.LEFT | Anchor.MIDDLE)
-                .position(0, 0)
-                .text("Buy Stack")
-                .enabled(false)
-                .build("button.buy.stack");
+            .width(60)
+            .anchor(Anchor.LEFT | Anchor.MIDDLE)
+            .position(0, 0)
+            .text("Buy Stack")
+            .enabled(false)
+            .build("button.buy.stack");
 
         // Bottom Economy Pane - buyStack button
         this.buttonBuySingle = new UIButtonBuilder(this)
-                .width(60)
-                .anchor(Anchor.CENTER | Anchor.MIDDLE)
-                .position(0, 0)
-                .text("Buy 1")
-                .enabled(false)
-                .build("button.buy.single");
+            .width(60)
+            .anchor(Anchor.CENTER | Anchor.MIDDLE)
+            .position(0, 0)
+            .text("Buy 1")
+            .enabled(false)
+            .build("button.buy.single");
 
         // Bottom Economy Pane - buyStack button
         this.buttonBuyQuantity = new UIButtonBuilder(this)
-                .width(60)
-                .anchor(Anchor.RIGHT | Anchor.MIDDLE)
-                .position(0, 0)
-                .text("Buy Quantity")
-                .enabled(false)
-                .build("button.buy.quantity");
+            .width(60)
+            .anchor(Anchor.RIGHT | Anchor.MIDDLE)
+            .position(0, 0)
+            .text("Buy Quantity")
+            .enabled(false)
+            .build("button.buy.quantity");
 
         economyActionArea.add(this.buttonBuyStack, this.buttonBuySingle, this.buttonBuyQuantity);
 
@@ -314,38 +314,38 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Bottom Economy Pane - buyStack button
         this.buttonList = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.LEFT | Anchor.BOTTOM)
-                .position(0, 0)
-                .text("List")
-                .enabled(false)
-                .onClick(() -> {
-                    final MockOffer offer = this.sellingList.getSelectedItem();
-                    if (offer != null) {
-                        offer.listed = !offer.listed;
-                    }
-                    this.updateControls();
-                })
-                .build("button.list");
+            .width(40)
+            .anchor(Anchor.LEFT | Anchor.BOTTOM)
+            .position(0, 0)
+            .text("List")
+            .enabled(false)
+            .onClick(() -> {
+                final MockOffer offer = this.sellingList.getSelectedItem();
+                if (offer != null) {
+                    offer.listed = !offer.listed;
+                }
+                this.updateControls();
+            })
+            .build("button.list");
 
         // Bottom Economy Pane - buyStack button
         this.buttonSetPrice = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.CENTER | Anchor.BOTTOM)
-                .position(0, 0)
-                .text("Set Price")
-                .enabled(false)
-                .build("button.setprice");
+            .width(40)
+            .anchor(Anchor.CENTER | Anchor.BOTTOM)
+            .position(0, 0)
+            .text("Set Price")
+            .enabled(false)
+            .build("button.setprice");
 
         // Bottom Economy Pane - buyStack button
         final UIButton buttonRemoveItem = new UIButtonBuilder(this)
-                .width(30)
-                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .position(0, 0)
-                .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
-                .enabled(true)
-                .onClick(() -> new ExchangeOfferScreen(this).display())
-                .build("button.add_remove");
+            .width(30)
+            .anchor(Anchor.RIGHT | Anchor.BOTTOM)
+            .position(0, 0)
+            .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
+            .enabled(true)
+            .onClick(() -> new ExchangeOfferScreen(this).display())
+            .build("button.add_remove");
 
         inventoryArea.add(sellingList, buttonList, buttonSetPrice, buttonRemoveItem);
 
@@ -405,29 +405,29 @@ public final class ExchangeScreen extends SimpleScreen {
 
     public List<MockOffer> getResults(String itemName, String username, SortType sort) {
         return this.allOffers
-                .stream()
-                .filter(o -> {
-                    final String itemDisplayName = o.item.getTranslation().get().toLowerCase();
+            .stream()
+            .filter(o -> {
+                final String itemDisplayName = o.item.getTranslation().get().toLowerCase();
 
-                    if (!itemName.isEmpty() && !itemDisplayName.contains(itemName.toLowerCase())) {
-                        return false;
-                    }
+                if (!itemName.isEmpty() && !itemDisplayName.contains(itemName.toLowerCase())) {
+                    return false;
+                }
 
-                    if (!username.isEmpty() && !o.playerName.toLowerCase().contains(username.toLowerCase())) {
-                        return false;
-                    }
+                if (!username.isEmpty() && !o.playerName.toLowerCase().contains(username.toLowerCase())) {
+                    return false;
+                }
 
-                    return true;
-                })
-                .sorted(sort.comparator)
-                .collect(Collectors.toList());
+                return true;
+            })
+            .sorted(sort.comparator)
+            .collect(Collectors.toList());
     }
 
     public MockOffer createMockOffer(final ItemType type) {
         final long quantity = ThreadLocalRandom.current().nextLong(1, 500000);
         final BigDecimal pricePer = BigDecimal.valueOf(ThreadLocalRandom.current().nextInt(1, 10000));
         return new MockOffer(Instant.now(), -1,
-                             ItemStack.of(type, 1), quantity, pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
+            ItemStack.of(type, 1), quantity, pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
     }
 
     public static String withSuffix(long value) {
@@ -465,8 +465,8 @@ public final class ExchangeScreen extends SimpleScreen {
             this.image = new UIComplexImage(gui, fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
             this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
-                    ? ITooltipFlag.TooltipFlags.ADVANCED
-                    : ITooltipFlag.TooltipFlags.NORMAL))));
+                ? ITooltipFlag.TooltipFlags.ADVANCED
+                : ITooltipFlag.TooltipFlags.NORMAL))));
 
             final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
             final int maxItemTextWidth = fontRenderer.getStringWidth("999999999999999999");
@@ -482,7 +482,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 itemTextBuilder.append(c);
             }
             this.itemLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.WHITE, itemTextBuilder.toString(), TextColors.GRAY, " x ", withSuffix(item.quantity))));
+                Text.of(TextColors.WHITE, itemTextBuilder.toString(), TextColors.GRAY, " x ", withSuffix(item.quantity))));
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             if (item.quantity >= (long) MILLION) {
@@ -515,7 +515,7 @@ public final class ExchangeScreen extends SimpleScreen {
             final int maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
 
             this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GRAY, TextStyles.ITALIC, item.playerName)));
+                Text.of(TextColors.GRAY, TextStyles.ITALIC, item.playerName)));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, item.pricePer, TextColors.GRAY, "/ea"));

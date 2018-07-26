@@ -11,7 +11,6 @@ import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
@@ -24,12 +23,7 @@ public final class ClientboundExchangeOpenResponsePacketHandler implements Messa
 
             final Minecraft client = Minecraft.getMinecraft();
             if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
-
-                final WorldClient world = client.world;
-
-                if (world != null) {
-                    new ExchangeScreen().display();
-                }
+                new ExchangeScreen().display();
             }
         }
     }
