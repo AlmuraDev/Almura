@@ -30,6 +30,8 @@ import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 
 public final class TitleModule extends AbstractModule implements CommonBinder {
@@ -66,8 +68,11 @@ public final class TitleModule extends AbstractModule implements CommonBinder {
 
         this.facet().add(ServerTitleManager.class);
         this.on(Platform.Type.CLIENT, () -> {
+
+            @SideOnly(Side.CLIENT)
             final class ClientModule extends AbstractModule implements ClientBinder {
 
+                @SideOnly(Side.CLIENT)
                 @Override
                 @SuppressWarnings("UnnecessaryStaticInjection")
                 protected void configure() {

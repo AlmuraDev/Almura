@@ -8,8 +8,7 @@
 package com.almuradev.almura.feature.title.network.handler;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.notification.ClientNotificationManager;
-import com.almuradev.almura.feature.notification.type.PopupNotification;
+import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.title.network.ClientboundTitleGuiResponsePacket;
 import com.almuradev.almura.feature.title.network.ServerboundTitleGuiRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -30,11 +29,11 @@ import javax.inject.Inject;
 public final class ServerboundTitleGuiRequestPacketHandler implements MessageHandler<ServerboundTitleGuiRequestPacket> {
 
     private final ChannelBinding.IndexedMessageChannel network;
-    private final ClientNotificationManager notificationManager;
+    private final ServerNotificationManager notificationManager;
 
     @Inject
     public ServerboundTitleGuiRequestPacketHandler(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
-    ClientNotificationManager notificationManager) {
+    ServerNotificationManager notificationManager) {
         this.network = network;
         this.notificationManager = notificationManager;
     }
@@ -46,8 +45,7 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
             final Player player = ((PlayerConnection) connection).getPlayer();
 
             if (!player.hasPermission(Almura.ID + ".title.change")) {
-                notificationManager
-                        .queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Insufficient Permissions to change Title!"), 2));
+                this.notificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("Insufficient Permissions to change Title!"), 2);
                 return;
             }
 

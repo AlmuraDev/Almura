@@ -23,12 +23,10 @@ import javax.inject.Inject;
 public final class ServerboundNicknameOpenRequestPacketHandler implements MessageHandler<ServerboundNicknameOpenRequestPacket> {
 
     private final ChannelBinding.IndexedMessageChannel network;
-    private final ServerNotificationManager manager;
 
     @Inject
-    public ServerboundNicknameOpenRequestPacketHandler(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final ServerNotificationManager manager) {
+    public ServerboundNicknameOpenRequestPacketHandler(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
         this.network = network;
-        this.manager = manager;
     }
 
     @Override
@@ -38,9 +36,6 @@ public final class ServerboundNicknameOpenRequestPacketHandler implements Messag
             final MinecraftServer threadListener = (MinecraftServer) Sponge.getServer();
             if (PacketUtil.checkThreadAndEnqueue(threadListener, message, this, connection, side)) {
                 final Player player = ((PlayerConnection) connection).getPlayer();
-
-                // Check permission here
-                // I added the notification manager above in-case you want to say you were denied opening via the GUI
 
                 this.network.sendTo(player, new ClientboundNicknameOpenResponsePacket());
             }
