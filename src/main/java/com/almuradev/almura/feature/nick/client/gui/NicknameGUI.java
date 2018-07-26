@@ -197,7 +197,7 @@ public final class NicknameGUI extends SimpleScreen {
         final UIButton buttonClose = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .text(Text.of("almura.button.close"))
+                .text("almura.button.close")
                 .listener(this)
                 .build("button.close");
 
@@ -243,7 +243,7 @@ public final class NicknameGUI extends SimpleScreen {
                     break;
                 }
 
-                if (validateText.toPlain().length() <= 3) {
+                if (validateText.toPlain().length() <= 1) {
                     notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname < 3 characters!"),5));
                     break;
                 }
