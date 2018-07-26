@@ -29,13 +29,13 @@ import javax.inject.Inject;
 
 public final class ServerboundAvailableTitlesRequestPacketHandler implements MessageHandler<ServerboundAvailableTitlesRequestPacket> {
 
-    private final ServerTitleManager manager;
+    private final ServerTitleManager titleManager;
     private final ChannelBinding.IndexedMessageChannel network;
 
     @Inject
-    public ServerboundAvailableTitlesRequestPacketHandler(final ServerTitleManager manager, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
+    public ServerboundAvailableTitlesRequestPacketHandler(final ServerTitleManager titleManager, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
         .IndexedMessageChannel network) {
-        this.manager = manager;
+        this.titleManager = titleManager;
         this.network = network;
     }
 
@@ -46,7 +46,7 @@ public final class ServerboundAvailableTitlesRequestPacketHandler implements Mes
 
             final Player player = ((PlayerConnection) connection).getPlayer();
 
-            final Set<Title> availableTitles = this.manager.getAvailableTitlesFor(player).orElse(null);
+            final Set<Title> availableTitles = this.titleManager.getAvailableTitlesFor(player).orElse(null);
 
             if (availableTitles == null) {
                 // TODO Tell the player they have no available titles :'(

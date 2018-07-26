@@ -24,11 +24,11 @@ import javax.inject.Inject;
 
 public final class ServerboundModifyTitlePacketHandler implements MessageHandler<ServerboundModifyTitlePacket> {
 
-    private final ServerTitleManager manager;
+    private final ServerTitleManager titleManager;
 
     @Inject
-    public ServerboundModifyTitlePacketHandler(final ServerTitleManager manager) {
-        this.manager = manager;
+    public ServerboundModifyTitlePacketHandler(final ServerTitleManager titleManager) {
+        this.titleManager = titleManager;
     }
 
     @Override
@@ -42,13 +42,13 @@ public final class ServerboundModifyTitlePacketHandler implements MessageHandler
 
             switch (message.type) {
                 case ADD:
-                    this.manager.addTitle(player, message.id, message.permission, message.content, message.isHidden);
+                    this.titleManager.addTitle(player, message.id, message.permission, message.content, message.isHidden);
                     break;
                 case MODIFY:
-                    this.manager.modifyTitle(player, message.id, message.permission, message.content, message.isHidden);
+                    this.titleManager.modifyTitle(player, message.id, message.permission, message.content, message.isHidden);
                     break;
                 case DELETE:
-                    this.manager.deleteTitle(player, message.id);
+                    this.titleManager.deleteTitle(player, message.id);
             }
         }
     }

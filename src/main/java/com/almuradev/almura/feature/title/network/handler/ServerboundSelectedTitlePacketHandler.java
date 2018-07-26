@@ -22,11 +22,11 @@ import javax.inject.Inject;
 
 public final class ServerboundSelectedTitlePacketHandler implements MessageHandler<ServerboundSelectedTitlePacket> {
 
-    private final ServerTitleManager manager;
+    private final ServerTitleManager titleManager;
 
     @Inject
-    public ServerboundSelectedTitlePacketHandler(final ServerTitleManager manager) {
-        this.manager = manager;
+    public ServerboundSelectedTitlePacketHandler(final ServerTitleManager titleManager) {
+        this.titleManager = titleManager;
     }
 
     @Override
@@ -36,7 +36,7 @@ public final class ServerboundSelectedTitlePacketHandler implements MessageHandl
 
             final Player player = ((PlayerConnection) connection).getPlayer();
 
-            this.manager.setSelectedTitleFor(player, message.titleId);
+            this.titleManager.setSelectedTitleFor(player, message.titleId);
         }
     }
 }

@@ -21,11 +21,11 @@ import javax.inject.Inject;
 
 public final class ClientboundSelectedTitlePacketHandler implements MessageHandler<ClientboundSelectedTitlePacket> {
 
-    private final ClientTitleManager manager;
+    private final ClientTitleManager titleManager;
 
     @Inject
-    public ClientboundSelectedTitlePacketHandler(final ClientTitleManager manager) {
-        this.manager = manager;
+    public ClientboundSelectedTitlePacketHandler(final ClientTitleManager titleManager) {
+        this.titleManager = titleManager;
     }
 
     @SideOnly(Side.CLIENT)
@@ -33,7 +33,7 @@ public final class ClientboundSelectedTitlePacketHandler implements MessageHandl
     public void handleMessage(final ClientboundSelectedTitlePacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
 
-            this.manager.putSelectedTitleFor(message.uniqueId, message.titleId);
+            this.titleManager.putSelectedTitleFor(message.uniqueId, message.titleId);
         }
     }
 }

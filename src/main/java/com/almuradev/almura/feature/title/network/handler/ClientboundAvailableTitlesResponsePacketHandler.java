@@ -8,9 +8,11 @@
 package com.almuradev.almura.feature.title.network.handler;
 
 import com.almuradev.almura.feature.title.ClientTitleManager;
+import com.almuradev.almura.feature.title.client.gui.ManageTitlesGUI;
 import com.almuradev.almura.feature.title.network.ClientboundAvailableTitlesResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -21,11 +23,11 @@ import javax.inject.Inject;
 
 public final class ClientboundAvailableTitlesResponsePacketHandler implements MessageHandler<ClientboundAvailableTitlesResponsePacket> {
 
-    private final ClientTitleManager manager;
+    private final ClientTitleManager titleManager;
 
     @Inject
-    public ClientboundAvailableTitlesResponsePacketHandler(final ClientTitleManager manager) {
-        this.manager = manager;
+    public ClientboundAvailableTitlesResponsePacketHandler(final ClientTitleManager titleManager) {
+        this.titleManager = titleManager;
     }
 
     @SideOnly(Side.CLIENT)
@@ -33,7 +35,13 @@ public final class ClientboundAvailableTitlesResponsePacketHandler implements Me
     public void handleMessage(final ClientboundAvailableTitlesResponsePacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
 
-            this.manager.addAvailableTitles(message.titles);
+            this.titleManager.addAvailableTitles(message.titles);
+
+            final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+
+            if (currentScreen instanceof ManageTitlesGUI) {
+                ((ManageTitlesGUI) currentScreen).refreshAvailableTitles();
+            }
         }
     }
 }

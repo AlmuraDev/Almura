@@ -7,13 +7,11 @@
  */
 package com.almuradev.almura.feature.title.client.gui;
 
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.almuradev.almura.feature.title.Title;
 import com.almuradev.almura.feature.title.TitleModifyType;
-import com.almuradev.almura.feature.title.network.ServerboundAvailableTitlesRequestPacket;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
@@ -73,7 +71,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
     private int screenHeight = 300;
 
     private TitleModifyType mode;
-    private boolean isAdmin;
+    private boolean isAdmin, inEditMode = false;
 
     public ManageTitlesGUI(boolean isAdmin) {
         this.isAdmin = isAdmin;
@@ -86,16 +84,16 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
 
         // Master Pane
-        form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
-        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        form.setMovable(true);
-        form.setClosable(true);
-        form.setBorder(FontColors.WHITE, 1, 185);
-        form.setBackgroundAlpha(215);
-        form.setBottomPadding(3);
-        form.setRightPadding(3);
-        form.setTopPadding(20);
-        form.setLeftPadding(3);
+        this.form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
+        this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        this.form.setMovable(true);
+        this.form.setClosable(true);
+        this.form.setBorder(FontColors.WHITE, 1, 185);
+        this.form.setBackgroundAlpha(215);
+        this.form.setBottomPadding(3);
+        this.form.setRightPadding(3);
+        this.form.setTopPadding(20);
+        this.form.setLeftPadding(3);
 
         final UILabel titleLabel = new UILabel(this, "Title Manager")
             .setFontOptions(FontOptions.builder()
@@ -107,16 +105,16 @@ public final class ManageTitlesGUI extends SimpleScreen {
             .setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Title List Area
-        listArea = new UIFormContainer(this, 220, 260, "");
-        listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
-        listArea.setMovable(false);
-        listArea.setClosable(false);
-        listArea.setBorder(FontColors.WHITE, 1, 185);
-        listArea.setBackgroundAlpha(215);
-        listArea.setBottomPadding(3);
-        listArea.setRightPadding(3);
-        listArea.setTopPadding(3);
-        listArea.setLeftPadding(3);
+        this.listArea = new UIFormContainer(this, 220, 260, "");
+        this.listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
+        this.listArea.setMovable(false);
+        this.listArea.setClosable(false);
+        this.listArea.setBorder(FontColors.WHITE, 1, 185);
+        this.listArea.setBackgroundAlpha(215);
+        this.listArea.setBottomPadding(3);
+        this.listArea.setRightPadding(3);
+        this.listArea.setTopPadding(3);
+        this.listArea.setLeftPadding(3);
 
         // Create left container
         final UIContainer<?> titleContainer = new UIContainer(this, 200, UIComponent.INHERITED);
@@ -134,20 +132,20 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.titleList.register(this);
 
         titleContainer.add(this.titleList);
-        listArea.add(titleContainer);
+        this.listArea.add(titleContainer);
 
         // Edit Container
-        editArea = new UIFormContainer(this, 220, 260, "");
-        editArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
-        editArea.setMovable(false);
-        editArea.setClosable(false);
-        editArea.setBorder(FontColors.WHITE, 1, 185);
-        editArea.setBackgroundAlpha(215);
-        editArea.setBottomPadding(3);
-        editArea.setRightPadding(3);
-        editArea.setTopPadding(3);
-        editArea.setLeftPadding(3);
-        editArea.setVisible(false);
+        this.editArea = new UIFormContainer(this, 220, 260, "");
+        this.editArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
+        this.editArea.setMovable(false);
+        this.editArea.setClosable(false);
+        this.editArea.setBorder(FontColors.WHITE, 1, 185);
+        this.editArea.setBackgroundAlpha(215);
+        this.editArea.setBottomPadding(3);
+        this.editArea.setRightPadding(3);
+        this.editArea.setTopPadding(3);
+        this.editArea.setLeftPadding(3);
+        this.editArea.setVisible(false);
 
         this.modeNameLabel = new UILabel(this, "Modify Title")
             .setFontOptions(FontOptions.builder()
@@ -256,7 +254,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.colorSelector.maxDisplayedOptions(7);
 
         // Add Color character button
-        buttonColor = new UIButtonBuilder(this)
+        this.buttonColor = new UIButtonBuilder(this)
             .width(40)
             .anchor(Anchor.TOP | Anchor.LEFT)
             .position(130, 125)
@@ -292,17 +290,17 @@ public final class ManageTitlesGUI extends SimpleScreen {
             this.colorSelector, this.buttonColor, this.formattedCheckbox, this.hiddenCheckbox, saveChangesButton);
 
         // Edit Container
-        playerArea = new UIFormContainer(this, 220, 260, "");
-        playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
-        playerArea.setMovable(false);
-        playerArea.setClosable(false);
-        playerArea.setBorder(FontColors.WHITE, 1, 185);
-        playerArea.setBackgroundAlpha(215);
-        playerArea.setBottomPadding(3);
-        playerArea.setRightPadding(3);
-        playerArea.setTopPadding(3);
-        playerArea.setLeftPadding(3);
-        playerArea.setVisible(true);
+        this.playerArea = new UIFormContainer(this, 220, 260, "");
+        this.playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
+        this.playerArea.setMovable(false);
+        this.playerArea.setClosable(false);
+        this.playerArea.setBorder(FontColors.WHITE, 1, 185);
+        this.playerArea.setBackgroundAlpha(215);
+        this.playerArea.setBottomPadding(3);
+        this.playerArea.setRightPadding(3);
+        this.playerArea.setTopPadding(3);
+        this.playerArea.setLeftPadding(3);
+        this.playerArea.setVisible(true);
 
         final UILabel playerLabel = new UILabel(this, "Player Title")
                 .setFontOptions(FontOptions.builder()
@@ -333,9 +331,9 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 .visible(true)
                 .build("button.remove");
 
-        this.playerArea.add(playerLabel, buttonApply, buttonRemove);
+        this.playerArea.add(playerLabel, this.buttonApply, this.buttonRemove);
 
-        titleSelectionLabel = new UILabel(this, "Available Titles:")
+        this.titleSelectionLabel = new UILabel(this, "Available Titles:")
             .setFontOptions(FontOptions.builder()
                 .from(FontColors.WHITE_FO)
                 .shadow(true)
@@ -382,9 +380,10 @@ public final class ManageTitlesGUI extends SimpleScreen {
             .listener(this)
             .build("button.close");
 
-        form.add(titleLabel, listArea, editArea, playerArea, titleSelectionLabel, buttonAdd, this.buttonDelete, this.editModeCheckbox, buttonClose);
+        this.form.add(titleLabel, this.listArea, this.editArea, this.playerArea, this.titleSelectionLabel, this.buttonAdd, this.buttonDelete, this
+            .editModeCheckbox, buttonClose);
 
-        this.addToScreen(form);
+        this.addToScreen(this.form);
     }
 
     @Subscribe
@@ -421,7 +420,6 @@ public final class ManageTitlesGUI extends SimpleScreen {
             case "checkbox.formatted":
                 this.formatContent(!this.formattedCheckbox.isChecked());
                 break;
-
             case "checkbox.editmode":
                 this.buttonAdd.setVisible(!this.editModeCheckbox.isChecked());
                 this.buttonDelete.setVisible(!this.editModeCheckbox.isChecked());
@@ -430,10 +428,12 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
                 if (!this.editModeCheckbox.isChecked()) {
                     this.titleSelectionLabel.setText("Server Titles");
-                    this.titleList.setItems(titleManager.getTitles());
+                    this.titleList.clearItems().setItems(titleManager.getTitles());
+                    this.inEditMode = true;
                 } else {
                     this.titleSelectionLabel.setText("Available Titles");
-                    this.titleList.setItems(titleManager.getAvailableTitles());
+                    this.titleList.clearItems().setItems(titleManager.getAvailableTitles());
+                    this.inEditMode = false;
                 }
 
                 break;
@@ -607,7 +607,16 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
     // Ordi's or Grinch's GUI System is beyond retarded as the list reference NEVER CHANGES YET IT NEEDS TO BE RESET? REALLY?
     public void refreshTitles() {
-        this.titleList.clearItems().setItems(titleManager.getTitles());
+        if (!this.inEditMode) {
+            this.titleList.clearItems().setItems(titleManager.getTitles());
+        }
+    }
+
+    // Lets keep the stupidity of the circus going shall we?!?!?
+    public void refreshAvailableTitles() {
+        if (this.inEditMode) {
+            this.titleList.clearItems().setItems(titleManager.getAvailableTitles());
+        }
     }
 
     // TODO: Merge this with the ExchangeItemComponent class as a new default style
