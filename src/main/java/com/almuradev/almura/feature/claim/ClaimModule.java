@@ -20,10 +20,7 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
         //this.packet().bind(ServerboundClaimRequestPacket.class, binder -> binder.handler(ServerboundClaimRequestPacketHandler.class, Platform.Type.SERVER));
         //this.packet().bind(ClientboundClaimPacket.class, binder -> binder.handler(ClientboundClaimPacketHandler.class, Platform.Type.CLIENT));
 
-        //this.facet().add(ClaimHandler.class);  // Don't load this yet, if SSP environment is missing the API at the moment this will cause crash.
-        // Todo: can you suggest a lamba to hide this behind a:
-        // this.game.getServiceManager().provide(GriefPreventionAPI.class).ifPresent((service) -> {}
-
+        this.facet().add(ClaimManager.class);
 
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {

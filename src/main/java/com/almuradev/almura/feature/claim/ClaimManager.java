@@ -10,26 +10,41 @@ package com.almuradev.almura.feature.claim;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
+import me.ryanhamshire.griefprevention.api.GriefPreventionApi;
 import me.ryanhamshire.griefprevention.api.event.*;
+import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
 import javax.inject.Inject;
 
-public final class ClaimHandler implements Witness {
+public final class ClaimManager implements Witness {
 
-    private final ServerNotificationManager serverNotificationManager;
     private final ChannelBinding.IndexedMessageChannel network;
+    private final CommandManager commandManager;
+    private final ServerNotificationManager notificationManager;
+
+    private GriefPreventionApi griefPreventionApi;
 
     @Inject
-    public ClaimHandler(final ServerNotificationManager serverNotificationManager, final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network) {
-        this.serverNotificationManager = serverNotificationManager;
+    public ClaimManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final CommandManager
+        commandManager, final ServerNotificationManager notificationManager) {
         this.network = network;
+        this.commandManager = commandManager;
+        this.notificationManager = notificationManager;
+    }
+
+    @Listener
+    public void onServiceChange(ChangeServiceProviderEvent event) {
+        if (event.getNewProviderRegistration().getService().equals(GriefPreventionApi.class)) {
+            this.griefPreventionApi = (GriefPreventionApi) event.getNewProviderRegistration().getProvider();
+        }
     }
 
     @Listener(order = Order.LAST)
@@ -61,4 +76,5 @@ public final class ClaimHandler implements Witness {
     public void onClaimFlagChange(final FlagClaimEvent event, @Getter("getTargetEntity") Player player) {
 
     }
+
 }

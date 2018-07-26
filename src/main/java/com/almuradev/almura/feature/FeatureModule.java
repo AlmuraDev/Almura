@@ -10,6 +10,7 @@ package com.almuradev.almura.feature;
 import com.almuradev.almura.feature.animal.AnimalModule;
 import com.almuradev.almura.feature.biome.BiomeModule;
 import com.almuradev.almura.feature.cache.CacheModule;
+import com.almuradev.almura.feature.claim.ClaimModule;
 import com.almuradev.almura.feature.complex.ComplexContentModule;
 import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.almura.feature.death.DeathModule;
@@ -75,6 +76,9 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 protected void configure() {
                     if (Sponge.getPluginManager().isLoaded("luckperms")) {
                         this.install(new PermissionsModule());
+                    }
+                    if (Sponge.getPluginManager().isLoaded("griefprevention")) {
+                        this.install(new ClaimModule());
                     }
                 }
             }
