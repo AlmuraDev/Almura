@@ -126,9 +126,12 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.titleList = new UIDynamicList<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
         this.titleList.setItemComponentFactory(TitleItemComponent::new);
         this.titleList.setItemComponentSpacing(1);
-        this.titleList.setCanDeselect(true);
+        this.titleList.setCanDeselect(false);
         this.titleList.setName("list.left");
-        this.titleList.setItems(titleManager.getTitles());
+        this.titleList.setItems(titleManager.getAvailableTitles());
+        if (!titleManager.getAvailableTitles().isEmpty()) {
+            this.titleList.setSelectedItem(titleManager.getAvailableTitles().get(0));
+        }
         this.titleList.register(this);
 
         titleContainer.add(this.titleList);
@@ -388,29 +391,30 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
     @Subscribe
     public void onUIListClickEvent(UIDynamicList.SelectEvent<Title> event) {
-        if (event.getNewValue() != null && this.editModeCheckbox.isChecked()) {
-            this.permissionField.setText(event.getNewValue().getPermission());
-            this.permissionField.setEditable(true);
-            this.permissionField.setEnabled(true);
-            this.idField.setText(event.getNewValue().getId());
-            this.idField.setEditable(false);
-            this.contentField.setText(event.getNewValue().getContent());
-            this.contentField.setEditable(true);
-            this.contentField.setEnabled(true);
-            this.modeNameLabel.setText("Modify Title");
-            this.hiddenCheckbox.setEnabled(true);
-            this.hiddenCheckbox.setChecked(event.getNewValue().isHidden());
-            this.formattedCheckbox.setChecked(true);
-            this.formattedCheckbox.setEnabled(true);
-            this.colorSelector.setEnabled(true);
-            this.buttonColor.setEnabled(true);
-            this.mode = TitleModifyType.MODIFY;
-            this.modeNameLabel.setVisible(true);
-            this.buttonDelete.setEnabled(true);
-            this.formatContent(this.formattedCheckbox.isChecked());
-        } else {
-            System.out.println("Update Player");
-            titleManager.setTitleContentForDisplay(event.getNewValue().copy());
+        if (event.getNewValue() != null) {
+            if (this.editModeCheckbox.isChecked()) {
+                this.permissionField.setText(event.getNewValue().getPermission());
+                this.permissionField.setEditable(true);
+                this.permissionField.setEnabled(true);
+                this.idField.setText(event.getNewValue().getId());
+                this.idField.setEditable(false);
+                this.contentField.setText(event.getNewValue().getContent());
+                this.contentField.setEditable(true);
+                this.contentField.setEnabled(true);
+                this.modeNameLabel.setText("Modify Title");
+                this.hiddenCheckbox.setEnabled(true);
+                this.hiddenCheckbox.setChecked(event.getNewValue().isHidden());
+                this.formattedCheckbox.setChecked(true);
+                this.formattedCheckbox.setEnabled(true);
+                this.colorSelector.setEnabled(true);
+                this.buttonColor.setEnabled(true);
+                this.mode = TitleModifyType.MODIFY;
+                this.modeNameLabel.setVisible(true);
+                this.buttonDelete.setEnabled(true);
+                this.formatContent(this.formattedCheckbox.isChecked());
+            } else {
+                titleManager.setTitleContentForDisplay(event.getNewValue().copy());
+            }
         }
     }
 
@@ -427,12 +431,18 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 this.playerArea.setVisible(this.editModeCheckbox.isChecked());
 
                 if (!this.editModeCheckbox.isChecked()) {
-                    this.titleSelectionLabel.setText("Server Titles");
+                    this.titleSelectionLabel.setText("Server Titles:");
                     this.titleList.clearItems().setItems(titleManager.getTitles());
+                    if (!titleManager.getTitles().isEmpty()) {
+                        this.titleList.setSelectedItem(titleManager.getTitles().get(0));
+                    }
                     this.inEditMode = true;
                 } else {
-                    this.titleSelectionLabel.setText("Available Titles");
+                    this.titleSelectionLabel.setText("Available Titles:");
                     this.titleList.clearItems().setItems(titleManager.getAvailableTitles());
+                    if (!titleManager.getAvailableTitles().isEmpty()) {
+                        this.titleList.setSelectedItem(titleManager.getAvailableTitles().get(0));
+                    }
                     this.inEditMode = false;
                 }
 
@@ -494,6 +504,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 this.mode = TitleModifyType.DELETE;
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Removing selected title"), 2));
                 titleManager.deleteTitle(this.idField.getText().toLowerCase().trim());
+                titleManager.setTitleContentForDisplay(null);
                 this.lockForm();
                 break;
 
@@ -608,14 +619,22 @@ public final class ManageTitlesGUI extends SimpleScreen {
     // Ordi's or Grinch's GUI System is beyond retarded as the list reference NEVER CHANGES YET IT NEEDS TO BE RESET? REALLY?
     public void refreshTitles() {
         if (!this.inEditMode) {
+            System.out.println("Received External Call");
             this.titleList.clearItems().setItems(titleManager.getTitles());
+            if (!titleManager.getTitles().isEmpty()) {
+                this.titleList.setSelectedItem(titleManager.getTitles().get(0));
+            }
         }
     }
 
     // Lets keep the stupidity of the circus going shall we?!?!?
     public void refreshAvailableTitles() {
         if (this.inEditMode) {
+            System.out.println("Received External Call 2");
             this.titleList.clearItems().setItems(titleManager.getAvailableTitles());
+            if (!titleManager.getAvailableTitles().isEmpty()) {
+                this.titleList.setSelectedItem(titleManager.getAvailableTitles().get(0));
+            }
         }
     }
 
