@@ -69,6 +69,11 @@ public final class ClientTitleManager implements Witness {
         return this.titles;
     }
 
+    @Nullable
+    public Title getAvailableTitle(final String id) {
+        return this.availableTitles.stream().filter(title -> title.getId().equalsIgnoreCase(id)).findAny().orElse(null);
+    }
+
     public List<Title> getAvailableTitles() {
         return this.availableTitles;
     }

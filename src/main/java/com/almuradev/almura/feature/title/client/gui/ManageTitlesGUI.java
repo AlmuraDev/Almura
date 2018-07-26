@@ -130,17 +130,13 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.titleList.setName("list.left");
         this.titleList.setItems(titleManager.getAvailableTitles());
         if (!titleManager.getAvailableTitles().isEmpty()) {
-            System.out.println("Availables not Empty" + " UNID: " + this.mc.player.getUniqueID());
             if (titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()) != null) {
-                System.out.println("got selected title");
                 titleManager.setTitleContentForDisplay(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()));
-                this.titleList.setSelectedItem(titleManager.getTitle(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()).getContent()));
+                this.titleList.setSelectedItem(titleManager.getAvailableTitle(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()).getId()));
             } else {
-                System.out.println("got top");
                 this.titleList.setSelectedItem(titleManager.getAvailableTitles().get(0));
                 titleManager.setTitleContentForDisplay(titleManager.getAvailableTitles().get(0));
             }
-
         }
         this.titleList.register(this);
 
@@ -445,13 +441,21 @@ public final class ManageTitlesGUI extends SimpleScreen {
                     this.titleList.clearItems().setItems(titleManager.getTitles());
                     if (!titleManager.getTitles().isEmpty()) {
                         this.titleList.setSelectedItem(titleManager.getTitles().get(0));
+                        this.idField.setText((titleManager.getTitles().get(0).getId()));
+                        this.permissionField.setText((titleManager.getTitles().get(0).getPermission()));
+                        this.contentField.setText((titleManager.getTitles().get(0).getContent()));
                     }
+                    this.mode = TitleModifyType.MODIFY;
                     this.inEditMode = true;
                 } else {
                     this.titleSelectionLabel.setText("Available Titles:");
                     this.titleList.clearItems().setItems(titleManager.getAvailableTitles());
-                    if (!titleManager.getAvailableTitles().isEmpty()) {
+                    if (titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()) != null) {
+                        titleManager.setTitleContentForDisplay(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()));
+                        this.titleList.setSelectedItem(titleManager.getAvailableTitle(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()).getId()));
+                    } else {
                         this.titleList.setSelectedItem(titleManager.getAvailableTitles().get(0));
+                        titleManager.setTitleContentForDisplay(titleManager.getAvailableTitles().get(0));
                     }
                     this.inEditMode = false;
                 }
@@ -484,8 +488,9 @@ public final class ManageTitlesGUI extends SimpleScreen {
             case "button.remove":
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title"), Text.of("Removing Title on server..."), 2));
                 titleManager.setTitleContentForDisplay(null);
-                titleManager.requestSelectedTitle(this.titleList.getSelectedItem());
+                titleManager.requestSelectedTitle(null);
                 this.close();
+
                 break;
 
             case "button.add":
@@ -513,8 +518,12 @@ public final class ManageTitlesGUI extends SimpleScreen {
             case "button.delete":
                 this.mode = TitleModifyType.DELETE;
                 notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Removing selected title"), 2));
-                titleManager.deleteTitle(this.idField.getText().toLowerCase().trim());
+                if (this.idField.getText().toLowerCase().trim().equalsIgnoreCase(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()).getId())) {
+                    titleManager.requestSelectedTitle(null); // remove the title as the selected title from the user if its the one begin deleted.
+                }
                 titleManager.setTitleContentForDisplay(null);
+                titleManager.deleteTitle(this.idField.getText().toLowerCase().trim());
+
                 this.lockForm();
                 break;
 
@@ -530,10 +539,10 @@ public final class ManageTitlesGUI extends SimpleScreen {
                         break;
                 }
 
-
                 this.lockForm();
                 break;
             case "button.close":
+                titleManager.setTitleContentForDisplay(null);
                 this.close();
                 break;
         }
@@ -628,22 +637,25 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
     // Ordi's or Grinch's GUI System is beyond retarded as the list reference NEVER CHANGES YET IT NEEDS TO BE RESET? REALLY?
     public void refreshTitles() {
-        if (!this.inEditMode) {
-            System.out.println("Received External Call");
+        if (this.inEditMode) {
             this.titleList.clearItems().setItems(titleManager.getTitles());
             if (!titleManager.getTitles().isEmpty()) {
                 this.titleList.setSelectedItem(titleManager.getTitles().get(0));
+                this.mode = TitleModifyType.MODIFY;
             }
         }
     }
 
     // Lets keep the stupidity of the circus going shall we?!?!?
     public void refreshAvailableTitles() {
-        if (this.inEditMode) {
-            System.out.println("Received External Call 2");
+        if (!this.inEditMode) {
             this.titleList.clearItems().setItems(titleManager.getAvailableTitles());
-            if (!titleManager.getAvailableTitles().isEmpty()) {
+            if (titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()) != null) {
+                titleManager.setTitleContentForDisplay(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()));
+                this.titleList.setSelectedItem(titleManager.getAvailableTitle(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()).getId()));
+            } else {
                 this.titleList.setSelectedItem(titleManager.getAvailableTitles().get(0));
+                titleManager.setTitleContentForDisplay(titleManager.getAvailableTitles().get(0));
             }
         }
     }
