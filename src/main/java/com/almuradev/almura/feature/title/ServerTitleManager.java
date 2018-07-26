@@ -123,6 +123,9 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         // Cache available titles for the joiner
         this.calculateAvailableTitlesFor(player);
 
+        // Send joiner available titles (to cache)
+        this.getAvailableTitlesFor(player).ifPresent(availableTitles -> this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
+
         // Query database for selected title for joiner
         this.scheduler.createTaskBuilder()
             .async()
@@ -221,9 +224,18 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                                 this.calculateAvailableTitlesFor(player);
 
                                 this.verifySelectedTitle(player, null);
+
+                                this.getAvailableTitlesFor(player).ifPresent(availableTitles -> this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
                             });
 
-
+                            // Send all selected titles out again as we've verified and corrected them in-case load changed
+                            this.network.sendToAll(new ClientboundSelectedTitleBulkPacket(
+                                    this.selectedTitles
+                                        .entrySet()
+                                        .stream()
+                                        .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().getId()))
+                                )
+                            );
                         })
                         .submit(this.container);
                 } catch (SQLException e) {
