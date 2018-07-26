@@ -666,60 +666,25 @@ public final class ManageTitlesGUI extends SimpleScreen {
     // TODO: Merge this with the ExchangeItemComponent class as a new default style
     public static class TitleItemComponent extends UIDynamicList.ItemComponent<Title> {
 
-        private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
-        private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
-        private static final int INNER_HOVER_COLOR = org.spongepowered.api.util.Color.ofRgb(40, 40, 40).getRgb();
-        private static final int INNER_SELECTED_COLOR = org.spongepowered.api.util.Color.ofRgb(65, 65, 65).getRgb();
-
         private UIExpandingLabel titleLabel;
 
         TitleItemComponent(final MalisisGui gui, final Title title) {
             super(gui, title);
 
-            // Set padding
-            this.setPadding(3, 3);
-
-            // Set colors
-            this.setColor(INNER_COLOR);
-            this.setBorder(BORDER_COLOR, 1, 255);
-
-            // Set default size
-            this.setSize(0, 20);
-
-            this.construct(gui, item);
+            // Set size
+            this.setSize(UIComponent.INHERITED, 20);
         }
 
         @SuppressWarnings("deprecation")
-        protected void construct(final MalisisGui gui, final Title title) {
-
-            this.titleLabel = new UIExpandingLabel(gui, Text.of(TextColors.WHITE, title.getContent()));
-            if (title.isHidden()) {
+        @Override
+        protected void construct(final MalisisGui gui) {
+            this.titleLabel = new UIExpandingLabel(gui, Text.of(TextColors.WHITE, item.getContent()));
+            if (item.isHidden()) {
                 this.titleLabel.setText(this.titleLabel.getText() + TextFormatting.WHITE + " [HIDDEN]");
             }
             this.titleLabel.setPosition(2, 0, Anchor.LEFT | Anchor.MIDDLE);
 
             this.add(this.titleLabel);
-        }
-
-        @Override
-        public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            if (this.parent instanceof UIDynamicList) {
-                final UIDynamicList parent = (UIDynamicList) this.parent;
-
-                final int width = parent.getWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
-
-                this.setSize(width, getHeight());
-
-                if (parent.getSelectedItem() == this.item) {
-                    this.setColor(INNER_SELECTED_COLOR);
-                } else if (this.isHovered()) {
-                    this.setColor(INNER_HOVER_COLOR);
-                } else {
-                    this.setColor(INNER_COLOR);
-                }
-
-                super.drawBackground(renderer, mouseX, mouseY, partialTick);
-            }
         }
     }
 }

@@ -180,6 +180,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.resultsList.setItemComponentFactory((g, e) -> new ResultItemComponent(this, e));
         this.resultsList.setItemComponentSpacing(1);
         this.resultsList.setCanDeselect(true);
+        this.resultsList.setCanInternalClick(true);
         this.resultsList.setSelectConsumer((i) -> this.updateControls());
 
         // Search button
@@ -430,7 +431,7 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public static String withSuffix(long value) {
-        if (value < 1000000) {
+        if (value < MILLION) {
             return defaultDecimalFormat.format(value);
         } else if (value < BILLION) {
             return defaultDecimalFormat.format(value / MILLION) + "m";
@@ -441,67 +442,22 @@ public final class ExchangeScreen extends SimpleScreen {
         return defaultDecimalFormat.format(value / TRILLION) + "t";
     }
 
-    public static class ExchangeItemComponent<T> extends UIDynamicList.ItemComponent<T> {
-
-        private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
-        private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
-        private static final int INNER_HOVER_COLOR = org.spongepowered.api.util.Color.ofRgb(40, 40, 40).getRgb();
-        private static final int INNER_SELECTED_COLOR = org.spongepowered.api.util.Color.ofRgb(65, 65, 65).getRgb();
-
-        public ExchangeItemComponent(final MalisisGui gui, final T item) {
-            super(gui, item);
-
-            // Set padding
-            this.setPadding(3, 3);
-
-            // Set colors
-            this.setColor(INNER_COLOR);
-            this.setBorder(BORDER_COLOR, 1, 255);
-
-            // Set default size
-            this.setSize(0, 24);
-
-            this.construct(gui, item);
-        }
-
-        protected void construct(final MalisisGui gui, final T item) {}
-
-        @Override
-        public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            if (this.parent instanceof UIDynamicList) {
-                final UIDynamicList parent = (UIDynamicList) this.parent;
-
-                final int width = parent.getWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
-
-                this.setSize(width, getHeight());
-
-                if (parent.getSelectedItem() == this.item) {
-                    this.setColor(INNER_SELECTED_COLOR);
-                } else if (this.isHovered()) {
-                    this.setColor(INNER_HOVER_COLOR);
-                } else {
-                    this.setColor(INNER_COLOR);
-                }
-
-                super.drawBackground(renderer, mouseX, mouseY, partialTick);
-            }
-        }
-    }
-
-    public static class BaseItemComponent extends ExchangeItemComponent<MockOffer> {
+    public static class ExchangeItemComponent extends UIDynamicList.ItemComponent<MockOffer> {
 
         private UIComplexImage image;
         private UIExpandingLabel itemLabel;
 
-        public BaseItemComponent(final MalisisGui gui, final MockOffer offer) {
+        public ExchangeItemComponent(final MalisisGui gui, final MockOffer offer) {
             super(gui, offer);
         }
 
         @SuppressWarnings("deprecation")
         @Override
-        protected void construct(final MalisisGui gui, final MockOffer offer) {
+        protected void construct(final MalisisGui gui) {
+            this.setSize(0, 24);
+
             // Add components
-            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(offer.item.copy());
+            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(item.item.copy());
             fakeStack.setCount(1);
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
@@ -517,7 +473,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
             // Limit item name to prevent over drawing
             final StringBuilder itemTextBuilder = new StringBuilder();
-            for (char c : offer.item.getTranslation().get().toCharArray()) {
+            for (char c : item.item.getTranslation().get().toCharArray()) {
                 final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c);
                 if (textWidth > maxItemTextWidth + 4) {
                     itemTextBuilder.replace(itemTextBuilder.length() - 3, itemTextBuilder.length(), "...");
@@ -526,11 +482,11 @@ public final class ExchangeScreen extends SimpleScreen {
                 itemTextBuilder.append(c);
             }
             this.itemLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.WHITE, itemTextBuilder.toString(), TextColors.GRAY, " x ", withSuffix(offer.quantity))));
+                    Text.of(TextColors.WHITE, itemTextBuilder.toString(), TextColors.GRAY, " x ", withSuffix(item.quantity))));
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
-            if (offer.quantity >= (long) MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, defaultDecimalFormat.format(offer.quantity)));
+            if (item.quantity >= (long) MILLION) {
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, defaultDecimalFormat.format(item.quantity)));
             }
 
             this.add(this.image, this.itemLabel);
@@ -542,7 +498,7 @@ public final class ExchangeScreen extends SimpleScreen {
         }
     }
 
-    public static final class ResultItemComponent extends BaseItemComponent {
+    public static final class ResultItemComponent extends ExchangeItemComponent {
 
         private UILabel sellerLabel;
         private UIExpandingLabel priceLabel;
@@ -553,48 +509,46 @@ public final class ExchangeScreen extends SimpleScreen {
 
         @SuppressWarnings("deprecation")
         @Override
-        protected void construct(final MalisisGui gui, final MockOffer offer) {
-            super.construct(gui, offer);
+        protected void construct(final MalisisGui gui) {
+            super.construct(gui);
 
             final int maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
 
             this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GRAY, TextStyles.ITALIC, offer.playerName)));
+                    Text.of(TextColors.GRAY, TextStyles.ITALIC, item.playerName)));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
-            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea"));
+            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, item.pricePer, TextColors.GRAY, "/ea"));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
-            this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(offer.quantity).multiply(offer.pricePer)));
+            this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(item.quantity).multiply(item.pricePer)));
 
             this.add(this.sellerLabel, this.priceLabel);
         }
     }
 
-    public static final class ListingItemComponent extends BaseItemComponent {
+    public static final class ListingItemComponent extends ExchangeItemComponent {
 
         private UIContainer<?> statusContainer;
         private UIExpandingLabel priceLabel;
-        private MockOffer item;
 
         private ListingItemComponent(MalisisGui gui, MockOffer offer) {
             super(gui, offer);
-            this.item = offer;
         }
 
         @SuppressWarnings("deprecation")
         @Override
-        protected void construct(final MalisisGui gui, final MockOffer offer) {
-            super.construct(gui, offer);
+        protected void construct(final MalisisGui gui) {
+            super.construct(gui);
 
             this.statusContainer = new UIContainer<>(gui, 5, this.height - (this.borderSize * 2));
             this.statusContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.statusContainer.setColor(FontColors.DARK_GREEN);
 
-            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, offer.pricePer, TextColors.GRAY, "/ea"));
+            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, item.pricePer, TextColors.GRAY, "/ea"));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(this.statusContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
-            this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(offer.quantity).multiply(offer.pricePer)));
+            this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(item.quantity).multiply(item.pricePer)));
 
             this.add(this.statusContainer, this.priceLabel);
         }

@@ -29,13 +29,13 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
-    private final List<T> items = new ArrayList<>();
     private final UIScrollBar scrollbar;
-    private boolean canDeselect, isDirty, readOnly;
+    private List<T> items = new ArrayList<>();
+    private boolean canDeselect, canInternalClick, isDirty, readOnly;
     private int itemSpacing = 0;
     private BiFunction<MalisisGui, T, ? extends ItemComponent<?>> itemComponentFactory = DefaultItemComponent::new;
     @Nullable private T selectedItem;
-    @Nullable Consumer<T> onSelectConsumer;
+    @Nullable private Consumer<T> onSelectConsumer;
 
     public UIDynamicList(MalisisGui gui, int width, int height) {
         super(gui, width, height);
@@ -52,6 +52,15 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      */
     public List<T> getItems() {
         return Collections.unmodifiableList(this.items);
+    }
+
+    /**
+     * Gets the item located at the index provided
+     * @param index The index
+     * @return The item located at the specified index
+     */
+    public T getItem(int index) {
+        return this.items.get(index);
     }
 
     /**
@@ -89,11 +98,15 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     /**
      * Clears current items and adds provided items, restricted by max limit if previously set
      * @param items The items to set
-     * @return True if all items were added, otherwise false
+     * @return The {@link UIDynamicList<T>}
      */
-    public boolean setItems(List<T> items) {
+    public UIDynamicList<T> setItems(List<T> items) {
         this.items.clear();
-        return this.addItems(items);
+        this.items.addAll(items);
+        this.isDirty = true;
+        this.fireEvent(new ItemsChangedEvent<>(this));
+
+        return this;
     }
 
     /**
@@ -107,6 +120,18 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         this.fireEvent(new ItemsChangedEvent<>(this));
 
         return result;
+    }
+
+    /**
+     * Removes the item located at the index provided
+     * @param index The index
+     * @return The {@link UIDynamicList<T>}
+     */
+    public UIDynamicList<T> removeItem(int index) {
+        this.items.remove(index);
+        this.isDirty = true;
+        this.fireEvent(new ItemsChangedEvent<>(this));
+        return this;
     }
 
     /**
@@ -217,6 +242,25 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     }
 
     /**
+     * Gets internal click status
+     * @return The value to set the status as
+     */
+    public boolean canInternalClick() {
+        return this.canInternalClick;
+    }
+
+    /**
+     * Sets internal click status
+     * @param canInternalClick canInternalClick The internal click enable status. If true the clicks on an item component will not count against
+     * the item component.
+     * @return The {@link UIDynamicList<T>}
+     */
+    public UIDynamicList<T> setCanInternalClick(boolean canInternalClick) {
+        this.canInternalClick = canInternalClick;
+        return this;
+    }
+
+    /**
      * Gets the item component factory
      * @return The item component factory
      */
@@ -291,19 +335,43 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     }
 
     public static class ItemComponent<T> extends UIContainer<ItemComponent<T>> {
+
+        private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
+        private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
+        private static final int INNER_HOVER_COLOR = org.spongepowered.api.util.Color.ofRgb(40, 40, 40).getRgb();
+        private static final int INNER_SELECTED_COLOR = org.spongepowered.api.util.Color.ofRgb(65, 65, 65).getRgb();
+
         protected T item;
 
         public ItemComponent(MalisisGui gui, T item) {
             super(gui);
+
+            // Set the item
             this.item = item;
+
+            // Set padding
+            this.setPadding(3, 3);
+
+            // Set colors
+            this.setColor(INNER_COLOR);
+            this.setBorder(BORDER_COLOR, 1, 255);
+
+            // Set default size
+            setSize(UIComponent.INHERITED, 15);
+
+            this.construct(gui);
         }
+
+        protected void construct(final MalisisGui gui) {}
 
         @SuppressWarnings("unchecked")
         @Override
         public boolean onClick(int x, int y) {
             final UIComponent component = getComponentAt(x, y);
-            if (this.equals(component) && this.parent instanceof UIDynamicList) {
-                final UIDynamicList parent = (UIDynamicList) this.parent;
+
+            final UIDynamicList parent = (UIDynamicList) this.parent;
+
+            if (this.equals(component) || !this.equals(component) && !parent.canInternalClick && hasParent(this, component)) {
 
                 if (parent.isReadOnly()) {
                     return false;
@@ -319,8 +387,46 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
             return true;
         }
 
+        @Override
+        public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+            if (this.parent instanceof UIDynamicList) {
+                final UIDynamicList parent = (UIDynamicList) this.parent;
+
+                final int width = parent.getWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
+
+                this.setSize(width, getHeight());
+
+                if (parent.getSelectedItem() == this.item) {
+                    this.setColor(INNER_SELECTED_COLOR);
+                } else if (this.isHovered()) {
+                    this.setColor(INNER_HOVER_COLOR);
+                } else {
+                    this.setColor(INNER_COLOR);
+                }
+
+                super.drawBackground(renderer, mouseX, mouseY, partialTick);
+            }
+        }
+
         protected void setParent(UIDynamicList<T> parent) {
             this.parent = parent;
+        }
+
+        private static boolean hasParent(UIComponent parent, UIComponent component) {
+            final UIComponent componentParent = component.getParent();
+            if (componentParent == null) {
+                return false;
+            }
+
+            if (componentParent == parent) {
+                return true;
+            }
+
+            if (componentParent.getParent() != null) {
+                return hasParent(parent, componentParent.getParent());
+            }
+
+            return false;
         }
     }
 
@@ -328,7 +434,6 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
         public DefaultItemComponent(MalisisGui gui, T item) {
             super(gui, item);
-            setSize(UIComponent.INHERITED, 15);
         }
 
         @Override

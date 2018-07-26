@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
 public class ExchangeOfferScreen extends SimpleScreen {
@@ -92,8 +91,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
                 Text.of(TextColors.WHITE, "Inventory"),
                 Text.of(TextColors.WHITE, "Held Items"),
-                ExchangeScreen.BaseItemComponent::new,
-                ExchangeScreen.BaseItemComponent::new);
+                ExchangeScreen.ExchangeItemComponent::new,
+                ExchangeScreen.ExchangeItemComponent::new);
         this.offerContainer.setItemLimit(this.maxOfferSlots, UIDualListContainer.ContainerSide.RIGHT);
         this.offerContainer.register(this);
 
