@@ -16,6 +16,7 @@ package com.almuradev.almura.feature.nick.client.gui;
  */
 
 import com.almuradev.almura.feature.nick.ClientNickManager;
+import com.almuradev.almura.feature.nick.NickUtil;
 import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
 import com.almuradev.almura.feature.nick.network.ServerboundNucleusNameChangePacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
@@ -236,8 +237,6 @@ public final class NicknameGUI extends SimpleScreen {
 
             case "button.apply":
                 final Text validateText = Text.of(this.nicknameTextbox.getText());
-                final String regexPattern = "[a-zA-Z0-9_§]+";
-                final Pattern nickNameRegex = Pattern.compile(regexPattern);
 
                 if (this.nicknameTextbox.getText().isEmpty()) {
                     notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have blank title!"),5));
@@ -254,7 +253,7 @@ public final class NicknameGUI extends SimpleScreen {
                     break;
                 }
 
-                if (!nickNameRegex.matcher(validateText.toPlain()).matches()) {
+                if (!NickUtil.nickNameRegex.matcher(validateText.toPlain()).matches()) {
                     notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Invalid Character in Nickname!"), 5));
                     break;
                 }

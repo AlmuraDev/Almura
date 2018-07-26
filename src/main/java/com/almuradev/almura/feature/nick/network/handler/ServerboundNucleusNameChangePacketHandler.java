@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.nick.network.handler;
 
+import com.almuradev.almura.feature.nick.NickUtil;
 import com.almuradev.almura.feature.nick.ServerNickManager;
 import com.almuradev.almura.feature.nick.network.ServerboundNucleusNameChangePacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
@@ -35,9 +36,6 @@ public final class ServerboundNucleusNameChangePacketHandler implements MessageH
     private final ServerNickManager nickManager;
     private final ServerNotificationManager notificationManager;
 
-    private static final String regexPattern = "[a-zA-Z0-9_§]+";
-    private static final Pattern nickNameRegex = Pattern.compile(regexPattern);
-
     @Inject
     public ServerboundNucleusNameChangePacketHandler(final Game game, final ServerNickManager nickManager, final ServerNotificationManager notificationManager) {
         this.game = game;
@@ -61,7 +59,7 @@ public final class ServerboundNucleusNameChangePacketHandler implements MessageH
                     return;
                 }
 
-                if (!nickNameRegex.matcher(nickname.toPlain()).matches()) {
+                if (!NickUtil.nickNameRegex.matcher(nickname.toPlain()).matches()) {
                     this.notificationManager
                         .sendPopupNotification(player, Text.of("Nickname Error!"), Text.of("Invalid Character in Nickname!"), 5);
                 }
