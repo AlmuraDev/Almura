@@ -76,9 +76,9 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 protected void configure() {
                     if (Sponge.getPluginManager().isLoaded("luckperms")) {
                         this.install(new PermissionsModule());
-                    }
-                    if (Sponge.getPluginManager().isLoaded("griefprevention")) {
-                        this.install(new ClaimModule());
+                        if (Sponge.getPluginManager().isLoaded("griefprevention")) {
+                            this.install(new ClaimModule());
+                        }
                     }
                 }
             }
