@@ -142,7 +142,6 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
                         this.scheduler
                             .createTaskBuilder()
-                            .delayTicks(5)
                             .execute(() -> {
                                 final Title selectedTitle = this.getTitle(titleId).orElse(null);
 
@@ -225,7 +224,8 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
                                 this.verifySelectedTitle(player, null);
 
-                                this.getAvailableTitlesFor(player).ifPresent(availableTitles -> this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
+                                final Set<Title> availableTitles = this.getAvailableTitlesFor(player).orElse(null);
+                                this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles));
                             });
 
                             // Send all selected titles out again as we've verified and corrected them in-case load changed
