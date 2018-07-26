@@ -620,6 +620,9 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 return;
             }
         }
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            titleManager.setTitleContentForDisplay(null);
+        }
         super.keyTyped(keyChar, keyCode);
         this.lastUpdate = 0; // Reset the timer when key is typed.
     }
