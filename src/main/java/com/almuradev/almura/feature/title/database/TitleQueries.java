@@ -119,4 +119,6 @@ public final class TitleQueries {
             .insertInto(TITLE_SELECT_HISTORY, TITLE_SELECT_HISTORY.OLD_TITLE, TITLE_SELECT_HISTORY.HOLDER)
             .values(oldId, holderData);
     }
+
+    private TitleQueries () {}
 }

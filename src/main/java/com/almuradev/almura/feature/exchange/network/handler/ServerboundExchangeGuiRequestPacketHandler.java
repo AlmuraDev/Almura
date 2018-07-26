@@ -8,8 +8,9 @@
 package com.almuradev.almura.feature.exchange.network.handler;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
+import com.almuradev.almura.feature.exchange.ServerExchangeManager;
+import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
@@ -25,20 +26,22 @@ import org.spongepowered.api.network.RemoteConnection;
 
 import javax.inject.Inject;
 
-public final class ServerboundExchangeOpenRequestPacketHandler implements MessageHandler<ServerboundExchangeOpenRequestPacket> {
+public final class ServerboundExchangeGuiRequestPacketHandler implements MessageHandler<ServerboundExchangeGuiRequestPacket> {
 
     private final ChannelBinding.IndexedMessageChannel network;
+    private final ServerExchangeManager exchangeManager;
     private final ServerNotificationManager notificationManager;
 
     @Inject
-    public ServerboundExchangeOpenRequestPacketHandler(final @ChannelId(NetworkConfig
-        .CHANNEL) ChannelBinding.IndexedMessageChannel network, final ServerNotificationManager notificationManager) {
+    public ServerboundExchangeGuiRequestPacketHandler(final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network,
+        final ServerExchangeManager exchangeManager, final ServerNotificationManager notificationManager) {
         this.network = network;
+        this.exchangeManager = exchangeManager;
         this.notificationManager = notificationManager;
     }
 
     @Override
-    public void handleMessage(ServerboundExchangeOpenRequestPacket message, RemoteConnection connection, Platform.Type side) {
+    public void handleMessage(ServerboundExchangeGuiRequestPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
             .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
@@ -48,7 +51,7 @@ public final class ServerboundExchangeOpenRequestPacketHandler implements Messag
                 return;
             }
 
-            this.network.sendTo(player, new ClientboundExchangeOpenResponsePacket());
+            this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(message.id));
         }
     }
 }

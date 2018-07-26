@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
-import com.almuradev.almura.feature.exchange.MockOffer;
+import com.almuradev.almura.feature.exchange.listing.MockOffer;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;

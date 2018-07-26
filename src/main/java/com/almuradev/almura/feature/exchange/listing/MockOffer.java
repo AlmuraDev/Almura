@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange;
+package com.almuradev.almura.feature.exchange.listing;
 
 import com.google.common.base.MoreObjects;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,16 +16,16 @@ import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.UUID;
 
-public final class MockOffer {
+public class MockOffer {
 
     private static final DecimalFormat FORMAT = new DecimalFormat("0.00");
 
     public final Instant instant;
     public final ItemStack item;
     public final BigDecimal pricePer;
+    public final UUID playerUuid;
     public final String playerName;
     public final int slotId;
-    private final UUID playerUuid;
     public long quantity;
     public boolean listed;
 

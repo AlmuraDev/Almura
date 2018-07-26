@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui.component;
 
-import com.almuradev.almura.feature.exchange.MockOffer;
+import com.almuradev.almura.feature.exchange.listing.MockOffer;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;

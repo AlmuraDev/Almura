@@ -79,8 +79,8 @@ public final class Title implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Title title = (Title) o;
-        return Objects.equals(this.id, title.id);
+        final Title other = (Title) o;
+        return Objects.equals(this.id, other.id);
     }
 
     @Override

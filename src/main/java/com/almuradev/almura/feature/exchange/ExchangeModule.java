@@ -8,10 +8,10 @@
 package com.almuradev.almura.feature.exchange;
 
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
-import com.almuradev.almura.feature.exchange.network.ClientboundExchangeOpenResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeOpenRequestPacket;
-import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeOpenResponsePacketHandler;
-import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeOpenRequestPacketHandler;
+import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
+import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeGuiResponsePacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeGuiRequestPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -24,10 +24,12 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
     @Override
     protected void configure() {
         this.packet()
-            .bind(ServerboundExchangeOpenRequestPacket.class, binder -> binder.handler(ServerboundExchangeOpenRequestPacketHandler.class, Platform
+            .bind(ServerboundExchangeGuiRequestPacket.class, binder -> binder.handler(ServerboundExchangeGuiRequestPacketHandler.class, Platform
                 .Type.SERVER))
-            .bind(ClientboundExchangeOpenResponsePacket.class, binder -> binder.handler(ClientboundExchangeOpenResponsePacketHandler.class, Platform
+            .bind(ClientboundExchangeGuiResponsePacket.class, binder -> binder.handler(ClientboundExchangeGuiResponsePacketHandler.class, Platform
                 .Type.CLIENT));
+
+        this.facet().add(ServerExchangeManager.class);
 
         this.on(Platform.Type.CLIENT, () -> {
 

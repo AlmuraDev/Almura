@@ -7,8 +7,8 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
-import com.almuradev.almura.feature.exchange.MockOffer;
 import com.almuradev.almura.feature.exchange.client.gui.component.UIExchangeOfferContainer;
+import com.almuradev.almura.feature.exchange.listing.MockOffer;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
