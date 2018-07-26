@@ -264,7 +264,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                 if (kv.getValue().isHidden()) {
                     return player.hasPermission(Almura.ID + ".title.admin");
                 }
-                return player.hasPermission(kv.getValue().getId());
+                return player.hasPermission(kv.getValue().getPermission());
             })
             .map(Map.Entry::getValue)
             .collect(Collectors.toCollection(HashSet::new));
