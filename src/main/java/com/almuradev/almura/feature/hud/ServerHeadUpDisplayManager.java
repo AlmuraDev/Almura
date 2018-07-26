@@ -7,14 +7,12 @@
  */
 package com.almuradev.almura.feature.hud;
 
-import com.almuradev.almura.core.server.config.ServerConfiguration;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
-import com.almuradev.toolbox.config.map.MappedConfiguration;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
 import net.kyori.membrane.facet.Activatable;
 import org.spongepowered.api.Game;
@@ -42,10 +40,9 @@ import org.spongepowered.api.service.economy.transaction.TransactionResult;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 
-import java.math.BigDecimal;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.math.BigDecimal;
 
 public final class ServerHeadUpDisplayManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
 
