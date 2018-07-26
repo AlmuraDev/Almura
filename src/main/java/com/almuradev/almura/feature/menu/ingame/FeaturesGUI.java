@@ -49,7 +49,7 @@ public final class FeaturesGUI extends SimpleScreen {
     private boolean unlockMouse = true;
     private boolean isAdmin = false;
     private UILabel titleLabel;
-    private UIButton guideButton, titleButton, manageTitleButton, nicknameButton, exchangeButton, serverShopButton, npcShopButton, accessoriesButton;
+    private UIButton guideButton, manageTitleButton, nicknameButton, exchangeButton, serverShopButton, npcShopButton, accessoriesButton;
 
     private World world;
     private EntityPlayerSP player;
@@ -104,21 +104,12 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.nickname");
 
-       // Title button
-       titleButton = new UIButtonBuilder(this)
-                .width(100)
-                .anchor(Anchor.TOP | Anchor.CENTER)
-                .text("Set a Title")
-                .position(0, nicknameButton.getY() + 18)
-                .listener(this)
-                .build("button.title.select");
-
        // Manage Titles button
        manageTitleButton = new UIButtonBuilder(this)
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("Manage Titles")
-                .position(0, titleButton.getY() + 18)
+                .position(0, nicknameButton.getY() + 18)
                 .listener(this)
                 .build("button.title.manage");
 
@@ -170,7 +161,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel, guideButton, exchangeButton, titleButton, manageTitleButton, nicknameButton, accessoriesButton, serverShopButton, npcShopButton, buttonClose);
+        form.add(titleLabel, guideButton, exchangeButton,  manageTitleButton, nicknameButton, accessoriesButton, serverShopButton, npcShopButton, buttonClose);
 
         addToScreen(form);
     }
@@ -190,7 +181,6 @@ public final class FeaturesGUI extends SimpleScreen {
                 new StoreListScreen().display();
                 break;
             case "button.title.manage":
-                // Todo: need packet based request here.
                 titleManager.requestManageTitlesGUI();
                 break;
             case "button.guide":
@@ -198,9 +188,6 @@ public final class FeaturesGUI extends SimpleScreen {
                 break;
             case "button.nickname":
                 nickManager.requestNicknameGUI();
-                break;
-            case "button.title.select":
-                titleManager.requestSelectTitleGUI();
                 break;
             case "button.close":
                 this.close();

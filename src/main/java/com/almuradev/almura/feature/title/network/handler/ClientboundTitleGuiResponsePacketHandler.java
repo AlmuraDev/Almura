@@ -7,10 +7,7 @@
  */
 package com.almuradev.almura.feature.title.network.handler;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.almuradev.almura.feature.title.client.gui.ManageTitlesGUI;
-import com.almuradev.almura.feature.title.client.gui.SelectTitleGUI;
 import com.almuradev.almura.feature.title.network.ClientboundTitleGuiResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -26,16 +23,8 @@ public final class ClientboundTitleGuiResponsePacketHandler implements MessageHa
     @Override
     public void handleMessage(ClientboundTitleGuiResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-            checkNotNull(message.type);
-
-            switch (message.type) {
-                case MANAGE:
-                    new ManageTitlesGUI().display();
-                    break;
-                case SELECT:
-                    new SelectTitleGUI().display();
-                    break;
-            }
+            new ManageTitlesGUI(message.isAdmin).display();
         }
     }
 }
+

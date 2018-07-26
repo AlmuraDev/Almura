@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.title;
 
 import com.almuradev.almura.feature.title.client.gui.ManageTitlesGUI;
-import com.almuradev.almura.feature.title.client.gui.SelectTitleGUI;
 import com.almuradev.almura.feature.title.network.ClientboundAvailableTitlesResponsePacket;
 import com.almuradev.almura.feature.title.network.ClientboundSelectedTitleBulkPacket;
 import com.almuradev.almura.feature.title.network.ClientboundSelectedTitlePacket;
@@ -74,7 +73,6 @@ public final class TitleModule extends AbstractModule implements CommonBinder {
                 protected void configure() {
                     this.facet().add(ClientTitleManager.class);
                     this.requestStaticInjection(RenderPlayer.class);
-                    this.requestStaticInjection(SelectTitleGUI.class);
                     this.requestStaticInjection(ManageTitlesGUI.class);
                 }
             }

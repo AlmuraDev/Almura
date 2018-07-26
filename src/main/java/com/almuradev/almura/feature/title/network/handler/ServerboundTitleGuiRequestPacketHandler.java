@@ -7,14 +7,10 @@
  */
 package com.almuradev.almura.feature.title.network.handler;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ServerTitleManager;
-import com.almuradev.almura.feature.title.Title;
-import com.almuradev.almura.feature.title.TitleGuiType;
 import com.almuradev.almura.feature.title.network.ClientboundAvailableTitlesResponsePacket;
 import com.almuradev.almura.feature.title.network.ClientboundTitleGuiResponsePacket;
 import com.almuradev.almura.feature.title.network.ServerboundTitleGuiRequestPacket;
@@ -31,8 +27,6 @@ import org.spongepowered.api.network.PlayerConnection;
 import org.spongepowered.api.network.RemoteConnection;
 import org.spongepowered.api.text.Text;
 
-import java.util.Set;
-
 import javax.inject.Inject;
 
 public final class ServerboundTitleGuiRequestPacketHandler implements MessageHandler<ServerboundTitleGuiRequestPacket> {
@@ -43,7 +37,7 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
 
     @Inject
     public ServerboundTitleGuiRequestPacketHandler(final ServerTitleManager manager, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
-        .IndexedMessageChannel network, final ClientNotificationManager clientNotificationManager) {
+            .IndexedMessageChannel network, final ClientNotificationManager clientNotificationManager) {
         this.manager = manager;
         this.network = network;
         this.clientNotificationManager = clientNotificationManager;
@@ -52,36 +46,20 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
     @Override
     public void handleMessage(final ServerboundTitleGuiRequestPacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
-            .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
-
-            checkNotNull(message.type);
-
+                .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
 
-            if (message.type == TitleGuiType.MANAGE) {
-                if (!player.hasPermission(Almura.ID + ".title.manage")) {
-                    clientNotificationManager
+            if (!player.hasPermission(Almura.ID + ".title.manage")) {
+                clientNotificationManager
                         .queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Insufficient Permissions to change Title!"), 2));
-                    return;
-                }
-
-                // TODO Remove me, test code
-                this.manager.getAvailableTitlesFor(player)
-                    .ifPresent(availableTitles -> this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
-
-            } else if (message.type == TitleGuiType.SELECT) {
-                final Set<Title> availableTitles = this.manager.getAvailableTitlesFor(player).orElse(null);
-
-                if (availableTitles == null) {
-                    clientNotificationManager
-                        .queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("You have no Titles available at this time."), 5));
-                    return;
-                } else {
-                    this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles));
-                }
+                return;
             }
 
-            this.network.sendTo(player, new ClientboundTitleGuiResponsePacket(message.type));
+            // TODO Remove me, test code
+            this.manager.getAvailableTitlesFor(player)
+                    .ifPresent(availableTitles -> this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
+
+            this.network.sendTo(player, new ClientboundTitleGuiResponsePacket(player.hasPermission("almura.title.admin")));
         }
     }
 }

@@ -7,34 +7,27 @@
  */
 package com.almuradev.almura.feature.title.network;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.almuradev.almura.feature.title.TitleGuiType;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
-import javax.annotation.Nullable;
-
 public final class ClientboundTitleGuiResponsePacket implements Message {
 
-    @Nullable public TitleGuiType type;
+    public boolean isAdmin;
 
     public ClientboundTitleGuiResponsePacket() {
     }
 
-    public ClientboundTitleGuiResponsePacket(final TitleGuiType type) {
-        this.type = type;
+    public ClientboundTitleGuiResponsePacket(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 
     @Override
     public void readFrom(ChannelBuf buf) {
-        this.type = TitleGuiType.valueOf(buf.readString());
+        this.isAdmin = buf.readBoolean();
     }
 
     @Override
     public void writeTo(ChannelBuf buf) {
-        checkNotNull(this.type);
-
-        buf.writeString(this.type.name().toUpperCase());
+        buf.writeBoolean(this.isAdmin);
     }
 }

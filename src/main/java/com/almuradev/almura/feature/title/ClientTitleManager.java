@@ -55,11 +55,7 @@ public final class ClientTitleManager implements Witness {
     }
 
     public void requestManageTitlesGUI() {
-        this.network.sendToServer(new ServerboundTitleGuiRequestPacket(TitleGuiType.MANAGE));
-    }
-
-    public void requestSelectTitleGUI() {
-        this.network.sendToServer(new ServerboundTitleGuiRequestPacket(TitleGuiType.SELECT));
+        this.network.sendToServer(new ServerboundTitleGuiRequestPacket());
     }
 
     @Nullable
