@@ -84,10 +84,12 @@ tile.storage.spruce_storage_crate.name=Spruce Storage Crate
 # ---------------
 # ---- gui ----
 # ---------------
+almura.button.add=Add
 almura.button.apply=Apply
 almura.button.cancel=Cancel
 almura.button.close=Close
 almura.button.save=Save
+almura.button.reset=Reset
 
 # ---------------
 # ---- guide ----
@@ -132,6 +134,11 @@ almura.guide.permission.modify.missing=You do not have permission to remove this
 almura.guide.permission.remove.missing=You do not have permission to remove this page!
 key.almura.guide.open=Open
 key.categories.almura.guide=Guide
+
+# ---------------
+# ---- nick  ----
+# ---------------
+almura.button.nick.remove=Remove Nickname
 
 item.farmers_almanac.name=Farmer's Almanac
 item.light_repair_wand.name=Area Light Repair Wand

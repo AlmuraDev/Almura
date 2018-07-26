@@ -15,6 +15,7 @@ package com.almuradev.almura.feature.nick.client.gui;
  * All Rights Reserved.
  */
 
+import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
 import com.almuradev.almura.feature.nick.network.ServerboundNucleusNameChangePacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
@@ -60,7 +61,8 @@ public final class NicknameGUI extends SimpleScreen {
     private EntityPlayer entityPlayer;
 
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
-    @Inject private static ClientNotificationManager clientNotificationManager;
+    @Inject private static ClientNickManager nickManager;
+    @Inject private static ClientNotificationManager notificationManager;
 
     public NicknameGUI(EntityPlayer entityPlayer) {
         this.entityPlayer = entityPlayer;
@@ -166,7 +168,7 @@ public final class NicknameGUI extends SimpleScreen {
         final UIButton buttonColor = new UIButtonBuilder(this)
                 .width(40)
                 .position(110, 49, Anchor.LEFT | Anchor.TOP)
-                .text(Text.of("Add"))
+                .text(Text.of("almura.button.add"))
                 .listener(this)
                 .build("button.color");
 
@@ -174,7 +176,7 @@ public final class NicknameGUI extends SimpleScreen {
         final UIButton buttonReset = new UIButtonBuilder(this)
                 .width(40)
                 .position(150, 49, Anchor.LEFT | Anchor.TOP)
-                .text(Text.of("Reset"))
+                .text(Text.of("almura.button.reset"))
                 .listener(this)
                 .build("button.reset");
 
@@ -182,7 +184,7 @@ public final class NicknameGUI extends SimpleScreen {
         final UIButton buttonRemove = new UIButtonBuilder(this)
                 .width(70)
                 .position(105, 65, Anchor.LEFT | Anchor.TOP)
-                .text(Text.of("Remove Nickname"))
+                .text(Text.of("almura.button.nick.remove"))
                 .listener(this)
                 .build("button.remove");
 
@@ -194,7 +196,7 @@ public final class NicknameGUI extends SimpleScreen {
         final UIButton buttonClose = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .text(Text.of("almura.guide.button.close"))
+                .text(Text.of("almura.button.close"))
                 .listener(this)
                 .build("button.close");
 
@@ -203,7 +205,7 @@ public final class NicknameGUI extends SimpleScreen {
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(-40, 0)
-                .text("Apply")
+                .text("almura.button.apply")
                 .listener(this)
                 .build("button.apply");
 
@@ -226,41 +228,40 @@ public final class NicknameGUI extends SimpleScreen {
 
             case "button.remove":
                 this.update = false; // Stop automatic update of name based on textbox
-                clientNotificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Removing Nickname from server...."),2));
-
-                network.sendToServer(new ServerboundNucleusNameChangePacket(entityPlayer.getName().trim()));
+                notificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Removing Nickname from server...."),2));
+                nickManager.requestNicknameChange(null);
 
                 this.close();
                 break;
 
             case "button.apply":
-                final Text validateText = Text.of(nicknameTextbox.getText());
+                final Text validateText = Text.of(this.nicknameTextbox.getText());
                 final String regexPattern = "[a-zA-Z0-9_§]+";
                 final Pattern nickNameRegex = Pattern.compile(regexPattern);
 
                 if (this.nicknameTextbox.getText().isEmpty()) {
-                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have blank title!"),5));
+                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have blank title!"),5));
                     break;
                 }
 
                 if (validateText.toPlain().length() <= 3) {
-                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname < 3 characters!"),5));
+                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname < 3 characters!"),5));
                     break;
                 }
 
                 if (validateText.toPlain().length() > 20) {
-                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname > 20 characters!"),5));
+                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname > 20 characters!"),5));
                     break;
                 }
 
                 if (!nickNameRegex.matcher(validateText.toPlain()).matches()) {
-                    clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Invalid Character in Nickname!"), 5));
+                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Invalid Character in Nickname!"), 5));
                     break;
                 }
                 this.update = false; // Stop automatic update of name based on textbox
-                clientNotificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Updating Nickname on server...."),2));
 
-                network.sendToServer(new ServerboundNucleusNameChangePacket(this.nicknameTextbox.getText().trim()));
+                notificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Updating Nickname on server...."),2));
+                nickManager.requestNicknameChange(this.nicknameTextbox.getText().trim());
 
                 this.close();
                 break;

@@ -10,14 +10,16 @@ package com.almuradev.almura.feature.nick.network;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
+import javax.annotation.Nullable;
+
 public final class ServerboundNucleusNameChangePacket implements Message {
 
-    public String nickname;
+    @Nullable public String nickname;
 
     public ServerboundNucleusNameChangePacket() {
     }
 
-    public ServerboundNucleusNameChangePacket(final String nickname) {
+    public ServerboundNucleusNameChangePacket(@Nullable final String nickname) {
         this.nickname = nickname;
     }
 
@@ -28,6 +30,8 @@ public final class ServerboundNucleusNameChangePacket implements Message {
 
     @Override
     public void writeTo(ChannelBuf buf) {
-        buf.writeString(this.nickname);
+        if (this.nickname != null) {
+            buf.writeString(this.nickname);
+        }
     }
 }

@@ -11,6 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
 import com.almuradev.almura.feature.nick.network.ServerboundNicknameOpenRequestPacket;
+import com.almuradev.almura.feature.nick.network.ServerboundNucleusNameChangePacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
@@ -72,5 +73,9 @@ public final class ClientNickManager implements Witness {
 
     public void requestNicknameGUI() {
         this.network.sendToServer(new ServerboundNicknameOpenRequestPacket());
+    }
+
+    public void requestNicknameChange(@Nullable final String nick) {
+        this.network.sendToServer(new ServerboundNucleusNameChangePacket(nick));
     }
 }
