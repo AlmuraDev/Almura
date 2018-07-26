@@ -124,7 +124,8 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         this.calculateAvailableTitlesFor(player);
 
         // Send joiner available titles (to cache)
-        this.getAvailableTitlesFor(player).ifPresent(availableTitles -> this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
+        this.getAvailableTitlesFor(player)
+            .ifPresent(availableTitles -> this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
 
         // Query database for selected title for joiner
         this.scheduler.createTaskBuilder()
@@ -327,62 +328,11 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
     public void setSelectedTitleFor(final Player player, @Nullable final String titleId) {
         checkNotNull(player);
 
-        boolean remove = titleId == null;
+        if (titleId == null) {
+            this.selectedTitles.remove(player.getUniqueId());
 
-        Title title;
+            this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), null));
 
-        if (!remove) {
-            title = this.getTitle(titleId).orElse(null);
-
-            if (title != null) {
-                final Set<Title> availableTitles = this.getAvailableTitlesFor(player).orElse(null);
-                if (availableTitles == null || !availableTitles.contains(title)) {
-                    this.network.sendTo(player, new ClientboundTitlesRegistryPacket(new HashSet<>(this.titles.values())));
-                    this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles));
-                } else {
-
-                    final Title previousTitle = this.selectedTitles.remove(player.getUniqueId());
-
-                    this.selectedTitles.put(player.getUniqueId(), title);
-
-                    this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), titleId));
-
-                    this.scheduler
-                        .createTaskBuilder()
-                        .async()
-                        .execute(() -> {
-                            try (final DSLContext context = this.databaseManager.createContext(true)) {
-                                if (previousTitle != null) {
-                                    TitleQueries
-                                        .createDeleteSelectedTitleFor(player.getUniqueId())
-                                        .build(context)
-                                        .keepStatement(false)
-                                        .execute();
-
-                                    TitleQueries
-                                        .createInsertSelectedTitleHistoryFor(player.getUniqueId(), previousTitle.getId())
-                                        .build(context)
-                                        .keepStatement(false)
-                                        .execute();
-                                }
-
-                                TitleQueries
-                                    .createInsertSelectedTitleFor(player.getUniqueId(), titleId)
-                                    .build(context)
-                                    .keepStatement(false)
-                                    .execute();
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
-                        })
-                        .submit(this.container);
-                }
-            } else {
-                remove = true;
-            }
-        }
-
-        if (remove) {
             this.scheduler.createTaskBuilder()
                 .async()
                 .execute(() -> {
@@ -398,6 +348,54 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                     }
                 )
                 .submit(this.container);
+            
+            return;
+        }
+
+        final Title title = this.getTitle(titleId).orElse(null);
+        if (title != null) {
+            final Set<Title> availableTitles = this.getAvailableTitlesFor(player).orElse(null);
+            if (availableTitles == null || !availableTitles.contains(title)) {
+                this.network.sendTo(player, new ClientboundTitlesRegistryPacket(new HashSet<>(this.titles.values())));
+                this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles));
+            } else {
+
+                final Title previousTitle = this.selectedTitles.remove(player.getUniqueId());
+
+                this.selectedTitles.put(player.getUniqueId(), title);
+
+                this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), titleId));
+
+                this.scheduler
+                    .createTaskBuilder()
+                    .async()
+                    .execute(() -> {
+                        try (final DSLContext context = this.databaseManager.createContext(true)) {
+                            if (previousTitle != null) {
+                                TitleQueries
+                                    .createDeleteSelectedTitleFor(player.getUniqueId())
+                                    .build(context)
+                                    .keepStatement(false)
+                                    .execute();
+
+                                TitleQueries
+                                    .createInsertSelectedTitleHistoryFor(player.getUniqueId(), previousTitle.getId())
+                                    .build(context)
+                                    .keepStatement(false)
+                                    .execute();
+                            }
+
+                            TitleQueries
+                                .createInsertSelectedTitleFor(player.getUniqueId(), titleId)
+                                .build(context)
+                                .keepStatement(false)
+                                .execute();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    })
+                    .submit(this.container);
+            }
         }
     }
 
