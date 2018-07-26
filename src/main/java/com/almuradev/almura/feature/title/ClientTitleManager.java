@@ -51,6 +51,7 @@ public final class ClientTitleManager implements Witness {
     @SubscribeEvent
     public void onClientConnectedToServerEvent(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.titles.clear();
+        this.availableTitles.clear();
         this.selectedTitles.clear();
     }
 
