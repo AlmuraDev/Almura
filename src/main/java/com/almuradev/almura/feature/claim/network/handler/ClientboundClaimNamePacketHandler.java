@@ -31,7 +31,13 @@ public final class ClientboundClaimNamePacketHandler implements MessageHandler<C
     public void handleMessage(ClientboundClaimNamePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
             if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
+                this.hudData.isClaim = message.isClaim;
                 this.hudData.claimName = message.name;
+                this.hudData.isWilderness = message.isWilderness;
+                this.hudData.isTownClaim = message.isTownClaim;
+                this.hudData.isAdminClaim = message.isAdminClaim;
+                this.hudData.isBasicClaim = message.isBasicClaim;
+                this.hudData.isSubdivision = message.isSubdivision;
             }
         }
     }

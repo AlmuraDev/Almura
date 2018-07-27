@@ -26,7 +26,14 @@ public class HeadUpDisplay {
 
     public boolean isEconomyPresent = false;
     public String economyAmount = "";
-    public String claimName = "Wilderness";
+
+    public boolean isClaim = false;
+    public String claimName = "";
+    public boolean isWilderness = true;
+    public boolean isTownClaim = false;
+    public boolean isAdminClaim = false;
+    public boolean isBasicClaim = false;
+    public boolean isSubdivision = false;
 
     @SideOnly(Side.CLIENT)
     public Text getCompass() {

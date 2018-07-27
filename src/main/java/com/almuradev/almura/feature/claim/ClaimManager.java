@@ -36,16 +36,32 @@ public final class ClaimManager implements Witness {
     }
 
     private void handleEvents(final Player player, final Claim claim) {
-        if (claim == null) {
-            return; // If claim is null then the HUDdata will just show "Wilderness".
+        boolean isClaim = false;
+        String claimName = "";
+        boolean isWilderness = false;
+        boolean isTownClaim = false;
+        boolean isAdminClaim = false;
+        boolean isBasicClaim = false;
+        boolean isSubdivision = false;
+
+        if (claim != null) {
+            isClaim = true;
+            isWilderness = claim.isWilderness();
+            isTownClaim = claim.isTown();
+            isAdminClaim = claim.isAdminClaim();
+            isBasicClaim = claim.isBasicClaim();
+            isSubdivision = claim.isSubdivision();
+
+            if (claim.getName().isPresent()) {
+                claimName = claim.getName().get().toPlain();
+            } else {
+                claimName = "claim name not set";
+            }
         }
 
-        claim.getName().ifPresent(c -> {
-            final String claimName = claim.getName().get().toPlain();
-            for (final Player players : claim.getPlayers()) {
-                this.network.sendTo(players, new ClientboundClaimNamePacket(claimName));
-            }
-        });
+        for (final Player players : claim.getPlayers()) {
+            this.network.sendTo(players, new ClientboundClaimNamePacket(isClaim, claimName, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision));
+        }
     }
 
     @Listener(order = Order.LAST)

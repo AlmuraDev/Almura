@@ -76,10 +76,21 @@ public class UIWorldPanel extends AbstractPanel {
     }
 
     private void updateClaim() {
-        if (hudData.claimName.equalsIgnoreCase("wilderness")) {
+        if (!hudData.isClaim || hudData.isWilderness) {
             this.claimLabel.setText(TextFormatting.GREEN + hudData.claimName);
         } else {
-            this.claimLabel.setText(TextFormatting.YELLOW + hudData.claimName);
+            if (hudData.claimName.equalsIgnoreCase("claim name not set")){
+                this.claimLabel.setText(TextFormatting.RED + hudData.claimName);
+            } else {
+                if (hudData.isTownClaim)
+                    this.claimLabel.setText(TextFormatting.YELLOW + hudData.claimName);
+                if (hudData.isAdminClaim)
+                    this.claimLabel.setText(TextFormatting.BLUE + hudData.claimName);
+                if (hudData.isBasicClaim)
+                    this.claimLabel.setText(TextFormatting.DARK_AQUA + hudData.claimName);
+                if (hudData.isSubdivision)
+                    this.claimLabel.setText(TextFormatting.DARK_PURPLE + hudData.claimName);
+            }
         }
         this.claimLabel.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
         if (this.width < Math.max(this.claimLabel.getWidth() + 10, 60)) {
