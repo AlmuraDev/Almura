@@ -41,7 +41,6 @@ public class UIWorldPanel extends AbstractPanel {
 
         this.claimLabel = new UILabel(gui, "");
         this.claimLabel.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
-        this.claimLabel.setVisible(false);
         this.claimLabel.setFontOptions(FontOptions.builder()
                 .from(FontColors.WHITE_FO)
                 .shadow(false)
