@@ -26,6 +26,7 @@ public class HeadUpDisplay {
 
     public boolean isEconomyPresent = false;
     public String economyAmount = "";
+    public String claimName = "Wilderness";
 
     @SideOnly(Side.CLIENT)
     public Text getCompass() {

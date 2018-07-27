@@ -7,17 +7,13 @@
  */
 package com.almuradev.almura.feature.claim;
 
+import com.almuradev.almura.feature.claim.network.ClientboundClaimNamePacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
-import me.ryanhamshire.griefprevention.api.event.BorderClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.ChangeClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.CreateClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.DeleteClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.FlagClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.TaxClaimEvent;
+import me.ryanhamshire.griefprevention.api.event.*;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -36,35 +32,20 @@ public final class ClaimManager implements Witness {
     @Inject
     public ClaimManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final ServerNotificationManager notificationManager) {
         this.network = network;
-        this.notificationManager = notificationManager;
+        this.notificationManager = notificationManager; // Not used at the moment but will in the future.
     }
 
     private void handleEvents(final Player player, final Claim claim) {
         if (claim == null) {
-            System.out.println("ClaimManager.class: Null Claim passed into handleEvents");
-            return;
+            return; // If claim is null then the HUDdata will just show "Wilderness".
         }
 
-        final String claimOwner = claim.getOwnerName().toPlain();
-        final boolean isWilderness = claim.isWilderness();
-        final boolean isTownClaim = claim.isTown();
-        final boolean isAdminClaim = claim.isAdminClaim();
-        final boolean isBasicClaim = claim.isBasicClaim();
-        final boolean is3dClaim = claim.isCuboid();
-
-        String claimName;
-
-        if (claim.getName().isPresent()) {
-            claimName = claim.getName().get().toPlain();
-        } else {
-            claimName = "Claim Name not Set";
-        }
-
-        System.out.println("Player: [" + player.getName() + "] has enter claim: [" + claimName + "]");
-
-        for (Player players : claim.getPlayers()) {
-            //this.network.sendTo(player, new ClientboundClaimInfoPacket(claimName, claimOwner, isWilderness, isTown, isAdminClaim, isBasicClaim, is3dClaim));
-        }
+        claim.getName().ifPresent(c -> {
+            final String claimName = claim.getName().get().toPlain();
+            for (final Player players : claim.getPlayers()) {
+                this.network.sendTo(players, new ClientboundClaimNamePacket(claimName));
+            }
+        });
     }
 
     @Listener(order = Order.LAST)
@@ -81,19 +62,16 @@ public final class ClaimManager implements Witness {
     @Listener()
     public void onChangeClaim(final ChangeClaimEvent event) {
         handleEvents(null, event.getClaim());
-        System.out.println("ClaimManager.class: Claim changed");
     }
 
     @Listener()
     public void onCreateClaim(final CreateClaimEvent event) {
         handleEvents(null, event.getClaim());
-        System.out.println("ClaimManager.class: Claim created");
     }
 
     @Listener()
     public void onDeleteClaim(final DeleteClaimEvent event) {
         handleEvents(null, event.getClaim());
-        System.out.println("ClaimManager.class: Claim deleted");
     }
 
     @Listener()
@@ -104,6 +82,5 @@ public final class ClaimManager implements Witness {
     @Listener()
     public void onClaimFlagChange(final FlagClaimEvent event) {
         handleEvents(null, event.getClaim());
-        System.out.println("ClaimManager.class: Claim flag changed: " + event.getCause().toString());
     }
 }
