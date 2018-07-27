@@ -53,28 +53,28 @@ public final class ClaimManager implements Witness {
     }
 
     @Listener()
-    public void onChangeClaim(final ChangeClaimEvent event, @Getter("getTargetEntity") Player player) {
+    public void onChangeClaim(final ChangeClaimEvent event) {
+        System.out.println("ALMURA: Claim changed.");
+    }
+
+    @Listener()
+    public void onCreateClaim(final CreateClaimEvent event) {
+        System.out.println("ALMURA: Claim created.");
+    }
+
+    @Listener()
+    public void onDeleteClaim(final DeleteClaimEvent event) {
+        System.out.println("ALMURA: Claim deleted.");
+    }
+
+    @Listener()
+    public void onTaxClaim(final TaxClaimEvent event) {
 
     }
 
     @Listener()
-    public void onCreateClaim(final CreateClaimEvent event, @Getter("getTargetEntity") Player player) {
-
-    }
-
-    @Listener()
-    public void onDeleteClaim(final DeleteClaimEvent event, @Getter("getTargetEntity") Player player) {
-
-    }
-
-    @Listener()
-    public void onTaxClaim(final TaxClaimEvent event, @Getter("getTargetEntity") Player player) {
-
-    }
-
-    @Listener()
-    public void onClaimFlagChange(final FlagClaimEvent event, @Getter("getTargetEntity") Player player) {
-
+    public void onClaimFlagChange(final FlagClaimEvent event) {
+        System.out.println("ALMURA: Claim flag changed.");
     }
 
 }
