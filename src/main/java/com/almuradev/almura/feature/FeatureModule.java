@@ -35,6 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.common.SpongeImplHooks;
 
 public final class FeatureModule extends AbstractModule implements CommonBinder {
 
@@ -57,6 +58,11 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         this.nerfVanillaFood();
+
+        if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
+            this.loadServerSideModules(); // Force loading this because it will fail the Platform.Type checks below during normal startup.
+        }
+
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {
 
@@ -74,16 +80,20 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 @SideOnly(Side.SERVER)
                 @Override
                 protected void configure() {
-                    if (Sponge.getPluginManager().isLoaded("luckperms")) {
-                        this.install(new PermissionsModule());
-                        if (Sponge.getPluginManager().isLoaded("griefprevention")) {
-                            this.install(new ClaimModule());
-                        }
-                    }
+                   loadServerSideModules();  // This is never touched in single player / de-obfuscated environments.
                 }
             }
             this.install(new ServerModule());
         });
+    }
+
+    private void loadServerSideModules() {
+        if (Sponge.getPluginManager().isLoaded("luckperms")) {
+            this.install(new PermissionsModule());
+            if (Sponge.getPluginManager().isLoaded("griefprevention")) {
+                this.install(new ClaimModule());
+            }
+        }
     }
 
     //ToDo: put into its own module ones the ability to turn features on and off is implemented.
