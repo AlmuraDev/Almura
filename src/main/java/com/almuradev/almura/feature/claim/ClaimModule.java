@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.claim;
 
+import com.almuradev.almura.feature.claim.gui.ClaimGUI;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimNamePacket;
 import com.almuradev.almura.feature.claim.network.handler.ClientboundClaimNamePacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
@@ -21,5 +22,15 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
         this.packet()
                 .bind(ClientboundClaimNamePacket.class, binder -> binder.handler(ClientboundClaimNamePacketHandler.class, Platform.Type.CLIENT));
         this.facet().add(ClaimManager.class);
+
+        this.on(Platform.Type.CLIENT, () -> {
+            final class ClientModule extends AbstractModule implements ClientBinder {
+                @Override
+                protected void configure() {
+                    this.requestStaticInjection(ClaimGUI.class);
+                }
+            }
+            this.install(new ClientModule());
+        });
     }
 }

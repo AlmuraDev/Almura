@@ -13,7 +13,9 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
+import me.ryanhamshire.griefprevention.api.claim.TrustType;
 import me.ryanhamshire.griefprevention.api.event.*;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -21,8 +23,12 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
+import org.spongepowered.api.service.economy.Currency;
+import org.spongepowered.api.service.economy.EconomyService;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
+import java.util.UUID;
 
 public final class ClaimManager implements Witness {
 
@@ -36,6 +42,8 @@ public final class ClaimManager implements Witness {
     }
 
     private void handleEvents(final Player player, final Claim claim) {
+        final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
+        final Currency currency = service.getDefaultCurrency();
         boolean isClaim = false;
         String claimName = "";
         boolean isWilderness = false;
@@ -43,6 +51,9 @@ public final class ClaimManager implements Witness {
         boolean isAdminClaim = false;
         boolean isBasicClaim = false;
         boolean isSubdivision = false;
+        double claimEconBalance = 0.0;
+        boolean isOwner = false;
+        boolean isTrusted = false;
 
         if (claim != null) {
             isClaim = true;
@@ -51,6 +62,9 @@ public final class ClaimManager implements Witness {
             isAdminClaim = claim.isAdminClaim();
             isBasicClaim = claim.isBasicClaim();
             isSubdivision = claim.isSubdivision();
+            claimEconBalance = claim.getEconomyAccount().get().getBalance(currency).doubleValue();
+            isOwner = claim.getOwnerUniqueId().equals(player.getUniqueId());
+            isTrusted = claim.isTrusted(player.getUniqueId());
 
             if (claim.getName().isPresent()) {
                 claimName = claim.getName().get().toPlain();

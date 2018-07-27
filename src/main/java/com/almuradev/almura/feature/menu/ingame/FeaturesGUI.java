@@ -15,6 +15,7 @@ package com.almuradev.almura.feature.menu.ingame;
  * All Rights Reserved.
  */
 
+import com.almuradev.almura.feature.claim.gui.ClaimGUI;
 import com.almuradev.almura.feature.exchange.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
@@ -49,7 +50,7 @@ public final class FeaturesGUI extends SimpleScreen {
     private boolean unlockMouse = true;
     private boolean isAdmin = false;
     private UILabel titleLabel;
-    private UIButton guideButton, manageTitleButton, nicknameButton, exchangeButton, serverShopButton, npcShopButton, accessoriesButton;
+    private UIButton guideButton, manageTitleButton, nicknameButton, exchangeButton, serverShopButton, npcShopButton, accessoriesButton, claimButton;
 
     private World world;
     private EntityPlayerSP player;
@@ -153,6 +154,16 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.accessories");
 
+        // Claims button
+        claimButton = new UIButtonBuilder(this)
+                .width(100)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .position(0, accessoriesButton.getY() + 18)
+                .text("Claim Management")
+                .visible(isAdmin)
+                .listener(this)
+                .build("button.claim");
+
         // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
                 .width(40)
@@ -161,7 +172,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel, guideButton, exchangeButton,  manageTitleButton, nicknameButton, accessoriesButton, serverShopButton, npcShopButton, buttonClose);
+        form.add(titleLabel, guideButton, exchangeButton,  manageTitleButton, nicknameButton, accessoriesButton, serverShopButton, npcShopButton, claimButton, buttonClose);
 
         addToScreen(form);
     }
@@ -188,6 +199,10 @@ public final class FeaturesGUI extends SimpleScreen {
                 break;
             case "button.nickname":
                 nickManager.requestNicknameGUI();
+                break;
+            case "button.claim":
+                //Todo: don't fake this.
+                new ClaimGUI(this.mc.player, "ClaimName", "ClaimOwner","ClaimGreetingHere", "ClaimFarewellHere", true, true, 5014.96).display();
                 break;
             case "button.close":
                 this.close();
