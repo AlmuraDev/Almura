@@ -9,7 +9,6 @@ package com.almuradev.almura.feature.claim.network.handler;
 
 import com.almuradev.almura.feature.claim.network.ClientboundClaimNamePacket;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
-import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.api.Platform;
@@ -38,6 +37,7 @@ public final class ClientboundClaimNamePacketHandler implements MessageHandler<C
                 this.hudData.isAdminClaim = message.isAdminClaim;
                 this.hudData.isBasicClaim = message.isBasicClaim;
                 this.hudData.isSubdivision = message.isSubdivision;
+                System.out.println("Received GP Update Packet " + message.name);
             }
         }
     }

@@ -76,8 +76,9 @@ public class UIWorldPanel extends AbstractPanel {
     }
 
     private void updateClaim() {
+        //System.out.println("ClaimName: " + hudData.claimName);
         if (!hudData.isClaim || hudData.isWilderness) {
-            this.claimLabel.setText(TextFormatting.GREEN + hudData.claimName);
+            this.claimLabel.setText(TextFormatting.GREEN + "Wilderness");
         } else {
             if (hudData.claimName.equalsIgnoreCase("claim name not set")){
                 this.claimLabel.setText(TextFormatting.RED + hudData.claimName);

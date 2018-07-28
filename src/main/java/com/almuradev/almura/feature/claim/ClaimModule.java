@@ -21,7 +21,7 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
     protected void configure() {
         this.packet()
                 .bind(ClientboundClaimNamePacket.class, binder -> binder.handler(ClientboundClaimNamePacketHandler.class, Platform.Type.CLIENT));
-        this.facet().add(ClaimManager.class);
+        this.facet().add(ServerClaimManager.class);
 
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {

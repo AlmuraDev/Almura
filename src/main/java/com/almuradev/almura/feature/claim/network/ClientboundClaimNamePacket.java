@@ -20,7 +20,6 @@ public final class ClientboundClaimNamePacket implements Message {
     public boolean isBasicClaim;
     public boolean isSubdivision;
 
-
     public ClientboundClaimNamePacket() {
     }
 
