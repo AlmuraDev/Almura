@@ -15,7 +15,8 @@ package com.almuradev.almura.feature.menu.ingame;
  * All Rights Reserved.
  */
 
-import com.almuradev.almura.feature.claim.gui.ClaimGUI;
+import com.almuradev.almura.feature.claim.ClientClaimManager;
+import com.almuradev.almura.feature.claim.gui.ManageClaimGUI;
 import com.almuradev.almura.feature.exchange.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
@@ -60,6 +61,7 @@ public final class FeaturesGUI extends SimpleScreen {
     @Inject private static ClientPageManager guideManager;
     @Inject private static ClientNickManager nickManager;
     @Inject private static ClientTitleManager titleManager;
+    @Inject private static ClientClaimManager claimManager;
 
     public FeaturesGUI(EntityPlayerSP player, World worldIn, boolean isAdmin) {
         this.player = player;
@@ -202,7 +204,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 break;
             case "button.claim":
                 //Todo: don't fake this.
-                new ClaimGUI(this.mc.player, "ClaimName", "ClaimOwner","ClaimGreetingHere", "ClaimFarewellHere", true, true, 5014.96).display();
+                claimManager.requestClaimGUI();
                 break;
             case "button.close":
                 this.close();

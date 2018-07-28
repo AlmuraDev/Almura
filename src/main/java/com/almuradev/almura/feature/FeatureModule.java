@@ -11,6 +11,7 @@ import com.almuradev.almura.feature.animal.AnimalModule;
 import com.almuradev.almura.feature.biome.BiomeModule;
 import com.almuradev.almura.feature.cache.CacheModule;
 import com.almuradev.almura.feature.claim.ClaimModule;
+import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.complex.ComplexContentModule;
 import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.almura.feature.death.DeathModule;
@@ -70,11 +71,12 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 @Override
                 protected void configure() {
                     this.facet().add(OffHandListener.class);
+                    this.facet().add(ClientClaimManager.class);
                 }
             }
             this.install(new ClientModule());
         });
-        this.on(Platform.Type.SERVER, () -> {
+        this.on(Platform.Type.SERVER, () -> { // Dedicated Server Only!
             final class ServerModule extends AbstractModule implements CommonBinder {
 
                 @SideOnly(Side.SERVER)

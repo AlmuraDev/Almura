@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.claim;
 
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import net.minecraftforge.fml.relauncher.Side;
@@ -22,6 +23,17 @@ import javax.inject.Singleton;
 public final class ClientClaimManager implements Witness {
 
     private final ChannelBinding.IndexedMessageChannel network;
+    public double claimEconBalance = 0.0;
+    public boolean isClaim = false;
+    public boolean isWilderness = false;
+    public boolean isTownClaim = false;
+    public boolean isAdminClaim = false;
+    public boolean isBasicClaim = false;
+    public boolean isSubdivision = false;
+    public String claimName = "";
+    public String claimOwner = "";
+    public String claimGreeting = "";
+    public String claimFarewell = "";
 
     @Inject
     public ClientClaimManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
@@ -29,6 +41,6 @@ public final class ClientClaimManager implements Witness {
     }
 
     public void requestClaimGUI() {
-        //this.network.sendToServer(new ServerboundClaimGuiRequestPacket());
+        this.network.sendToServer(new ServerboundClaimGuiRequestPacket());
     }
 }

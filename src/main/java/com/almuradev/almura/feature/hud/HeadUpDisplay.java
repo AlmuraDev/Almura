@@ -27,14 +27,6 @@ public class HeadUpDisplay {
     public boolean isEconomyPresent = false;
     public String economyAmount = "";
 
-    public boolean isClaim = false;
-    public String claimName = "";
-    public boolean isWilderness = true;
-    public boolean isTownClaim = false;
-    public boolean isAdminClaim = false;
-    public boolean isBasicClaim = false;
-    public boolean isSubdivision = false;
-
     @SideOnly(Side.CLIENT)
     public Text getCompass() {
         final int position = (int) ((((Minecraft.getMinecraft().player.rotationYaw + 5.25) % 360 + 360) % 360) / 360 * 32);

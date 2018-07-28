@@ -15,11 +15,11 @@ package com.almuradev.almura.feature.claim.gui;
  * All Rights Reserved.
  */
 
-import com.almuradev.almura.feature.nick.ClientNickManager;
-import com.almuradev.almura.feature.nick.NickUtil;
-import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
+import com.almuradev.almura.feature.claim.ClientClaimManager;
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequestPacket;
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiSaveRequestPacket;
+import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
-import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
@@ -30,25 +30,19 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.renderer.font.FontOptions;
-import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
-import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
-import java.math.BigDecimal;
-import java.util.Arrays;
 
 @SideOnly(Side.CLIENT)
-public final class ClaimGUI extends SimpleScreen {
+public final class ManageClaimGUI extends SimpleScreen {
 
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
@@ -57,43 +51,32 @@ public final class ClaimGUI extends SimpleScreen {
     private UIFormContainer form;
     private UITextField claimNameField, claimOwnerField, claimGreetingField, claimFarewellField;
     private UILabel claimNameLabel, claimOwnerLabel, claimGreetingLabel, claimFarewellLabel;
-    private String claimName, claimOwner, claimGreeting, claimFarewell;
-    private boolean isOwner, isTrusted;
-    private double econBalance;
+    private boolean isOwner, isTrusted, isAdmin;
 
-    // Features to add
-    private EntityPlayer entityPlayer;
 
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
-    @Inject private static ClientNickManager nickManager;
+    @Inject private static ClientClaimManager claimManager;
     @Inject private static ClientNotificationManager notificationManager;
+    @Inject private static HeadUpDisplay hudData;
 
-    public ClaimGUI(EntityPlayer entityPlayer, String claimName, String claimOwner, String claimGreeting, String claimFarewell, boolean isOwner, boolean isTrusted, double econBalance) {
-        this.entityPlayer = entityPlayer;
-        this.claimName = claimName;
-        this.claimOwner = claimOwner;
-        this.claimGreeting = claimGreeting;
-        this.claimFarewell = claimFarewell;
-
-        // Features to Add
+    public ManageClaimGUI(boolean isOwner, boolean isTrusted, boolean isAdmin) {
         this.isOwner = isOwner;
         this.isTrusted = isTrusted;
-        this.econBalance = econBalance;
-
-        // Add/Remove Trusted users [example]
-        // claim.addUserTrust(player.getUniqueId(), TrustType.BUILDER);
-
-        // Get list of Trusted Users
-        // List<UUID> getUserTrusts(TrustType type);
-        // List<UUID> getUserTrusts();
-
-        // Claim Area claim.getArea()
-
-        // Set ClaimType, ADMIN, BASIC, TOWN, SUBDIVISION
-        // Boolean Enabled/Disable DENY message to players.
-
-
+        this.isAdmin = isAdmin;
     }
+
+    // Add/Remove Trusted users [example]
+    // claim.addUserTrust(player.getUniqueId(), TrustType.BUILDER);
+
+    // Get list of Trusted Users
+    // List<UUID> getUserTrusts(TrustType type);
+    // List<UUID> getUserTrusts();
+
+    // Claim Area claim.getArea()
+
+    // Set ClaimType, ADMIN, BASIC, TOWN, SUBDIVISION
+    // Boolean Enabled/Disable DENY message to players.
+
 
     @SuppressWarnings("unchecked")
     @Override
@@ -101,7 +84,6 @@ public final class ClaimGUI extends SimpleScreen {
         this.guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
-        // Master Panel
         this.form = new UIFormContainer(this, 300, 250, "");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
@@ -129,7 +111,8 @@ public final class ClaimGUI extends SimpleScreen {
 
         this.claimNameField = new UITextField(this, "", false);
         this.claimNameField.setSize(265, 0);
-        this.claimNameField.setText(this.claimName);
+        this.claimNameField.setText(claimManager.claimName);
+        this.claimNameField.setEditable(isOwner || isAdmin);
         this.claimNameField.setPosition(15, claimNameLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
         this.claimNameField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -139,8 +122,9 @@ public final class ClaimGUI extends SimpleScreen {
 
         this.claimOwnerField = new UITextField(this, "", false);
         this.claimOwnerField.setSize(265, 0);
-        this.claimOwnerField.setText(this.claimOwner);
-        this.claimOwnerField.setPosition(15, claimGreetingLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
+        this.claimOwnerField.setText(claimManager.claimOwner);
+        this.claimOwnerField.setEditable(false);
+        this.claimOwnerField.setPosition(15, claimNameLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
         this.claimOwnerField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         final UILabel claimGreetingLabel = new UILabel(this, "Greeting:");
@@ -149,7 +133,8 @@ public final class ClaimGUI extends SimpleScreen {
 
         this.claimGreetingField = new UITextField(this, "", false);
         this.claimGreetingField.setSize(265, 0);
-        this.claimGreetingField.setText(this.claimGreeting);
+        this.claimGreetingField.setText(claimManager.claimGreeting);
+        this.claimGreetingField.setEditable(isOwner || isAdmin);
         this.claimGreetingField.setPosition(15, claimOwnerLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
         this.claimGreetingField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -159,7 +144,8 @@ public final class ClaimGUI extends SimpleScreen {
 
         this.claimFarewellField = new UITextField(this, "", false);
         this.claimFarewellField.setSize(265, 0);
-        this.claimFarewellField.setText(this.claimFarewell);
+        this.claimFarewellField.setText(claimManager.claimFarewell);
+        this.claimFarewellField.setEditable(isOwner || isAdmin);
         this.claimFarewellField.setPosition(15, claimFarewellLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
         this.claimFarewellField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -168,6 +154,7 @@ public final class ClaimGUI extends SimpleScreen {
                 .anchor(Anchor.LEFT | Anchor.BOTTOM)
                 .text("Abandon Claim")
                 .listener(this)
+                .enabled(isOwner || isAdmin)
                 .build("button.abandon");
 
         final UIButton buttonSave = new UIButtonBuilder(this)
@@ -176,7 +163,8 @@ public final class ClaimGUI extends SimpleScreen {
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
                 .text("Save")
                 .listener(this)
-                .build("button.reset");
+                .enabled(isOwner || isAdmin)
+                .build("button.save");
 
         // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
@@ -194,15 +182,17 @@ public final class ClaimGUI extends SimpleScreen {
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.abandon":
-
+                this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
+                this.close();
                 break;
 
             case "button.save":
-
+                this.network.sendToServer(new ServerboundClaimGuiSaveRequestPacket(this.claimNameField.getText().trim(), this.claimGreetingField.getText().trim(), this.claimFarewellField.getText().trim(), this.mc.player.posX, this.mc.player.posY,
+                        this.mc.player.posZ, hudData.worldName));
+                this.close();
                 break;
 
             case "button.close":
-                this.update = false; // Stop automatic update of name based on textbox
                 this.close();
                 break;
         }
@@ -222,6 +212,21 @@ public final class ClaimGUI extends SimpleScreen {
 
     @Override
     protected void keyTyped(char keyChar, int keyCode) {
+        if (keyCode == Keyboard.KEY_TAB) {
+            if (this.claimNameField.isFocused()) {
+                this.claimNameField.setFocused(false);
+                this.claimGreetingField.setFocused(true);
+                this.claimGreetingField.setCursorPosition(this.claimGreetingField.getContentWidth() + 1, 0);
+                return;
+            }
+
+            if (this.claimGreetingField.isFocused()) {
+                this.claimGreetingField.setFocused(false);
+                this.claimFarewellField.setFocused(true);
+                this.claimFarewellField.setCursorPosition(this.claimFarewellField.getContentWidth() + 1, 0);
+                return;
+            }
+        }
         super.keyTyped(keyChar, keyCode);
         this.lastUpdate = 0; // Reset the timer when key is typed.
     }

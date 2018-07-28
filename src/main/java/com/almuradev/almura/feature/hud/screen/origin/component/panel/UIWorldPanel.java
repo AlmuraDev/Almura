@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
+import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import net.malisis.core.client.gui.Anchor;
@@ -25,6 +26,7 @@ import javax.inject.Inject;
 public class UIWorldPanel extends AbstractPanel {
 
     @Inject private static HeadUpDisplay hudData;
+    @Inject private static ClientClaimManager clientClaimManager;
 
     private final UILabel compassLabel, worldLabel, claimLabel;
 
@@ -77,20 +79,20 @@ public class UIWorldPanel extends AbstractPanel {
 
     private void updateClaim() {
         //System.out.println("ClaimName: " + hudData.claimName);
-        if (!hudData.isClaim || hudData.isWilderness) {
+        if (!clientClaimManager.isClaim || clientClaimManager.isWilderness) {
             this.claimLabel.setText(TextFormatting.GREEN + "Wilderness");
         } else {
-            if (hudData.claimName.equalsIgnoreCase("claim name not set")){
-                this.claimLabel.setText(TextFormatting.RED + hudData.claimName);
+            if (clientClaimManager.claimName.equalsIgnoreCase("claim name not set")){
+                this.claimLabel.setText(TextFormatting.RED + clientClaimManager.claimName);
             } else {
-                if (hudData.isTownClaim)
-                    this.claimLabel.setText(TextFormatting.YELLOW + hudData.claimName);
-                if (hudData.isAdminClaim)
-                    this.claimLabel.setText(TextFormatting.BLUE + hudData.claimName);
-                if (hudData.isBasicClaim)
-                    this.claimLabel.setText(TextFormatting.DARK_AQUA + hudData.claimName);
-                if (hudData.isSubdivision)
-                    this.claimLabel.setText(TextFormatting.DARK_PURPLE + hudData.claimName);
+                if (clientClaimManager.isTownClaim)
+                    this.claimLabel.setText(TextFormatting.YELLOW + clientClaimManager.claimName);
+                if (clientClaimManager.isAdminClaim)
+                    this.claimLabel.setText(TextFormatting.BLUE + clientClaimManager.claimName);
+                if (clientClaimManager.isBasicClaim)
+                    this.claimLabel.setText(TextFormatting.DARK_AQUA + clientClaimManager.claimName);
+                if (clientClaimManager.isSubdivision)
+                    this.claimLabel.setText(TextFormatting.DARK_PURPLE + clientClaimManager.claimName);
             }
         }
         this.claimLabel.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
