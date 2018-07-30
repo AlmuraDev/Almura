@@ -7,11 +7,11 @@
  */
 package com.almuradev.almura.feature.exchange.listing;
 
-import com.almuradev.almura.feature.exchange.Exchange;
 import com.google.common.base.MoreObjects;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,32 +19,28 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-public final class BasicListItem implements ListItem, Serializable {
+import javax.annotation.Nullable;
 
-    private final Exchange exchange;
+public final class BasicListItem implements ListItem {
+
     private final Instant created;
     private final UUID seller;
-    private final ItemStackSnapshot item;
+    private final Item item;
     private final BigDecimal price;
-    private final int quantity;
-    private final int index;
+    private final int metadata, quantity, index;
+    private final List<ForSaleItem> listed = new ArrayList<>();
 
-    private transient List<ForSaleItem> listed = new ArrayList<>();
+    @Nullable protected NBTTagCompound compound;
 
-    public BasicListItem(final Exchange exchange, final Instant created, final UUID seller, final ItemStackSnapshot item, final BigDecimal price,
-        final int quantity, final int index) {
-        this.exchange = exchange;
+    public BasicListItem(final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
+        final BigDecimal price, final int index) {
         this.created = created;
         this.seller = seller;
         this.item = item;
-        this.price = price;
         this.quantity = quantity;
+        this.metadata = metadata;
+        this.price = price;
         this.index = index;
-    }
-
-    @Override
-    public Exchange getExchange() {
-        return this.exchange;
     }
 
     @Override
@@ -58,18 +54,38 @@ public final class BasicListItem implements ListItem, Serializable {
     }
 
     @Override
-    public ItemStackSnapshot getItem() {
+    public Item getItem() {
         return this.item;
-    }
-
-    @Override
-    public BigDecimal getPrice() {
-        return this.price;
     }
 
     @Override
     public int getQuantity() {
         return this.quantity;
+    }
+
+    @Override
+    public int getMetadata() {
+        return this.metadata;
+    }
+
+    @Nullable
+    @Override
+    public NBTTagCompound getCompound() {
+        if (this.compound == null) {
+            return null;
+        }
+
+        return this.compound.copy();
+    }
+
+    @Override
+    public void setCompound(@Nullable NBTTagCompound compound) {
+        this.compound = compound == null ? null : compound.copy();
+    }
+
+    @Override
+    public BigDecimal getPrice() {
+        return this.price;
     }
 
     @Override
@@ -83,15 +99,31 @@ public final class BasicListItem implements ListItem, Serializable {
     }
 
     @Override
+    public BasicListItem copy() {
+        return new BasicListItem(this.created, this.seller, this.item, this.quantity, this.metadata, this.price, this.index);
+    }
+
+    @Override
+    public ItemStack asRealStack() {
+        final ItemStack stack = new ItemStack(this.item, this.quantity, this.metadata);
+        if (this.compound != null) {
+            stack.setTagCompound(this.compound.copy());
+        }
+
+        return stack;
+    }
+
+    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("exchange", this.exchange.getId())
             .add("created", this.created)
             .add("seller", this.seller)
             .add("item", this.item)
-            .add("price", this.price)
             .add("quantity", this.quantity)
+            .add("metadata", this.metadata)
+            .add("price", this.price)
             .add("index", this.index)
+            .add("compound", this.compound)
             .toString();
     }
 }

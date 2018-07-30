@@ -16,7 +16,8 @@ import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.UUID;
 
-public class MockOffer {
+@Deprecated
+public final class MockOffer {
 
     private static final DecimalFormat FORMAT = new DecimalFormat("0.00");
 
