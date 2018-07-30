@@ -12,14 +12,11 @@ import org.spongepowered.api.network.Message;
 
 public final class ServerboundClaimGuiRequestPacket implements Message {
 
-    public ServerboundClaimGuiRequestPacket() {
-    }
+    public ServerboundClaimGuiRequestPacket() {}
 
     @Override
-    public void readFrom(final ChannelBuf buf) {
-    }
+    public void readFrom(ChannelBuf buf) {}
 
     @Override
-    public void writeTo(final ChannelBuf buf) {
-    }
+    public void writeTo(ChannelBuf buf) {}
 }

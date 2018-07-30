@@ -17,21 +17,21 @@ public final class ClientboundClaimGuiResponsePacket implements Message {
     public ClientboundClaimGuiResponsePacket() {
     }
 
-    public ClientboundClaimGuiResponsePacket(final boolean isOwner, final boolean isTrusted, final boolean isAdmin) {
+    public ClientboundClaimGuiResponsePacket(boolean isOwner, boolean isTrusted, boolean isAdmin) {
         this.isOwner = isOwner;
         this.isTrusted = isTrusted;
         this.isAdmin = isAdmin;
     }
 
     @Override
-    public void readFrom(final ChannelBuf buf) {
+    public void readFrom(ChannelBuf buf) {
         this.isOwner = buf.readBoolean();
         this.isTrusted = buf.readBoolean();
         this.isAdmin = buf.readBoolean();
     }
 
     @Override
-    public void writeTo(final ChannelBuf buf) {
+    public void writeTo(ChannelBuf buf) {
         buf.writeBoolean(this.isOwner);
         buf.writeBoolean(this.isAdmin);
         buf.writeBoolean(this.isAdmin);

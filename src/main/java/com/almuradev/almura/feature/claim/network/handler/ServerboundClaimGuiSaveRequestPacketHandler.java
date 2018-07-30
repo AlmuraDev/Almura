@@ -28,23 +28,22 @@ public final class ServerboundClaimGuiSaveRequestPacketHandler implements Messag
 
     private final ChannelBinding.IndexedMessageChannel network;
     private final ServerNotificationManager notificationManager;
-    private final ServerClaimManager claimManager;
+    private final ServerClaimManager serverClaimManager;
 
     @Inject
     public ServerboundClaimGuiSaveRequestPacketHandler(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
-    ServerNotificationManager notificationManager, final ServerClaimManager claimManager) {
+    ServerNotificationManager notificationManager, final ServerClaimManager serverClaimManager) {
         this.network = network;
         this.notificationManager = notificationManager;
-        this.claimManager = claimManager;
+        this.serverClaimManager = serverClaimManager;
     }
 
     @Override
     public void handleMessage(final ServerboundClaimGuiSaveRequestPacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
-            .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
+                .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
-            this.claimManager.saveClaimChanges(player, message.claimName, message.claimGreeting, message.claimFarewell, message.x, message.y,
-                message.z, message.worldName);
+           this.serverClaimManager.saveClaimChanges(player, message.claimName, message.claimGreeting, message.claimFarewell, message.x, message.y, message.z, message.worldName);
         }
     }
 }
