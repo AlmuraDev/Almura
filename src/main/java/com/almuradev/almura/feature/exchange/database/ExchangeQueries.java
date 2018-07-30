@@ -10,17 +10,23 @@ package com.almuradev.almura.feature.exchange.database;
 import static com.almuradev.generated.axs.Tables.AXS;
 import static com.almuradev.generated.axs.Tables.AXS_ITEM;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.database.DatabaseUtils;
 import com.almuradev.generated.axs.tables.records.AxsItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsRecord;
+import net.minecraft.item.Item;
 import org.jooq.DeleteConditionStep;
 import org.jooq.InsertValuesStep5;
+import org.jooq.InsertValuesStep8;
 import org.jooq.SelectLimitPercentStep;
 import org.jooq.SelectWhereStep;
 import org.jooq.UpdateConditionStep;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.UUID;
 
 public final class ExchangeQueries {
@@ -71,14 +77,35 @@ public final class ExchangeQueries {
     }
 
     /**
-     * ListItems
+     * Item
      */
-    public static DatabaseQuery<SelectLimitPercentStep<AxsItemRecord>> createFetchListItemsFor(final String id, final int limit) {
+
+    public static DatabaseQuery<SelectLimitPercentStep<AxsItemRecord>> createFetchItemsFor(final String id, final int limit) {
         checkNotNull(id);
 
         return context -> context
             .selectFrom(AXS_ITEM)
             .where(AXS_ITEM.AXS.eq(id))
             .limit(limit);
+    }
+
+    public DatabaseQuery<InsertValuesStep8<AxsItemRecord, Timestamp, String, byte[], String, Integer, Integer, BigDecimal, Integer>> createInsertItem(final String id,
+        final Instant created, final UUID seller, final Item item, final int quantity, final int metadata, final BigDecimal price, final int index) {
+        checkNotNull(id);
+        checkNotNull(created);
+        checkNotNull(seller);
+        checkNotNull(item);
+        checkState(quantity > 0);
+        checkState(metadata >= 0);
+        checkNotNull(price);
+        checkState(index >= 0);
+
+        final String itemId = DatabaseUtils.toString(item.getRegistryName());
+        final byte[] sellerData = DatabaseUtils.toBytes(seller);
+
+        return context -> context
+            .insertInto(AXS_ITEM, AXS_ITEM.CREATED, AXS_ITEM.AXS, AXS_ITEM.SELLER, AXS_ITEM.ITEM_TYPE, AXS_ITEM.QUANTITY, AXS_ITEM.METADATA,
+                AXS_ITEM.PRICE, AXS_ITEM.INDEX)
+            .values(Timestamp.from(created), id, sellerData, itemId, quantity, metadata, price, index);
     }
 }

@@ -14,6 +14,8 @@ import java.util.UUID;
 
 public interface ListItem extends VirtualStack {
 
+    int getRecord();
+
     Instant getCreated();
 
     UUID getSeller();

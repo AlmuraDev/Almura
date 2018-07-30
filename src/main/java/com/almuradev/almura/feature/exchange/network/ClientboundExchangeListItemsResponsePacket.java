@@ -51,6 +51,7 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
         if (count > 0) {
             this.items = new ArrayList<>();
             for (int i = 0; i < count; i++) {
+                final int record = buf.readInteger();
                 final ResourceLocation location = new ResourceLocation(buf.readString(), buf.readString());
                 final Item item = ForgeRegistries.ITEMS.getValue(location);
 
@@ -74,7 +75,7 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
                 final BigDecimal price = PacketUtil.fromBytes(buf.readBytes(buf.readVarInt()));
                 final int index = buf.readInteger();
 
-                items.add(new BasicListItem(created, seller, item, quantity, metadata, price, index));
+                items.add(new BasicListItem(record, created, seller, item, quantity, metadata, price, index));
             }
         }
     }
@@ -88,6 +89,8 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
 
         if (this.items != null) {
             this.items.forEach(item -> {
+                buf.writeInteger(item.getRecord());
+                
                 final ResourceLocation location = item.getItem().getRegistryName();
 
                 checkNotNull(location);

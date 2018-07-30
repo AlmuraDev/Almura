@@ -26,6 +26,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
     public ClientboundExchangeGuiResponsePacket(final ExchangeGuiType type, @Nullable final String id) {
         checkNotNull(type);
 
+        this.type = type;
         if (type != ExchangeGuiType.MANAGE) {
             checkNotNull(id);
             this.id = id;
@@ -45,6 +46,8 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
     public void writeTo(final ChannelBuf buf) {
         checkNotNull(this.type);
 
+        buf.writeString(this.type.name().toUpperCase());
+        
         if (this.type != ExchangeGuiType.MANAGE) {
             checkNotNull(this.id);
 

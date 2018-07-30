@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 
 public final class BasicListItem implements ListItem {
 
+    private final int record;
     private final Instant created;
     private final UUID seller;
     private final Item item;
@@ -33,8 +34,9 @@ public final class BasicListItem implements ListItem {
     @Nullable private ItemStack cacheStack;
     @Nullable NBTTagCompound compound;
 
-    public BasicListItem(final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
+    public BasicListItem(final int record, final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
         final BigDecimal price, final int index) {
+        this.record = record;
         this.created = created;
         this.seller = seller;
         this.item = item;
@@ -42,6 +44,11 @@ public final class BasicListItem implements ListItem {
         this.metadata = metadata;
         this.price = price;
         this.index = index;
+    }
+
+    @Override
+    public int getRecord() {
+        return this.record;
     }
 
     @Override
@@ -102,7 +109,7 @@ public final class BasicListItem implements ListItem {
 
     @Override
     public BasicListItem copy() {
-        return new BasicListItem(this.created, this.seller, this.item, this.quantity, this.metadata, this.price, this.index);
+        return new BasicListItem(this.record, this.created, this.seller, this.item, this.quantity, this.metadata, this.price, this.index);
     }
 
     @Override

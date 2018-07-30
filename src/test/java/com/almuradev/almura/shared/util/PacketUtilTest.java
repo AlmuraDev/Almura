@@ -8,6 +8,7 @@
 package com.almuradev.almura.shared.util;
 
 import static com.google.common.base.Preconditions.checkState;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public final class PacketUtilTest {
     @Test
     public void testBigDecimalSerialization() {
         BigDecimal value = BigDecimal.valueOf(5);
-        checkState(PacketUtil.fromBytes(PacketUtil.toBytes(value)).doubleValue() == value.doubleValue());
+        assertEquals(PacketUtil.fromBytes(PacketUtil.toBytes(value)).doubleValue(), value.doubleValue(), 0);
 
         value = BigDecimal.valueOf(5.5);
         checkState(PacketUtil.fromBytes(PacketUtil.toBytes(value)).doubleValue() == value.doubleValue());
