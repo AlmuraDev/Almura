@@ -43,11 +43,6 @@ public interface ForSaleItem extends VirtualStack {
     }
 
     @Override
-    default void setCompound(@Nullable final NBTTagCompound compound) {
-        this.getListItem().setCompound(compound);
-    }
-
-    @Override
     ForSaleItem copy();
 
     /**

@@ -30,8 +30,9 @@ public final class BasicListItem implements ListItem {
     private final int metadata, quantity, index;
     private final List<ForSaleItem> listed = new ArrayList<>();
 
-    @Nullable protected NBTTagCompound compound;
-
+    @Nullable private ItemStack cacheStack;
+    @Nullable NBTTagCompound compound;
+    
     public BasicListItem(final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
         final BigDecimal price, final int index) {
         this.created = created;
@@ -81,6 +82,7 @@ public final class BasicListItem implements ListItem {
     @Override
     public void setCompound(@Nullable NBTTagCompound compound) {
         this.compound = compound == null ? null : compound.copy();
+        this.cacheStack = null;
     }
 
     @Override
@@ -105,12 +107,14 @@ public final class BasicListItem implements ListItem {
 
     @Override
     public ItemStack asRealStack() {
-        final ItemStack stack = new ItemStack(this.item, this.quantity, this.metadata);
-        if (this.compound != null) {
-            stack.setTagCompound(this.compound.copy());
+        if (this.cacheStack == null) {
+            this.cacheStack = new ItemStack(this.item, this.quantity, this.metadata);
+            if (this.compound != null) {
+                this.cacheStack.setTagCompound(this.compound.copy());
+            }
         }
 
-        return stack;
+        return this.cacheStack;
     }
 
     @Override

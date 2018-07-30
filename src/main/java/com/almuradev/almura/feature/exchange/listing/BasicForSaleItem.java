@@ -7,14 +7,18 @@
  */
 package com.almuradev.almura.feature.exchange.listing;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.base.MoreObjects;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.annotation.Nullable;
 
 public final class BasicForSaleItem implements ForSaleItem {
 
@@ -23,7 +27,10 @@ public final class BasicForSaleItem implements ForSaleItem {
     private final int quantity;
     private final Collection<Transaction> transactions = new ArrayList<>();
 
+    private ItemStack cacheStack;
+
     public BasicForSaleItem(final BasicListItem listItem, final Instant created, final int quantity) {
+        checkNotNull(listItem);
         checkState(listItem.getQuantity() >= quantity);
 
         this.listItem = listItem;
@@ -47,6 +54,12 @@ public final class BasicForSaleItem implements ForSaleItem {
     }
 
     @Override
+    public void setCompound(@Nullable NBTTagCompound compound) {
+        this.listItem.setCompound(compound);
+        this.cacheStack = null;
+    }
+
+    @Override
     public Collection<Transaction> getTransactions() {
         return this.transactions;
     }
@@ -58,12 +71,14 @@ public final class BasicForSaleItem implements ForSaleItem {
 
     @Override
     public ItemStack asRealStack() {
-        final ItemStack stack = new ItemStack(this.getItem(), this.quantity, this.getMetadata());
-        if (this.listItem.compound != null) {
-            stack.setTagCompound(this.listItem.compound.copy());
+        if (this.cacheStack == null) {
+            this.cacheStack = new ItemStack(this.getItem(), this.quantity, this.getMetadata());
+            if (this.listItem.compound != null) {
+                this.cacheStack.setTagCompound(this.listItem.compound.copy());
+            }
         }
 
-        return stack;
+        return this.cacheStack;
     }
 
     @Override
