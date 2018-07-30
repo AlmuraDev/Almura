@@ -31,7 +31,8 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
     protected void configure() {
         // Safe to register both during Common
         this.packet().bind(ClientboundClaimDataPacket.class, binder -> binder.handler(ClientboundClaimDataPacketHandler.class, Platform.Type.CLIENT));
-        this.packet().bind(ClientboundClaimGuiResponsePacket.class, binder -> binder.handler(ClientboundClaimGuiResponsePacketHandler.class, Platform.Type.CLIENT));
+        this.packet().bind(ClientboundClaimGuiResponsePacket.class,
+            binder -> binder.handler(ClientboundClaimGuiResponsePacketHandler.class, Platform.Type.CLIENT));
 
         if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
             loadServerModules();
@@ -42,6 +43,7 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
         }
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {
+
                 @Override
                 protected void configure() {
 
@@ -62,9 +64,12 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
 
     private void loadServerModules() {
         // Note:  Can't register these during a normal load because the packet handler registration causes the class load of serverClaimManager.
-        this.packet().bind(ServerboundClaimGuiRequestPacket.class, binder -> binder.handler(ServerboundClaimGuiRequestPacketHandler.class, Platform.Type.SERVER));
-        this.packet().bind(ServerboundClaimGuiSaveRequestPacket.class, binder -> binder.handler(ServerboundClaimGuiSaveRequestPacketHandler.class, Platform.Type.SERVER));
-        this.packet().bind(ServerboundClaimGuiAbandonRequestPacket.class, binder -> binder.handler(ServerboundClaimGuiAbandonRequestPacketHandler.class, Platform.Type.SERVER));
+        this.packet().bind(ServerboundClaimGuiRequestPacket.class,
+            binder -> binder.handler(ServerboundClaimGuiRequestPacketHandler.class, Platform.Type.SERVER));
+        this.packet().bind(ServerboundClaimGuiSaveRequestPacket.class,
+            binder -> binder.handler(ServerboundClaimGuiSaveRequestPacketHandler.class, Platform.Type.SERVER));
+        this.packet().bind(ServerboundClaimGuiAbandonRequestPacket.class,
+            binder -> binder.handler(ServerboundClaimGuiAbandonRequestPacketHandler.class, Platform.Type.SERVER));
 
         this.facet().add(ServerClaimManager.class);
     }

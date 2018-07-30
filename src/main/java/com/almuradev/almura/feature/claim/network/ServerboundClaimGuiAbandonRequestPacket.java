@@ -12,32 +12,33 @@ import org.spongepowered.api.network.Message;
 
 public final class ServerboundClaimGuiAbandonRequestPacket implements Message {
 
-    public double x, y, z;
     public String worldName;
+    public double x, y, z;
 
-    public ServerboundClaimGuiAbandonRequestPacket() {}
+    public ServerboundClaimGuiAbandonRequestPacket() {
+    }
 
-    public ServerboundClaimGuiAbandonRequestPacket(final double x, final double y, final double z, final String worldName) {
+    public ServerboundClaimGuiAbandonRequestPacket(final String worldName, final double x, final double y, final double z) {
+        this.worldName = worldName;
         this.x = x;
         this.y = y;
         this.z = z;
-        this.worldName = worldName;
     }
 
     @Override
-    public void readFrom(ChannelBuf buf) {
+    public void readFrom(final ChannelBuf buf) {
+        this.worldName = buf.readString();
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
-        this.worldName = buf.readString();
     }
 
     @Override
-    public void writeTo(ChannelBuf buf) {
+    public void writeTo(final ChannelBuf buf) {
+        buf.writeString(this.worldName);
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
-        buf.writeString(this.worldName);
     }
 
 }

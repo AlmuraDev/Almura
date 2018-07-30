@@ -24,7 +24,7 @@ import javax.inject.Singleton;
 public final class ClientClaimManager implements Witness {
 
     private final ChannelBinding.IndexedMessageChannel network;
-    private final ClientNotificationManager clientNotificationManager;
+    private final ClientNotificationManager notificationManager;
     public double claimEconBalance = 0.0;
     public double claimTaxes = 0.0;
     public double claimBlockSell = 0.0;
@@ -45,9 +45,9 @@ public final class ClientClaimManager implements Witness {
 
     @Inject
     public ClientClaimManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
-    ClientNotificationManager clientNotificationManager) {
+    ClientNotificationManager notificationManager) {
         this.network = network;
-        this.clientNotificationManager = clientNotificationManager;
+        this.notificationManager = notificationManager;
     }
 
     public void requestClaimGUI() {

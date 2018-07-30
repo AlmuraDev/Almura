@@ -13,7 +13,6 @@ import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiRequestPack
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
-import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
@@ -31,28 +30,29 @@ public final class ServerboundClaimGuiRequestPacketHandler implements MessageHan
 
     private final ChannelBinding.IndexedMessageChannel network;
     private final ServerNotificationManager notificationManager;
-    private final ServerClaimManager serverClaimManager;
+    private final ServerClaimManager claimManager;
 
     @Inject
     public ServerboundClaimGuiRequestPacketHandler(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
-    ServerNotificationManager notificationManager, final ServerClaimManager serverClaimManager) {
+    ServerNotificationManager notificationManager, final ServerClaimManager claimManager) {
         this.network = network;
         this.notificationManager = notificationManager;
-        this.serverClaimManager = serverClaimManager;
+        this.claimManager = claimManager;
     }
 
     @Override
     public void handleMessage(final ServerboundClaimGuiRequestPacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
-                .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
+            .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
 
             if (!player.hasPermission(Almura.ID + ".claim.manage")) {
-                this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions to manage this claim!"), 2);
+                this.notificationManager
+                    .sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions to manage this claim!"), 2);
                 return;
             }
 
-            this.serverClaimManager.openClientGUI(player);
+            this.claimManager.openClientGUI(player);
         }
     }
 }

@@ -15,7 +15,6 @@ import com.almuradev.almura.shared.util.PacketUtil;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.WorldServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -27,7 +26,6 @@ import org.spongepowered.api.network.RemoteConnection;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.common.world.WorldManager;
 
 import javax.inject.Inject;
 
@@ -35,47 +33,44 @@ public final class ServerboundClaimGuiAbandonRequestPacketHandler implements Mes
 
     private final ChannelBinding.IndexedMessageChannel network;
     private final ServerNotificationManager notificationManager;
-    private final ServerClaimManager serverClaimManager;
+    private final ServerClaimManager claimManager;
 
     @Inject
     public ServerboundClaimGuiAbandonRequestPacketHandler(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
-    ServerNotificationManager notificationManager, final ServerClaimManager serverClaimManager) {
+    ServerNotificationManager notificationManager, final ServerClaimManager claimManager) {
         this.network = network;
         this.notificationManager = notificationManager;
-        this.serverClaimManager = serverClaimManager;
+        this.claimManager = claimManager;
     }
 
     @Override
     public void handleMessage(final ServerboundClaimGuiAbandonRequestPacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
-                .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
+            .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
-            final WorldServer worldServer = WorldManager.getWorld(message.worldName).orElse(null);
+            final World world = Sponge.getServer().getWorld(message.worldName).orElse(null);
 
-            if (worldServer == null) {
-                this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Unable to find world, changes not saved!"), 5);
+            if (world == null) {
+                this.notificationManager
+                    .sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Unable to find world, changes not saved!"), 5);
                 return;
             }
 
-            final World world = (World)worldServer;
-            final Location<World> location = new Location<>(world, message.x, message.y, message.z);
-            if (location == null) {
-                this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Invalid location sent to server.  Changes not saved!"), 5);
+            final Location<World> location = new Location<World>(world, message.x, message.y, message.z);
+            final Claim claim = GriefPrevention.getApi().getClaimManager(world).getClaimAt(location);
+            if (claim == null) {
+                this.notificationManager
+                    .sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Unable to lookup Claim, changed not saved!"), 5);
             } else {
-                final Claim claim = GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(location);
-                if (claim != null) { // if GP is loaded, claim should never be null.
-                    final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
-                    final boolean isAdmin = player.hasPermission("griefprevention.admin");
+                final boolean isOwner = claim.getOwnerUniqueId().equals(player.getUniqueId());
+                final boolean isAdmin = player.hasPermission("griefprevention.admin");
 
-                    if (isOwner || isAdmin) {
-                        claim.getClaimManager().deleteClaim(claim);
-                        this.serverClaimManager.buildUpdatePacket(player, claim);
-                        this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Claim Abandoned!"), 5);
-                    } else {
-                        this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);
-                    }
+                if (isOwner || isAdmin) {
+                    claim.getClaimManager().deleteClaim(claim);
+                    this.claimManager.sendUpdatePacket(player, claim);
+                    this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Claim Abandoned!"), 5);
                 } else {
-                    this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Unable to lookup Claim, changed not saved!"), 5);
+                    this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);
                 }
             }
         }

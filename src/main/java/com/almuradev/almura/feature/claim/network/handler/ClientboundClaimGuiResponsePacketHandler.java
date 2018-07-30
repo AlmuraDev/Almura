@@ -21,7 +21,7 @@ public final class ClientboundClaimGuiResponsePacketHandler implements MessageHa
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void handleMessage(ClientboundClaimGuiResponsePacket message, RemoteConnection connection, Platform.Type side) {
+    public void handleMessage(final ClientboundClaimGuiResponsePacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
             new ManageClaimGUI(message.isOwner, message.isTrusted, message.isAdmin).display();
         }

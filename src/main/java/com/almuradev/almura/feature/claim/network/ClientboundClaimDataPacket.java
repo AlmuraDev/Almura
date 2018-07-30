@@ -33,8 +33,10 @@ public final class ClientboundClaimDataPacket implements Message {
     public ClientboundClaimDataPacket() {
     }
 
-    public ClientboundClaimDataPacket(final boolean isClaim, final String claimName, final String claimOwner, final boolean isWilderness, final boolean isTownClaim, final boolean isAdminClaim, final boolean isBasicClaim, final boolean isSubdivision,
-            final double claimEconBalance, final String claimGreeting, final String claimFarewell, final int claimSize, final boolean isForSale, final boolean showWarnings, final double claimTaxes, final double claimBlockCost, final double claimBlockSell) {
+    public ClientboundClaimDataPacket(final boolean isClaim, final String claimName, final String claimOwner, final boolean isWilderness,
+        final boolean isTownClaim, final boolean isAdminClaim, final boolean isBasicClaim, final boolean isSubdivision,
+        final double claimEconBalance, final String claimGreeting, final String claimFarewell, final int claimSize, final boolean isForSale,
+        final boolean showWarnings, final double claimTaxes, final double claimBlockCost, final double claimBlockSell) {
         this.isClaim = isClaim;
         this.claimName = claimName;
         this.claimOwner = claimOwner;

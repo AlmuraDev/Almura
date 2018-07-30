@@ -21,40 +21,37 @@ import javax.inject.Inject;
 
 public final class ClientboundClaimDataPacketHandler implements MessageHandler<ClientboundClaimDataPacket> {
 
-    private final ClientClaimManager clientClaimManager;
+    private final ClientClaimManager claimManager;
 
     @Inject
     private ClientboundClaimDataPacketHandler(final ClientClaimManager claimManager) {
-        this.clientClaimManager = claimManager;
+        this.claimManager = claimManager;
     }
 
     @Override
-    public void handleMessage(ClientboundClaimDataPacket message, RemoteConnection connection, Platform.Type side) {
-        if (side.isClient()) {
-            if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-                clientClaimManager.isClaim = message.isClaim;
-                clientClaimManager.claimName = message.claimName;
-                clientClaimManager.claimOwner = message.claimOwner;
-                clientClaimManager.claimGreeting = message.claimGreeting;
-                clientClaimManager.claimFarewell = message.claimFarewell;
-                clientClaimManager.claimEconBalance = message.claimEconBalance;
-                clientClaimManager.isClaim = message.isClaim;
-                clientClaimManager.isWilderness = message.isWilderness;
-                clientClaimManager.isTownClaim = message.isTownClaim;
-                clientClaimManager.isAdminClaim = message.isAdminClaim;
-                clientClaimManager.isBasicClaim = message.isBasicClaim;
-                clientClaimManager.isSubdivision = message.isSubdivision;
-                clientClaimManager.claimSize = message.claimSize;
-                clientClaimManager.showWarnings = message.showWarnings;
-                clientClaimManager.claimTaxes = message.claimTaxes;
-                clientClaimManager.claimBlockCost = message.claimBlockCost;
-                clientClaimManager.claimBlockSell = message.claimBlockSell;
+    public void handleMessage(final ClientboundClaimDataPacket message, final RemoteConnection connection, final Platform.Type side) {
+        if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
+            claimManager.isClaim = message.isClaim;
+            claimManager.claimName = message.claimName;
+            claimManager.claimOwner = message.claimOwner;
+            claimManager.claimGreeting = message.claimGreeting;
+            claimManager.claimFarewell = message.claimFarewell;
+            claimManager.claimEconBalance = message.claimEconBalance;
+            claimManager.isWilderness = message.isWilderness;
+            claimManager.isTownClaim = message.isTownClaim;
+            claimManager.isAdminClaim = message.isAdminClaim;
+            claimManager.isBasicClaim = message.isBasicClaim;
+            claimManager.isSubdivision = message.isSubdivision;
+            claimManager.claimSize = message.claimSize;
+            claimManager.showWarnings = message.showWarnings;
+            claimManager.claimTaxes = message.claimTaxes;
+            claimManager.claimBlockCost = message.claimBlockCost;
+            claimManager.claimBlockSell = message.claimBlockSell;
 
-                final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+            final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
 
-                if (currentScreen instanceof ManageClaimGUI) {
-                    ((ManageClaimGUI) currentScreen).updateValues();
-                }
+            if (currentScreen instanceof ManageClaimGUI) {
+                ((ManageClaimGUI) currentScreen).updateValues();
             }
         }
     }

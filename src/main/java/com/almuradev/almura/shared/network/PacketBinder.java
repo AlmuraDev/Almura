@@ -118,7 +118,7 @@ public class PacketBinder {
             }
 
             channel.registerMessage(this.packet, this.channel);
-            
+
             if (this.handler == null) {
                 return;
             }
