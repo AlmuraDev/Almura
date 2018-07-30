@@ -21,31 +21,34 @@ import javax.inject.Inject;
 
 public final class ClientboundClaimDataPacketHandler implements MessageHandler<ClientboundClaimDataPacket> {
 
-    private final ClientClaimManager claimManager;
+    private final ClientClaimManager clientClaimManager;
 
     @Inject
     private ClientboundClaimDataPacketHandler(final ClientClaimManager claimManager) {
-        this.claimManager = claimManager;
+        this.clientClaimManager = claimManager;
     }
 
     @Override
     public void handleMessage(ClientboundClaimDataPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
             if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-                claimManager.isClaim = message.isClaim;
-                claimManager.claimName = message.claimName;
-                claimManager.claimOwner = message.claimOwner;
-                claimManager.claimGreeting = message.claimGreeting;
-                claimManager.claimFarewell = message.claimFarewell;
-                claimManager.claimEconBalance = message.claimEconBalance;
-                claimManager.isClaim = message.isClaim;
-                claimManager.isWilderness = message.isWilderness;
-                claimManager.isTownClaim = message.isTownClaim;
-                claimManager.isAdminClaim = message.isAdminClaim;
-                claimManager.isBasicClaim = message.isBasicClaim;
-                claimManager.isSubdivision = message.isSubdivision;
-                claimManager.claimSize = message.claimSize;
-                claimManager.showWarnings = message.showWarnings;
+                clientClaimManager.isClaim = message.isClaim;
+                clientClaimManager.claimName = message.claimName;
+                clientClaimManager.claimOwner = message.claimOwner;
+                clientClaimManager.claimGreeting = message.claimGreeting;
+                clientClaimManager.claimFarewell = message.claimFarewell;
+                clientClaimManager.claimEconBalance = message.claimEconBalance;
+                clientClaimManager.isClaim = message.isClaim;
+                clientClaimManager.isWilderness = message.isWilderness;
+                clientClaimManager.isTownClaim = message.isTownClaim;
+                clientClaimManager.isAdminClaim = message.isAdminClaim;
+                clientClaimManager.isBasicClaim = message.isBasicClaim;
+                clientClaimManager.isSubdivision = message.isSubdivision;
+                clientClaimManager.claimSize = message.claimSize;
+                clientClaimManager.showWarnings = message.showWarnings;
+                clientClaimManager.claimTaxes = message.claimTaxes;
+                clientClaimManager.claimBlockCost = message.claimBlockCost;
+                clientClaimManager.claimBlockSell = message.claimBlockSell;
 
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
 
