@@ -38,7 +38,7 @@ public final class ClientboundTitlesRegistryPacket implements Message {
 
             for (int i = 0; i < count; i++) {
                 try {
-                    this.titles.add(PacketUtil.fromBytes(buf.readBytes(buf.readVarInt())));
+                    this.titles.add(PacketUtil.bytesToObject(buf.readBytes(buf.readVarInt())));
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -53,7 +53,7 @@ public final class ClientboundTitlesRegistryPacket implements Message {
         if (this.titles != null) {
             for (Title title : this.titles) {
                 try {
-                    final byte[] data = PacketUtil.asBytes(title);
+                    final byte[] data = PacketUtil.objectToBytes(title);
                     buf.writeVarInt(data.length);
                     buf.writeBytes(data);
                 } catch (IOException e) {

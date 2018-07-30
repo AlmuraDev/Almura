@@ -8,14 +8,16 @@
 package com.almuradev.almura.feature.exchange.database;
 
 import static com.almuradev.generated.axs.Tables.AXS;
+import static com.almuradev.generated.axs.Tables.AXS_ITEM;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.database.DatabaseUtils;
+import com.almuradev.generated.axs.tables.records.AxsItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsRecord;
 import org.jooq.DeleteConditionStep;
-import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStep5;
+import org.jooq.SelectLimitPercentStep;
 import org.jooq.SelectWhereStep;
 import org.jooq.UpdateConditionStep;
 
@@ -66,5 +68,17 @@ public final class ExchangeQueries {
         checkNotNull(id);
 
         return context -> context.deleteFrom(AXS).where(AXS.ID.eq(id));
+    }
+
+    /**
+     * ListItems
+     */
+    public static DatabaseQuery<SelectLimitPercentStep<AxsItemRecord>> createFetchListItemsFor(final String id, final int limit) {
+        checkNotNull(id);
+
+        return context -> context
+            .selectFrom(AXS_ITEM)
+            .where(AXS_ITEM.AXS.eq(id))
+            .limit(limit);
     }
 }

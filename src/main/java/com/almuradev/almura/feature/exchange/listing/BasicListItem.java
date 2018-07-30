@@ -32,7 +32,7 @@ public final class BasicListItem implements ListItem {
 
     @Nullable private ItemStack cacheStack;
     @Nullable NBTTagCompound compound;
-    
+
     public BasicListItem(final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
         final BigDecimal price, final int index) {
         this.created = created;

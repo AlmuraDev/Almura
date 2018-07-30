@@ -38,7 +38,7 @@ public final class ClientboundExchangeRegistryPacket implements Message {
 
             for (int i = 0; i < count; i++) {
                 try {
-                    this.exchanges.add(PacketUtil.fromBytes(buf.readBytes(buf.readVarInt())));
+                    this.exchanges.add(PacketUtil.bytesToObject(buf.readBytes(buf.readVarInt())));
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -53,7 +53,7 @@ public final class ClientboundExchangeRegistryPacket implements Message {
         if (this.exchanges != null) {
             for (Exchange exchange : this.exchanges) {
                 try {
-                    final byte[] data = PacketUtil.asBytes(exchange);
+                    final byte[] data = PacketUtil.objectToBytes(exchange);
                     buf.writeVarInt(data.length);
                     buf.writeBytes(data);
                 } catch (IOException e) {
