@@ -52,13 +52,7 @@ public final class ServerboundClaimGuiRequestPacketHandler implements MessageHan
                 return;
             }
 
-            if (GriefPreventionPlugin.instance != null) {
-                if (GriefPreventionPlugin.instance.permissionService != null) {
-                    this.serverClaimManager.openClientGUI(player);
-                } else {
-                    this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Grief Prevention is not active!"), 2);
-                }
-            }
+            this.serverClaimManager.openClientGUI(player);
         }
     }
 }

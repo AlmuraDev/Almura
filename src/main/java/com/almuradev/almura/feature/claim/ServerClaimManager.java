@@ -143,19 +143,36 @@ public final class ServerClaimManager implements Witness {
         buildUpdatePacket(null, event.getClaim());
     }
 
+    public boolean isGPEnabled(Player player) {
+        if(GriefPreventionPlugin.instance == null) {
+            this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Grief Prevention is not initialized!"), 2);
+            return false;
+        } else {
+            if( GriefPreventionPlugin.instance.permissionService == null) {
+                this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Grief Prevention is not enabled!"), 2);
+                return false;
+            }
+        }
+        return true;
+    }
+
     // This is not ready to be used yet...
     public void toggleVisualization(Claim claim, Player player, boolean show) {
-        if (GriefPreventionPlugin.instance == null) {
-            // Todo: send notification about not finding GP.
-        }
-        if (GriefPreventionPlugin.instance != null && show) {
-            GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
+        if (!isGPEnabled(player))
+            return;
+
+        GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
+        if (show) {
             GriefPreventionPlugin.instance.worldEditProvider.visualizeClaim(claim, player, playerData, false);
-            // Todo: bug: this doesn't auto toggle off.
+        } else {
+            GriefPreventionPlugin.instance.worldEditProvider.revertVisuals(player, playerData, null);
         }
+
     }
 
     public void saveClaimChanges(Player player, String claimName, String claimGreeting, String claimFarewell, double x, double y, double z, String worldName) {
+        if (!isGPEnabled(player))
+            return;
 
         final WorldServer worldServer = WorldManager.getWorld(worldName).orElse(null);
 
@@ -189,6 +206,9 @@ public final class ServerClaimManager implements Witness {
     }
 
     public void openClientGUI(Player player) {
+        if (!isGPEnabled(player))
+            return;
+
         final Claim claim = GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(player.getLocation());
         if (claim != null) { // if GP is loaded, claim should never be null.
             final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
