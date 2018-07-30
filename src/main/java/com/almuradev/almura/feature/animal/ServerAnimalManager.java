@@ -18,6 +18,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.entity.BreedEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
@@ -28,8 +29,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
     @Inject
     private PluginContainer container;
 
-    // Todo: Re-enable this once SpongeCommon is updated.
-    /*@Listener
+    @Listener
     public void onSpawnEntity(SpawnEntityEvent event) {
         event.getEntities().stream()
                 .filter(e -> e instanceof Animal)
@@ -40,7 +40,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
                                 .delayTicks(1) // Delay this because the animals age isn't set yet.
                                 .execute(() -> {
                                             if (!e.isRemoved() && e.getAgeData().age().get() != 0) {
-                                                //e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, e.getType().getTranslation().get()));
+                                                e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, e.getType().getTranslation().get()));
                                                 // Todo: The below bugs may affect this feature.
                                                 // Bug 1: bug here, using .getTranslation().get() for MoCreatures returns "unknown"
                                                 // Bug 2: e.getType().getName() returns a lowerCase name of animals.
@@ -69,5 +69,5 @@ public final class ServerAnimalManager extends Witness.Impl  {
     public void onBreedEntityBreed(final BreedEntityEvent.Breed event) {
         // Change Name color AFTER BRED
         event.getCause().allOf(Animal.class).forEach(a -> a.offer(Keys.DISPLAY_NAME, Text.of(TextColors.BLUE, a.getTranslation().get())));
-    } */
+    }
 }

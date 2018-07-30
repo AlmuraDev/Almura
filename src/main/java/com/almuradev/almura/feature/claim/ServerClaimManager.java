@@ -15,6 +15,7 @@ import com.almuradev.core.event.Witness;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
+import me.ryanhamshire.griefprevention.api.GriefPreventionApi;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
 import me.ryanhamshire.griefprevention.api.event.*;
 import me.ryanhamshire.griefprevention.configuration.GriefPreventionConfig;
@@ -120,7 +121,9 @@ public final class ServerClaimManager implements Witness {
 
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-        this.sendUpdate(null, GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(player.getLocation()));
+        if (player != null && this.isGPEnabled(player)) {
+            this.sendUpdate(null, GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(player.getLocation()));
+        }
     }
 
     @Listener()
