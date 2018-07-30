@@ -7,17 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.ingame;
 
-/*
- * This file is part of Almura.
- *
- * Copyright (c) AlmuraDev <https://github.com/AlmuraDev/>
- *
- * All Rights Reserved.
- */
-
 import com.almuradev.almura.feature.claim.ClientClaimManager;
-import com.almuradev.almura.feature.claim.gui.ManageClaimGUI;
-import com.almuradev.almura.feature.exchange.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
@@ -59,7 +49,7 @@ public final class FeaturesGUI extends SimpleScreen {
     private EntityPlayerSP player;
 
     @Inject private static PluginContainer container;
-    @Inject private static ClientExchangeManager exchangeManager;
+    @Inject private static com.almuradev.almura.feature.exchange.ClientExchangeManager exchangeManager;
     @Inject private static ClientPageManager guideManager;
     @Inject private static ClientNickManager nickManager;
     @Inject private static ClientTitleManager titleManager;
@@ -199,7 +189,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 new StoreListScreen().display();
                 break;
             case "button.title.manage":
-                titleManager.requestManageTitlesGUI();
+                titleManager.requestManageTitlesGui();
                 break;
             case "button.guide":
                 guideManager.requestGuideGUI();

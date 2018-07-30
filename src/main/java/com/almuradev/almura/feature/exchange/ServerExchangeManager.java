@@ -34,6 +34,7 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Scheduler;
+import org.spongepowered.api.text.Text;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -151,13 +152,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         }
                     });
 
-                    this.scheduler.createTaskBuilder()
+                    this.scheduler
+                        .createTaskBuilder()
                         .execute(() -> {
                             this.exchanges.clear();
-
-                            if (!exchanges.isEmpty()) {
-                                this.exchanges.putAll(exchanges);
-                            }
+                            this.exchanges.putAll(exchanges);
 
                             this.logger.info("Loaded {} exchange(s).", this.exchanges.size());
 
@@ -170,7 +169,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 this.cacheAvailableExchangesFor(player);
 
                                 final Set<Exchange> availableExchanges = this.getAvailableExchangesFor(player).orElse(null);
-                                this.network.sendTo(player, new ClientboundAvailableExchangesResponsePacket(availableExchanges));
+                                this.network.sendTo(player, new ClientboundAvailableExchangesResponsePacket(availableExchanges != null &&
+                                    availableExchanges.isEmpty() ? null : availableExchanges));
                             });
                         })
                         .submit(this.container);
@@ -208,5 +208,183 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
         this.availableExchanges.put(player.getUniqueId(), availableExchanges);
+    }
+
+    public void addExchange(final Player player, final String id, final String permission, final boolean isHidden) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkNotNull(permission);
+
+        if (!player.hasPermission(Almura.ID + ".exchange.create")) {
+            notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("Insufficient Permission!, Exchange addition "
+                + "failed."), 5);
+            return;
+        }
+
+        if (this.getExchange(id).isPresent()) {
+            notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("This Exchange already exists!"), 5);
+
+            this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
+                    this.exchanges
+                        .values()
+                        .stream()
+                        .filter(axs -> {
+                            if (!axs.isHidden()) {
+                                return true;
+                            }
+
+                            return player.hasPermission(Almura.ID + ".exchange.admin");
+                        })
+                        .collect(Collectors.toSet())
+                )
+            );
+        } else {
+            this.scheduler
+                .createTaskBuilder()
+                .async()
+                .execute(() -> {
+                    try (final DSLContext context = this.databaseManager.createContext(true)) {
+                        final int result = ExchangeQueries
+                            .createInsertExchange(player.getUniqueId(), id, permission, isHidden)
+                            .build(context)
+                            .keepStatement(false)
+                            .execute();
+
+                        final Runnable runnable;
+
+                        if (result == 0) {
+                            runnable = () -> notificationManager
+                                .sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("Thread execution to add Exchange to database "
+                                    + "failed!"), 5);
+                        } else {
+                            runnable = this::loadExchanges;
+                        }
+
+                        this.scheduler
+                            .createTaskBuilder()
+                            .execute(runnable)
+                            .submit(this.container);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .submit(this.container);
+        }
+    }
+
+    public void modifyExchange(final Player player, final String id, final String permission, final boolean isHidden) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkNotNull(permission);
+
+        if (!player.hasPermission(Almura.ID + ".exchange.modify")) {
+            // TODO Dockter, handle this
+            return;
+        }
+
+        final Exchange axs = this.getExchange(id).orElse(null);
+
+        if (axs == null) {
+            // TODO Dockter, we're in a desync...either send them a notification that modify failed as it doesn't exist or remove this TODO
+
+            this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
+                    this.exchanges
+                        .values()
+                        .stream()
+                        .filter(a -> {
+                            if (!a.isHidden()) {
+                                return true;
+                            }
+
+                            return player.hasPermission(Almura.ID + ".axs.admin");
+                        })
+                        .collect(Collectors.toSet())
+                )
+            );
+        } else {
+            this.scheduler.createTaskBuilder()
+                .async()
+                .execute(() -> {
+                    try (final DSLContext context = this.databaseManager.createContext(true)) {
+                        final int result = ExchangeQueries
+                            .createUpdateExchange(id, permission, isHidden)
+                            .build(context)
+                            .keepStatement(false)
+                            .execute();
+
+                        final Runnable runnable;
+
+                        if (result == 0) {
+                            runnable = () -> {
+                                // TODO Dockter, send a notification down to the player that modify failed
+                            };
+                        } else {
+                            runnable = this::loadExchanges;
+                        }
+
+                        this.scheduler
+                            .createTaskBuilder()
+                            .execute(runnable)
+                            .submit(this.container);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .submit(this.container);
+        }
+    }
+
+    public void deleteExchange(final Player player, final String id) {
+        checkNotNull(player);
+        checkNotNull(id);
+
+        if (!this.getExchange(id).isPresent()) {
+            // TODO Dockter, we're in a desync...either send them a notification that deletion failed as it doesn't exist or remove this TODO
+            this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
+                    this.exchanges
+                        .values()
+                        .stream()
+                        .filter(axs -> {
+                            if (!axs.isHidden()) {
+                                return true;
+                            }
+
+                            return player.hasPermission(Almura.ID + ".exchange.admin");
+                        })
+                        .collect(Collectors.toSet())
+                )
+            );
+        } else {
+            this.scheduler
+                .createTaskBuilder()
+                .async()
+                .execute(() -> {
+                    try (final DSLContext context = this.databaseManager.createContext(true)) {
+                        final int result = ExchangeQueries
+                            .createDeleteExchange(id)
+                            .build(context)
+                            .keepStatement(false)
+                            .execute();
+
+                        final Runnable runnable;
+
+                        if (result == 0) {
+                            runnable = () -> {
+                                // TODO Dockter, send a notification down to the player that deletion failed
+                            };
+                        } else {
+                            runnable = this::loadExchanges;
+                        }
+
+                        this.scheduler
+                            .createTaskBuilder()
+                            .execute(runnable)
+                            .submit(this.container);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .submit(this.container);
+        }
     }
 }

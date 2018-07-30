@@ -60,7 +60,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
     private final Scheduler scheduler;
     private final Logger logger;
     private final ChannelBinding.IndexedMessageChannel network;
-    private final ServerNotificationManager serverNotificationManager;
+    private final ServerNotificationManager notificationManager;
     private final DatabaseManager databaseManager;
 
     private final Map<String, Title> titles = new HashMap<>();
@@ -68,15 +68,13 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
     private final Map<UUID, Title> selectedTitles = new HashMap<>();
 
     @Inject
-    public ServerTitleManager(final PluginContainer container, final Scheduler scheduler, final Logger logger,
-        @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network,
-        final ServerNotificationManager serverNotificationManager,
-        final DatabaseManager databaseManager) {
+    public ServerTitleManager(final PluginContainer container, final Scheduler scheduler, final Logger logger, @ChannelId(NetworkConfig.CHANNEL)
+    final ChannelBinding.IndexedMessageChannel network, final ServerNotificationManager notificationManager, final DatabaseManager databaseManager) {
         this.container = container;
         this.scheduler = scheduler;
         this.logger = logger;
         this.network = network;
-        this.serverNotificationManager = serverNotificationManager;
+        this.notificationManager = notificationManager;
         this.databaseManager = databaseManager;
     }
 
@@ -422,13 +420,13 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         checkNotNull(content);
 
         if (!player.hasPermission(Almura.ID + ".title.create")) {
-            serverNotificationManager
+            notificationManager
                 .sendPopupNotification(player, Text.of("Title Manager"), Text.of("Insufficient Permission!, Title addition failed."), 5);
             return;
         }
 
         if (this.getTitle(id).isPresent()) {
-            serverNotificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("This Title already exists!"), 5);
+            notificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("This Title already exists!"), 5);
 
             this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
                     this.titles
@@ -457,19 +455,11 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             .execute();
 
                         if (result == 0) {
-
-                            final Runnable runnable = () -> {
-                                // TODO Dockter
-                                System.err.println("Add failed!");
-                            };
-
-                            this.scheduler
-                                .createTaskBuilder()
-                                .execute(runnable)
-                                .submit(this.container);
-                        } else {
-                            this.loadTitles();
+                            // TODO Logger
+                            return;
                         }
+                        
+                        this.loadTitles();
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -493,7 +483,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         final Title title = this.getTitle(id).orElse(null);
 
         if (title == null) {
-            // TODO Dockter, we're in a desync...either send them a notification that title modify failed as it doesn't exist or remove this TODO
+            // TODO Dockter, we're in a desync...either send them a notification that modify failed as it doesn't exist or remove this TODO
 
             this.network.sendTo(player, new ClientboundTitlesRegistryPacket(
                     this.titles
@@ -521,19 +511,11 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             .execute();
 
                         if (result == 0) {
-
-                            final Runnable runnable = () -> {
-                                // TODO Dockter
-                                System.err.println("Modify failed!");
-                            };
-
-                            this.scheduler
-                                .createTaskBuilder()
-                                .execute(runnable)
-                                .submit(this.container);
-                        } else {
-                            this.loadTitles();
+                            // TODO Logger
+                            return;
                         }
+
+                      this.loadTitles();
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -575,19 +557,11 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             .execute();
 
                         if (result == 0) {
-
-                            final Runnable runnable = () -> {
-                                // TODO Dockter
-                                System.err.println("Deletion failed!");
-                            };
-
-                            this.scheduler
-                                .createTaskBuilder()
-                                .execute(runnable)
-                                .submit(this.container);
-                        } else {
-                            this.loadTitles();
+                          // TODO Logger
+                            return;
                         }
+
+                        this.loadTitles();
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }

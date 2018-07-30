@@ -15,28 +15,34 @@ import org.spongepowered.api.network.Message;
 
 import javax.annotation.Nullable;
 
-public final class ServerboundModifyExchangeRequestPacket implements Message {
+public final class ServerboundModifyExchangePacket implements Message {
 
     @Nullable public ExchangeModifyType type;
     @Nullable public String id, name, permission;
     public boolean isHidden;
 
-    public ServerboundModifyExchangeRequestPacket() {
+    public ServerboundModifyExchangePacket() {
     }
 
-    public ServerboundModifyExchangeRequestPacket(final ExchangeModifyType type, final String id, @Nullable final String name, @Nullable final String
+    public ServerboundModifyExchangePacket(final ExchangeModifyType type, final String id, @Nullable final String name, @Nullable final String
         permission, final boolean isHidden) {
         checkNotNull(type);
         checkNotNull(id);
 
         this.type = type;
         this.id = id;
+
+        if (this.type != ExchangeModifyType.DELETE) {
+            checkNotNull(name);
+            checkNotNull(permission);
+        }
+
         this.name = name;
         this.permission = permission;
         this.isHidden = isHidden;
     }
 
-    public ServerboundModifyExchangeRequestPacket(final String id) {
+    public ServerboundModifyExchangePacket(final String id) {
         this(ExchangeModifyType.DELETE, id, null, null, false);
     }
 

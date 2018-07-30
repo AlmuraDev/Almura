@@ -43,11 +43,10 @@ public final class ExchangeQueries {
             .values(creatorData, id, permission, isHidden);
     }
 
-    public static DatabaseQuery<UpdateConditionStep<AxsRecord>> createUpdateExchange(final String id, final String permission,
-        final String content, final boolean isHidden) {
+    public static DatabaseQuery<UpdateConditionStep<AxsRecord>> createUpdateExchange(final String id, final String permission, final boolean
+        isHidden) {
         checkNotNull(id);
         checkNotNull(permission);
-        checkNotNull(content);
 
         return context -> context
             .update(AXS)
