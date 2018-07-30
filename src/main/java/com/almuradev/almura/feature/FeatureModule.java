@@ -11,7 +11,6 @@ import com.almuradev.almura.feature.animal.AnimalModule;
 import com.almuradev.almura.feature.biome.BiomeModule;
 import com.almuradev.almura.feature.cache.CacheModule;
 import com.almuradev.almura.feature.claim.ClaimModule;
-import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.complex.ComplexContentModule;
 import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.almura.feature.death.DeathModule;
@@ -22,10 +21,10 @@ import com.almuradev.almura.feature.menu.ingame.FeaturesModule;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
 import com.almuradev.almura.feature.offhand.OffHandListener;
-import com.almuradev.almura.feature.store.StoreModule;
 import com.almuradev.almura.feature.permission.PermissionsModule;
 import com.almuradev.almura.feature.sign.SignEditFeature;
 import com.almuradev.almura.feature.storage.StorageModule;
+import com.almuradev.almura.feature.store.StoreModule;
 import com.almuradev.almura.feature.title.TitleModule;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
@@ -59,6 +58,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         this.nerfVanillaFood();
+        this.install(new ClaimModule());
 
         if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
             this.loadServerSideModules(); // Force loading this because it will fail the Platform.Type checks below during normal startup.
@@ -71,7 +71,6 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 @Override
                 protected void configure() {
                     this.facet().add(OffHandListener.class);
-                    this.facet().add(ClientClaimManager.class);
                 }
             }
             this.install(new ClientModule());
@@ -82,7 +81,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
                 @SideOnly(Side.SERVER)
                 @Override
                 protected void configure() {
-                   loadServerSideModules();  // This is never touched in single player / de-obfuscated environments.
+                    loadServerSideModules();  // This is never touched in single player / de-obfuscated environments.
                 }
             }
             this.install(new ServerModule());
@@ -92,9 +91,6 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
     private void loadServerSideModules() {
         if (Sponge.getPluginManager().isLoaded("luckperms")) {
             this.install(new PermissionsModule());
-            if (Sponge.getPluginManager().isLoaded("griefprevention")) {
-                this.install(new ClaimModule());
-            }
         }
     }
 

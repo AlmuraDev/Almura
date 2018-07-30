@@ -9,7 +9,6 @@ package com.almuradev.almura.feature.claim.network.handler;
 
 import com.almuradev.almura.feature.claim.ServerClaimManager;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequestPacket;
-import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiSaveRequestPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
@@ -18,7 +17,6 @@ import me.ryanhamshire.griefprevention.api.claim.Claim;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import org.spongepowered.api.Platform;
-import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBinding;
@@ -55,14 +53,14 @@ public final class ServerboundClaimGuiAbandonRequestPacketHandler implements Mes
             final WorldServer worldServer = WorldManager.getWorld(message.worldName).orElse(null);
 
             if (worldServer == null) {
-                notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Unable to find world, changes not saved!"), 5);
+                this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Unable to find world, changes not saved!"), 5);
                 return;
             }
 
             final World world = (World)worldServer;
             final Location<World> location = new Location<>(world, message.x, message.y, message.z);
             if (location == null) {
-                notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Invalid location sent to server.  Changes not saved!"), 5);
+                this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Invalid location sent to server.  Changes not saved!"), 5);
             } else {
                 final Claim claim = GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(location);
                 if (claim != null) { // if GP is loaded, claim should never be null.
@@ -71,13 +69,13 @@ public final class ServerboundClaimGuiAbandonRequestPacketHandler implements Mes
 
                     if (isOwner || isAdmin) {
                         claim.getClaimManager().deleteClaim(claim);
-                        serverClaimManager.buildUpdatePacket(player, claim);
-                        notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Claim Abandoned!"), 5);
+                        this.serverClaimManager.buildUpdatePacket(player, claim);
+                        this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Claim Abandoned!"), 5);
                     } else {
-                        notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);
+                        this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);
                     }
                 } else {
-                    notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Unable to lookup Claim, changed not saved!"), 5);
+                    this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Unable to lookup Claim, changed not saved!"), 5);
                 }
             }
         }

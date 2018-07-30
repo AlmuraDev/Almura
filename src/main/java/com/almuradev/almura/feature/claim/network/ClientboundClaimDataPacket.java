@@ -23,12 +23,15 @@ public final class ClientboundClaimDataPacket implements Message {
     public double claimEconBalance;
     public String claimGreeting;
     public String claimFarewell;
+    public int claimSize;
+    public boolean isForSale;
+    public boolean showWarnings;
 
     public ClientboundClaimDataPacket() {
     }
 
     public ClientboundClaimDataPacket(final boolean isClaim, final String claimName, final String claimOwner, final boolean isWilderness, final boolean isTownClaim, final boolean isAdminClaim, final boolean isBasicClaim, final boolean isSubdivision,
-            double claimEconBalance, String claimGreeting, String claimFarewell) {
+            final double claimEconBalance, final String claimGreeting, final String claimFarewell, final int claimSize, final boolean isForSale, final boolean showWarnings) {
         this.isClaim = isClaim;
         this.claimName = claimName;
         this.claimOwner = claimOwner;
@@ -40,6 +43,9 @@ public final class ClientboundClaimDataPacket implements Message {
         this.claimEconBalance = claimEconBalance;
         this.claimGreeting = claimGreeting;
         this.claimFarewell = claimFarewell;
+        this.claimSize = claimSize;
+        this.isForSale = isForSale;
+        this.showWarnings = showWarnings;
     }
 
     @Override
@@ -55,6 +61,9 @@ public final class ClientboundClaimDataPacket implements Message {
         this.claimEconBalance = buf.readDouble();
         this.claimGreeting = buf.readString();
         this.claimFarewell = buf.readString();
+        this.claimSize = buf.readInteger();
+        this.isForSale = buf.readBoolean();
+        this.showWarnings = buf.readBoolean();
     }
 
     @Override
@@ -70,5 +79,8 @@ public final class ClientboundClaimDataPacket implements Message {
         buf.writeDouble(this.claimEconBalance);
         buf.writeString(this.claimGreeting);
         buf.writeString(this.claimFarewell);
+        buf.writeInteger(this.claimSize);
+        buf.writeBoolean(this.isForSale);
+        buf.writeBoolean(this.showWarnings);
     }
 }

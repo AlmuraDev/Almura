@@ -8,14 +8,11 @@
 package com.almuradev.almura.feature.claim.network.handler;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.claim.network.ClientboundClaimGuiResponsePacket;
+import com.almuradev.almura.feature.claim.ServerClaimManager;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiRequestPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
-import com.almuradev.almura.feature.title.network.ServerboundTitleGuiRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
-import me.ryanhamshire.griefprevention.GriefPrevention;
-import me.ryanhamshire.griefprevention.api.claim.Claim;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
@@ -33,12 +30,14 @@ public final class ServerboundClaimGuiRequestPacketHandler implements MessageHan
 
     private final ChannelBinding.IndexedMessageChannel network;
     private final ServerNotificationManager notificationManager;
+    private final ServerClaimManager serverClaimManager;
 
     @Inject
     public ServerboundClaimGuiRequestPacketHandler(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
-    ServerNotificationManager notificationManager) {
+    ServerNotificationManager notificationManager, final ServerClaimManager serverClaimManager) {
         this.network = network;
         this.notificationManager = notificationManager;
+        this.serverClaimManager = serverClaimManager;
     }
 
     @Override
@@ -52,13 +51,7 @@ public final class ServerboundClaimGuiRequestPacketHandler implements MessageHan
                 return;
             }
 
-            Claim claim = GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(player.getLocation());
-            if (claim != null) { // if GP is loaded, claim should never be null.
-                boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
-                boolean isTrusted = claim.isTrusted(player.getUniqueId());
-                boolean isAdmin = player.hasPermission("griefprevention.admin");
-                this.network.sendTo(player, new ClientboundClaimGuiResponsePacket(isOwner, isTrusted, isAdmin));
-            }
+            this.serverClaimManager.openClientGUI(player);
         }
     }
 }

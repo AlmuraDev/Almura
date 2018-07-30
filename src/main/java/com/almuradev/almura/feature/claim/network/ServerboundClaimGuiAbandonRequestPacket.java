@@ -17,7 +17,7 @@ public final class ServerboundClaimGuiAbandonRequestPacket implements Message {
 
     public ServerboundClaimGuiAbandonRequestPacket() {}
 
-    public ServerboundClaimGuiAbandonRequestPacket(double x, double y, double z, String worldName) {
+    public ServerboundClaimGuiAbandonRequestPacket(final double x, final double y, final double z, final String worldName) {
         this.x = x;
         this.y = y;
         this.z = z;

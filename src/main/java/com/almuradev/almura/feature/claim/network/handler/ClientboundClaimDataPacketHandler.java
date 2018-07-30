@@ -8,9 +8,11 @@
 package com.almuradev.almura.feature.claim.network.handler;
 
 import com.almuradev.almura.feature.claim.ClientClaimManager;
+import com.almuradev.almura.feature.claim.gui.ManageClaimGUI;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimDataPacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
@@ -42,6 +44,14 @@ public final class ClientboundClaimDataPacketHandler implements MessageHandler<C
                 claimManager.isAdminClaim = message.isAdminClaim;
                 claimManager.isBasicClaim = message.isBasicClaim;
                 claimManager.isSubdivision = message.isSubdivision;
+                claimManager.claimSize = message.claimSize;
+                claimManager.showWarnings = message.showWarnings;
+
+                final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+
+                if (currentScreen instanceof ManageClaimGUI) {
+                    ((ManageClaimGUI) currentScreen).updateValues();
+                }
             }
         }
     }

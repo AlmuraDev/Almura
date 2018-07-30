@@ -18,7 +18,7 @@ public final class ServerboundClaimGuiSaveRequestPacket implements Message {
 
     public ServerboundClaimGuiSaveRequestPacket() {}
 
-    public ServerboundClaimGuiSaveRequestPacket(String claimName, String claimGreeting, String claimFarewell, double x, double y, double z, String worldName) {
+    public ServerboundClaimGuiSaveRequestPacket(final String claimName, final String claimGreeting, final String claimFarewell, final double x, final double y, final double z, final String worldName) {
         this.claimName = claimName;
         this.claimGreeting = claimGreeting;
         this.claimFarewell = claimFarewell;
