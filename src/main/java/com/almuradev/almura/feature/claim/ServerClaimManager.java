@@ -144,14 +144,15 @@ public final class ServerClaimManager implements Witness {
         buildUpdatePacket(null, event.getClaim());
     }
 
-    public void toggleVisualization(Claim claim, Player player) {
-        System.out.println("Toggle Visualization");
+    // This is not ready to be used yet...
+    public void toggleVisualization(Claim claim, Player player, boolean show) {
         if (GriefPreventionPlugin.instance == null) {
-            System.out.println("Error: GP is not fully initialized.");
+            // Todo: send notification about not finding GP.
         }
-        if (GriefPreventionPlugin.instance != null) {
+        if (GriefPreventionPlugin.instance != null && show) {
             GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
             GriefPreventionPlugin.instance.worldEditProvider.visualizeClaim(claim, player, playerData, false);
+            // Todo: bug: this doesn't auto toggle off.
         }
     }
 
@@ -169,7 +170,6 @@ public final class ServerClaimManager implements Witness {
             notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Invalid location sent to server.  Changes not saved!"), 5);
         } else {
             final Claim claim = GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(location);
-            this.toggleVisualization(claim, player);
             if (claim != null) { // if GP is loaded, claim should never be null.
                 final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
                 final boolean isAdmin = player.hasPermission("griefprevention.admin");
@@ -198,5 +198,4 @@ public final class ServerClaimManager implements Witness {
             this.network.sendTo(player, new ClientboundClaimGuiResponsePacket(isOwner, isTrusted, isAdmin));
         }
     }
-
 }
