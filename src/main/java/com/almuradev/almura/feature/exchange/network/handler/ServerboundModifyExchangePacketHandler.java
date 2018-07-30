@@ -11,8 +11,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.exchange.ServerExchangeManager;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
-import com.almuradev.almura.feature.title.ServerTitleManager;
-import com.almuradev.almura.feature.title.network.ServerboundModifyTitlePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
@@ -44,13 +42,13 @@ public final class ServerboundModifyExchangePacketHandler implements MessageHand
 
             switch (message.type) {
                 case ADD:
-                    this.exchangeManager.addExchange(player, message.id, message.permission, message.isHidden);
+                    this.exchangeManager.handleExchangeAdd(player, message.id, message.name, message.permission, message.isHidden);
                     break;
                 case MODIFY:
-                    this.exchangeManager.modifyExchange(player, message.id, message.permission, message.isHidden);
+                    this.exchangeManager.handleExchangeModify(player, message.id, message.name, message.permission, message.isHidden);
                     break;
                 case DELETE:
-                    this.exchangeManager.deleteExchange(player, message.id);
+                    this.exchangeManager.handleExchangeDelete(player, message.id);
             }
         }
     }

@@ -11,7 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
-import com.almuradev.almura.feature.exchange.network.ClientboundAvailableExchangesResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
@@ -24,7 +24,6 @@ import org.jooq.Record;
 import org.jooq.Results;
 import org.slf4j.Logger;
 import org.spongepowered.api.GameState;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
@@ -38,11 +37,11 @@ import org.spongepowered.api.text.Text;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -60,11 +59,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     private final ServerNotificationManager notificationManager;
 
     private final Map<String, Exchange> exchanges = new HashMap<>();
-    private final Map<UUID, Set<Exchange>> availableExchanges = new HashMap<>();
 
     @Inject
     public ServerExchangeManager(final PluginContainer container, final Scheduler scheduler, final Logger logger, final @ChannelId(NetworkConfig
-        .CHANNEL) ChannelBinding.IndexedMessageChannel network, final DatabaseManager databaseManager, final ServerNotificationManager notificationManager) {
+        .CHANNEL) ChannelBinding.IndexedMessageChannel network, final DatabaseManager databaseManager,
+        final ServerNotificationManager notificationManager) {
         this.container = container;
         this.scheduler = scheduler;
         this.logger = logger;
@@ -101,13 +100,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     .collect(Collectors.toSet())
             )
         );
-
-        // Cache available exchanges for the joiner
-        this.cacheAvailableExchangesFor(player);
-
-        // Send joiner available exchanges (to cache)
-        this.getAvailableExchangesFor(player)
-            .ifPresent(availableExchanges -> this.network.sendTo(player, new ClientboundAvailableExchangesResponsePacket(availableExchanges)));
     }
 
     public Optional<Exchange> getExchange(final String id) {
@@ -116,15 +108,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         return Optional.ofNullable(this.exchanges.get(id));
     }
 
-    public Optional<Set<Exchange>> getAvailableExchangesFor(final Player holder) {
-        checkNotNull(holder);
-
-        return Optional.ofNullable(this.availableExchanges.get(holder.getUniqueId()));
-    }
-
     public boolean loadExchanges() {
 
-        this.availableExchanges.clear();
+        // TODO I might automatically create the Global Exchange (almura.global) by default (if no others are found when loading from db)
 
         this.logger.info("Querying database for exchanges, please wait...");
 
@@ -145,12 +131,42 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             final String id = record.getValue(Axs.AXS.ID);
                             final Timestamp created = record.getValue(Axs.AXS.CREATED);
                             final UUID creator = DatabaseUtils.fromBytes(record.getValue(Axs.AXS.CREATOR));
+                            final String name = record.getValue(Axs.AXS.NAME);
                             final String permission = record.getValue(Axs.AXS.PERMISSION);
                             final boolean isHidden = record.getValue(Axs.AXS.IS_HIDDEN);
 
-                            exchanges.put(id, new BasicExchange(id, created.toInstant(), creator, id, permission, isHidden));
+                            exchanges.put(id, new BasicExchange(id, created.toInstant(), creator, name, permission, isHidden));
                         }
                     });
+
+                    if (exchanges.isEmpty()) {
+                        // TODO Begin Test Code
+                        final BasicExchange exchange = new BasicExchange("almura.global", Instant.now(), UUID.randomUUID(), "Exchange", "almura"
+                            + ".exchange.global", false);
+                        exchanges.put("almura.global", exchange);
+
+                        // Yes, I am purposedly running this sync
+                        this.scheduler
+                            .createTaskBuilder()
+                            .execute(() -> {
+                                try (final DSLContext context1 = this.databaseManager.createContext(true)) {
+                                    final int result = ExchangeQueries
+                                        .createInsertExchange(exchange.getCreator(), exchange.getId(), exchange.getName(), exchange.getPermission(),
+                                            exchange.isHidden())
+                                        .build(context1)
+                                        .keepStatement(false)
+                                        .execute();
+
+                                    if (result == 0) {
+                                        Thread.dumpStack();
+                                    }
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            })
+                            .submit(this.container);
+                        // TODO End Test Code
+                    }
 
                     this.scheduler
                         .createTaskBuilder()
@@ -161,17 +177,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             this.logger.info("Loaded {} exchange(s).", this.exchanges.size());
 
                             // Re-send exchanges to everyone
-                            this.network.sendToAll(new ClientboundExchangeRegistryPacket(this.exchanges.isEmpty() ? null : new HashSet<>(this.exchanges
-                                .values())));
-
-                            // Re-calculate available exchanges
-                            Sponge.getServer().getOnlinePlayers().forEach(player -> {
-                                this.cacheAvailableExchangesFor(player);
-
-                                final Set<Exchange> availableExchanges = this.getAvailableExchangesFor(player).orElse(null);
-                                this.network.sendTo(player, new ClientboundAvailableExchangesResponsePacket(availableExchanges != null &&
-                                    availableExchanges.isEmpty() ? null : availableExchanges));
-                            });
+                            this.network
+                                .sendToAll(new ClientboundExchangeRegistryPacket(this.exchanges.isEmpty() ? null : new HashSet<>(this.exchanges
+                                    .values())));
                         })
                         .submit(this.container);
                 } catch (SQLException e) {
@@ -183,36 +191,51 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         return true;
     }
 
-    public void cacheAvailableExchangesFor(final Player player) {
-        checkNotNull(player);
-
-        this.availableExchanges.remove(player.getUniqueId());
-
-        if (this.exchanges.isEmpty()) {
+    public void handleExchangeManage(final Player player) {
+        if (!player.hasPermission(Almura.ID + ".exchange.manage")) {
+            // TODO Notification
             return;
         }
 
-        final Set<Exchange> availableExchanges = this.exchanges
-            .entrySet()
-            .stream()
-            .filter(kv -> {
-                if (kv.getValue().isHidden()) {
-                    return player.hasPermission(Almura.ID + ".exchange.admin");
-                }
-                return player.hasPermission(kv.getValue().getPermission());
-            })
-            .map(Map.Entry::getValue)
-            .collect(Collectors.toCollection(HashSet::new));
-
-        if (availableExchanges.isEmpty()) {
-            return;
-        }
-        this.availableExchanges.put(player.getUniqueId(), availableExchanges);
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.MANAGE, null));
     }
 
-    public void addExchange(final Player player, final String id, final String permission, final boolean isHidden) {
+    public void handleExchangeSpecific(final Player player, final String id) {
         checkNotNull(player);
         checkNotNull(id);
+
+        if (!player.hasPermission(Almura.ID + ".exchange.open")) {
+            // TODO Notification
+            return;
+        }
+
+        final Exchange exchange = this.getExchange(id).orElse(null);
+
+        if (exchange == null || !player.hasPermission(exchange.getPermission())) {
+            // TODO Notification
+
+            this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
+                this.exchanges
+                    .values()
+                    .stream()
+                    .filter(axs -> {
+                        if (!axs.isHidden()) {
+                            return true;
+                        }
+
+                        return player.hasPermission(Almura.ID + ".exchange.admin");
+                    })
+                    .collect(Collectors.toSet()))
+            );
+        } else {
+            this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, id));
+        }
+    }
+
+    public void handleExchangeAdd(final Player player, final String id, final String name, final String permission, final boolean isHidden) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkNotNull(name);
         checkNotNull(permission);
 
         if (!player.hasPermission(Almura.ID + ".exchange.create")) {
@@ -245,7 +268,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .execute(() -> {
                     try (final DSLContext context = this.databaseManager.createContext(true)) {
                         final int result = ExchangeQueries
-                            .createInsertExchange(player.getUniqueId(), id, permission, isHidden)
+                            .createInsertExchange(player.getUniqueId(), id, name, permission, isHidden)
                             .build(context)
                             .keepStatement(false)
                             .execute();
@@ -272,9 +295,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
     }
 
-    public void modifyExchange(final Player player, final String id, final String permission, final boolean isHidden) {
+    public void handleExchangeModify(final Player player, final String id, final String name, final String permission, final boolean isHidden) {
         checkNotNull(player);
         checkNotNull(id);
+        checkNotNull(name);
         checkNotNull(permission);
 
         if (!player.hasPermission(Almura.ID + ".exchange.modify")) {
@@ -307,7 +331,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .execute(() -> {
                     try (final DSLContext context = this.databaseManager.createContext(true)) {
                         final int result = ExchangeQueries
-                            .createUpdateExchange(id, permission, isHidden)
+                            .createUpdateExchange(id, name, permission, isHidden)
                             .build(context)
                             .keepStatement(false)
                             .execute();
@@ -334,7 +358,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
     }
 
-    public void deleteExchange(final Player player, final String id) {
+    public void handleExchangeDelete(final Player player, final String id) {
         checkNotNull(player);
         checkNotNull(id);
 

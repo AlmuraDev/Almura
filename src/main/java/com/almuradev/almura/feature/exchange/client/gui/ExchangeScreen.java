@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.listing.MockOffer;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
@@ -77,6 +78,7 @@ public final class ExchangeScreen extends SimpleScreen {
     private static final int minScreenWidth = 600;
     private static final int minScreenHeight = 370;
     private static final int innerPadding = 2;
+    private final Exchange exchange;
 
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
         buttonList, buttonSetPrice;
@@ -92,7 +94,9 @@ public final class ExchangeScreen extends SimpleScreen {
     @Inject private static Logger logger;
     @Inject private static ClientNotificationManager clientNotificationManager;
 
-    public ExchangeScreen() {
+    public ExchangeScreen(final Exchange exchange) {
+        this.exchange = exchange;
+
         // ADD MOCK DATA
         final List<List<MockOffer>> testList = Lists.newArrayList(this.allOffers, this.playerOffers);
 

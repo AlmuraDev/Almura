@@ -7,9 +7,9 @@
  */
 package com.almuradev.almura.feature.exchange.network.handler;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.almuradev.almura.feature.exchange.ClientExchangeManager;
-import com.almuradev.almura.feature.exchange.Exchange;
-import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -32,10 +32,15 @@ public final class ClientboundExchangeGuiResponsePacketHandler implements Messag
     public void handleMessage(ClientboundExchangeGuiResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
 
-            final Exchange exchange = this.exchangeManager.getExchange(message.id);
+            checkNotNull(message.type);
 
-            if (exchange != null) {
-                new ExchangeScreen(exchange).display();
+            switch (message.type) {
+                case MANAGE:
+                    this.exchangeManager.handleExchangeManage();
+                    break;
+                case SPECIFIC:
+                    this.exchangeManager.handleExchangeSpecific(message.id);
+                    break;
             }
         }
     }

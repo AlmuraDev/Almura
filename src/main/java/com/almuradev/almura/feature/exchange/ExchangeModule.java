@@ -8,16 +8,12 @@
 package com.almuradev.almura.feature.exchange;
 
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
-import com.almuradev.almura.feature.exchange.network.ClientboundAvailableExchangesResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundAvailableExchangesRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
-import com.almuradev.almura.feature.exchange.network.handler.ClientboundAvailableExchangesResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeGuiResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangesRegistryPacketHandler;
-import com.almuradev.almura.feature.exchange.network.handler.ServerboundAvailableExchangesRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeGuiRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyExchangePacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
@@ -42,13 +38,7 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 binder -> binder.handler(ClientboundExchangeGuiResponsePacketHandler.class, Platform.Type.CLIENT))
 
             .bind(ServerboundModifyExchangePacket.class,
-                binder -> binder.handler(ServerboundModifyExchangePacketHandler.class, Platform.Type.SERVER))
-
-            .bind(ServerboundAvailableExchangesRequestPacket.class,
-                binder -> binder.handler(ServerboundAvailableExchangesRequestPacketHandler.class, Platform.Type.SERVER))
-
-            .bind(ClientboundAvailableExchangesResponsePacket.class,
-                binder -> binder.handler(ClientboundAvailableExchangesResponsePacketHandler.class, Platform.Type.CLIENT));
+                binder -> binder.handler(ServerboundModifyExchangePacketHandler.class, Platform.Type.SERVER));
         this.facet().add(ServerExchangeManager.class);
 
         this.on(Platform.Type.CLIENT, () -> {

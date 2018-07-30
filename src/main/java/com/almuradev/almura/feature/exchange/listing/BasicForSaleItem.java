@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public final class BasicForSaleItem implements ForSaleItem {
+
     private final ListItem listItem;
     private final Instant created;
     private int quantity;

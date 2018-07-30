@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.menu.ingame;
 
 import com.almuradev.almura.feature.claim.ClientClaimManager;
+import com.almuradev.almura.feature.exchange.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
@@ -42,14 +43,14 @@ public final class FeaturesGUI extends SimpleScreen {
     private boolean unlockMouse = true;
     private boolean isAdmin = false;
     private UILabel titleLabel;
-    private UIButton guideButton, manageTitleButton, nicknameButton, exchangeButton, serverShopButton, npcShopButton, accessoriesButton, claimButton;
     private UIFormContainer form;
+    private UIButton guideButton, manageTitleButton, nicknameButton, manageExchangeButton, specificExchangeButton, serverShopButton, npcShopButton,
+        accessoriesButton, claimButton;
 
     private World world;
     private EntityPlayerSP player;
 
-    @Inject private static PluginContainer container;
-    @Inject private static com.almuradev.almura.feature.exchange.ClientExchangeManager exchangeManager;
+    @Inject private static ClientExchangeManager exchangeManager;
     @Inject private static ClientPageManager guideManager;
     @Inject private static ClientNickManager nickManager;
     @Inject private static ClientTitleManager titleManager;
@@ -112,21 +113,31 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.title.manage");
 
-       // Exchange button
-       exchangeButton = new UIButtonBuilder(this)
+       // Manage Exchange button
+       manageExchangeButton = new UIButtonBuilder(this)
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, manageTitleButton.getY() + 18)
                 .visible(isAdmin)
-                .text("Exchange")
+                .text("Manage Exchanges")
                 .listener(this)
-                .build("button.exchange");
+                .build("button.exchange.manage");
+
+        // Specific Exchange button
+        specificExchangeButton = new UIButtonBuilder(this)
+            .width(100)
+            .anchor(Anchor.TOP | Anchor.CENTER)
+            .position(0, manageExchangeButton.getY() + 18)
+            .visible(isAdmin)
+            .text("Global Exchange")
+            .listener(this)
+            .build("button.exchange.specific");
 
        // Server Shop Configuration GUI button
        serverShopButton = new UIButtonBuilder(this)
                 .width(100)
                 .anchor(Anchor.TOP | Anchor.CENTER)
-                .position(0, exchangeButton.getY() + 18)
+                .position(0, specificExchangeButton.getY() + 18)
                 .visible(isAdmin)
                 .text("Server Shops")
                 .listener(this)
@@ -169,7 +180,8 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel,  topWindowTitleSeparator, guideButton, exchangeButton,  manageTitleButton, nicknameButton, accessoriesButton, serverShopButton, npcShopButton, claimButton, buttonClose);
+        form.add(titleLabel, guideButton, specificExchangeButton, manageExchangeButton, manageTitleButton, nicknameButton, accessoriesButton,
+            serverShopButton, npcShopButton, claimButton, buttonClose);
 
         addToScreen(form);
     }
@@ -177,8 +189,11 @@ public final class FeaturesGUI extends SimpleScreen {
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
-            case "button.exchange":
-                exchangeManager.requestExchangeGui("almura.global");
+            case "button.exchange.manage":
+                exchangeManager.requestManageExchangeGui();
+                break;
+            case "button.exchange.specific":
+                exchangeManager.requestSpecificExchangeGui("almura.global");
                 break;
             case "button.npcshop":
                 // Todo: need packet based request here.

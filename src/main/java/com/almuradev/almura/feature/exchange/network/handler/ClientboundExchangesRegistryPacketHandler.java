@@ -11,7 +11,6 @@ import com.almuradev.almura.feature.exchange.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -33,12 +32,7 @@ public final class ClientboundExchangesRegistryPacketHandler implements MessageH
     @Override
     public void handleMessage(final ClientboundExchangeRegistryPacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-
-            this.exchangeManager.putExchanges(message.exchanges);
-
-            final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-
-            // TODO Manage Exchange screen
+            this.exchangeManager.handleExchangeRegistry(message.exchanges);
         }
     }
 }

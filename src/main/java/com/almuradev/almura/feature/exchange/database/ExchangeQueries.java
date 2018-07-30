@@ -15,12 +15,16 @@ import com.almuradev.almura.shared.database.DatabaseUtils;
 import com.almuradev.generated.axs.tables.records.AxsRecord;
 import org.jooq.DeleteConditionStep;
 import org.jooq.InsertValuesStep4;
+import org.jooq.InsertValuesStep5;
 import org.jooq.SelectWhereStep;
 import org.jooq.UpdateConditionStep;
 
 import java.util.UUID;
 
 public final class ExchangeQueries {
+
+    private ExchangeQueries() {
+    }
 
     /**
      * Exchange
@@ -30,26 +34,29 @@ public final class ExchangeQueries {
         return context -> context.selectFrom(AXS);
     }
 
-    public static DatabaseQuery<InsertValuesStep4<AxsRecord, byte[], String, String, Boolean>> createInsertExchange(final UUID creator,
-        final String id, final String permission, final boolean isHidden) {
+    public static DatabaseQuery<InsertValuesStep5<AxsRecord, byte[], String, String, String, Boolean>> createInsertExchange(final UUID creator,
+        final String id, final String name, final String permission, final boolean isHidden) {
         checkNotNull(creator);
         checkNotNull(id);
+        checkNotNull(name);
         checkNotNull(permission);
 
         final byte[] creatorData = DatabaseUtils.toBytes(creator);
 
         return context -> context
-            .insertInto(AXS, AXS.CREATOR, AXS.ID, AXS.PERMISSION, AXS.IS_HIDDEN)
-            .values(creatorData, id, permission, isHidden);
+            .insertInto(AXS, AXS.CREATOR, AXS.ID, AXS.NAME, AXS.PERMISSION, AXS.IS_HIDDEN)
+            .values(creatorData, id, name, permission, isHidden);
     }
 
-    public static DatabaseQuery<UpdateConditionStep<AxsRecord>> createUpdateExchange(final String id, final String permission, final boolean
-        isHidden) {
+    public static DatabaseQuery<UpdateConditionStep<AxsRecord>> createUpdateExchange(final String id, final String name, final String permission,
+        final boolean isHidden) {
         checkNotNull(id);
+        checkNotNull(name);
         checkNotNull(permission);
 
         return context -> context
             .update(AXS)
+            .set(AXS.NAME, name)
             .set(AXS.PERMISSION, permission)
             .set(AXS.IS_HIDDEN, isHidden)
             .where(AXS.ID.eq(id));
@@ -60,6 +67,4 @@ public final class ExchangeQueries {
 
         return context -> context.deleteFrom(AXS).where(AXS.ID.eq(id));
     }
-
-    private ExchangeQueries() {}
 }

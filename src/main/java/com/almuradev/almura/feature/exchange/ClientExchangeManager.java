@@ -9,10 +9,13 @@ package com.almuradev.almura.feature.exchange;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
+import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -86,10 +89,14 @@ public final class ClientExchangeManager implements Witness {
         }
     }
 
-    public void requestExchangeGui(final String id) {
+    public void requestManageExchangeGui() {
+        this.network.sendToServer(new ServerboundExchangeGuiRequestPacket(ExchangeGuiType.MANAGE, null));
+    }
+
+    public void requestSpecificExchangeGui(final String id) {
         checkNotNull(id);
 
-        this.network.sendToServer(new ServerboundExchangeGuiRequestPacket(id));
+        this.network.sendToServer(new ServerboundExchangeGuiRequestPacket(ExchangeGuiType.SPECIFIC, id));
     }
 
     public void addExchange(final String id, final String name, final String permission, final boolean isHidden) {
@@ -112,5 +119,27 @@ public final class ClientExchangeManager implements Witness {
         checkNotNull(id);
 
         this.network.sendToServer(new ServerboundModifyExchangePacket(id));
+    }
+
+    public void handleExchangeRegistry(final Set<Exchange> exchanges) {
+        this.putExchanges(exchanges);
+
+        final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+
+        // TODO Grinch
+        // TODO If Manage Exchange screen is open, need to refresh it. If Specific Exchange screen is open and that Exchange vanishes, need to
+        // TODO close it
+    }
+
+    public void handleExchangeManage() {
+        // TODO Grinch Exchange Manage Gui
+    }
+
+    public void handleExchangeSpecific(final String id) {
+        final Exchange exchange = this.getExchange(id);
+
+        if (exchange != null) {
+            new ExchangeScreen(exchange).display();
+        }
     }
 }
