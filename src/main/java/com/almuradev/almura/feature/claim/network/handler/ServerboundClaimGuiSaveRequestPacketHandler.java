@@ -43,7 +43,7 @@ public final class ServerboundClaimGuiSaveRequestPacketHandler implements Messag
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
                 .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
-           this.serverClaimManager.saveClaimChanges(player, message.claimName, message.claimGreeting, message.claimFarewell, message.x, message.y, message.z, message.worldName);
+           this.serverClaimManager.saveChanges(player, message.claimName, message.claimGreeting, message.claimFarewell, message.x, message.y, message.z, message.worldName);
         }
     }
 }
