@@ -112,6 +112,10 @@ public class PacketBinder {
         }
 
         public void register(final ChannelBinding.IndexedMessageChannel channel, final Platform.Type side, final Injector injector) {
+            if (this.side == null || this.handler == null) {
+                channel.registerMessage(this.packet, this.channel);
+                return;
+            }
             checkState(this.side != null, "side not provided");
             checkState(this.handler != null, "handler not provided");
             channel.registerMessage(this.packet, this.channel);
