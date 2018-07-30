@@ -44,13 +44,28 @@ public class PacketBinder {
      * <p>Bound packets will be installed into the network channel.</p>
      *
      * @param packet the packet class
+     * @param <M> the packet type
+     * @return this binder
+     */
+    public <M extends Message> PacketBinder bind(final Class<M> packet) {
+        return this.bind(packet, null);
+    }
+
+    /**
+     * Create a binding entry for the specified packet.
+     *
+     * <p>Bound packets will be installed into the network channel.</p>
+     *
+     * @param packet the packet class
      * @param consumer the binder consumer
      * @param <M> the packet type
      * @return this binder
      */
-    public <M extends Message> PacketBinder bind(final Class<M> packet, final Consumer<Entry<M>> consumer) {
+    public <M extends Message> PacketBinder bind(final Class<M> packet, @Nullable final Consumer<Entry<M>> consumer) {
         final EntryImpl<M> entry = new EntryImpl<>(packet);
-        consumer.accept(entry);
+        if (consumer != null) {
+            consumer.accept(entry);
+        }
         this.binder.addBinding().toInstance(entry);
         return this;
     }
