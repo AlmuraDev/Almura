@@ -13,6 +13,7 @@ import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiRequestPack
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
+import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
@@ -51,7 +52,13 @@ public final class ServerboundClaimGuiRequestPacketHandler implements MessageHan
                 return;
             }
 
-            this.serverClaimManager.openClientGUI(player);
+            if (GriefPreventionPlugin.instance != null) {
+                if (GriefPreventionPlugin.instance.permissionService != null) {
+                    this.serverClaimManager.openClientGUI(player);
+                } else {
+                    this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Grief Prevention is not active!"), 2);
+                }
+            }
         }
     }
 }

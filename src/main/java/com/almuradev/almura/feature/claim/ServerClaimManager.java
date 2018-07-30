@@ -16,12 +16,7 @@ import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
-import me.ryanhamshire.griefprevention.api.event.BorderClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.ChangeClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.CreateClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.DeleteClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.FlagClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.TaxClaimEvent;
+import me.ryanhamshire.griefprevention.api.event.*;
 import net.minecraft.world.WorldServer;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -53,56 +48,60 @@ public final class ServerClaimManager implements Witness {
     }
 
     public void buildUpdatePacket(final Player player, final Claim claim) {
-        if (claim != null) {
-            boolean isClaim = true;
+        if (GriefPreventionPlugin.instance != null) {
+            if (GriefPreventionPlugin.instance.permissionService != null) {
+                if (claim != null) {
+                    boolean isClaim = true;
 
-            String claimName = "";
-            String claimGreeting = "";
-            String claimFarewell = "";
-            String claimOwner = "";
+                    String claimName = "";
+                    String claimGreeting = "";
+                    String claimFarewell = "";
+                    String claimOwner = "";
 
-            double claimEconBalance = 0.0;
-            int claimSize = 0;
+                    double claimEconBalance = 0.0;
+                    int claimSize = 0;
 
-            final boolean isWilderness = claim.isWilderness();
-            final boolean isTownClaim = claim.isTown();
-            final boolean isAdminClaim = claim.isAdminClaim();
-            final boolean isBasicClaim = claim.isBasicClaim();
-            final boolean isSubdivision = claim.isSubdivision();
-            final boolean isForSale = claim.getEconomyData().isForSale();
-            final boolean showWarnings = claim.getData().allowDenyMessages();
+                    final boolean isWilderness = claim.isWilderness();
+                    final boolean isTownClaim = claim.isTown();
+                    final boolean isAdminClaim = claim.isAdminClaim();
+                    final boolean isBasicClaim = claim.isBasicClaim();
+                    final boolean isSubdivision = claim.isSubdivision();
+                    final boolean isForSale = claim.getEconomyData().isForSale();
+                    final boolean showWarnings = claim.getData().allowDenyMessages();
 
-            if (claim.getOwnerName() != null)
-                claimOwner = claim.getOwnerName().toPlain();
-            if (claim.getData().getGreeting().isPresent())
-                claimGreeting = claim.getData().getGreeting().get().toPlain();
-            if (claim.getData().getFarewell().isPresent())
-                claimFarewell = claim.getData().getFarewell().get().toPlain();
-            if (claim.getName().isPresent()) {
-                claimName = claim.getName().get().toPlain();
+                    if (claim.getOwnerName() != null)
+                        claimOwner = claim.getOwnerName().toPlain();
+                    if (claim.getData().getGreeting().isPresent())
+                        claimGreeting = claim.getData().getGreeting().get().toPlain();
+                    if (claim.getData().getFarewell().isPresent())
+                        claimFarewell = claim.getData().getFarewell().get().toPlain();
+                    if (claim.getName().isPresent()) {
+                        claimName = claim.getName().get().toPlain();
 
-                final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
-                if (service != null) {
-                    final Currency currency = service.getDefaultCurrency();
-                    if (claim.getEconomyAccount().isPresent()) {
-                        claimEconBalance = claim.getEconomyAccount().get().getBalance(currency).doubleValue();
+                        final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
+                        if (service != null) {
+                            final Currency currency = service.getDefaultCurrency();
+                            if (claim.getEconomyAccount().isPresent()) {
+                                claimEconBalance = claim.getEconomyAccount().get().getBalance(currency).doubleValue();
+                            }
+                        }
+                    }
+
+                    if (!claim.isWilderness()) {
+                        claimSize = claim.getArea();
+                    }
+
+
+                    if (player != null) {
+                        this.network.sendTo(player, new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize,
+                                isForSale, showWarnings));
+                    }
+
+                    for (final Player players : claim.getPlayers()) {  //Apparently claims.getPlayers() doesn't include the one that just entered or exited it.
+                        this.network.sendTo(players, new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize,
+                                isForSale, showWarnings));
                     }
                 }
-            }
-
-            if (!claim.isWilderness()) {
-                claimSize = claim.getArea();
-            }
-
-
-            if (player != null) {
-                this.network.sendTo(player, new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize,
-                        isForSale, showWarnings));
-            }
-
-            for (final Player players : claim.getPlayers()) {  //Apparently claims.getPlayers() doesn't include the one that just entered or exited it.
-                this.network.sendTo(players, new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize,
-                        isForSale, showWarnings));
             }
         }
     }
