@@ -19,16 +19,16 @@ import javax.inject.Singleton;
 
 public final class DatabaseModule extends AbstractModule implements CommonBinder {
 
-  @Override
-  protected void configure() {
-    this.facet().add(DatabaseManager.class);
-    this.facet().add(DatabaseInstaller.class);
-  }
+    @Override
+    protected void configure() {
+        this.facet().add(DatabaseManager.class);
+        this.facet().add(DatabaseInstaller.class);
+    }
 
-  @Provides
-  @Singleton
-  DatabaseManager configurationAdapter(final PluginContainer container, final ServiceManager manager, final MappedConfiguration<ServerConfiguration>
-    configAdapter) {
-    return new DatabaseManager(container, manager, configAdapter.get().database);
-  }
+    @Provides
+    @Singleton
+    DatabaseManager configurationAdapter(final PluginContainer container, final ServiceManager manager, final MappedConfiguration<ServerConfiguration>
+        configAdapter) {
+        return new DatabaseManager(container, manager, configAdapter.get().database);
+    }
 }

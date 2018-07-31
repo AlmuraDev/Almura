@@ -279,7 +279,7 @@ jooq {
                 relations = true
                 deprecated = false
                 records = true
-                immutablePojos = true
+                immutablePojos = false
                 fluentSetters = true
             }
             target {
@@ -306,7 +306,7 @@ jooq {
                 relations = true
                 deprecated = false
                 records = true
-                immutablePojos = true
+                immutablePojos = false
                 fluentSetters = true
             }
             target {
@@ -333,7 +333,7 @@ jooq {
                 relations = true
                 deprecated = false
                 records = true
-                immutablePojos = true
+                immutablePojos = false
                 fluentSetters = true
             }
             target {

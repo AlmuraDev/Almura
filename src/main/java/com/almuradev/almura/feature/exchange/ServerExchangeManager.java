@@ -130,7 +130,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         for (Record record : result) {
                             final String id = record.getValue(Axs.AXS.ID);
                             final Timestamp created = record.getValue(Axs.AXS.CREATED);
-                            final UUID creator = DatabaseUtils.fromBytes(record.getValue(Axs.AXS.CREATOR));
+                            final UUID creator = DatabaseUtils.uniqueIdFromBytes(record.getValue(Axs.AXS.CREATOR));
                             final String name = record.getValue(Axs.AXS.NAME);
                             final String permission = record.getValue(Axs.AXS.PERMISSION);
                             final boolean isHidden = record.getValue(Axs.AXS.IS_HIDDEN);

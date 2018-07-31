@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -179,71 +178,80 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
     /**
      * Loads all {@link Title}s from the database. This method is expected to be called async.
      */
-    public void loadTitles() {
+    public boolean loadTitles() {
+
+        this.availableTitles.clear();
 
         this.logger.info("Querying database for titles, please wait...");
 
-        final Map<String, Title> titles = new HashMap<>();
-
-        try (final DSLContext context = this.databaseManager.createContext(true)) {
-            final Results results = TitleQueries
-                .createFetchAllTitles()
-                .build(context)
-                .keepStatement(false)
-                .fetchMany();
-
-
-            results.forEach(result -> {
-                for (Record record : result) {
-                    final String id = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.ID);
-                    final Timestamp created = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.CREATED);
-                    final UUID creator = DatabaseUtils.fromBytes(record.getValue(com.almuradev.generated.title.tables.Title.TITLE
-                        .CREATOR));
-                    final String permission = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.PERMISSION);
-                    final boolean isHidden = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.IS_HIDDEN);
-                    final String content = record.getValue(com.almuradev.generated.title.tables
-                        .Title.TITLE.CONTENT);
-
-                    titles.put(id, new Title(created, creator, id, permission, isHidden, content));
-                }
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
         this.scheduler.createTaskBuilder()
-            .execute(() -> {
-                this.titles.clear();
+          .async()
+          .execute(() -> {
+              try (final DSLContext context = this.databaseManager.createContext(true)) {
+                  final Results results = TitleQueries
+                    .createFetchAllTitles()
+                    .build(context)
+                    .keepStatement(false)
+                    .fetchMany();
 
-                this.titles.putAll(titles);
+                  final Map<String, Title> titles = new HashMap<>();
 
-                this.logger.info("Loaded {} title(s).", this.titles.size());
+                  results.forEach(result -> {
+                      for (Record record : result) {
+                          final String id = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.ID);
+                          final Timestamp created = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.CREATED);
+                          final UUID creator = DatabaseUtils.uniqueIdFromBytes(record.getValue(com.almuradev.generated.title.tables.Title.TITLE
+                            .CREATOR));
+                          final String permission = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.PERMISSION);
+                          final boolean isHidden = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.IS_HIDDEN);
+                          final String content = record.getValue(com.almuradev.generated.title.tables
+                            .Title.TITLE.CONTENT);
 
-                // Re-send titles to everyone
-                this.network.sendToAll(new ClientboundTitlesRegistryPacket(this.titles.isEmpty() ? null : new HashSet<>(this.titles
-                    .values())));
+                          titles.put(id, new Title(created, creator, id, permission, isHidden, content));
+                      }
+                  });
 
-                this.availableTitles.clear();
+                  this.scheduler.createTaskBuilder()
+                    .execute(() -> {
+                        this.titles.clear();
 
-                // Re-calculate available/selected titles
-                Sponge.getServer().getOnlinePlayers().forEach(player -> {
-                    this.calculateAvailableTitlesFor(player);
+                        if (!titles.isEmpty()) {
+                            this.titles.putAll(titles);
+                        }
 
-                    this.verifySelectedTitle(player, null);
+                        this.logger.info("Loaded {} title(s).", this.titles.size());
 
-                    this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(this.getAvailableTitlesFor(player).orElse(null)));
-                });
+                        // Re-send titles to everyone
+                        this.network.sendToAll(new ClientboundTitlesRegistryPacket(this.titles.isEmpty() ? null : new HashSet<>(this.titles
+                          .values())));
 
-                // Send all selected titles out again as we've verified and corrected them
-                this.network.sendToAll(new ClientboundSelectedTitleBulkPacket(
-                        this.selectedTitles
-                            .entrySet()
-                            .stream()
-                            .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().getId()))
-                    )
-                );
-            })
-            .submit(this.container);
+                        // Re-calculate available titles
+                        Sponge.getServer().getOnlinePlayers().forEach(player -> {
+                            this.calculateAvailableTitlesFor(player);
+
+                            this.verifySelectedTitle(player, null);
+
+                            final Set<Title> availableTitles = this.getAvailableTitlesFor(player).orElse(null);
+                            this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles));
+                        });
+
+                        // Send all selected titles out again as we've verified and corrected them in-case load changed
+                        this.network.sendToAll(new ClientboundSelectedTitleBulkPacket(
+                            this.selectedTitles
+                              .entrySet()
+                              .stream()
+                              .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().getId()))
+                          )
+                        );
+                    })
+                    .submit(this.container);
+              } catch (SQLException e) {
+                  e.printStackTrace();
+              }
+          })
+          .submit(this.container);
+
+        return true;
     }
 
     public void calculateAvailableTitlesFor(final Player player) {

@@ -47,7 +47,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
         checkNotNull(this.type);
 
         buf.writeString(this.type.name().toUpperCase());
-        
+
         if (this.type != ExchangeGuiType.MANAGE) {
             checkNotNull(this.id);
 
