@@ -7,6 +7,8 @@
  */
 package com.almuradev.almura.feature.animal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.almuradev.core.event.Witness;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
@@ -123,10 +125,37 @@ public final class ServerAnimalManager extends Witness.Impl  {
     }
 
     private int getAdditionalSpawnCount(final Animal baby, final ItemStackSnapshot usedItem) {
-        // TODO Check the item and the animal's type to drill this down
+        checkNotNull(baby);
+        checkNotNull(usedItem);
+
+        int additionalSpawnCount = 0;  //Physical count of additional spawn besides the original within the event.
+        int spawnChance = 0;  // Percentage
+
+        // Format:  almura:normal/ingredient/barley & almura:food/food/soybean
+        final String itemName = usedItem.getType().getName();
+
+        // Cows
         if (baby.getType() == EntityTypes.COW) {
-            return 5;
+            if (itemName.equalsIgnoreCase("almura:food/food/soybean") || itemName.equalsIgnoreCase("almura:food/food/corn")) {
+                additionalSpawnCount = 1;
+            }
         }
+
+        // Pigs
+        if (baby.getType() == EntityTypes.PIG) {
+            if (itemName.equalsIgnoreCase("almura:food/food/soybean")) {
+                additionalSpawnCount = 1;
+                spawnChance = 30;
+            }
+
+            if (itemName.equalsIgnoreCase("almura:food/food/corn")) {
+                additionalSpawnCount = 2;
+                spawnChance = 20;
+            }
+        }
+
+        //Todo: write randomizer code here.
+
 
         return 0;
     }
