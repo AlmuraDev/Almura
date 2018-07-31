@@ -38,6 +38,7 @@ public final class ClientClaimManager implements Witness {
     public boolean isSubdivision = false;
     public boolean isForSale = false;
     public boolean showWarnings = true;
+    public boolean hasWECUI = false;
     public String claimName = "";
     public String claimOwner = "";
     public String claimGreeting = "";

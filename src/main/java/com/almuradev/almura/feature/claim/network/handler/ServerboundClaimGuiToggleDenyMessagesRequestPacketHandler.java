@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.claim.network.handler;
 
 import com.almuradev.almura.feature.claim.ServerClaimManager;
-import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequestPacket;
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleDenyMessagesRequestPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
@@ -26,14 +26,14 @@ import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
 
-public final class ServerboundClaimGuiAbandonRequestPacketHandler implements MessageHandler<ServerboundClaimGuiAbandonRequestPacket> {
+public final class ServerboundClaimGuiToggleDenyMessagesRequestPacketHandler implements MessageHandler<ServerboundClaimGuiToggleDenyMessagesRequestPacket> {
 
     private final ChannelBinding.IndexedMessageChannel network;
     private final ServerNotificationManager notificationManager;
     private final ServerClaimManager serverClaimManager;
 
     @Inject
-    public ServerboundClaimGuiAbandonRequestPacketHandler(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
+    public ServerboundClaimGuiToggleDenyMessagesRequestPacketHandler(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
     ServerNotificationManager notificationManager, final ServerClaimManager serverClaimManager) {
         this.network = network;
         this.notificationManager = notificationManager;
@@ -41,19 +41,23 @@ public final class ServerboundClaimGuiAbandonRequestPacketHandler implements Mes
     }
 
     @Override
-    public void handleMessage(final ServerboundClaimGuiAbandonRequestPacket message, final RemoteConnection connection, final Platform.Type side) {
+    public void handleMessage(final ServerboundClaimGuiToggleDenyMessagesRequestPacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
                 .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
             final Claim claim = serverClaimManager.claimLookup(player, message.x, message.y, message.z, message.worldName);
-            if (claim != null) {
+            if (claim != null) { // if GP is loaded, claim should never be null.
                 final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
                 final boolean isAdmin = player.hasPermission("griefprevention.admin");
 
                 if (isOwner || isAdmin) {
-                    this.serverClaimManager.abandonClaim(player, claim);
+                    this.serverClaimManager.toggleClaimDenyMessages(player, claim, message.value);
                     this.serverClaimManager.sendUpdate(player, claim);
-                    this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Claim Abandoned!"), 5);
+                    if (message.value) {
+                        this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Deny Messages Enabled!"), 5);
+                    } else {
+                        this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Deny Messages Disabled!"), 5);
+                    }
                 } else {
                     this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);
                 }

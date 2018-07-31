@@ -16,7 +16,10 @@ package com.almuradev.almura.feature.claim.gui;
  */
 
 import com.almuradev.almura.feature.claim.ClientClaimManager;
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequestPacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiSaveRequestPacket;
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleDenyMessagesRequestPacket;
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleVisualsRequestPacket;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
@@ -31,6 +34,7 @@ import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -61,7 +65,7 @@ public final class ManageClaimGUI extends SimpleScreen {
     private UIFormContainer form, functionsArea, econArea;
     private UITextField claimNameField, claimOwnerField, claimGreetingField, claimFarewellField, claimSizeField, claimValueField, claimTaxField;
     private UILabel claimNameLabel, claimForSaleLabel, claimOwnerLabel, claimGreetingLabel, claimFarewellLabel, claimSizeLabel, claimTaxLabel;
-    private UICheckBox showWarningsCheckbox;
+    private UICheckBox showWarningsCheckbox, showVisualsCheckbox;
 
     private boolean isOwner, isTrusted, isAdmin;
 
@@ -71,24 +75,13 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.isAdmin = isAdmin;
     }
 
-    // Add/Remove Trusted users [example]
-    // claim.addUserTrust(player.getUniqueId(), TrustType.BUILDER);
-
-    // Get list of Trusted Users
-    // List<UUID> getUserTrusts(TrustType type);
-    // List<UUID> getUserTrusts();
-
-    // Set ClaimType, ADMIN, BASIC, TOWN, SUBDIVISION
-    // Boolean Enabled/Disable DENY message to players.
-
-
     @SuppressWarnings("unchecked")
     @Override
     public void construct() {
         this.guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
-        final DecimalFormat dFormat = new DecimalFormat("#.00");
+        final DecimalFormat dFormat = new DecimalFormat("###,###,##0.00");
 
         this.form = new UIFormContainer(this, 400, 250, "");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
@@ -271,12 +264,26 @@ public final class ManageClaimGUI extends SimpleScreen {
 
         this.functionsArea.add(claimFunctionsLabel, functionsSeparator, buttonAbandon, buttonSetForSale, buttonSetSpawnLocation);
 
+        this.showVisualsCheckbox = new UICheckBox(this);
+        this.showVisualsCheckbox.setText(TextFormatting.WHITE + "Show Visuals");
+        this.showVisualsCheckbox.setPosition(7, -11, Anchor.LEFT | Anchor.BOTTOM);
+        this.showVisualsCheckbox.setChecked(false);
+        this.showVisualsCheckbox.setEnabled(isOwner || isAdmin);
+        this.showVisualsCheckbox.setName("checkbox.showvisuals");
+        if (clientClaimManager.isWilderness) {
+            this.showVisualsCheckbox.setVisible(!clientClaimManager.isWilderness);
+        } else {
+            this.showVisualsCheckbox.setVisible(clientClaimManager.hasWECUI);
+        }
+        this.showVisualsCheckbox.register(this);
+
         this.showWarningsCheckbox = new UICheckBox(this);
         this.showWarningsCheckbox.setText(TextFormatting.WHITE + "Show Permission Denied Messages");
-        this.showWarningsCheckbox.setPosition(7, -4, Anchor.LEFT | Anchor.BOTTOM);
+        this.showWarningsCheckbox.setPosition(7, 0, Anchor.LEFT | Anchor.BOTTOM);
         this.showWarningsCheckbox.setChecked(clientClaimManager.showWarnings);
         this.showWarningsCheckbox.setEnabled(isOwner || isAdmin);
         this.showWarningsCheckbox.setName("checkbox.showwarnings");
+        this.showWarningsCheckbox.setVisible(!clientClaimManager.isWilderness);
         this.showWarningsCheckbox.register(this);
 
         final UIButton buttonSave = new UIButtonBuilder(this)
@@ -296,9 +303,8 @@ public final class ManageClaimGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        this.form.add(titleLabel, separator, claimNameLabel, this.claimNameField, this.claimSizeLabel, this.claimSizeField, claimGreetingLabel, this.claimGreetingField, claimFarewellLabel, this.claimFarewellField, this.econArea, this.functionsArea, this.showWarningsCheckbox,
-                buttonSave,
-                buttonClose);
+        this.form.add(titleLabel, separator, claimNameLabel, this.claimNameField, this.claimSizeLabel, this.claimSizeField, claimGreetingLabel, this.claimGreetingField, claimFarewellLabel, this.claimFarewellField, this.econArea, this
+                        .functionsArea, this.showWarningsCheckbox, this.showVisualsCheckbox, buttonSave, buttonClose);
 
         updateValues();
 
@@ -306,10 +312,27 @@ public final class ManageClaimGUI extends SimpleScreen {
     }
 
     @Subscribe
+    public void onValueChange(ComponentEvent.ValueChange event) {
+        switch (event.getComponent().getName()) {
+            case "checkbox.showwarnings":
+                System.out.println("Checked: " + !this.showWarningsCheckbox.isChecked());
+                this.network.sendToServer(new ServerboundClaimGuiToggleDenyMessagesRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc
+                    .player.posZ, hudData.worldName, !this.showWarningsCheckbox.isChecked()));
+                break;
+
+            case "checkbox.showvisuals":
+                System.out.println("Showing Visuals");
+                this.network.sendToServer(new ServerboundClaimGuiToggleVisualsRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc
+                    .player.posZ, hudData.worldName, !this.showVisualsCheckbox.isChecked()));
+                break;
+        }
+    }
+
+    @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.abandon":
-                //this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
+                this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
 
                 this.close();
                 break;
@@ -341,11 +364,10 @@ public final class ManageClaimGUI extends SimpleScreen {
     }
 
     public void updateValues() {
-        final DecimalFormat dFormat = new DecimalFormat("#.00");
+        final DecimalFormat dFormat = new DecimalFormat("###,###,##0.00");
         this.claimForSaleLabel.setVisible(clientClaimManager.isForSale);
         this.showWarningsCheckbox.setChecked(clientClaimManager.showWarnings);
         this.showWarningsCheckbox.setVisible(!clientClaimManager.isWilderness);
-        // Todo: This is claimBlocksCost, we need what its worth to sell, aka, claimBlockSell * claimSize.
         this.claimValueField.setText("$ " + TextFormatting.GREEN + dFormat.format(clientClaimManager.claimBlockCost * clientClaimManager.claimSize));
         this.claimTaxField.setText("$ " + TextFormatting.YELLOW + dFormat.format(clientClaimManager.claimTaxes));
         this.functionsArea.setEnabled(!clientClaimManager.isWilderness);
@@ -353,9 +375,11 @@ public final class ManageClaimGUI extends SimpleScreen {
         if (clientClaimManager.isWilderness) {
             this.form.setSize(300, 125);
             this.claimSizeField.setText(" -- Unlimited -- ");
+            this.showVisualsCheckbox.setVisible(false);
         } else {
             this.form.setSize(400, 250);
             this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(clientClaimManager.claimSize));
+            this.showVisualsCheckbox.setVisible(clientClaimManager.hasWECUI);
         }
     }
 
