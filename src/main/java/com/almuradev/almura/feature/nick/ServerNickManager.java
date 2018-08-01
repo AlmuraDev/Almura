@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.ForgeEventFactory;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -33,12 +34,15 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.ServiceManager;
+import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @SuppressWarnings("deprecation")
@@ -146,6 +150,18 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
             }
         });
     }
+
+    public String getNickname(Player player) {
+		// Todo: Zidane please put this in a functional lamda
+        Optional<NucleusNicknameService> service = Sponge.getServiceManager().provide(NucleusNicknameService.class);
+
+        if (service.isPresent()) {
+            return this.getFormattedNickname(service.get(), player).toPlain();
+        }
+
+        return player.getName(); //Default return value when Nucleus isn't loaded.
+    }
+
 
     public void setNickname(NucleusNicknameService service, final Player player, final Text nick) throws NicknameException {
         service.setNickname(player, nick);
