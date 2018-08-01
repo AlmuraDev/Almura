@@ -5,7 +5,9 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange.listing;
+package com.almuradev.almura.shared.feature.store.listing;
+
+import com.almuradev.almura.shared.item.VirtualStack;
 
 import java.math.BigDecimal;
 import java.time.Instant;

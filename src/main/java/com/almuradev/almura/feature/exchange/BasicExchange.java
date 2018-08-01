@@ -7,8 +7,8 @@
  */
 package com.almuradev.almura.feature.exchange;
 
-import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
-import com.almuradev.almura.feature.exchange.listing.ListItem;
+import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.google.common.base.MoreObjects;
 
 import java.io.Serializable;

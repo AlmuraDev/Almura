@@ -5,8 +5,10 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange.listing;
+package com.almuradev.almura.shared.feature.store.listing.basic;
 
+import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.google.common.base.MoreObjects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

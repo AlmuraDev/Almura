@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange.listing;
+package com.almuradev.almura.shared.item;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

@@ -17,7 +17,7 @@ create table if not exists "axs_item"
   "seller"           binary(16)   not null,
   "item_type"        varchar(255) not null,
   "quantity"         int          default 1 not null,
-  "metadata"         int          default 1 not null,
+  "metadata"         int          default 0 not null,
   "price"            decimal      default 0 not null,
   "index"            int          default 0 not null,
   "is_hidden"        bit          default 0 not null,

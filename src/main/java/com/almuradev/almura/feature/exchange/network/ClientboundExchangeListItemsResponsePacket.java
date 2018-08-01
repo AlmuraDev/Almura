@@ -9,8 +9,8 @@ package com.almuradev.almura.feature.exchange.network;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.feature.exchange.listing.BasicListItem;
-import com.almuradev.almura.feature.exchange.listing.ListItem;
+import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;

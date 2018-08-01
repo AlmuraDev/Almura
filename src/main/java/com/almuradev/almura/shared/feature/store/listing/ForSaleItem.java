@@ -5,8 +5,9 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange.listing;
+package com.almuradev.almura.shared.feature.store.listing;
 
+import com.almuradev.almura.shared.item.VirtualStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

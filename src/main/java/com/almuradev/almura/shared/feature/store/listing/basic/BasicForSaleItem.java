@@ -5,11 +5,14 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange.listing;
+package com.almuradev.almura.shared.feature.store.listing.basic;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.feature.store.listing.Transaction;
 import com.google.common.base.MoreObjects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
