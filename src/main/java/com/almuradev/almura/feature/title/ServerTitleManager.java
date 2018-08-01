@@ -325,6 +325,12 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         return !remove;
     }
 
+    public Optional<Title> getSelectedTitleFor(final Player player) {
+        checkNotNull(player);
+
+        return Optional.ofNullable(this.selectedTitles.get(player.getUniqueId()));
+    }
+
     public void setSelectedTitleFor(final Player player, @Nullable final String titleId) {
         checkNotNull(player);
 
