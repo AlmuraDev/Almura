@@ -32,6 +32,8 @@ public final class ServerboundNucleusNameChangePacket implements Message {
     public void writeTo(ChannelBuf buf) {
         if (this.nickname != null) {
             buf.writeString(this.nickname);
+        } else {
+            buf.writeString(""); //Can't send null in a string.
         }
     }
 }

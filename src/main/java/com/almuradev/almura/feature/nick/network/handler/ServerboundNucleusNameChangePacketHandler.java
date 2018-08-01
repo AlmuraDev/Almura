@@ -26,8 +26,6 @@ import org.spongepowered.api.network.RemoteConnection;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import java.util.regex.Pattern;
-
 import javax.inject.Inject;
 
 public final class ServerboundNucleusNameChangePacketHandler implements MessageHandler<ServerboundNucleusNameChangePacket> {
@@ -50,6 +48,11 @@ public final class ServerboundNucleusNameChangePacketHandler implements MessageH
             .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
 
             final Player player = ((PlayerConnection) connection).getPlayer();
+
+            if (message.nickname.isEmpty()) {
+                message.nickname = null; // nullify the nicknamet if the server sends an empty chance packet.
+            }
+
             final Text nickname = TextSerializers.LEGACY_FORMATTING_CODE.deserialize(message.nickname == null ? player.getName() : message.nickname);
 
             // Validation checks
@@ -92,7 +95,7 @@ public final class ServerboundNucleusNameChangePacketHandler implements MessageH
                 if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
                     if (message.nickname == null || player.getName().equalsIgnoreCase(message.nickname)) {
                         this.notificationManager
-                            .sendPopupNotification(onlinePlayer, Text.of("Nickname Removed!"), Text.of("You are now known as ", message.nickname), 5);
+                            .sendPopupNotification(onlinePlayer, Text.of("Nickname Removed!"), Text.of("You are now known as ", player.getName()), 5);
                     } else {
                         this.notificationManager
                             .sendPopupNotification(onlinePlayer, Text.of("New Nickname!"), Text.of("You are now known as ", message.nickname), 5);
