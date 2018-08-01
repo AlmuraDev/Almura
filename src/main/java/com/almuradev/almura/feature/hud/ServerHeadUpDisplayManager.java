@@ -7,14 +7,19 @@
  */
 package com.almuradev.almura.feature.hud;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
+import com.almuradev.almura.feature.nick.ServerNickManager;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
+import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
 import net.kyori.membrane.facet.Activatable;
+import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Server;
@@ -50,14 +55,19 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
     private final PluginContainer container;
     private final ChannelBinding.IndexedMessageChannel network;
     private final ServerNotificationManager manager;
+    private final ServerTitleManager serverTitleManager;
+    private final ServerNickManager serverNickManager;
 
     @Inject
     private ServerHeadUpDisplayManager(final Game game, final PluginContainer container, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
-            .IndexedMessageChannel network, final ServerNotificationManager manager) {
+        .IndexedMessageChannel network, final ServerNotificationManager manager, final ServerTitleManager serverTitleManager, final
+    ServerNickManager serverNickManager) {
         this.game = game;
         this.container = container;
         this.network = network;
         this.manager = manager;
+        this.serverTitleManager = serverTitleManager;
+        this.serverNickManager = serverNickManager;
     }
 
     @Override
@@ -139,8 +149,49 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
             if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
                 this.manager.sendPopupNotification(player, Text.of("Welcome!"), Text.of("Welcome to Almura."), 5);
             } else {
-                this.manager.sendPopupNotification(onlinePlayer, Text.of("New Player!!!"), Text.of("Please welcome " + player.getName() +
-                        " to Almura."), 5);
+                this.manager.sendPopupNotification(onlinePlayer, Text.of("New Player!!!"), Text.of("Please welcome " + player.getName() + " to Almura."), 5);
+            }
+        }
+    }
+
+    @Listener(order = Order.LAST)
+    public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
+        checkNotNull(player);
+        Task.builder()
+            .delayTicks(20)
+            .execute(t -> {
+                String displayName = serverNickManager.getNickname(player);
+                String playerTitle = serverTitleManager.getSelectedTitleForFormatted(player);
+
+                for (final Player players : Sponge.getServer().getOnlinePlayers()) {
+                    if (players.equals(player)) {
+                        continue;
+                    }
+                    if (playerTitle.isEmpty()) {
+                        this.manager.sendPopupNotification(player, Text.of(TextFormatting.BLUE + "Player Joined" + TextFormatting.WHITE), Text.of (TextFormatting.YELLOW + displayName + TextFormatting.WHITE + " has " + "joined the server"), 5);
+                    } else {
+                        this.manager.sendPopupNotification(player, Text.of(TextFormatting.BLUE + "Player Joined" + TextFormatting.WHITE), Text.of (displayName + " - " + playerTitle +"§f - has joined the server"), 5);
+                    }
+                }
+            })
+            .submit(this.container);
+    }
+
+    @Listener(order = Order.PRE)
+    public void onPlayerQuit(final ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
+        checkNotNull(player);
+
+        String displayName = serverNickManager.getNickname(player);
+        String playerTitle = serverTitleManager.getSelectedTitleForFormatted(player);
+
+        for (final Player players : Sponge.getServer().getOnlinePlayers()) {
+            if (players.equals(player)) {
+                continue;
+            }
+            if (playerTitle.isEmpty()) {
+                this.manager.sendPopupNotification(player, Text.of(TextFormatting.DARK_AQUA + "Player Disconnected" + TextFormatting.WHITE), Text.of (TextFormatting.YELLOW + displayName + TextFormatting.WHITE + " has " + "left the server"), 5);
+            } else {
+                this.manager.sendPopupNotification(player, Text.of(TextFormatting.DARK_AQUA + "Player Disconnected" + TextFormatting.WHITE), Text.of (displayName + " - " + playerTitle +"§f - has left the server"), 5);
             }
         }
     }

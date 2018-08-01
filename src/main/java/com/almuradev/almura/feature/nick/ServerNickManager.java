@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.ForgeEventFactory;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -39,6 +40,7 @@ import org.spongepowered.api.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @SuppressWarnings("deprecation")
@@ -168,6 +170,15 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
         }
 
         return nickname;
+    }
+
+    public String getNickname(Player player) {
+        // Todo: Zidane please put this in a functional lamda
+        Optional<NucleusNicknameService> service = Sponge.getServiceManager().provide(NucleusNicknameService.class);
+        if (service.isPresent()) {
+            return this.getFormattedNickname(service.get(), player).toPlain();
+        }
+        return player.getName(); //Default return value when Nucleus isn't loaded.
     }
 
     public void sendNicknameUpdate(NucleusNicknameService service, Player player) {
