@@ -130,7 +130,7 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
     }
 
     @Listener(order = Order.LAST)
-    public void onEconomyTransaction(EconomyTransactionEvent event) {
+    public void onEconomyTransaction(final EconomyTransactionEvent event) {
         final TransactionResult result = event.getTransactionResult();
         final Account account = result.getAccount();
         if (account instanceof UniqueAccount) {
@@ -144,7 +144,7 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
     }
 
     @Listener
-    public void onPlayerFirstJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") Player player) {
+    public void onPlayerFirstJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") final Player player) {
         for (final Player onlinePlayer : this.game.getServer().getOnlinePlayers()) {
             if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
                 this.manager.sendPopupNotification(player, Text.of("Welcome!"), Text.of("Welcome to Almura."), 5);
@@ -155,13 +155,13 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
     }
 
     @Listener(order = Order.LAST)
-    public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
+    public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
         checkNotNull(player);
         Task.builder()
             .delayTicks(20)
             .execute(t -> {
-                String displayName = serverNickManager.getNickname(player);
-                String playerTitle = serverTitleManager.getSelectedTitleForFormatted(player);
+                final String displayName = serverNickManager.getNickname(player);
+                final String playerTitle = serverTitleManager.getSelectedTitleForFormatted(player);
 
                 for (final Player players : Sponge.getServer().getOnlinePlayers()) {
                     if (players.equals(player)) {
@@ -178,11 +178,11 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
     }
 
     @Listener(order = Order.PRE)
-    public void onPlayerQuit(final ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
+    public void onPlayerQuit(final ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") final Player player) {
         checkNotNull(player);
 
-        String displayName = serverNickManager.getNickname(player);
-        String playerTitle = serverTitleManager.getSelectedTitleForFormatted(player);
+        final String displayName = serverNickManager.getNickname(player);
+        final String playerTitle = serverTitleManager.getSelectedTitleForFormatted(player);
 
         for (final Player players : Sponge.getServer().getOnlinePlayers()) {
             if (players.equals(player)) {
@@ -210,7 +210,7 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
     }
 
     @Nullable
-    private ClientboundPlayerCurrencyPacket createPlayerCurrencyPacket(Player player) {
+    private ClientboundPlayerCurrencyPacket createPlayerCurrencyPacket(final Player player) {
         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
         if (service != null) {
             final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
