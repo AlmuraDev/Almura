@@ -19,7 +19,7 @@ public final class ClientboundNicknameOpenResponsePacketHandler implements Messa
     @Override
     public void handleMessage(ClientboundNicknameOpenResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
-            new NicknameGUI(Minecraft.getMinecraft().player).display();
+            new NicknameGUI(Minecraft.getMinecraft().player, message.canChangeNickname, message.isAdmin).display();
         }
     }
 }

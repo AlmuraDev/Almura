@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.claim;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimDataPacket;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimGuiResponsePacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
@@ -299,6 +300,11 @@ public final class ServerClaimManager implements Witness {
 
     public void openClientGUI (final Player player){
         if (!isGPEnabled(player)) {
+            return;
+        }
+
+        if (!player.hasPermission(Almura.ID + ".claim.base")) {
+            this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions to Manage Claim!"), 2);
             return;
         }
 

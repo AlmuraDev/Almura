@@ -23,7 +23,7 @@ public final class ClientboundTitleGuiResponsePacketHandler implements MessageHa
     @Override
     public void handleMessage(ClientboundTitleGuiResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-            new ManageTitlesGUI(message.isAdmin).display();
+            new ManageTitlesGUI(message.canChangeTitle, message.isAdmin).display();
         }
     }
 }

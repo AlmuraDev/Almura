@@ -71,9 +71,12 @@ public final class ManageTitlesGUI extends SimpleScreen {
     private int screenHeight = 300;
 
     private TitleModifyType mode;
-    private boolean isAdmin, inEditMode = false;
+    private boolean isAdmin = false;
+    private boolean inEditMode = false;
+    private boolean canChangeTitle = false;
 
-    public ManageTitlesGUI(boolean isAdmin) {
+    public ManageTitlesGUI(boolean canChangeTitle, boolean isAdmin) {
+        this.canChangeTitle = canChangeTitle;
         this.isAdmin = isAdmin;
     }
 
@@ -322,20 +325,20 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 .setVisible(false)
                 .setPosition(0, 05, Anchor.CENTER | Anchor.TOP);
 
-        // Apply button
         this.buttonApply = new UIButtonBuilder(this)
                 .text(Text.of(TextColors.WHITE, "Apply"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .tooltip("Apply Title and Exit")
                 .listener(this)
+                .enabled(this.canChangeTitle)
                 .visible(true)
                 .build("button.apply");
 
-        // Apply button
         this.buttonRemove = new UIButtonBuilder(this)
                 .text(Text.of(TextColors.WHITE, "Remove"))
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .tooltip("Remove Title and Exit")
+                .enabled(this.canChangeTitle)
                 .listener(this)
                 .visible(true)
                 .build("button.remove");

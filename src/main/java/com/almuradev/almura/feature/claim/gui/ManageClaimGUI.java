@@ -108,8 +108,8 @@ public final class ManageClaimGUI extends SimpleScreen {
 
         this.claimNameField = new UITextField(this, "", false);
         this.claimNameField.setSize(150, 0);
-        this.claimNameField.setText(clientClaimManager.claimName);
-        this.claimNameField.setEditable(isOwner || isAdmin);
+        this.claimNameField.setText(this.clientClaimManager.claimName);
+        this.claimNameField.setEditable(this.isOwner || this.isAdmin);
         this.claimNameField.setPosition(15, claimNameLabel.getY() + 14, Anchor.LEFT | Anchor.TOP);
         this.claimNameField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -119,7 +119,7 @@ public final class ManageClaimGUI extends SimpleScreen {
 
         this.claimSizeField = new UITextField(this, "", false);
         this.claimSizeField.setSize(85, 0);
-        this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(clientClaimManager.claimSize));
+        this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(this.clientClaimManager.claimSize));
         this.claimSizeField.setTooltip("Total blocks included in claim");
         this.claimSizeField.setPosition(175, claimNameLabel.getY() + 14, Anchor.LEFT | Anchor.TOP);
         this.claimSizeField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
@@ -130,7 +130,7 @@ public final class ManageClaimGUI extends SimpleScreen {
 
         this.claimOwnerField = new UITextField(this, "", false);
         this.claimOwnerField.setSize(265, 0);
-        this.claimOwnerField.setText(clientClaimManager.claimOwner);
+        this.claimOwnerField.setText(this.clientClaimManager.claimOwner);
         this.claimOwnerField.setEditable(false);
         this.claimOwnerField.setPosition(15, claimNameLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
         this.claimOwnerField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
@@ -141,8 +141,8 @@ public final class ManageClaimGUI extends SimpleScreen {
 
         this.claimGreetingField = new UITextField(this, "", false);
         this.claimGreetingField.setSize(200, 0);
-        this.claimGreetingField.setText(clientClaimManager.claimGreeting);
-        this.claimGreetingField.setEditable(isOwner || isAdmin);
+        this.claimGreetingField.setText(this.clientClaimManager.claimGreeting);
+        this.claimGreetingField.setEditable(this.isOwner || this.isAdmin);
         this.claimGreetingField.setPosition(60, claimNameLabel.getY() + 32, Anchor.LEFT | Anchor.TOP);
         this.claimGreetingField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -152,8 +152,8 @@ public final class ManageClaimGUI extends SimpleScreen {
 
         this.claimFarewellField = new UITextField(this, "", false);
         this.claimFarewellField.setSize(200, 0);
-        this.claimFarewellField.setText(clientClaimManager.claimFarewell);
-        this.claimFarewellField.setEditable(isOwner || isAdmin);
+        this.claimFarewellField.setText(this.clientClaimManager.claimFarewell);
+        this.claimFarewellField.setEditable(this.isOwner || this.isAdmin);
         this.claimFarewellField.setPosition(60, claimOwnerLabel.getY() + 20, Anchor.LEFT | Anchor.TOP);
         this.claimFarewellField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -168,7 +168,7 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.econArea.setRightPadding(3);
         this.econArea.setTopPadding(3);
         this.econArea.setLeftPadding(3);
-        this.econArea.setVisible(!clientClaimManager.isWilderness);
+        this.econArea.setVisible(!this.clientClaimManager.isWilderness);
 
         final UILabel econTitleLabel = new UILabel(this, "Economy Functions");
         econTitleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
@@ -197,7 +197,7 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.claimTaxField.setSize(100, 0);
         this.claimTaxField.setText("$ 56,434.00");
         this.claimTaxField.setEditable(false);
-        this.claimTaxField.setPosition(120, claimTaxLabel.getY() - 1, Anchor.LEFT | Anchor.TOP);
+        this.claimTaxField.setPosition(120, this.claimTaxLabel.getY() - 1, Anchor.LEFT | Anchor.TOP);
         this.claimTaxField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         this.claimForSaleLabel = new UILabel(this, "<- Claim is For Sale ->");
@@ -223,14 +223,14 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.functionsArea.setRightPadding(3);
         this.functionsArea.setTopPadding(3);
         this.functionsArea.setLeftPadding(3);
-        this.functionsArea.setVisible(!clientClaimManager.isWilderness);
+        this.functionsArea.setVisible(!this.clientClaimManager.isWilderness);
 
         final UILabel claimFunctionsLabel = new UILabel(this, "Claim Functions");
         claimFunctionsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         claimFunctionsLabel.setPosition(0, 4, Anchor.CENTER | Anchor.TOP);
 
         final UISeparator functionsSeparator = new UISeparator(this);
-        functionsSeparator.setSize(functionsArea.getWidth() - 15, 1);
+        functionsSeparator.setSize(this.functionsArea.getWidth() - 15, 1);
         functionsSeparator.setPosition(0, 15, Anchor.TOP | Anchor.CENTER);
 
         final UIButton buttonAbandon = new UIButtonBuilder(this)
@@ -239,7 +239,7 @@ public final class ManageClaimGUI extends SimpleScreen {
                 .anchor(Anchor.CENTER | Anchor.TOP)
                 .text("Abandon Claim")
                 .listener(this)
-                .enabled(isOwner || isAdmin)
+                .enabled(this.isOwner || this.isAdmin)
                 .build("button.abandon");
 
         final UIButton buttonSetForSale = new UIButtonBuilder(this)
@@ -248,7 +248,7 @@ public final class ManageClaimGUI extends SimpleScreen {
                 .anchor(Anchor.CENTER | Anchor.TOP)
                 .text("List For Sale")
                 .listener(this)
-                .enabled(isOwner || isAdmin)
+                .enabled(this.isOwner || this.isAdmin)
                 .visible(false)
                 .build("button.setForSale");
 
@@ -258,7 +258,7 @@ public final class ManageClaimGUI extends SimpleScreen {
                 .anchor(Anchor.CENTER | Anchor.TOP)
                 .text("Set Spawn")
                 .listener(this)
-                .enabled(isOwner || isAdmin)
+                .enabled(this.isOwner || this.isAdmin)
                 .visible(false)
                 .build("button.setSpawnLocation");
 
@@ -268,22 +268,22 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.showVisualsCheckbox.setText(TextFormatting.WHITE + "Show Visuals");
         this.showVisualsCheckbox.setPosition(7, -11, Anchor.LEFT | Anchor.BOTTOM);
         this.showVisualsCheckbox.setChecked(false);
-        this.showVisualsCheckbox.setEnabled(isOwner || isAdmin);
+        this.showVisualsCheckbox.setEnabled(this.isOwner || this.isAdmin);
         this.showVisualsCheckbox.setName("checkbox.showvisuals");
-        if (clientClaimManager.isWilderness) {
-            this.showVisualsCheckbox.setVisible(!clientClaimManager.isWilderness);
+        if (this.clientClaimManager.isWilderness) {
+            this.showVisualsCheckbox.setVisible(!this.clientClaimManager.isWilderness);
         } else {
-            this.showVisualsCheckbox.setVisible(clientClaimManager.hasWECUI);
+            this.showVisualsCheckbox.setVisible(this.clientClaimManager.hasWECUI);
         }
         this.showVisualsCheckbox.register(this);
 
         this.showWarningsCheckbox = new UICheckBox(this);
         this.showWarningsCheckbox.setText(TextFormatting.WHITE + "Show Permission Denied Messages");
         this.showWarningsCheckbox.setPosition(7, 0, Anchor.LEFT | Anchor.BOTTOM);
-        this.showWarningsCheckbox.setChecked(clientClaimManager.showWarnings);
-        this.showWarningsCheckbox.setEnabled(isOwner || isAdmin);
+        this.showWarningsCheckbox.setChecked(this.clientClaimManager.showWarnings);
+        this.showWarningsCheckbox.setEnabled(this.isOwner || this.isAdmin);
         this.showWarningsCheckbox.setName("checkbox.showwarnings");
-        this.showWarningsCheckbox.setVisible(!clientClaimManager.isWilderness);
+        this.showWarningsCheckbox.setVisible(!this.clientClaimManager.isWilderness);
         this.showWarningsCheckbox.register(this);
 
         final UIButton buttonSave = new UIButtonBuilder(this)
@@ -292,7 +292,7 @@ public final class ManageClaimGUI extends SimpleScreen {
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
                 .text("Save")
                 .listener(this)
-                .enabled(isOwner || isAdmin)
+                .enabled(this.isOwner || this.isAdmin)
                 .build("button.save");
 
         // Close button
@@ -365,21 +365,21 @@ public final class ManageClaimGUI extends SimpleScreen {
 
     public void updateValues() {
         final DecimalFormat dFormat = new DecimalFormat("###,###,##0.00");
-        this.claimForSaleLabel.setVisible(clientClaimManager.isForSale);
-        this.showWarningsCheckbox.setChecked(clientClaimManager.showWarnings);
-        this.showWarningsCheckbox.setVisible(!clientClaimManager.isWilderness);
-        this.claimValueField.setText("$ " + TextFormatting.GREEN + dFormat.format(clientClaimManager.claimBlockCost * clientClaimManager.claimSize));
-        this.claimTaxField.setText("$ " + TextFormatting.YELLOW + dFormat.format(clientClaimManager.claimTaxes));
-        this.functionsArea.setEnabled(!clientClaimManager.isWilderness);
-        this.econArea.setVisible(!clientClaimManager.isWilderness);
-        if (clientClaimManager.isWilderness) {
+        this.claimForSaleLabel.setVisible(this.clientClaimManager.isForSale);
+        this.showWarningsCheckbox.setChecked(this.clientClaimManager.showWarnings);
+        this.showWarningsCheckbox.setVisible(!this.clientClaimManager.isWilderness);
+        this.claimValueField.setText("$ " + TextFormatting.GREEN + dFormat.format(this.clientClaimManager.claimBlockCost * this.clientClaimManager.claimSize));
+        this.claimTaxField.setText("$ " + TextFormatting.YELLOW + dFormat.format(this.clientClaimManager.claimTaxes));
+        this.functionsArea.setEnabled(!this.clientClaimManager.isWilderness);
+        this.econArea.setVisible(!this.clientClaimManager.isWilderness);
+        if (this.clientClaimManager.isWilderness) {
             this.form.setSize(300, 125);
             this.claimSizeField.setText(" -- Unlimited -- ");
             this.showVisualsCheckbox.setVisible(false);
         } else {
             this.form.setSize(400, 250);
-            this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(clientClaimManager.claimSize));
-            this.showVisualsCheckbox.setVisible(clientClaimManager.hasWECUI);
+            this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(this.clientClaimManager.claimSize));
+            this.showVisualsCheckbox.setVisible(this.clientClaimManager.hasWECUI);
         }
     }
 

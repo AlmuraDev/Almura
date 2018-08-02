@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.death.network.handler;
 
-import com.almuradev.almura.feature.death.client.gui.PlayerDiedGUI;
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
@@ -16,7 +16,11 @@ import net.minecraft.world.WorldServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.network.*;
+import org.spongepowered.api.network.ChannelBinding;
+import org.spongepowered.api.network.ChannelId;
+import org.spongepowered.api.network.MessageHandler;
+import org.spongepowered.api.network.PlayerConnection;
+import org.spongepowered.api.network.RemoteConnection;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.text.Text;
@@ -50,9 +54,8 @@ public final class ServerboundReviveRequestPacketHandler implements MessageHandl
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
 
-                if (!player.hasPermission("almura.revive")) {
-                    player.sendMessage(Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.exchange.open",
-                            TextColors.WHITE, "."));
+                if (!player.hasPermission(Almura.ID + "death.revive")) {
+                    player.sendMessage(Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.death.revive", TextColors.WHITE, "."));
                     return;
                 }
 

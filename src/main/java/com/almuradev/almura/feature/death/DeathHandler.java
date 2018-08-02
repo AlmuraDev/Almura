@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.death;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.death.network.ClientboundPlayerDiedPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -85,7 +86,7 @@ public final class DeathHandler implements Witness {
                 final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.##");
                 balance = account.getBalance(currency);
 
-                if (balance.doubleValue() > 0) {
+                if (balance.doubleValue() > 0 && !player.hasPermission(Almura.ID + ".death.exempt")) {
                     double dropAmount = balance.doubleValue() - (balance.doubleValue() * (deathTax / 100));
 
                     if (dropAmount > balance.doubleValue()) {
@@ -106,7 +107,7 @@ public final class DeathHandler implements Witness {
 
                 server.getOnlinePlayers().forEach(onlinePlayer -> {
                     if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
-                        this.network.sendTo(player, new ClientboundPlayerDiedPacket(finalDroppedAmount, finalDeathTaxAmount, finalDisplayDrops));
+                        this.network.sendTo(player, new ClientboundPlayerDiedPacket(finalDroppedAmount, finalDeathTaxAmount, finalDisplayDrops, player.hasPermission(Almura.ID + ".death.revive")));
                     } else {
                         //ToDo: broke atm.
                         serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + " has died!"), Text.of("Dropped: " + TextFormatting.GOLD + "$" + dFormat.format(finalDroppedAmount) + TextFormatting.RESET + " and "
@@ -118,7 +119,7 @@ public final class DeathHandler implements Witness {
         }
 
         // Service or Account was null, fallback.
-        this.network.sendTo(player, new ClientboundPlayerDiedPacket());
+        this.network.sendTo(player, new ClientboundPlayerDiedPacket(0.00, 0.00, false, player.hasPermission(Almura.ID + "death.revive")));
     }
 
     private void cacheItemTypes() {

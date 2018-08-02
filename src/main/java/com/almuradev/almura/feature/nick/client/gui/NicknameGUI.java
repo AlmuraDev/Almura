@@ -61,12 +61,17 @@ public final class NicknameGUI extends SimpleScreen {
 
     private EntityPlayer entityPlayer;
 
+    private boolean canChangeNickname = false;
+    private boolean isAdmin = false;
+
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientNickManager nickManager;
     @Inject private static ClientNotificationManager notificationManager;
 
-    public NicknameGUI(EntityPlayer entityPlayer) {
+    public NicknameGUI(EntityPlayer entityPlayer, boolean canChangeNickname, boolean isAdmin) {
         this.entityPlayer = entityPlayer;
+        this.canChangeNickname = canChangeNickname;
+        this.isAdmin = isAdmin;
         this.originalNickname = entityPlayer.getDisplayName().getFormattedText(); // Save this so it can be used to revert to in the event the user doesn't click "Apply".
 
         if (originalNickname.substring(0,1).equalsIgnoreCase("~")) {
@@ -186,6 +191,7 @@ public final class NicknameGUI extends SimpleScreen {
                 .width(70)
                 .position(105, 65, Anchor.LEFT | Anchor.TOP)
                 .text(Text.of("almura.button.nick.remove"))
+                .enabled(this.canChangeNickname)
                 .listener(this)
                 .build("button.remove");
 
@@ -207,6 +213,7 @@ public final class NicknameGUI extends SimpleScreen {
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(-40, 0)
                 .text("almura.button.apply")
+                .enabled(this.canChangeNickname)
                 .listener(this)
                 .build("button.apply");
 

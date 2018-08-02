@@ -13,7 +13,6 @@ import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiRequestPack
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
-import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
@@ -47,7 +46,7 @@ public final class ServerboundClaimGuiRequestPacketHandler implements MessageHan
                 .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
 
-            if (!player.hasPermission(Almura.ID + ".claim.manage")) {
+            if (!player.hasPermission(Almura.ID + ".claim.base")) {
                 this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions to manage this claim!"), 2);
                 return;
             }

@@ -202,7 +202,6 @@ public final class FeaturesGUI extends SimpleScreen {
                 nickManager.requestNicknameGUI();
                 break;
             case "button.claim":
-                //Todo: don't fake this.
                 claimManager.requestClaimGUI();
                 break;
             case "button.close":

@@ -68,7 +68,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
 
     private EntityPlayer player;
     private double droppedAmount, deathTaxAmount;
-    private boolean dropCoins;
+    private boolean dropCoins, canRevive;
 
     @Inject
     @ChannelId(NetworkConfig.CHANNEL)
@@ -78,91 +78,92 @@ public final class PlayerDiedGUI extends SimpleScreen {
     @Inject
     private static PluginContainer container;
 
-    public PlayerDiedGUI(EntityPlayer player, double dropAmount, double deathTaxAmount, boolean dropCoins) {
+    public PlayerDiedGUI(EntityPlayer player, double dropAmount, double deathTaxAmount, boolean dropCoins, boolean canRevive) {
         this.player = player;
         this.dropCoins = dropCoins;
         this.droppedAmount = dropAmount;
         this.deathTaxAmount = deathTaxAmount;
+        this.canRevive = canRevive;
     }
 
     @Override
     public void construct() {
-        guiscreenBackground = true;
+        this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        form = new UIFormContainer(this, 50, 200, "You have died.");
-        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        form.setMovable(false);
-        form.setClosable(false);
-        form.setBorder(FontColors.WHITE, 1, 185);
-        form.setBackgroundAlpha(215);
-        form.setBottomPadding(3);
-        form.setRightPadding(3);
-        form.setTopPadding(20);
-        form.setLeftPadding(3);
+        this.form = new UIFormContainer(this, 50, 200, "You have died.");
+        this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        this.form.setMovable(false);
+        this.form.setClosable(false);
+        this.form.setBorder(FontColors.WHITE, 1, 185);
+        this.form.setBackgroundAlpha(215);
+        this.form.setBottomPadding(3);
+        this.form.setRightPadding(3);
+        this.form.setTopPadding(20);
+        this.form.setLeftPadding(3);
 
         // Almura header
         final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.DEAD_STEVE), null);
         almuraHeader.setSize(99, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
-        messageLabel = new UILabel(this, getMessage(player.getName()));
-        messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        messageLabel.setPosition(0, 102, Anchor.CENTER | Anchor.TOP);
+        this.messageLabel = new UILabel(this, getMessage(this.player.getName()));
+        this.messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.messageLabel.setPosition(0, 102, Anchor.CENTER | Anchor.TOP);
 
         final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.00");
 
-        droppedLabel = new UILabel(this, "You dropped: " + TextFormatting.GOLD + "$" + dFormat.format(droppedAmount) + TextFormatting.RESET + ".");
-        droppedLabel.setVisible(dropCoins);
-        droppedLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        droppedLabel.setPosition(0, -40, Anchor.CENTER | Anchor.BOTTOM);
+        this.droppedLabel = new UILabel(this, "You dropped: " + TextFormatting.GOLD + "$" + dFormat.format(this.droppedAmount) + TextFormatting.RESET + ".");
+        this.droppedLabel.setVisible(this.dropCoins);
+        this.droppedLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.droppedLabel.setPosition(0, -40, Anchor.CENTER | Anchor.BOTTOM);
 
-        deathTaxLabel = new UILabel(this, "You lost: " + TextFormatting.RED + "$" + dFormat.format(deathTaxAmount) + TextFormatting.RESET + " to death taxes.");
-        deathTaxLabel.setVisible(dropCoins);
-        deathTaxLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        deathTaxLabel.setPosition(0, -26, Anchor.CENTER | Anchor.BOTTOM);
+        this.deathTaxLabel = new UILabel(this, "You lost: " + TextFormatting.RED + "$" + dFormat.format(this.deathTaxAmount) + TextFormatting.RESET + " to death taxes.");
+        this.deathTaxLabel.setVisible(this.dropCoins);
+        this.deathTaxLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.deathTaxLabel.setPosition(0, -26, Anchor.CENTER | Anchor.BOTTOM);
 
-        form.setSize(messageLabel.getWidth() + 30, form.getHeight());
+        this.form.setSize(this.messageLabel.getWidth() + 30, this.form.getHeight());
 
-        if (form.getWidth() < droppedLabel.getWidth() + 30) {
-            form.setSize(droppedLabel.getWidth() + 20, form.getHeight()); // Account for the width possibly being too small.
+        if (this.form.getWidth() < this.droppedLabel.getWidth() + 30) {
+            this.form.setSize(this.droppedLabel.getWidth() + 20, this.form.getHeight()); // Account for the width possibly being too small.
         }
 
-        if (form.getWidth() < deathTaxLabel.getWidth() + 30) {
-            form.setSize(deathTaxLabel.getWidth() + 20, form.getHeight()); // Account for the width possibly being too small.
+        if (this.form.getWidth() < this.deathTaxLabel.getWidth() + 30) {
+            this.form.setSize(this.deathTaxLabel.getWidth() + 20, this.form.getHeight()); // Account for the width possibly being too small.
         }
 
-        if (!dropCoins) {
-            form.setSize(form.getWidth(), 160);
+        if (!this.dropCoins) {
+            this.form.setSize(this.form.getWidth(), 160);
         }
 
         final UISeparator topWindowTitleSeparator = new UISeparator(this);
-        topWindowTitleSeparator.setSize(form.getWidth() -5, 1);
+        topWindowTitleSeparator.setSize(this.form.getWidth() -5, 1);
         topWindowTitleSeparator.setPosition(0, -5, Anchor.TOP | Anchor.CENTER);
-        form.add(topWindowTitleSeparator);
+        this.form.add(topWindowTitleSeparator);
 
         final UISeparator aboveButtonsSeparator = new UISeparator(this);
-        aboveButtonsSeparator.setSize(form.getWidth() -5, 1);
+        aboveButtonsSeparator.setSize(this.form.getWidth() -5, 1);
         aboveButtonsSeparator.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
-        form.add(aboveButtonsSeparator);
+        this.form.add(aboveButtonsSeparator);
 
         final UISeparator belowMessageSeparator = new UISeparator(this);
         belowMessageSeparator.setSize(form.getWidth() -5, 1);
         belowMessageSeparator.setPosition(0, 40, Anchor.CENTER | Anchor.MIDDLE);
-        belowMessageSeparator.setVisible(dropCoins);
-        form.add(belowMessageSeparator);
+        belowMessageSeparator.setVisible(this.dropCoins);
+        this.form.add(belowMessageSeparator);
 
         // Revive button
-        buttonRevive = new UIButtonBuilder(this)
+        this.buttonRevive = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .text("Revive")
                 .listener(this)
-                .enabled(false)
+                .enabled(this.canRevive)
                 .build("button.revive");
 
         // Respawn button
-        buttonRespawn = new UIButtonBuilder(this)
+        this.buttonRespawn = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
                 .position(0, 0)
@@ -171,7 +172,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 .build("button.respawn");
 
         // Rage Quit button
-        buttonRagequit = new UIButtonBuilder(this)
+        this.buttonRagequit = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .text(Text.of(I18n.format("almura.menu_button.quit")))
@@ -179,9 +180,9 @@ public final class PlayerDiedGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.ragequit");
 
-        form.add(almuraHeader, messageLabel, droppedLabel, deathTaxLabel, buttonRespawn, buttonRevive, buttonRagequit);
+        this.form.add(almuraHeader, this.messageLabel, this.droppedLabel, this.deathTaxLabel, this.buttonRespawn, this.buttonRevive, this.buttonRagequit);
 
-        addToScreen(form);
+        addToScreen(this.form);
     }
 
     @Subscribe
@@ -228,9 +229,9 @@ public final class PlayerDiedGUI extends SimpleScreen {
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
 
-        if (unlockMouse && this.lastUpdate == 25) {
+        if (this.unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
-            unlockMouse = false; // Only unlock once per session.
+            this.unlockMouse = false; // Only unlock once per session.
         }
     }
 

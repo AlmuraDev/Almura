@@ -44,12 +44,12 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
                 .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
 
-            if (!player.hasPermission(Almura.ID + ".title.change")) {
-                this.notificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("Insufficient Permissions to change Title!"), 2);
+            if (!player.hasPermission(Almura.ID + ".title.base")) {
+                this.notificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("Insufficient Permissions to view Title Manager!"), 2);
                 return;
             }
 
-            this.network.sendTo(player, new ClientboundTitleGuiResponsePacket(player.hasPermission("almura.title.admin")));
+            this.network.sendTo(player, new ClientboundTitleGuiResponsePacket(player.hasPermission(Almura.ID + ".title.change"), player.hasPermission(Almura.ID + ".title.admin")));
         }
     }
 }
