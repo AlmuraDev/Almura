@@ -55,7 +55,7 @@ public final class ServerboundFeaturesOpenRequestPacketHandler implements Messag
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
 
-                if (!player.hasPermission("almura.admin") || player.hasPermission("almura.singleplayer") && MalisisCore.isObfEnv) {
+                if (!player.hasPermission("almura.features.base") || player.hasPermission("almura.singleplayer") && MalisisCore.isObfEnv) {
                     player.sendMessage(Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.admin",
                             TextColors.WHITE, "."));
                     return;
