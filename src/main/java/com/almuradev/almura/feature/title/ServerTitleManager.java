@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -86,7 +87,12 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
     @Listener
     public void onServerStarting(final GameStartingServerEvent event) {
-        this.loadTitles();
+        // TODO There is an argument to be made to sync this when server starts (to ensure we have the data in time). I'd be interested in Dockter
+        // TODO testing this being async.
+        this.scheduler.createTaskBuilder()
+            .async()
+            .execute(this::loadTitles)
+            .submit(this.container);
     }
 
     @Listener
@@ -172,72 +178,74 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         return Optional.ofNullable(this.availableTitles.get(holder.getUniqueId()));
     }
 
-    public boolean loadTitles() {
-
-        this.availableTitles.clear();
+    /**
+     * Loads all {@link Title}s from the database. This method is expected to be called async.
+     */
+    public void loadTitles() {
 
         this.logger.info("Querying database for titles, please wait...");
 
-        this.scheduler.createTaskBuilder()
-            .async()
-            .execute(() -> {
-                try (final DSLContext context = this.databaseManager.createContext(true)) {
-                    final Results results = TitleQueries
-                        .createFetchAllTitles()
-                        .build(context)
-                        .keepStatement(false)
-                        .fetchMany();
+        final Map<String, Title> titles = new HashMap<>();
 
-                    final Map<String, Title> titles = new HashMap<>();
+        try (final DSLContext context = this.databaseManager.createContext(true)) {
+            final Results results = TitleQueries
+                .createFetchAllTitles()
+                .build(context)
+                .keepStatement(false)
+                .fetchMany();
 
-                    results.forEach(result -> {
-                        for (Record record : result) {
-                            final String id = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.ID);
-                            final Timestamp created = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.CREATED);
-                            final UUID creator = DatabaseUtils.fromBytes(record.getValue(com.almuradev.generated.title.tables.Title.TITLE
-                                .CREATOR));
-                            final String permission = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.PERMISSION);
-                            final boolean isHidden = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.IS_HIDDEN);
-                            final String content = record.getValue(com.almuradev.generated.title.tables
-                                .Title.TITLE.CONTENT);
 
-                            titles.put(id, new Title(created, creator, id, permission, isHidden, content));
-                        }
-                    });
+            results.forEach(result -> {
+                for (Record record : result) {
+                    final String id = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.ID);
+                    final Timestamp created = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.CREATED);
+                    final UUID creator = DatabaseUtils.fromBytes(record.getValue(com.almuradev.generated.title.tables.Title.TITLE
+                        .CREATOR));
+                    final String permission = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.PERMISSION);
+                    final boolean isHidden = record.getValue(com.almuradev.generated.title.tables.Title.TITLE.IS_HIDDEN);
+                    final String content = record.getValue(com.almuradev.generated.title.tables
+                        .Title.TITLE.CONTENT);
 
-                    this.scheduler.createTaskBuilder()
-                        .execute(() -> {
-                            this.titles.clear();
-
-                            if (!titles.isEmpty()) {
-                                this.titles.putAll(titles);
-                            }
-
-                            this.logger.info("Loaded {} title(s).", this.titles.size());
-
-                            // Re-send titles to everyone
-                            this.network.sendToAll(new ClientboundTitlesRegistryPacket(this.titles.isEmpty() ? null : new HashSet<>(this.titles
-                                .values())));
-
-                           this.sendAvailableTitlesUpdate();
-
-                            // Send all selected titles out again as we've verified and corrected them in-case load changed
-                            this.network.sendToAll(new ClientboundSelectedTitleBulkPacket(
-                                    this.selectedTitles
-                                        .entrySet()
-                                        .stream()
-                                        .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().getId()))
-                                )
-                            );
-                        })
-                        .submit(this.container);
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    titles.put(id, new Title(created, creator, id, permission, isHidden, content));
                 }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        this.scheduler.createTaskBuilder()
+            .execute(() -> {
+                this.titles.clear();
+
+                this.titles.putAll(titles);
+
+                this.logger.info("Loaded {} title(s).", this.titles.size());
+
+                // Re-send titles to everyone
+                this.network.sendToAll(new ClientboundTitlesRegistryPacket(this.titles.isEmpty() ? null : new HashSet<>(this.titles
+                    .values())));
+
+                this.availableTitles.clear();
+
+                // Re-calculate available/selected titles
+                Sponge.getServer().getOnlinePlayers().forEach(player -> {
+                    this.calculateAvailableTitlesFor(player);
+
+                    this.verifySelectedTitle(player, null);
+
+                    this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(this.getAvailableTitlesFor(player).orElse(null)));
+                });
+
+                // Send all selected titles out again as we've verified and corrected them
+                this.network.sendToAll(new ClientboundSelectedTitleBulkPacket(
+                        this.selectedTitles
+                            .entrySet()
+                            .stream()
+                            .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().getId()))
+                    )
+                );
             })
             .submit(this.container);
-
-        return true;
     }
 
     public void calculateAvailableTitlesFor(final Player player) {
@@ -448,27 +456,25 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             .keepStatement(false)
                             .execute();
 
-                        final Runnable runnable;
-
                         if (result == 0) {
-                            runnable = () -> serverNotificationManager
-                                .sendPopupNotification(player, Text.of("Title Manager"), Text.of("Thread execution to add Title to database Failed!"),
-                                    5);
-                        } else {
-                            runnable = this::loadTitles;
-                        }
 
-                        this.scheduler
-                            .createTaskBuilder()
-                            .execute(runnable)
-                            .submit(this.container);
+                            final Runnable runnable = () -> {
+                                // TODO Dockter
+                                System.err.println("Add failed!");
+                            };
+
+                            this.scheduler
+                                .createTaskBuilder()
+                                .execute(runnable)
+                                .submit(this.container);
+                        } else {
+                            this.loadTitles();
+                        }
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 })
                 .submit(this.container);
-
-           this.sendAvailableTitlesUpdate();
         }
     }
 
@@ -480,7 +486,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
         checkNotNull(content);
 
         if (!player.hasPermission(Almura.ID + ".title.modify")) {
-            // TODO Dockter, handle this
+            // TODO Dockter
             return;
         }
 
@@ -514,28 +520,25 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             .keepStatement(false)
                             .execute();
 
-                        final Runnable runnable;
-
                         if (result == 0) {
-                            runnable = () -> {
-                                // TODO Dockter, send a notification down to the player that modify failed
+
+                            final Runnable runnable = () -> {
+                                // TODO Dockter
                                 System.err.println("Modify failed!");
                             };
-                        } else {
-                            runnable = this::loadTitles;
-                        }
 
-                        this.scheduler
-                            .createTaskBuilder()
-                            .execute(runnable)
-                            .submit(this.container);
+                            this.scheduler
+                                .createTaskBuilder()
+                                .execute(runnable)
+                                .submit(this.container);
+                        } else {
+                            this.loadTitles();
+                        }
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 })
                 .submit(this.container);
-
-            this.sendAvailableTitlesUpdate();
         }
     }
 
@@ -571,40 +574,25 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             .keepStatement(false)
                             .execute();
 
-                        final Runnable runnable;
-
                         if (result == 0) {
-                            runnable = () -> {
-                                // TODO Dockter, send a notification down to the player that changing title visibility failed
+
+                            final Runnable runnable = () -> {
+                                // TODO Dockter
                                 System.err.println("Deletion failed!");
                             };
-                        } else {
-                            runnable = this::loadTitles;
-                        }
 
-                        this.scheduler
-                            .createTaskBuilder()
-                            .execute(runnable)
-                            .submit(this.container);
+                            this.scheduler
+                                .createTaskBuilder()
+                                .execute(runnable)
+                                .submit(this.container);
+                        } else {
+                            this.loadTitles();
+                        }
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 })
                 .submit(this.container);
-
-            this.sendAvailableTitlesUpdate();
         }
-    }
-
-    public void sendAvailableTitlesUpdate() {
-        // Re-calculate available titles
-        Sponge.getServer().getOnlinePlayers().forEach(player -> {
-            this.calculateAvailableTitlesFor(player);
-
-            this.verifySelectedTitle(player, null);
-
-            final Set<Title> availableTitles = this.getAvailableTitlesFor(player).orElse(null);
-            this.network.sendTo(player, new ClientboundAvailableTitlesResponsePacket(availableTitles));
-        });
     }
 }
