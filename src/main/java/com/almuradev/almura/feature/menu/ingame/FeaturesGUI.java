@@ -162,7 +162,6 @@ public final class FeaturesGUI extends SimpleScreen {
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, accessoriesButton.getY() + 18)
                 .text("Claim Management")
-                .visible(isAdmin)
                 .listener(this)
                 .build("button.claim");
 
