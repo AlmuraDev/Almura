@@ -79,7 +79,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
     @Listener
     public void onServerStarting(final GameStartingServerEvent event) {
-        this.loadExchanges();
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(this::loadExchanges)
+            .submit(this.container);
     }
 
     @Listener
@@ -108,92 +112,78 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         return Optional.ofNullable(this.exchanges.get(id));
     }
 
-    public boolean loadExchanges() {
-
-        // TODO I might automatically create the Global Exchange (almura.global) by default (if no others are found when loading from db)
+    public void loadExchanges() {
 
         this.logger.info("Querying database for exchanges, please wait...");
 
-        this.scheduler.createTaskBuilder()
-            .async()
-            .execute(() -> {
-                try (final DSLContext context = this.databaseManager.createContext(true)) {
-                    final Results results = ExchangeQueries
-                        .createFetchAllExchanges()
-                        .build(context)
-                        .keepStatement(false)
-                        .fetchMany();
+        final Map<String, Exchange> exchanges = new HashMap<>();
 
-                    final Map<String, Exchange> exchanges = new HashMap<>();
+        try (final DSLContext context = this.databaseManager.createContext(true)) {
+            final Results results = ExchangeQueries
+                .createFetchAllExchanges()
+                .build(context)
+                .keepStatement(false)
+                .fetchMany();
 
-                    results.forEach(result -> {
-                        for (Record record : result) {
-                            final String id = record.getValue(Axs.AXS.ID);
-                            final Timestamp created = record.getValue(Axs.AXS.CREATED);
-                            final UUID creator = DatabaseUtils.uniqueIdFromBytes(record.getValue(Axs.AXS.CREATOR));
-                            final String name = record.getValue(Axs.AXS.NAME);
-                            final String permission = record.getValue(Axs.AXS.PERMISSION);
-                            final boolean isHidden = record.getValue(Axs.AXS.IS_HIDDEN);
+            results.forEach(result -> {
+                for (Record record : result) {
+                    final String id = record.getValue(Axs.AXS.ID);
+                    final Timestamp created = record.getValue(Axs.AXS.CREATED);
+                    final UUID creator = DatabaseUtils.uniqueIdFromBytes(record.getValue(Axs.AXS.CREATOR));
+                    final String name = record.getValue(Axs.AXS.NAME);
+                    final String permission = record.getValue(Axs.AXS.PERMISSION);
+                    final boolean isHidden = record.getValue(Axs.AXS.IS_HIDDEN);
 
-                            exchanges.put(id, new BasicExchange(id, created.toInstant(), creator, name, permission, isHidden));
-                        }
-                    });
-
-                    if (exchanges.isEmpty()) {
-                        // TODO Begin Test Code
-                        final BasicExchange exchange = new BasicExchange("almura.global", Instant.now(), UUID.randomUUID(), "Exchange", "almura"
-                            + ".exchange.global", false);
-                        exchanges.put("almura.global", exchange);
-
-                        // Yes, I am purposedly running this sync
-                        this.scheduler
-                            .createTaskBuilder()
-                            .execute(() -> {
-                                try (final DSLContext context1 = this.databaseManager.createContext(true)) {
-                                    final int result = ExchangeQueries
-                                        .createInsertExchange(exchange.getCreator(), exchange.getId(), exchange.getName(), exchange.getPermission(),
-                                            exchange.isHidden())
-                                        .build(context1)
-                                        .keepStatement(false)
-                                        .execute();
-
-                                    if (result == 0) {
-                                        Thread.dumpStack();
-                                    }
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
-                                }
-                            })
-                            .submit(this.container);
-                        // TODO End Test Code
-                    }
-
-                    this.scheduler
-                        .createTaskBuilder()
-                        .execute(() -> {
-                            this.exchanges.clear();
-                            this.exchanges.putAll(exchanges);
-
-                            this.logger.info("Loaded {} exchange(s).", this.exchanges.size());
-
-                            // Re-send exchanges to everyone
-                            this.network
-                                .sendToAll(new ClientboundExchangeRegistryPacket(this.exchanges.isEmpty() ? null : new HashSet<>(this.exchanges
-                                    .values())));
-                        })
-                        .submit(this.container);
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    exchanges.put(id, new BasicExchange(id, created.toInstant(), creator, name, permission, isHidden));
                 }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .execute(() -> {
+                this.exchanges.clear();
+
+                this.exchanges.putAll(exchanges);
+
+                if (this.exchanges.isEmpty()) {
+                    // TODO Begin Test Code
+                    // TODO I might automatically create the Global Exchange (almura.global) by default (if no others are found when loading from db)
+                    final BasicExchange exchange = new BasicExchange("almura.global", Instant.now(), UUID.randomUUID(), "Exchange",
+                        "almura.exchange.global", false);
+                    this.exchanges.put("almura.global", exchange);
+
+                    // Yes, I am purposely running this sync
+                    try (final DSLContext context1 = this.databaseManager.createContext(true)) {
+                        final int result = ExchangeQueries
+                            .createInsertExchange(exchange.getCreator(), exchange.getId(), exchange.getName(), exchange.getPermission(), exchange
+                                .isHidden())
+                            .build(context1)
+                            .keepStatement(false)
+                            .execute();
+
+                        if (result == 0) {
+                            Thread.dumpStack();
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                this.logger.info("Loaded {} exchange(s).", this.exchanges.size());
+
+                // Re-send exchanges to everyone
+                this.network.sendToAll(new ClientboundExchangeRegistryPacket(this.exchanges.isEmpty() ? null : new HashSet<>(this.exchanges.values
+                    ())));
             })
             .submit(this.container);
-
-        return true;
     }
 
     public void handleExchangeManage(final Player player) {
         if (!player.hasPermission(Almura.ID + ".exchange.manage")) {
-            // TODO Notification
+            // TODO Dockter
             return;
         }
 
@@ -205,14 +195,14 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(id);
 
         if (!player.hasPermission(Almura.ID + ".exchange.open")) {
-            // TODO Notification
+            // TODO Dockter
             return;
         }
 
         final Exchange exchange = this.getExchange(id).orElse(null);
 
         if (exchange == null || !player.hasPermission(exchange.getPermission())) {
-            // TODO Notification
+            // TODO Dockter
 
             this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
                 this.exchanges
@@ -239,13 +229,14 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(permission);
 
         if (!player.hasPermission(Almura.ID + ".exchange.create")) {
-            notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("Insufficient Permission!, Exchange addition "
-                + "failed."), 5);
+            this.notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("Insufficient Permission!, "
+                + "Exchange addition failed."), 5);
             return;
         }
 
         if (this.getExchange(id).isPresent()) {
-            notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("This Exchange already exists!"), 5);
+            this.notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("This Exchange already "
+                + "exists!"), 5);
 
             this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
                     this.exchanges
@@ -273,20 +264,15 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             .keepStatement(false)
                             .execute();
 
-                        final Runnable runnable;
-
                         if (result == 0) {
-                            runnable = () -> notificationManager
-                                .sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("Thread execution to add Exchange to database "
-                                    + "failed!"), 5);
+                            this.scheduler
+                                .createTaskBuilder()
+                                .execute(() -> this.notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of(
+                                    "Thread execution to add Exchange to database failed!"), 5))
+                                .submit(this.container);
                         } else {
-                            runnable = this::loadExchanges;
+                            this.loadExchanges();
                         }
-
-                        this.scheduler
-                            .createTaskBuilder()
-                            .execute(runnable)
-                            .submit(this.container);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -336,20 +322,15 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             .keepStatement(false)
                             .execute();
 
-                        final Runnable runnable;
-
                         if (result == 0) {
-                            runnable = () -> {
-                                // TODO Dockter, send a notification down to the player that modify failed
-                            };
+                            this.scheduler
+                                .createTaskBuilder()
+                                .execute(() -> this.notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of(
+                                    "Thread execution to modify Exchange in database failed!"), 5))
+                                .submit(this.container);
                         } else {
-                            runnable = this::loadExchanges;
+                            this.loadExchanges();
                         }
-
-                        this.scheduler
-                            .createTaskBuilder()
-                            .execute(runnable)
-                            .submit(this.container);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -390,20 +371,15 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             .keepStatement(false)
                             .execute();
 
-                        final Runnable runnable;
-
                         if (result == 0) {
-                            runnable = () -> {
-                                // TODO Dockter, send a notification down to the player that deletion failed
-                            };
+                            this.scheduler
+                                .createTaskBuilder()
+                                .execute(() -> this.notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of(
+                                    "Thread execution to delete Exchange from database failed!"), 5))
+                                .submit(this.container);
                         } else {
-                            runnable = this::loadExchanges;
+                            this.loadExchanges();
                         }
-
-                        this.scheduler
-                            .createTaskBuilder()
-                            .execute(runnable)
-                            .submit(this.container);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
