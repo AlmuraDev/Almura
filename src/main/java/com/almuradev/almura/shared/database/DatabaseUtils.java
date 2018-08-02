@@ -63,7 +63,7 @@ public final class DatabaseUtils {
         return domain + ":" + path;
     }
 
-    public static ResourceLocation fromString(final String value) {
+    public static ResourceLocation fromString(String value) {
         checkNotNull(value);
 
         if (!value.contains(":")) {

@@ -94,14 +94,12 @@ public final class ExchangeQueries {
      * Item
      */
 
-    public static DatabaseQuery<SelectLimitPercentStep<AxsItemRecord>> createFetchItemsFor(final String id, final int limit) {
+    public static DatabaseQuery<SelectConditionStep<AxsItemRecord>> createFetchItemsFor(final String id) {
         checkNotNull(id);
-        checkState(limit >= 0);
 
         return context -> context
             .selectFrom(AXS_ITEM)
-            .where(AXS_ITEM.AXS.eq(id))
-            .limit(limit);
+            .where(AXS_ITEM.AXS.eq(id));
     }
 
     public static DatabaseQuery<InsertValuesStep8<AxsItemRecord, Timestamp, String, byte[], String, Integer, Integer, BigDecimal, Integer>>

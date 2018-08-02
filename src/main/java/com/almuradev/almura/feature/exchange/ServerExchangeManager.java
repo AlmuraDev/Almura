@@ -17,9 +17,18 @@ import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseUtils;
 import com.almuradev.almura.shared.feature.store.Store;
+import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
+import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import com.almuradev.generated.axs.tables.Axs;
+import com.almuradev.generated.axs.tables.AxsItem;
+import com.almuradev.generated.axs.tables.AxsListItem;
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Results;
@@ -36,11 +45,15 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.text.Text;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -112,6 +125,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         return Optional.ofNullable(this.exchanges.get(id));
     }
+
+    /**
+     * Exchange
+     */
 
     public void loadExchanges() {
 
@@ -388,6 +405,119 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     }
                 })
                 .submit(this.container);
+        }
+    }
+
+    /**
+     * ListItem
+     */
+
+    public void loadListItems(final Exchange axs) {
+
+        this.logger.info("Querying list items for Exchange [{}], please wait...");
+
+        final List<ListItem> items = new ArrayList<>();
+
+        try (final DSLContext context = this.databaseManager.createContext(true)) {
+            final Results results = ExchangeQueries
+                .createFetchItemsFor(axs.getId())
+                .build(context)
+                .keepStatement(false)
+                .fetchMany();
+
+            results.forEach(result -> result.forEach(record -> {
+                final ResourceLocation location = DatabaseUtils.fromString(record.getValue(AxsItem.AXS_ITEM.ITEM_TYPE));
+
+                if (location == null) {
+                    // TODO This is a malformed resource location
+                } else {
+
+                    final Item item = ForgeRegistries.ITEMS.getValue(location);
+
+                    if (item == null) {
+                        // TODO They've given us an item that isn't loaded (likely a mod that vanished)
+                    } else {
+
+                        final Integer recNo = record.getValue(AxsItem.AXS_ITEM.REC_NO);
+                        final Timestamp created = record.getValue(AxsItem.AXS_ITEM.CREATED);
+                        final UUID seller = DatabaseUtils.uniqueIdFromBytes(record.getValue(AxsItem.AXS_ITEM.SELLER));
+                        final Integer quantity = record.getValue(AxsItem.AXS_ITEM.QUANTITY);
+                        final Integer metadata = record.getValue(AxsItem.AXS_ITEM.METADATA);
+                        final BigDecimal price = record.getValue(AxsItem.AXS_ITEM.PRICE);
+                        final Integer index = record.getValue(AxsItem.AXS_ITEM.INDEX);
+
+                        items.add(new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, price, index));
+                    }
+                }
+            }));
+
+            this.scheduler
+                .createTaskBuilder()
+                .execute(() -> {
+                    axs.clearListItems();
+
+                    items.sort(Comparator.comparingInt(ListItem::getIndex));
+
+                    axs.putListItems(items.isEmpty() ? null : items.stream().collect(Collectors.groupingBy(ListItem::getSeller)));
+                })
+                .submit(this.container);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * ForSaleItem
+     */
+
+    public void loadForSaleItems(final Exchange axs) {
+        this.logger.info("Querying for sale items for Exchange [{}], please wait...");
+
+        final List<ForSaleItem> items = new ArrayList<>();
+
+        try (final DSLContext context = this.databaseManager.createContext(true)) {
+            final Results results = ExchangeQueries
+                .createFetchListItemsFor(axs.getId())
+                .build(context)
+                .keepStatement(false)
+                .fetchMany();
+
+            // We're async here, we have to get a copy of the map else iteration will be synchronized for the entirety of the below..
+            final Map<UUID, List<ListItem>> listItems = new HashMap<>(axs.getListItems());
+
+            results.forEach(result -> result.forEach(record -> {
+                final Integer itemRecNo = record.getValue(AxsListItem.AXS_LIST_ITEM.AXS_ITEM);
+                ListItem found = null;
+
+                for (final List<ListItem> itemList : listItems.values()) {
+
+                    found = itemList.stream().filter(item -> item.getRecord() == itemRecNo).findAny().orElse(null);
+                    if (found != null) {
+                        break;
+                    }
+                }
+
+                if (found == null) {
+                    // TODO If we're here, this is a dead listing as the listing doesn't exist in the exchange
+                } else {
+                    final Timestamp created = record.getValue(AxsListItem.AXS_LIST_ITEM.CREATED);
+                    final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
+
+                    items.add(new BasicForSaleItem((BasicListItem) found, created.toInstant(), quantity));
+                }
+            }));
+
+            this.scheduler
+                .createTaskBuilder()
+                .execute(() -> {
+                    axs.clearForSaleItems();
+
+                    axs.putForSaleItems(items.isEmpty() ? null : items.stream().collect(Collectors.groupingBy(forSaleItem -> forSaleItem
+                        .getListItem().getSeller())));
+                })
+                .submit(this.container);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

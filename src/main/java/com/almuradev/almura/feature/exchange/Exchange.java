@@ -15,7 +15,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 public interface Exchange extends Store {
 
-    Optional<Map<UUID, List<ListItem>>> getPendingItems();
+    Map<UUID, List<ListItem>> getListItems();
+
+    Optional<List<ListItem>> getListItemsFor(final UUID uuid);
+
+    void putListItems(@Nullable final Map<UUID, List<ListItem>> listItems);
+
+    void putListItemsFor(final UUID uuid, @Nullable final List<ListItem> listItems);
+
+    void clearListItems();
 }

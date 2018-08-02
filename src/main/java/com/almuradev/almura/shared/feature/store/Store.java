@@ -8,6 +8,7 @@
 package com.almuradev.almura.shared.feature.store;
 
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 public interface Store extends Serializable {
 
@@ -41,5 +44,23 @@ public interface Store extends Serializable {
 
     boolean isHidden();
 
-    Optional<Map<UUID, List<ForSaleItem>>> getForSaleItems();
+    Map<UUID, List<ForSaleItem>> getForSaleItems();
+
+    Optional<List<ForSaleItem>> getForSaleItemsFor(final UUID uuid);
+
+    void putForSaleItems(@Nullable final Map<UUID, List<ForSaleItem>> forSaleItems);
+
+    void putForSaleItemsFor(final UUID uuid, @Nullable final List<ForSaleItem> forSaleItems);
+
+    void clearForSaleItems();
+
+    /**
+     * Returns if the store is currently in a dirty state. This can be defined as the store needing to save data to the database but isn't the
+     * strictest definition of this.
+     *
+     * @return True if dirty, false if not
+     */
+    boolean isDirty();
+
+    void setDirty(final boolean dirty);
 }
