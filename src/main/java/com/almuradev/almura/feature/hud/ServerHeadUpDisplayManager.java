@@ -168,9 +168,9 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
                         continue;
                     }
                     if (playerTitle.isEmpty()) {
-                        this.manager.sendPopupNotification(player, Text.of(TextFormatting.BLUE + "Player Joined" + TextFormatting.WHITE), Text.of (TextFormatting.YELLOW + displayName + TextFormatting.WHITE + " has " + "joined the server"), 5);
+                        this.manager.sendPopupNotification(players, Text.of(TextFormatting.BLUE + "Player Joined" + TextFormatting.WHITE), Text.of (TextFormatting.YELLOW + displayName + TextFormatting.WHITE + " has " + "joined the server"), 5);
                     } else {
-                        this.manager.sendPopupNotification(player, Text.of(TextFormatting.BLUE + "Player Joined" + TextFormatting.WHITE), Text.of (displayName + " - " + playerTitle +"§f - has joined the server"), 5);
+                        this.manager.sendPopupNotification(players, Text.of(TextFormatting.BLUE + "Player Joined" + TextFormatting.WHITE), Text.of (displayName + " - " + playerTitle +"§f - has joined the server"), 5);
                     }
                 }
             })
@@ -189,9 +189,9 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
                 continue;
             }
             if (playerTitle.isEmpty()) {
-                this.manager.sendPopupNotification(player, Text.of(TextFormatting.DARK_AQUA + "Player Disconnected" + TextFormatting.WHITE), Text.of (TextFormatting.YELLOW + displayName + TextFormatting.WHITE + " has " + "left the server"), 5);
+                this.manager.sendPopupNotification(players, Text.of(TextFormatting.DARK_AQUA + "Player Disconnected" + TextFormatting.WHITE), Text.of (TextFormatting.YELLOW + displayName + TextFormatting.WHITE + " has " + "left the server"), 5);
             } else {
-                this.manager.sendPopupNotification(player, Text.of(TextFormatting.DARK_AQUA + "Player Disconnected" + TextFormatting.WHITE), Text.of (displayName + " - " + playerTitle +"§f - has left the server"), 5);
+                this.manager.sendPopupNotification(players, Text.of(TextFormatting.DARK_AQUA + "Player Disconnected" + TextFormatting.WHITE), Text.of (displayName + " - " + playerTitle +"§f - has left the server"), 5);
             }
         }
     }
