@@ -8,10 +8,13 @@
 package com.almuradev.almura.feature.exchange;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
+import com.almuradev.almura.feature.exchange.network.InventoryAction;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundModifyListItemsPacket;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
@@ -120,6 +123,14 @@ public final class ClientExchangeManager implements Witness {
         checkNotNull(id);
 
         this.network.sendToServer(new ServerboundModifyExchangePacket(id));
+    }
+
+    public void updateListItems(final String id, final List<InventoryAction> actions) {
+        checkNotNull(id);
+        checkNotNull(actions);
+        checkState(!actions.isEmpty());
+
+        this.network.sendToServer(new ServerboundModifyListItemsPacket(id, actions));
     }
 
     public void handleExchangeRegistry(final Set<Exchange> exchanges) {

@@ -13,11 +13,13 @@ import com.almuradev.almura.feature.exchange.network.ClientboundExchangeListItem
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundModifyListItemsPacket;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeGuiResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeListItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangesRegistryPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeGuiRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyExchangePacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyListItemsPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -43,8 +45,11 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 binder -> binder.handler(ServerboundModifyExchangePacketHandler.class, Platform.Type.SERVER))
 
             .bind(ClientboundExchangeListItemsResponsePacket.class,
-                binder -> binder.handler(ClientboundExchangeListItemsResponsePacketHandler.class, Platform.Type.CLIENT));
+                binder -> binder.handler(ClientboundExchangeListItemsResponsePacketHandler.class, Platform.Type.CLIENT))
 
+            .bind(ServerboundModifyListItemsPacket.class,
+                binder -> binder.handler(ServerboundModifyListItemsPacketHandler.class, Platform.Type.CLIENT));
+        
         this.facet().add(ServerExchangeManager.class);
 
         this.on(Platform.Type.CLIENT, () -> {

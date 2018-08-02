@@ -8,12 +8,14 @@
 package com.almuradev.almura.feature.exchange;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
+import com.almuradev.almura.feature.exchange.network.InventoryAction;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
@@ -473,6 +475,14 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void handleModifyListItems(final Player player, final String id, final List<InventoryAction> actions) {
+        checkNotNull(id);
+        checkNotNull(actions);
+        checkState(!actions.isEmpty());
+
+        // TODO Buckle up, this will be a hell of a ride
     }
 
     /**
