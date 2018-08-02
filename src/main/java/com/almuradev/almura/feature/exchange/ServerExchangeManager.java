@@ -12,9 +12,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundExchangeListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
+import com.almuradev.almura.shared.database.DatabaseQueue;
 import com.almuradev.almura.shared.database.DatabaseUtils;
 import com.almuradev.almura.shared.feature.store.Store;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
@@ -34,6 +36,7 @@ import org.jooq.Record;
 import org.jooq.Results;
 import org.slf4j.Logger;
 import org.spongepowered.api.GameState;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
@@ -219,17 +222,17 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        final Exchange exchange = this.getExchange(id).orElse(null);
+        final Exchange axs = this.getExchange(id).orElse(null);
 
-        if (exchange == null || !player.hasPermission(exchange.getPermission())) {
+        if (axs == null || !player.hasPermission(axs.getPermission())) {
             // TODO Dockter
 
             this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
                 this.exchanges
                     .values()
                     .stream()
-                    .filter(axs -> {
-                        if (!axs.isHidden()) {
+                    .filter(a -> {
+                        if (!a.isHidden()) {
                             return true;
                         }
 
@@ -239,6 +242,17 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             );
         } else {
             this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, id));
+
+            this.databaseManager.getQueue().queue(DatabaseQueue.ActionType.FETCH_IGNORE_DUPLICATES, id, () -> {
+                this.loadListItems(axs);
+
+                this.scheduler
+                    .createTaskBuilder()
+                    .execute(() ->
+                        Sponge.getServer().getOnlinePlayers().forEach(p ->
+                            axs.getListItemsFor(p.getUniqueId()).ifPresent(items ->
+                                this.network.sendTo(p, new ClientboundExchangeListItemsResponsePacket(axs.getId(), items)))));
+            });
         }
     }
 
@@ -414,7 +428,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
     public void loadListItems(final Exchange axs) {
 
-        this.logger.info("Querying list items for Exchange [{}], please wait...");
+        this.logger.info("Querying items for Exchange [{}], please wait...");
 
         final List<ListItem> items = new ArrayList<>();
 
@@ -451,16 +465,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 }
             }));
 
-            this.scheduler
-                .createTaskBuilder()
-                .execute(() -> {
-                    axs.clearListItems();
+            items.sort(Comparator.comparingInt(ListItem::getIndex));
 
-                    items.sort(Comparator.comparingInt(ListItem::getIndex));
+            axs.putListItems(items.isEmpty() ? null : items.stream().collect(Collectors.groupingBy(ListItem::getSeller)));
 
-                    axs.putListItems(items.isEmpty() ? null : items.stream().collect(Collectors.groupingBy(ListItem::getSeller)));
-                })
-                .submit(this.container);
+            this.logger.info("Loaded {} item(s) for Exchange [{}].", axs.getId(), items.size());
         } catch (SQLException e) {
             e.printStackTrace();
         }
