@@ -219,7 +219,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             this.network.sendToAll(new ClientboundTitlesRegistryPacket(this.titles.isEmpty() ? null : new HashSet<>(this.titles
                                 .values())));
 
-                           sendAvailableTitlesUpdate();
+                           this.sendAvailableTitlesUpdate();
 
                             // Send all selected titles out again as we've verified and corrected them in-case load changed
                             this.network.sendToAll(new ClientboundSelectedTitleBulkPacket(
@@ -468,7 +468,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                 })
                 .submit(this.container);
 
-           sendAvailableTitlesUpdate();
+           this.sendAvailableTitlesUpdate();
         }
     }
 
@@ -535,7 +535,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                 })
                 .submit(this.container);
 
-            sendAvailableTitlesUpdate();
+            this.sendAvailableTitlesUpdate();
         }
     }
 
@@ -592,7 +592,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                 })
                 .submit(this.container);
 
-            sendAvailableTitlesUpdate();
+            this.sendAvailableTitlesUpdate();
         }
     }
 
