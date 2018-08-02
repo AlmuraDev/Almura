@@ -60,12 +60,13 @@ public final class ServerClaimManager implements Witness {
         this.container = container;
     }
 
-    public void sendUpdate(final Player player, final Claim claim) {
+    public void sendUpdate(final Player player, final Claim claim, boolean everyone) {
         if (GriefPreventionPlugin.instance != null) {
             if (GriefPreventionPlugin.instance.permissionService != null) {
                 if (claim != null) {
                     boolean isClaim = true;
                     boolean hasWECUI = false;
+                    boolean isForSale = false;
 
                     String claimName = "";
                     String claimGreeting = "";
@@ -83,7 +84,11 @@ public final class ServerClaimManager implements Witness {
                     final boolean isAdminClaim = claim.isAdminClaim();
                     final boolean isBasicClaim = claim.isBasicClaim();
                     final boolean isSubdivision = claim.isSubdivision();
-                    final boolean isForSale = claim.getEconomyData().isForSale();
+
+                    if (claim.isWilderness()) {
+                        isForSale = claim.getEconomyData().isForSale();
+                    }
+
                     final boolean showWarnings = claim.getData().allowDenyMessages();
 
                     if (player != null) {
@@ -127,10 +132,12 @@ public final class ServerClaimManager implements Witness {
                         this.network.sendTo(player, new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize,
                                 isForSale, showWarnings, claimTaxes, claimBlockCost, claimBlockSell, hasWECUI));
                     }
-
-                    for (final Player players : claim.getPlayers()) {  //Apparently claims.getPlayers() doesn't include the one that just entered or exited it.
-                        this.network.sendTo(players, new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize,
-                                isForSale, showWarnings, claimTaxes, claimBlockCost, claimBlockSell, hasWECUI));
+                    if (everyone && !claim.isWilderness()) {
+                        for (final Player players : claim.getPlayers()) {  //Apparently claims.getPlayers() doesn't include the one that just entered or exited it.
+                            this.network.sendTo(players,
+                                new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize, isForSale, showWarnings, claimTaxes, claimBlockCost, claimBlockSell,
+                                    hasWECUI));
+                        }
                     }
                 }
             }
@@ -142,7 +149,7 @@ public final class ServerClaimManager implements Witness {
         if (player != null && this.isGPEnabled(player)) {
             Task.builder()
                 .delayTicks(20) // Give GP time to register the user as its not at tick zero.
-                .execute(t -> this.sendUpdate(player, GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(player.getLocation())))
+                .execute(t -> this.sendUpdate(player, GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(player.getLocation()), false))
                 .submit(this.container);
         }
     }
@@ -150,32 +157,32 @@ public final class ServerClaimManager implements Witness {
     @Listener()
     public void onEnterExitClaim(final BorderClaimEvent event, @Getter("getTargetEntity") Player player) {
         // Notes:  this event does NOT fire when a player logs into the server.
-        this.sendUpdate(player, event.getEnterClaim());
+        this.sendUpdate(player, event.getEnterClaim(), false);
     }
 
     @Listener()
     public void onChangeClaim(final ChangeClaimEvent event) {
-        this.sendUpdate(null, event.getClaim());
+        this.sendUpdate(null, event.getClaim(), false);
     }
 
     @Listener()
     public void onCreateClaim(final CreateClaimEvent event) {
-        this.sendUpdate(null, event.getClaim());
+        this.sendUpdate(null, event.getClaim(), true);
     }
 
     @Listener()
     public void onDeleteClaim(final DeleteClaimEvent event) {
-        this.sendUpdate(null, event.getClaim());
+        this.sendUpdate(null, event.getClaim(), true);
     }
 
     @Listener()
     public void onTaxClaim(final TaxClaimEvent event) {
-        this.sendUpdate(null, event.getClaim());
+        //this.sendUpdate(null, event.getClaim(), false);
     }
 
     @Listener()
     public void onClaimFlagChange(final FlagClaimEvent event) {
-        this.sendUpdate(null, event.getClaim());
+        this.sendUpdate(null, event.getClaim(), true);
     }
 
     public final boolean isGPEnabled(final Player player) {
@@ -222,7 +229,7 @@ public final class ServerClaimManager implements Witness {
                 claim.getData().setName(Text.of(claimName));
                 claim.getData().setGreeting(Text.of(claimGreeting));
                 claim.getData().setFarewell(Text.of(claimFarewell));
-                this.sendUpdate(player, claim);
+                this.sendUpdate(player, claim, true);
                 this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Changed Saved!"), 5);
             } else {
                 this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);

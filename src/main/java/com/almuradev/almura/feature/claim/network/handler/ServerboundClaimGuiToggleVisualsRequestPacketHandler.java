@@ -52,7 +52,7 @@ public final class ServerboundClaimGuiToggleVisualsRequestPacketHandler implemen
 
                 if (isOwner || isAdmin) {
                     this.serverClaimManager.toggleVisuals(player, claim, message.value);
-                    this.serverClaimManager.sendUpdate(player, claim);
+                    this.serverClaimManager.sendUpdate(player, claim, false);
                 } else {
                     this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);
                 }

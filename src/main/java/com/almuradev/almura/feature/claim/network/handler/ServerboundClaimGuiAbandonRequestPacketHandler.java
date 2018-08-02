@@ -52,7 +52,7 @@ public final class ServerboundClaimGuiAbandonRequestPacketHandler implements Mes
 
                 if (isOwner || isAdmin) {
                     this.serverClaimManager.abandonClaim(player, claim);
-                    this.serverClaimManager.sendUpdate(player, claim);
+                    this.serverClaimManager.sendUpdate(player, claim, true);
                     this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Claim Abandoned!"), 5);
                 } else {
                     this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);

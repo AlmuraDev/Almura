@@ -54,18 +54,18 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
     private final Game game;
     private final PluginContainer container;
     private final ChannelBinding.IndexedMessageChannel network;
-    private final ServerNotificationManager manager;
+    private final ServerNotificationManager serverNotificationManager;
     private final ServerTitleManager serverTitleManager;
     private final ServerNickManager serverNickManager;
 
     @Inject
     private ServerHeadUpDisplayManager(final Game game, final PluginContainer container, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
-        .IndexedMessageChannel network, final ServerNotificationManager manager, final ServerTitleManager serverTitleManager, final
+        .IndexedMessageChannel network, final ServerNotificationManager serverNotificationManager, final ServerTitleManager serverTitleManager, final
     ServerNickManager serverNickManager) {
         this.game = game;
         this.container = container;
         this.network = network;
-        this.manager = manager;
+        this.serverNotificationManager = serverNotificationManager;
         this.serverTitleManager = serverTitleManager;
         this.serverNickManager = serverNickManager;
     }
@@ -147,9 +147,9 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
     public void onPlayerFirstJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") final Player player) {
         for (final Player onlinePlayer : this.game.getServer().getOnlinePlayers()) {
             if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
-                this.manager.sendPopupNotification(player, Text.of("Welcome!"), Text.of("Welcome to Almura."), 5);
+                this.serverNotificationManager.sendPopupNotification(player, Text.of("Welcome!"), Text.of("Welcome to Almura."), 5);
             } else {
-                this.manager.sendPopupNotification(onlinePlayer, Text.of("New Player!!!"), Text.of("Please welcome " + player.getName() + " to Almura."), 5);
+                this.serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of("New Player!!!"), Text.of("Please welcome " + player.getName() + " to Almura."), 5);
             }
         }
     }
@@ -165,12 +165,13 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
 
                 for (final Player players : Sponge.getServer().getOnlinePlayers()) {
                     if (players.equals(player)) {
+                        this.serverNotificationManager.sendPopupNotification(player, Text.of("Welcome!"), Text.of("Welcome to Almura."), 5);
                         continue;
                     }
                     if (playerTitle.isEmpty()) {
-                        this.manager.sendPopupNotification(players, Text.of(TextFormatting.BLUE + "Player Joined" + TextFormatting.WHITE), Text.of (TextFormatting.YELLOW + displayName + TextFormatting.WHITE + " has " + "joined the server"), 5);
+                        this.serverNotificationManager.sendPopupNotification(players, Text.of(TextFormatting.BLUE + "Player Joined" + TextFormatting.WHITE), Text.of (TextFormatting.YELLOW + displayName + TextFormatting.WHITE + " has " + "joined the server"), 5);
                     } else {
-                        this.manager.sendPopupNotification(players, Text.of(TextFormatting.BLUE + "Player Joined" + TextFormatting.WHITE), Text.of (displayName + " - " + playerTitle +"§f - has joined the server"), 5);
+                        this.serverNotificationManager.sendPopupNotification(players, Text.of(TextFormatting.BLUE + "Player Joined" + TextFormatting.WHITE), Text.of (displayName + " - " + playerTitle +"§f - has joined the server"), 5);
                     }
                 }
             })
@@ -189,9 +190,9 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
                 continue;
             }
             if (playerTitle.isEmpty()) {
-                this.manager.sendPopupNotification(players, Text.of(TextFormatting.DARK_AQUA + "Player Disconnected" + TextFormatting.WHITE), Text.of (TextFormatting.YELLOW + displayName + TextFormatting.WHITE + " has " + "left the server"), 5);
+                this.serverNotificationManager.sendPopupNotification(players, Text.of(TextFormatting.DARK_AQUA + "Player Disconnected" + TextFormatting.WHITE), Text.of (TextFormatting.YELLOW + displayName + TextFormatting.WHITE + " has " + "left the server"), 5);
             } else {
-                this.manager.sendPopupNotification(players, Text.of(TextFormatting.DARK_AQUA + "Player Disconnected" + TextFormatting.WHITE), Text.of (displayName + " - " + playerTitle +"§f - has left the server"), 5);
+                this.serverNotificationManager.sendPopupNotification(players, Text.of(TextFormatting.DARK_AQUA + "Player Disconnected" + TextFormatting.WHITE), Text.of (displayName + " - " + playerTitle +"§f - has left the server"), 5);
             }
         }
     }

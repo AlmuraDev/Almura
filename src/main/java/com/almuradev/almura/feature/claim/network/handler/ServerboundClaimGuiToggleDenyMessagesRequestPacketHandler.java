@@ -52,7 +52,7 @@ public final class ServerboundClaimGuiToggleDenyMessagesRequestPacketHandler imp
 
                 if (isOwner || isAdmin) {
                     this.serverClaimManager.toggleClaimDenyMessages(player, claim, message.value);
-                    this.serverClaimManager.sendUpdate(player, claim);
+                    this.serverClaimManager.sendUpdate(player, claim, true);
                     if (message.value) {
                         this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Deny Messages Enabled!"), 5);
                     } else {
