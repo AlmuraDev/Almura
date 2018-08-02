@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 
 public interface Store extends Serializable {
 
-    UUID ZERO = new UUID(0, 0);
+    UUID UNKNOWN_OWNER = new UUID(0, 0);
 
     Instant getCreated();
 

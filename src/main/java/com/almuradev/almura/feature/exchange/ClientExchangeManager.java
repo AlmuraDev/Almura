@@ -12,6 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
@@ -141,5 +142,13 @@ public final class ClientExchangeManager implements Witness {
         if (exchange != null) {
             new ExchangeScreen(exchange).display();
         }
+    }
+
+    public void handleExchangeListItems(final String id, @Nullable final List<ListItem> listItems) {
+        checkNotNull(id);
+
+        // TODO Grinch
+        // TODO Need to refresh the screen with this value if the id is of an Exchange open. You won't have the NBT at this time though, that is
+        // TODO requested later
     }
 }

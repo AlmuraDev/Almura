@@ -9,10 +9,12 @@ package com.almuradev.almura.feature.exchange;
 
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundExchangeListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeGuiResponsePacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeListItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangesRegistryPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeGuiRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyExchangePacketHandler;
@@ -38,7 +40,11 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 binder -> binder.handler(ClientboundExchangeGuiResponsePacketHandler.class, Platform.Type.CLIENT))
 
             .bind(ServerboundModifyExchangePacket.class,
-                binder -> binder.handler(ServerboundModifyExchangePacketHandler.class, Platform.Type.SERVER));
+                binder -> binder.handler(ServerboundModifyExchangePacketHandler.class, Platform.Type.SERVER))
+
+            .bind(ClientboundExchangeListItemsResponsePacket.class,
+                binder -> binder.handler(ClientboundExchangeListItemsResponsePacketHandler.class, Platform.Type.CLIENT));
+
         this.facet().add(ServerExchangeManager.class);
 
         this.on(Platform.Type.CLIENT, () -> {

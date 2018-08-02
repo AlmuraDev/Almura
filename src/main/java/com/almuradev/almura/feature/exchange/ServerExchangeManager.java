@@ -169,7 +169,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 if (this.exchanges.isEmpty()) {
                     // TODO Begin Test Code
                     // TODO I might automatically create the Global Exchange (almura.global) by default (if no others are found when loading from db)
-                    final BasicExchange exchange = new BasicExchange("almura.global", Instant.now(), Store.ZERO, "Exchange",
+                    final BasicExchange exchange = new BasicExchange("almura.global", Instant.now(), Store.UNKNOWN_OWNER, "Exchange",
                         "almura.exchange.global", false);
                     this.exchanges.put("almura.global", exchange);
 

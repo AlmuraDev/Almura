@@ -168,7 +168,7 @@ public final class BasicExchange implements Exchange, Serializable {
     }
 
     public void refreshCreatorName() {
-        if (this.creator != Store.ZERO && Sponge.getPlatform().getExecutionType().isServer()) {
+        if (this.creator != Store.UNKNOWN_OWNER && Sponge.getPlatform().getExecutionType().isServer()) {
             Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.creator)
                 .ifPresent(user -> this.creatorName = user.getName());
         }
