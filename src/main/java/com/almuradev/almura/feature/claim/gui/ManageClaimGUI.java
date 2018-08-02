@@ -370,8 +370,8 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.showWarningsCheckbox.setVisible(!this.clientClaimManager.isWilderness);
         this.claimValueField.setText("$ " + TextFormatting.GREEN + dFormat.format(this.clientClaimManager.claimBlockCost * this.clientClaimManager.claimSize));
         this.claimTaxField.setText("$ " + TextFormatting.YELLOW + dFormat.format(this.clientClaimManager.claimTaxes));
-        this.econArea.setVisible(this.clientClaimManager.isWilderness);
-        this.functionsArea.setVisible(this.clientClaimManager.isWilderness);
+        this.econArea.setVisible(!this.clientClaimManager.isWilderness);
+        this.functionsArea.setVisible(!this.clientClaimManager.isWilderness);
         if (this.clientClaimManager.isWilderness) {
             this.form.setSize(300, 125);
             this.claimSizeField.setText(" -- Unlimited -- ");
