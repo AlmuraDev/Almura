@@ -16,6 +16,7 @@ import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistry
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseUtils;
+import com.almuradev.almura.shared.feature.store.Store;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import com.almuradev.generated.axs.tables.Axs;
@@ -151,7 +152,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 if (this.exchanges.isEmpty()) {
                     // TODO Begin Test Code
                     // TODO I might automatically create the Global Exchange (almura.global) by default (if no others are found when loading from db)
-                    final BasicExchange exchange = new BasicExchange("almura.global", Instant.now(), UUID.randomUUID(), "Exchange",
+                    final BasicExchange exchange = new BasicExchange("almura.global", Instant.now(), Store.ZERO, "Exchange",
                         "almura.exchange.global", false);
                     this.exchanges.put("almura.global", exchange);
 
@@ -173,6 +174,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 }
 
                 this.logger.info("Loaded {} exchange(s).", this.exchanges.size());
+
+                this.exchanges.values().forEach(axs -> ((BasicExchange) axs).refreshCreatorName());
 
                 // Re-send exchanges to everyone
                 this.network.sendToAll(new ClientboundExchangeRegistryPacket(this.exchanges.isEmpty() ? null : new HashSet<>(this.exchanges.values

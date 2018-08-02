@@ -18,6 +18,8 @@ import java.util.UUID;
 
 public interface Store extends Serializable {
 
+    UUID ZERO = new UUID(0, 0);
+
     Instant getCreated();
 
     String getId();
@@ -25,6 +27,15 @@ public interface Store extends Serializable {
     String getName();
 
     UUID getCreator();
+
+    /**
+     * Returns the creator name, if known. A server shop who is created by default would not have one.
+     *
+     * No assumption should ever be made that the name is a direct correlation to the UUID.
+     *
+     * @return The name, if known
+     */
+    Optional<String> getCreatorName();
 
     String getPermission();
 
