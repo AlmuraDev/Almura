@@ -76,6 +76,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
     private boolean growing = true;
     private boolean readyForHarvest = false;
+    private boolean canDie = false;
 
     public IngameFarmersAlmanac(ClientboundWorldPositionInformationPacket message) {
         this.message = message;
@@ -159,7 +160,11 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         if (this.growing) {
             this.cropStatusLabel.setText(TextFormatting.DARK_GREEN + "Growing...");
         } else {
-            this.cropStatusLabel.setText(TextFormatting.RED + "Dying!");
+            if (canDie) {
+                this.cropStatusLabel.setText(TextFormatting.RED + "Dying!");
+            } else {
+                this.cropStatusLabel.setText(TextFormatting.YELLOW + "Not Growing...");
+            }
         }
 
         if (this.readyForHarvest) {
@@ -330,8 +335,10 @@ public class IngameFarmersAlmanac extends SimpleScreen {
             if (!this.readyForHarvest) {
                 if (String.valueOf(canRollback(blockState)).equalsIgnoreCase("true")) {
                     this.addLineLabel((Text.of(TextColors.WHITE, "Can Die: ", TextColors.RED, "Yes")));
+                    canDie = true;
                 } else {
                     this.addLineLabel((Text.of(TextColors.WHITE, "Can Die: ", TextColors.DARK_GREEN, "No")));
+                    canDie = false;
                 }
             }
 
