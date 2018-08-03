@@ -46,27 +46,26 @@ public final class ClientboundNucleusNameChangeMappingPacketHandler implements M
 
             if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
 
-                final UUID entityUniqueId = message.uuid;
-                final Text nickname = message.text;
+                client.addScheduledTask(() -> {
+                    final UUID entityUniqueId = message.uuid;
+                    final Text nickname = message.text;
 
-                this.nickManager.put(entityUniqueId, nickname);
+                    this.nickManager.put(entityUniqueId, nickname);
 
-                final World world = client.world;
+                    final World world = client.world;
 
-                if (world != null) {
-                    final EntityPlayer player = world.getPlayerEntityByUUID(entityUniqueId);
+                    if (world != null) {
+                        final EntityPlayer player = world.getPlayerEntityByUUID(entityUniqueId);
 
-                    if (player != null) {
-                        final String newNick =
+                        if (player != null) {
+                            final String newNick =
                                 ForgeEventFactory.getPlayerDisplayName(player, TextSerializers.LEGACY_FORMATTING_CODE.serialize(nickname));
 
-                        this.nickManager.put(entityUniqueId, TextSerializers.LEGACY_FORMATTING_CODE.deserialize(newNick));
-                        this.nickManager.setForgeNickname(player, newNick);
+                            this.nickManager.put(entityUniqueId, TextSerializers.LEGACY_FORMATTING_CODE.deserialize(newNick));
+                            this.nickManager.setForgeNickname(player, newNick);
+                        }
                     }
-                }
 
-                // queue an update of the tab list display names (Vanilla may change the displayname in the PlayerListPacket)
-                client.addScheduledTask(() -> {
                     final EntityPlayerSP player = client.player;
                     if (player != null && player.connection != null) {
 
