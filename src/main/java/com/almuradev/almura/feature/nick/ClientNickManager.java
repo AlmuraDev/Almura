@@ -58,7 +58,7 @@ public final class ClientNickManager implements Witness {
         if (event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
             final Text nick = this.getNicknameFor(event.getEntity().getUniqueID());
             if (nick != null) {
-                ((IMixinEntityPlayer) nick).setDisplayName(TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick));
+                ((IMixinEntityPlayer) event.getEntity()).setDisplayName(TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick));
             }
         }
     }
