@@ -59,14 +59,18 @@ public final class ServerAnimalManager extends Witness.Impl  {
     @Listener
     public void onBreedEntityReadyToMate(final BreedEntityEvent.ReadyToMate event) {
         final Animal animal = event.getTargetEntity();
-        animal.offer(Keys.DISPLAY_NAME, Text.of(TextColors.WHITE, LegacyTexts.stripAll(((Entity) animal).getName(), SpongeTexts.COLOR_CHAR)));
+        if (animal instanceof EntityCow || animal instanceof EntityChicken || animal instanceof EntityHorse || animal instanceof EntityPig || animal instanceof EntitySheep) {
+            animal.offer(Keys.DISPLAY_NAME, Text.of(TextColors.WHITE, LegacyTexts.stripAll(((Entity) animal).getName(), SpongeTexts.COLOR_CHAR)));
+        }
     }
 
     @Listener
     public void onBreedEntityFindMate(final BreedEntityEvent.FindMate event) {
         // Change Name to Yellow while animal is looking for mate.
         event.getCause().allOf(Animal.class).forEach(a -> {
-            a.offer(Keys.DISPLAY_NAME, Text.of(TextColors.YELLOW, LegacyTexts.stripAll(((Entity) a).getName(), SpongeTexts.COLOR_CHAR)));
+            if (a instanceof EntityCow || a instanceof EntityChicken || a instanceof EntityHorse || a instanceof EntityPig || a instanceof EntitySheep) {
+                a.offer(Keys.DISPLAY_NAME, Text.of(TextColors.YELLOW, LegacyTexts.stripAll(((Entity) a).getName(), SpongeTexts.COLOR_CHAR)));
+            }
         });
     }
 
@@ -75,7 +79,9 @@ public final class ServerAnimalManager extends Witness.Impl  {
         // Change Name color AFTER BRED
         System.out.println("Fired Breed");
         event.getCause().allOf(Animal.class).forEach(a -> {
-            a.offer(Keys.DISPLAY_NAME, Text.of(TextColors.BLUE, LegacyTexts.stripAll(((Entity) a).getName(), SpongeTexts.COLOR_CHAR)));
+            if (a instanceof EntityCow || a instanceof EntityChicken || a instanceof EntityHorse || a instanceof EntityPig || a instanceof EntitySheep) {
+                a.offer(Keys.DISPLAY_NAME, Text.of(TextColors.BLUE, LegacyTexts.stripAll(((Entity) a).getName(), SpongeTexts.COLOR_CHAR)));
+            }
         });
     }
 }
