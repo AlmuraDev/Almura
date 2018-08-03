@@ -14,8 +14,10 @@ import com.almuradev.almura.feature.nick.network.ServerboundNicknameOpenRequestP
 import com.almuradev.almura.feature.nick.network.ServerboundNucleusNameChangePacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
+import com.google.common.eventbus.Subscribe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -23,6 +25,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.common.text.SpongeTexts;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +51,16 @@ public final class ClientNickManager implements Witness {
     @SubscribeEvent
     public void onClientConnectToServer(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.nicks.clear();
+    }
+
+    @SubscribeEvent
+    public void onEntityJoinWorld(final EntityJoinWorldEvent event) {
+        if (event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
+            final Text nick = this.getNicknameFor(event.getEntity().getUniqueID());
+            if (nick != null) {
+                ((IMixinEntityPlayer) nick).setDisplayName(TextSerializers.LEGACY_FORMATTING_CODE.serialize(nick));
+            }
+        }
     }
 
     public void putAll(final Map<UUID, Text> nicksById) {

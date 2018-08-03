@@ -28,7 +28,6 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-@SuppressWarnings("deprecation")
 public final class ClientboundNucleusNameMappingsPacketHandler implements MessageHandler<ClientboundNucleusNameMappingsPacket> {
 
     private final ClientNickManager nickManager;
@@ -45,32 +44,32 @@ public final class ClientboundNucleusNameMappingsPacketHandler implements Messag
             final Minecraft client = Minecraft.getMinecraft();
 
             if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
-                final Map<UUID, Text> nicknames = message.nicknames;
+                client.addScheduledTask(() -> {
 
-                this.nickManager.putAll(nicknames);
+                    final Map<UUID, Text> nicknames = message.nicknames;
 
-                final World world = client.world;
+                    this.nickManager.putAll(nicknames);
 
-                if (world != null) {
+                    final World world = client.world;
 
-                    message.nicknames.forEach((uniqueId, nickname) -> {
-                        final EntityPlayer player = world.getPlayerEntityByUUID(uniqueId);
+                    if (world != null) {
 
-                        if (player != null) {
-                            final String newNick =
+                        message.nicknames.forEach((uniqueId, nickname) -> {
+                            final EntityPlayer player = world.getPlayerEntityByUUID(uniqueId);
+
+                            if (player != null) {
+                                final String newNick =
                                     ForgeEventFactory.getPlayerDisplayName(player, TextSerializers.LEGACY_FORMATTING_CODE.serialize(nickname));
 
-                            this.nickManager.put(player.getUniqueID(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(newNick));
+                                this.nickManager.put(player.getUniqueID(), TextSerializers.LEGACY_FORMATTING_CODE.deserialize(newNick));
 
-                            this.nickManager.setForgeNickname(player, newNick);
-                        }
-                    });
-                }
+                                this.nickManager.setForgeNickname(player, newNick);
+                            }
+                        });
+                    }
 
-                client.addScheduledTask(() -> {
                     final EntityPlayerSP player = client.player;
                     if (player != null && player.connection != null) {
-
                         message.nicknames.forEach((uniqueId, nickname) -> {
                             final NetworkPlayerInfo info = player.connection.getPlayerInfo(uniqueId);
                             if (info != null) {
