@@ -40,6 +40,8 @@ public final class SerializationUtil {
     }
 
     public static byte[] toBytes(final UUID uuid) {
+        checkNotNull(uuid);
+
         final byte[] bytes = new byte[16];
         ByteBuffer.wrap(bytes)
             .order(ByteOrder.BIG_ENDIAN)
@@ -49,6 +51,8 @@ public final class SerializationUtil {
     }
 
     public static UUID uniqueIdFromBytes(final byte[] data) {
+        checkNotNull(data);
+
         final ByteBuffer buf = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN);
         return new UUID(buf.getLong(), buf.getLong());
     }
@@ -90,6 +94,8 @@ public final class SerializationUtil {
     }
 
     public static byte[] objectToBytes(final Serializable value) throws IOException {
+        checkNotNull(value);
+
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             final ObjectOutputStream out = new ObjectOutputStream(bos);
             out.writeObject(value);
@@ -100,6 +106,8 @@ public final class SerializationUtil {
 
     @SuppressWarnings("unchecked")
     public static <T> T bytesToObject(final byte[] bytes) throws IOException, ClassNotFoundException {
+        checkNotNull(bytes);
+
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         try (final ObjectInput in = new ObjectInputStream(bis)) {
             return (T) in.readObject();
@@ -113,6 +121,8 @@ public final class SerializationUtil {
     }
 
     public static BigDecimal fromBytes(final byte[] data) {
+        checkNotNull(data);
+
         final BigInteger intValue = new BigInteger(data);
         final BigDecimal decimalValue = new BigDecimal(intValue);
         return decimalValue.multiply(FRACTIONAL_OP);
