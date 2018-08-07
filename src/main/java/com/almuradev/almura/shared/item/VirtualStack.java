@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.shared.item;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,6 +23,16 @@ public interface VirtualStack {
 
     int getQuantity();
 
+    /**
+     * Determines if the stack is empty. This is different from Vanilla in that {@link VirtualStack#getItem()} doesn't get changed
+     * to {@link Items#AIR}.
+     *
+     * @return The item
+     */
+    default boolean isEmpty() {
+        return this.getQuantity() == 0;
+    }
+
     int getMetadata();
 
     /**
@@ -31,13 +42,6 @@ public interface VirtualStack {
      */
     @Nullable
     NBTTagCompound getCompound();
-
-    /**
-     * Sets the {@link NBTTagCompound}. The given compound will be copied if not null./
-     *
-     * @param compound The compound
-     */
-    void setCompound(@Nullable final NBTTagCompound compound);
 
     /**
      * Returns a copy of this virtual stack, including NBT data (if present).

@@ -8,6 +8,7 @@
 package com.almuradev.almura.shared.item;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,16 +16,17 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
 
-public final class BasicVirtualStack implements VirtualStack {
+public class BasicVirtualStack implements VirtualStack {
 
     private final Item item;
-    private final int quantity, metadata;
-    private final NBTTagCompound compound;
-
-    private final ItemStack stack;
+    private final int metadata;
+    protected int quantity;
+    protected NBTTagCompound compound;
+    protected ItemStack stack;
 
     public BasicVirtualStack(final Item item, final int quantity, final int metadata, @Nullable final NBTTagCompound compound) {
         checkNotNull(item);
+        checkState(metadata > 0 && metadata <= 15);
 
         this.item = item;
         this.quantity = quantity;
@@ -61,11 +63,6 @@ public final class BasicVirtualStack implements VirtualStack {
         }
 
         return this.compound.copy();
-    }
-
-    @Override
-    public void setCompound(@Nullable NBTTagCompound compound) {
-        throw new UnsupportedOperationException("This virtual stack does not support modifying NBT data!");
     }
 
     @Override

@@ -7,6 +7,9 @@
  */
 package com.almuradev.almura.shared.feature.store.listing.basic;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.google.common.base.MoreObjects;
@@ -38,6 +41,14 @@ public final class BasicListItem implements ListItem {
 
     public BasicListItem(final int record, final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
         final BigDecimal price, final int index) {
+        checkNotNull(created);
+        checkNotNull(seller);
+        checkNotNull(item);
+        checkNotNull(price);
+        checkState(quantity >= 0);
+        checkState(metadata > 0 && metadata <= 15);
+        checkState(index >= 0);
+
         this.record = record;
         this.created = created;
         this.seller = seller;

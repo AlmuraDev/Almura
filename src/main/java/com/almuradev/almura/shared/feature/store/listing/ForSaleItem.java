@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.shared.feature.store.listing;
 
+import com.almuradev.almura.shared.item.DynamicCompoundStack;
 import com.almuradev.almura.shared.item.VirtualStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,13 +18,11 @@ import java.util.Collection;
 
 import javax.annotation.Nullable;
 
-public interface ForSaleItem extends VirtualStack {
+public interface ForSaleItem extends DynamicCompoundStack {
 
     ListItem getListItem();
 
     Instant getCreated();
-
-    int getQuantity();
 
     Collection<Transaction> getTransactions();
 
