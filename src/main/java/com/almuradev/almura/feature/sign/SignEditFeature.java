@@ -27,7 +27,7 @@ public final class SignEditFeature implements Witness {
 
     @Listener
     public void interact(final InteractBlockEvent.Secondary.MainHand event, @Root final Player player) {
-        if (!(player instanceof EntityPlayerMP) || !player.require(Keys.IS_SNEAKING)) {
+        if (!player.require(Keys.IS_SNEAKING)) {
             return;
         }
         final BlockSnapshot snapshot = event.getTargetBlock();
@@ -35,7 +35,8 @@ public final class SignEditFeature implements Witness {
         if (type == BlockTypes.STANDING_SIGN || type == BlockTypes.WALL_SIGN) {
             snapshot.getLocation().flatMap(Location::getTileEntity).ifPresent((be) -> {
                 if (be instanceof TileEntitySign) {
-                    ((TileEntitySign) be).setEditable(true);
+                    //Todo: this needs to be handled within NetHandlerPlayClient, specifically: handleSignEditorOpen
+                    //((TileEntitySign) be).setEditable(true);
                     ((TileEntitySign) be).setPlayer((EntityPlayer)player);
                     ((EntityPlayerMP) player).connection.sendPacket(new SPacketSignEditorOpen(VecHelper.toBlockPos(snapshot.getPosition())));
                 }
