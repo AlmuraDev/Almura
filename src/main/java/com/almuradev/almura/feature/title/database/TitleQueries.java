@@ -13,7 +13,7 @@ import static com.almuradev.generated.title.Tables.TITLE_SELECT_HISTORY;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
-import com.almuradev.almura.shared.database.DatabaseUtils;
+import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.generated.title.tables.records.TitleRecord;
 import com.almuradev.generated.title.tables.records.TitleSelectHistoryRecord;
 import com.almuradev.generated.title.tables.records.TitleSelectRecord;
@@ -43,7 +43,7 @@ public final class TitleQueries {
         checkNotNull(permission);
         checkNotNull(content);
 
-        final byte[] creatorData = DatabaseUtils.toBytes(creator);
+        final byte[] creatorData = SerializationUtil.toBytes(creator);
 
         return context -> context
             .insertInto(TITLE, TITLE.CREATOR, TITLE.ID, TITLE.PERMISSION, TITLE.CONTENT, TITLE.IS_HIDDEN)
@@ -77,7 +77,7 @@ public final class TitleQueries {
     public static DatabaseQuery<SelectConditionStep<TitleSelectRecord>> createFetchSelectedTitleFor(final UUID holder) {
         checkNotNull(holder);
 
-        final byte[] holderData = DatabaseUtils.toBytes(holder);
+        final byte[] holderData = SerializationUtil.toBytes(holder);
 
         return context -> context
             .selectFrom(TITLE_SELECT)
@@ -89,7 +89,7 @@ public final class TitleQueries {
         checkNotNull(holder);
         checkNotNull(id);
 
-        final byte[] holderData = DatabaseUtils.toBytes(holder);
+        final byte[] holderData = SerializationUtil.toBytes(holder);
 
         return context -> context
             .insertInto(TITLE_SELECT, TITLE_SELECT.TITLE, TITLE_SELECT.HOLDER)
@@ -99,7 +99,7 @@ public final class TitleQueries {
     public static DatabaseQuery<DeleteConditionStep<TitleSelectRecord>> createDeleteSelectedTitleFor(final UUID holder) {
         checkNotNull(holder);
 
-        final byte[] holderData = DatabaseUtils.toBytes(holder);
+        final byte[] holderData = SerializationUtil.toBytes(holder);
 
         return context -> context.deleteFrom(TITLE_SELECT).where(TITLE_SELECT.HOLDER.eq(holderData));
     }
@@ -113,7 +113,7 @@ public final class TitleQueries {
         checkNotNull(holder);
         checkNotNull(oldId);
 
-        final byte[] holderData = DatabaseUtils.toBytes(holder);
+        final byte[] holderData = SerializationUtil.toBytes(holder);
 
         return context -> context
             .insertInto(TITLE_SELECT_HISTORY, TITLE_SELECT_HISTORY.OLD_TITLE, TITLE_SELECT_HISTORY.HOLDER)

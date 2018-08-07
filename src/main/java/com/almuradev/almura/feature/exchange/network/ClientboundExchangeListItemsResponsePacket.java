@@ -9,8 +9,9 @@ package com.almuradev.almura.feature.exchange.network;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
+import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -48,15 +49,21 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
     public void readFrom(final ChannelBuf buf) {
         this.id = buf.readString();
         final int count = buf.readVarInt();
+
         if (count > 0) {
             this.items = new ArrayList<>();
             for (int i = 0; i < count; i++) {
                 final int record = buf.readInteger();
-                final ResourceLocation location = new ResourceLocation(buf.readString(), buf.readString());
+                final ResourceLocation location = SerializationUtil.fromString(buf.readString());
+                if (location == null) {
+                    // TODO Malformed ResourceLocation
+                    continue;
+                }
+
                 final Item item = ForgeRegistries.ITEMS.getValue(location);
 
                 if (item == null) {
-                    // TODO
+                    // TODO Unknown item
                     continue;
                 }
 
@@ -65,14 +72,15 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
 
                 final Instant created;
                 try {
-                    created = PacketUtil.bytesToObject(buf.readBytes(buf.readVarInt()));
+                    created = SerializationUtil.bytesToObject(buf.readBytes(buf.readVarInt()));
                 } catch (IOException | ClassNotFoundException e) {
-                    throw new RuntimeException(e);
+                    // TODO Bad created date
+                    continue;
                 }
 
                 final UUID seller = buf.readUniqueId();
 
-                final BigDecimal price = PacketUtil.fromBytes(buf.readBytes(buf.readVarInt()));
+                final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readVarInt()));
                 final int index = buf.readInteger();
 
                 items.add(new BasicListItem(record, created, seller, item, quantity, metadata, price, index));
@@ -88,37 +96,39 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
         buf.writeVarInt(this.items == null ? 0 : this.items.size());
 
         if (this.items != null) {
-            this.items.forEach(item -> {
-                buf.writeInteger(item.getRecord());
-                
+            for (final ListItem item : this.items) {
                 final ResourceLocation location = item.getItem().getRegistryName();
+                if (location == null) {
+                    // TODO Bad item, no location
+                    continue;
+                }
 
-                checkNotNull(location);
+                final byte[] createdData;
+                try {
+                    createdData = SerializationUtil.objectToBytes(item.getCreated());
+                } catch (IOException e) {
+                    // TODO Malformed created date
+                    continue;
+                }
 
-                buf.writeString(location.getResourceDomain());
-                buf.writeString(location.getResourcePath());
+                buf.writeInteger(item.getRecord());
+
+                buf.writeString(SerializationUtil.toString(location));
 
                 buf.writeInteger(item.getQuantity());
                 buf.writeInteger(item.getMetadata());
 
-                final byte[] createdData;
-                try {
-                    createdData = PacketUtil.objectToBytes(item.getCreated());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
                 buf.writeVarInt(createdData.length);
                 buf.writeBytes(createdData);
 
                 buf.writeUniqueId(item.getSeller());
 
-                final byte[] priceData = PacketUtil.toBytes(item.getPrice());
+                final byte[] priceData = SerializationUtil.toBytes(item.getPrice());
                 buf.writeVarInt(priceData.length);
                 buf.writeBytes(priceData);
 
                 buf.writeInteger(item.getIndex());
-
-            });
+            }
         }
     }
 }

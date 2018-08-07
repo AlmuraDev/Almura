@@ -19,7 +19,7 @@ import com.almuradev.almura.feature.exchange.network.InventoryAction;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
-import com.almuradev.almura.shared.database.DatabaseUtils;
+import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.almura.shared.feature.store.Store;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
@@ -152,7 +152,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 for (Record record : result) {
                     final String id = record.getValue(Axs.AXS.ID);
                     final Timestamp created = record.getValue(Axs.AXS.CREATED);
-                    final UUID creator = DatabaseUtils.uniqueIdFromBytes(record.getValue(Axs.AXS.CREATOR));
+                    final UUID creator = SerializationUtil.uniqueIdFromBytes(record.getValue(Axs.AXS.CREATOR));
                     final String name = record.getValue(Axs.AXS.NAME);
                     final String permission = record.getValue(Axs.AXS.PERMISSION);
                     final boolean isHidden = record.getValue(Axs.AXS.IS_HIDDEN);
@@ -442,7 +442,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .fetchMany();
 
             results.forEach(result -> result.forEach(record -> {
-                final ResourceLocation location = DatabaseUtils.fromString(record.getValue(AxsItem.AXS_ITEM.ITEM_TYPE));
+                final ResourceLocation location = SerializationUtil.fromString(record.getValue(AxsItem.AXS_ITEM.ITEM_TYPE));
 
                 if (location == null) {
                     // TODO This is a malformed resource location
@@ -456,7 +456,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                         final Integer recNo = record.getValue(AxsItem.AXS_ITEM.REC_NO);
                         final Timestamp created = record.getValue(AxsItem.AXS_ITEM.CREATED);
-                        final UUID seller = DatabaseUtils.uniqueIdFromBytes(record.getValue(AxsItem.AXS_ITEM.SELLER));
+                        final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsItem.AXS_ITEM.SELLER));
                         final Integer quantity = record.getValue(AxsItem.AXS_ITEM.QUANTITY);
                         final Integer metadata = record.getValue(AxsItem.AXS_ITEM.METADATA);
                         final BigDecimal price = record.getValue(AxsItem.AXS_ITEM.PRICE);

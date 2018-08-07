@@ -7,14 +7,14 @@
  */
 package com.almuradev.almura.feature.exchange.network;
 
-import net.minecraft.item.ItemStack;
+import com.almuradev.almura.shared.item.VirtualStack;
 
 public final class InventoryAction {
 
     private final Direction direction;
-    private final ItemStack stack;
+    private final VirtualStack stack;
 
-    public InventoryAction(final Direction direction, final ItemStack stack) {
+    public InventoryAction(final Direction direction, final VirtualStack stack) {
         this.direction = direction;
         this.stack = stack;
     }
@@ -23,7 +23,7 @@ public final class InventoryAction {
         return this.direction;
     }
 
-    public ItemStack getStack() {
+    public VirtualStack getStack() {
         return this.stack;
     }
 

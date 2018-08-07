@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.exchange.network;
 
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.shared.util.PacketUtil;
+import com.almuradev.almura.shared.util.SerializationUtil;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
@@ -38,7 +39,7 @@ public final class ClientboundExchangeRegistryPacket implements Message {
 
             for (int i = 0; i < count; i++) {
                 try {
-                    this.exchanges.add(PacketUtil.bytesToObject(buf.readBytes(buf.readVarInt())));
+                    this.exchanges.add(SerializationUtil.bytesToObject(buf.readBytes(buf.readVarInt())));
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -53,7 +54,7 @@ public final class ClientboundExchangeRegistryPacket implements Message {
         if (this.exchanges != null) {
             for (Exchange exchange : this.exchanges) {
                 try {
-                    final byte[] data = PacketUtil.objectToBytes(exchange);
+                    final byte[] data = SerializationUtil.objectToBytes(exchange);
                     buf.writeVarInt(data.length);
                     buf.writeBytes(data);
                 } catch (IOException e) {

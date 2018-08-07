@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
-import com.almuradev.almura.shared.database.DatabaseUtils;
+import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.generated.axs.tables.records.AxsItemDataRecord;
 import com.almuradev.generated.axs.tables.records.AxsItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
@@ -33,7 +33,6 @@ import org.jooq.InsertValuesStep8;
 import org.jooq.Record;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectJoinStep;
-import org.jooq.SelectLimitPercentStep;
 import org.jooq.SelectWhereStep;
 import org.jooq.UpdateConditionStep;
 
@@ -63,7 +62,7 @@ public final class ExchangeQueries {
         checkNotNull(name);
         checkNotNull(permission);
 
-        final byte[] creatorData = DatabaseUtils.toBytes(creator);
+        final byte[] creatorData = SerializationUtil.toBytes(creator);
 
         return context -> context
             .insertInto(AXS, AXS.CREATOR, AXS.ID, AXS.NAME, AXS.PERMISSION, AXS.IS_HIDDEN)
@@ -114,8 +113,8 @@ public final class ExchangeQueries {
         checkNotNull(price);
         checkState(index >= 0);
 
-        final String itemId = DatabaseUtils.toString(item.getRegistryName());
-        final byte[] sellerData = DatabaseUtils.toBytes(seller);
+        final String itemId = SerializationUtil.toString(item.getRegistryName());
+        final byte[] sellerData = SerializationUtil.toBytes(seller);
 
         return context -> context
             .insertInto(AXS_ITEM, AXS_ITEM.CREATED, AXS_ITEM.AXS, AXS_ITEM.SELLER, AXS_ITEM.ITEM_TYPE, AXS_ITEM.QUANTITY, AXS_ITEM.METADATA,
@@ -140,7 +139,7 @@ public final class ExchangeQueries {
         checkState(record >= 0);
         checkNotNull(compound);
 
-        final byte[] compoundData = DatabaseUtils.toBytes(compound);
+        final byte[] compoundData = SerializationUtil.toBytes(compound);
         return context -> context
             .insertInto(AXS_ITEM_DATA, AXS_ITEM_DATA.AXS_ITEM, AXS_ITEM_DATA.DATA)
             .values(record, compoundData);
@@ -193,7 +192,7 @@ public final class ExchangeQueries {
         checkNotNull(buyer);
         checkState(quantity > 0);
 
-        final byte[] buyerData = DatabaseUtils.toBytes(buyer);
+        final byte[] buyerData = SerializationUtil.toBytes(buyer);
 
         return context -> context
             .insertInto(AXS_TRANSACTION, AXS_TRANSACTION.CREATED, AXS_TRANSACTION.LIST_ITEM, AXS_TRANSACTION.BUYER, AXS_TRANSACTION.QUANTITY)
