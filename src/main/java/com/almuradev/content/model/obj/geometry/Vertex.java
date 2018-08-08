@@ -7,14 +7,17 @@
  */
 package com.almuradev.content.model.obj.geometry;
 
-import com.flowpowered.math.vector.Vector4f;
 import com.google.common.base.MoreObjects;
 
-public class Vertex extends Vector4f {
+public final class Vertex {
     private int index;
+    private final float x, y, z, w;
 
     public Vertex(final float x, final float y, final float z, final float w) {
-        super(x, y, z, w);
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
     }
 
     public int getIndex() {
@@ -29,13 +32,30 @@ public class Vertex extends Vector4f {
         this.index = index;
     }
 
+    public float getX() {
+        return this.x;
+    }
+
+    public float getY() {
+        return this.y;
+    }
+
+    public float getZ() {
+        return this.z;
+    }
+
+    public float getW() {
+        return this.w;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("index", this.index)
-                .add("x", this.getX())
-                .add("y", this.getY())
-                .add("z", this.getZ())
+                .add("x", this.x)
+                .add("y", this.y)
+                .add("z", this.z)
+                .add("w", this.w)
                 .toString();
     }
 }
