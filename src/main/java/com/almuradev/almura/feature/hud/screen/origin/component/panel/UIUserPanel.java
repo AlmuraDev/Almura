@@ -54,6 +54,8 @@ public class UIUserPanel extends AbstractPanel {
     private final DecimalFormat df = new DecimalFormat("0.##");
     @Nullable private UIComponent lastVisibleComponent;
 
+    private int update = 60;
+
     public UIUserPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
 
@@ -153,22 +155,25 @@ public class UIUserPanel extends AbstractPanel {
         this.height = this.baseHeight;
         this.lastVisibleComponent = null;
 
-        // Update
-        this.updateUserImage();
-        this.updateDisplayName();
-        this.updateCurrency();
-        this.updateLevel();
+        if (--this.update == 0) {
+            // Update
+            this.updateUserImage();
+            this.updateDisplayName();
+            this.updateCurrency();
+            this.updateLevel();
 
-        // Update property bars, call order defines visual layout
-        this.updateExperience();
-        this.updateHealth();
-        this.updateArmor();
-        this.updateHunger();
+            // Update property bars, call order defines visual layout
+            this.updateExperience();
+            this.updateHealth();
+            this.updateArmor();
+            this.updateHunger();
 
-        // Update temporary property bars, call order defines visual layout
-        this.updateStamina();
-        this.updateAir();
-        this.updateMountHealth();
+            // Update temporary property bars, call order defines visual layout
+            this.updateStamina();
+            this.updateAir();
+            this.updateMountHealth();
+            this.update = 60;
+        }
     }
 
     private void updateDisplayName() {
