@@ -7,21 +7,21 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui.component;
 
-import com.almuradev.almura.feature.exchange.listing.MockOffer;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.event.ComponentEvent;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackComparators;
 import org.spongepowered.api.text.Text;
 
@@ -33,15 +33,15 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
+public class UIExchangeOfferContainer extends UIDualListContainer<BasicVanillaStack> {
 
     @Nullable private UIButton buttonOne, buttonStack, buttonItem, buttonAll, buttonDirection;
-    private long leftItemLimit = -1, rightItemLimit = -1;
+    private int leftItemLimit = -1, rightItemLimit = -1;
     private ContainerSide targetSide = ContainerSide.RIGHT;
 
     public UIExchangeOfferContainer(MalisisGui gui, int width, int height, Text leftTitle, Text rightTitle,
-        BiFunction<MalisisGui, MockOffer, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
-        BiFunction<MalisisGui, MockOffer, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory) {
+        BiFunction<MalisisGui, BasicVanillaStack, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
+        BiFunction<MalisisGui, BasicVanillaStack, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory) {
         super(gui, width, height, leftTitle, rightTitle, leftComponentFactory, rightComponentFactory);
 
         this.leftDynamicList.register(this);
@@ -109,8 +109,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
     }
 
     @Override
-    protected void updateControls(@Nullable final MockOffer selectedValue, final ContainerSide containerSide) {
-
+    protected void updateControls(@Nullable final BasicVanillaStack selectedValue, final ContainerSide containerSide) {
         this.buttonDirection.setText(this.targetSide == ContainerSide.LEFT ? "<-" : "->");
         this.buttonDirection.setTooltip(String.format("Send items to the %s", this.targetSide == ContainerSide.LEFT ? "left" : "right"));
 
@@ -121,7 +120,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
         super.updateControls(selectedValue, containerSide);
     }
 
-    public UIExchangeOfferContainer setItemLimit(long limit, ContainerSide target) {
+    public UIExchangeOfferContainer setItemLimit(int limit, ContainerSide target) {
         if (target == ContainerSide.LEFT) {
             this.leftItemLimit = limit;
         } else {
@@ -131,27 +130,29 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
         return this;
     }
 
-    protected void transfer(final ContainerSide target, @Nullable final MockOffer offer, final TransferType type) {
-        final UIDynamicList<MockOffer> sourceList = this.getOpposingListFromSide(target);
+    protected void transfer(final ContainerSide target, @Nullable final BasicVanillaStack stack, final TransferType type) {
+        final UIDynamicList<BasicVanillaStack> sourceList = this.getOpposingListFromSide(target);
 
         switch (type) {
             case SINGLE:
-                this.transferQuantity(target, offer, 1);
+                this.transferQuantity(target, stack, 1);
                 break;
             case STACK:
-                if (offer == null) {
+                if (stack == null) {
                     break;
                 }
-                this.transferQuantity(target, offer, offer.quantity);
+                this.transferQuantity(target, stack, stack.getQuantity());
                 break;
             case ITEM:
-                if (offer == null) {
+                if (stack == null) {
                     break;
                 }
-                final List<MockOffer> toCopy = sourceList.getItems().stream()
-                    .filter(o -> ItemStackComparators.IGNORE_SIZE.compare(offer.item, o.item) == 0)
+                final List<BasicVanillaStack> matchingItems = sourceList.getItems().stream()
+                    .filter(i -> i != null && ItemStackComparators.IGNORE_SIZE.compare((ItemStack) (Object) stack.asRealStack(),
+                            (ItemStack) (Object) i.asRealStack()) == 0)
                     .collect(Collectors.toList());
-                toCopy.forEach(o -> this.transfer(target, o, TransferType.STACK));
+
+                matchingItems.forEach(i -> this.transfer(target, i, TransferType.STACK));
                 break;
             case ALL:
                 this.transferAll(target);
@@ -159,44 +160,48 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
         }
     }
 
-    private void transferQuantity(final ContainerSide target, @Nullable final MockOffer offer, final long quantity) {
-        final UIDynamicList<MockOffer> targetList = this.getListFromSide(target);
-        final UIDynamicList<MockOffer> sourceList = this.getOpposingListFromSide(target);
-        final long targetSideLimit = this.getLimitFromSide(target);
+    private void transferQuantity(final ContainerSide target, @Nullable final BasicVanillaStack stack, final int quantity) {
+        final UIDynamicList<BasicVanillaStack> targetList = this.getListFromSide(target);
+        final UIDynamicList<BasicVanillaStack> sourceList = this.getOpposingListFromSide(target);
+        final int targetSideLimit = this.getLimitFromSide(target);
 
-        if (offer == null
-            || targetList.getItems().stream().noneMatch(o -> ItemStackComparators.IGNORE_SIZE.compare(o.item, offer.item) == 0)
+        if (stack == null
+            || targetList.getItems().stream()
+                .noneMatch(s ->
+                        ItemStackComparators.IGNORE_SIZE.compare((ItemStack) (Object) s.asRealStack(), (ItemStack) (Object) stack.asRealStack()) == 0)
             && targetSideLimit > -1
             && targetList.getItems().size() >= targetSideLimit) {
             return;
         }
 
-        final long targetStackMaxQuantity = target == ContainerSide.LEFT ? offer.item.getMaxStackQuantity() : Long.MAX_VALUE;
+        final int targetStackMaxQuantity = target == ContainerSide.LEFT ? ((ItemStack) (Object) stack.asRealStack()).getMaxStackQuantity() : Integer.MAX_VALUE;
 
-        final MockOffer targetOffer = targetList.getItems().stream()
-            .filter(o -> ItemStackComparators.IGNORE_SIZE.compare(o.item, offer.item) == 0 && o.quantity < targetStackMaxQuantity)
+        final BasicVanillaStack targetStack = targetList.getItems().stream()
+            .filter(s -> ItemStackComparators.IGNORE_SIZE.compare(
+                    (ItemStack) (Object) s.asRealStack(),
+                    (ItemStack) (Object) stack.asRealStack()) == 0 && s.getQuantity() < targetStackMaxQuantity)
             .findFirst()
             .orElseGet(() -> {
-                final MockOffer newOffer = new MockOffer(offer.slotId, offer.item.copy(), Minecraft.getMinecraft().player);
-                newOffer.quantity = 0;
-                targetList.addItem(newOffer);
-                return newOffer;
+                final BasicVanillaStack newStack = (BasicVanillaStack) stack.copy();
+                newStack.setQuantity(0);
+                targetList.addItem(newStack);
+                return newStack;
             });
 
-        final long remainder;
-        remainder = this.addQuantity(targetList, offer.slotId, targetOffer, quantity, targetStackMaxQuantity);
-        this.removeQuantity(sourceList, offer.slotId, offer, quantity - remainder);
+        final int remainder;
+        remainder = this.addQuantity(targetList, targetStack, quantity, targetStackMaxQuantity);
+        this.removeQuantity(sourceList, stack, quantity - remainder);
         if (remainder > 0) {
-            this.transferQuantity(target, offer, remainder);
+            this.transferQuantity(target, stack, remainder);
         }
     }
 
     private void transferAll(final ContainerSide target) {
-        final List<MockOffer> toCopy = new ArrayList<>(this.getOpposingListFromSide(target).getItems());
-        toCopy.forEach(o -> this.transferQuantity(target, o, o.quantity));
+        final List<BasicVanillaStack> toCopy = new ArrayList<>(this.getOpposingListFromSide(target).getItems());
+        toCopy.forEach(s -> this.transferQuantity(target, s, s.getQuantity()));
     }
 
-    private long getLimitFromSide(final ContainerSide side) {
+    private int getLimitFromSide(final ContainerSide side) {
         if (side == ContainerSide.LEFT) {
             return this.leftItemLimit;
         }
@@ -204,48 +209,51 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
         return this.rightItemLimit;
     }
 
-    private long addQuantity(final UIDynamicList<MockOffer> list, final int originatingSlotId, final MockOffer offer, final long quantity,
-        final long max) {
-        final long initialQuantity = offer.quantity;
-        final long rawTotalQuantity = initialQuantity + quantity;
-        final long newQuantity = Math.min(rawTotalQuantity, max);
-        final long remainder = rawTotalQuantity - newQuantity;
+    private int addQuantity(final UIDynamicList<BasicVanillaStack> list, final BasicVanillaStack stack, final int quantity, final int max) {
+        final int initialQuantity = stack.getQuantity();
+        final int rawTotalQuantity = initialQuantity + quantity;
+        final int newQuantity = Math.min(rawTotalQuantity, max);
+        final int remainder = rawTotalQuantity - newQuantity;
 
-        offer.quantity = newQuantity;
+        stack.setQuantity(newQuantity);
 
-        this.fireEvent(new TransactionEvent<>(this, getTargetFromList(list), originatingSlotId, offer, quantity - remainder));
+        this.fireEvent(new TransactionEvent<>(this, getTargetFromList(list), stack, quantity - remainder));
         this.fireEvent(new UIDynamicList.ItemsChangedEvent<>(list));
 
         return remainder;
     }
 
-    private long removeQuantity(final UIDynamicList<MockOffer> list, final int originatingSlotId, final MockOffer offer, final long quantity) {
-        final long newQuantity = offer.quantity - quantity;
-        offer.quantity = newQuantity;
+    private int removeQuantity(final UIDynamicList<BasicVanillaStack> list, final BasicVanillaStack stack, final int quantity) {
+        final int newQuantity = stack.getQuantity() - quantity;
+        stack.setQuantity(newQuantity);
 
         if (newQuantity <= 0) {
-            list.removeItem(offer);
+            list.removeItem(stack);
         }
 
-        this.fireEvent(new TransactionEvent<>(this, getTargetFromList(list), originatingSlotId, offer, -quantity));
+        this.fireEvent(new TransactionEvent<>(this, getTargetFromList(list), stack, -quantity));
         this.fireEvent(new UIDynamicList.ItemsChangedEvent<>(list));
 
         return newQuantity < 0 ? Math.abs(newQuantity) : 0;
     }
 
     private void changeDirections() {
-        // Invert the target side
+        // Invert the target targetSide
         this.targetSide = this.targetSide == ContainerSide.LEFT ? ContainerSide.RIGHT : ContainerSide.LEFT;
         this.updateControls(null, this.targetSide);
     }
 
     @Subscribe
-    private void onItemSelect(final UIDynamicList.SelectEvent<MockOffer> event) {
-        final boolean isValidTarget = this.getTargetFromList(event.getComponent()) != this.targetSide;
+    private void onItemSelect(final UIDynamicList.SelectEvent<BasicVanillaStack> event) {
+        final ContainerSide targetSide = this.getTargetFromList(event.getComponent());
+        final boolean isValidTarget = targetSide != this.targetSide;
+        final boolean isValidSource = event.getNewValue() != null;
 
-        this.buttonOne.setEnabled(isValidTarget);
-        this.buttonStack.setEnabled(isValidTarget);
-        this.buttonItem.setEnabled(isValidTarget);
+        this.updateControls(event.getNewValue(), targetSide);
+
+        this.buttonOne.setEnabled(isValidTarget && isValidSource);
+        this.buttonStack.setEnabled(isValidTarget && isValidSource);
+        this.buttonItem.setEnabled(isValidTarget && isValidSource);
         this.buttonAll.setEnabled(isValidTarget);
     }
 
@@ -258,17 +266,14 @@ public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
 
     public static class TransactionEvent<T> extends ComponentEvent<UIDualListContainer<T>> {
 
-        public final ContainerSide side;
-        public final MockOffer offer;
-        public final int originatingSlotId;
-        public final long quantity;
+        public final ContainerSide targetSide;
+        public final BasicVanillaStack stack;
+        public final int quantity;
 
-        TransactionEvent(final UIDualListContainer<T> component, final ContainerSide side, final int originatingSlotId, final MockOffer offer,
-            final long quantity) {
+        TransactionEvent(final UIDualListContainer<T> component, final ContainerSide targetSide, final BasicVanillaStack stack, final int quantity) {
             super(component);
-            this.side = side;
-            this.originatingSlotId = originatingSlotId;
-            this.offer = offer;
+            this.targetSide = targetSide;
+            this.stack = stack;
             this.quantity = quantity;
         }
     }

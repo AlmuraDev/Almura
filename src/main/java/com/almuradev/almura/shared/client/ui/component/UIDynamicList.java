@@ -15,6 +15,7 @@ import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -392,7 +393,8 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
             if (this.parent instanceof UIDynamicList) {
                 final UIDynamicList parent = (UIDynamicList) this.parent;
 
-                final int width = parent.getWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
+                final int width = parent.getRawWidth() - parent.getLeftPadding() - parent.getRightPadding()
+                        - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
 
                 this.setSize(width, getHeight());
 
@@ -438,7 +440,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
         @Override
         public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            renderer.drawText(item.toString(), 2, 3, 0);
+            renderer.drawText(TextFormatting.WHITE + item.toString(), 2, 3, 0);
         }
     }
 

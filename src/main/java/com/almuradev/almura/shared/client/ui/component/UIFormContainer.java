@@ -21,6 +21,8 @@ import net.malisis.core.util.MouseButton;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Collection;
+
 @SideOnly(Side.CLIENT)
 public class UIFormContainer extends UIBackgroundContainer {
     private UISimpleButton closeButton;
@@ -129,5 +131,9 @@ public class UIFormContainer extends UIBackgroundContainer {
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
         this.closeButton.setFontOptions(this.closeButton.isInsideBounds(mouseX, mouseY) ? FontColors.WHITE_FO : FontColors.GRAY_FO);
+    }
+
+    public Collection<UIComponent<?>> getComponents() {
+        return this.components;
     }
 }

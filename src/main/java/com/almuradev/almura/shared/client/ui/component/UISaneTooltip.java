@@ -34,10 +34,10 @@ public class UISaneTooltip extends UITooltip {
         final int realX = mouseX + this.getOffsetX();
         final int realY = mouseY + this.getOffsetY();
 
-        // Handle drawing off the right side of the screen
+        // Handle drawing off the right targetSide of the screen
         if (realX + this.getWidth() > getGui().width) {
             mouseX = getGui().width - this.getWidth();
-        } else if (realX < 0) { // Handle drawing off the left side of the screen
+        } else if (realX < 0) { // Handle drawing off the left targetSide of the screen
             mouseX = 0;
         }
 

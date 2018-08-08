@@ -10,6 +10,7 @@ package com.almuradev.almura.shared.item;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.google.common.base.MoreObjects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,7 +27,7 @@ public class BasicVirtualStack implements VirtualStack {
 
     public BasicVirtualStack(final Item item, final int quantity, final int metadata, @Nullable final NBTTagCompound compound) {
         checkNotNull(item);
-        checkState(metadata > 0 && metadata <= 15);
+        checkState(metadata >= 0 && metadata <= 15);
 
         this.item = item;
         this.quantity = quantity;
@@ -72,6 +73,21 @@ public class BasicVirtualStack implements VirtualStack {
 
     @Override
     public ItemStack asRealStack() {
+        if (this.stack == null) {
+            this.stack = new ItemStack(this.item, !this.isEmpty() ? this.quantity : 1, this.metadata);
+            this.stack.setTagCompound(this.compound);
+        }
+
         return this.stack;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("item", this.item)
+                .add("quantity", this.quantity)
+                .add("metadata", this.metadata)
+                .add("compound", this.compound)
+                .toString();
     }
 }

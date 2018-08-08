@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.exchange.client.gui;
 
 import com.almuradev.almura.feature.exchange.Exchange;
-import com.almuradev.almura.feature.exchange.listing.MockOffer;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
@@ -22,8 +21,9 @@ import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.util.MathUtil;
-import com.google.common.collect.Lists;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
@@ -40,8 +40,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.slf4j.Logger;
-import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
@@ -52,16 +50,10 @@ import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -70,24 +62,20 @@ import javax.inject.Inject;
 @SideOnly(Side.CLIENT)
 public final class ExchangeScreen extends SimpleScreen {
 
-    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
-    private static final DecimalFormat defaultDecimalFormat = new DecimalFormat("#,##0.##");
-    private static final double MILLION = 1000000.0;
+    public static final DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("#,##0.##");
+    public static final double MILLION = 1000000.0;
     private static final double BILLION = 1000000000.0;
-    private static final double TRILLION = 1000000000000.0;
     private static final int minScreenWidth = 600;
     private static final int minScreenHeight = 370;
     private static final int innerPadding = 2;
     private final Exchange exchange;
 
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
-        buttonList, buttonSetPrice;
+        buttonList;
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
-    public UIDynamicList<MockOffer> resultsList, sellingList;
-    private final List<MockOffer> allOffers = new ArrayList<>();
-    private final List<MockOffer> playerOffers = new ArrayList<>();
-    private final List<MockOffer> currentResults = new ArrayList<>();
+    public UIDynamicList<ListItem> forSaleList, searchResultsList;
+    private final List<ListItem> currentResults = new ArrayList<>();
     private int currentPage;
     private int pages;
 
@@ -96,25 +84,6 @@ public final class ExchangeScreen extends SimpleScreen {
 
     public ExchangeScreen(final Exchange exchange) {
         this.exchange = exchange;
-
-        // ADD MOCK DATA
-        final List<List<MockOffer>> testList = Lists.newArrayList(this.allOffers, this.playerOffers);
-
-        for (List<MockOffer> list : testList) {
-            list.add(createMockOffer(ItemTypes.ACACIA_BOAT));
-            list.add(createMockOffer(ItemTypes.ACACIA_BOAT));
-            list.add(createMockOffer(ItemTypes.ACACIA_BOAT));
-            list.add(createMockOffer(ItemTypes.SNOWBALL));
-            list.add(createMockOffer(ItemTypes.WATER_BUCKET));
-            list.add(createMockOffer(ItemTypes.GOLDEN_AXE));
-            list.add(createMockOffer(ItemTypes.STONE));
-            list.add(createMockOffer(ItemTypes.PUMPKIN));
-            list.add(createMockOffer(ItemTypes.END_ROD));
-            list.add(createMockOffer(ItemTypes.APPLE));
-            list.add(createMockOffer(ItemTypes.BAKED_POTATO));
-            list.add(createMockOffer(ItemTypes.CARROT));
-
-        }
     }
 
     @Override
@@ -179,13 +148,13 @@ public final class ExchangeScreen extends SimpleScreen {
         comboBoxSortType.select(SortType.PRICE_ASC);
         comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchField.getY(), Anchor.RIGHT | Anchor.TOP);
 
-        this.resultsList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 250);
-        this.resultsList.setPosition(innerPadding, getPaddedY(sellerSearchField, 8));
-        this.resultsList.setItemComponentFactory((g, e) -> new ResultItemComponent(this, e));
-        this.resultsList.setItemComponentSpacing(1);
-        this.resultsList.setCanDeselect(true);
-        this.resultsList.setCanInternalClick(true);
-        this.resultsList.setSelectConsumer((i) -> this.updateControls());
+        this.searchResultsList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 250);
+        this.searchResultsList.setPosition(innerPadding, getPaddedY(sellerSearchField, 8));
+        this.searchResultsList.setItemComponentFactory((g, e) -> new ResultItemComponent(this, e));
+        this.searchResultsList.setItemComponentSpacing(1);
+        this.searchResultsList.setCanDeselect(true);
+        this.searchResultsList.setCanInternalClick(true);
+        this.searchResultsList.setSelectConsumer((i) -> this.updateControls());
 
         // Search button
         final UIButton buttonSearch = new UIButtonBuilder(this)
@@ -201,8 +170,9 @@ public final class ExchangeScreen extends SimpleScreen {
 
                 logger.info(String.format("Searching for criteria: itemname=%s, playerName=%s", itemName, username));
 
-                this.currentResults.addAll(this.getResults(itemName, username, comboBoxSortType.getSelectedValue()));
-                this.pages = (Math.max(this.currentResults.size() - 1, 1) / 10) + 1;
+                final List<ForSaleItem> items =
+                        this.exchange.getForSaleItems().values().stream().flatMap(List::stream).collect(Collectors.toList());
+                this.pages = (Math.max(items.size() - 1, 1) / 10) + 1;
 
                 this.setPage(1);
 
@@ -259,7 +229,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Add Elements of Search Area
         searchArea.add(itemSearchLabel, this.itemSearchField, sellerSearchLabel, this.sellerSearchField, buttonSearch, comboBoxSortType,
-            this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.resultsList, this.labelSearchPage);
+            this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.searchResultsList, this.labelSearchPage);
 
         // Economy Pane
         final UIFormContainer economyActionArea = new UIFormContainer(this, 295, 20, "");
@@ -308,13 +278,12 @@ public final class ExchangeScreen extends SimpleScreen {
         inventoryArea.setBackgroundAlpha(215);
         inventoryArea.setPadding(3, 3);
 
-        this.sellingList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 315);
-        this.sellingList.setPosition(innerPadding, innerPadding);
-        this.sellingList.setItemComponentFactory(ListingItemComponent::new);
-        this.sellingList.setItems(this.playerOffers);
-        this.sellingList.setItemComponentSpacing(1);
-        this.sellingList.setCanDeselect(true);
-        this.sellingList.setSelectConsumer((i) -> this.updateControls());
+        this.forSaleList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 315);
+        this.forSaleList.setPosition(innerPadding, innerPadding);
+        this.forSaleList.setItemComponentFactory(ListingItemComponent::new);
+        this.forSaleList.setItemComponentSpacing(1);
+        this.forSaleList.setCanDeselect(true);
+        this.forSaleList.setSelectConsumer((i) -> this.updateControls());
 
         // Bottom Economy Pane - buyStack button
         this.buttonList = new UIButtonBuilder(this)
@@ -324,22 +293,14 @@ public final class ExchangeScreen extends SimpleScreen {
             .text("List")
             .enabled(false)
             .onClick(() -> {
-                final MockOffer offer = this.sellingList.getSelectedItem();
+                final ListItem offer = this.forSaleList.getSelectedItem();
                 if (offer != null) {
-                    offer.listed = !offer.listed;
+                    // TODO: Grinch: Handle list/delist
+                    // TODO: Grinch: Prompt for price if listing
                 }
                 this.updateControls();
             })
             .build("button.list");
-
-        // Bottom Economy Pane - buyStack button
-        this.buttonSetPrice = new UIButtonBuilder(this)
-            .width(40)
-            .anchor(Anchor.CENTER | Anchor.BOTTOM)
-            .position(0, 0)
-            .text("Set Price")
-            .enabled(false)
-            .build("button.setprice");
 
         // Bottom Economy Pane - buyStack button
         final UIButton buttonRemoveItem = new UIButtonBuilder(this)
@@ -351,7 +312,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .onClick(() -> new ExchangeOfferScreen(this).display())
             .build("button.add_remove");
 
-        inventoryArea.add(sellingList, buttonList, buttonSetPrice, buttonRemoveItem);
+        inventoryArea.add(this.forSaleList, this.buttonList, buttonRemoveItem);
 
         form.add(searchArea, economyActionArea, inventoryArea);
 
@@ -384,75 +345,66 @@ public final class ExchangeScreen extends SimpleScreen {
 
         this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, page, "/", pages)));
 
-        this.resultsList.setSelectedItem(null); // Clear selection
-        this.resultsList.setItems(this.currentResults.stream().skip((page - 1) * 10).limit(10).collect(Collectors.toList()));
+        this.searchResultsList.setSelectedItem(null); // Clear selection
+        this.searchResultsList.setItems(this.currentResults.stream().skip((page - 1) * 10).limit(10).collect(Collectors.toList()));
     }
 
     private void updateControls() {
 
         // Results list
-        final boolean isResultSelected = this.resultsList.getSelectedItem() != null;
+        final boolean isResultSelected = this.searchResultsList.getSelectedItem() != null;
         // TODO: Logic for buying buttons
 
         // Selling list
-        final boolean isSellingItemSelected = this.sellingList.getSelectedItem() != null;
+        final boolean isSellingItemSelected = this.forSaleList.getSelectedItem() != null;
 
         this.buttonList.setEnabled(isSellingItemSelected);
-        this.buttonSetPrice.setEnabled(isSellingItemSelected);
 
-        if (isSellingItemSelected && this.sellingList.getSelectedItem().listed) {
+        if (isSellingItemSelected && !this.forSaleList.getSelectedItem().getListings().isEmpty()) {
             this.buttonList.setText("Unlist");
         } else {
             buttonList.setText("List");
         }
     }
 
-    public List<MockOffer> getResults(String itemName, String username, SortType sort) {
-        return this.allOffers
-            .stream()
-            .filter(o -> {
-                final String itemDisplayName = o.item.getTranslation().get().toLowerCase();
+    public List<ListItem> getResults(String itemName, String username, SortType sort) {
+        return this.exchange.getForSaleItems().values()
+                .stream()
+                .flatMap(List::stream)
+                .filter(o -> {
+                    final String itemDisplayName = o.asRealStack().getDisplayName().toLowerCase();
 
-                if (!itemName.isEmpty() && !itemDisplayName.contains(itemName.toLowerCase())) {
-                    return false;
-                }
+                    if (!itemName.isEmpty() && !itemDisplayName.contains(itemName.toLowerCase())) {
+                        return false;
+                    }
 
-                if (!username.isEmpty() && !o.playerName.toLowerCase().contains(username.toLowerCase())) {
-                    return false;
-                }
+//                    if (!username.isEmpty() && !o..toLowerCase().contains(username.toLowerCase())) {
+//                        return false;
+//                    }
 
-                return true;
-            })
-            .sorted(sort.comparator)
-            .collect(Collectors.toList());
+                    return true;
+                })
+                .map(ForSaleItem::getListItem)
+                .sorted(sort.comparator)
+                .collect(Collectors.toList());
     }
 
-    public MockOffer createMockOffer(final ItemType type) {
-        final long quantity = ThreadLocalRandom.current().nextLong(1, 500000);
-        final BigDecimal pricePer = BigDecimal.valueOf(ThreadLocalRandom.current().nextInt(1, 10000));
-        return new MockOffer(Instant.now(), -1,
-            ItemStack.of(type, 1), quantity, pricePer, UUID.randomUUID(), "player" + ThreadLocalRandom.current().nextInt(0, 999));
-    }
-
-    public static String withSuffix(long value) {
+    public static String withSuffix(int value) {
         if (value < MILLION) {
-            return defaultDecimalFormat.format(value);
+            return DEFAULT_DECIMAL_FORMAT.format(value);
         } else if (value < BILLION) {
-            return defaultDecimalFormat.format(value / MILLION) + "m";
-        } else if (value < TRILLION) {
-            return defaultDecimalFormat.format(value / BILLION) + "b";
+            return DEFAULT_DECIMAL_FORMAT.format(value / MILLION) + "m";
         }
-
-        return defaultDecimalFormat.format(value / TRILLION) + "t";
+        return DEFAULT_DECIMAL_FORMAT.format(value / BILLION) + "t";
     }
 
-    public static class ExchangeItemComponent extends UIDynamicList.ItemComponent<MockOffer> {
+    public static class ExchangeItemComponent extends UIDynamicList.ItemComponent<ItemStack> {
 
         private UIComplexImage image;
         private UIExpandingLabel itemLabel;
 
-        public ExchangeItemComponent(final MalisisGui gui, final MockOffer offer) {
-            super(gui, offer);
+        public ExchangeItemComponent(final MalisisGui gui, final ItemStack stack) {
+            super(gui, stack);
         }
 
         @SuppressWarnings("deprecation")
@@ -461,7 +413,7 @@ public final class ExchangeScreen extends SimpleScreen {
             this.setSize(0, 24);
 
             // Add components
-            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(item.item.copy());
+            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(item).copy();
             fakeStack.setCount(1);
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
@@ -473,32 +425,31 @@ public final class ExchangeScreen extends SimpleScreen {
                 : ITooltipFlag.TooltipFlags.NORMAL))));
 
             final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-            final int maxItemTextWidth = fontRenderer.getStringWidth("999999999999999999");
+            final int maxItemTextWidth = fontRenderer.getStringWidth("999999999999999999") + 4;
 
             // Limit item name to prevent over drawing
-            final StringBuilder itemTextBuilder = new StringBuilder();
-            for (char c : item.item.getTranslation().get().toCharArray()) {
-                final int textWidth = fontRenderer.getStringWidth(itemTextBuilder.toString() + c);
-                if (textWidth > maxItemTextWidth + 4) {
-                    itemTextBuilder.replace(itemTextBuilder.length() - 3, itemTextBuilder.length(), "...");
-                    break;
+            String displayName = fakeStack.getDisplayName();
+            if (fontRenderer.getStringWidth(displayName) > maxItemTextWidth) {
+                final StringBuilder displayNameBuilder = new StringBuilder();
+                for (char c : fakeStack.getDisplayName().toCharArray()) {
+                    final int textWidth = fontRenderer.getStringWidth(displayNameBuilder.toString() + c);
+                    if (textWidth > maxItemTextWidth) {
+                        displayNameBuilder.replace(displayNameBuilder.length() - 3, displayNameBuilder.length(), "...");
+                        break;
+                    }
+                    displayNameBuilder.append(c);
                 }
-                itemTextBuilder.append(c);
+                displayName = displayNameBuilder.toString();
             }
             this.itemLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                Text.of(TextColors.WHITE, itemTextBuilder.toString(), TextColors.GRAY, " x ", withSuffix(item.quantity))));
+                Text.of(TextColors.WHITE, displayName, TextColors.GRAY, " x ", withSuffix(item.getQuantity()))));
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
-            if (item.quantity >= (long) MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, defaultDecimalFormat.format(item.quantity)));
+            if (item.getQuantity() >= (int) MILLION) {
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, DEFAULT_DECIMAL_FORMAT.format(item.getQuantity())));
             }
 
             this.add(this.image, this.itemLabel);
-        }
-
-        @Override
-        public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            super.draw(renderer, mouseX, mouseY, partialTick);
         }
     }
 
@@ -506,9 +457,11 @@ public final class ExchangeScreen extends SimpleScreen {
 
         private UILabel sellerLabel;
         private UIExpandingLabel priceLabel;
+        private final ListItem listItem;
 
-        private ResultItemComponent(MalisisGui gui, MockOffer offer) {
-            super(gui, offer);
+        private ResultItemComponent(MalisisGui gui, ListItem item) {
+            super(gui, ItemStackUtil.fromNative(item.asRealStack()));
+            this.listItem = item;
         }
 
         @SuppressWarnings("deprecation")
@@ -519,13 +472,14 @@ public final class ExchangeScreen extends SimpleScreen {
             final int maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
 
             this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                Text.of(TextColors.GRAY, TextStyles.ITALIC, item.playerName)));
+                Text.of(TextColors.GRAY, TextStyles.ITALIC, "PLAYER_NAME"))); // TODO: Real player name
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
-            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, item.pricePer, TextColors.GRAY, "/ea"));
+            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, this.listItem.getPrice(), TextColors.GRAY, "/ea"));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
-            this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(item.quantity).multiply(item.pricePer)));
+            this.priceLabel.setTooltip("Total: " +
+                    DEFAULT_DECIMAL_FORMAT.format(BigDecimal.valueOf(item.getQuantity()).multiply(this.listItem.getPrice())));
 
             this.add(this.sellerLabel, this.priceLabel);
         }
@@ -535,9 +489,11 @@ public final class ExchangeScreen extends SimpleScreen {
 
         private UIContainer<?> statusContainer;
         private UIExpandingLabel priceLabel;
+        private final ListItem listItem;
 
-        private ListingItemComponent(MalisisGui gui, MockOffer offer) {
-            super(gui, offer);
+        private ListingItemComponent(MalisisGui gui, ListItem item) {
+            super(gui, ItemStackUtil.fromNative(item.asRealStack()));
+            this.listItem = item;
         }
 
         @SuppressWarnings("deprecation")
@@ -549,34 +505,35 @@ public final class ExchangeScreen extends SimpleScreen {
             this.statusContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.statusContainer.setColor(FontColors.DARK_GREEN);
 
-            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, item.pricePer, TextColors.GRAY, "/ea"));
+            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, this.listItem.getPrice(), TextColors.GRAY, "/ea"));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(this.statusContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
-            this.priceLabel.setTooltip("Total: " + defaultDecimalFormat.format(BigDecimal.valueOf(item.quantity).multiply(item.pricePer)));
+            this.priceLabel.setTooltip("Total: " +
+                    DEFAULT_DECIMAL_FORMAT.format(BigDecimal.valueOf(item.getQuantity()).multiply(this.listItem.getPrice())));
 
             this.add(this.statusContainer, this.priceLabel);
         }
 
         @Override
         public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            this.statusContainer.setAlpha(this.item.listed ? 255 : 0);
+            this.statusContainer.setAlpha(!this.listItem.getListings().isEmpty() ? 255 : 0);
             super.draw(renderer, mouseX, mouseY, partialTick);
         }
     }
 
     public enum SortType {
-        OLDEST("Oldest", (a, b) -> a.instant.compareTo(b.instant)),
-        NEWEST("Newest", (a, b) -> b.instant.compareTo(a.instant)),
-        PRICE_ASC("Price (Asc.)", (a, b) -> a.pricePer.compareTo(b.pricePer)),
-        PRICE_DESC("Price (Desc.)", (a, b) -> b.pricePer.compareTo(a.pricePer)),
-        ITEM_ASC("Item (Asc.)", (a, b) -> a.item.getTranslation().get().compareTo(b.item.getTranslation().get())),
-        ITEM_DESC("Item (Desc.)", (a, b) -> b.item.getTranslation().get().compareTo(a.item.getTranslation().get())),
-        PLAYER_ASC("Player (Asc.)", (a, b) -> a.playerName.compareTo(b.playerName)),
-        PLAYER_DESC("Player (Desc.)", (a, b) -> b.playerName.compareTo(a.playerName));
+        OLDEST("Oldest", (a, b) -> a.getCreated().compareTo(b.getCreated())),
+        NEWEST("Newest", (a, b) -> b.getCreated().compareTo(a.getCreated())),
+        PRICE_ASC("Price (Asc.)", (a, b) -> a.getPrice().compareTo(b.getPrice())),
+        PRICE_DESC("Price (Desc.)", (a, b) -> b.getPrice().compareTo(a.getPrice())),
+        ITEM_ASC("Item (Asc.)", (a, b) -> a.asRealStack().getDisplayName().compareTo(b.asRealStack().getDisplayName())),
+        ITEM_DESC("Item (Desc.)", (a, b) -> b.asRealStack().getDisplayName().compareTo(a.asRealStack().getDisplayName()));
+//        PLAYER_ASC("Player (Asc.)", (a, b) -> a.playerName.compareTo(b.playerName)),
+//        PLAYER_DESC("Player (Desc.)", (a, b) -> b.playerName.compareTo(a.playerName));
 
         public final String displayName;
-        public final Comparator<MockOffer> comparator;
-        SortType(String displayName, Comparator<MockOffer> comparator) {
+        public final Comparator<ListItem> comparator;
+        SortType(String displayName, Comparator<ListItem> comparator) {
             this.displayName = displayName;
             this.comparator = comparator;
         }

@@ -7,8 +7,6 @@
  */
 package com.almuradev.almura.shared.item;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,8 +25,6 @@ public class BasicVanillaStack extends BasicDynamicCompoundStack implements Vani
 
     @Override
     public void setQuantity(int quantity) {
-        checkState(quantity >= 0);
-
         this.quantity = quantity;
 
         this.stack = null;

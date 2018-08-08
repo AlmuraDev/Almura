@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.exchange;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.InventoryAction;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
@@ -138,13 +139,13 @@ public final class ClientExchangeManager implements Witness {
 
         final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
 
-        // TODO Grinch
-        // TODO If Manage Exchange screen is open, need to refresh it. If Specific Exchange screen is open and that Exchange vanishes, need to
-        // TODO close it
+        if (currentScreen instanceof ExchangeManagementScreen) {
+            ((ExchangeManagementScreen) currentScreen).refresh();
+        }
     }
 
     public void handleExchangeManage() {
-        // TODO Grinch Exchange Manage Gui
+        new ExchangeManagementScreen().display();
     }
 
     public void handleExchangeSpecific(final String id) {

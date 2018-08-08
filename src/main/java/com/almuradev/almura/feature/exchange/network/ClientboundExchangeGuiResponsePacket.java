@@ -27,7 +27,8 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
         checkNotNull(type);
 
         this.type = type;
-        if (type != ExchangeGuiType.MANAGE) {
+
+        if (this.type != ExchangeGuiType.MANAGE) {
             checkNotNull(id);
             this.id = id;
         }
@@ -37,7 +38,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
     public void readFrom(final ChannelBuf buf) {
         this.type = ExchangeGuiType.valueOf(buf.readString());
 
-        if (type != ExchangeGuiType.MANAGE) {
+        if (this.type != ExchangeGuiType.MANAGE) {
             this.id = buf.readString();
         }
     }

@@ -53,7 +53,10 @@ public interface VirtualStack {
     /**
      * Returns the current state of this virtual stack as an {@link ItemStack}.
      *
-     * Note: The stack created may or may not have the NBT data associated with it.
+     * Note 1: The stack created may or may not have the NBT data associated with it.
+     * Note 2: If the quantity falls to zero or less then this method will return a stack with
+     *         a quantity of one to offset the fact that Vanilla will mark it as AIR.
+     *         If you want to check empty status then use {@link VirtualStack#isEmpty()}.
      *
      * @return The stack
      */

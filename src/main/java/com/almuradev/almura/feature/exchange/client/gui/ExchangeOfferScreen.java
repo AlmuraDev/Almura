@@ -7,20 +7,30 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.DEFAULT_DECIMAL_FORMAT;
+import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.MILLION;
+import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.withSuffix;
+
 import com.almuradev.almura.feature.exchange.client.gui.component.UIExchangeOfferContainer;
-import com.almuradev.almura.feature.exchange.listing.MockOffer;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
+import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
+import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.util.MathUtil;
-import com.google.common.base.MoreObjects;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -28,23 +38,21 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackComparators;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Color;
-import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 @SideOnly(Side.CLIENT)
 public class ExchangeOfferScreen extends SimpleScreen {
 
-    private final Map<Integer, TransactionRecord> toTakeMap = new HashMap<>();
-    private final List<TransactionRecord> toRegainList = new ArrayList<>();
-    private final int maxOfferSlots = ThreadLocalRandom.current().nextInt(2, 5);
+    private final List<BasicVanillaStack> toList = new ArrayList<>();
+    private final List<BasicVanillaStack> toInventory = new ArrayList<>();
+    private final int maxOfferSlots = ThreadLocalRandom.current().nextInt(1, 5); // TODO: Server must instruct client to open this screen with the
+                                                                                 // appropriate limit
     private UIExchangeOfferContainer offerContainer;
     private UIPropertyBar progressBar;
 
@@ -91,19 +99,15 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
             Text.of(TextColors.WHITE, "Inventory"),
             Text.of(TextColors.WHITE, "Held Items"),
-            ExchangeScreen.ExchangeItemComponent::new,
-            ExchangeScreen.ExchangeItemComponent::new);
+            OfferItemComponent::new,
+            OfferItemComponent::new);
         this.offerContainer.setItemLimit(this.maxOfferSlots, UIDualListContainer.ContainerSide.RIGHT);
         this.offerContainer.register(this);
 
         // Populate swap container
-        final List<MockOffer> inventoryOffers = new ArrayList<>();
-        final EntityPlayer player = Minecraft.getMinecraft().player;
-        for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
-            final ItemStack stack = ItemStackUtil.fromNative(player.inventory.mainInventory.get(i));
-            if (stack.isEmpty()) continue;
-            inventoryOffers.add(new MockOffer(i, stack, player));
-        }
+        final List<BasicVanillaStack> inventoryOffers = new ArrayList<>();
+        Minecraft.getMinecraft().player.inventory.mainInventory.stream().filter(i -> !i.isEmpty()).forEach(i -> inventoryOffers.add(new BasicVanillaStack(i)));
+
         this.offerContainer.setItems(inventoryOffers, UIDualListContainer.ContainerSide.LEFT);
         final int size = this.offerContainer.getItems(UIDualListContainer.ContainerSide.RIGHT).size();
         this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
@@ -115,7 +119,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
     }
 
     @Subscribe
-    private void onUpdate(UIDualListContainer.UpdateEvent<UIDualListContainer<MockOffer>> event) {
+    private void onUpdate(UIDualListContainer.UpdateEvent<UIDualListContainer<BasicVanillaStack>> event) {
         final int size = event.getComponent().getItems(UIDualListContainer.ContainerSide.RIGHT).size();
         this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
         this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
@@ -123,68 +127,93 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
     @Subscribe
     private void onTransaction(UIExchangeOfferContainer.TransactionEvent event) {
-        if (event.side == UIDualListContainer.ContainerSide.RIGHT) {
-            final TransactionRecord record = Optional.ofNullable(this.toTakeMap.putIfAbsent(event.originatingSlotId,
-                new TransactionRecord(event.offer.item.copy(), 0)))
-                .orElse(this.toTakeMap.get(event.originatingSlotId));
+        final List<BasicVanillaStack> targetList = event.targetSide == UIDualListContainer.ContainerSide.LEFT ? this.toInventory : this.toList;
 
-            record.quantity += event.quantity;
+        final BasicVanillaStack stack = targetList.stream()
+                .filter(t -> ItemStackComparators.IGNORE_SIZE.compare((ItemStack) (Object) t.asRealStack(),
+                        (ItemStack) (Object) event.stack.asRealStack()) == 0)
+                .findAny()
+                .orElseGet(() -> {
+                    final BasicVanillaStack newStack = (BasicVanillaStack) event.stack.copy();
+                    newStack.setQuantity(0);
+                    targetList.add(newStack);
+                    return newStack;
+                });
 
-            if (record.quantity <= 0) {
-                this.toTakeMap.remove(event.originatingSlotId);
-            }
+        stack.setQuantity(stack.getQuantity() + event.quantity);
 
-            System.out.println(">>> Side: " + event.side);
-            System.out.println(Arrays.toString(this.toTakeMap.entrySet().toArray()));
-            System.out.println("==========");
-        } else {
-            Optional<TransactionRecord> optRecord = this.toRegainList.stream()
-                .filter(r -> ItemStackComparators.IGNORE_SIZE.compare(r.itemStack, event.offer.item) == 0)
-                .findFirst();
-            if (!optRecord.isPresent()) {
-                optRecord = Optional.of(new TransactionRecord(event.offer.item.copy(), 0));
-                this.toRegainList.add(optRecord.get());
-            }
-
-            optRecord.get().quantity += event.quantity;
-
-            if (optRecord.get().quantity >= 0) {
-                this.toRegainList.remove(optRecord.get());
-            }
-
-            System.out.println(">>> Side: " + event.side);
-            System.out.println(Arrays.toString(this.toRegainList.toArray()));
-            System.out.println("==========");
+        if (stack.getQuantity() <= 0) {
+            targetList.remove(stack);
         }
 
+        System.out.println(">>> Side: " + event.targetSide);
+        System.out.println(Arrays.toString(targetList.toArray()));
+        System.out.println("==========");
     }
 
     private void transact() {
         // Only add for now
         if (parent.isPresent() && parent.get() instanceof ExchangeScreen) {
-            final ExchangeScreen excParent = (ExchangeScreen) parent.get();
+            //final ExchangeScreen excParent = (ExchangeScreen) parent.get();
 
-            excParent.sellingList.clearItems();
-            excParent.sellingList.setItems(new ArrayList<>(this.offerContainer.getItems(UIDualListContainer.ContainerSide.RIGHT)));
+            //excParent.forSaleList.clearItems();
+            //excParent.forSaleList.setItems(new ArrayList<>(this.offerContainer.getItems(UIDualListContainer.ContainerSide.RIGHT)));
         }
         this.close();
     }
 
-    private static class TransactionRecord {
-        public final ItemStack itemStack;
-        public long quantity;
+    private static class OfferItemComponent extends UIDynamicList.ItemComponent<BasicVanillaStack> {
 
-        public TransactionRecord(final ItemStack itemStack, final long quantity) {
-            this.itemStack = itemStack;
-            this.quantity = quantity;
+        private UIComplexImage image;
+        private UIExpandingLabel itemLabel;
+
+        public OfferItemComponent(final MalisisGui gui, final BasicVanillaStack stack) {
+            super(gui, stack);
         }
 
+        @SuppressWarnings("deprecation")
         @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                .addValue(this.itemStack.getType().getName())
-                .addValue(this.quantity)
-                .toString();
+        protected void construct(final MalisisGui gui) {
+            this.setSize(0, 24);
+
+            // Add components
+            final net.minecraft.item.ItemStack fakeStack = item.asRealStack();
+            fakeStack.setCount(1);
+            final EntityPlayer player = Minecraft.getMinecraft().player;
+            final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
+
+            this.image = new UIComplexImage(gui, fakeStack);
+            this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
+            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+                    ? ITooltipFlag.TooltipFlags.ADVANCED
+                    : ITooltipFlag.TooltipFlags.NORMAL))));
+
+            final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+            final int maxItemTextWidth = fontRenderer.getStringWidth("999999999999999999") + 4;
+
+            // Limit item name to prevent over drawing
+            String displayName = fakeStack.getDisplayName();
+            if (fontRenderer.getStringWidth(displayName) > maxItemTextWidth) {
+                final StringBuilder displayNameBuilder = new StringBuilder();
+                for (char c : fakeStack.getDisplayName().toCharArray()) {
+                    final int textWidth = fontRenderer.getStringWidth(displayNameBuilder.toString() + c);
+                    if (textWidth > maxItemTextWidth) {
+                        displayNameBuilder.replace(displayNameBuilder.length() - 3, displayNameBuilder.length(), "...");
+                        break;
+                    }
+                    displayNameBuilder.append(c);
+                }
+                displayName = displayNameBuilder.toString();
+            }
+            this.itemLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.WHITE, displayName, TextColors.GRAY, " x ", withSuffix(item.getQuantity()))));
+            this.itemLabel.setPosition(SimpleScreen.getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
+
+            if (item.getQuantity() >= (int) MILLION) {
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, DEFAULT_DECIMAL_FORMAT.format(item.getQuantity())));
+            }
+
+            this.add(this.image, this.itemLabel);
         }
     }
 }

@@ -64,7 +64,7 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         this.leftDynamicList = new UIDynamicList<>(gui, UIComponent.INHERITED, UIComponent.INHERITED);
         this.leftDynamicList.setItemComponentFactory(this.leftComponentFactory);
         this.leftDynamicList.setItemComponentSpacing(1);
-        this.leftDynamicList.setCanDeselect(true);
+        this.leftDynamicList.setCanDeselect(false);
         this.leftDynamicList.setName("list.left");
         this.leftDynamicList.register(this);
 
@@ -84,7 +84,7 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         this.rightDynamicList.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
         this.rightDynamicList.setItemComponentFactory(this.rightComponentFactory);
         this.rightDynamicList.setItemComponentSpacing(1);
-        this.rightDynamicList.setCanDeselect(true);
+        this.rightDynamicList.setCanDeselect(false);
         this.rightDynamicList.setName("list.right");
         this.rightDynamicList.register(this);
 
@@ -161,12 +161,10 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
 
     protected void updateControls(@Nullable T selectedValue, ContainerSide containerSide) {
         // Unregister and re-register to avoid firing this event when deselecting from the other list
-        this.leftDynamicList.unregister(this);
-        this.leftDynamicList.setSelectedItem(null);
-        this.leftDynamicList.register(this);
-        this.rightDynamicList.unregister(this);
-        this.rightDynamicList.setSelectedItem(null);
-        this.rightDynamicList.register(this);
+        final UIDynamicList<T> targetList = this.getOpposingListFromSide(containerSide);
+        targetList.unregister(this);
+        targetList.setSelectedItem(null);
+        targetList.register(this);
 
         this.fireEvent(new UpdateEvent<>(this));
     }
