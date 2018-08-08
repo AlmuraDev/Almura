@@ -13,12 +13,16 @@ import com.almuradev.almura.feature.exchange.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public final class ClientboundExchangeGuiResponsePacketHandler implements MessageHandler<ClientboundExchangeGuiResponsePacket> {
 
     private final ClientExchangeManager exchangeManager;
@@ -28,6 +32,7 @@ public final class ClientboundExchangeGuiResponsePacketHandler implements Messag
         this.exchangeManager = exchangeManager;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(ClientboundExchangeGuiResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {

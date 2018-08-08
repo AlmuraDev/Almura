@@ -9,16 +9,22 @@ package com.almuradev.almura.feature.exchange;
 
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
+import com.almuradev.almura.feature.exchange.network.ClientboundExchangeForSaleItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundExchangeForSaleItemsRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundExchangeTransactionRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyListItemsPacket;
+import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeForSaleItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeGuiResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeListItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangesRegistryPacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeForSaleItemsRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeGuiRequestPacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeTransactionRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyExchangePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyListItemsPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
@@ -49,7 +55,16 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 binder -> binder.handler(ClientboundExchangeListItemsResponsePacketHandler.class, Platform.Type.CLIENT))
 
             .bind(ServerboundModifyListItemsPacket.class,
-                binder -> binder.handler(ServerboundModifyListItemsPacketHandler.class, Platform.Type.CLIENT));
+                binder -> binder.handler(ServerboundModifyListItemsPacketHandler.class, Platform.Type.SERVER))
+
+            .bind(ClientboundExchangeForSaleItemsResponsePacket.class,
+                binder -> binder.handler(ClientboundExchangeForSaleItemsResponsePacketHandler.class, Platform.Type.CLIENT))
+
+            .bind(ServerboundExchangeForSaleItemsRequestPacket.class,
+                binder -> binder.handler(ServerboundExchangeForSaleItemsRequestPacketHandler.class, Platform.Type.SERVER))
+
+            .bind(ServerboundExchangeTransactionRequestPacket.class,
+                binder -> binder.handler(ServerboundExchangeTransactionRequestPacketHandler.class, Platform.Type.SERVER));
         
         this.facet().add(ServerExchangeManager.class);
 

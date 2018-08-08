@@ -24,6 +24,12 @@ public interface ForSaleItem extends DynamicCompoundStack {
 
     Instant getCreated();
 
+    /**
+     * Returns the current quantity
+     * @return
+     */
+    int getQuantity();
+
     Collection<Transaction> getTransactions();
 
     @Override

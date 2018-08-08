@@ -21,7 +21,9 @@ import org.spongepowered.api.network.PlayerConnection;
 import org.spongepowered.api.network.RemoteConnection;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public final class ServerboundExchangeGuiRequestPacketHandler implements MessageHandler<ServerboundExchangeGuiRequestPacket> {
 
     private final ServerExchangeManager exchangeManager;

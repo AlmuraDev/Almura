@@ -39,9 +39,10 @@ public final class BasicListItem implements ListItem {
     private final UUID seller;
     private final Item item;
     private final BigDecimal price;
-    private final int metadata, quantity, index;
+    private final int metadata, index;
     private final List<ForSaleItem> listed = new ArrayList<>();
 
+    private int quantity;
     @Nullable private String sellerName;
     @Nullable private ItemStack cacheStack;
     @Nullable NBTTagCompound compound;
@@ -94,6 +95,12 @@ public final class BasicListItem implements ListItem {
     @Override
     public int getQuantity() {
         return this.quantity;
+    }
+
+    @Override
+    public void setQuantity(final int quantity) {
+        this.quantity = quantity;
+        this.cacheStack = null;
     }
 
     @Override

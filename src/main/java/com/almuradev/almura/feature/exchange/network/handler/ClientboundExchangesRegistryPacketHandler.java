@@ -18,7 +18,9 @@ import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public final class ClientboundExchangesRegistryPacketHandler implements MessageHandler<ClientboundExchangeRegistryPacket> {
 
     private final ClientExchangeManager exchangeManager;

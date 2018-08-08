@@ -7,8 +7,7 @@
  */
 package com.almuradev.almura.shared.feature.store.listing;
 
-import com.almuradev.almura.shared.item.DynamicCompoundStack;
-import com.almuradev.almura.shared.item.VirtualStack;
+import com.almuradev.almura.shared.item.VanillaStack;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -16,7 +15,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ListItem extends DynamicCompoundStack {
+public interface ListItem extends VanillaStack {
 
     int getRecord();
 
