@@ -16,6 +16,7 @@ import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
@@ -79,11 +80,18 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
                 }
 
                 final UUID seller = buf.readUniqueId();
+                final String sellerName = buf.readBoolean() ? buf.readString() : null;
 
                 final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readVarInt()));
                 final int index = buf.readInteger();
 
-                items.add(new BasicListItem(record, created, seller, item, quantity, metadata, price, index));
+                final BasicListItem basicListItem = new BasicListItem(record, created, seller, item, quantity, metadata, price, index);
+
+                if (Sponge.getPlatform().getExecutionType().isClient()) {
+                    basicListItem.setSellerName(sellerName);
+                }
+
+                this.items.add(basicListItem);
             }
         }
     }
@@ -122,6 +130,13 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
                 buf.writeBytes(createdData);
 
                 buf.writeUniqueId(item.getSeller());
+
+                final String sellerName = item.getSellerName().orElse(null);
+                buf.writeBoolean(sellerName != null);
+
+                if (sellerName != null) {
+                    buf.writeString(sellerName);
+                }
 
                 final byte[] priceData = SerializationUtil.toBytes(item.getPrice());
                 buf.writeVarInt(priceData.length);

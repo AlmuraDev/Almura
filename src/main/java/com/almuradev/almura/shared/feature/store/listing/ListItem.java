@@ -13,6 +13,7 @@ import com.almuradev.almura.shared.item.VirtualStack;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ListItem extends DynamicCompoundStack {
@@ -22,6 +23,15 @@ public interface ListItem extends DynamicCompoundStack {
     Instant getCreated();
 
     UUID getSeller();
+
+    /**
+     * Returns the seller name, if known.
+     *
+     * No assumption should ever be made that the name is a direct correlation to the UUID.
+     *
+     * @return The name, if known
+     */
+    Optional<String> getSellerName();
 
     BigDecimal getPrice();
 

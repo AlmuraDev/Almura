@@ -10,18 +10,24 @@ package com.almuradev.almura.shared.feature.store.listing.basic;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.shared.feature.store.Store;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.google.common.base.MoreObjects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.service.user.UserStorageService;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -36,6 +42,7 @@ public final class BasicListItem implements ListItem {
     private final int metadata, quantity, index;
     private final List<ForSaleItem> listed = new ArrayList<>();
 
+    @Nullable private String sellerName;
     @Nullable private ItemStack cacheStack;
     @Nullable NBTTagCompound compound;
 
@@ -72,6 +79,11 @@ public final class BasicListItem implements ListItem {
     @Override
     public UUID getSeller() {
         return this.seller;
+    }
+
+    @Override
+    public Optional<String> getSellerName() {
+        return Optional.ofNullable(this.sellerName);
     }
 
     @Override
@@ -137,11 +149,24 @@ public final class BasicListItem implements ListItem {
         return this.cacheStack;
     }
 
+    public void refreshSellerName() {
+        if (this.seller != Store.UNKNOWN_OWNER && Sponge.getPlatform().getExecutionType().isServer()) {
+            Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.seller)
+                .ifPresent(user -> this.sellerName = user.getName());
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void setSellerName(@Nullable final String sellerName) {
+        this.sellerName = sellerName;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
             .add("created", this.created)
             .add("seller", this.seller)
+            .add("sellerName", this.sellerName)
             .add("item", this.item)
             .add("quantity", this.quantity)
             .add("metadata", this.metadata)
