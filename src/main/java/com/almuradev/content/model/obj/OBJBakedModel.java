@@ -91,10 +91,8 @@ public class OBJBakedModel implements IBakedModel {
             return this.quads;
         }
 
-        OBJBakedModel model;
-
         if (blockState != null) {
-            model = STATE_MODEL_CACHE.get(blockState.toString());
+            final OBJBakedModel model = STATE_MODEL_CACHE.get(blockState.toString());
 
             if (model != null && model.quads != null) {
                 return model.quads;
