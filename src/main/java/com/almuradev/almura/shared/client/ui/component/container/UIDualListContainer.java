@@ -35,10 +35,10 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
     protected final UIDynamicList<T> leftDynamicList, rightDynamicList;
 
     @SuppressWarnings("deprecation")
-    public UIDualListContainer(MalisisGui gui, int width, int height,
-            Text leftTitle, Text rightTitle,
-            BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
-            BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory) {
+    public UIDualListContainer(final MalisisGui gui, final int width, final int height,
+            final Text leftTitle, final Text rightTitle,
+            final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
+            final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory) {
         super(gui, width, height);
 
         // Assign factories
@@ -94,7 +94,7 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
     }
 
     @Override
-    public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+    public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
         super.drawBackground(renderer, mouseX, mouseY, partialTick);
 
         final int startX = this.width / 2;
@@ -114,54 +114,59 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
     }
 
     @Subscribe
-    private void onItemSelect(UIDynamicList.SelectEvent<T> event) {
-        this.updateControls(event.getNewValue(), this.getTargetFromList(event.getComponent()));
+    private void onItemSelect(final UIDynamicList.SelectEvent<T> event) {
+        this.updateControls(event.getNewValue(), this.getSideFromList(event.getComponent()));
     }
 
-    @Subscribe
-    private void onItemsChanged(UIDynamicList.ItemsChangedEvent<T> event) {
-        this.updateControls(null, this.getTargetFromList(event.getComponent()));
-    }
-
-    public UIDualListContainer<T> setItems(List<T> list, ContainerSide target) {
+    public UIDualListContainer<T> setItems(final List<T> list, final SideType target) {
         this.getListFromSide(target).setItems(list);
         this.fireEvent(new PopulateEvent<>(this, target));
 
         return this;
     }
 
-    public Collection<T> getItems(ContainerSide target) {
+    public Collection<T> getItems(SideType target) {
         return this.getListFromSide(target).getItems();
     }
 
     @Nullable
-    protected UIContainer<?> createMiddleContainer(MalisisGui gui) {
+    protected UIContainer<?> createMiddleContainer(final MalisisGui gui) {
         return null;
     }
 
-    protected UIDynamicList<T> getListFromSide(ContainerSide target) {
-        if (target == ContainerSide.LEFT) {
+    protected UIDynamicList<T> getListFromSide(final SideType target) {
+        if (target == SideType.LEFT) {
             return this.leftDynamicList;
         }
 
         return this.rightDynamicList;
     }
 
-    protected UIDynamicList<T> getOpposingListFromSide(ContainerSide target) {
-        if (target == ContainerSide.LEFT) {
+    protected UIDynamicList<T> getOpposingListFromSide(final SideType target) {
+        if (target == SideType.LEFT) {
             return this.rightDynamicList;
         }
 
         return this.leftDynamicList;
     }
 
-    protected ContainerSide getTargetFromList(UIDynamicList<T> list) {
-        return list.getName().equalsIgnoreCase("list.left") ? ContainerSide.LEFT : ContainerSide.RIGHT;
+    protected SideType getSideFromList(final UIDynamicList<T> list) {
+        return list.getName().equalsIgnoreCase("list.left") ? SideType.LEFT : SideType.RIGHT;
     }
 
-    protected void updateControls(@Nullable T selectedValue, ContainerSide containerSide) {
-        // Unregister and re-register to avoid firing this event when deselecting from the other list
-        final UIDynamicList<T> targetList = this.getOpposingListFromSide(containerSide);
+    protected SideType getOpposingSideFromList(final UIDynamicList<T> list) {
+        return list.getName().equalsIgnoreCase("list.left") ? SideType.RIGHT : SideType.LEFT;
+    }
+
+    protected SideType getOppositeSide(final SideType side) {
+        return side == SideType.LEFT ? SideType.RIGHT : SideType.LEFT;
+    }
+
+    protected void updateControls(@Nullable final T selectedValue, final SideType targetSide) {
+        // Deselect on the list that wasn't targeted
+        final UIDynamicList<T> targetList = this.getListFromSide(targetSide);
+
+        // Unregister and re-register to avoid recursion
         targetList.unregister(this);
         targetList.setSelectedItem(null);
         targetList.register(this);
@@ -171,9 +176,9 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
 
     public static class PopulateEvent<T> extends ComponentEvent<UIDualListContainer<T>> {
 
-        public final ContainerSide side;
+        public final SideType side;
 
-        public PopulateEvent(UIDualListContainer<T> component, ContainerSide side) {
+        public PopulateEvent(final UIDualListContainer<T> component, final SideType side) {
             super(component);
             this.side = side;
         }
@@ -181,12 +186,12 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
 
     public static class UpdateEvent<T> extends ComponentEvent<UIDualListContainer<T>> {
 
-        public UpdateEvent(UIDualListContainer<T> component) {
+        public UpdateEvent(final UIDualListContainer<T> component) {
             super(component);
         }
     }
 
-    public enum ContainerSide {
+    public enum SideType {
         LEFT,
         RIGHT
     }
