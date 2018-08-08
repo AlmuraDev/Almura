@@ -373,14 +373,15 @@ public final class ExchangeScreen extends SimpleScreen {
                 .flatMap(List::stream)
                 .filter(o -> {
                     final String itemDisplayName = o.asRealStack().getDisplayName().toLowerCase();
+                    final String itemSellerName = o.getListItem().getSellerName().orElse("").toLowerCase();
 
                     if (!itemName.isEmpty() && !itemDisplayName.contains(itemName.toLowerCase())) {
                         return false;
                     }
 
-//                    if (!username.isEmpty() && !o..toLowerCase().contains(username.toLowerCase())) {
-//                        return false;
-//                    }
+                    if (!username.isEmpty() && !itemSellerName.contains(username.toLowerCase())) {
+                        return false;
+                    }
 
                     return true;
                 })
@@ -527,9 +528,9 @@ public final class ExchangeScreen extends SimpleScreen {
         PRICE_ASC("Price (Asc.)", (a, b) -> a.getPrice().compareTo(b.getPrice())),
         PRICE_DESC("Price (Desc.)", (a, b) -> b.getPrice().compareTo(a.getPrice())),
         ITEM_ASC("Item (Asc.)", (a, b) -> a.asRealStack().getDisplayName().compareTo(b.asRealStack().getDisplayName())),
-        ITEM_DESC("Item (Desc.)", (a, b) -> b.asRealStack().getDisplayName().compareTo(a.asRealStack().getDisplayName()));
-//        PLAYER_ASC("Player (Asc.)", (a, b) -> a.playerName.compareTo(b.playerName)),
-//        PLAYER_DESC("Player (Desc.)", (a, b) -> b.playerName.compareTo(a.playerName));
+        ITEM_DESC("Item (Desc.)", (a, b) -> b.asRealStack().getDisplayName().compareTo(a.asRealStack().getDisplayName())),
+        PLAYER_ASC("Player (Asc.)", (a, b) -> a.getSellerName().orElse("").compareTo(b.getSellerName().orElse(""))),
+        PLAYER_DESC("Player (Desc.)", (a, b) -> b.getSellerName().orElse("").compareTo(a.getSellerName().orElse("")));
 
         public final String displayName;
         public final Comparator<ListItem> comparator;
