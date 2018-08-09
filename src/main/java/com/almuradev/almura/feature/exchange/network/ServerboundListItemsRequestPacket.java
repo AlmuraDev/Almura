@@ -48,7 +48,7 @@ public final class ServerboundListItemsRequestPacket implements Message {
     public void readFrom(ChannelBuf buf) {
         this.id = buf.readString();
 
-        final int count = buf.readVarInt();
+        final int count = buf.readInteger();
 
         if (count > 0) {
             this.actions = new ArrayList<>();
@@ -69,9 +69,9 @@ public final class ServerboundListItemsRequestPacket implements Message {
                     continue;
                 }
 
-                final int quantity = buf.readVarInt();
-                final int metadata = buf.readVarInt();
-                final int compoundDataLength = buf.readVarInt();
+                final int quantity = buf.readInteger();
+                final int metadata = buf.readInteger();
+                final int compoundDataLength = buf.readInteger();
                 NBTTagCompound compound = null;
 
                 if (compoundDataLength > 0) {
@@ -96,7 +96,7 @@ public final class ServerboundListItemsRequestPacket implements Message {
         checkState(!this.actions.isEmpty());
 
         buf.writeString(this.id);
-        buf.writeVarInt(this.actions.size());
+        buf.writeInteger(this.actions.size());
 
         for (final InventoryAction action : this.actions) {
             final VirtualStack stack = action.getStack();
@@ -123,13 +123,13 @@ public final class ServerboundListItemsRequestPacket implements Message {
             buf.writeString(action.getDirection().name().toUpperCase());
 
             buf.writeString(SerializationUtil.toString(location));
-            buf.writeVarInt(stack.getQuantity());
-            buf.writeVarInt(stack.getMetadata());
+            buf.writeInteger(stack.getQuantity());
+            buf.writeInteger(stack.getMetadata());
 
             if (compoundData == null) {
-                buf.writeVarInt(0);
+                buf.writeInteger(0);
             } else {
-                buf.writeVarInt(compoundData.length);
+                buf.writeInteger(compoundData.length);
                 buf.writeBytes(compoundData);
             }
         }

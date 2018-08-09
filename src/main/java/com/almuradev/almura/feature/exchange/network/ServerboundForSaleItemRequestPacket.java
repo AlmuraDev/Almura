@@ -36,7 +36,7 @@ public final class ServerboundForSaleItemRequestPacket implements Message {
   @Override
   public void readFrom(final ChannelBuf buf) {
     this.id = buf.readString();
-    this.itemRecNo = buf.readVarInt();
+    this.itemRecNo = buf.readInteger();
     this.remove = buf.readBoolean();
   }
 
@@ -46,7 +46,7 @@ public final class ServerboundForSaleItemRequestPacket implements Message {
     checkState(this.itemRecNo >= 0);
 
     buf.writeString(this.id);
-    buf.writeVarInt(this.itemRecNo);
+    buf.writeInteger(this.itemRecNo);
     buf.writeBoolean(this.remove);
   }
 }

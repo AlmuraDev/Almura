@@ -32,14 +32,14 @@ public final class ClientboundExchangeRegistryPacket implements Message {
 
     @Override
     public void readFrom(final ChannelBuf buf) {
-        final int count = buf.readVarInt();
+        final int count = buf.readInteger();
 
         if (count > 0) {
             this.exchanges = new HashSet<>();
 
             for (int i = 0; i < count; i++) {
                 try {
-                    this.exchanges.add(SerializationUtil.bytesToObject(buf.readBytes(buf.readVarInt())));
+                    this.exchanges.add(SerializationUtil.bytesToObject(buf.readBytes(buf.readInteger())));
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -49,13 +49,13 @@ public final class ClientboundExchangeRegistryPacket implements Message {
 
     @Override
     public void writeTo(final ChannelBuf buf) {
-        buf.writeVarInt(this.exchanges == null ? 0 : this.exchanges.size());
+        buf.writeInteger(this.exchanges == null ? 0 : this.exchanges.size());
 
         if (this.exchanges != null) {
             for (Exchange exchange : this.exchanges) {
                 try {
                     final byte[] data = SerializationUtil.objectToBytes(exchange);
-                    buf.writeVarInt(data.length);
+                    buf.writeInteger(data.length);
                     buf.writeBytes(data);
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -100,7 +100,7 @@ public final class ClientboundListItemsResponsePacket implements Message {
         checkNotNull(this.id);
 
         buf.writeString(this.id);
-        buf.writeVarInt(this.listItems == null ? 0 : this.listItems.size());
+        buf.writeInteger(this.listItems == null ? 0 : this.listItems.size());
 
         if (this.listItems != null) {
             for (final ListItem item : this.listItems) {
