@@ -71,7 +71,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.buttonSingle, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("S")
-                .tooltip("Move the selected stack of listItems to the target container")
+                .tooltip("Move the selected stack of items to the target container")
                 .onClick(() -> TransferType.STACK.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.stack");
@@ -81,7 +81,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             .position(0, SimpleScreen.getPaddedY(this.buttonStack, 4))
             .anchor(Anchor.TOP | Anchor.CENTER)
             .text("->")
-            .tooltip("Send listItems to the right")
+            .tooltip("Send items to the right")
             .onClick(() -> this.setDirection(this.getOppositeSide(this.targetSide)))
             .build("button.direction");
 
@@ -90,7 +90,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.buttonDirection, 4))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("T")
-                .tooltip("Moves all listItems of the selected type to the target container")
+                .tooltip("Moves all items of the selected type to the target container")
                 .onClick(() -> TransferType.TYPE.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.type");
@@ -100,7 +100,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.buttonType, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("A")
-                .tooltip("Moves all listItems of the selected type to the target container")
+                .tooltip("Moves all items of the selected type to the target container")
                 .onClick(() -> TransferType.ALL.transfer(this, this.targetSide, null))
                 .build("button.all");
 
@@ -112,7 +112,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
     @Override
     protected void updateControls(@Nullable final VanillaStack selectedValue, final SideType targetSide) {
         this.buttonDirection.setText(targetSide == SideType.LEFT ? "<-" : "->");
-        this.buttonDirection.setTooltip(String.format("Send listItems to the %s", this.targetSide == SideType.LEFT ? "left" : "right"));
+        this.buttonDirection.setTooltip(String.format("Send items to the %s", this.targetSide == SideType.LEFT ? "left" : "right"));
 
         super.updateControls(selectedValue, targetSide);
     }
@@ -127,8 +127,12 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
         return this;
     }
 
-    private int getLimitFromSide(final SideType side) {
-        if (side == SideType.LEFT) {
+    private boolean isSideLimited(final SideType targetSide) {
+        return this.getLimitFromSide(targetSide) != -1;
+    }
+
+    private int getLimitFromSide(final SideType targetSide) {
+        if (targetSide == SideType.LEFT) {
             return this.leftItemLimit;
         }
 
@@ -208,6 +212,10 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             final UIDynamicList<VanillaStack> sourceList = component.getOpposingListFromSide(targetSide);
             final UIDynamicList<VanillaStack> targetList = component.getListFromSide(targetSide);
 
+            if (component.isSideLimited(targetSide) && targetList.getItems().size() >= component.getLimitFromSide(targetSide)) {
+                return;
+            }
+
             // Remove what we can from the source stack first
             final int initialRemoved = Math.min(sourceStack.getQuantity(), toTransferCount);
             sourceStack.setQuantity(sourceStack.getQuantity() - initialRemoved);
@@ -245,6 +253,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
             // Add/merge to target
             final int limit = targetSide == SideType.RIGHT ? Integer.MAX_VALUE : sourceStack.asRealStack().getMaxStackSize();
+            int added = 0;
             int toAddCount = toTransferCount;
 
             for (VanillaStack stack : targetList.getItems()) {
@@ -265,6 +274,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
                 // Determine how much we are adding
                 final int toAdd = Math.min(limit, toAddCount);
+                added += toAdd;
                 toAddCount -= toAdd;
 
                 // Add the amount
@@ -277,20 +287,30 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             final ArrayList<VanillaStack> toAdd = new ArrayList<>();
 
             for (int i = 0; i < divisor; i++) {
+                if (component.isSideLimited(targetSide) && targetList.getItems().size() >= component.getLimitFromSide(targetSide)) {
+                    break;
+                }
                 final VanillaStack copyStack = sourceStack.copy();
+                added += limit;
                 copyStack.setQuantity(limit);
                 toAdd.add(copyStack);
             }
 
             if (remainder != 0) {
-                final VanillaStack copyStack = sourceStack.copy();
-                copyStack.setQuantity(remainder);
-                toAdd.add(copyStack);
+                if (!component.isSideLimited(targetSide) || !(targetList.getItems().size() >= component.getLimitFromSide(targetSide))) {
+                    final VanillaStack copyStack = sourceStack.copy();
+                    copyStack.setQuantity(remainder);
+                    added += remainder;
+                    toAdd.add(copyStack);
+                }
             }
 
             targetList.addItems(toAdd);
 
-            component.fireEvent(new TransactionCompletedEvent<>(component, targetSide, sourceStack, toTransferCount));
+            final VanillaStack transactionStack = sourceStack.copy();
+            transactionStack.setQuantity(added);
+
+            component.fireEvent(new TransactionCompletedEvent<>(component, targetSide, transactionStack));
             component.fireEvent(new UIDynamicList.ItemsChangedEvent<>(sourceList));
             component.fireEvent(new UIDynamicList.ItemsChangedEvent<>(targetList));
         }
@@ -299,7 +319,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             return list.stream().filter(s -> isStackEqualIgnoreSize(sourceStack, s));
         }
 
-        protected static boolean isStackEqualIgnoreSize(@Nullable VanillaStack stack1, @Nullable VanillaStack stack2) {
+        public static boolean isStackEqualIgnoreSize(@Nullable VirtualStack stack1, @Nullable VirtualStack stack2) {
             if (stack1 == null || stack2 == null) {
                 return false;
             }
@@ -315,13 +335,11 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
         public final SideType targetSide;
         public final VanillaStack stack;
-        public final int quantity;
 
-        TransactionCompletedEvent(final UIDualListContainer<T> component, final SideType targetSide, final VanillaStack stack, final int quantity) {
+        TransactionCompletedEvent(final UIDualListContainer<T> component, final SideType targetSide, final VanillaStack stack) {
             super(component);
             this.targetSide = targetSide;
             this.stack = stack;
-            this.quantity = quantity;
         }
     }
 }

@@ -7,14 +7,15 @@
  */
 package com.almuradev.almura.feature.exchange.network;
 
-import com.almuradev.almura.shared.item.VirtualStack;
+import com.almuradev.almura.shared.item.VanillaStack;
+import com.google.common.base.MoreObjects;
 
 public final class InventoryAction {
 
     private final Direction direction;
-    private final VirtualStack stack;
+    private final VanillaStack stack;
 
-    public InventoryAction(final Direction direction, final VirtualStack stack) {
+    public InventoryAction(final Direction direction, final VanillaStack stack) {
         this.direction = direction;
         this.stack = stack;
     }
@@ -23,12 +24,20 @@ public final class InventoryAction {
         return this.direction;
     }
 
-    public VirtualStack getStack() {
+    public VanillaStack getStack() {
         return this.stack;
     }
 
     public enum Direction {
         TO_LISTING,
         TO_INVENTORY
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("stack", this.stack)
+                .add("direction", this.direction)
+                .toString();
     }
 }

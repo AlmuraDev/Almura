@@ -11,7 +11,10 @@ import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.DE
 import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.MILLION;
 import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.withSuffix;
 
+import com.almuradev.almura.feature.exchange.ClientExchangeManager;
+import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.client.gui.component.UIExchangeOfferContainer;
+import com.almuradev.almura.feature.exchange.network.InventoryAction;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
@@ -36,30 +39,33 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.ItemStackComparators;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Color;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
 public class ExchangeOfferScreen extends SimpleScreen {
 
-    private final List<VanillaStack> toList = new ArrayList<>();
-    private final List<VanillaStack> toInventory = new ArrayList<>();
+    @Inject private static ClientExchangeManager clientExchangeManager;
+
+    private final Exchange exchange;
+    private final List<InventoryAction> inventoryActions = new ArrayList<>();
     private final int maxOfferSlots = ThreadLocalRandom.current().nextInt(1, 5); // TODO: Server must instruct client to open this screen with the
                                                                                  // appropriate limit
     private UIExchangeOfferContainer offerContainer;
     private UIPropertyBar progressBar;
 
-    public ExchangeOfferScreen(ExchangeScreen parent) {
+    public ExchangeOfferScreen(ExchangeScreen parent, Exchange exchange) {
         super(parent, true);
+        this.exchange = exchange;
     }
 
     @Override
@@ -75,6 +81,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
         form.setBorder(FontColors.WHITE, 1, 185);
         form.setPadding(4, 4);
         form.setTopPadding(20);
+
+        final ExchangeOfferScreen currentInstance = this;
 
         // OK/Cancel buttons
         final UIButton buttonOk = new UIButtonBuilder(this)
@@ -123,41 +131,74 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
     @Subscribe
     private void onTransaction(UIExchangeOfferContainer.TransactionCompletedEvent event) {
-        final List<VanillaStack> targetList = event.targetSide == UIDualListContainer.SideType.LEFT ? this.toInventory : this.toList;
+        final InventoryAction.Direction direction = event.targetSide == UIDualListContainer.SideType.LEFT
+                ? InventoryAction.Direction.TO_INVENTORY
+                : InventoryAction.Direction.TO_LISTING;
+        final InventoryAction.Direction oppositeDirection = event.targetSide == UIDualListContainer.SideType.LEFT
+                ? InventoryAction.Direction.TO_LISTING
+                : InventoryAction.Direction.TO_INVENTORY;
 
-        final VanillaStack stack = targetList.stream()
-                .filter(t -> ItemStackComparators.IGNORE_SIZE.compare((ItemStack) (Object) t.asRealStack(),
-                        (ItemStack) (Object) event.stack.asRealStack()) == 0)
-                .findAny()
-                .orElseGet(() -> {
-                    final VanillaStack newStack = event.stack.copy();
-                    newStack.setQuantity(0);
-                    targetList.add(newStack);
-                    return newStack;
-                });
+        // Filter out relevant actions
+        final List<InventoryAction> filteredActions = this.inventoryActions.stream()
+                .filter(a -> UIExchangeOfferContainer.TransferType.isStackEqualIgnoreSize(a.getStack(), event.stack) &&
+                        a.getDirection() == oppositeDirection)
+                .collect(Collectors.toList());
 
-        stack.setQuantity(stack.getQuantity() + event.quantity);
+        // Determine what we need to remove
+        int removed = 0;
+        int toRemoveCount = event.stack.getQuantity();
 
-        if (stack.getQuantity() <= 0) {
-            targetList.remove(stack);
+        // If we can still remove more, iterate through all remaining stacks and attempt to pull what we can
+        if (toRemoveCount > 0) {
+            for (InventoryAction action : filteredActions) {
+                // Stop if we don't have anymore to remove
+                if (toRemoveCount <= 0) {
+                    break;
+                }
+
+                // Determine how much we are taking
+                final int toTake = Math.min(action.getStack().getQuantity(), toRemoveCount);
+                removed += toTake;
+                toRemoveCount -= toTake;
+
+                // Take the amount
+                action.getStack().setQuantity(action.getStack().getQuantity() - toTake);
+                if (action.getStack().isEmpty()) {
+                    this.inventoryActions.remove(action);
+                }
+            }
+        }
+
+        // If the items we've removed is less than the items we need to add then continue
+        // Otherwise we'll balance to a net zero as this means that the items were once added from one direction to another.
+        if (removed < event.stack.getQuantity()) { // To Inventory logic
+            final int toadd = event.stack.getQuantity() - removed;
+            if (direction == InventoryAction.Direction.TO_INVENTORY) {
+
+                // Add a new action or add the quantity to an existing one.
+                final InventoryAction existingAction = this.inventoryActions.stream()
+                        .filter(a -> UIExchangeOfferContainer.TransferType.isStackEqualIgnoreSize(a.getStack(), event.stack) && a.getDirection() == direction).findAny().orElse(null);
+
+                if (existingAction == null) {
+                    final InventoryAction newAction = new InventoryAction(direction, event.stack);
+                    newAction.getStack().setQuantity(toadd);
+                    this.inventoryActions.add(newAction);
+                } else {
+                    existingAction.getStack().setQuantity(existingAction.getStack().getQuantity() + event.stack.getQuantity());
+                }
+            } else { // To Listing logic
+                this.inventoryActions.add(new InventoryAction(direction, event.stack));
+            }
         }
 
         final int size = offerContainer.getItems(UIDualListContainer.SideType.RIGHT).size();
         this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
         this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
-
-        System.out.println(">>> Side: " + event.targetSide);
-        System.out.println(Arrays.toString(targetList.toArray()));
-        System.out.println("==========");
     }
 
     private void transact() {
-        // Only add for now
-        if (parent.isPresent() && parent.get() instanceof ExchangeScreen) {
-            //final ExchangeScreen excParent = (ExchangeScreen) parent.get();
-
-            //excParent.forSaleList.clearItems();
-            //excParent.forSaleList.setItems(new ArrayList<>(this.offerContainer.getItems(UIDualListContainer.SideType.RIGHT)));
+        if (!this.inventoryActions.isEmpty()) {
+            clientExchangeManager.updateListItems(this.exchange.getId(), this.inventoryActions);
         }
         this.close();
     }

@@ -430,7 +430,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
     public void loadListItems(final Exchange axs) {
 
-        this.logger.info("Querying listItems for Exchange [{}], please wait...");
+        this.logger.info("Querying items for Exchange [{}], please wait...");
 
         final List<ListItem> items = new ArrayList<>();
 
@@ -490,7 +490,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
      */
 
     public void loadForSaleItems(final Exchange axs) {
-        this.logger.info("Querying for sale listItems for Exchange [{}], please wait...");
+        this.logger.info("Querying for sale items for Exchange [{}], please wait...");
 
         final List<ForSaleItem> items = new ArrayList<>();
 

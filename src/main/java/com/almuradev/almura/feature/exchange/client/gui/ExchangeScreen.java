@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.feature.exchange.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
@@ -68,19 +69,21 @@ public final class ExchangeScreen extends SimpleScreen {
     private static final int minScreenWidth = 600;
     private static final int minScreenHeight = 370;
     private static final int innerPadding = 2;
+    @Inject private static Logger logger;
+    @Inject private static ClientNotificationManager clientNotificationManager;
+    @Inject private static ClientExchangeManager clientExchangeManager;
+
     private final Exchange exchange;
+    private final List<ListItem> currentResults = new ArrayList<>();
 
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
         buttonList;
     private UILabel labelSearchPage;
     private UITextField itemSearchField, sellerSearchField;
-    public UIDynamicList<ListItem> forSaleList, searchResultsList;
-    private final List<ListItem> currentResults = new ArrayList<>();
     private int currentPage;
     private int pages;
 
-    @Inject private static Logger logger;
-    @Inject private static ClientNotificationManager clientNotificationManager;
+    public UIDynamicList<ListItem> forSaleList, searchResultsList;
 
     public ExchangeScreen(final Exchange exchange) {
         this.exchange = exchange;
@@ -153,7 +156,6 @@ public final class ExchangeScreen extends SimpleScreen {
         this.searchResultsList.setItemComponentFactory((g, e) -> new ResultItemComponent(this, e));
         this.searchResultsList.setItemComponentSpacing(1);
         this.searchResultsList.setCanDeselect(true);
-        this.searchResultsList.setCanInternalClick(true);
         this.searchResultsList.setSelectConsumer((i) -> this.updateControls());
 
         // Search button
@@ -309,7 +311,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .position(0, 0)
             .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
             .enabled(true)
-            .onClick(() -> new ExchangeOfferScreen(this).display())
+            .onClick(() -> new ExchangeOfferScreen(this, this.exchange).display())
             .build("button.add_remove");
 
         inventoryArea.add(this.forSaleList, this.buttonList, buttonRemoveItem);

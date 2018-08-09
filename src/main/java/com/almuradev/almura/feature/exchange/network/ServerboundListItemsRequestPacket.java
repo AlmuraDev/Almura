@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.exchange.network;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.almura.shared.item.BasicVirtualStack;
 import com.almuradev.almura.shared.item.VirtualStack;
@@ -82,7 +83,7 @@ public final class ServerboundListItemsRequestPacket implements Message {
                         continue;
                     }
                 }
-                final BasicVirtualStack stack = new BasicVirtualStack(item, quantity, metadata, compound);
+                final BasicVanillaStack stack = new BasicVanillaStack(item, quantity, metadata, compound);
                 this.actions.add(new InventoryAction(direction, stack));
             }
         }
