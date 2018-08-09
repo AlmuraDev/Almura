@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.exchange.network.handler;
 
 import com.almuradev.almura.feature.exchange.ServerExchangeManager;
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeForSaleItemsRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundForSaleItemRequestPacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
@@ -21,17 +21,17 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ServerboundExchangeForSaleItemsRequestPacketHandler implements MessageHandler<ServerboundExchangeForSaleItemsRequestPacket> {
+public final class ServerboundForSaleItemsRequestPacketHandler implements MessageHandler<ServerboundForSaleItemRequestPacket> {
 
   private final ServerExchangeManager exchangeManager;
 
   @Inject
-  public ServerboundExchangeForSaleItemsRequestPacketHandler(final ServerExchangeManager exchangeManager) {
+  public ServerboundForSaleItemsRequestPacketHandler(final ServerExchangeManager exchangeManager) {
     this.exchangeManager = exchangeManager;
   }
 
   @Override
-  public void handleMessage(final ServerboundExchangeForSaleItemsRequestPacket message, final RemoteConnection connection, final Platform.Type side) {
+  public void handleMessage(final ServerboundForSaleItemRequestPacket message, final RemoteConnection connection, final Platform.Type side) {
     if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
       .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
 

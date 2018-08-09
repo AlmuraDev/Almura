@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.exchange.network.handler;
 
 import com.almuradev.almura.feature.exchange.ClientExchangeManager;
-import com.almuradev.almura.feature.exchange.network.ClientboundExchangeForSaleItemsResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundForSaleItemsResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
@@ -21,18 +21,18 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ClientboundExchangeForSaleItemsResponsePacketHandler implements MessageHandler<ClientboundExchangeForSaleItemsResponsePacket> {
+public final class ClientboundForSaleItemsResponsePacketHandler implements MessageHandler<ClientboundForSaleItemsResponsePacket> {
 
   private final ClientExchangeManager exchangeManager;
 
   @Inject
-  public ClientboundExchangeForSaleItemsResponsePacketHandler(final ClientExchangeManager exchangeManager) {
+  public ClientboundForSaleItemsResponsePacketHandler(final ClientExchangeManager exchangeManager) {
     this.exchangeManager = exchangeManager;
   }
 
   @SideOnly(Side.CLIENT)
   @Override
-  public void handleMessage(final ClientboundExchangeForSaleItemsResponsePacket message, final RemoteConnection connection,
+  public void handleMessage(final ClientboundForSaleItemsResponsePacket message, final RemoteConnection connection,
     final Platform.Type side) {
 
     if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {

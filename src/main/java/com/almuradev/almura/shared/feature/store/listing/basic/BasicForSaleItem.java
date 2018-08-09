@@ -87,7 +87,7 @@ public final class BasicForSaleItem implements ForSaleItem {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("item", this.listItem)
+            .add("listItem", this.listItem)
             .add("created", this.created)
             .add("quantity", this.quantity)
             .toString();

@@ -12,7 +12,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
-import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -29,30 +28,30 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-public final class ClientboundExchangeListItemsResponsePacket implements Message {
+public final class ClientboundListItemsResponsePacket implements Message {
 
     @Nullable public String id;
-    @Nullable public List<ListItem> items;
+    @Nullable public List<ListItem> listItems;
 
-    public ClientboundExchangeListItemsResponsePacket() {
+    public ClientboundListItemsResponsePacket() {
 
     }
 
-    public ClientboundExchangeListItemsResponsePacket(final String id, final List<ListItem> items) {
+    public ClientboundListItemsResponsePacket(final String id, final List<ListItem> listItems) {
         checkNotNull(id);
-        checkNotNull(items);
+        checkNotNull(listItems);
 
         this.id = id;
-        this.items = items;
+        this.listItems = listItems;
     }
 
     @Override
     public void readFrom(final ChannelBuf buf) {
         this.id = buf.readString();
-        final int count = buf.readVarInt();
+        final int count = buf.readInteger();
 
         if (count > 0) {
-            this.items = new ArrayList<>();
+            this.listItems = new ArrayList<>();
             for (int i = 0; i < count; i++) {
                 final int record = buf.readInteger();
                 final ResourceLocation location = SerializationUtil.fromString(buf.readString());
@@ -73,7 +72,7 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
 
                 final Instant created;
                 try {
-                    created = SerializationUtil.bytesToObject(buf.readBytes(buf.readVarInt()));
+                    created = SerializationUtil.bytesToObject(buf.readBytes(buf.readInteger()));
                 } catch (IOException | ClassNotFoundException e) {
                     // TODO Bad created date
                     continue;
@@ -82,7 +81,7 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
                 final UUID seller = buf.readUniqueId();
                 final String sellerName = buf.readBoolean() ? buf.readString() : null;
 
-                final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readVarInt()));
+                final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
                 final int index = buf.readInteger();
 
                 final BasicListItem basicListItem = new BasicListItem(record, created, seller, item, quantity, metadata, price, index);
@@ -91,7 +90,7 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
                     basicListItem.setSellerName(sellerName);
                 }
 
-                this.items.add(basicListItem);
+                this.listItems.add(basicListItem);
             }
         }
     }
@@ -101,10 +100,10 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
         checkNotNull(this.id);
 
         buf.writeString(this.id);
-        buf.writeVarInt(this.items == null ? 0 : this.items.size());
+        buf.writeVarInt(this.listItems == null ? 0 : this.listItems.size());
 
-        if (this.items != null) {
-            for (final ListItem item : this.items) {
+        if (this.listItems != null) {
+            for (final ListItem item : this.listItems) {
                 final ResourceLocation location = item.getItem().getRegistryName();
                 if (location == null) {
                     // TODO Bad item, no location
@@ -126,7 +125,7 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
                 buf.writeInteger(item.getQuantity());
                 buf.writeInteger(item.getMetadata());
 
-                buf.writeVarInt(createdData.length);
+                buf.writeInteger(createdData.length);
                 buf.writeBytes(createdData);
 
                 buf.writeUniqueId(item.getSeller());
@@ -139,7 +138,7 @@ public final class ClientboundExchangeListItemsResponsePacket implements Message
                 }
 
                 final byte[] priceData = SerializationUtil.toBytes(item.getPrice());
-                buf.writeVarInt(priceData.length);
+                buf.writeInteger(priceData.length);
                 buf.writeBytes(priceData);
 
                 buf.writeInteger(item.getIndex());

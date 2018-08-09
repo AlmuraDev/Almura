@@ -71,7 +71,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.buttonSingle, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("S")
-                .tooltip("Move the selected stack of items to the target container")
+                .tooltip("Move the selected stack of listItems to the target container")
                 .onClick(() -> TransferType.STACK.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.stack");
@@ -81,7 +81,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             .position(0, SimpleScreen.getPaddedY(this.buttonStack, 4))
             .anchor(Anchor.TOP | Anchor.CENTER)
             .text("->")
-            .tooltip("Send items to the right")
+            .tooltip("Send listItems to the right")
             .onClick(() -> this.setDirection(this.getOppositeSide(this.targetSide)))
             .build("button.direction");
 
@@ -90,7 +90,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.buttonDirection, 4))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("T")
-                .tooltip("Moves all items of the selected type to the target container")
+                .tooltip("Moves all listItems of the selected type to the target container")
                 .onClick(() -> TransferType.TYPE.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.type");
@@ -100,7 +100,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.buttonType, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("A")
-                .tooltip("Moves all items of the selected type to the target container")
+                .tooltip("Moves all listItems of the selected type to the target container")
                 .onClick(() -> TransferType.ALL.transfer(this, this.targetSide, null))
                 .build("button.all");
 
@@ -112,7 +112,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
     @Override
     protected void updateControls(@Nullable final VanillaStack selectedValue, final SideType targetSide) {
         this.buttonDirection.setText(targetSide == SideType.LEFT ? "<-" : "->");
-        this.buttonDirection.setTooltip(String.format("Send items to the %s", this.targetSide == SideType.LEFT ? "left" : "right"));
+        this.buttonDirection.setTooltip(String.format("Send listItems to the %s", this.targetSide == SideType.LEFT ? "left" : "right"));
 
         super.updateControls(selectedValue, targetSide);
     }

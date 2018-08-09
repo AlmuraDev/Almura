@@ -13,7 +13,7 @@ import static com.google.common.base.Preconditions.checkState;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ClientboundExchangeListItemsResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
 import com.almuradev.almura.feature.exchange.network.InventoryAction;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
@@ -253,7 +253,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     .execute(() ->
                         Sponge.getServer().getOnlinePlayers().forEach(p ->
                             axs.getListItemsFor(p.getUniqueId()).ifPresent(items ->
-                                this.network.sendTo(p, new ClientboundExchangeListItemsResponsePacket(axs.getId(), items)))));
+                                this.network.sendTo(p, new ClientboundListItemsResponsePacket(axs.getId(), items)))));
             });
         }
     }
@@ -430,7 +430,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
     public void loadListItems(final Exchange axs) {
 
-        this.logger.info("Querying items for Exchange [{}], please wait...");
+        this.logger.info("Querying listItems for Exchange [{}], please wait...");
 
         final List<ListItem> items = new ArrayList<>();
 
@@ -490,7 +490,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
      */
 
     public void loadForSaleItems(final Exchange axs) {
-        this.logger.info("Querying for sale items for Exchange [{}], please wait...");
+        this.logger.info("Querying for sale listItems for Exchange [{}], please wait...");
 
         final List<ForSaleItem> items = new ArrayList<>();
 

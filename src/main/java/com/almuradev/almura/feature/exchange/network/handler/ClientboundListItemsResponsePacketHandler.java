@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.exchange.network.handler;
 
 import com.almuradev.almura.feature.exchange.ClientExchangeManager;
-import com.almuradev.almura.feature.exchange.network.ClientboundExchangeListItemsResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
@@ -21,20 +21,20 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ClientboundExchangeListItemsResponsePacketHandler implements MessageHandler<ClientboundExchangeListItemsResponsePacket> {
+public final class ClientboundListItemsResponsePacketHandler implements MessageHandler<ClientboundListItemsResponsePacket> {
 
     private final ClientExchangeManager exchangeManager;
 
     @Inject
-    public ClientboundExchangeListItemsResponsePacketHandler(final ClientExchangeManager exchangeManager) {
+    public ClientboundListItemsResponsePacketHandler(final ClientExchangeManager exchangeManager) {
         this.exchangeManager = exchangeManager;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void handleMessage(ClientboundExchangeListItemsResponsePacket message, RemoteConnection connection, Platform.Type side) {
+    public void handleMessage(ClientboundListItemsResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-            this.exchangeManager.handleExchangeListItems(message.id, message.items);
+            this.exchangeManager.handleExchangeListItems(message.id, message.listItems);
         }
     }
 }

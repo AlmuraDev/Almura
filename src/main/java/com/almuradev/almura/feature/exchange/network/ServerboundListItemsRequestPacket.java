@@ -26,15 +26,15 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-public final class ServerboundModifyListItemsPacket implements Message {
+public final class ServerboundListItemsRequestPacket implements Message {
 
     @Nullable public String id;
     @Nullable public List<InventoryAction> actions;
 
-    public ServerboundModifyListItemsPacket() {
+    public ServerboundListItemsRequestPacket() {
     }
 
-    public ServerboundModifyListItemsPacket(final String id, final List<InventoryAction> actions) {
+    public ServerboundListItemsRequestPacket(final String id, final List<InventoryAction> actions) {
         checkNotNull(id);
         checkNotNull(actions);
         checkState(!actions.isEmpty());
