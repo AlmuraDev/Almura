@@ -77,13 +77,12 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .build("button.stack");
 
         this.buttonDirection = new UIButtonBuilder(gui)
-            .size(30)
-            .position(0, SimpleScreen.getPaddedY(this.buttonStack, 4))
-            .anchor(Anchor.TOP | Anchor.CENTER)
-            .text("->")
-            .tooltip("Send items to the right")
-            .onClick(() -> this.setDirection(this.getOppositeSide(this.targetSide)))
-            .build("button.direction");
+                .size(30)
+                .position(0, SimpleScreen.getPaddedY(this.buttonStack, 4))
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .text("->")
+                .tooltip("Send items to the right")
+                .build("button.direction");
 
         this.buttonType = new UIButtonBuilder(gui)
                 .size(20)
@@ -208,6 +207,9 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 return;
             }
 
+            // Store the last stack we've touched on the target list
+            VanillaStack lastStack = null;
+
             // Store our lists
             final UIDynamicList<VanillaStack> sourceList = component.getOpposingListFromSide(targetSide);
             final UIDynamicList<VanillaStack> targetList = component.getListFromSide(targetSide);
@@ -279,6 +281,8 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
                 // Add the amount
                 stack.setQuantity(stack.getQuantity() + toAdd);
+
+                lastStack = stack;
             }
 
             final int divisor = toAddCount / limit;
@@ -294,6 +298,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 added += limit;
                 copyStack.setQuantity(limit);
                 toAdd.add(copyStack);
+                lastStack = copyStack;
             }
 
             if (remainder != 0) {
@@ -302,6 +307,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                     copyStack.setQuantity(remainder);
                     added += remainder;
                     toAdd.add(copyStack);
+                    lastStack = copyStack;
                 }
             }
 
@@ -313,6 +319,8 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             component.fireEvent(new TransactionCompletedEvent<>(component, targetSide, transactionStack));
             component.fireEvent(new UIDynamicList.ItemsChangedEvent<>(sourceList));
             component.fireEvent(new UIDynamicList.ItemsChangedEvent<>(targetList));
+
+            targetList.setSelectedItem(lastStack);
         }
 
         protected static Stream<VanillaStack> getFilteredStream(List<VanillaStack> list, @Nullable VanillaStack sourceStack) {
