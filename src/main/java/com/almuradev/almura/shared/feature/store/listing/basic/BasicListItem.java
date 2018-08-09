@@ -48,7 +48,7 @@ public final class BasicListItem implements ListItem {
     @Nullable NBTTagCompound compound;
 
     public BasicListItem(final int record, final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
-        final BigDecimal price, final int index) {
+        final BigDecimal price, final int index, @Nullable final NBTTagCompound compound) {
         checkNotNull(created);
         checkNotNull(seller);
         checkNotNull(item);
@@ -65,6 +65,7 @@ public final class BasicListItem implements ListItem {
         this.metadata = metadata;
         this.price = price;
         this.index = index;
+        this.compound = compound;
     }
 
     @Override
@@ -141,7 +142,8 @@ public final class BasicListItem implements ListItem {
 
     @Override
     public BasicListItem copy() {
-        return new BasicListItem(this.record, this.created, this.seller, this.item, this.quantity, this.metadata, this.price, this.index);
+        return new BasicListItem(this.record, this.created, this.seller, this.item, this.quantity, this.metadata, this.price, this.index,
+          this.compound == null ? null : this.compound.copy());
     }
 
     @Override

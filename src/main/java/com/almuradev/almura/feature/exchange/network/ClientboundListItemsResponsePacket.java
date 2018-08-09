@@ -13,6 +13,7 @@ import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.spongepowered.api.Sponge;
@@ -84,7 +85,20 @@ public final class ClientboundListItemsResponsePacket implements Message {
                 final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
                 final int index = buf.readInteger();
 
-                final BasicListItem basicListItem = new BasicListItem(record, created, seller, item, quantity, metadata, price, index);
+                final int compoundDataLength = buf.readInteger();
+                NBTTagCompound compound = null;
+
+                if (compoundDataLength > 0) {
+                    try {
+                        compound = SerializationUtil.compoundFromBytes(buf.readBytes(compoundDataLength));
+                    } catch (IOException e) {
+                        // TODO Malformed tag compound
+                        e.printStackTrace();
+                        continue;
+                    }
+                }
+
+                final BasicListItem basicListItem = new BasicListItem(record, created, seller, item, quantity, metadata, price, index, compound);
 
                 if (Sponge.getPlatform().getExecutionType().isClient()) {
                     basicListItem.setSellerName(sellerName);
@@ -118,6 +132,19 @@ public final class ClientboundListItemsResponsePacket implements Message {
                     continue;
                 }
 
+                final NBTTagCompound compound = item.getCompound();
+                byte[] compoundData = null;
+
+                if (compound != null) {
+                    try {
+                        compoundData = SerializationUtil.toBytes(compound);
+                    } catch (IOException e) {
+                        // TODO Malformed tag compound
+                        e.printStackTrace();
+                        continue;
+                    }
+                }
+
                 buf.writeInteger(item.getRecord());
 
                 buf.writeString(SerializationUtil.toString(location));
@@ -142,6 +169,13 @@ public final class ClientboundListItemsResponsePacket implements Message {
                 buf.writeBytes(priceData);
 
                 buf.writeInteger(item.getIndex());
+
+                if (compoundData == null) {
+                    buf.writeInteger(0);
+                } else {
+                    buf.writeInteger(compoundData.length);
+                    buf.writeBytes(compoundData);
+                }
             }
         }
     }

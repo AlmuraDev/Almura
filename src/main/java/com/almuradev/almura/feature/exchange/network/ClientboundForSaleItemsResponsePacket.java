@@ -15,6 +15,7 @@ import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.spongepowered.api.Sponge;
@@ -86,7 +87,20 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
         final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
         final int index = buf.readInteger();
 
-        final BasicListItem basicListItem = new BasicListItem(record, listItemCreated, seller, item, quantity, metadata, price, index);
+        final int compoundDataLength = buf.readInteger();
+        NBTTagCompound compound = null;
+
+        if (compoundDataLength > 0) {
+          try {
+            compound = SerializationUtil.compoundFromBytes(buf.readBytes(compoundDataLength));
+          } catch (IOException e) {
+            // TODO Malformed tag compound
+            e.printStackTrace();
+            continue;
+          }
+        }
+
+        final BasicListItem basicListItem = new BasicListItem(record, listItemCreated, seller, item, quantity, metadata, price, index, compound);
 
         if (Sponge.getPlatform().getExecutionType().isClient()) {
           basicListItem.setSellerName(sellerName);
@@ -133,6 +147,19 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
           continue;
         }
 
+        final NBTTagCompound compound = listItem.getCompound();
+        byte[] compoundData = null;
+
+        if (compound != null) {
+          try {
+            compoundData = SerializationUtil.toBytes(compound);
+          } catch (IOException e) {
+            // TODO Malformed tag compound
+            e.printStackTrace();
+            continue;
+          }
+        }
+
         final byte[] forSaleItemCreatedData;
         try {
           forSaleItemCreatedData = SerializationUtil.objectToBytes(forSaleItem.getCreated());
@@ -166,6 +193,13 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
         buf.writeBytes(priceData);
 
         buf.writeInteger(listItem.getIndex());
+
+        if (compoundData == null) {
+          buf.writeInteger(0);
+        } else {
+          buf.writeInteger(compoundData.length);
+          buf.writeBytes(compoundData);
+        }
 
         // ForSaleItem
         buf.writeInteger(forSaleItemCreatedData.length);
