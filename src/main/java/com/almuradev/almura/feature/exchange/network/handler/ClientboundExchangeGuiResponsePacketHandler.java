@@ -9,7 +9,7 @@ package com.almuradev.almura.feature.exchange.network.handler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.feature.exchange.ClientExchangeManager;
+import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -34,7 +34,7 @@ public final class ClientboundExchangeGuiResponsePacketHandler implements Messag
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void handleMessage(ClientboundExchangeGuiResponsePacket message, RemoteConnection connection, Platform.Type side) {
+    public void handleMessage(final ClientboundExchangeGuiResponsePacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
 
             checkNotNull(message.type);
@@ -46,6 +46,8 @@ public final class ClientboundExchangeGuiResponsePacketHandler implements Messag
                 case SPECIFIC:
                     this.exchangeManager.handleExchangeSpecific(message.id);
                     break;
+                default:
+                    throw new UnsupportedOperationException(message.type + " is not supported yet!");
             }
         }
     }

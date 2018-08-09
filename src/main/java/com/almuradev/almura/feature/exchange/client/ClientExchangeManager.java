@@ -5,17 +5,21 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange;
+package com.almuradev.almura.feature.exchange.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.feature.exchange.Exchange;
+import com.almuradev.almura.feature.exchange.ExchangeGuiType;
+import com.almuradev.almura.feature.exchange.ExchangeModifyType;
+import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
-import com.almuradev.almura.feature.exchange.network.InventoryAction;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
+import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
@@ -46,7 +50,7 @@ public final class ClientExchangeManager implements Witness {
     private final List<Exchange> availableExchanges = new ArrayList<>();
 
     @Inject
-    public ClientExchangeManager(final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network) {
+    public ClientExchangeManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
         this.network = network;
     }
 
@@ -126,13 +130,31 @@ public final class ClientExchangeManager implements Witness {
         this.network.sendToServer(new ServerboundModifyExchangePacket(id));
     }
 
-    public void updateListItems(final String id, final List<InventoryAction> actions) {
+    public void queryForSaleItemsFor(final String id, @Nullable final String filter) {
         checkNotNull(id);
-        checkNotNull(actions);
-        checkState(!actions.isEmpty());
+
+        // TODO Grinch
+        // TODO Send up the filter here
+    }
+
+    public void updateListItems(final String id, @Nullable final List<InventoryAction> actions) {
+        checkNotNull(id);
 
         this.network.sendToServer(new ServerboundListItemsRequestPacket(id, actions));
     }
+
+    public void purchase(final String id, final int listItemRecNo, final int quantity) {
+        checkNotNull(id);
+        checkState(listItemRecNo >= 0);
+        checkState(quantity >= 1);
+
+        // TODO Grinch
+        // TODO Send up the transaction here
+    }
+
+    /**
+     * Handlers
+     */
 
     public void handleExchangeRegistry(final Set<Exchange> exchanges) {
         this.putExchanges(exchanges);
@@ -156,11 +178,24 @@ public final class ClientExchangeManager implements Witness {
         }
     }
 
-    public void handleExchangeListItems(final String id, @Nullable final List<ListItem> listItems) {
+    public void handleListItems(final String id, @Nullable final List<ListItem> listItems) {
         checkNotNull(id);
 
         // TODO Grinch
-        // TODO Need to refresh the screen with this value if the id is of an Exchange open. You won't have the NBT at this time though, that is
-        // TODO requested later
+        // TODO Need to refresh the list items with this value if the id is of an Exchange open.
+    }
+
+    public void handleForSaleFilter(final String id) {
+        checkNotNull(id);
+
+        // TODO Grinch
+        // TODO Clear out for sale listings, call updateForSaleItemsFor with the filter
+    }
+
+    public void handleForSaleItems(final String id, @Nullable final List<ForSaleItem> forSaleItems) {
+        checkNotNull(id);
+
+        // TODO Grinch
+        // TODO Need to refresh the forsale items with this value if the id is of an Exchange open.
     }
 }

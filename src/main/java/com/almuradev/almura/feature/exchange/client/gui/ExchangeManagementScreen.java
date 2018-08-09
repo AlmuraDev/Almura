@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
-import com.almuradev.almura.feature.exchange.ClientExchangeManager;
+import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.ui.FontColors;

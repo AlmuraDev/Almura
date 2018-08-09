@@ -7,10 +7,8 @@
  */
 package com.almuradev.almura.feature.exchange.network.handler;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.almuradev.almura.feature.exchange.ServerExchangeManager;
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundForSaleFilterResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
@@ -24,34 +22,23 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ServerboundExchangeGuiRequestPacketHandler implements MessageHandler<ServerboundExchangeGuiRequestPacket> {
+public final class ServerboundForSaleFilterResponsePacketHandler implements MessageHandler<ServerboundForSaleFilterResponsePacket> {
 
     private final ServerExchangeManager exchangeManager;
 
     @Inject
-    public ServerboundExchangeGuiRequestPacketHandler(final ServerExchangeManager exchangeManager) {
+    public ServerboundForSaleFilterResponsePacketHandler(final ServerExchangeManager exchangeManager) {
         this.exchangeManager = exchangeManager;
     }
 
     @Override
-    public void handleMessage(final ServerboundExchangeGuiRequestPacket message, final RemoteConnection connection, final Platform.Type side) {
+    public void handleMessage(final ServerboundForSaleFilterResponsePacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
             .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
 
-            checkNotNull(message.type);
-
             final Player player = ((PlayerConnection) connection).getPlayer();
 
-            switch (message.type) {
-                case MANAGE:
-                    this.exchangeManager.handleExchangeManage(player);
-                    break;
-                case SPECIFIC:
-                    this.exchangeManager.handleExchangeSpecific(player, message.id);
-                    break;
-                default:
-                    throw new UnsupportedOperationException(message.type + " is not supported yet!");
-            }
+            this.exchangeManager.handleForSaleFilter(player, message.filter);
         }
     }
 }

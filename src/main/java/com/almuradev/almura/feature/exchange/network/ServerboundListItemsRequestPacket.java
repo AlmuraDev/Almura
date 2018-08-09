@@ -10,10 +10,10 @@ package com.almuradev.almura.feature.exchange.network;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
-import com.almuradev.almura.shared.util.SerializationUtil;
-import com.almuradev.almura.shared.item.BasicVirtualStack;
 import com.almuradev.almura.shared.item.VirtualStack;
+import com.almuradev.almura.shared.util.SerializationUtil;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -35,17 +35,15 @@ public final class ServerboundListItemsRequestPacket implements Message {
     public ServerboundListItemsRequestPacket() {
     }
 
-    public ServerboundListItemsRequestPacket(final String id, final List<InventoryAction> actions) {
+    public ServerboundListItemsRequestPacket(final String id, @Nullable final List<InventoryAction> actions) {
         checkNotNull(id);
-        checkNotNull(actions);
-        checkState(!actions.isEmpty());
 
         this.id = id;
         this.actions = actions;
     }
 
     @Override
-    public void readFrom(ChannelBuf buf) {
+    public void readFrom(final ChannelBuf buf) {
         this.id = buf.readString();
 
         final int count = buf.readInteger();
@@ -90,47 +88,48 @@ public final class ServerboundListItemsRequestPacket implements Message {
     }
 
     @Override
-    public void writeTo(ChannelBuf buf) {
+    public void writeTo(final ChannelBuf buf) {
         checkNotNull(this.id);
-        checkNotNull(this.actions);
-        checkState(!this.actions.isEmpty());
 
         buf.writeString(this.id);
-        buf.writeInteger(this.actions.size());
+        buf.writeInteger(this.actions == null ? 0 : this.actions.size());
 
-        for (final InventoryAction action : this.actions) {
-            final VirtualStack stack = action.getStack();
+        if (this.actions != null) {
 
-            final ResourceLocation location = stack.getItem().getRegistryName();
-            if (location == null) {
-                // TODO Bad item, no location
-                continue;
-            }
+            for (final InventoryAction action : this.actions) {
+                final VirtualStack stack = action.getStack();
 
-            final NBTTagCompound compound = stack.getCompound();
-            byte[] compoundData = null;
-
-            if (compound != null) {
-                try {
-                    compoundData = SerializationUtil.toBytes(compound);
-                } catch (IOException e) {
-                    // TODO Malformed tag compound
-                    e.printStackTrace();
+                final ResourceLocation location = stack.getItem().getRegistryName();
+                if (location == null) {
+                    // TODO Bad item, no location
                     continue;
                 }
-            }
 
-            buf.writeString(action.getDirection().name().toUpperCase());
+                final NBTTagCompound compound = stack.getCompound();
+                byte[] compoundData = null;
 
-            buf.writeString(SerializationUtil.toString(location));
-            buf.writeInteger(stack.getQuantity());
-            buf.writeInteger(stack.getMetadata());
+                if (compound != null) {
+                    try {
+                        compoundData = SerializationUtil.toBytes(compound);
+                    } catch (IOException e) {
+                        // TODO Malformed tag compound
+                        e.printStackTrace();
+                        continue;
+                    }
+                }
 
-            if (compoundData == null) {
-                buf.writeInteger(0);
-            } else {
-                buf.writeInteger(compoundData.length);
-                buf.writeBytes(compoundData);
+                buf.writeString(action.getDirection().name().toUpperCase());
+
+                buf.writeString(SerializationUtil.toString(location));
+                buf.writeInteger(stack.getQuantity());
+                buf.writeInteger(stack.getMetadata());
+
+                if (compoundData == null) {
+                    buf.writeInteger(0);
+                } else {
+                    buf.writeInteger(compoundData.length);
+                    buf.writeBytes(compoundData);
+                }
             }
         }
     }

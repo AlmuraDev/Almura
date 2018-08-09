@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.exchange.network;
 
 import com.almuradev.almura.feature.exchange.Exchange;
-import com.almuradev.almura.shared.util.PacketUtil;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;

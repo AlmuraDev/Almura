@@ -7,27 +7,32 @@
  */
 package com.almuradev.almura.feature.exchange;
 
+import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeOfferScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
-import com.almuradev.almura.feature.exchange.network.ClientboundForSaleItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundForSaleItemRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundForSaleItemsResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeTransactionRequestPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundForSaleFilterResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundTransactionRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequestPacket;
-import com.almuradev.almura.feature.exchange.network.handler.ClientboundForSaleItemsResponsePacketHandler;
+import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundModifyForSaleItemListStatusRequestPacket;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangeGuiResponsePacketHandler;
-import com.almuradev.almura.feature.exchange.network.handler.ClientboundListItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchangesRegistryPacketHandler;
-import com.almuradev.almura.feature.exchange.network.handler.ServerboundForSaleItemsRequestPacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ClientboundForSaleFilterRequestPacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ClientboundForSaleItemsResponsePacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ClientboundListItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeGuiRequestPacketHandler;
-import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeTransactionRequestPacketHandler;
-import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyExchangePacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ServerboundForSaleFilterResponsePacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ServerboundTransactionRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundListItemsRequestPacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyExchangePacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyForSaleItemListStatusRequestPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -58,15 +63,21 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
             .bind(ServerboundListItemsRequestPacket.class,
                 binder -> binder.handler(ServerboundListItemsRequestPacketHandler.class, Platform.Type.SERVER))
 
+            .bind(ClientboundForSaleFilterRequestPacket.class,
+                binder -> binder.handler(ClientboundForSaleFilterRequestPacketHandler.class, Platform.Type.CLIENT))
+
+            .bind(ServerboundForSaleFilterResponsePacket.class,
+                binder -> binder.handler(ServerboundForSaleFilterResponsePacketHandler.class, Platform.Type.SERVER))
+
             .bind(ClientboundForSaleItemsResponsePacket.class,
                 binder -> binder.handler(ClientboundForSaleItemsResponsePacketHandler.class, Platform.Type.CLIENT))
 
-            .bind(ServerboundForSaleItemRequestPacket.class,
-                binder -> binder.handler(ServerboundForSaleItemsRequestPacketHandler.class, Platform.Type.SERVER))
+            .bind(ServerboundModifyForSaleItemListStatusRequestPacket.class,
+                binder -> binder.handler(ServerboundModifyForSaleItemListStatusRequestPacketHandler.class, Platform.Type.SERVER))
 
-            .bind(ServerboundExchangeTransactionRequestPacket.class,
-                binder -> binder.handler(ServerboundExchangeTransactionRequestPacketHandler.class, Platform.Type.SERVER));
-        
+            .bind(ServerboundTransactionRequestPacket.class,
+                binder -> binder.handler(ServerboundTransactionRequestPacketHandler.class, Platform.Type.SERVER));
+
         this.facet().add(ServerExchangeManager.class);
 
         this.on(Platform.Type.CLIENT, () -> {

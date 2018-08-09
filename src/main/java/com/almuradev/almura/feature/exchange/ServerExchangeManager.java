@@ -13,22 +13,21 @@ import static com.google.common.base.Preconditions.checkState;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
-import com.almuradev.almura.feature.exchange.network.InventoryAction;
+import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
-import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.almura.shared.feature.store.Store;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.core.event.Witness;
 import com.almuradev.generated.axs.tables.Axs;
-import com.almuradev.generated.axs.tables.AxsItem;
+import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -80,8 +79,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     private final Map<String, Exchange> exchanges = new HashMap<>();
 
     @Inject
-    public ServerExchangeManager(final PluginContainer container, final Scheduler scheduler, final Logger logger, final @ChannelId(NetworkConfig
-        .CHANNEL) ChannelBinding.IndexedMessageChannel network, final DatabaseManager databaseManager,
+    public ServerExchangeManager(final PluginContainer container, final Scheduler scheduler, final Logger logger, @ChannelId(NetworkConfig.CHANNEL)
+        final ChannelBinding.IndexedMessageChannel network, final DatabaseManager databaseManager,
         final ServerNotificationManager notificationManager) {
         this.container = container;
         this.scheduler = scheduler;
@@ -429,6 +428,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
      */
 
     public void loadListItems(final Exchange axs) {
+        checkNotNull(axs);
 
         this.logger.info("Querying items for Exchange [{}], please wait...");
 
@@ -442,7 +442,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .fetchMany();
 
             results.forEach(result -> result.forEach(record -> {
-                final ResourceLocation location = SerializationUtil.fromString(record.getValue(AxsItem.AXS_ITEM.ITEM_TYPE));
+                final ResourceLocation location = SerializationUtil.fromString(record.getValue(AxsListItem.AXS_LIST_ITEM.ITEM_TYPE));
 
                 if (location == null) {
                     // TODO This is a malformed resource location
@@ -454,15 +454,16 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         // TODO They've given us an item that isn't loaded (likely a mod that vanished)
                     } else {
 
-                        final Integer recNo = record.getValue(AxsItem.AXS_ITEM.REC_NO);
-                        final Timestamp created = record.getValue(AxsItem.AXS_ITEM.CREATED);
-                        final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsItem.AXS_ITEM.SELLER));
-                        final Integer quantity = record.getValue(AxsItem.AXS_ITEM.QUANTITY);
-                        final Integer metadata = record.getValue(AxsItem.AXS_ITEM.METADATA);
-                        final BigDecimal price = record.getValue(AxsItem.AXS_ITEM.PRICE);
-                        final Integer index = record.getValue(AxsItem.AXS_ITEM.INDEX);
+                        final Integer recNo = record.getValue(AxsListItem.AXS_LIST_ITEM.REC_NO);
+                        final Timestamp created = record.getValue(AxsListItem.AXS_LIST_ITEM.CREATED);
+                        final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsListItem.AXS_LIST_ITEM.SELLER));
+                        final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
+                        final Integer metadata = record.getValue(AxsListItem.AXS_LIST_ITEM.METADATA);
+                        final BigDecimal price = record.getValue(AxsListItem.AXS_LIST_ITEM.PRICE);
+                        final Integer index = record.getValue(AxsListItem.AXS_LIST_ITEM.INDEX);
 
-                        items.add(new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, price, index));
+                        /// TODO Query for compound
+                        items.add(new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, price, index, null));
                     }
                 }
             }));
@@ -478,9 +479,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     }
 
     public void handleModifyListItems(final Player player, final String id, final List<InventoryAction> actions) {
+        checkNotNull(player);
         checkNotNull(id);
-        checkNotNull(actions);
-        checkState(!actions.isEmpty());
 
         // TODO Buckle up, this will be a hell of a ride
     }
@@ -490,13 +490,15 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
      */
 
     public void loadForSaleItems(final Exchange axs) {
+        checkNotNull(axs);
+
         this.logger.info("Querying for sale items for Exchange [{}], please wait...");
 
         final List<ForSaleItem> items = new ArrayList<>();
 
         try (final DSLContext context = this.databaseManager.createContext(true)) {
             final Results results = ExchangeQueries
-                .createFetchListItemsFor(axs.getId())
+                .createFetchForSaleItemsFor(axs.getId())
                 .build(context)
                 .keepStatement(false)
                 .fetchMany();
@@ -505,22 +507,27 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             final Map<UUID, List<ListItem>> listItems = new HashMap<>(axs.getListItems());
 
             results.forEach(result -> result.forEach(record -> {
-                final Integer itemRecNo = record.getValue(AxsListItem.AXS_LIST_ITEM.AXS_ITEM);
+                final Integer itemRecNo = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.LIST_ITEM);
                 ListItem found = null;
 
                 for (final List<ListItem> itemList : listItems.values()) {
 
-                    found = itemList.stream().filter(item -> item.getRecord() == itemRecNo).findAny().orElse(null);
+                    found = itemList
+                        .stream()
+                        .filter(item -> item.getRecord() == itemRecNo)
+                        .findAny()
+                        .orElse(null);
+
                     if (found != null) {
                         break;
                     }
                 }
 
                 if (found == null) {
-                    // TODO If we're here, this is a dead listing as the listing doesn't exist in the exchange
+                    // TODO If we're here, this is a dead for sale item as the list item doesn't exist in the exchange
                 } else {
-                    final Timestamp created = record.getValue(AxsListItem.AXS_LIST_ITEM.CREATED);
-                    final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
+                    final Timestamp created = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED);
+                    final Integer quantity = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.QUANTITY);
 
                     items.add(new BasicForSaleItem((BasicListItem) found, created.toInstant(), quantity));
                 }
@@ -538,5 +545,41 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void handleForSaleFilter(final Player player, final String filter) {
+        checkNotNull(player);
+        checkNotNull(filter);
+
+        // TODO
+    }
+
+    public void handleListItemForSale(final Player player, final String id, final int listItemRecNo) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkState(listItemRecNo >= 0);
+
+        // TODO
+    }
+
+    public void handleDelistItemFromSale(final Player player, final String id, final int listItemRecNo) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkState(listItemRecNo >= 0);
+
+        // TODO
+    }
+
+    /**
+     * Transaction
+     */
+
+    public void handleTransaction(final Player player, final String id, final int listItemRecNo, final int quantity) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkState(listItemRecNo >= 0);
+        checkState(quantity >= 0);
+
+        // TODO
     }
 }

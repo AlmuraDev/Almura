@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.network.handler;
 
-import com.almuradev.almura.feature.exchange.ClientExchangeManager;
+import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -32,9 +32,9 @@ public final class ClientboundListItemsResponsePacketHandler implements MessageH
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void handleMessage(ClientboundListItemsResponsePacket message, RemoteConnection connection, Platform.Type side) {
+    public void handleMessage(final ClientboundListItemsResponsePacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-            this.exchangeManager.handleExchangeListItems(message.id, message.listItems);
+            this.exchangeManager.handleListItems(message.id, message.listItems);
         }
     }
 }

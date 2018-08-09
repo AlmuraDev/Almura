@@ -8,17 +8,17 @@
 package com.almuradev.almura.feature.exchange.database;
 
 import static com.almuradev.generated.axs.Tables.AXS;
-import static com.almuradev.generated.axs.Tables.AXS_ITEM;
-import static com.almuradev.generated.axs.Tables.AXS_ITEM_DATA;
+import static com.almuradev.generated.axs.Tables.AXS_FOR_SALE_ITEM;
 import static com.almuradev.generated.axs.Tables.AXS_LIST_ITEM;
+import static com.almuradev.generated.axs.Tables.AXS_LIST_ITEM_DATA;
 import static com.almuradev.generated.axs.Tables.AXS_TRANSACTION;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.util.SerializationUtil;
-import com.almuradev.generated.axs.tables.records.AxsItemDataRecord;
-import com.almuradev.generated.axs.tables.records.AxsItemRecord;
+import com.almuradev.generated.axs.tables.records.AxsForSaleItemRecord;
+import com.almuradev.generated.axs.tables.records.AxsListItemDataRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsRecord;
 import com.almuradev.generated.axs.tables.records.AxsTransactionRecord;
@@ -90,18 +90,18 @@ public final class ExchangeQueries {
     }
 
     /**
-     * Item
+     * ListItem
      */
 
-    public static DatabaseQuery<SelectConditionStep<AxsItemRecord>> createFetchItemsFor(final String id) {
+    public static DatabaseQuery<SelectConditionStep<AxsListItemRecord>> createFetchItemsFor(final String id) {
         checkNotNull(id);
 
         return context -> context
-            .selectFrom(AXS_ITEM)
-            .where(AXS_ITEM.AXS.eq(id));
+            .selectFrom(AXS_LIST_ITEM)
+            .where(AXS_LIST_ITEM.AXS.eq(id));
     }
 
-    public static DatabaseQuery<InsertValuesStep8<AxsItemRecord, Timestamp, String, byte[], String, Integer, Integer, BigDecimal, Integer>>
+    public static DatabaseQuery<InsertValuesStep8<AxsListItemRecord, Timestamp, String, byte[], String, Integer, Integer, BigDecimal, Integer>>
     createInsertItem(final String id, final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
         final BigDecimal price, final int index) {
         checkNotNull(id);
@@ -111,14 +111,15 @@ public final class ExchangeQueries {
         checkState(quantity > 0);
         checkState(metadata >= 0);
         checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
         checkState(index >= 0);
 
         final String itemId = SerializationUtil.toString(item.getRegistryName());
         final byte[] sellerData = SerializationUtil.toBytes(seller);
 
         return context -> context
-            .insertInto(AXS_ITEM, AXS_ITEM.CREATED, AXS_ITEM.AXS, AXS_ITEM.SELLER, AXS_ITEM.ITEM_TYPE, AXS_ITEM.QUANTITY, AXS_ITEM.METADATA,
-                AXS_ITEM.PRICE, AXS_ITEM.INDEX)
+            .insertInto(AXS_LIST_ITEM, AXS_LIST_ITEM.CREATED, AXS_LIST_ITEM.AXS, AXS_LIST_ITEM.SELLER, AXS_LIST_ITEM.ITEM_TYPE,
+                AXS_LIST_ITEM.QUANTITY, AXS_LIST_ITEM.METADATA, AXS_LIST_ITEM.PRICE, AXS_LIST_ITEM.INDEX)
             .values(Timestamp.from(created), id, sellerData, itemId, quantity, metadata, price, index);
     }
 
@@ -126,59 +127,58 @@ public final class ExchangeQueries {
      * ItemData
      */
 
-    public static DatabaseQuery<SelectConditionStep<AxsItemDataRecord>> createFetchItemDataFor(final int itemRecord) {
-        checkState(itemRecord >= 0);
+    public static DatabaseQuery<SelectConditionStep<AxsListItemDataRecord>> createFetchItemDataFor(final int listItemRecNo) {
+        checkState(listItemRecNo >= 0);
 
         return context -> context
-            .selectFrom(AXS_ITEM_DATA)
-            .where(AXS_ITEM_DATA.AXS_ITEM.eq(itemRecord));
+            .selectFrom(AXS_LIST_ITEM_DATA)
+            .where(AXS_LIST_ITEM_DATA.LIST_ITEM.eq(listItemRecNo));
     }
 
-    public static DatabaseQuery<InsertValuesStep2<AxsItemDataRecord, Integer, byte[]>> createInsertItemData(final int record, final NBTTagCompound
-        compound) throws IOException {
-        checkState(record >= 0);
+    public static DatabaseQuery<InsertValuesStep2<AxsListItemDataRecord, Integer, byte[]>> createInsertItemData(final int listItemRecNo,
+        final NBTTagCompound compound) throws IOException {
+        checkState(listItemRecNo >= 0);
         checkNotNull(compound);
 
         final byte[] compoundData = SerializationUtil.toBytes(compound);
         return context -> context
-            .insertInto(AXS_ITEM_DATA, AXS_ITEM_DATA.AXS_ITEM, AXS_ITEM_DATA.DATA)
-            .values(record, compoundData);
-
+            .insertInto(AXS_LIST_ITEM_DATA, AXS_LIST_ITEM_DATA.LIST_ITEM, AXS_LIST_ITEM_DATA.DATA)
+            .values(listItemRecNo, compoundData);
     }
 
     /**
-     * ListItem
+     * ForSaleItem
      */
 
-    public static DatabaseQuery<SelectJoinStep<Record>> createFetchListItemsFor(final String id) {
+    public static DatabaseQuery<SelectJoinStep<Record>> createFetchForSaleItemsFor(final String id) {
         checkNotNull(id);
 
         return context -> context
             .select()
-            .from(AXS_LIST_ITEM
-                .join(AXS_ITEM
+            .from(AXS_FOR_SALE_ITEM
+                .join(AXS_LIST_ITEM
                     .join(AXS)
                     .on(AXS.ID.eq(id)))
                 .onKey());
     }
 
-    public static DatabaseQuery<SelectConditionStep<AxsListItemRecord>> createFetchListItemsFor(final int item) {
-        checkState(item >= 0);
+    public static DatabaseQuery<SelectConditionStep<AxsForSaleItemRecord>> createFetchForSaleItemsFor(final int listItemRecNo) {
+        checkState(listItemRecNo >= 0);
 
         return context -> context
-            .selectFrom(AXS_LIST_ITEM)
-            .where(AXS_LIST_ITEM.AXS_ITEM.eq(item));
+            .selectFrom(AXS_FOR_SALE_ITEM)
+            .where(AXS_FOR_SALE_ITEM.LIST_ITEM.eq(listItemRecNo));
     }
 
-    public static DatabaseQuery<InsertValuesStep3<AxsListItemRecord, Timestamp, Integer, Integer>> createInsertListItem(final Instant created,
-        final int listItem, final int quantity) {
+    public static DatabaseQuery<InsertValuesStep3<AxsForSaleItemRecord, Timestamp, Integer, Integer>> createInsertForSaleItem(final Instant created,
+        final int listItemRecNo, final int quantity) {
         checkNotNull(created);
-        checkState(listItem >= 0);
+        checkState(listItemRecNo >= 0);
         checkState(quantity > 0);
 
         return context -> context
-            .insertInto(AXS_LIST_ITEM, AXS_LIST_ITEM.CREATED, AXS_LIST_ITEM.AXS_ITEM, AXS_LIST_ITEM.QUANTITY)
-            .values(Timestamp.from(created), listItem, quantity);
+            .insertInto(AXS_FOR_SALE_ITEM, AXS_FOR_SALE_ITEM.CREATED, AXS_FOR_SALE_ITEM.LIST_ITEM, AXS_FOR_SALE_ITEM.QUANTITY)
+            .values(Timestamp.from(created), listItemRecNo, quantity);
     }
 
     /**
@@ -186,9 +186,9 @@ public final class ExchangeQueries {
      */
 
     public DatabaseQuery<InsertValuesStep4<AxsTransactionRecord, Timestamp, Integer, byte[], Integer>> createInsertTransaction(final Instant created,
-        final int listItem, final UUID buyer, final int quantity) {
+        final int forSaleItemRecNo, final UUID buyer, final int quantity) {
         checkNotNull(created);
-        checkState(listItem >= 0);
+        checkState(forSaleItemRecNo >= 0);
         checkNotNull(buyer);
         checkState(quantity > 0);
 
@@ -196,6 +196,6 @@ public final class ExchangeQueries {
 
         return context -> context
             .insertInto(AXS_TRANSACTION, AXS_TRANSACTION.CREATED, AXS_TRANSACTION.LIST_ITEM, AXS_TRANSACTION.BUYER, AXS_TRANSACTION.QUANTITY)
-            .values(Timestamp.from(created), listItem, buyerData, quantity);
+            .values(Timestamp.from(created), forSaleItemRecNo, buyerData, quantity);
     }
 }

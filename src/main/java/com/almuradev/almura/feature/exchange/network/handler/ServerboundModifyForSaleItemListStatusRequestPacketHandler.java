@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.exchange.network.handler;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.exchange.ServerExchangeManager;
-import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundModifyForSaleItemListStatusRequestPacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
@@ -24,17 +24,19 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ServerboundModifyExchangePacketHandler implements MessageHandler<ServerboundModifyExchangePacket> {
+public final class ServerboundModifyForSaleItemListStatusRequestPacketHandler
+    implements MessageHandler<ServerboundModifyForSaleItemListStatusRequestPacket> {
 
     private final ServerExchangeManager exchangeManager;
 
     @Inject
-    public ServerboundModifyExchangePacketHandler(final ServerExchangeManager exchangeManager) {
+    public ServerboundModifyForSaleItemListStatusRequestPacketHandler(final ServerExchangeManager exchangeManager) {
         this.exchangeManager = exchangeManager;
     }
 
     @Override
-    public void handleMessage(final ServerboundModifyExchangePacket message, final RemoteConnection connection, final Platform.Type side) {
+    public void handleMessage(final ServerboundModifyForSaleItemListStatusRequestPacket message, final RemoteConnection connection,
+        final Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
             .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
 
@@ -43,14 +45,11 @@ public final class ServerboundModifyExchangePacketHandler implements MessageHand
             final Player player = ((PlayerConnection) connection).getPlayer();
 
             switch (message.type) {
-                case ADD:
-                    this.exchangeManager.handleExchangeAdd(player, message.id, message.name, message.permission, message.isHidden);
+                case LIST:
+                    this.exchangeManager.handleListItemForSale(player, message.id, message.listItemRecNo);
                     break;
-                case MODIFY:
-                    this.exchangeManager.handleExchangeModify(player, message.id, message.name, message.permission, message.isHidden);
-                    break;
-                case DELETE:
-                    this.exchangeManager.handleExchangeDelete(player, message.id);
+                case DE_LIST:
+                    this.exchangeManager.handleDelistItemFromSale(player, message.id, message.listItemRecNo);
                     break;
                 default:
                     throw new UnsupportedOperationException(message.type + " is not supported yet!");

@@ -7,8 +7,8 @@
  */
 package com.almuradev.almura.feature.exchange;
 
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.Store;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
 
 import java.util.List;
 import java.util.Map;

@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange.network;
+package com.almuradev.almura.feature.exchange;
 
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.google.common.base.MoreObjects;
@@ -28,16 +28,16 @@ public final class InventoryAction {
         return this.stack;
     }
 
-    public enum Direction {
-        TO_LISTING,
-        TO_INVENTORY
-    }
-
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("stack", this.stack)
-                .add("direction", this.direction)
-                .toString();
+            .add("stack", this.stack)
+            .add("direction", this.direction)
+            .toString();
+    }
+
+    public enum Direction {
+        TO_LISTING,
+        TO_INVENTORY
     }
 }

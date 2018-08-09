@@ -11,10 +11,10 @@ import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.DE
 import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.MILLION;
 import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.withSuffix;
 
-import com.almuradev.almura.feature.exchange.ClientExchangeManager;
+import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
+import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.feature.exchange.client.gui.component.UIExchangeOfferContainer;
-import com.almuradev.almura.feature.exchange.network.InventoryAction;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIComplexImage;

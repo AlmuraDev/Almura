@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.menu.ingame;
 
 import com.almuradev.almura.feature.claim.ClientClaimManager;
-import com.almuradev.almura.feature.exchange.ClientExchangeManager;
+import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;

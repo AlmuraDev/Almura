@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.network.handler;
 
-import com.almuradev.almura.feature.exchange.ClientExchangeManager;
+import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.network.ClientboundForSaleItemsResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -23,20 +23,18 @@ import javax.inject.Singleton;
 @Singleton
 public final class ClientboundForSaleItemsResponsePacketHandler implements MessageHandler<ClientboundForSaleItemsResponsePacket> {
 
-  private final ClientExchangeManager exchangeManager;
+    private final ClientExchangeManager exchangeManager;
 
-  @Inject
-  public ClientboundForSaleItemsResponsePacketHandler(final ClientExchangeManager exchangeManager) {
-    this.exchangeManager = exchangeManager;
-  }
-
-  @SideOnly(Side.CLIENT)
-  @Override
-  public void handleMessage(final ClientboundForSaleItemsResponsePacket message, final RemoteConnection connection,
-    final Platform.Type side) {
-
-    if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-
+    @Inject
+    public ClientboundForSaleItemsResponsePacketHandler(final ClientExchangeManager exchangeManager) {
+        this.exchangeManager = exchangeManager;
     }
-  }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void handleMessage(final ClientboundForSaleItemsResponsePacket message, final RemoteConnection connection, final Platform.Type side) {
+        if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
+            this.exchangeManager.handleForSaleItems(message.id, message.forSaleItems);
+        }
+    }
 }

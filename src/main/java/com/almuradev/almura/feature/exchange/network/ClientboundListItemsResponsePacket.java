@@ -9,9 +9,9 @@ package com.almuradev.almura.feature.exchange.network;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
+import com.almuradev.almura.shared.util.SerializationUtil;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -38,7 +38,7 @@ public final class ClientboundListItemsResponsePacket implements Message {
 
     }
 
-    public ClientboundListItemsResponsePacket(final String id, final List<ListItem> listItems) {
+    public ClientboundListItemsResponsePacket(final String id, @Nullable final List<ListItem> listItems) {
         checkNotNull(id);
         checkNotNull(listItems);
 
