@@ -36,6 +36,8 @@ public final class BasicExchange implements Exchange, Serializable {
     private transient final Map<UUID, List<ListItem>> listItems = new ConcurrentHashMap<>();
     private transient final Map<UUID, List<ForSaleItem>> forSaleItems = new ConcurrentHashMap<>();
     @Nullable private String creatorName;
+
+    private transient boolean loaded = false;
     private transient boolean dirty = false;
 
     public BasicExchange(final String id, final Instant created, final UUID creator, final String name, final String permission, final boolean
@@ -150,6 +152,16 @@ public final class BasicExchange implements Exchange, Serializable {
     @Override
     public void clearForSaleItems() {
         this.forSaleItems.clear();
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return this.loaded;
+    }
+
+    @Override
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
     }
 
     @Override

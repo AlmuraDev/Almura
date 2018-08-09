@@ -29,7 +29,9 @@ import com.almuradev.core.event.Witness;
 import com.almuradev.generated.axs.tables.Axs;
 import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
+import com.almuradev.generated.axs.tables.AxsListItemData;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.jooq.DSLContext;
@@ -49,6 +51,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.text.Text;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -244,16 +247,25 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         } else {
             this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, id));
 
-            this.databaseManager.getQueue().queue(DatabaseQueue.ActionType.FETCH_IGNORE_DUPLICATES, id, () -> {
-                this.loadListItems(axs);
+            if (!axs.isLoaded()) {
+                this.databaseManager.getQueue().queue(DatabaseQueue.ActionType.FETCH_IGNORE_DUPLICATES, id, () -> {
+                    this.loadListItems(axs);
 
-                this.scheduler
-                    .createTaskBuilder()
-                    .execute(() ->
-                        Sponge.getServer().getOnlinePlayers().forEach(p ->
-                            axs.getListItemsFor(p.getUniqueId()).ifPresent(items ->
-                                this.network.sendTo(p, new ClientboundListItemsResponsePacket(axs.getId(), items)))));
-            });
+                    axs.setLoaded(true);
+
+                    // TODO This will hit everyone, not just who opened the Exchange in this timeframe. Figure out a way to pass initiators
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() ->
+                            Sponge.getServer().getOnlinePlayers().forEach(p ->
+                                axs.getListItemsFor(p.getUniqueId()).ifPresent(items ->
+                                    this.network.sendTo(p, new ClientboundListItemsResponsePacket(axs.getId(), items)))))
+                        .submit(this.container);
+                });
+            } else {
+                axs.getListItemsFor(player.getUniqueId()).ifPresent(items ->
+                    this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), items)));
+            }
         }
     }
 
@@ -436,43 +448,57 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         try (final DSLContext context = this.databaseManager.createContext(true)) {
             final Results results = ExchangeQueries
-                .createFetchItemsFor(axs.getId())
+                .createFetchListItemsAndDataFor(axs.getId())
                 .build(context)
                 .keepStatement(false)
                 .fetchMany();
 
-            results.forEach(result -> result.forEach(record -> {
-                final ResourceLocation location = SerializationUtil.fromString(record.getValue(AxsListItem.AXS_LIST_ITEM.ITEM_TYPE));
+            results.forEach(result -> {
+                for (final Record record : result) {
+                    final ResourceLocation location = SerializationUtil.fromString(record.getValue(AxsListItem.AXS_LIST_ITEM.ITEM_TYPE));
 
-                if (location == null) {
-                    // TODO This is a malformed resource location
-                } else {
-
-                    final Item item = ForgeRegistries.ITEMS.getValue(location);
-
-                    if (item == null) {
-                        // TODO They've given us an item that isn't loaded (likely a mod that vanished)
+                    if (location == null) {
+                        // TODO This is a malformed resource location
                     } else {
 
-                        final Integer recNo = record.getValue(AxsListItem.AXS_LIST_ITEM.REC_NO);
-                        final Timestamp created = record.getValue(AxsListItem.AXS_LIST_ITEM.CREATED);
-                        final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsListItem.AXS_LIST_ITEM.SELLER));
-                        final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
-                        final Integer metadata = record.getValue(AxsListItem.AXS_LIST_ITEM.METADATA);
-                        final BigDecimal price = record.getValue(AxsListItem.AXS_LIST_ITEM.PRICE);
-                        final Integer index = record.getValue(AxsListItem.AXS_LIST_ITEM.INDEX);
+                        final Item item = ForgeRegistries.ITEMS.getValue(location);
 
-                        /// TODO Query for compound
-                        items.add(new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, price, index, null));
+                        if (item == null) {
+                            // TODO They've given us an item that isn't loaded (likely a mod that vanished)
+                        } else {
+
+                            final Integer recNo = record.getValue(AxsListItem.AXS_LIST_ITEM.REC_NO);
+                            final Timestamp created = record.getValue(AxsListItem.AXS_LIST_ITEM.CREATED);
+                            final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsListItem.AXS_LIST_ITEM.SELLER));
+                            final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
+                            final Integer metadata = record.getValue(AxsListItem.AXS_LIST_ITEM.METADATA);
+                            final BigDecimal price = record.getValue(AxsListItem.AXS_LIST_ITEM.PRICE);
+                            final Integer index = record.getValue(AxsListItem.AXS_LIST_ITEM.INDEX);
+                            final byte[] compoundData = record.getValue(AxsListItemData.AXS_LIST_ITEM_DATA.DATA);
+
+                            NBTTagCompound compound = null;
+                            if (compoundData != null) {
+                                try {
+                                    compound = SerializationUtil.compoundFromBytes(compoundData);
+                                } catch (IOException e) {
+                                    // TODO Malformed compound from database
+                                    continue;
+                                }
+                            }
+
+                            items.add(new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, price, index, compound));
+                        }
                     }
                 }
-            }));
+            });
 
-            items.sort(Comparator.comparingInt(ListItem::getIndex));
+            final Map<UUID, List<ListItem>> itemsByOwner = items.stream().collect(Collectors.groupingBy(ListItem::getSeller));
+            itemsByOwner.forEach((key, value) -> value.sort(Comparator.comparingInt(ListItem::getIndex)));
 
-            axs.putListItems(items.isEmpty() ? null : items.stream().collect(Collectors.groupingBy(ListItem::getSeller)));
+            axs.putListItems(itemsByOwner.isEmpty() ? null : itemsByOwner);
 
             this.logger.info("Loaded {} item(s) for Exchange [{}].", axs.getId(), items.size());
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

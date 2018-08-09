@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.UUID;
 
 public final class ExchangeQueries {
@@ -93,11 +94,14 @@ public final class ExchangeQueries {
      * ListItem
      */
 
-    public static DatabaseQuery<SelectConditionStep<AxsListItemRecord>> createFetchItemsFor(final String id) {
+    public static DatabaseQuery<SelectConditionStep<Record>> createFetchListItemsAndDataFor(final String id) {
         checkNotNull(id);
 
         return context -> context
-            .selectFrom(AXS_LIST_ITEM)
+            .select()
+            .from(AXS_LIST_ITEM)
+                .join(AXS_LIST_ITEM_DATA)
+                .on(AXS_LIST_ITEM_DATA.LIST_ITEM.eq(AXS_LIST_ITEM.REC_NO))
             .where(AXS_LIST_ITEM.AXS.eq(id));
     }
 
@@ -126,14 +130,6 @@ public final class ExchangeQueries {
     /**
      * ItemData
      */
-
-    public static DatabaseQuery<SelectConditionStep<AxsListItemDataRecord>> createFetchItemDataFor(final int listItemRecNo) {
-        checkState(listItemRecNo >= 0);
-
-        return context -> context
-            .selectFrom(AXS_LIST_ITEM_DATA)
-            .where(AXS_LIST_ITEM_DATA.LIST_ITEM.eq(listItemRecNo));
-    }
 
     public static DatabaseQuery<InsertValuesStep2<AxsListItemDataRecord, Integer, byte[]>> createInsertItemData(final int listItemRecNo,
         final NBTTagCompound compound) throws IOException {

@@ -54,6 +54,10 @@ public interface Store extends Serializable {
 
     void clearForSaleItems();
 
+    boolean isLoaded();
+
+    void setLoaded(final boolean loaded);
+
     /**
      * Returns if the store is currently in a dirty state. This can be defined as the store needing to save data to the database but isn't the
      * strictest definition of this.

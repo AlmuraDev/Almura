@@ -29,7 +29,7 @@ public final class DatabaseQueue implements Runnable {
         this.flush();
     }
 
-    public void queue(final ActionType type, final String id, final Runnable runnable) {
+    public synchronized void queue(final ActionType type, final String id, final Runnable runnable) {
         checkNotNull(type);
         checkNotNull(id);
         checkNotNull(runnable);
