@@ -29,6 +29,7 @@ import org.jooq.InsertValuesStep2;
 import org.jooq.InsertValuesStep3;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStep5;
+import org.jooq.InsertValuesStep7;
 import org.jooq.InsertValuesStep8;
 import org.jooq.Record;
 import org.jooq.SelectConditionStep;
@@ -105,17 +106,14 @@ public final class ExchangeQueries {
             .where(AXS_LIST_ITEM.AXS.eq(id));
     }
 
-    public static DatabaseQuery<InsertValuesStep8<AxsListItemRecord, Timestamp, String, byte[], String, Integer, Integer, BigDecimal, Integer>>
-    createInsertItem(final String id, final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
-        final BigDecimal price, final int index) {
+    public static DatabaseQuery<InsertValuesStep7<AxsListItemRecord, Timestamp, String, byte[], String, Integer, Integer, Integer>> createInsertItem(
+        final String id, final Instant created, final UUID seller, final Item item, final int quantity, final int metadata, final int index) {
         checkNotNull(id);
         checkNotNull(created);
         checkNotNull(seller);
         checkNotNull(item);
         checkState(quantity > 0);
         checkState(metadata >= 0);
-        checkNotNull(price);
-        checkState(price.doubleValue() >= 0);
         checkState(index >= 0);
 
         final String itemId = SerializationUtil.toString(item.getRegistryName());
@@ -123,8 +121,8 @@ public final class ExchangeQueries {
 
         return context -> context
             .insertInto(AXS_LIST_ITEM, AXS_LIST_ITEM.CREATED, AXS_LIST_ITEM.AXS, AXS_LIST_ITEM.SELLER, AXS_LIST_ITEM.ITEM_TYPE,
-                AXS_LIST_ITEM.QUANTITY, AXS_LIST_ITEM.METADATA, AXS_LIST_ITEM.PRICE, AXS_LIST_ITEM.INDEX)
-            .values(Timestamp.from(created), id, sellerData, itemId, quantity, metadata, price, index);
+                AXS_LIST_ITEM.QUANTITY, AXS_LIST_ITEM.METADATA, AXS_LIST_ITEM.INDEX)
+            .values(Timestamp.from(created), id, sellerData, itemId, quantity, metadata, index);
     }
 
     /**
@@ -166,15 +164,16 @@ public final class ExchangeQueries {
             .where(AXS_FOR_SALE_ITEM.LIST_ITEM.eq(listItemRecNo));
     }
 
-    public static DatabaseQuery<InsertValuesStep3<AxsForSaleItemRecord, Timestamp, Integer, Integer>> createInsertForSaleItem(final Instant created,
-        final int listItemRecNo, final int quantity) {
+    public static DatabaseQuery<InsertValuesStep3<AxsForSaleItemRecord, Timestamp, Integer, BigDecimal>> createInsertForSaleItem(final Instant created,
+        final int listItemRecNo, final BigDecimal price) {
         checkNotNull(created);
         checkState(listItemRecNo >= 0);
-        checkState(quantity > 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() > 0);
 
         return context -> context
-            .insertInto(AXS_FOR_SALE_ITEM, AXS_FOR_SALE_ITEM.CREATED, AXS_FOR_SALE_ITEM.LIST_ITEM, AXS_FOR_SALE_ITEM.QUANTITY)
-            .values(Timestamp.from(created), listItemRecNo, quantity);
+            .insertInto(AXS_FOR_SALE_ITEM, AXS_FOR_SALE_ITEM.CREATED, AXS_FOR_SALE_ITEM.LIST_ITEM, AXS_FOR_SALE_ITEM.PRICE)
+            .values(Timestamp.from(created), listItemRecNo, price);
     }
 
     /**

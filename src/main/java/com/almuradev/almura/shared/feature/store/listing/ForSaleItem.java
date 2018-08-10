@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collection;
 
@@ -24,11 +25,18 @@ public interface ForSaleItem extends DynamicCompoundStack {
 
     Instant getCreated();
 
+    BigDecimal getPrice();
+
     Collection<Transaction> getTransactions();
 
     @Override
     default Item getItem() {
         return this.getListItem().getItem();
+    }
+
+    @Override
+    default int getQuantity() {
+        return this.getListItem().getQuantity();
     }
 
     @Override

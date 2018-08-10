@@ -46,11 +46,13 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacketHandler
 
             switch (message.type) {
                 case LIST:
-                    this.exchangeManager.handleListItemForSale(player, message.id, message.listItemRecNo);
+                    this.exchangeManager.handleListForSaleItem(player, message.id, message.listItemRecNo, message.price);
                     break;
                 case DE_LIST:
-                    this.exchangeManager.handleDelistItemFromSale(player, message.id, message.listItemRecNo);
+                    this.exchangeManager.handleDelistForSaleItem(player, message.id, message.listItemRecNo);
                     break;
+                case ADJUST_PRICE:
+                    this.exchangeManager.handleAdjustPriceForSaleItem(player, message.id, message.listItemRecNo, message.price);
                 default:
                     throw new UnsupportedOperationException(message.type + " is not supported yet!");
             }

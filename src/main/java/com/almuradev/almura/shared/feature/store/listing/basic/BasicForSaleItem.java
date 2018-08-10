@@ -17,6 +17,7 @@ import com.google.common.base.MoreObjects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,18 +28,18 @@ public final class BasicForSaleItem implements ForSaleItem {
 
     private final BasicListItem listItem;
     private final Instant created;
-    private final int quantity;
+    private final BigDecimal price;
     private final Collection<Transaction> transactions = new ArrayList<>();
 
     private ItemStack cacheStack;
 
-    public BasicForSaleItem(final BasicListItem listItem, final Instant created, final int quantity) {
+    public BasicForSaleItem(final BasicListItem listItem, final Instant created, final BigDecimal price) {
         checkNotNull(listItem);
-        checkState(listItem.getQuantity() >= quantity);
+        checkNotNull(price);
 
         this.listItem = listItem;
         this.created = created;
-        this.quantity = quantity;
+        this.price = price;
     }
 
     @Override
@@ -52,8 +53,8 @@ public final class BasicForSaleItem implements ForSaleItem {
     }
 
     @Override
-    public int getQuantity() {
-        return this.quantity;
+    public BigDecimal getPrice() {
+        return this.price;
     }
 
     @Override
@@ -69,13 +70,13 @@ public final class BasicForSaleItem implements ForSaleItem {
 
     @Override
     public ForSaleItem copy() {
-        return new BasicForSaleItem(this.listItem.copy(), this.created, this.quantity);
+        return new BasicForSaleItem(this.listItem.copy(), this.created, this.price);
     }
 
     @Override
     public ItemStack asRealStack() {
         if (this.cacheStack == null) {
-            this.cacheStack = new ItemStack(this.getItem(), this.quantity, this.getMetadata());
+            this.cacheStack = new ItemStack(this.getItem(), this.getQuantity(), this.getMetadata());
             if (this.listItem.compound != null) {
                 this.cacheStack.setTagCompound(this.listItem.compound.copy());
             }
@@ -89,7 +90,7 @@ public final class BasicForSaleItem implements ForSaleItem {
         return MoreObjects.toStringHelper(this)
             .add("listItem", this.listItem)
             .add("created", this.created)
-            .add("quantity", this.quantity)
+            .add("price", this.price)
             .toString();
     }
 }

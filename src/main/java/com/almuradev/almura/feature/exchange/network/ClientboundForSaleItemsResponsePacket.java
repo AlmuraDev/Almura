@@ -84,7 +84,6 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 final UUID seller = buf.readUniqueId();
                 final String sellerName = buf.readBoolean() ? buf.readString() : null;
 
-                final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
                 final int index = buf.readInteger();
 
                 final int compoundDataLength = buf.readInteger();
@@ -101,7 +100,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 }
 
                 final BasicListItem basicListItem =
-                    new BasicListItem(record, listItemCreated, seller, item, quantity, metadata, price, index, compound);
+                    new BasicListItem(record, listItemCreated, seller, item, quantity, metadata, index, compound);
 
                 if (Sponge.getPlatform().getExecutionType().isClient()) {
                     basicListItem.setSellerName(sellerName);
@@ -116,9 +115,9 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                     continue;
                 }
 
-                final int soldQuantity = buf.readInteger();
+                final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
 
-                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem(basicListItem, forSaleItemCreated, soldQuantity);
+                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem(basicListItem, forSaleItemCreated, price);
                 this.forSaleItems.add(basicForSaleItem);
             }
         }
@@ -189,10 +188,6 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                     buf.writeString(sellerName);
                 }
 
-                final byte[] priceData = SerializationUtil.toBytes(listItem.getPrice());
-                buf.writeInteger(priceData.length);
-                buf.writeBytes(priceData);
-
                 buf.writeInteger(listItem.getIndex());
 
                 if (compoundData == null) {
@@ -206,7 +201,9 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 buf.writeInteger(forSaleItemCreatedData.length);
                 buf.writeBytes(forSaleItemCreatedData);
 
-                buf.writeInteger(forSaleItem.getQuantity());
+                final byte[] priceData = SerializationUtil.toBytes(forSaleItem.getPrice());
+                buf.writeInteger(priceData.length);
+                buf.writeBytes(priceData);
             }
         }
     }

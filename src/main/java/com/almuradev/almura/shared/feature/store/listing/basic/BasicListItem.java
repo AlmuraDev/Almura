@@ -22,11 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.user.UserStorageService;
 
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,21 +36,19 @@ public final class BasicListItem implements ListItem {
     private final Instant created;
     private final UUID seller;
     private final Item item;
-    private final BigDecimal price;
     private final int metadata, index;
-    private final List<ForSaleItem> listed = new ArrayList<>();
 
     private int quantity;
     @Nullable private String sellerName;
     @Nullable private ItemStack cacheStack;
     @Nullable NBTTagCompound compound;
+    @Nullable private ForSaleItem forSaleItem;
 
     public BasicListItem(final int record, final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
-        final BigDecimal price, final int index, @Nullable final NBTTagCompound compound) {
+        final int index, @Nullable final NBTTagCompound compound) {
         checkNotNull(created);
         checkNotNull(seller);
         checkNotNull(item);
-        checkNotNull(price);
         checkState(quantity >= 0);
         checkState(metadata > 0 && metadata <= 15);
         checkState(index >= 0);
@@ -65,7 +59,6 @@ public final class BasicListItem implements ListItem {
         this.item = item;
         this.quantity = quantity;
         this.metadata = metadata;
-        this.price = price;
         this.index = index;
         this.compound = compound;
     }
@@ -128,23 +121,18 @@ public final class BasicListItem implements ListItem {
     }
 
     @Override
-    public BigDecimal getPrice() {
-        return this.price;
-    }
-
-    @Override
     public int getIndex() {
         return this.index;
     }
 
     @Override
-    public Collection<ForSaleItem> getListings() {
-        return this.listed;
+    public Optional<ForSaleItem> getForSaleItem() {
+        return Optional.ofNullable(this.forSaleItem);
     }
 
     @Override
     public BasicListItem copy() {
-        return new BasicListItem(this.record, this.created, this.seller, this.item, this.quantity, this.metadata, this.price, this.index,
+        return new BasicListItem(this.record, this.created, this.seller, this.item, this.quantity, this.metadata, this.index,
           this.compound == null ? null : this.compound.copy());
     }
 
@@ -172,6 +160,10 @@ public final class BasicListItem implements ListItem {
         this.sellerName = sellerName;
     }
 
+    public void setForSaleItem(@Nullable final ForSaleItem forSaleItem) {
+        this.forSaleItem = forSaleItem;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -181,7 +173,6 @@ public final class BasicListItem implements ListItem {
             .add("item", this.item)
             .add("quantity", this.quantity)
             .add("metadata", this.metadata)
-            .add("price", this.price)
             .add("index", this.index)
             .add("compound", this.compound)
             .toString();

@@ -49,12 +49,6 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.entity.MainPlayerInventory;
-import org.spongepowered.api.item.inventory.query.QueryOperationType;
-import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
-import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -489,7 +483,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsListItem.AXS_LIST_ITEM.SELLER));
                             final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
                             final Integer metadata = record.getValue(AxsListItem.AXS_LIST_ITEM.METADATA);
-                            final BigDecimal price = record.getValue(AxsListItem.AXS_LIST_ITEM.PRICE);
                             final Integer index = record.getValue(AxsListItem.AXS_LIST_ITEM.INDEX);
                             final byte[] compoundData = record.getValue(AxsListItemData.AXS_LIST_ITEM_DATA.DATA);
 
@@ -503,18 +496,27 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 }
                             }
 
-                            items.add(new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, price, index, compound));
+                            final BasicListItem basicListItem =
+                                new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, index, compound);
+
+                            // TODO This may not be thread-safe..
+                            basicListItem.refreshSellerName();
+
+                            items.add(basicListItem);
                         }
                     }
                 }
             });
+
+            axs.clearListItems();
+            axs.clearForSaleItems();
 
             final Map<UUID, List<ListItem>> itemsByOwner = items.stream().collect(Collectors.groupingBy(ListItem::getSeller));
             itemsByOwner.forEach((key, value) -> value.sort(Comparator.comparingInt(ListItem::getIndex)));
 
             axs.putListItems(itemsByOwner.isEmpty() ? null : itemsByOwner);
 
-            this.logger.info("Loaded {} item(s) for Exchange [{}].", axs.getId(), items.size());
+            this.logger.info("Loaded {} list item(s) for Exchange [{}].", axs.getId(), items.size());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -539,14 +541,15 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
+        List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
 
+        // Inventory -> Listing
         final List<InventoryAction> toListingActions =
             actions.stream().filter(a -> a.getDirection() == InventoryAction.Direction.TO_LISTING).collect(Collectors.toList());
 
-        // TODO Additional listing limits
-        for (final InventoryAction action : toListingActions) {
-            final VanillaStack stack = action.getStack();
+        // TODO Listing limits (listing amounts)
+        for (int i = 0; i < toListingActions.size(); i++) {
+            final VanillaStack stack = toListingActions.get(i).getStack();
 
             int amountLeft = stack.getQuantity();
 
@@ -554,30 +557,52 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             while (iter.hasNext()) {
                 final ItemStack next = iter.next();
 
+                if (ItemStack.areItemsEqual(stack.asRealStack(), next)) {
+                    final int toRemove = Math.min(next.getCount(), amountLeft);
+                    next.setCount(next.getCount() - toRemove);
+                    amountLeft -= toRemove;
+
+                    if (next.getCount() <= 0) {
+                        iter.remove();
+                    }
+                }
+
                 if (amountLeft == 0) {
                     break;
                 }
+            }
 
-                if (ItemStack.areItemsEqual(stack.asRealStack(), next)) {
-                    if (next.getCount() <= amountLeft) {
-                        amountLeft -= next.getCount();
-                        next.setCount(0);
-                        iter.remove();
-                    } else {
-                        next.setCount(next.getCount() - amountLeft);
-                        amountLeft = 0;
-                    }
+            if (amountLeft > 0) {
+                // TODO Player asked to create a listing for an amount they do not have so we have taken what we could. Maybe send them a
+                // TODO notification and tell them what we didn't take.
+            }
+
+            final int listingQuantity = stack.getQuantity() - amountLeft;
+
+            if (listItems == null) {
+                listItems = new ArrayList<>();
+                axs.putListItemsFor(player.getUniqueId(), listItems);
+            }
+
+            ListItem found = null;
+
+            for (final ListItem listItem : listItems) {
+                if (ItemStack.areItemsEqual(stack.asRealStack(), listItem.asRealStack())) {
+                    found = listItem;
+                    break;
                 }
             }
 
-            if (amountLeft != stack.getQuantity()) {
-                final VanillaStack listingStack = stack.copy();
-                listingStack.setQuantity(listingStack.getQuantity() - amountLeft);
-
-                // TODO Merge into listing or queue a new listing creation
+            if (found != null) {
+                found.setQuantity(listingQuantity);
+            } else {
+                found = new BasicListItem(BasicListItem.NEW_ROW, Instant.now(), player.getUniqueId(), stack.getItem(), listingQuantity,
+                    stack.getMetadata(), i, stack.getCompound());
+                listItems.add(found);
             }
         }
 
+        // Listing -> Inventory
         final List<InventoryAction> toInventoryActions =
             actions.stream().filter(a -> a.getDirection() == InventoryAction.Direction.TO_INVENTORY).collect(Collectors.toList());
 
@@ -616,15 +641,17 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             for (int i = 0; i < divisor; i++) {
                 final VanillaStack copyStack = stack.copy();
                 copyStack.setQuantity(limit);
-                serverPlayer.inventory.addItemStackToInventory(copyStack.asRealStack());
-                amountAdded += copyStack.getQuantity() - copyStack.asRealStack().getCount();
+                final ItemStack realCopyStack = copyStack.asRealStack().copy();
+                serverPlayer.inventory.addItemStackToInventory(realCopyStack);
+                amountAdded += copyStack.getQuantity() - realCopyStack.getCount();
             }
 
             if (remainder > 0) {
                 final VanillaStack copyStack = stack.copy();
                 copyStack.setQuantity(remainder);
-                serverPlayer.inventory.addItemStackToInventory(copyStack.asRealStack());
-                amountAdded += copyStack.getQuantity() - copyStack.asRealStack().getCount();
+                final ItemStack realCopyStack = copyStack.asRealStack().copy();
+                serverPlayer.inventory.addItemStackToInventory(realCopyStack);
+                amountAdded += copyStack.getQuantity() - realCopyStack.getCount();
             }
 
             final int amountRejected = stack.getQuantity() - amountAdded;
@@ -682,21 +709,19 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     // TODO If we're here, this is a dead for sale item as the list item doesn't exist in the exchange
                 } else {
                     final Timestamp created = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED);
-                    final Integer quantity = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.QUANTITY);
+                    final BigDecimal price = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
 
-                    items.add(new BasicForSaleItem((BasicListItem) found, created.toInstant(), quantity));
+                    items.add(new BasicForSaleItem((BasicListItem) found, created.toInstant(), price));
                 }
             }));
 
-            this.scheduler
-                .createTaskBuilder()
-                .execute(() -> {
-                    axs.clearForSaleItems();
+            axs.clearForSaleItems();
 
-                    axs.putForSaleItems(items.isEmpty() ? null : items.stream().collect(Collectors.groupingBy(forSaleItem -> forSaleItem
-                        .getListItem().getSeller())));
-                })
-                .submit(this.container);
+            axs.putForSaleItems(items.isEmpty() ? null : items.stream().collect(Collectors.groupingBy(forSaleItem -> forSaleItem
+                .getListItem().getSeller())));
+
+            this.logger.info("Loaded {} for sale item(s) for Exchange [{}].", axs.getId(), items.size());
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -709,7 +734,17 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         // TODO
     }
 
-    public void handleListItemForSale(final Player player, final String id, final int listItemRecNo) {
+    public void handleListForSaleItem(final Player player, final String id, final int listItemRecNo, final BigDecimal price) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkState(listItemRecNo >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+        // TODO
+    }
+
+    public void handleDelistForSaleItem(final Player player, final String id, final int listItemRecNo) {
         checkNotNull(player);
         checkNotNull(id);
         checkState(listItemRecNo >= 0);
@@ -717,10 +752,12 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         // TODO
     }
 
-    public void handleDelistItemFromSale(final Player player, final String id, final int listItemRecNo) {
+    public void handleAdjustPriceForSaleItem(final Player player, final String id, final int listItemRecNo, final BigDecimal price) {
         checkNotNull(player);
         checkNotNull(id);
         checkState(listItemRecNo >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
 
         // TODO
     }

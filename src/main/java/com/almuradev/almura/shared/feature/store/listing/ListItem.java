@@ -32,11 +32,9 @@ public interface ListItem extends VanillaStack {
      */
     Optional<String> getSellerName();
 
-    BigDecimal getPrice();
-
     int getIndex();
 
-    Collection<ForSaleItem> getListings();
+    Optional<ForSaleItem> getForSaleItem();
 
     @Override
     ListItem copy();

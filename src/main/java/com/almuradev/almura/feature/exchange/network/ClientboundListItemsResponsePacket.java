@@ -21,7 +21,6 @@ import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +81,6 @@ public final class ClientboundListItemsResponsePacket implements Message {
                 final UUID seller = buf.readUniqueId();
                 final String sellerName = buf.readBoolean() ? buf.readString() : null;
 
-                final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
                 final int index = buf.readInteger();
 
                 final int compoundDataLength = buf.readInteger();
@@ -98,7 +96,7 @@ public final class ClientboundListItemsResponsePacket implements Message {
                     }
                 }
 
-                final BasicListItem basicListItem = new BasicListItem(record, created, seller, item, quantity, metadata, price, index, compound);
+                final BasicListItem basicListItem = new BasicListItem(record, created, seller, item, quantity, metadata, index, compound);
 
                 if (Sponge.getPlatform().getExecutionType().isClient()) {
                     basicListItem.setSellerName(sellerName);
@@ -163,10 +161,6 @@ public final class ClientboundListItemsResponsePacket implements Message {
                 if (sellerName != null) {
                     buf.writeString(sellerName);
                 }
-
-                final byte[] priceData = SerializationUtil.toBytes(item.getPrice());
-                buf.writeInteger(priceData.length);
-                buf.writeBytes(priceData);
 
                 buf.writeInteger(item.getIndex());
 
