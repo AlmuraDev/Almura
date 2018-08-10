@@ -14,6 +14,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
@@ -23,6 +24,7 @@ import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
+import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.core.event.Witness;
@@ -30,7 +32,9 @@ import com.almuradev.generated.axs.tables.Axs;
 import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
 import com.almuradev.generated.axs.tables.AxsListItemData;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -45,6 +49,12 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import org.spongepowered.api.item.inventory.entity.MainPlayerInventory;
+import org.spongepowered.api.item.inventory.query.QueryOperationType;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
+import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -60,12 +70,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -251,20 +263,25 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 this.databaseManager.getQueue().queue(DatabaseQueue.ActionType.FETCH_IGNORE_DUPLICATES, id, () -> {
                     this.loadListItems(axs);
 
+                    this.loadForSaleItems(axs);
+
                     axs.setLoaded(true);
 
                     // TODO This will hit everyone, not just who opened the Exchange in this timeframe. Figure out a way to pass initiators
                     this.scheduler
                         .createTaskBuilder()
                         .execute(() ->
-                            Sponge.getServer().getOnlinePlayers().forEach(p ->
-                                axs.getListItemsFor(p.getUniqueId()).ifPresent(items ->
-                                    this.network.sendTo(p, new ClientboundListItemsResponsePacket(axs.getId(), items)))))
+                            Sponge.getServer().getOnlinePlayers().forEach(p -> {
+                                axs.getListItemsFor(p.getUniqueId()).ifPresent(items -> this.network.sendTo(p, new ClientboundListItemsResponsePacket(axs.getId(), items)));
+                                this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                            })
+                        )
                         .submit(this.container);
                 });
             } else {
                 axs.getListItemsFor(player.getUniqueId()).ifPresent(items ->
                     this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), items)));
+                this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
             }
         }
     }
@@ -504,11 +521,123 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
     }
 
-    public void handleModifyListItems(final Player player, final String id, final List<InventoryAction> actions) {
+    public void handleModifyListItems(final Player player, final String id, @Nullable final List<InventoryAction> actions) {
         checkNotNull(player);
         checkNotNull(id);
 
-        // TODO Buckle up, this will be a hell of a ride
+        final Exchange axs = this.getExchange(id).orElse(null);
+
+        if (axs == null) {
+            // TODO Exchange no longer exists, re-sync this player
+            return;
+        }
+
+        final EntityPlayerMP serverPlayer = (EntityPlayerMP) player;
+
+        if (actions == null) {
+            // TODO Might do a resync in this case or enforce at least 1 action. I'll ponder it.
+            return;
+        }
+
+        final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
+
+        final List<InventoryAction> toListingActions =
+            actions.stream().filter(a -> a.getDirection() == InventoryAction.Direction.TO_LISTING).collect(Collectors.toList());
+
+        // TODO Additional listing limits
+        for (final InventoryAction action : toListingActions) {
+            final VanillaStack stack = action.getStack();
+
+            int amountLeft = stack.getQuantity();
+
+            final Iterator<ItemStack> iter = serverPlayer.inventory.mainInventory.iterator();
+            while (iter.hasNext()) {
+                final ItemStack next = iter.next();
+
+                if (amountLeft == 0) {
+                    break;
+                }
+
+                if (ItemStack.areItemsEqual(stack.asRealStack(), next)) {
+                    if (next.getCount() <= amountLeft) {
+                        amountLeft -= next.getCount();
+                        next.setCount(0);
+                        iter.remove();
+                    } else {
+                        next.setCount(next.getCount() - amountLeft);
+                        amountLeft = 0;
+                    }
+                }
+            }
+
+            if (amountLeft != stack.getQuantity()) {
+                final VanillaStack listingStack = stack.copy();
+                listingStack.setQuantity(listingStack.getQuantity() - amountLeft);
+
+                // TODO Merge into listing or queue a new listing creation
+            }
+        }
+
+        final List<InventoryAction> toInventoryActions =
+            actions.stream().filter(a -> a.getDirection() == InventoryAction.Direction.TO_INVENTORY).collect(Collectors.toList());
+
+        if ((listItems == null || listItems.isEmpty()) && !toInventoryActions.isEmpty()) {
+            // TODO They want to move items back to their Inventory but we know of no listings, re-sync this player
+            return;
+        }
+
+        // TODO Not using this yet but I can at least tell the client what we couldn't move back
+        final List<VanillaStack> inventoryRejections = new ArrayList<>();
+
+        for (final InventoryAction action : toInventoryActions) {
+            final VanillaStack stack = action.getStack();
+
+            ListItem found = null;
+
+            for (final ListItem listItem : listItems) {
+                if (ItemStack.areItemsEqual(stack.asRealStack(), listItem.asRealStack())) {
+                    found = listItem;
+                    break;
+                }
+            }
+
+            if (found == null || found.getQuantity() < stack.getQuantity()) {
+                // TODO They sent us up an unknown listing or asked to remove too much, we're bailing
+                inventoryRejections.add(stack);
+                continue;
+            }
+
+            final int limit = stack.getItem().getItemStackLimit(stack.asRealStack());
+            final int divisor = stack.getQuantity() / limit;
+            final int remainder = stack.getQuantity() % limit;
+
+            int amountAdded = 0;
+
+            for (int i = 0; i < divisor; i++) {
+                final VanillaStack copyStack = stack.copy();
+                copyStack.setQuantity(limit);
+                serverPlayer.inventory.addItemStackToInventory(copyStack.asRealStack());
+                amountAdded += copyStack.getQuantity() - copyStack.asRealStack().getCount();
+            }
+
+            if (remainder > 0) {
+                final VanillaStack copyStack = stack.copy();
+                copyStack.setQuantity(remainder);
+                serverPlayer.inventory.addItemStackToInventory(copyStack.asRealStack());
+                amountAdded += copyStack.getQuantity() - copyStack.asRealStack().getCount();
+            }
+
+            final int amountRejected = stack.getQuantity() - amountAdded;
+            found.setQuantity(amountRejected);
+
+            if (amountRejected > 0) {
+                final VanillaStack rejectedStack = stack.copy();
+                rejectedStack.setQuantity(amountAdded);
+                inventoryRejections.add(rejectedStack);
+            }
+        }
+
+        // TODO Tell the Player we cannot pull all their listings back into their inventory
     }
 
     /**

@@ -34,6 +34,8 @@ import javax.annotation.Nullable;
 
 public final class BasicListItem implements ListItem {
 
+    public static final int NEW_ROW = -1;
+
     private final int record;
     private final Instant created;
     private final UUID seller;
