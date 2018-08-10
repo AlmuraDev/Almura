@@ -24,6 +24,7 @@ import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.item.VirtualStack;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
@@ -313,7 +314,13 @@ public final class ExchangeScreen extends SimpleScreen {
             .position(0, 0)
             .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
             .enabled(true)
-            .onClick(() -> new ExchangeOfferScreen(this, this.exchange).display())
+            .onClick(() -> new ExchangeOfferScreen(this, this.exchange,
+                    this.listItemList.getItems()
+                            .stream()
+                            .filter(item -> !item.getForSaleItem().isPresent())
+                            .map(item -> new BasicVanillaStack(item.asRealStack()))
+                            .collect(Collectors.toList()))
+                    .display())
             .build("button.add_remove");
 
         inventoryArea.add(this.listItemList, this.buttonList, buttonRemoveItem);

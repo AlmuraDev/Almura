@@ -25,6 +25,7 @@ import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.util.MathUtil;
@@ -62,10 +63,12 @@ public class ExchangeOfferScreen extends SimpleScreen {
                                                                                  // appropriate limit
     private UIExchangeOfferContainer offerContainer;
     private UIPropertyBar progressBar;
+    private List<VanillaStack> pendingItems;
 
-    public ExchangeOfferScreen(ExchangeScreen parent, Exchange exchange) {
+    public ExchangeOfferScreen(ExchangeScreen parent, Exchange exchange, List<VanillaStack> pendingItems) {
         super(parent, true);
         this.exchange = exchange;
+        this.pendingItems = pendingItems;
     }
 
     @Override
@@ -81,8 +84,6 @@ public class ExchangeOfferScreen extends SimpleScreen {
         form.setBorder(FontColors.WHITE, 1, 185);
         form.setPadding(4, 4);
         form.setTopPadding(20);
-
-        final ExchangeOfferScreen currentInstance = this;
 
         // OK/Cancel buttons
         final UIButton buttonOk = new UIButtonBuilder(this)
@@ -114,10 +115,11 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.offerContainer.setItemLimit(this.maxOfferSlots, UIDualListContainer.SideType.RIGHT);
         this.offerContainer.register(this);
 
-        // Populate swap container
+        // Populate offer container
         final List<VanillaStack> inventoryOffers = new ArrayList<>();
         Minecraft.getMinecraft().player.inventory.mainInventory.stream().filter(i -> !i.isEmpty()).forEach(i -> inventoryOffers.add(new BasicVanillaStack(i)));
 
+        this.offerContainer.setItems(this.pendingItems, UIDualListContainer.SideType.RIGHT);
         this.offerContainer.setItems(inventoryOffers, UIDualListContainer.SideType.LEFT);
 
         final int size = this.offerContainer.getItems(UIDualListContainer.SideType.RIGHT).size();
