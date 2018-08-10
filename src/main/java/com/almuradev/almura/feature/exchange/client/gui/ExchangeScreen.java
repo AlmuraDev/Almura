@@ -24,6 +24,7 @@ import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.item.VirtualStack;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -398,12 +399,12 @@ public final class ExchangeScreen extends SimpleScreen {
         }
     }
 
-    public static class ExchangeItemComponent extends UIDynamicList.ItemComponent<ItemStack> {
+    public static class ExchangeItemComponent<T extends VirtualStack> extends UIDynamicList.ItemComponent<T> {
 
         private UIComplexImage image;
         private UIExpandingLabel itemLabel;
 
-        public ExchangeItemComponent(final MalisisGui gui, final ItemStack stack) {
+        public ExchangeItemComponent(final MalisisGui gui, final T stack) {
             super(gui, stack);
         }
 
@@ -413,7 +414,7 @@ public final class ExchangeScreen extends SimpleScreen {
             this.setSize(0, 24);
 
             // Add components
-            final net.minecraft.item.ItemStack fakeStack = ItemStackUtil.toNative(item).copy();
+            final net.minecraft.item.ItemStack fakeStack = item.asRealStack().copy();
             fakeStack.setCount(1);
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
@@ -453,15 +454,13 @@ public final class ExchangeScreen extends SimpleScreen {
         }
     }
 
-    public static final class ListItemComponent extends ExchangeItemComponent {
+    public static final class ListItemComponent extends ExchangeItemComponent<ListItem> {
 
         private UIContainer<?> statusContainer;
         private UIExpandingLabel priceLabel;
-        private final ListItem listItem;
 
-        private ListItemComponent(final MalisisGui gui, final ListItem listItem) {
-            super(gui, ItemStackUtil.fromNative(listItem.asRealStack()));
-            this.listItem = listItem;
+        private ListItemComponent(final MalisisGui gui, final ListItem item) {
+            super(gui, item);
         }
 
         @SuppressWarnings("deprecation")
@@ -473,7 +472,7 @@ public final class ExchangeScreen extends SimpleScreen {
             this.statusContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.statusContainer.setColor(FontColors.DARK_GREEN);
 
-            final ForSaleItem forSaleItem = this.listItem.getForSaleItem().orElse(null);
+            final ForSaleItem forSaleItem = this.item.getForSaleItem().orElse(null);
 
             // TODO Grinch, I'm sure you want to handle this differently.
             if (forSaleItem != null) {
@@ -481,7 +480,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
                 this.priceLabel.setPosition(-(this.statusContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
                 this.priceLabel.setTooltip("Total: " +
-                    DEFAULT_DECIMAL_FORMAT.format(BigDecimal.valueOf(this.listItem.getQuantity()).multiply(forSaleItem.getPrice())));
+                    DEFAULT_DECIMAL_FORMAT.format(BigDecimal.valueOf(this.item.getQuantity()).multiply(forSaleItem.getPrice())));
 
                 this.add(this.statusContainer, this.priceLabel);
             } else {
@@ -491,19 +490,19 @@ public final class ExchangeScreen extends SimpleScreen {
 
         @Override
         public void draw(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-            this.statusContainer.setAlpha(this.listItem.getForSaleItem().isPresent() ? 255 : 0);
+            this.statusContainer.setAlpha(this.item.getForSaleItem().isPresent() ? 255 : 0);
             super.draw(renderer, mouseX, mouseY, partialTick);
         }
     }
 
-    public static final class ForSaleItemComponent extends ExchangeItemComponent {
+    public static final class ForSaleItemComponent extends ExchangeItemComponent<ForSaleItem> {
 
         private UILabel sellerLabel;
         private UIExpandingLabel priceLabel;
         private final ForSaleItem forSaleItem;
 
         private ForSaleItemComponent(final MalisisGui gui, final ForSaleItem forSaleItem) {
-            super(gui, ItemStackUtil.fromNative(forSaleItem.asRealStack()));
+            super(gui, forSaleItem);
             this.forSaleItem = forSaleItem;
         }
 
