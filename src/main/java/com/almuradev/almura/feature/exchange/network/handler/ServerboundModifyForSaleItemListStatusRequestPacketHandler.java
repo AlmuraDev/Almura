@@ -53,6 +53,7 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacketHandler
                     break;
                 case ADJUST_PRICE:
                     this.exchangeManager.handleAdjustPriceForSaleItem(player, message.id, message.listItemRecNo, message.price);
+                    break;
                 default:
                     throw new UnsupportedOperationException(message.type + " is not supported yet!");
             }

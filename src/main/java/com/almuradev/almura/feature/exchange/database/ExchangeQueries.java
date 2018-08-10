@@ -30,7 +30,6 @@ import org.jooq.InsertValuesStep3;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStep5;
 import org.jooq.InsertValuesStep7;
-import org.jooq.InsertValuesStep8;
 import org.jooq.Record;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectJoinStep;
@@ -41,7 +40,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.UUID;
 
 public final class ExchangeQueries {
@@ -169,7 +167,7 @@ public final class ExchangeQueries {
         checkNotNull(created);
         checkState(listItemRecNo >= 0);
         checkNotNull(price);
-        checkState(price.doubleValue() > 0);
+        checkState(price.doubleValue() >= 0);
 
         return context -> context
             .insertInto(AXS_FOR_SALE_ITEM, AXS_FOR_SALE_ITEM.CREATED, AXS_FOR_SALE_ITEM.LIST_ITEM, AXS_FOR_SALE_ITEM.PRICE)
