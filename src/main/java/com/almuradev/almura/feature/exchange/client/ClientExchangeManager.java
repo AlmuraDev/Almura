@@ -181,8 +181,19 @@ public final class ClientExchangeManager implements Witness {
     public void handleListItems(final String id, @Nullable final List<ListItem> listItems) {
         checkNotNull(id);
 
-        // TODO Grinch
-        // TODO Need to refresh the list items with this value if the id is of an Exchange open.
+        System.err.println(listItems);
+
+        final Exchange exchange = this.getExchange(id);
+        if (exchange == null) {
+            return;
+        }
+
+        final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+        if (currentScreen instanceof ExchangeScreen) {
+            exchange.putListItemsFor(Minecraft.getMinecraft().player.getUniqueID(), listItems);
+
+            ((ExchangeScreen) currentScreen).refreshListItems();
+        }
     }
 
     public void handleForSaleFilter(final String id) {

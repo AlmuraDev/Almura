@@ -50,7 +50,7 @@ public final class BasicListItem implements ListItem {
         checkNotNull(seller);
         checkNotNull(item);
         checkState(quantity >= 0);
-        checkState(metadata > 0 && metadata <= 15);
+        checkState(metadata >= 0 && metadata <= 15);
         checkState(index >= 0);
 
         this.record = record;
@@ -170,7 +170,7 @@ public final class BasicListItem implements ListItem {
             .add("created", this.created)
             .add("seller", this.seller)
             .add("sellerName", this.sellerName)
-            .add("item", this.item)
+            .add("item", this.item.getRegistryName())
             .add("quantity", this.quantity)
             .add("metadata", this.metadata)
             .add("index", this.index)

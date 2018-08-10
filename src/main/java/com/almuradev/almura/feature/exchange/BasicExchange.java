@@ -13,6 +13,8 @@ import com.almuradev.almura.shared.feature.store.Store;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.google.common.base.MoreObjects;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.user.UserStorageService;
 
@@ -27,18 +29,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
-public final class BasicExchange implements Exchange, Serializable {
+public final class BasicExchange implements Exchange {
 
     private final String id, name, permission;
     private final Instant created;
     private final UUID creator;
     private final boolean isHidden;
-    private transient final Map<UUID, List<ListItem>> listItems = new ConcurrentHashMap<>();
-    private transient final Map<UUID, List<ForSaleItem>> forSaleItems = new ConcurrentHashMap<>();
-    @Nullable private String creatorName;
+    private final Map<UUID, List<ListItem>> listItems = new ConcurrentHashMap<>();
+    private final Map<UUID, List<ForSaleItem>> forSaleItems = new ConcurrentHashMap<>();
 
-    private transient boolean loaded = false;
-    private transient boolean dirty = false;
+    @Nullable private String creatorName;
+    private boolean loaded = false;
+    private boolean dirty = false;
 
     public BasicExchange(final String id, final Instant created, final UUID creator, final String name, final String permission, final boolean
         isHidden) {
@@ -184,6 +186,11 @@ public final class BasicExchange implements Exchange, Serializable {
             Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.creator)
                 .ifPresent(user -> this.creatorName = user.getName());
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void setCreatorName(@Nullable final String creatorName) {
+        this.creatorName = creatorName;
     }
 
     @Override

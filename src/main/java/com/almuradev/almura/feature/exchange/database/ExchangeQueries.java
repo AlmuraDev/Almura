@@ -188,7 +188,7 @@ public final class ExchangeQueries {
         final byte[] buyerData = SerializationUtil.toBytes(buyer);
 
         return context -> context
-            .insertInto(AXS_TRANSACTION, AXS_TRANSACTION.CREATED, AXS_TRANSACTION.LIST_ITEM, AXS_TRANSACTION.BUYER, AXS_TRANSACTION.QUANTITY)
+            .insertInto(AXS_TRANSACTION, AXS_TRANSACTION.CREATED, AXS_TRANSACTION.FOR_SALE_ITEM, AXS_TRANSACTION.BUYER, AXS_TRANSACTION.QUANTITY)
             .values(Timestamp.from(created), forSaleItemRecNo, buyerData, quantity);
     }
 }

@@ -553,9 +553,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
             int amountLeft = stack.getQuantity();
 
-            final Iterator<ItemStack> iter = serverPlayer.inventory.mainInventory.iterator();
-            while (iter.hasNext()) {
-                final ItemStack next = iter.next();
+            for (int j = 0; j < serverPlayer.inventory.mainInventory.size(); j++) {
+                final ItemStack next = serverPlayer.inventory.getStackInSlot(j);
 
                 if (ItemStack.areItemsEqual(stack.asRealStack(), next)) {
                     final int toRemove = Math.min(next.getCount(), amountLeft);
@@ -563,7 +562,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     amountLeft -= toRemove;
 
                     if (next.getCount() <= 0) {
-                        iter.remove();
+                        serverPlayer.inventory.removeStackFromSlot(j);
                     }
                 }
 
@@ -587,17 +586,19 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             ListItem found = null;
 
             for (final ListItem listItem : listItems) {
-                if (ItemStack.areItemsEqual(stack.asRealStack(), listItem.asRealStack())) {
+                if (ItemStack.areItemsEqual(stack.asRealStack(), listItem.asRealStack()) && ItemStack.areItemStackTagsEqual(stack.asRealStack(),
+                    listItem.asRealStack())) {
                     found = listItem;
                     break;
                 }
             }
 
             if (found != null) {
-                found.setQuantity(listingQuantity);
+                found.setQuantity(found.getQuantity() + listingQuantity);
             } else {
                 found = new BasicListItem(BasicListItem.NEW_ROW, Instant.now(), player.getUniqueId(), stack.getItem(), listingQuantity,
                     stack.getMetadata(), i, stack.getCompound());
+                ((BasicListItem) found).refreshSellerName();
                 listItems.add(found);
             }
         }
@@ -620,7 +621,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             ListItem found = null;
 
             for (final ListItem listItem : listItems) {
-                if (ItemStack.areItemsEqual(stack.asRealStack(), listItem.asRealStack())) {
+                if (ItemStack.areItemsEqual(stack.asRealStack(), listItem.asRealStack()) && ItemStack.areItemStackTagsEqual(stack.asRealStack(),
+                    listItem.asRealStack())) {
                     found = listItem;
                     break;
                 }
@@ -665,6 +667,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
 
         // TODO Tell the Player we cannot pull all their listings back into their inventory
+
+        // TODO TEST CODE
+        this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItems == null || listItems.isEmpty() ? null : listItems));
+        this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(id));
     }
 
     /**

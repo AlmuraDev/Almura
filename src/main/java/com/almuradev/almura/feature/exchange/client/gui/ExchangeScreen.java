@@ -153,7 +153,7 @@ public final class ExchangeScreen extends SimpleScreen {
         comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchField.getY(), Anchor.RIGHT | Anchor.TOP);
 
         this.forSaleList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 250);
-        this.forSaleList.setPosition(innerPadding, getPaddedY(sellerSearchField, 8));
+        this.forSaleList.setPosition(innerPadding, getPaddedY(this.sellerSearchField, 8));
         this.forSaleList.setItemComponentFactory((g, e) -> new ForSaleItemComponent(this, e));
         this.forSaleList.setItemComponentSpacing(1);
         this.forSaleList.setCanDeselect(true);
@@ -166,8 +166,8 @@ public final class ExchangeScreen extends SimpleScreen {
             .position(-innerPadding, 1)
             .text("Search")
             .onClick(() -> {
-                final String itemName = itemSearchField.getText();
-                final String username = sellerSearchField.getText();
+                final String itemName = this.itemSearchField.getText();
+                final String username = this.sellerSearchField.getText();
 
                 this.currentForSaleItemResults.clear();
 
@@ -322,14 +322,6 @@ public final class ExchangeScreen extends SimpleScreen {
         addToScreen(form);
     }
 
-    protected Consumer<Task> openWindow(String details) {  // Scheduler
-        return task -> {
-            if (details.equalsIgnoreCase("purchaseRequest")) {
-                // Packet to send request.
-            }
-        };
-    }
-
     @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
@@ -397,6 +389,15 @@ public final class ExchangeScreen extends SimpleScreen {
         return DEFAULT_DECIMAL_FORMAT.format(value / BILLION) + "t";
     }
 
+    public void refreshListItems() {
+        final List<ListItem> listItems = this.exchange.getListItemsFor(Minecraft.getMinecraft().player.getUniqueID()).orElse(null);
+        if (listItems == null) {
+            this.listItemList.clearItems();
+        } else {
+            this.listItemList.setItems(listItems);
+        }
+    }
+
     public static class ExchangeItemComponent extends UIDynamicList.ItemComponent<ItemStack> {
 
         private UIComplexImage image;
@@ -452,6 +453,49 @@ public final class ExchangeScreen extends SimpleScreen {
         }
     }
 
+    public static final class ListItemComponent extends ExchangeItemComponent {
+
+        private UIContainer<?> statusContainer;
+        private UIExpandingLabel priceLabel;
+        private final ListItem listItem;
+
+        private ListItemComponent(final MalisisGui gui, final ListItem listItem) {
+            super(gui, ItemStackUtil.fromNative(listItem.asRealStack()));
+            this.listItem = listItem;
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        protected void construct(final MalisisGui gui) {
+            super.construct(gui);
+
+            this.statusContainer = new UIContainer<>(gui, 5, this.height - (this.borderSize * 2));
+            this.statusContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
+            this.statusContainer.setColor(FontColors.DARK_GREEN);
+
+            final ForSaleItem forSaleItem = this.listItem.getForSaleItem().orElse(null);
+
+            // TODO Grinch, I'm sure you want to handle this differently.
+            if (forSaleItem != null) {
+                this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, forSaleItem.getPrice(), TextColors.GRAY, "/ea"));
+                this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
+                this.priceLabel.setPosition(-(this.statusContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
+                this.priceLabel.setTooltip("Total: " +
+                    DEFAULT_DECIMAL_FORMAT.format(BigDecimal.valueOf(this.listItem.getQuantity()).multiply(forSaleItem.getPrice())));
+
+                this.add(this.statusContainer, this.priceLabel);
+            } else {
+                this.add(this.statusContainer);
+            }
+        }
+
+        @Override
+        public void draw(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+            this.statusContainer.setAlpha(this.listItem.getForSaleItem().isPresent() ? 255 : 0);
+            super.draw(renderer, mouseX, mouseY, partialTick);
+        }
+    }
+
     public static final class ForSaleItemComponent extends ExchangeItemComponent {
 
         private UILabel sellerLabel;
@@ -478,52 +522,9 @@ public final class ExchangeScreen extends SimpleScreen {
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
             this.priceLabel.setTooltip("Total: " +
-                    DEFAULT_DECIMAL_FORMAT.format(BigDecimal.valueOf(item.getQuantity()).multiply(this.forSaleItem.getPrice())));
+                DEFAULT_DECIMAL_FORMAT.format(BigDecimal.valueOf(item.getQuantity()).multiply(this.forSaleItem.getPrice())));
 
             this.add(this.sellerLabel, this.priceLabel);
-        }
-    }
-
-    public static final class ListItemComponent extends ExchangeItemComponent {
-
-        private UIContainer<?> statusContainer;
-        private UIExpandingLabel priceLabel;
-        private final ListItem listItem;
-
-        private ListItemComponent(final MalisisGui gui, final ListItem item) {
-            super(gui, ItemStackUtil.fromNative(item.asRealStack()));
-            this.listItem = item;
-        }
-
-        @SuppressWarnings("deprecation")
-        @Override
-        protected void construct(final MalisisGui gui) {
-            super.construct(gui);
-
-            this.statusContainer = new UIContainer<>(gui, 5, this.height - (this.borderSize * 2));
-            this.statusContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
-            this.statusContainer.setColor(FontColors.DARK_GREEN);
-
-            final ForSaleItem forSaleItem = this.listItem.getForSaleItem().orElse(null);
-
-            // TODO Grinch, I'm sure you want to handle this differently.
-            if (forSaleItem != null) {
-                this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, forSaleItem.getPrice(), TextColors.GRAY, "/ea"));
-                this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
-                this.priceLabel.setPosition(-(this.statusContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
-                this.priceLabel.setTooltip("Total: " +
-                    DEFAULT_DECIMAL_FORMAT.format(BigDecimal.valueOf(item.getQuantity()).multiply(forSaleItem.getPrice())));
-
-                this.add(this.statusContainer, this.priceLabel);
-            } else {
-                this.add(this.statusContainer);
-            }
-        }
-
-        @Override
-        public void draw(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-            this.statusContainer.setAlpha(this.listItem.getForSaleItem().isPresent() ? 255 : 0);
-            super.draw(renderer, mouseX, mouseY, partialTick);
         }
     }
 
