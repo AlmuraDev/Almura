@@ -19,17 +19,20 @@ import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.feature.store.Store;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -39,14 +42,13 @@ import org.spongepowered.api.text.format.TextColors;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
 import java.util.Locale;
 
 @SideOnly(Side.CLIENT)
 public final class ExchangeManagementScreen extends SimpleScreen {
 
-    private static final int screenWidth = 375;
-    private static final int screenHeight = 300;
+    private static final int requiredScreenWidth = 375;
+    private static final int requiredScreenHeight = 260;
     private static final String filter = "[^A-Za-z0-9_.]";
     private static final FontOptions defaultTextFieldFontOptions = FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build();
     private static final FontOptions readOnlyTextFieldFontOptions = FontOptions.builder().color(0xC5C5C5).shadow(false).build();
@@ -54,10 +56,11 @@ public final class ExchangeManagementScreen extends SimpleScreen {
     @Inject private static ClientExchangeManager exchangeManager;
     @Inject private static ClientNotificationManager notificationManager;
 
-    private UITextField idField, permissionField, creatorField, createdField, titleField;
     private UIButton buttonAdd, buttonDelete, buttonSave;
-    private UIDynamicList<Exchange> exchangeList;
     private UICheckBox hiddenCheckbox;
+    private UIDynamicList<Exchange> exchangeList;
+    private UILabel creatorNameLabel, creatorUniqueIdLabel, createdLabel;
+    private UITextField idField, permissionField, creatorNameField, creatorUniqueIdField, createdField, titleField;
     private UIFormContainer form;
 
     @Override
@@ -65,7 +68,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         this.guiscreenBackground = false;
 
         // Master Pane
-        this.form = new UIFormContainer(this, screenWidth, screenHeight, "Exchange - Management");
+        this.form = new UIFormContainer(this, requiredScreenWidth, requiredScreenHeight, "Exchange - Management");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -75,7 +78,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         this.form.setTopPadding(20);
 
         // LIST
-        this.exchangeList = new UIDynamicList<>(this, 120, 260);
+        this.exchangeList = new UIDynamicList<>(this, 120, requiredScreenHeight - 40);
         this.exchangeList.setItemComponentFactory(ExchangeItemComponent::new);
         this.exchangeList.setItemComponentSpacing(1);
         this.exchangeList.setCanDeselect(false);
@@ -92,12 +95,12 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         container.setPadding(4, 4);
         container.setAnchor(Anchor.RIGHT | Anchor.TOP);
         container.setPosition(-1, 0);
-        container.setSize(244, 260);
+        container.setSize(244, requiredScreenHeight - 40);
         container.setBackgroundAlpha(0);
 
         // ID
         this.idField = new UITextField(this, "", false)
-                .setSize(165, 0)
+                .setSize(140, 0)
                 .setPosition(0, 0, Anchor.RIGHT | Anchor.TOP)
                 .setFontOptions(readOnlyTextFieldFontOptions)
                 .setEditable(false)
@@ -108,7 +111,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         // Title
         this.titleField = new UITextField(this, "", false)
-                .setSize(165, 0)
+                .setSize(140, 0)
                 .setPosition(0, SimpleScreen.getPaddedY(this.idField, 2), Anchor.RIGHT | Anchor.TOP)
                 .setFontOptions(defaultTextFieldFontOptions)
                 .register(this);
@@ -117,7 +120,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         // Permission
         this.permissionField = new UITextField(this, "", false)
-                .setSize(165, 0)
+                .setSize(140, 0)
                 .setPosition(0, SimpleScreen.getPaddedY(this.titleField, 2), Anchor.RIGHT | Anchor.TOP)
                 .setFontOptions(defaultTextFieldFontOptions)
                 .register(this);
@@ -125,22 +128,31 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         final UILabel permissionLabel = new UILabel(this, TextFormatting.WHITE + "Permission:")
                 .setPosition(0, this.permissionField.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
-        // Last modified by
-        this.creatorField = new UITextField(this, "", false)
-                .setSize(165, 0)
+        // Created by (name)
+        this.creatorNameField = new UITextField(this, "", false)
+                .setSize(140, 0)
                 .setPosition(0, SimpleScreen.getPaddedY(this.permissionField, 2), Anchor.RIGHT | Anchor.TOP)
                 .setFontOptions(readOnlyTextFieldFontOptions)
                 .setEditable(false);
-        final UILabel creatorLabel = new UILabel(this, TextFormatting.WHITE + "Creator:")
-                .setPosition(0, this.creatorField.getY() + 3, Anchor.LEFT | Anchor.TOP);
+        this.creatorNameLabel = new UILabel(this, TextFormatting.WHITE + "Creator (name):")
+                .setPosition(0, this.creatorNameField.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
-        // Last modified date
-        this.createdField = new UITextField(this, "", false)
-                .setSize(165, 0)
-                .setPosition(0, SimpleScreen.getPaddedY(this.creatorField, 2), Anchor.RIGHT | Anchor.TOP)
+        // Created by (Unique ID)
+        this.creatorUniqueIdField = new UITextField(this, "", false)
+                .setSize(140, 0)
+                .setPosition(0, SimpleScreen.getPaddedY(this.creatorNameField, 2), Anchor.RIGHT | Anchor.TOP)
                 .setFontOptions(readOnlyTextFieldFontOptions)
                 .setEditable(false);
-        final UILabel createdLabel = new UILabel(this, TextFormatting.WHITE + "Created:")
+        this.creatorUniqueIdLabel = new UILabel(this, TextFormatting.WHITE + "Creator (uuid):")
+                .setPosition(0, this.creatorUniqueIdField.getY() + 3, Anchor.LEFT | Anchor.TOP);
+
+        // Created on
+        this.createdField = new UITextField(this, "", false)
+                .setSize(140, 0)
+                .setPosition(0, SimpleScreen.getPaddedY(this.creatorUniqueIdField, 2), Anchor.RIGHT | Anchor.TOP)
+                .setFontOptions(readOnlyTextFieldFontOptions)
+                .setEditable(false);
+        this.createdLabel = new UILabel(this, TextFormatting.WHITE + "Created:")
                 .setPosition(0, this.createdField.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         this.hiddenCheckbox = new UICheckBox(this);
@@ -177,7 +189,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         container.add(this.idField, idLabel,
                       this.titleField, titleLabel,
                       this.permissionField, permissionLabel,
-                      this.creatorField, creatorLabel,
+                      this.creatorNameField, creatorNameLabel,
+                      this.creatorUniqueIdField, creatorUniqueIdLabel,
                       this.createdField, createdLabel,
                       this.hiddenCheckbox, this.buttonSave);
 
@@ -186,10 +199,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .text(Text.of(TextColors.GREEN, "+"))
                 .width(15)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
-                .onClick(() -> {
-                    this.reset(false);
-                    this.exchangeList.setSelectedItem(null);
-                })
+                .onClick(() -> this.exchangeList.setSelectedItem(null))
                 .build("button.add");
 
         // Remove button
@@ -228,7 +238,9 @@ public final class ExchangeManagementScreen extends SimpleScreen {
     }
 
     public void refresh() {
-        final String lastSelectedId = this.exchangeList.getSelectedItem() != null ? this.exchangeList.getSelectedItem().getId() : "";
+        final String lastSelectedId = this.exchangeList.getSelectedItem() != null
+                ? this.exchangeList.getSelectedItem().getId()
+                : this.idField.getText().toLowerCase();
 
         this.exchangeList.setItems(exchangeManager.getExchanges());
 
@@ -240,37 +252,52 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         this.exchangeList.setSelectedItem(toSelect);
     }
 
-    private void reset(boolean markReadOnly) {
-        final UITextField[] editableFields = {this.idField, this.titleField, this.permissionField};
-        final UITextField[] readOnlyFields = {this.creatorField, this.createdField};
+    private void reset(boolean forNewExchange) {
 
-        Arrays.stream(editableFields).forEach(c -> {
-            c.setText("");
-            c.setEnabled(!markReadOnly);
-        });
-
-        Arrays.stream(readOnlyFields).forEach(c -> {
-            c.setText("");
-            c.setEnabled(!markReadOnly);
-            c.setFontOptions(markReadOnly ? readOnlyTextFieldFontOptions : defaultTextFieldFontOptions);
-        });
-
+        // ID
         this.idField.setText("");
-        this.idField.setEditable(true);
-        this.idField.setFontOptions(defaultTextFieldFontOptions);
+        this.idField.setEditable(forNewExchange);
+        this.idField.setFontOptions(forNewExchange ? defaultTextFieldFontOptions : readOnlyTextFieldFontOptions);
+
+        // Title
         this.titleField.setText("");
+
+        // Permission
         this.permissionField.setText("");
-        this.creatorField.setText("");
+
+        // Creator by (name)
+        this.creatorNameField.setText("");
+        this.creatorNameField.setEditable(false);
+        this.creatorNameField.setFontOptions(readOnlyTextFieldFontOptions);
+        this.creatorNameField.setVisible(!forNewExchange);
+        this.creatorNameLabel.setVisible(!forNewExchange);
+
+        // Creator by (Unique ID)
+        this.creatorUniqueIdField.setText("");
+        this.creatorUniqueIdField.setEditable(false);
+        this.creatorUniqueIdField.setFontOptions(readOnlyTextFieldFontOptions);
+        this.creatorUniqueIdField.setVisible(!forNewExchange);
+        this.creatorUniqueIdLabel.setVisible(!forNewExchange);
+
+        // Created on
         this.createdField.setText("");
+        this.createdField.setVisible(!forNewExchange);
+        this.createdLabel.setVisible(!forNewExchange);
+
+        // Hidden
         this.hiddenCheckbox.setChecked(false);
+
         this.validate("");
     }
 
     private void validate(String newValue) {
-        final boolean isValid = !this.idField.getText().isEmpty()
+        boolean isValid = !this.idField.getText().isEmpty()
                 && !this.titleField.getText().isEmpty()
                 && !this.permissionField.getText().isEmpty()
                 && !newValue.isEmpty(); // Because we don't have a post event
+        if (this.exchangeList.getSelectedItem() == null) {
+            isValid = this.exchangeList.getItems().stream().noneMatch(i -> i.getId().equalsIgnoreCase(this.idField.getText()));
+        }
         this.buttonSave.setEnabled(isValid);
     }
 
@@ -288,20 +315,35 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         if (event.getNewValue() != null) {
             final Exchange exchange = (Exchange) event.getNewValue();
 
+            // ID
             this.idField.setText(exchange.getId());
             this.idField.setFontOptions(readOnlyTextFieldFontOptions);
             this.idField.setEditable(false);
-            this.titleField.setText(exchange.getName());
-            this.permissionField.setText(exchange.getPermission());
-            this.creatorField.setText(exchange.getCreator().toString());
-            exchange.getCreatorName().ifPresent(name -> this.creatorField.setTooltip(name));
 
+            // Title
+            this.titleField.setText(exchange.getName());
+
+            // Permission
+            this.permissionField.setText(exchange.getPermission());
+
+            // Creator by (Name)
+            // This nonsense is brought to you by [sponge].
+            final String name = Store.UNKNOWN_OWNER.equals(exchange.getCreator())
+                    ? "Unknown"
+                    : exchange.getCreatorName().orElse("Unknown");
+            this.creatorNameField.setText(name);
+
+            // Creator by (Unique ID)
+            this.creatorUniqueIdField.setText(exchange.getCreator().toString());
+
+            // Created on
             final DateTimeFormatter formatter = DateTimeFormatter
                     .ofLocalizedDateTime(FormatStyle.SHORT)
                     .withLocale(Locale.getDefault())
                     .withZone(ZoneId.systemDefault());
             this.createdField.setText(formatter.format(exchange.getCreated()));
 
+            // Hidden
             this.hiddenCheckbox.setChecked(exchange.isHidden());
         }
     }
@@ -310,11 +352,12 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         public ExchangeItemComponent(MalisisGui gui, Exchange item) {
             super(gui, item);
+            this.setSize(UIComponent.INHERITED, 20);
         }
 
         @Override
         public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            renderer.drawText(TextFormatting.WHITE + item.getName(), 2, 3, 0);
+            renderer.drawText(TextFormatting.WHITE + item.getName(), 2, (this.height - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) / 2f, 0);
         }
     }
 }
