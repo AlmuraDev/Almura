@@ -35,10 +35,12 @@ public class BasicVirtualStack implements VirtualStack {
         this.compound = compound;
 
         if (quantity == 0) {
-            this.stack = new ItemStack(item, 1, metadata, compound);
+            this.stack = new ItemStack(item, 1, metadata);
         } else {
-            this.stack = new ItemStack(item, quantity, metadata, compound);
+            this.stack = new ItemStack(item, quantity, metadata);
         }
+
+        this.stack.setTagCompound(compound);
     }
 
     @Override

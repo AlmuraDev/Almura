@@ -614,6 +614,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         // TODO Not using this yet but I can at least tell the client what we couldn't move back
         final List<VanillaStack> inventoryRejections = new ArrayList<>();
+        final List<VanillaStack> listingRemovals = new ArrayList<>();
 
         for (final InventoryAction action : toInventoryActions) {
             final VanillaStack stack = action.getStack();
@@ -657,9 +658,12 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             }
 
             final int amountRejected = stack.getQuantity() - amountAdded;
-            found.setQuantity(amountRejected);
+            if (amountRejected <= 0) {
+                listingRemovals.add(found);
+                listItems.remove(found);
+            } else {
+                found.setQuantity(amountRejected);
 
-            if (amountRejected > 0) {
                 final VanillaStack rejectedStack = stack.copy();
                 rejectedStack.setQuantity(amountAdded);
                 inventoryRejections.add(rejectedStack);

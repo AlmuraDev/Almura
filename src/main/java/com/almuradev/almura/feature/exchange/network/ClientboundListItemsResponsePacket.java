@@ -39,7 +39,6 @@ public final class ClientboundListItemsResponsePacket implements Message {
 
     public ClientboundListItemsResponsePacket(final String id, @Nullable final List<ListItem> listItems) {
         checkNotNull(id);
-        checkNotNull(listItems);
 
         this.id = id;
         this.listItems = listItems;
