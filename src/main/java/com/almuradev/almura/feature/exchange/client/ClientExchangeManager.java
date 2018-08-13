@@ -11,6 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.feature.exchange.Exchange;
+import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.ExchangeGuiType;
 import com.almuradev.almura.feature.exchange.ExchangeModifyType;
 import com.almuradev.almura.feature.exchange.InventoryAction;
@@ -189,7 +190,7 @@ public final class ClientExchangeManager implements Witness {
 
     public void handleExchangeSpecificOffer(final String id, final int limit) {
         checkNotNull(id);
-        checkState(limit >= 0);
+        checkState(limit >= ExchangeConstants.UNLIMITED);
 
         final Exchange axs = this.getExchange(id);
         if (axs == null) {
@@ -214,8 +215,6 @@ public final class ClientExchangeManager implements Witness {
 
     public void handleListItems(final String id, @Nullable final List<ListItem> listItems) {
         checkNotNull(id);
-
-        System.err.println(listItems);
 
         final Exchange exchange = this.getExchange(id);
         if (exchange == null) {

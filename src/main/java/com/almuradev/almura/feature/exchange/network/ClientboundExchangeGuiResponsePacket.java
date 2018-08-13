@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.exchange.network;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.ExchangeGuiType;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
@@ -26,7 +27,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
     }
 
     public ClientboundExchangeGuiResponsePacket(final ExchangeGuiType type, @Nullable final String id) {
-        this(type, id, -1);
+        this(type, id, -2); // This constructor should never be called for SPECIFIC_OFFER so pass -2 to intentionally fail
     }
 
     public ClientboundExchangeGuiResponsePacket(final ExchangeGuiType type, @Nullable final String id, final int limit) {
@@ -40,7 +41,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
         }
 
         if (this.type == ExchangeGuiType.SPECIFIC_OFFER) {
-            checkState(limit >= 0);
+            checkState(limit >= ExchangeConstants.UNLIMITED);
             this.limit = limit;
         }
     }
