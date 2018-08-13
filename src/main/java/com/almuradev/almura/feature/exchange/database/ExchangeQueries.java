@@ -17,6 +17,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.util.SerializationUtil;
+import com.almuradev.generated.axs.tables.AxsListItem;
 import com.almuradev.generated.axs.tables.records.AxsForSaleItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemDataRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
@@ -24,13 +25,16 @@ import com.almuradev.generated.axs.tables.records.AxsRecord;
 import com.almuradev.generated.axs.tables.records.AxsTransactionRecord;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
+import org.jooq.DSLContext;
 import org.jooq.DeleteConditionStep;
+import org.jooq.InsertResultStep;
 import org.jooq.InsertValuesStep2;
 import org.jooq.InsertValuesStep3;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStep5;
 import org.jooq.InsertValuesStep7;
 import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectJoinStep;
 import org.jooq.SelectWhereStep;
@@ -93,34 +97,63 @@ public final class ExchangeQueries {
      * ListItem
      */
 
-    public static DatabaseQuery<SelectConditionStep<Record>> createFetchListItemsAndDataFor(final String id) {
+    public static DatabaseQuery<SelectConditionStep<Record>> createFetchListItemsAndDataFor(final String id, final boolean isHidden) {
         checkNotNull(id);
 
         return context -> context
             .select()
             .from(AXS_LIST_ITEM)
-                .join(AXS_LIST_ITEM_DATA)
+                .leftJoin(AXS_LIST_ITEM_DATA)
                 .on(AXS_LIST_ITEM_DATA.LIST_ITEM.eq(AXS_LIST_ITEM.REC_NO))
-            .where(AXS_LIST_ITEM.AXS.eq(id));
+            .where(AXS_LIST_ITEM.AXS.eq(id).and(AXS_LIST_ITEM.IS_HIDDEN.eq(isHidden)));
     }
 
-    public static DatabaseQuery<InsertValuesStep7<AxsListItemRecord, Timestamp, String, byte[], String, Integer, Integer, Integer>> createInsertItem(
-        final String id, final Instant created, final UUID seller, final Item item, final int quantity, final int metadata, final int index) {
+    public static DatabaseQuery<InsertResultStep<AxsListItemRecord>> createInsertItem(final String id, final Instant created, final UUID seller,
+        final Item item, final int quantity, final int metadata, final int index) {
         checkNotNull(id);
         checkNotNull(created);
         checkNotNull(seller);
         checkNotNull(item);
-        checkState(quantity > 0);
+        checkState(quantity >= -1);
         checkState(metadata >= 0);
         checkState(index >= 0);
 
+        final Timestamp sqlCreated = Timestamp.from(created);
         final String itemId = SerializationUtil.toString(item.getRegistryName());
         final byte[] sellerData = SerializationUtil.toBytes(seller);
 
+        return context -> {
+            final InsertValuesStep7<AxsListItemRecord, String, Timestamp, byte[], String, Integer, Integer, Integer> insertionStep = context
+                .insertInto(AxsListItem.AXS_LIST_ITEM)
+                .columns(AxsListItem.AXS_LIST_ITEM.AXS, AxsListItem.AXS_LIST_ITEM.CREATED, AxsListItem.AXS_LIST_ITEM.SELLER,
+                    AxsListItem.AXS_LIST_ITEM.ITEM_TYPE, AxsListItem.AXS_LIST_ITEM.QUANTITY, AxsListItem.AXS_LIST_ITEM.METADATA,
+                    AxsListItem.AXS_LIST_ITEM.INDEX);
+
+            insertionStep.values(id, sqlCreated, sellerData, itemId, quantity, metadata, index);
+
+            return insertionStep.returning();
+        };
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<AxsListItemRecord>> createUpdateListItem(final int listItemRecNo, final int quantity,
+        final int index) {
+        checkState(quantity > 0);
+        checkState(index >= 0);
+
         return context -> context
-            .insertInto(AXS_LIST_ITEM, AXS_LIST_ITEM.CREATED, AXS_LIST_ITEM.AXS, AXS_LIST_ITEM.SELLER, AXS_LIST_ITEM.ITEM_TYPE,
-                AXS_LIST_ITEM.QUANTITY, AXS_LIST_ITEM.METADATA, AXS_LIST_ITEM.INDEX)
-            .values(Timestamp.from(created), id, sellerData, itemId, quantity, metadata, index);
+            .update(AXS_LIST_ITEM)
+            .set(AXS_LIST_ITEM.QUANTITY, quantity)
+            .set(AXS_LIST_ITEM.INDEX, index)
+            .where(AXS_LIST_ITEM.REC_NO.eq(listItemRecNo));
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<AxsListItemRecord>> createUpdateListItemIsHidden(final int listItemRecNo,
+        final boolean isHidden) {
+
+        return context -> context
+            .update(AXS_LIST_ITEM)
+            .set(AXS_LIST_ITEM.IS_HIDDEN, isHidden)
+            .where(AXS_LIST_ITEM.REC_NO.eq(listItemRecNo));
     }
 
     /**
@@ -148,10 +181,10 @@ public final class ExchangeQueries {
         return context -> context
             .select()
             .from(AXS_FOR_SALE_ITEM
-                .join(AXS_LIST_ITEM
-                    .join(AXS)
-                    .on(AXS.ID.eq(id)))
-                .onKey());
+                .join(AXS_LIST_ITEM)
+                .onKey()
+                .join(AXS)
+                .on(AXS.ID.eq(id)));
     }
 
     public static DatabaseQuery<SelectConditionStep<AxsForSaleItemRecord>> createFetchForSaleItemsFor(final int listItemRecNo) {

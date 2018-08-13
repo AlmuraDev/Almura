@@ -7,12 +7,11 @@
  */
 package com.almuradev.almura.shared.database;
 
-import com.almuradev.toolbox.inject.event.Witness;
-import com.almuradev.toolbox.inject.event.WitnessScope;
 import com.google.inject.Singleton;
 import org.jooq.DSLContext;
 import org.jooq.conf.Settings;
 import org.jooq.impl.DSL;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
@@ -30,8 +29,7 @@ import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
 @Singleton
-@WitnessScope.Sponge
-public final class DatabaseManager implements Witness {
+public final class DatabaseManager {
 
     private final PluginContainer container;
     private final Scheduler scheduler;
@@ -50,6 +48,9 @@ public final class DatabaseManager implements Witness {
         this.manager = manager;
         this.configuration = configuration;
         this.queue = new DatabaseQueue();
+
+        // TODO This is provided to Guice, we must manually register this..
+        Sponge.getEventManager().registerListeners(container, this);
     }
 
     @Listener(order = Order.FIRST)
@@ -57,6 +58,7 @@ public final class DatabaseManager implements Witness {
         this.queueTask = this.scheduler
             .createTaskBuilder()
             .async()
+            .intervalTicks(5)
             .execute(this.queue)
             .submit(this.container);
     }

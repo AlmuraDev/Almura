@@ -18,6 +18,7 @@ import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterReq
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
+import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.database.DatabaseQueue;
 import com.almuradev.almura.shared.feature.store.Store;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
@@ -32,6 +33,7 @@ import com.almuradev.generated.axs.tables.Axs;
 import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
 import com.almuradev.generated.axs.tables.AxsListItemData;
+import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -39,7 +41,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.jooq.DSLContext;
+import org.jooq.InsertResultStep;
+import org.jooq.InsertValuesStep7;
+import org.jooq.Query;
 import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.Results;
 import org.slf4j.Logger;
 import org.spongepowered.api.GameState;
@@ -69,6 +75,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -266,7 +273,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .createTaskBuilder()
                         .execute(() ->
                             Sponge.getServer().getOnlinePlayers().forEach(p -> {
-                                axs.getListItemsFor(p.getUniqueId()).ifPresent(items -> this.network.sendTo(p, new ClientboundListItemsResponsePacket(axs.getId(), items)));
+                                axs.getListItemsFor(p.getUniqueId()).ifPresent(items -> this.network.sendTo(p,
+                                    new ClientboundListItemsResponsePacket(axs.getId(), items)));
                                 this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(axs.getId()));
                             })
                         )
@@ -453,13 +461,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     public void loadListItems(final Exchange axs) {
         checkNotNull(axs);
 
-        this.logger.info("Querying items for Exchange [{}], please wait...");
+        this.logger.info("Querying items for Exchange [{}], please wait...", axs.getId());
 
         final List<ListItem> items = new ArrayList<>();
 
         try (final DSLContext context = this.databaseManager.createContext(true)) {
             final Results results = ExchangeQueries
-                .createFetchListItemsAndDataFor(axs.getId())
+                .createFetchListItemsAndDataFor(axs.getId(), false)
                 .build(context)
                 .keepStatement(false)
                 .fetchMany();
@@ -516,7 +524,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
             axs.putListItems(itemsByOwner.isEmpty() ? null : itemsByOwner);
 
-            this.logger.info("Loaded {} list item(s) for Exchange [{}].", axs.getId(), items.size());
+            this.logger.info("Loaded {} list item(s) for Exchange [{}].", items.size(), axs.getId());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -614,7 +622,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         // TODO Not using this yet but I can at least tell the client what we couldn't move back
         final List<VanillaStack> inventoryRejections = new ArrayList<>();
-        final List<VanillaStack> listingRemovals = new ArrayList<>();
+        final List<ListItem> listingRemovals = new ArrayList<>();
 
         for (final InventoryAction action : toInventoryActions) {
             final VanillaStack stack = action.getStack();
@@ -672,9 +680,83 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         // TODO Tell the Player we cannot pull all their listings back into their inventory
 
-        // TODO TEST CODE
-        this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItems == null || listItems.isEmpty() ? null : listItems));
-        this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(id));
+        final List<ListItem> listItemsRef = listItems;
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+
+                    // Insertions/Updates
+                    final List<Query> batchUpdates = new ArrayList<>();
+
+                    final Iterator<ListItem> iter = listItemsRef.iterator();
+                    while (iter.hasNext()) {
+
+                        final ListItem item = iter.next();
+
+                        // Insertions
+                        if (item.getRecord() == BasicListItem.NEW_ROW) {
+
+                            final Result<AxsListItemRecord> result = ExchangeQueries
+                                .createInsertItem(axs.getId(), item.getCreated(), item.getSeller(), item.getItem(), item.getQuantity(),
+                                    item.getMetadata(), item.getIndex())
+                                .build(context)
+                                .fetch();
+
+                            if (result.isEmpty()) {
+                                // TODO Insertion to DB failed for whatever reason, need to decide on what to do with the limbo listing
+                                iter.remove();
+                                continue;
+                            }
+
+                            final Integer recNo = result.getValue(0, AxsListItem.AXS_LIST_ITEM.REC_NO);
+
+                            ((BasicListItem) item).setRecord(recNo);
+
+                            final NBTTagCompound compound = item.getCompound();
+                            if (compound == null) {
+                                continue;
+                            }
+
+                            ExchangeQueries
+                                .createInsertItemData(recNo, compound)
+                                .build(context)
+                                .execute();
+                        } else {
+
+                            batchUpdates.add(ExchangeQueries
+                                .createUpdateListItem(item.getRecord(), item.getQuantity(), item.getIndex())
+                                .build(context)
+                            );
+                        }
+                    }
+
+                    // Updates
+                    context.batch(batchUpdates).execute();
+
+                    final List<Query> batchRemovals = new ArrayList<>();
+
+                    // Deletions (soft)
+                    listingRemovals.forEach(item -> batchRemovals.add(ExchangeQueries
+                        .createUpdateListItemIsHidden(item.getRecord(), true)
+                        .build(context)));
+
+                    context.batch(batchRemovals).execute();
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItemsRef.isEmpty() ? null : listItemsRef));
+                            this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(id));
+                        })
+                        .submit(this.container);
+                } catch (SQLException | IOException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     /**
@@ -684,7 +766,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     public void loadForSaleItems(final Exchange axs) {
         checkNotNull(axs);
 
-        this.logger.info("Querying for sale items for Exchange [{}], please wait...");
+        this.logger.info("Querying for sale items for Exchange [{}], please wait...", axs.getId());
 
         final List<ForSaleItem> items = new ArrayList<>();
 
@@ -730,7 +812,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             axs.putForSaleItems(items.isEmpty() ? null : items.stream().collect(Collectors.groupingBy(forSaleItem -> forSaleItem
                 .getListItem().getSeller())));
 
-            this.logger.info("Loaded {} for sale item(s) for Exchange [{}].", axs.getId(), items.size());
+            this.logger.info("Loaded {} for sale item(s) for Exchange [{}].", items.size(), axs.getId());
 
         } catch (SQLException e) {
             e.printStackTrace();

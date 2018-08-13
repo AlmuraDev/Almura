@@ -22,7 +22,6 @@ public final class DatabaseModule extends AbstractModule implements CommonBinder
 
     @Override
     protected void configure() {
-        this.facet().add(DatabaseManager.class);
         this.facet().add(DatabaseInstaller.class);
     }
 

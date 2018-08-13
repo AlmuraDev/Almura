@@ -32,7 +32,7 @@ public final class BasicListItem implements ListItem {
 
     public static final int NEW_ROW = -1;
 
-    private final int record;
+    private int record;
     private final Instant created;
     private final UUID seller;
     private final Item item;
@@ -66,6 +66,10 @@ public final class BasicListItem implements ListItem {
     @Override
     public int getRecord() {
         return this.record;
+    }
+
+    public void setRecord(final Integer record) {
+        this.record = record;
     }
 
     @Override
@@ -149,7 +153,7 @@ public final class BasicListItem implements ListItem {
     }
 
     public void refreshSellerName() {
-        if (this.seller != Store.UNKNOWN_OWNER && Sponge.getPlatform().getExecutionType().isServer()) {
+        if (this.seller != Store.UNKNOWN_OWNER) {
             Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.seller)
                 .ifPresent(user -> this.sellerName = user.getName());
         }

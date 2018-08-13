@@ -59,8 +59,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
     private final Exchange exchange;
     private final List<InventoryAction> inventoryActions = new ArrayList<>();
-    private final int maxOfferSlots = ThreadLocalRandom.current().nextInt(1, 5); // TODO: Server must instruct client to open this screen with the
-                                                                                 // appropriate limit
+    private final int maxOfferSlots = 10;
     private UIExchangeOfferContainer offerContainer;
     private UIPropertyBar progressBar;
     private List<VanillaStack> pendingItems;
