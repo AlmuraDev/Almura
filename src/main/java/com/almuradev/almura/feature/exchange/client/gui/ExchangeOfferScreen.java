@@ -25,7 +25,6 @@ import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.util.MathUtil;
@@ -47,7 +46,6 @@ import org.spongepowered.api.util.Color;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -59,15 +57,16 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
     private final Exchange exchange;
     private final List<InventoryAction> inventoryActions = new ArrayList<>();
-    private final int maxOfferSlots = 10;
+    private final int limit;
     private UIExchangeOfferContainer offerContainer;
     private UIPropertyBar progressBar;
     private List<VanillaStack> pendingItems;
 
-    public ExchangeOfferScreen(ExchangeScreen parent, Exchange exchange, List<VanillaStack> pendingItems) {
+    public ExchangeOfferScreen(final ExchangeScreen parent, final Exchange exchange, final List<VanillaStack> pendingItems, final int limit) {
         super(parent, true);
         this.exchange = exchange;
         this.pendingItems = pendingItems;
+        this.limit = limit;
     }
 
     @Override
@@ -103,7 +102,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.progressBar = new UIPropertyBar(this, getPaddedWidth(form) - buttonOk.getWidth() - buttonCancel.getWidth() - 4, 15);
         this.progressBar.setColor(Color.ofRgb(0, 130, 0).getRgb());
         this.progressBar.setPosition(-1, -1, Anchor.BOTTOM | Anchor.LEFT);
-        this.progressBar.setText(Text.of(0, "/", this.maxOfferSlots));
+        this.progressBar.setText(Text.of(0, "/", this.limit));
 
         // Swap container
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
@@ -111,7 +110,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
             Text.of(TextColors.WHITE, "Held Items"),
             OfferItemComponent::new,
             OfferItemComponent::new);
-        this.offerContainer.setItemLimit(this.maxOfferSlots, UIDualListContainer.SideType.RIGHT);
+        this.offerContainer.setItemLimit(this.limit, UIDualListContainer.SideType.RIGHT);
         this.offerContainer.register(this);
 
         // Populate offer container
@@ -122,8 +121,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.offerContainer.setItems(inventoryOffers, UIDualListContainer.SideType.LEFT);
 
         final int size = this.offerContainer.getItems(UIDualListContainer.SideType.RIGHT).size();
-        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
-        this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
+        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.limit, 0f, 1f));
+        this.progressBar.setText(Text.of(size, "/", this.limit));
 
         form.add(this.progressBar, this.offerContainer, buttonOk, buttonCancel);
 
@@ -193,8 +192,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
         }
 
         final int size = offerContainer.getItems(UIDualListContainer.SideType.RIGHT).size();
-        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
-        this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
+        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.limit, 0f, 1f));
+        this.progressBar.setText(Text.of(size, "/", this.limit));
     }
 
     private void transact() {

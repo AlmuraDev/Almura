@@ -308,22 +308,16 @@ public final class ExchangeScreen extends SimpleScreen {
             .build("button.list");
 
         // Bottom Economy Pane - buyStack button
-        final UIButton buttonRemoveItem = new UIButtonBuilder(this)
+        final UIButton buttonOffer = new UIButtonBuilder(this)
             .width(30)
             .anchor(Anchor.RIGHT | Anchor.BOTTOM)
             .position(0, 0)
             .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
             .enabled(true)
-            .onClick(() -> new ExchangeOfferScreen(this, this.exchange,
-                    this.listItemList.getItems()
-                            .stream()
-                            .filter(item -> !item.getForSaleItem().isPresent())
-                            .map(item -> new BasicVanillaStack(item.asRealStack()))
-                            .collect(Collectors.toList()))
-                    .display())
-            .build("button.add_remove");
+            .onClick(() -> clientExchangeManager.requestExchangeSpecificOfferGui(this.exchange.getId()))
+            .build("button.offer");
 
-        inventoryArea.add(this.listItemList, this.buttonList, buttonRemoveItem);
+        inventoryArea.add(this.listItemList, this.buttonList, buttonOffer);
 
         form.add(searchArea, economyActionArea, inventoryArea);
 

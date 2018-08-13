@@ -288,6 +288,20 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
     }
 
+    public void handleExchangeSpecificOffer(final Player player, final String id) {
+        checkNotNull(player);
+        checkNotNull(id);
+
+        final Exchange axs = this.getExchange(id).orElse(null);
+        if (axs == null) {
+            // TODO Resync the Player
+            return;
+        }
+
+        // TODO Return the amount of listings they have available, set to 100 currently
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC_OFFER, id, 100));
+    }
+
     public void handleExchangeAdd(final Player player, final String id, final String name, final String permission, final boolean isHidden) {
         checkNotNull(player);
         checkNotNull(id);

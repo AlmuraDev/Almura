@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.exchange;
 
 public enum ExchangeGuiType {
+    MANAGE,
     SPECIFIC,
-    MANAGE
+    SPECIFIC_OFFER
 }

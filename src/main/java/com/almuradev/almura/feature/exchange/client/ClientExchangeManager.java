@@ -15,12 +15,14 @@ import com.almuradev.almura.feature.exchange.ExchangeGuiType;
 import com.almuradev.almura.feature.exchange.ExchangeModifyType;
 import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
+import com.almuradev.almura.feature.exchange.client.gui.ExchangeOfferScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
@@ -35,6 +37,7 @@ import org.spongepowered.api.network.ChannelId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -98,14 +101,20 @@ public final class ClientExchangeManager implements Witness {
         }
     }
 
-    public void requestManageExchangeGui() {
+    public void requestExchangeManageGui() {
         this.network.sendToServer(new ServerboundExchangeGuiRequestPacket(ExchangeGuiType.MANAGE, null));
     }
 
-    public void requestSpecificExchangeGui(final String id) {
+    public void requestExchangeSpecificGui(final String id) {
         checkNotNull(id);
 
         this.network.sendToServer(new ServerboundExchangeGuiRequestPacket(ExchangeGuiType.SPECIFIC, id));
+    }
+
+    public void requestExchangeSpecificOfferGui(final String id) {
+        checkNotNull(id);
+
+        this.network.sendToServer(new ServerboundExchangeGuiRequestPacket(ExchangeGuiType.SPECIFIC_OFFER, id));
     }
 
     public void addExchange(final String id, final String name, final String permission, final boolean isHidden) {
@@ -176,6 +185,31 @@ public final class ClientExchangeManager implements Witness {
         if (exchange != null) {
             new ExchangeScreen(exchange).display();
         }
+    }
+
+    public void handleExchangeSpecificOffer(final String id, final int limit) {
+        checkNotNull(id);
+        checkState(limit >= 0);
+
+        final Exchange axs = this.getExchange(id);
+        if (axs == null) {
+            // TODO Close main screen
+            return;
+        }
+
+        final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+        if (!(currentScreen instanceof ExchangeScreen)) {
+            return;
+        }
+
+        final ExchangeScreen axsScreen = (ExchangeScreen) currentScreen;
+
+        new ExchangeOfferScreen(axsScreen, axs, axsScreen.listItemList.getItems()
+                .stream()
+                .filter(item -> !item.getForSaleItem().isPresent())
+                .map(item -> new BasicVanillaStack(item.asRealStack()))
+                .collect(Collectors.toList()), limit)
+            .display();
     }
 
     public void handleListItems(final String id, @Nullable final List<ListItem> listItems) {

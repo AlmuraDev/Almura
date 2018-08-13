@@ -190,10 +190,10 @@ public final class FeaturesGUI extends SimpleScreen {
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.exchange.manage":
-                exchangeManager.requestManageExchangeGui();
+                exchangeManager.requestExchangeManageGui();
                 break;
             case "button.exchange.specific":
-                exchangeManager.requestSpecificExchangeGui("almura.global");
+                exchangeManager.requestExchangeSpecificGui("almura.global");
                 break;
             case "button.npcshop":
                 // Todo: need packet based request here.

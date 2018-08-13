@@ -49,6 +49,9 @@ public final class ServerboundExchangeGuiRequestPacketHandler implements Message
                 case SPECIFIC:
                     this.exchangeManager.handleExchangeSpecific(player, message.id);
                     break;
+                case SPECIFIC_OFFER:
+                    this.exchangeManager.handleExchangeSpecificOffer(player, message.id);
+                    break;
                 default:
                     throw new UnsupportedOperationException(message.type + " is not supported yet!");
             }

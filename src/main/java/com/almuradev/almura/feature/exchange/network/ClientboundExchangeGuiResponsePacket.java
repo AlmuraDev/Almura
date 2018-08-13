@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.exchange.network;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.feature.exchange.ExchangeGuiType;
 import org.spongepowered.api.network.ChannelBuf;
@@ -19,11 +20,16 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
 
     @Nullable public ExchangeGuiType type;
     @Nullable public String id;
+    public int limit;
 
     public ClientboundExchangeGuiResponsePacket() {
     }
 
     public ClientboundExchangeGuiResponsePacket(final ExchangeGuiType type, @Nullable final String id) {
+        this(type, id, -1);
+    }
+
+    public ClientboundExchangeGuiResponsePacket(final ExchangeGuiType type, @Nullable final String id, final int limit) {
         checkNotNull(type);
 
         this.type = type;
@@ -31,6 +37,11 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
         if (this.type != ExchangeGuiType.MANAGE) {
             checkNotNull(id);
             this.id = id;
+        }
+
+        if (this.type == ExchangeGuiType.SPECIFIC_OFFER) {
+            checkState(limit >= 0);
+            this.limit = limit;
         }
     }
 
@@ -40,6 +51,10 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
 
         if (this.type != ExchangeGuiType.MANAGE) {
             this.id = buf.readString();
+        }
+
+        if (this.type == ExchangeGuiType.SPECIFIC_OFFER) {
+            this.limit = buf.readInteger();
         }
     }
 
@@ -53,6 +68,10 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
             checkNotNull(this.id);
 
             buf.writeString(this.id);
+        }
+
+        if (this.type == ExchangeGuiType.SPECIFIC_OFFER) {
+            buf.writeInteger(this.limit);
         }
     }
 }
