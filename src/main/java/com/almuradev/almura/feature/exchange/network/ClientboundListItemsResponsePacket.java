@@ -53,16 +53,17 @@ public final class ClientboundListItemsResponsePacket implements Message {
             this.listItems = new ArrayList<>();
             for (int i = 0; i < count; i++) {
                 final int record = buf.readInteger();
-                final ResourceLocation location = SerializationUtil.fromString(buf.readString());
+                final String rawItemId = buf.readString();
+                final ResourceLocation location = SerializationUtil.fromString(rawItemId);
                 if (location == null) {
-                    // TODO Malformed ResourceLocation
+                    new IOException("Malformed item id when receiving list item! Id [" + rawItemId + "]. Skipping...").printStackTrace();
                     continue;
                 }
 
                 final Item item = ForgeRegistries.ITEMS.getValue(location);
 
                 if (item == null) {
-                    // TODO Unknown item
+                    new IOException("Unknown item id when receiving list item! Id [" + rawItemId + "]. Skipping...").printStackTrace();
                     continue;
                 }
 
@@ -73,7 +74,7 @@ public final class ClientboundListItemsResponsePacket implements Message {
                 try {
                     created = SerializationUtil.bytesToObject(buf.readBytes(buf.readInteger()));
                 } catch (IOException | ClassNotFoundException e) {
-                    // TODO Bad created date
+                    e.printStackTrace();
                     continue;
                 }
 
@@ -89,7 +90,6 @@ public final class ClientboundListItemsResponsePacket implements Message {
                     try {
                         compound = SerializationUtil.compoundFromBytes(buf.readBytes(compoundDataLength));
                     } catch (IOException e) {
-                        // TODO Malformed tag compound
                         e.printStackTrace();
                         continue;
                     }
@@ -117,7 +117,7 @@ public final class ClientboundListItemsResponsePacket implements Message {
             for (final ListItem item : this.listItems) {
                 final ResourceLocation location = item.getItem().getRegistryName();
                 if (location == null) {
-                    // TODO Bad item, no location
+                    new IOException("Malformed location when sending list item! Item [" + item.getItem() + "].").printStackTrace();
                     continue;
                 }
 
@@ -125,7 +125,7 @@ public final class ClientboundListItemsResponsePacket implements Message {
                 try {
                     createdData = SerializationUtil.objectToBytes(item.getCreated());
                 } catch (IOException e) {
-                    // TODO Malformed created date
+                    e.printStackTrace();
                     continue;
                 }
 
@@ -136,7 +136,6 @@ public final class ClientboundListItemsResponsePacket implements Message {
                     try {
                         compoundData = SerializationUtil.toBytes(compound);
                     } catch (IOException e) {
-                        // TODO Malformed tag compound
                         e.printStackTrace();
                         continue;
                     }

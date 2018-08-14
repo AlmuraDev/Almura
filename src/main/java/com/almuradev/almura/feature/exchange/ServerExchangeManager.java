@@ -18,7 +18,6 @@ import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterReq
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
-import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.database.DatabaseQueue;
 import com.almuradev.almura.shared.feature.store.Store;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
@@ -42,7 +41,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.jooq.DSLContext;
 import org.jooq.InsertResultStep;
-import org.jooq.InsertValuesStep7;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -75,10 +73,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -122,22 +118,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
     @Listener
     public void onClientConnectionEventJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
-
-        // Send exchanges to joiner
-        this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
-                this.exchanges
-                    .values()
-                    .stream()
-                    .filter(axs -> {
-                        if (!axs.isHidden()) {
-                            return true;
-                        }
-
-                        return player.hasPermission(Almura.ID + ".exchange.admin");
-                    })
-                    .collect(Collectors.toSet())
-            )
-        );
+        this.syncExchangeRegistry(player);
     }
 
     public Optional<Exchange> getExchange(final String id) {
@@ -188,23 +169,19 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                 if (this.exchanges.isEmpty()) {
                     // TODO Begin Test Code
-                    // TODO I might automatically create the Global Exchange (almura.global) by default (if no others are found when loading from db)
-                    final BasicExchange exchange = new BasicExchange("almura.global", Instant.now(), Store.UNKNOWN_OWNER, "Exchange",
+                    // TODO I might automatically create the Global Exchange (almura.exchange.global) by default (if no others are found when loading from db).
+                    final BasicExchange exchange = new BasicExchange("almura.exchange.global", Instant.now(), Store.UNKNOWN_OWNER, "Exchange",
                         "almura.exchange.global", false);
-                    this.exchanges.put("almura.global", exchange);
+                    this.exchanges.put("almura.exchange.global", exchange);
 
                     // Yes, I am purposely running this sync
                     try (final DSLContext context1 = this.databaseManager.createContext(true)) {
-                        final int result = ExchangeQueries
+                        ExchangeQueries
                             .createInsertExchange(exchange.getCreator(), exchange.getId(), exchange.getName(), exchange.getPermission(), exchange
                                 .isHidden())
                             .build(context1)
                             .keepStatement(false)
                             .execute();
-
-                        if (result == 0) {
-                            Thread.dumpStack();
-                        }
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -223,61 +200,57 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
     public void handleExchangeManage(final Player player) {
         if (!player.hasPermission(Almura.ID + ".exchange.manage")) {
-            // TODO Dockter
+            // TODO Send notification
             return;
         }
 
         this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.MANAGE, null));
     }
 
+    private final List<UUID> playerSpecificInitiatorIds = new ArrayList<>();
+
     public void handleExchangeSpecific(final Player player, final String id) {
         checkNotNull(player);
         checkNotNull(id);
 
         if (!player.hasPermission(Almura.ID + ".exchange.open")) {
-            // TODO Dockter
+            // TODO Send notification
             return;
         }
 
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null || !player.hasPermission(axs.getPermission())) {
-            // TODO Dockter
-
-            this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
-                this.exchanges
-                    .values()
-                    .stream()
-                    .filter(a -> {
-                        if (!a.isHidden()) {
-                            return true;
-                        }
-
-                        return player.hasPermission(Almura.ID + ".exchange.admin");
-                    })
-                    .collect(Collectors.toSet()))
-            );
+            this.syncExchangeRegistry(player);
         } else {
             this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, id));
 
             if (!axs.isLoaded()) {
+                this.playerSpecificInitiatorIds.add(player.getUniqueId());
+
                 this.databaseManager.getQueue().queue(DatabaseQueue.ActionType.FETCH_IGNORE_DUPLICATES, id, () -> {
                     this.loadListItems(axs);
 
                     this.loadForSaleItems(axs);
 
-                    axs.setLoaded(true);
-
-                    // TODO This will hit everyone, not just who opened the Exchange in this timeframe. Figure out a way to pass initiators
                     this.scheduler
                         .createTaskBuilder()
-                        .execute(() ->
-                            Sponge.getServer().getOnlinePlayers().forEach(p -> {
-                                axs.getListItemsFor(p.getUniqueId()).ifPresent(items -> this.network.sendTo(p,
-                                    new ClientboundListItemsResponsePacket(axs.getId(), items)));
-                                this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(axs.getId()));
-                            })
-                        )
+                        .execute(() -> {
+                            axs.setLoaded(true);
+
+                            final Iterator<UUID> iter = this.playerSpecificInitiatorIds.iterator();
+                            while (iter.hasNext()) {
+                                final UUID uniqueId = iter.next();
+                                iter.remove();
+
+                                final Player p = Sponge.getServer().getPlayer(uniqueId).orElse(null);
+                                if (p != null && p.isOnline() && !p.isRemoved()) {
+                                    axs.getListItemsFor(p.getUniqueId()).ifPresent(items -> this.network.sendTo(p,
+                                        new ClientboundListItemsResponsePacket(axs.getId(), items)));
+                                    this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                                }
+                            }
+                        })
                         .submit(this.container);
                 });
             } else {
@@ -294,12 +267,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            // TODO Resync the Player
+            this.syncExchangeRegistry(player);
             return;
         }
 
-        // TODO Return the amount of listings they have available, set to 100 currently
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC_OFFER, id, 100));
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC_OFFER, id, this.getListingsLimit(player)));
     }
 
     public void handleExchangeAdd(final Player player, final String id, final String name, final String permission, final boolean isHidden) {
@@ -318,20 +290,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             this.notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("This Exchange already "
                 + "exists!"), 5);
 
-            this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
-                    this.exchanges
-                        .values()
-                        .stream()
-                        .filter(axs -> {
-                            if (!axs.isHidden()) {
-                                return true;
-                            }
-
-                            return player.hasPermission(Almura.ID + ".exchange.admin");
-                        })
-                        .collect(Collectors.toSet())
-                )
-            );
+            this.syncExchangeRegistry(player);
         } else {
             this.scheduler
                 .createTaskBuilder()
@@ -368,29 +327,14 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(permission);
 
         if (!player.hasPermission(Almura.ID + ".exchange.modify")) {
-            // TODO Dockter, handle this
+            // TODO Send Notification
             return;
         }
 
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null) {
-            // TODO Dockter, we're in a desync...either send them a notification that modify failed as it doesn't exist or remove this TODO
-
-            this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
-                    this.exchanges
-                        .values()
-                        .stream()
-                        .filter(a -> {
-                            if (!a.isHidden()) {
-                                return true;
-                            }
-
-                            return player.hasPermission(Almura.ID + ".axs.admin");
-                        })
-                        .collect(Collectors.toSet())
-                )
-            );
+            this.syncExchangeRegistry(player);
         } else {
             this.scheduler.createTaskBuilder()
                 .async()
@@ -424,21 +368,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(id);
 
         if (!this.getExchange(id).isPresent()) {
-            // TODO Dockter, we're in a desync...either send them a notification that deletion failed as it doesn't exist or remove this TODO
-            this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
-                    this.exchanges
-                        .values()
-                        .stream()
-                        .filter(axs -> {
-                            if (!axs.isHidden()) {
-                                return true;
-                            }
-
-                            return player.hasPermission(Almura.ID + ".exchange.admin");
-                        })
-                        .collect(Collectors.toSet())
-                )
-            );
+            this.syncExchangeRegistry(player);
         } else {
             this.scheduler
                 .createTaskBuilder()
@@ -488,19 +418,23 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
             results.forEach(result -> {
                 for (final Record record : result) {
-                    final ResourceLocation location = SerializationUtil.fromString(record.getValue(AxsListItem.AXS_LIST_ITEM.ITEM_TYPE));
+                    final Integer recNo = record.getValue(AxsListItem.AXS_LIST_ITEM.REC_NO);
+
+                    final String rawItemId = record.getValue(AxsListItem.AXS_LIST_ITEM.ITEM_TYPE);
+
+                    final ResourceLocation location = SerializationUtil.fromString(rawItemId);
 
                     if (location == null) {
-                        // TODO This is a malformed resource location
+                        this.logger.warn("Malformed item id found when loading from database. Id is [{}] for record number [{}]. Skipping...",
+                            rawItemId, recNo);
                     } else {
 
                         final Item item = ForgeRegistries.ITEMS.getValue(location);
 
                         if (item == null) {
-                            // TODO They've given us an item that isn't loaded (likely a mod that vanished)
+                            this.logger.warn("Unknown item found when loading from database. Registry name is [{}] for record number [{}]. Skipping"
+                                + "... (Did you remove a mod?)", rawItemId, recNo);
                         } else {
-
-                            final Integer recNo = record.getValue(AxsListItem.AXS_LIST_ITEM.REC_NO);
                             final Timestamp created = record.getValue(AxsListItem.AXS_LIST_ITEM.CREATED);
                             final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsListItem.AXS_LIST_ITEM.SELLER));
                             final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
@@ -513,7 +447,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 try {
                                     compound = SerializationUtil.compoundFromBytes(compoundData);
                                 } catch (IOException e) {
-                                    // TODO Malformed compound from database
+                                    this.logger.error("Malformed item data found when loading from database. Record number is [{}]. Skipping...",
+                                        recNo);
                                     continue;
                                 }
                             }
@@ -521,7 +456,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             final BasicListItem basicListItem =
                                 new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, index, compound);
 
-                            // TODO This may not be thread-safe..
                             basicListItem.refreshSellerName();
 
                             items.add(basicListItem);
@@ -545,23 +479,20 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
     }
 
-    public void handleModifyListItems(final Player player, final String id, @Nullable final List<InventoryAction> actions) {
+    public void handleModifyListItems(final Player player, final String id, final List<InventoryAction> actions) {
         checkNotNull(player);
         checkNotNull(id);
+        checkNotNull(actions);
+        checkState(!actions.isEmpty());
 
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null) {
-            // TODO Exchange no longer exists, re-sync this player
+            this.syncExchangeRegistry(player);
             return;
         }
 
         final EntityPlayerMP serverPlayer = (EntityPlayerMP) player;
-
-        if (actions == null) {
-            // TODO Might do a resync in this case or enforce at least 1 action. I'll ponder it.
-            return;
-        }
 
         List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
 
@@ -630,11 +561,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             actions.stream().filter(a -> a.getDirection() == InventoryAction.Direction.TO_INVENTORY).collect(Collectors.toList());
 
         if ((listItems == null || listItems.isEmpty()) && !toInventoryActions.isEmpty()) {
-            // TODO They want to move items back to their Inventory but we know of no listings, re-sync this player
+            this.logger.warn("Player [{}] attempted to move listings back to the inventory but the server knows of no listings for them. This could"
+                + " be a de-sync or an exploit. Printing stacks...", player.getName());
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), null));
             return;
         }
 
-        // TODO Not using this yet but I can at least tell the client what we couldn't move back
+        final List<VanillaStack> unknownListings = new ArrayList<>();
         final List<VanillaStack> inventoryRejections = new ArrayList<>();
         final List<ListItem> listingRemovals = new ArrayList<>();
 
@@ -651,8 +584,12 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 }
             }
 
-            if (found == null || found.getQuantity() < stack.getQuantity()) {
-                // TODO They sent us up an unknown listing or asked to remove too much, we're bailing
+            if (found == null) {
+                unknownListings.add(stack);
+                continue;
+            }
+
+            if (found.getQuantity() < stack.getQuantity()) {
                 inventoryRejections.add(stack);
                 continue;
             }
@@ -692,7 +629,16 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             }
         }
 
-        // TODO Tell the Player we cannot pull all their listings back into their inventory
+        if (!unknownListings.isEmpty()) {
+            this.logger.warn("Player [{}] attempted to move the following item listings back to their inventory but the "
+                + "Exchange knows of no such listings. This could either be a de-sync or an attempt at an exploit. Printing stacks...",
+                player.getName());
+            this.logger.warn(unknownListings.toString());
+        }
+
+        if (!inventoryRejections.isEmpty()) {
+            // TODO Send down a notification explaining their inventory ran out of space and the remaining remained a listing
+        }
 
         final List<ListItem> listItemsRef = listItems;
 
@@ -713,6 +659,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         // Insertions
                         if (item.getRecord() == BasicListItem.NEW_ROW) {
 
+                            // TODO Can't keepstatement this, need to make sure it doesn't cache connections.
                             final Result<AxsListItemRecord> result = ExchangeQueries
                                 .createInsertItem(axs.getId(), item.getCreated(), item.getSeller(), item.getItem(), item.getQuantity(),
                                     item.getMetadata(), item.getIndex())
@@ -720,7 +667,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 .fetch();
 
                             if (result.isEmpty()) {
-                                // TODO Insertion to DB failed for whatever reason, need to decide on what to do with the limbo listing
+                                this.logger.error("Failed to submit an item listing to the database and therefore it will be discarded. This "
+                                    + "generally means there is an issue connecting to the database or an issue with the database itself. Printing "
+                                    + "contents of the listing...");
+                                this.logger.error(item.toString());
                                 iter.remove();
                                 continue;
                             }
@@ -737,27 +687,52 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             ExchangeQueries
                                 .createInsertItemData(recNo, compound)
                                 .build(context)
+                                .keepStatement(false)
                                 .execute();
                         } else {
 
                             batchUpdates.add(ExchangeQueries
                                 .createUpdateListItem(item.getRecord(), item.getQuantity(), item.getIndex())
                                 .build(context)
+                                .keepStatement(false)
                             );
                         }
                     }
 
                     // Updates
-                    context.batch(batchUpdates).execute();
+                    int[] batchedResults = context
+                        .batch(batchUpdates)
+                        .execute();
+
+                    for (int i = 0; i < batchedResults.length; i++) {
+                        if (batchedResults[i] == 0) {
+                            this.logger.warn("A query apart of a batch returned a 0 result which means the listing was not found. "
+                                + "Normally this means a de-sync between the server and the database. Please report the query contents as follows to"
+                                + " an AlmuraDev developer.");
+                            this.logger.warn(batchUpdates.get(i).getSQL());
+                        }
+                    }
 
                     final List<Query> batchRemovals = new ArrayList<>();
 
                     // Deletions (soft)
                     listingRemovals.forEach(item -> batchRemovals.add(ExchangeQueries
                         .createUpdateListItemIsHidden(item.getRecord(), true)
-                        .build(context)));
+                        .build(context)
+                        .keepStatement(false))
+                    );
 
-                    context.batch(batchRemovals).execute();
+                    batchedResults = context
+                        .batch(batchRemovals).execute();
+
+                    for (int i = 0; i < batchedResults.length; i++) {
+                        if (batchedResults[i] == 0) {
+                            this.logger.warn("A soft removal query apart of a batch returned a 0 result which means the listing was not found. "
+                                + "Normally this means a de-sync between the server and the database. Please report the query contents as follows to"
+                                + " an AlmuraDev developer.");
+                            this.logger.warn(batchRemovals.get(i).getSQL());
+                        }
+                    }
 
                     this.scheduler
                         .createTaskBuilder()
@@ -795,6 +770,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             final Map<UUID, List<ListItem>> listItems = new HashMap<>(axs.getListItems());
 
             results.forEach(result -> result.forEach(record -> {
+                final Integer recNo = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.REC_NO);
                 final Integer itemRecNo = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.LIST_ITEM);
                 ListItem found = null;
 
@@ -812,7 +788,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 }
 
                 if (found == null) {
-                    // TODO If we're here, this is a dead for sale item as the list item doesn't exist in the exchange
+                    this.logger.error("A for sale listing is being loaded but the listing no longer exists. This is a de-sync between the database "
+                        + "and the server or somehow an entity has tampered with the structure of the database. The item list id is [{}] and the "
+                        + "record number is [{}]. Report to an AlmuraDev developer ASAP.", itemRecNo, recNo);
                 } else {
                     final Timestamp created = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED);
                     final BigDecimal price = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
@@ -837,7 +815,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(player);
         checkNotNull(filter);
 
-        // TODO
+        // TODO Parse filter or more determine filter format
     }
 
     public void handleListForSaleItem(final Player player, final String id, final int listItemRecNo, final BigDecimal price) {
@@ -847,7 +825,12 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
 
-        // TODO
+        final Exchange axs = this.getExchange(id).orElse(null);
+        if (axs == null) {
+            this.syncExchangeRegistry(player);
+        }
+
+
     }
 
     public void handleDelistForSaleItem(final Player player, final String id, final int listItemRecNo) {
@@ -879,5 +862,27 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkState(quantity >= 0);
 
         // TODO
+    }
+
+    private void syncExchangeRegistry(final Player player) {
+        this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
+                this.exchanges
+                    .values()
+                    .stream()
+                    .filter(axs -> {
+                        if (!axs.isHidden()) {
+                            return true;
+                        }
+
+                        return player.hasPermission(Almura.ID + ".exchange.admin");
+                    })
+                    .collect(Collectors.toSet())
+            )
+        );
+    }
+
+    private int getListingsLimit(final Player player) {
+        // TODO Need to determine what controls this ultimately, 100 for now.
+        return 100;
     }
 }

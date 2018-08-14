@@ -51,7 +51,6 @@ public final class ClientExchangeManager implements Witness {
     private final ChannelBinding.IndexedMessageChannel network;
 
     private final List<Exchange> exchanges = new ArrayList<>();
-    private final List<Exchange> availableExchanges = new ArrayList<>();
 
     @Inject
     public ClientExchangeManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
@@ -61,7 +60,6 @@ public final class ClientExchangeManager implements Witness {
     @SubscribeEvent
     public void onClientConnectedToServerEvent(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.exchanges.clear();
-        this.availableExchanges.clear();
     }
 
     @Nullable
@@ -80,25 +78,6 @@ public final class ClientExchangeManager implements Witness {
 
         if (exchanges != null) {
             this.exchanges.addAll(exchanges);
-        }
-    }
-
-    @Nullable
-    public Exchange getAvailableExchange(final String id) {
-        checkNotNull(id);
-
-        return this.availableExchanges.stream().filter(axs -> axs.getId().equalsIgnoreCase(id)).findAny().orElse(null);
-    }
-
-    public List<Exchange> getAvailableExchanges() {
-        return this.availableExchanges;
-    }
-
-    public void addAvailableExchanges(@Nullable final Set<Exchange> exchanges) {
-        this.availableExchanges.clear();
-
-        if (exchanges != null) {
-            this.availableExchanges.addAll(exchanges);
         }
     }
 

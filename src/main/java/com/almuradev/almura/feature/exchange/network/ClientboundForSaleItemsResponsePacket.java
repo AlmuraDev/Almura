@@ -57,16 +57,17 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
 
             for (int i = 0; i < count; i++) {
                 final int record = buf.readInteger();
-                final ResourceLocation location = SerializationUtil.fromString(buf.readString());
+                final String rawItemId = buf.readString();
+                final ResourceLocation location = SerializationUtil.fromString(rawItemId);
                 if (location == null) {
-                    // TODO Malformed ResourceLocation
+                    new IOException("Malformed item id when receiving for sale item! Id [" + rawItemId + "]. Skipping...").printStackTrace();
                     continue;
                 }
 
                 final Item item = ForgeRegistries.ITEMS.getValue(location);
 
                 if (item == null) {
-                    // TODO Unknown item
+                    new IOException("Unknown item id when receiving for sale item! Id [" + rawItemId + "]. Skipping...").printStackTrace();
                     continue;
                 }
 
@@ -77,7 +78,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 try {
                     listItemCreated = SerializationUtil.bytesToObject(buf.readBytes(buf.readInteger()));
                 } catch (IOException | ClassNotFoundException e) {
-                    // TODO Malformed ListItem created date
+                    e.printStackTrace();
                     continue;
                 }
 
@@ -93,7 +94,6 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                     try {
                         compound = SerializationUtil.compoundFromBytes(buf.readBytes(compoundDataLength));
                     } catch (IOException e) {
-                        // TODO Malformed tag compound
                         e.printStackTrace();
                         continue;
                     }
@@ -111,7 +111,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 try {
                     forSaleItemCreated = SerializationUtil.bytesToObject(buf.readBytes(buf.readInteger()));
                 } catch (IOException | ClassNotFoundException e) {
-                    // TODO Malformed ForSaleItem created date
+                    e.printStackTrace();
                     continue;
                 }
 
@@ -135,7 +135,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 final ListItem listItem = forSaleItem.getListItem();
                 final ResourceLocation location = listItem.getItem().getRegistryName();
                 if (location == null) {
-                    // TODO Bad item, no location
+                    new IOException("Malformed location when sending for sale item! Id [" + listItem.getItem().getRegistryName() + "].").printStackTrace();
                     continue;
                 }
 
@@ -143,7 +143,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 try {
                     listItemCreatedData = SerializationUtil.objectToBytes(listItem.getCreated());
                 } catch (IOException e) {
-                    // TODO Malformed ListItem created date
+                    e.printStackTrace();
                     continue;
                 }
 
@@ -154,7 +154,6 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                     try {
                         compoundData = SerializationUtil.toBytes(compound);
                     } catch (IOException e) {
-                        // TODO Malformed tag compound
                         e.printStackTrace();
                         continue;
                     }
@@ -164,7 +163,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 try {
                     forSaleItemCreatedData = SerializationUtil.objectToBytes(forSaleItem.getCreated());
                 } catch (IOException e) {
-                    // TODO Malformed ForSaleItem created date
+                    e.printStackTrace();
                     continue;
                 }
 

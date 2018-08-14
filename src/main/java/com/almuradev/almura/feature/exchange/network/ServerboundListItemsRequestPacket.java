@@ -35,8 +35,10 @@ public final class ServerboundListItemsRequestPacket implements Message {
     public ServerboundListItemsRequestPacket() {
     }
 
-    public ServerboundListItemsRequestPacket(final String id, @Nullable final List<InventoryAction> actions) {
+    public ServerboundListItemsRequestPacket(final String id, final List<InventoryAction> actions) {
         checkNotNull(id);
+        checkNotNull(actions);
+        checkState(!actions.isEmpty());
 
         this.id = id;
         this.actions = actions;
@@ -48,88 +50,86 @@ public final class ServerboundListItemsRequestPacket implements Message {
 
         final int count = buf.readInteger();
 
-        if (count > 0) {
-            this.actions = new ArrayList<>();
+        checkState(count > 0);
 
-            for (int i = 0; i < count; i++) {
-                final InventoryAction.Direction direction = InventoryAction.Direction.valueOf(buf.readString());
-                final ResourceLocation location = SerializationUtil.fromString(buf.readString());
+        this.actions = new ArrayList<>();
 
-                if (location == null) {
-                    // TODO Malformed ResourceLocation
-                    continue;
-                }
+        for (int i = 0; i < count; i++) {
+            final InventoryAction.Direction direction = InventoryAction.Direction.valueOf(buf.readString());
+            final String rawItemId = buf.readString();
+            final ResourceLocation location = SerializationUtil.fromString(rawItemId);
 
-                final Item item = ForgeRegistries.ITEMS.getValue(location);
-
-                if (item == null) {
-                    // TODO Unknown item
-                    continue;
-                }
-
-                final int quantity = buf.readInteger();
-                final int metadata = buf.readInteger();
-                final int compoundDataLength = buf.readInteger();
-                NBTTagCompound compound = null;
-
-                if (compoundDataLength > 0) {
-                    try {
-                        compound = SerializationUtil.compoundFromBytes(buf.readBytes(compoundDataLength));
-                    } catch (IOException e) {
-                        // TODO Malformed tag compound
-                        e.printStackTrace();
-                        continue;
-                    }
-                }
-                final BasicVanillaStack stack = new BasicVanillaStack(item, quantity, metadata, compound);
-                this.actions.add(new InventoryAction(direction, stack));
+            if (location == null) {
+                new IOException("Malformed item id when receiving list item! Id [" + rawItemId + "]. Skipping...").printStackTrace();
+                continue;
             }
+
+            final Item item = ForgeRegistries.ITEMS.getValue(location);
+
+            if (item == null) {
+                new IOException("Unknown item id when receiving list item! Id [" + rawItemId + "]. Skipping...").printStackTrace();
+                continue;
+            }
+
+            final int quantity = buf.readInteger();
+            final int metadata = buf.readInteger();
+            final int compoundDataLength = buf.readInteger();
+            NBTTagCompound compound = null;
+
+            if (compoundDataLength > 0) {
+                try {
+                    compound = SerializationUtil.compoundFromBytes(buf.readBytes(compoundDataLength));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+            }
+            final BasicVanillaStack stack = new BasicVanillaStack(item, quantity, metadata, compound);
+            this.actions.add(new InventoryAction(direction, stack));
         }
     }
 
     @Override
     public void writeTo(final ChannelBuf buf) {
         checkNotNull(this.id);
+        checkNotNull(this.actions);
+        checkState(!this.actions.isEmpty());
 
         buf.writeString(this.id);
-        buf.writeInteger(this.actions == null ? 0 : this.actions.size());
+        buf.writeInteger(this.actions.size());
 
-        if (this.actions != null) {
+        for (final InventoryAction action : this.actions) {
+            final VirtualStack stack = action.getStack();
 
-            for (final InventoryAction action : this.actions) {
-                final VirtualStack stack = action.getStack();
+            final ResourceLocation location = stack.getItem().getRegistryName();
+            if (location == null) {
+                new IOException("Malformed location when sending list item! Item [" + stack.getItem() + "].").printStackTrace();
+                continue;
+            }
 
-                final ResourceLocation location = stack.getItem().getRegistryName();
-                if (location == null) {
-                    // TODO Bad item, no location
+            final NBTTagCompound compound = stack.getCompound();
+            byte[] compoundData = null;
+
+            if (compound != null) {
+                try {
+                    compoundData = SerializationUtil.toBytes(compound);
+                } catch (IOException e) {
+                    e.printStackTrace();
                     continue;
                 }
+            }
 
-                final NBTTagCompound compound = stack.getCompound();
-                byte[] compoundData = null;
+            buf.writeString(action.getDirection().name().toUpperCase());
 
-                if (compound != null) {
-                    try {
-                        compoundData = SerializationUtil.toBytes(compound);
-                    } catch (IOException e) {
-                        // TODO Malformed tag compound
-                        e.printStackTrace();
-                        continue;
-                    }
-                }
+            buf.writeString(SerializationUtil.toString(location));
+            buf.writeInteger(stack.getQuantity());
+            buf.writeInteger(stack.getMetadata());
 
-                buf.writeString(action.getDirection().name().toUpperCase());
-
-                buf.writeString(SerializationUtil.toString(location));
-                buf.writeInteger(stack.getQuantity());
-                buf.writeInteger(stack.getMetadata());
-
-                if (compoundData == null) {
-                    buf.writeInteger(0);
-                } else {
-                    buf.writeInteger(compoundData.length);
-                    buf.writeBytes(compoundData);
-                }
+            if (compoundData == null) {
+                buf.writeInteger(0);
+            } else {
+                buf.writeInteger(compoundData.length);
+                buf.writeBytes(compoundData);
             }
         }
     }
