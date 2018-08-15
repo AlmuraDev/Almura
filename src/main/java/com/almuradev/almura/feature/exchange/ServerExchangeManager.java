@@ -34,6 +34,7 @@ import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
 import com.almuradev.generated.axs.tables.AxsListItemData;
 import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
+import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -918,6 +919,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         forSaleItems.add(basicForSaleItem);
 
         this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+
+        this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), Lists.newArrayList(basicForSaleItem)));
 
         this.scheduler
             .createTaskBuilder()
