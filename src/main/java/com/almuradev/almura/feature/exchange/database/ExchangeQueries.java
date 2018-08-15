@@ -18,6 +18,7 @@ import static org.jooq.impl.DSL.sum;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.util.SerializationUtil;
+import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
 import com.almuradev.generated.axs.tables.records.AxsForSaleItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemDataRecord;
@@ -48,8 +49,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 public final class ExchangeQueries {
-
-    public static final String AGTE_SUM_SOLD_QUANTITY = "sold_quantity";
 
     private ExchangeQueries() {
     }
@@ -152,6 +151,7 @@ public final class ExchangeQueries {
 
     public static DatabaseQuery<UpdateConditionStep<AxsListItemRecord>> createUpdateListItemIsHidden(final int listItemRecNo,
         final boolean isHidden) {
+        checkState(listItemRecNo >= 0);
 
         return context -> context
             .update(AXS_LIST_ITEM)
@@ -178,7 +178,7 @@ public final class ExchangeQueries {
      * ForSaleItem
      */
 
-    public static DatabaseQuery<SelectJoinStep<Record>> createFetchForSaleItemsFor(final String id) {
+    public static DatabaseQuery<SelectConditionStep<Record>> createFetchForSaleItemsFor(final String id, final boolean isHidden) {
         checkNotNull(id);
 
         return context -> context
@@ -187,20 +187,43 @@ public final class ExchangeQueries {
                 .join(AXS_LIST_ITEM)
                 .onKey()
                 .join(AXS)
-                .on(AXS.ID.eq(id)));
+                .on(AXS.ID.eq(id)))
+            .where(AXS_FOR_SALE_ITEM.IS_HIDDEN.eq(isHidden));
     }
 
-
-    public static DatabaseQuery<InsertValuesStep3<AxsForSaleItemRecord, Timestamp, Integer, BigDecimal>> createInsertForSaleItem(final Instant created,
-        final int listItemRecNo, final BigDecimal price) {
+    public static DatabaseQuery<InsertValuesStep4<AxsForSaleItemRecord, Timestamp, Integer, Integer, BigDecimal>> createInsertForSaleItem(
+        final Instant created, final int listItemRecNo, final int quantityRemaining, final BigDecimal price) {
         checkNotNull(created);
         checkState(listItemRecNo >= 0);
+        checkState(quantityRemaining > 0);
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
 
         return context -> context
-            .insertInto(AXS_FOR_SALE_ITEM, AXS_FOR_SALE_ITEM.CREATED, AXS_FOR_SALE_ITEM.LIST_ITEM, AXS_FOR_SALE_ITEM.PRICE)
-            .values(Timestamp.from(created), listItemRecNo, price);
+            .insertInto(AXS_FOR_SALE_ITEM, AXS_FOR_SALE_ITEM.CREATED, AXS_FOR_SALE_ITEM.LIST_ITEM, AXS_FOR_SALE_ITEM.QUANTITY_REMAINING,
+                AXS_FOR_SALE_ITEM.PRICE)
+            .values(Timestamp.from(created), listItemRecNo, quantityRemaining, price);
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<AxsForSaleItemRecord>> createUpdateForSaleItemIsHidden(final int forSaleItemRecNo,
+        final boolean isHidden) {
+        checkState(forSaleItemRecNo >= 0);
+
+        return context -> context
+            .update(AXS_FOR_SALE_ITEM)
+            .set(AXS_FOR_SALE_ITEM.IS_HIDDEN, isHidden)
+            .where(AXS_FOR_SALE_ITEM.REC_NO.eq(forSaleItemRecNo));
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<AxsForSaleItemRecord>> createUpdateForSaleItemQuantityRemaining(final int forSaleItemRecNo,
+        final int quantityRemaining) {
+        checkState(forSaleItemRecNo >= 0);
+        checkState(quantityRemaining >= 0);
+
+        return context -> context
+            .update(AXS_FOR_SALE_ITEM)
+            .set(AXS_FOR_SALE_ITEM.QUANTITY_REMAINING, quantityRemaining)
+            .where(AXS_FOR_SALE_ITEM.REC_NO.eq(forSaleItemRecNo));
     }
 
     /**
@@ -219,15 +242,5 @@ public final class ExchangeQueries {
         return context -> context
             .insertInto(AXS_TRANSACTION, AXS_TRANSACTION.CREATED, AXS_TRANSACTION.FOR_SALE_ITEM, AXS_TRANSACTION.BUYER, AXS_TRANSACTION.QUANTITY)
             .values(Timestamp.from(created), forSaleItemRecNo, buyerData, quantity);
-    }
-
-    public static DatabaseQuery<SelectConditionStep<Record1<BigDecimal>>> createSumSoldQuantityFor(final int forSaleItemRecNo) {
-        checkState(forSaleItemRecNo >= 0);
-
-        return context -> context
-            .select(sum(AXS_TRANSACTION.QUANTITY)
-                .as(AGTE_SUM_SOLD_QUANTITY))
-            .from(AXS_TRANSACTION)
-            .where(AXS_TRANSACTION.FOR_SALE_ITEM.eq(forSaleItemRecNo));
     }
 }
