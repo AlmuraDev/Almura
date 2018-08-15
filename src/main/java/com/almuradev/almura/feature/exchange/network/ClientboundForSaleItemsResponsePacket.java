@@ -115,9 +115,11 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                     continue;
                 }
 
+                final int quantityRemaining = buf.readInteger();
+
                 final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
 
-                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem(basicListItem, forSaleItemCreated, price);
+                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem(basicListItem, forSaleItemCreated, quantityRemaining, price);
                 this.forSaleItems.add(basicForSaleItem);
             }
         }
@@ -199,6 +201,8 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 // ForSaleItem
                 buf.writeInteger(forSaleItemCreatedData.length);
                 buf.writeBytes(forSaleItemCreatedData);
+
+                buf.writeInteger(forSaleItem.getQuantityRemaining());
 
                 final byte[] priceData = SerializationUtil.toBytes(forSaleItem.getPrice());
                 buf.writeInteger(priceData.length);

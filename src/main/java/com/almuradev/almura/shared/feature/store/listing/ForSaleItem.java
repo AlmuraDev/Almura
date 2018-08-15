@@ -34,9 +34,8 @@ public interface ForSaleItem extends DynamicCompoundStack {
         return this.getListItem().getItem();
     }
 
-    @Override
-    default int getQuantity() {
-        return this.getListItem().getQuantity();
+    default int getQuantityRemaining() {
+        return this.getQuantity();
     }
 
     @Override

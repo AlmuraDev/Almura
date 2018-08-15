@@ -16,6 +16,7 @@ import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistry
 import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundForSaleItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundForSaleFilterResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundTransactionRequestPacket;
@@ -27,6 +28,7 @@ import com.almuradev.almura.feature.exchange.network.handler.ClientboundExchange
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundForSaleFilterRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundForSaleItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundListItemsResponsePacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ClientboundListItemsSaleStatusPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeGuiRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundForSaleFilterResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundTransactionRequestPacketHandler;
@@ -59,6 +61,9 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
 
             .bind(ClientboundListItemsResponsePacket.class,
                 binder -> binder.handler(ClientboundListItemsResponsePacketHandler.class, Platform.Type.CLIENT))
+
+            .bind(ClientboundListItemsSaleStatusPacket.class,
+                binder -> binder.handler(ClientboundListItemsSaleStatusPacketHandler.class, Platform.Type.CLIENT))
 
             .bind(ServerboundListItemsRequestPacket.class,
                 binder -> binder.handler(ServerboundListItemsRequestPacketHandler.class, Platform.Type.SERVER))

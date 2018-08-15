@@ -28,17 +28,21 @@ public final class BasicForSaleItem implements ForSaleItem {
 
     private final BasicListItem listItem;
     private final Instant created;
-    private final BigDecimal price;
+    private int quantityRemaining;
+    private BigDecimal price;
     private final Collection<Transaction> transactions = new ArrayList<>();
 
     private ItemStack cacheStack;
 
-    public BasicForSaleItem(final BasicListItem listItem, final Instant created, final BigDecimal price) {
+    public BasicForSaleItem(final BasicListItem listItem, final Instant created, final int quantityRemaining, final BigDecimal price) {
         checkNotNull(listItem);
+        checkState(quantityRemaining > 0);
         checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
 
         this.listItem = listItem;
         this.created = created;
+        this.quantityRemaining = quantityRemaining;
         this.price = price;
     }
 
@@ -69,8 +73,18 @@ public final class BasicForSaleItem implements ForSaleItem {
     }
 
     @Override
+    public int getQuantity() {
+        return this.quantityRemaining;
+    }
+
+    public void setQuantityRemaining(final int quantityRemaining) {
+        checkState(quantityRemaining >= 0);
+        this.quantityRemaining = quantityRemaining;
+    }
+
+    @Override
     public ForSaleItem copy() {
-        return new BasicForSaleItem(this.listItem.copy(), this.created, this.price);
+        return new BasicForSaleItem(this.listItem.copy(), this.created, this.getQuantity(), this.price);
     }
 
     @Override
@@ -90,6 +104,7 @@ public final class BasicForSaleItem implements ForSaleItem {
         return MoreObjects.toStringHelper(this)
             .add("listItem", this.listItem)
             .add("created", this.created)
+            .add("quantityRemaining", this.quantityRemaining)
             .add("price", this.price)
             .toString();
     }

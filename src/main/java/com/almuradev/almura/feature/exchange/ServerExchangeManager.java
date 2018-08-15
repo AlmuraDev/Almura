@@ -16,6 +16,7 @@ import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiRespo
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
@@ -40,7 +41,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.jooq.DSLContext;
-import org.jooq.InsertResultStep;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -245,18 +245,34 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                                 final Player p = Sponge.getServer().getPlayer(uniqueId).orElse(null);
                                 if (p != null && p.isOnline() && !p.isRemoved()) {
-                                    axs.getListItemsFor(p.getUniqueId()).ifPresent(items -> this.network.sendTo(p,
-                                        new ClientboundListItemsResponsePacket(axs.getId(), items)));
-                                    this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                                    final List<ListItem> listItems = axs.getListItemsFor(p.getUniqueId()).orElse(null);
+                                    if (listItems != null && !listItems.isEmpty()) {
+                                        this.network.sendTo(p, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
+
+                                        final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(p.getUniqueId()).orElse(null);
+                                        if (forSaleItems != null && !forSaleItems.isEmpty()) {
+                                            this.network.sendTo(p, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                                        }
+
+                                        this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                                    }
                                 }
                             }
                         })
                         .submit(this.container);
                 });
             } else {
-                axs.getListItemsFor(player.getUniqueId()).ifPresent(items ->
-                    this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), items)));
-                this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
+                if (listItems != null && !listItems.isEmpty()) {
+                    this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
+
+                    final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
+                    if (forSaleItems != null && !forSaleItems.isEmpty()) {
+                        this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                    }
+
+                    this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                }
             }
         }
     }
@@ -642,6 +658,14 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final List<ListItem> listItemsRef = listItems;
 
+        // TODO Unsure if I want to do this here but it is quite necessary to cap for sale quantities..
+        listItemsRef
+            .stream()
+            .filter(item -> item.getForSaleItem().isPresent())
+            .map(item -> item.getForSaleItem().get())
+            .forEach(forSaleItem -> ((BasicForSaleItem) forSaleItem).setQuantityRemaining(Math.min(forSaleItem.getQuantityRemaining(),
+                forSaleItem.getListItem().getQuantity())));
+
         this.scheduler
             .createTaskBuilder()
             .async()
@@ -737,8 +761,16 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     this.scheduler
                         .createTaskBuilder()
                         .execute(() -> {
-                            this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItemsRef.isEmpty() ? null : listItemsRef));
-                            this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(id));
+                            this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItemsRef));
+
+                            if (!listItemsRef.isEmpty()) {
+                                final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
+                                if (forSaleItems != null && !forSaleItems.isEmpty()) {
+                                    this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                                }
+                            }
+
+                            this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
                         })
                         .submit(this.container);
                 } catch (SQLException | IOException e) {
@@ -795,7 +827,21 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     final Timestamp created = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED);
                     final BigDecimal price = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
 
-                    items.add(new BasicForSaleItem((BasicListItem) found, created.toInstant(), price));
+                    final int soldQuantity = ExchangeQueries
+                        .createSumSoldQuantityFor(recNo)
+                        .build(context)
+                        .keepStatement(false)
+                        .fetchOne()
+                        .getValue(ExchangeQueries.AGTE_SUM_SOLD_QUANTITY, Integer.class);
+
+                    final int remainingQuantity = found.getQuantity() - soldQuantity;
+
+                    if (remainingQuantity <= 0) {
+                        // TODO Database was modified, need to decide what to do with the listing
+                    } else {
+                        items.add(new BasicForSaleItem((BasicListItem) found, created.toInstant(), remainingQuantity,
+                            price));
+                    }
                 }
             }));
 

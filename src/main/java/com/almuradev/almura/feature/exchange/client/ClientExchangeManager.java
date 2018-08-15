@@ -18,11 +18,14 @@ import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeOfferScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
+import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
+import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
@@ -35,6 +38,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -126,7 +130,7 @@ public final class ClientExchangeManager implements Witness {
         // TODO Send up the filter here
     }
 
-    public void updateListItems(final String id, @Nullable final List<InventoryAction> actions) {
+    public void updateListItems(final String id, final List<InventoryAction> actions) {
         checkNotNull(id);
 
         this.network.sendToServer(new ServerboundListItemsRequestPacket(id, actions));
@@ -160,10 +164,10 @@ public final class ClientExchangeManager implements Witness {
     }
 
     public void handleExchangeSpecific(final String id) {
-        final Exchange exchange = this.getExchange(id);
+        final Exchange axs = this.getExchange(id);
 
-        if (exchange != null) {
-            new ExchangeScreen(exchange).display();
+        if (axs != null) {
+            new ExchangeScreen(axs).display();
         }
     }
 
@@ -195,16 +199,38 @@ public final class ClientExchangeManager implements Witness {
     public void handleListItems(final String id, @Nullable final List<ListItem> listItems) {
         checkNotNull(id);
 
-        final Exchange exchange = this.getExchange(id);
-        if (exchange == null) {
+        final Exchange axs = this.getExchange(id);
+        if (axs == null) {
             return;
         }
 
         final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
         if (currentScreen instanceof ExchangeScreen) {
-            exchange.putListItemsFor(Minecraft.getMinecraft().player.getUniqueID(), listItems);
+            axs.putListItemsFor(Minecraft.getMinecraft().player.getUniqueID(), listItems);
 
             ((ExchangeScreen) currentScreen).refreshListItems();
+        }
+    }
+
+    public void handleListItemsSaleStatus(final String id, final List<ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate> itemCandidates) {
+        checkNotNull(id);
+        checkNotNull(itemCandidates);
+        checkState(!itemCandidates.isEmpty());
+
+        final Exchange axs = this.getExchange(id);
+        if (axs == null) {
+            return;
+        }
+
+        final List<ListItem> listItems = axs.getListItemsFor(Minecraft.getMinecraft().player.getUniqueID()).orElse(null);
+        if (listItems == null || listItems.isEmpty()) {
+            return;
+        }
+
+        for (final ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate itemCandidate : itemCandidates) {
+            listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
+                .ifPresent(listItem -> ((BasicListItem) listItem).setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, Instant.now(),
+                    itemCandidate.quantityRemaining, itemCandidate.price)));
         }
     }
 

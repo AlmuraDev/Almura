@@ -14,6 +14,7 @@ import static com.almuradev.generated.axs.Tables.AXS_LIST_ITEM_DATA;
 import static com.almuradev.generated.axs.Tables.AXS_TRANSACTION;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static org.jooq.impl.DSL.sum;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.util.SerializationUtil;
@@ -25,7 +26,6 @@ import com.almuradev.generated.axs.tables.records.AxsRecord;
 import com.almuradev.generated.axs.tables.records.AxsTransactionRecord;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
-import org.jooq.DSLContext;
 import org.jooq.DeleteConditionStep;
 import org.jooq.InsertResultStep;
 import org.jooq.InsertValuesStep2;
@@ -34,11 +34,12 @@ import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStep5;
 import org.jooq.InsertValuesStep7;
 import org.jooq.Record;
-import org.jooq.Result;
+import org.jooq.Record1;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectJoinStep;
 import org.jooq.SelectWhereStep;
 import org.jooq.UpdateConditionStep;
+import org.jooq.impl.DSL;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -47,6 +48,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 public final class ExchangeQueries {
+
+    public static final String AGTE_SUM_SOLD_QUANTITY = "sold_quantity";
 
     private ExchangeQueries() {
     }
@@ -187,13 +190,6 @@ public final class ExchangeQueries {
                 .on(AXS.ID.eq(id)));
     }
 
-    public static DatabaseQuery<SelectConditionStep<AxsForSaleItemRecord>> createFetchForSaleItemsFor(final int listItemRecNo) {
-        checkState(listItemRecNo >= 0);
-
-        return context -> context
-            .selectFrom(AXS_FOR_SALE_ITEM)
-            .where(AXS_FOR_SALE_ITEM.LIST_ITEM.eq(listItemRecNo));
-    }
 
     public static DatabaseQuery<InsertValuesStep3<AxsForSaleItemRecord, Timestamp, Integer, BigDecimal>> createInsertForSaleItem(final Instant created,
         final int listItemRecNo, final BigDecimal price) {
@@ -223,5 +219,15 @@ public final class ExchangeQueries {
         return context -> context
             .insertInto(AXS_TRANSACTION, AXS_TRANSACTION.CREATED, AXS_TRANSACTION.FOR_SALE_ITEM, AXS_TRANSACTION.BUYER, AXS_TRANSACTION.QUANTITY)
             .values(Timestamp.from(created), forSaleItemRecNo, buyerData, quantity);
+    }
+
+    public static DatabaseQuery<SelectConditionStep<Record1<BigDecimal>>> createSumSoldQuantityFor(final int forSaleItemRecNo) {
+        checkState(forSaleItemRecNo >= 0);
+
+        return context -> context
+            .select(sum(AXS_TRANSACTION.QUANTITY)
+                .as(AGTE_SUM_SOLD_QUANTITY))
+            .from(AXS_TRANSACTION)
+            .where(AXS_TRANSACTION.FOR_SALE_ITEM.eq(forSaleItemRecNo));
     }
 }
