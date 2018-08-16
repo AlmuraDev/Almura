@@ -38,7 +38,7 @@ public final class ServerboundForSaleFilterResponsePacketHandler implements Mess
 
             final Player player = ((PlayerConnection) connection).getPlayer();
 
-            this.exchangeManager.handleForSaleFilter(player, message.filter);
+            this.exchangeManager.handleForSaleFilter(player, message.id, message.filter);
         }
     }
 }

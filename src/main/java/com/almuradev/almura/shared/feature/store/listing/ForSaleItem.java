@@ -21,6 +21,8 @@ import javax.annotation.Nullable;
 
 public interface ForSaleItem extends DynamicCompoundStack {
 
+    int getRecord();
+
     ListItem getListItem();
 
     Instant getCreated();

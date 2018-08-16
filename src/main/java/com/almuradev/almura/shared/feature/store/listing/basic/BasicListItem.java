@@ -171,6 +171,7 @@ public final class BasicListItem implements ListItem {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+            .add("record", this.record)
             .add("created", this.created)
             .add("seller", this.seller)
             .add("sellerName", this.sellerName)

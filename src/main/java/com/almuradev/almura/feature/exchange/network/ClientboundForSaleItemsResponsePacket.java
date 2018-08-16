@@ -56,7 +56,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
             this.forSaleItems = new ArrayList<>();
 
             for (int i = 0; i < count; i++) {
-                final int record = buf.readInteger();
+                final int listItemRecNo = buf.readInteger();
                 final String rawItemId = buf.readString();
                 final ResourceLocation location = SerializationUtil.fromString(rawItemId);
                 if (location == null) {
@@ -100,11 +100,13 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 }
 
                 final BasicListItem basicListItem =
-                    new BasicListItem(record, listItemCreated, seller, item, quantity, metadata, index, compound);
+                    new BasicListItem(listItemRecNo, listItemCreated, seller, item, quantity, metadata, index, compound);
 
                 if (Sponge.getPlatform().getExecutionType().isClient()) {
                     basicListItem.setSellerName(sellerName);
                 }
+
+                final int forSaleItemRecNo = buf.readInteger();
 
                 // ForSaleItem
                 final Instant forSaleItemCreated;
@@ -119,7 +121,8 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
 
                 final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
 
-                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem(basicListItem, forSaleItemCreated, quantityRemaining, price);
+                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem(basicListItem, forSaleItemRecNo, forSaleItemCreated,
+                    quantityRemaining, price);
                 this.forSaleItems.add(basicForSaleItem);
             }
         }
@@ -199,6 +202,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 }
 
                 // ForSaleItem
+                buf.writeInteger(forSaleItem.getRecord());
                 buf.writeInteger(forSaleItemCreatedData.length);
                 buf.writeBytes(forSaleItemCreatedData);
 

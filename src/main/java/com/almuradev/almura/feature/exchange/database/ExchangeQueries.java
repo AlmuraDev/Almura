@@ -191,7 +191,7 @@ public final class ExchangeQueries {
             .where(AXS_FOR_SALE_ITEM.IS_HIDDEN.eq(isHidden));
     }
 
-    public static DatabaseQuery<InsertValuesStep4<AxsForSaleItemRecord, Timestamp, Integer, Integer, BigDecimal>> createInsertForSaleItem(
+    public static DatabaseQuery<InsertResultStep<AxsForSaleItemRecord>> createInsertForSaleItem(
         final Instant created, final int listItemRecNo, final int quantityRemaining, final BigDecimal price) {
         checkNotNull(created);
         checkState(listItemRecNo >= 0);
@@ -199,10 +199,16 @@ public final class ExchangeQueries {
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
 
-        return context -> context
-            .insertInto(AXS_FOR_SALE_ITEM, AXS_FOR_SALE_ITEM.CREATED, AXS_FOR_SALE_ITEM.LIST_ITEM, AXS_FOR_SALE_ITEM.QUANTITY_REMAINING,
-                AXS_FOR_SALE_ITEM.PRICE)
-            .values(Timestamp.from(created), listItemRecNo, quantityRemaining, price);
+        return context -> {
+            final InsertValuesStep4<AxsForSaleItemRecord, Timestamp, Integer, Integer, BigDecimal> insertionStep = context
+                .insertInto(AxsForSaleItem.AXS_FOR_SALE_ITEM)
+                .columns(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED, AxsForSaleItem.AXS_FOR_SALE_ITEM.LIST_ITEM,
+                    AxsForSaleItem.AXS_FOR_SALE_ITEM.QUANTITY_REMAINING, AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
+
+            insertionStep.values(Timestamp.from(created), listItemRecNo, quantityRemaining, price);
+
+            return insertionStep.returning();
+        };
     }
 
     public static DatabaseQuery<UpdateConditionStep<AxsForSaleItemRecord>> createUpdateForSaleItemIsHidden(final int forSaleItemRecNo,

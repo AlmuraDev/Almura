@@ -20,6 +20,7 @@ import com.almuradev.almura.feature.exchange.client.gui.ExchangeOfferScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundForSaleFilterResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
@@ -38,7 +39,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -229,8 +229,8 @@ public final class ClientExchangeManager implements Witness {
 
         for (final ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate itemCandidate : itemCandidates) {
             listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
-                .ifPresent(listItem -> ((BasicListItem) listItem).setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, Instant.now(),
-                    itemCandidate.quantityRemaining, itemCandidate.price)));
+                .ifPresent(listItem -> ((BasicListItem) listItem).setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, itemCandidate.forSaleItemRecNo,
+                    itemCandidate.created, itemCandidate.quantityRemaining, itemCandidate.price)));
         }
     }
 
@@ -239,10 +239,15 @@ public final class ClientExchangeManager implements Witness {
 
         // TODO Grinch
         // TODO Clear out for sale listings, call updateForSaleItemsFor with the filter
+
+        // TODO TEST CODE
+        this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, ""));
     }
 
     public void handleForSaleItems(final String id, @Nullable final List<ForSaleItem> forSaleItems) {
         checkNotNull(id);
+
+        System.err.println(forSaleItems);
 
         // TODO Grinch
         // TODO Need to refresh the forsale items with this value if the id is of an Exchange open.

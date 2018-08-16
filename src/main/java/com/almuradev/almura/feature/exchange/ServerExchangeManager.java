@@ -15,6 +15,7 @@ import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundForSaleItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
@@ -33,6 +34,7 @@ import com.almuradev.generated.axs.tables.Axs;
 import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
 import com.almuradev.generated.axs.tables.AxsListItemData;
+import com.almuradev.generated.axs.tables.records.AxsForSaleItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -844,8 +846,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 .execute();
                         }
 
-                        final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, created.toInstant(), quantityRemaining,
-                            price);
+                        final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, recNo, created.toInstant(),
+                            quantityRemaining, price);
                         ((BasicListItem) found).setForSaleItem(basicForSaleItem);
 
                         items.add(basicForSaleItem);
@@ -865,11 +867,20 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
     }
 
-    public void handleForSaleFilter(final Player player, final String filter) {
+    public void handleForSaleFilter(final Player player, final String id, final String filter) {
         checkNotNull(player);
-        checkNotNull(filter);
+        checkNotNull(id);
+
+        final Exchange axs = this.getExchange(id).orElse(null);
+        if (axs == null) {
+            return;
+        }
 
         // TODO Parse filter or more determine filter format
+
+        // TODO TEST CODE
+        this.network.sendTo(player, new ClientboundForSaleItemsResponsePacket(axs.getId(),
+            axs.getForSaleItems().entrySet().stream().map(Map.Entry::getValue).flatMap(List::stream).collect(Collectors.toList())));
     }
 
     public void handleListForSaleItem(final Player player, final String id, final int listItemRecNo, final BigDecimal price) {
@@ -906,36 +917,49 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
-        if (forSaleItems == null) {
-            forSaleItems = new ArrayList<>();
-            axs.putForSaleItemsFor(player.getUniqueId(), forSaleItems);
-        } else if (forSaleItems.size() + 1 >= this.getListingsLimit(player)) {
+        final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
+        if (forSaleItems != null && forSaleItems.size() + 1 > this.getListingsLimit(player)) {
             // TODO Notification
             return;
         }
-
-        final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, Instant.now(), found.getQuantity(), price);
-        forSaleItems.add(basicForSaleItem);
-
-        this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
-
-        this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), Lists.newArrayList(basicForSaleItem)));
 
         this.scheduler
             .createTaskBuilder()
             .async()
             .execute(() -> {
                 try (final DSLContext context = this.databaseManager.createContext(true)) {
-                    final int result = ExchangeQueries
-                        .createInsertForSaleItem(basicForSaleItem.getCreated(), found.getRecord(), basicForSaleItem.getQuantityRemaining(),
-                            basicForSaleItem.getPrice())
-                        .build(context)
-                        .keepStatement(false)
-                        .execute();
+                    final Instant created = Instant.now();
 
-                    if (result == 0) {
+                    // TODO Can't keepstatement this, need to make sure it doesn't cache connections.
+                    final AxsForSaleItemRecord record = ExchangeQueries
+                        .createInsertForSaleItem(created, found.getRecord(), found.getQuantity(), price)
+                        .build(context)
+                        .fetchOne();
+
+                    if (record == null) {
                         // TODO Logger
+                    } else {
+                        this.scheduler
+                            .createTaskBuilder()
+                            .execute(() -> {
+
+                                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, record.getRecNo(),
+                                    created, record.getQuantityRemaining(), record.getPrice());
+
+                                List<ForSaleItem> forSaleItemsRef = forSaleItems;
+                                if (forSaleItemsRef == null) {
+                                    forSaleItemsRef = new ArrayList<>();
+                                    axs.putForSaleItemsFor(player.getUniqueId(), forSaleItemsRef);
+                                }
+
+                                forSaleItemsRef.add(basicForSaleItem);
+
+                                this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+
+                                this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(),
+                                    Lists.newArrayList(basicForSaleItem)));
+                            })
+                            .submit(this.container);
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -949,7 +973,78 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(id);
         checkState(listItemRecNo >= 0);
 
-        // TODO
+        final Exchange axs = this.getExchange(id).orElse(null);
+        if (axs == null) {
+            this.syncExchangeRegistry(player);
+            return;
+        }
+
+        final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
+        if (listItems == null || listItems.isEmpty()) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        final ListItem found = listItems.stream().filter(item -> item.getRecord() == listItemRecNo).findAny().orElse(null);
+
+        if (found == null) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        final ForSaleItem forSaleItem = found.getForSaleItem().orElse(null);
+
+        if (forSaleItem == null) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
+        if (forSaleItems == null) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final int result = ExchangeQueries
+                        .createUpdateForSaleItemIsHidden(forSaleItem.getRecord(), true)
+                        .build(context)
+                        .keepStatement(false)
+                        .execute();
+
+                    if (result == 0) {
+                        // TODO Logger
+                    } else {
+                        this.scheduler
+                            .createTaskBuilder()
+                            .execute(() -> {
+                                if (!forSaleItems.remove(forSaleItem)) {
+                                    // TODO Notification
+                                    // TODO Resync
+                                    return;
+                                }
+                                
+                                ((BasicListItem) found).setForSaleItem(null);
+
+                                this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+
+                                this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                            })
+                            .submit(this.container);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     public void handleAdjustPriceForSaleItem(final Player player, final String id, final int listItemRecNo, final BigDecimal price) {

@@ -15,7 +15,9 @@ import com.almuradev.almura.shared.util.SerializationUtil;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,10 +51,18 @@ public final class ClientboundListItemsSaleStatusPacket implements Message {
 
         for (int i = 0; i < count; i++) {
             final int listItemRecNo = buf.readInteger();
+            final int forSaleItemRecNo = buf.readInteger();
             final int remainingQuantity = buf.readInteger();
+            final Instant created;
+            try {
+                created = SerializationUtil.bytesToObject(buf.readBytes(buf.readInteger()));
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                continue;
+            }
             final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
 
-            this.fromServerItems.add(new ForSaleItemCandidate(listItemRecNo, remainingQuantity, price));
+            this.fromServerItems.add(new ForSaleItemCandidate(listItemRecNo, forSaleItemRecNo, created, remainingQuantity, price));
         }
     }
 
@@ -75,11 +85,16 @@ public final class ClientboundListItemsSaleStatusPacket implements Message {
 
     public static class ForSaleItemCandidate {
         public final int listItemRecNo;
+        public final int forSaleItemRecNo;
+        public final Instant created;
         public final int quantityRemaining;
         public final BigDecimal price;
 
-        ForSaleItemCandidate(final int listItemRecNo, final int quantityRemaining, final BigDecimal price) {
+        ForSaleItemCandidate(final int listItemRecNo, final int forSaleItemRecNo, final Instant created, final int quantityRemaining,
+            final BigDecimal price) {
             this.listItemRecNo = listItemRecNo;
+            this.forSaleItemRecNo = forSaleItemRecNo;
+            this.created = created;
             this.quantityRemaining = quantityRemaining;
             this.price = price;
         }
