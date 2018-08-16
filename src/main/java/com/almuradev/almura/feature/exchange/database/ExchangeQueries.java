@@ -33,6 +33,7 @@ import org.jooq.InsertValuesStep2;
 import org.jooq.InsertValuesStep3;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStep5;
+import org.jooq.InsertValuesStep6;
 import org.jooq.InsertValuesStep7;
 import org.jooq.Record;
 import org.jooq.Record1;
@@ -61,8 +62,9 @@ public final class ExchangeQueries {
         return context -> context.selectFrom(AXS);
     }
 
-    public static DatabaseQuery<InsertValuesStep5<AxsRecord, byte[], String, String, String, Boolean>> createInsertExchange(final UUID creator,
-        final String id, final String name, final String permission, final boolean isHidden) {
+    public static DatabaseQuery<InsertValuesStep6<AxsRecord, Timestamp, byte[], String, String, String, Boolean>> createInsertExchange(
+        final Instant created, final UUID creator, final String id, final String name, final String permission, final boolean isHidden) {
+        checkNotNull(created);
         checkNotNull(creator);
         checkNotNull(id);
         checkNotNull(name);
@@ -71,8 +73,8 @@ public final class ExchangeQueries {
         final byte[] creatorData = SerializationUtil.toBytes(creator);
 
         return context -> context
-            .insertInto(AXS, AXS.CREATOR, AXS.ID, AXS.NAME, AXS.PERMISSION, AXS.IS_HIDDEN)
-            .values(creatorData, id, name, permission, isHidden);
+            .insertInto(AXS, AXS.CREATED, AXS.CREATOR, AXS.ID, AXS.NAME, AXS.PERMISSION, AXS.IS_HIDDEN)
+            .values(Timestamp.from(created), creatorData, id, name, permission, isHidden);
     }
 
     public static DatabaseQuery<UpdateConditionStep<AxsRecord>> createUpdateExchange(final String id, final String name, final String permission,
@@ -229,6 +231,18 @@ public final class ExchangeQueries {
         return context -> context
             .update(AXS_FOR_SALE_ITEM)
             .set(AXS_FOR_SALE_ITEM.QUANTITY_REMAINING, quantityRemaining)
+            .where(AXS_FOR_SALE_ITEM.REC_NO.eq(forSaleItemRecNo));
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<AxsForSaleItemRecord>> createUpdateForSaleItemPrice(final int forSaleItemRecNo,
+        final BigDecimal price) {
+        checkState(forSaleItemRecNo >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+        return context -> context
+            .update(AXS_FOR_SALE_ITEM)
+            .set(AXS_FOR_SALE_ITEM.PRICE, price)
             .where(AXS_FOR_SALE_ITEM.REC_NO.eq(forSaleItemRecNo));
     }
 

@@ -24,6 +24,11 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
     public int limit;
 
     public ClientboundExchangeGuiResponsePacket() {
+
+    }
+
+    public ClientboundExchangeGuiResponsePacket(final ExchangeGuiType type) {
+        this(type, null);
     }
 
     public ClientboundExchangeGuiResponsePacket(final ExchangeGuiType type, @Nullable final String id) {

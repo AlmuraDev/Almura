@@ -121,7 +121,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
     @Listener
     public void onClientConnectionEventJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
-        this.syncExchangeRegistry(player);
+        this.syncExchangeRegistryTo(player);
     }
 
     public Optional<Exchange> getExchange(final String id) {
@@ -156,6 +156,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     final String permission = record.getValue(Axs.AXS.PERMISSION);
                     final boolean isHidden = record.getValue(Axs.AXS.IS_HIDDEN);
 
+                    this.logger.info("Loaded exchange '{}' ({})", name, id);
+
                     exchanges.put(id, new BasicExchange(id, created.toInstant(), creator, name, permission, isHidden));
                 }
             });
@@ -173,41 +175,43 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 if (this.exchanges.isEmpty()) {
                     // TODO Begin Test Code
                     // TODO I might automatically create the Global Exchange (almura.exchange.global) by default (if no others are found when loading from db).
-                    final BasicExchange exchange = new BasicExchange("almura.exchange.global", Instant.now(), Store.UNKNOWN_OWNER, "Exchange",
-                        "almura.exchange.global", false);
+                    final BasicExchange exchange = new BasicExchange("almura.exchange.global", Instant.now(), Store.UNKNOWN_OWNER, "Global "
+                        + "Exchange", "almura.exchange.global", false);
                     this.exchanges.put("almura.exchange.global", exchange);
 
                     // Yes, I am purposely running this sync
                     try (final DSLContext context1 = this.databaseManager.createContext(true)) {
                         ExchangeQueries
-                            .createInsertExchange(exchange.getCreator(), exchange.getId(), exchange.getName(), exchange.getPermission(), exchange
-                                .isHidden())
+                            .createInsertExchange(exchange.getCreated(), exchange.getCreator(), exchange.getId(), exchange.getName(),
+                                exchange.getPermission(), exchange.isHidden())
                             .build(context1)
                             .keepStatement(false)
                             .execute();
+
+                        this.logger.info("Loaded exchange '{}' ({})", exchange.getName(), exchange.getId());
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 }
 
-                this.logger.info("Loaded {} exchange(s).", this.exchanges.size());
+                this.logger.info("Loaded [{}] exchange(s).", this.exchanges.size());
 
                 this.exchanges.values().forEach(axs -> ((BasicExchange) axs).refreshCreatorName());
 
-                // Re-send exchanges to everyone
-                this.network.sendToAll(new ClientboundExchangeRegistryPacket(this.exchanges.isEmpty() ? null : new HashSet<>(this.exchanges.values
-                    ())));
+                Sponge.getServer().getOnlinePlayers().forEach(this::syncExchangeRegistryTo);
             })
             .submit(this.container);
     }
 
     public void handleExchangeManage(final Player player) {
+        checkNotNull(player);
+
         if (!player.hasPermission(Almura.ID + ".exchange.manage")) {
             // TODO Notification
             return;
         }
 
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.MANAGE, null));
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.MANAGE));
     }
 
     private final List<UUID> playerSpecificInitiatorIds = new ArrayList<>();
@@ -224,59 +228,61 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null || !player.hasPermission(axs.getPermission())) {
-            this.syncExchangeRegistry(player);
-        } else {
-            this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, id));
+            // TODO Notification
+            this.syncExchangeRegistryTo(player);
+            return;
+        }
 
-            if (!axs.isLoaded()) {
-                this.playerSpecificInitiatorIds.add(player.getUniqueId());
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, id));
 
-                this.databaseManager.getQueue().queue(DatabaseQueue.ActionType.FETCH_IGNORE_DUPLICATES, id, () -> {
-                    this.loadListItems(axs);
+        if (!axs.isLoaded()) {
+            this.playerSpecificInitiatorIds.add(player.getUniqueId());
 
-                    this.loadForSaleItems(axs);
+            this.databaseManager.getQueue().queue(DatabaseQueue.ActionType.FETCH_IGNORE_DUPLICATES, id, () -> {
+                this.loadListItems(axs);
 
-                    this.scheduler
-                        .createTaskBuilder()
-                        .execute(() -> {
-                            axs.setLoaded(true);
+                this.loadForSaleItems(axs);
 
-                            final Iterator<UUID> iter = this.playerSpecificInitiatorIds.iterator();
-                            while (iter.hasNext()) {
-                                final UUID uniqueId = iter.next();
-                                iter.remove();
+                this.scheduler
+                    .createTaskBuilder()
+                    .execute(() -> {
+                        axs.setLoaded(true);
 
-                                final Player p = Sponge.getServer().getPlayer(uniqueId).orElse(null);
-                                if (p != null && p.isOnline() && !p.isRemoved()) {
-                                    final List<ListItem> listItems = axs.getListItemsFor(p.getUniqueId()).orElse(null);
-                                    this.network.sendTo(p, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
+                        final Iterator<UUID> iter = this.playerSpecificInitiatorIds.iterator();
+                        while (iter.hasNext()) {
+                            final UUID uniqueId = iter.next();
+                            iter.remove();
 
-                                    if (listItems != null && !listItems.isEmpty()) {
-                                        final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(p.getUniqueId()).orElse(null);
-                                        if (forSaleItems != null && !forSaleItems.isEmpty()) {
-                                            this.network.sendTo(p, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
-                                        }
+                            final Player p = Sponge.getServer().getPlayer(uniqueId).orElse(null);
+                            if (p != null && p.isOnline() && !p.isRemoved()) {
+                                final List<ListItem> listItems = axs.getListItemsFor(p.getUniqueId()).orElse(null);
+                                this.network.sendTo(p, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
+
+                                if (listItems != null && !listItems.isEmpty()) {
+                                    final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(p.getUniqueId()).orElse(null);
+                                    if (forSaleItems != null && !forSaleItems.isEmpty()) {
+                                        this.network.sendTo(p, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
                                     }
-
-                                    this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(axs.getId()));
                                 }
+
+                                this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(axs.getId()));
                             }
-                        })
-                        .submit(this.container);
-                });
-            } else {
-                final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
-                this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
+                        }
+                    })
+                    .submit(this.container);
+            });
+        } else {
+            final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
 
-                if (listItems != null && !listItems.isEmpty()) {
-                    final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
-                    if (forSaleItems != null && !forSaleItems.isEmpty()) {
-                        this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
-                    }
+            if (listItems != null && !listItems.isEmpty()) {
+                final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
+                if (forSaleItems != null && !forSaleItems.isEmpty()) {
+                    this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
                 }
-
-                this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
             }
+
+            this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
         }
     }
 
@@ -286,7 +292,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            this.syncExchangeRegistry(player);
+            this.syncExchangeRegistryTo(player);
             return;
         }
 
@@ -309,30 +315,38 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             this.notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("This Exchange already "
                 + "exists!"), 5);
 
-            this.syncExchangeRegistry(player);
-        } else {
-            this.scheduler
-                .createTaskBuilder()
-                .async()
-                .execute(() -> {
-                    try (final DSLContext context = this.databaseManager.createContext(true)) {
-                        final int result = ExchangeQueries
-                            .createInsertExchange(player.getUniqueId(), id, name, permission, isHidden)
-                            .build(context)
-                            .keepStatement(false)
-                            .execute();
-
-                        if (result == 0) {
-                            // TODO Notification
-                        } else {
-                            this.loadExchanges();
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                })
-                .submit(this.container);
+            this.syncExchangeRegistryTo(player);
+            return;
         }
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final Instant created = Instant.now();
+
+                    final int result = ExchangeQueries
+                        .createInsertExchange(created, player.getUniqueId(), id, name, permission, isHidden)
+                        .build(context)
+                        .keepStatement(false)
+                        .execute();
+
+                    if (result == 0) {
+                        // TODO Notification
+                        return;
+                    }
+
+                    final BasicExchange basicExchange = new BasicExchange(id, created, player.getUniqueId(), name, permission, isHidden);
+                    basicExchange.refreshCreatorName();
+
+                    this.exchanges.put(id, basicExchange);
+
+                    Sponge.getServer().getOnlinePlayers().forEach(this::syncExchangeRegistryTo);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     public void handleExchangeModify(final Player player, final String id, final String name, final String permission, final boolean isHidden) {
@@ -349,29 +363,33 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null) {
-            this.syncExchangeRegistry(player);
-        } else {
-            this.scheduler.createTaskBuilder()
-                .async()
-                .execute(() -> {
-                    try (final DSLContext context = this.databaseManager.createContext(true)) {
-                        final int result = ExchangeQueries
-                            .createUpdateExchange(id, name, permission, isHidden)
-                            .build(context)
-                            .keepStatement(false)
-                            .execute();
-
-                        if (result == 0) {
-                            // TODO Notification
-                        } else {
-                            this.loadExchanges();
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                })
-                .submit(this.container);
+            // TODO Notification
+            this.syncExchangeRegistryTo(player);
+            return;
         }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final int result = ExchangeQueries
+                        .createUpdateExchange(id, name, permission, isHidden)
+                        .build(context)
+                        .keepStatement(false)
+                        .execute();
+
+                    if (result == 0) {
+                        // TODO Notification
+                    } else {
+                        this.loadExchanges();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
+
     }
 
     public void handleExchangeDelete(final Player player, final String id) {
@@ -379,30 +397,32 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(id);
 
         if (!this.getExchange(id).isPresent()) {
-            this.syncExchangeRegistry(player);
-        } else {
-            this.scheduler
-                .createTaskBuilder()
-                .async()
-                .execute(() -> {
-                    try (final DSLContext context = this.databaseManager.createContext(true)) {
-                        final int result = ExchangeQueries
-                            .createDeleteExchange(id)
-                            .build(context)
-                            .keepStatement(false)
-                            .execute();
-
-                        if (result == 0) {
-                            // TODO Notification
-                        } else {
-                            this.loadExchanges();
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                })
-                .submit(this.container);
+            // TODO Notification
+            this.syncExchangeRegistryTo(player);
+            return;
         }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final int result = ExchangeQueries
+                        .createDeleteExchange(id)
+                        .build(context)
+                        .keepStatement(false)
+                        .execute();
+
+                    if (result == 0) {
+                        // TODO Notification
+                    } else {
+                        this.loadExchanges();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     /**
@@ -434,40 +454,41 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     if (location == null) {
                         this.logger.warn("Malformed item id found when loading from database. Id is [{}] for record number [{}]. Skipping...",
                             rawItemId, recNo);
-                    } else {
+                        continue;
+                    }
 
-                        final Item item = ForgeRegistries.ITEMS.getValue(location);
+                    final Item item = ForgeRegistries.ITEMS.getValue(location);
 
-                        if (item == null) {
-                            this.logger.warn("Unknown item found when loading from database. Registry name is [{}] for record number [{}]. Skipping"
-                                + "... (Did you remove a mod?)", rawItemId, recNo);
-                        } else {
-                            final Timestamp created = record.getValue(AxsListItem.AXS_LIST_ITEM.CREATED);
-                            final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsListItem.AXS_LIST_ITEM.SELLER));
-                            final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
-                            final Integer metadata = record.getValue(AxsListItem.AXS_LIST_ITEM.METADATA);
-                            final Integer index = record.getValue(AxsListItem.AXS_LIST_ITEM.INDEX);
-                            final byte[] compoundData = record.getValue(AxsListItemData.AXS_LIST_ITEM_DATA.DATA);
+                    if (item == null) {
+                        this.logger.warn("Unknown item found when loading from database. Registry name is [{}] for record number [{}]. Skipping"
+                            + "... (Did you remove a mod?)", rawItemId, recNo);
+                        continue;
+                    }
 
-                            NBTTagCompound compound = null;
-                            if (compoundData != null) {
-                                try {
-                                    compound = SerializationUtil.compoundFromBytes(compoundData);
-                                } catch (IOException e) {
-                                    this.logger.error("Malformed item data found when loading from database. Record number is [{}]. Skipping...",
-                                        recNo);
-                                    continue;
-                                }
-                            }
+                    final Timestamp created = record.getValue(AxsListItem.AXS_LIST_ITEM.CREATED);
+                    final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsListItem.AXS_LIST_ITEM.SELLER));
+                    final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
+                    final Integer metadata = record.getValue(AxsListItem.AXS_LIST_ITEM.METADATA);
+                    final Integer index = record.getValue(AxsListItem.AXS_LIST_ITEM.INDEX);
+                    final byte[] compoundData = record.getValue(AxsListItemData.AXS_LIST_ITEM_DATA.DATA);
 
-                            final BasicListItem basicListItem =
-                                new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, index, compound);
-
-                            basicListItem.refreshSellerName();
-
-                            items.add(basicListItem);
+                    NBTTagCompound compound = null;
+                    if (compoundData != null) {
+                        try {
+                            compound = SerializationUtil.compoundFromBytes(compoundData);
+                        } catch (IOException e) {
+                            this.logger.error("Malformed item data found when loading from database. Record number is [{}]. Skipping...",
+                                recNo);
+                            continue;
                         }
                     }
+
+                    final BasicListItem basicListItem =
+                        new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, index, compound);
+
+                    basicListItem.refreshSellerName();
+
+                    items.add(basicListItem);
                 }
             });
 
@@ -495,7 +516,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null) {
-            this.syncExchangeRegistry(player);
+            // TODO Notification
+            this.syncExchangeRegistryTo(player);
             return;
         }
 
@@ -873,6 +895,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
+            // TODO Notification
+            this.syncExchangeRegistryTo(player);
             return;
         }
 
@@ -892,7 +916,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            this.syncExchangeRegistry(player);
+            // TODO Notification
+            this.syncExchangeRegistryTo(player);
             return;
         }
 
@@ -938,29 +963,29 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                     if (record == null) {
                         // TODO Logger
-                    } else {
-                        this.scheduler
-                            .createTaskBuilder()
-                            .execute(() -> {
-
-                                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, record.getRecNo(),
-                                    created, record.getQuantityRemaining(), record.getPrice());
-
-                                List<ForSaleItem> forSaleItemsRef = forSaleItems;
-                                if (forSaleItemsRef == null) {
-                                    forSaleItemsRef = new ArrayList<>();
-                                    axs.putForSaleItemsFor(player.getUniqueId(), forSaleItemsRef);
-                                }
-
-                                forSaleItemsRef.add(basicForSaleItem);
-
-                                this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
-
-                                this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(),
-                                    Lists.newArrayList(basicForSaleItem)));
-                            })
-                            .submit(this.container);
+                        return;
                     }
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, record.getRecNo(),
+                                created, record.getQuantityRemaining(), record.getPrice());
+
+                            List<ForSaleItem> forSaleItemsRef = forSaleItems;
+                            if (forSaleItemsRef == null) {
+                                forSaleItemsRef = new ArrayList<>();
+                                axs.putForSaleItemsFor(player.getUniqueId(), forSaleItemsRef);
+                            }
+
+                            forSaleItemsRef.add(basicForSaleItem);
+
+                            this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+
+                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(),
+                                Lists.newArrayList(basicForSaleItem)));
+                        })
+                        .submit(this.container);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -975,7 +1000,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            this.syncExchangeRegistry(player);
+            this.syncExchangeRegistryTo(player);
             return;
         }
 
@@ -1022,24 +1047,25 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                     if (result == 0) {
                         // TODO Logger
-                    } else {
-                        this.scheduler
-                            .createTaskBuilder()
-                            .execute(() -> {
-                                if (!forSaleItems.remove(forSaleItem)) {
-                                    // TODO Notification
-                                    // TODO Resync
-                                    return;
-                                }
-                                
-                                ((BasicListItem) found).setForSaleItem(null);
-
-                                this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
-
-                                this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
-                            })
-                            .submit(this.container);
+                        return;
                     }
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            if (!forSaleItems.remove(forSaleItem)) {
+                                // TODO Notification
+                                // TODO Resync
+                                return;
+                            }
+
+                            ((BasicListItem) found).setForSaleItem(null);
+
+                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+
+                            this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                        })
+                        .submit(this.container);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -1054,7 +1080,65 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
 
-        // TODO
+        final Exchange axs = this.getExchange(id).orElse(null);
+        if (axs == null) {
+            // TODO Notification
+            this.syncExchangeRegistryTo(player);
+            return;
+        }
+
+        final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
+        if (listItems == null) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        final ListItem found = listItems.stream().filter(item -> item.getRecord() == listItemRecNo).findAny().orElse(null);
+
+        if (found == null) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        final ForSaleItem forSaleItem = found.getForSaleItem().orElse(null);
+
+        if (forSaleItem == null) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final int result = ExchangeQueries
+                        .createUpdateForSaleItemPrice(forSaleItem.getRecord(), price)
+                        .build(context)
+                        .execute();
+
+                    if (result == 0) {
+                        // TODO Logger
+                        return;
+                    }
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            ((BasicForSaleItem) forSaleItem).setPrice(price);
+
+                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), Lists.newArrayList(forSaleItem)));
+                            this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                        })
+                        .submit(this.container);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     /**
@@ -1065,12 +1149,12 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(player);
         checkNotNull(id);
         checkState(listItemRecNo >= 0);
-        checkState(quantity >= 0);
+        checkState(quantity > 0);
 
         // TODO
     }
 
-    private void syncExchangeRegistry(final Player player) {
+    private void syncExchangeRegistryTo(final Player player) {
         this.network.sendTo(player, new ClientboundExchangeRegistryPacket(
                 this.exchanges
                     .values()

@@ -75,6 +75,10 @@ public final class BasicForSaleItem implements ForSaleItem {
         return this.price;
     }
 
+    public void setPrice(final BigDecimal price) {
+        this.price = price;
+    }
+
     @Override
     public void setCompound(@Nullable NBTTagCompound compound) {
         this.listItem.setCompound(compound);
