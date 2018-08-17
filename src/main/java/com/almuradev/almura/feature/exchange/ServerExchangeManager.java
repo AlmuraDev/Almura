@@ -238,7 +238,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, id));
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, id, this.getListingsLimit(player)));
 
         if (!axs.isLoaded()) {
             this.playerSpecificInitiatorIds.add(player.getUniqueId());
@@ -301,7 +301,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC_OFFER, id, this.getListingsLimit(player)));
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC_OFFER, id));
     }
 
     public void handleExchangeAdd(final Player player, final String id, final String name, final String permission, final boolean isHidden) {
@@ -987,10 +987,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                             forSaleItemsRef.add(basicForSaleItem);
 
-                            this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
 
-                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(),
-                                Lists.newArrayList(basicForSaleItem)));
+                            this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
                         })
                         .submit(this.container);
                 } catch (SQLException e) {

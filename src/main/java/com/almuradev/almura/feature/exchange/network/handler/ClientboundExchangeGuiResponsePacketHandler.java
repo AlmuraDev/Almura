@@ -44,10 +44,10 @@ public final class ClientboundExchangeGuiResponsePacketHandler implements Messag
                     this.exchangeManager.handleExchangeManage();
                     break;
                 case SPECIFIC:
-                    this.exchangeManager.handleExchangeSpecific(message.id);
+                    this.exchangeManager.handleExchangeSpecific(message.id, message.limit);
                     break;
                 case SPECIFIC_OFFER:
-                    this.exchangeManager.handleExchangeSpecificOffer(message.id, message.limit);
+                    this.exchangeManager.handleExchangeSpecificOffer(message.id);
                     break;
                 default:
                     throw new UnsupportedOperationException(message.type + " is not supported yet!");

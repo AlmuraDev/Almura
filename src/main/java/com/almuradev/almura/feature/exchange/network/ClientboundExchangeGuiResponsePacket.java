@@ -45,7 +45,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
             this.id = id;
         }
 
-        if (this.type == ExchangeGuiType.SPECIFIC_OFFER) {
+        if (this.type == ExchangeGuiType.SPECIFIC) {
             checkState(limit >= ExchangeConstants.UNLIMITED);
             this.limit = limit;
         }
@@ -59,7 +59,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
             this.id = buf.readString();
         }
 
-        if (this.type == ExchangeGuiType.SPECIFIC_OFFER) {
+        if (this.type == ExchangeGuiType.SPECIFIC) {
             this.limit = buf.readInteger();
         }
     }
@@ -76,7 +76,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
             buf.writeString(this.id);
         }
 
-        if (this.type == ExchangeGuiType.SPECIFIC_OFFER) {
+        if (this.type == ExchangeGuiType.SPECIFIC) {
             buf.writeInteger(this.limit);
         }
     }

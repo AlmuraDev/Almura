@@ -170,17 +170,17 @@ public final class ClientExchangeManager implements Witness {
         new ExchangeManagementScreen().display();
     }
 
-    public void handleExchangeSpecific(final String id) {
+    public void handleExchangeSpecific(final String id, final int limit) {
+        checkState(limit >= ExchangeConstants.UNLIMITED);
         final Exchange axs = this.getExchange(id);
 
         if (axs != null) {
-            new ExchangeScreen(axs).display();
+            new ExchangeScreen(axs, limit).display();
         }
     }
 
-    public void handleExchangeSpecificOffer(final String id, final int limit) {
+    public void handleExchangeSpecificOffer(final String id) {
         checkNotNull(id);
-        checkState(limit >= ExchangeConstants.UNLIMITED);
 
         final Exchange axs = this.getExchange(id);
         if (axs == null) {
@@ -199,7 +199,7 @@ public final class ClientExchangeManager implements Witness {
                 .stream()
                 .filter(item -> !item.getForSaleItem().isPresent())
                 .map(item -> new BasicVanillaStack(item.asRealStack()))
-                .collect(Collectors.toList()), limit)
+                .collect(Collectors.toList()), axsScreen.limit)
             .display();
     }
 

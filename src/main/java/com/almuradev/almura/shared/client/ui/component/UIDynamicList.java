@@ -298,17 +298,19 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         return this.scrollbar;
     }
 
+    public Set<UIComponent<?>> getComponents() {
+        return Collections.unmodifiableSet(this.components);
+    }
+
     public void markDirty() {
         this.isDirty = true;
     }
 
-    private void createItemComponents()
-    {
+    private void createItemComponents() {
         this.removeAll();
 
         int startY = 0;
-        for (T item : this.items)
-        {
+        for (T item : this.items) {
             final ItemComponent<?> component = this.itemComponentFactory.apply(this.getGui(), item);
             component.attachData(item);
             component.setParent(this);

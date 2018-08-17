@@ -70,10 +70,11 @@ public final class ExchangeScreen extends SimpleScreen {
     @Inject private static ClientExchangeManager exchangeManager;
 
     private final Exchange axs;
+    public final int limit;
 
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
         buttonList;
-    private UILabel labelSearchPage;
+    private UILabel labelSearchPage, labelLimit;
     private UITextField itemSearchField, sellerSearchField;
     private int currentPage;
     private int pages;
@@ -81,8 +82,9 @@ public final class ExchangeScreen extends SimpleScreen {
     public UIDynamicList<ListItem> listItemList;
     public UIDynamicList<ForSaleItem> forSaleList;
 
-    public ExchangeScreen(final Exchange axs) {
+    public ExchangeScreen(final Exchange axs, final int limit) {
         this.axs = axs;
+        this.limit = limit;
     }
 
     @Override
@@ -98,11 +100,10 @@ public final class ExchangeScreen extends SimpleScreen {
         }
 
         // Main Panel
-        final UIFormContainer form = new UIFormContainer(this, minScreenWidth, minScreenHeight, "");
+        final UIFormContainer form = new UIFormContainer(this, minScreenWidth, minScreenHeight, this.getExchange().getName());
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
-        form.setTitle("Exchange");
         form.setBorder(FontColors.WHITE, 1, 185);
         form.setBackgroundAlpha(215);
         form.setBottomPadding(3);
@@ -291,6 +292,9 @@ public final class ExchangeScreen extends SimpleScreen {
             })
             .build("button.list");
 
+        this.labelLimit = new UILabel(this, "");
+        this.labelLimit.setPosition(0, -4, Anchor.CENTER | Anchor.BOTTOM);
+
         // Bottom Economy Pane - buyStack button
         final UIButton buttonOffer = new UIButtonBuilder(this)
             .width(30)
@@ -301,7 +305,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .onClick(() -> exchangeManager.requestExchangeSpecificOfferGui(this.axs.getId()))
             .build("button.offer");
 
-        inventoryArea.add(this.listItemList, this.buttonList, buttonOffer);
+        inventoryArea.add(this.listItemList, this.buttonList, this.labelLimit, buttonOffer);
 
         form.add(searchArea, economyActionArea, inventoryArea);
 
@@ -328,7 +332,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.buttonNextPage.setEnabled(page != this.pages);
         this.buttonLastPage.setEnabled(page != this.pages);
 
-        this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, page, "/", pages)));
+        this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, page, "/", this.pages)));
 
         this.forSaleList.setSelectedItem(null); // Clear selection
 
@@ -343,6 +347,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.forSaleList.setItems(forSaleItems);
     }
 
+    @SuppressWarnings("deprecation")
     private void updateControls() {
 
         // Results list
@@ -351,17 +356,20 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Selling list
         final boolean isSellingItemSelected = this.listItemList.getSelectedItem() != null;
-
+        final boolean isListed = isSellingItemSelected && this.listItemList.getSelectedItem().getForSaleItem().isPresent();
         this.buttonList.setEnabled(isSellingItemSelected);
+        this.buttonList.setText(isListed ? "Unlist" : "List");
 
-        if (isSellingItemSelected && this.listItemList.getSelectedItem().getForSaleItem().isPresent()) {
-            this.buttonList.setText("Unlist");
-        } else {
-            this.buttonList.setText("List");
-        }
+        // Update all items
+        this.listItemList.getComponents()
+                .stream()
+                .filter(c -> c instanceof ListItemComponent)
+                .map(c -> (ListItemComponent) c)
+                .forEach(ListItemComponent::update);
 
-        // Iterate the list items and update their list status
-        this.listItemList.markDirty();
+        // Update the limit label
+        this.labelLimit.setText(TextSerializers.LEGACY_FORMATTING_CODE
+                .serialize(Text.of(TextColors.WHITE, this.listItemList.getItems().size(), "/", this.limit)));
     }
 
     public List<ForSaleItem> getResults(String itemName, String username, SortType sort) {
@@ -398,6 +406,8 @@ public final class ExchangeScreen extends SimpleScreen {
         if (listItems != null && !listItems.isEmpty()) {
             this.listItemList.setItems(listItems);
         }
+
+        this.updateControls();
     }
 
     public void refreshForSaleItemResults() {
@@ -412,7 +422,8 @@ public final class ExchangeScreen extends SimpleScreen {
 
         this.pages = (Math.max(this.forSaleList.getSize() - 1, 1) / 10) + 1;
 
-        this.setPage(1);
+        // If we can go back to the same page, try it. Otherwise default back to the first.
+        this.setPage(this.currentPage <= this.pages ? this.currentPage : 1);
 
         this.updateControls();
     }
@@ -474,9 +485,6 @@ public final class ExchangeScreen extends SimpleScreen {
 
     public static final class ListItemComponent extends ExchangeItemComponent<ListItem> {
 
-        private static final FontOptions priceFontOption = FontOptions.builder().from(FontColors.GOLD_FO).scale(0.8f).build();
-
-        private boolean listed;
         private UIContainer<?> listedIndicatorContainer;
         private UIExpandingLabel priceLabel;
 
@@ -491,34 +499,30 @@ public final class ExchangeScreen extends SimpleScreen {
             this.listedIndicatorContainer = new UIContainer<>(gui, 5, this.height - (this.borderSize * 2));
             this.listedIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.listedIndicatorContainer.setColor(FontColors.DARK_GREEN);
-            this.listedIndicatorContainer.setVisible(false);
 
-            final BigDecimal forSalePrice = this.item.getForSaleItem().map(ForSaleItem::getPrice).orElse(BigDecimal.valueOf(0));
-            final double forSaleDoublePrice = forSalePrice.doubleValue();
-
-            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, forSaleDoublePrice, TextColors.GRAY, "/ea"));
-            this.priceLabel.setFontOptions(priceFontOption);
+            this.priceLabel = new UIExpandingLabel(gui, "");
+            this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
-            if (this.item.getQuantity() > 1) {
-                this.priceLabel.setTooltip("Total: " + DEFAULT_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));
-            }
-            this.priceLabel.setVisible(false);
 
             this.add(this.listedIndicatorContainer, this.priceLabel);
+
+            this.update();
         }
 
-        public void update(boolean listed) {
-            this.listed = listed;
+        @SuppressWarnings("deprecation")
+        public void update() {
+            final boolean listed = this.item.getForSaleItem().isPresent();
 
             // Update visibility
-            this.listedIndicatorContainer.setVisible(this.listed);
-            this.priceLabel.setVisible(this.listed);
+            this.listedIndicatorContainer.setVisible(listed);
+            this.priceLabel.setVisible(listed);
 
-            if (this.listed) {
+            if (listed) {
                 final BigDecimal forSalePrice = this.item.getForSaleItem().map(ForSaleItem::getPrice).orElse(BigDecimal.valueOf(0));
                 final double forSaleDoublePrice = forSalePrice.doubleValue();
 
-                this.priceLabel = new UIExpandingLabel(this.getGui(), Text.of(TextColors.GOLD, forSaleDoublePrice, TextColors.GRAY, "/ea"));
+                this.priceLabel.setText(
+                        TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.GOLD, forSaleDoublePrice, TextColors.GRAY, "/ea")));
                 this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
                 if (this.item.getQuantity() > 1) {
                     this.priceLabel.setTooltip("Total: " + DEFAULT_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));

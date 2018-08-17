@@ -107,10 +107,10 @@ public class ExchangeOfferScreen extends SimpleScreen {
         // Swap container
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
             Text.of(TextColors.WHITE, "Inventory"),
-            Text.of(TextColors.WHITE, "Held Items"),
+            Text.of(TextColors.WHITE, "Unlisted Items"),
             OfferItemComponent::new,
             OfferItemComponent::new);
-        this.offerContainer.setItemLimit(this.limit, UIDualListContainer.SideType.RIGHT);
+        this.offerContainer.setItemLimit(this.limit - this.getUsedLimit(), UIDualListContainer.SideType.RIGHT);
         this.offerContainer.register(this);
 
         // Populate offer container
@@ -120,9 +120,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.offerContainer.setItems(this.pendingItems, UIDualListContainer.SideType.RIGHT);
         this.offerContainer.setItems(inventoryOffers, UIDualListContainer.SideType.LEFT);
 
-        final int size = this.offerContainer.getItems(UIDualListContainer.SideType.RIGHT).size();
-        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.limit, 0f, 1f));
-        this.progressBar.setText(Text.of(size, "/", this.limit));
+        this.updateProgressBar();
 
         form.add(this.progressBar, this.offerContainer, buttonOk, buttonCancel);
 
@@ -191,9 +189,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
             }
         }
 
-        final int size = offerContainer.getItems(UIDualListContainer.SideType.RIGHT).size();
-        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.limit, 0f, 1f));
-        this.progressBar.setText(Text.of(size, "/", this.limit));
+        this.updateProgressBar();
     }
 
     private void transact() {
@@ -201,6 +197,23 @@ public class ExchangeOfferScreen extends SimpleScreen {
             clientExchangeManager.updateListItems(this.exchange.getId(), this.inventoryActions);
         }
         this.close();
+    }
+
+    private int getForSaleCount() {
+        return ((ExchangeScreen) this.parent.get()).listItemList.getItems()
+                .stream()
+                .filter(i -> i.getForSaleItem().isPresent())
+                .collect(Collectors.toList()).size();
+    }
+
+    private int getUsedLimit() {
+        return this.offerContainer.getItems(UIDualListContainer.SideType.RIGHT).size() + this.getForSaleCount();
+    }
+
+    private void updateProgressBar() {
+        final int size = this.getUsedLimit();
+        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.limit, 0f, 1f));
+        this.progressBar.setText(Text.of(size, "/", this.limit));
     }
 
     private static class OfferItemComponent extends UIDynamicList.ItemComponent<VanillaStack> {

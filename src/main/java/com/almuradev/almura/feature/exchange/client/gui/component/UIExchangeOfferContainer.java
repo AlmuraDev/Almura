@@ -214,7 +214,9 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             final UIDynamicList<VanillaStack> sourceList = component.getOpposingListFromSide(targetSide);
             final UIDynamicList<VanillaStack> targetList = component.getListFromSide(targetSide);
 
-            if (component.isSideLimited(targetSide) && targetList.getItems().size() >= component.getLimitFromSide(targetSide)) {
+            if (component.isSideLimited(targetSide)
+                    && targetList.getItems().size() >= component.getLimitFromSide(targetSide)
+                    && targetList.getItems().stream().noneMatch(i -> isStackEqualIgnoreSize(i, sourceStack))) {
                 return;
             }
 
