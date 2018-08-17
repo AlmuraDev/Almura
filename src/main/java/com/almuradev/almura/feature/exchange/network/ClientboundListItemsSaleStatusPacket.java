@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.exchange.network;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.util.SerializationUtil;
@@ -32,55 +31,64 @@ public final class ClientboundListItemsSaleStatusPacket implements Message {
     public ClientboundListItemsSaleStatusPacket() {
     }
 
-    public ClientboundListItemsSaleStatusPacket(final String id, final List<ForSaleItem> toClientItems) {
+    public ClientboundListItemsSaleStatusPacket(final String id, @Nullable final List<ForSaleItem> toClientItems) {
         checkNotNull(id);
-        checkNotNull(toClientItems);
-        checkState(!toClientItems.isEmpty());
 
         this.id = id;
         this.toClientItems = toClientItems;
     }
 
     @Override
-    public void readFrom(ChannelBuf buf) {
+    public void readFrom(final ChannelBuf buf) {
+        this.id = buf.readString();
         final int count = buf.readInteger();
 
-        checkState(count > 0);
+        if (count > 0) {
+            this.fromServerItems = new ArrayList<>();
 
-        this.fromServerItems = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                final int listItemRecNo = buf.readInteger();
+                final int forSaleItemRecNo = buf.readInteger();
+                final Instant created;
+                try {
+                    created = SerializationUtil.bytesToObject(buf.readBytes(buf.readInteger()));
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+                final int remainingQuantity = buf.readInteger();
+                final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
 
-        for (int i = 0; i < count; i++) {
-            final int listItemRecNo = buf.readInteger();
-            final int forSaleItemRecNo = buf.readInteger();
-            final int remainingQuantity = buf.readInteger();
-            final Instant created;
-            try {
-                created = SerializationUtil.bytesToObject(buf.readBytes(buf.readInteger()));
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-                continue;
+                this.fromServerItems.add(new ForSaleItemCandidate(listItemRecNo, forSaleItemRecNo, created, remainingQuantity, price));
             }
-            final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
-
-            this.fromServerItems.add(new ForSaleItemCandidate(listItemRecNo, forSaleItemRecNo, created, remainingQuantity, price));
         }
     }
 
     @Override
-    public void writeTo(ChannelBuf buf) {
+    public void writeTo(final ChannelBuf buf) {
         checkNotNull(this.id);
-        checkNotNull(this.toClientItems);
-        checkState(!this.toClientItems.isEmpty());
 
-        buf.writeInteger(this.toClientItems.size());
+        buf.writeString(this.id);
+        buf.writeInteger(this.toClientItems == null ? 0 : this.toClientItems.size());
 
-        this.toClientItems.forEach(item -> {
-            buf.writeInteger(item.getListItem().getRecord());
-            buf.writeInteger(item.getQuantity());
-            final byte[] priceData = SerializationUtil.toBytes(item.getPrice());
-            buf.writeInteger(priceData.length);
-            buf.writeBytes(priceData);
-        });
+        if (this.toClientItems != null) {
+            for (final ForSaleItem item : this.toClientItems) {
+                buf.writeInteger(item.getListItem().getRecord());
+                buf.writeInteger(item.getRecord());
+                try {
+                    final byte[] createdData = SerializationUtil.objectToBytes(item.getCreated());
+                    buf.writeInteger(createdData.length);
+                    buf.writeBytes(createdData);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+                buf.writeInteger(item.getQuantity());
+                final byte[] priceData = SerializationUtil.toBytes(item.getPrice());
+                buf.writeInteger(priceData.length);
+                buf.writeBytes(priceData);
+            }
+        }
     }
 
     public static class ForSaleItemCandidate {

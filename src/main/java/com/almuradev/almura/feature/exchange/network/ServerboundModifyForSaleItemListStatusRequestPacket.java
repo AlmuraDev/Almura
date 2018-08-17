@@ -51,6 +51,10 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacket implement
         this.type = ListStatusType.valueOf(buf.readString());
         this.id = buf.readString();
         this.listItemRecNo = buf.readInteger();
+
+        if (this.type != ListStatusType.DE_LIST) {
+            this.price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
+        }
     }
 
     @Override
@@ -59,7 +63,7 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacket implement
         checkNotNull(this.id);
         checkState(this.listItemRecNo >= 0);
 
-        buf.writeString(this.type.name().toLowerCase());
+        buf.writeString(this.type.name().toUpperCase());
         buf.writeString(this.id);
         buf.writeInteger(this.listItemRecNo);
 

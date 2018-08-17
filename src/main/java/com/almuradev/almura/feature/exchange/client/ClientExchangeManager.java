@@ -212,10 +212,8 @@ public final class ClientExchangeManager implements Witness {
         }
     }
 
-    public void handleListItemsSaleStatus(final String id, final List<ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate> itemCandidates) {
+    public void handleListItemsSaleStatus(final String id, @Nullable final List<ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate> itemCandidates) {
         checkNotNull(id);
-        checkNotNull(itemCandidates);
-        checkState(!itemCandidates.isEmpty());
 
         final Exchange axs = this.getExchange(id);
         if (axs == null) {
@@ -227,10 +225,15 @@ public final class ClientExchangeManager implements Witness {
             return;
         }
 
-        for (final ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate itemCandidate : itemCandidates) {
-            listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
-                .ifPresent(listItem -> ((BasicListItem) listItem).setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, itemCandidate.forSaleItemRecNo,
-                    itemCandidate.created, itemCandidate.quantityRemaining, itemCandidate.price)));
+        if (itemCandidates == null) {
+            // TODO Grinch, you got nothing back
+        } else {
+            for (final ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate itemCandidate : itemCandidates) {
+                listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
+                    .ifPresent(listItem -> ((BasicListItem) listItem)
+                        .setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, itemCandidate.forSaleItemRecNo,
+                            itemCandidate.created, itemCandidate.quantityRemaining, itemCandidate.price)));
+            }
         }
     }
 
