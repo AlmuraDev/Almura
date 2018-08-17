@@ -193,7 +193,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 exchangeManager.requestExchangeManageGui();
                 break;
             case "button.exchange.specific":
-                exchangeManager.requestExchangeSpecificGui("almura.global");
+                exchangeManager.requestExchangeSpecificGui("almura.exchange.global");
                 break;
             case "button.npcshop":
                 // Todo: need packet based request here.

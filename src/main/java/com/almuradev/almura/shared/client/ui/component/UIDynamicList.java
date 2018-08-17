@@ -22,6 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -45,6 +46,10 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         this.scrollbar.setAutoHide(true);
 
         this.setBackgroundAlpha(0);
+    }
+
+    public int getSize() {
+        return this.getItems().size();
     }
 
     /**
@@ -291,6 +296,10 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
     public UIScrollBar getScrollBar() {
         return this.scrollbar;
+    }
+
+    public void markDirty() {
+        this.isDirty = true;
     }
 
     private void createItemComponents()

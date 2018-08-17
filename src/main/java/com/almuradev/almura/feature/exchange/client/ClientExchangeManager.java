@@ -15,6 +15,7 @@ import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.ExchangeGuiType;
 import com.almuradev.almura.feature.exchange.ExchangeModifyType;
 import com.almuradev.almura.feature.exchange.InventoryAction;
+import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeOfferScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
@@ -23,6 +24,7 @@ import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiReque
 import com.almuradev.almura.feature.exchange.network.ServerboundForSaleFilterResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundModifyForSaleItemListStatusRequestPacket;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
@@ -39,9 +41,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -126,8 +130,7 @@ public final class ClientExchangeManager implements Witness {
     public void queryForSaleItemsFor(final String id, @Nullable final String filter) {
         checkNotNull(id);
 
-        // TODO Grinch
-        // TODO Send up the filter here
+        this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, filter));
     }
 
     public void updateListItems(final String id, final List<InventoryAction> actions) {
@@ -143,6 +146,10 @@ public final class ClientExchangeManager implements Witness {
 
         // TODO Grinch
         // TODO Send up the transaction here
+    }
+
+    public void modifyListStatus(ListStatusType type, String id, int recordNo, @Nullable BigDecimal price) {
+        this.network.sendToServer(new ServerboundModifyForSaleItemListStatusRequestPacket(type, id, recordNo, price));
     }
 
     /**
@@ -206,6 +213,11 @@ public final class ClientExchangeManager implements Witness {
 
         final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
         if (currentScreen instanceof ExchangeScreen) {
+
+            if (axs != ((ExchangeScreen) currentScreen).getExchange()) {
+                return;
+            }
+
             axs.putListItemsFor(Minecraft.getMinecraft().player.getUniqueID(), listItems);
 
             ((ExchangeScreen) currentScreen).refreshListItems();
@@ -250,9 +262,26 @@ public final class ClientExchangeManager implements Witness {
     public void handleForSaleItems(final String id, @Nullable final List<ForSaleItem> forSaleItems) {
         checkNotNull(id);
 
-        System.err.println(forSaleItems);
+        final Exchange axs = this.getExchange(id);
+        if (axs == null) {
+            return;
+        }
 
-        // TODO Grinch
-        // TODO Need to refresh the forsale items with this value if the id is of an Exchange open.
+        final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+        if (currentScreen instanceof ExchangeScreen) {
+            if (axs != ((ExchangeScreen) currentScreen).getExchange()) {
+                return;
+            }
+
+            if (forSaleItems == null ) {
+                axs.putForSaleItems(null);
+            } else {
+                axs.putForSaleItems(forSaleItems
+                    .stream()
+                    .collect(Collectors.groupingBy(k -> k.getListItem().getSeller(), ConcurrentHashMap::new,
+                        Collectors.toCollection(ArrayList::new))));
+            }
+            ((ExchangeScreen) currentScreen).refreshForSaleItemResults();
+        }
     }
 }
