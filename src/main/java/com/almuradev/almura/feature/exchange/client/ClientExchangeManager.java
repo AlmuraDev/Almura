@@ -224,7 +224,8 @@ public final class ClientExchangeManager implements Witness {
         }
     }
 
-    public void handleListItemsSaleStatus(final String id, @Nullable final List<ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate> itemCandidates) {
+    public void handleListItemsSaleStatus(final String id,
+        @Nullable final List<ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate> itemCandidates) {
         checkNotNull(id);
 
         final Exchange axs = this.getExchange(id);
@@ -236,6 +237,9 @@ public final class ClientExchangeManager implements Witness {
         if (listItems == null || listItems.isEmpty()) {
             return;
         }
+
+        // Null out all for sale items, our candidates will have what we currently have
+        listItems.forEach(item -> ((BasicListItem) item).setForSaleItem(null));
 
         if (itemCandidates == null) {
             // TODO Grinch, you got nothing back

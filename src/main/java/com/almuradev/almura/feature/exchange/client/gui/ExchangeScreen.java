@@ -69,7 +69,7 @@ public final class ExchangeScreen extends SimpleScreen {
     @Inject private static ClientNotificationManager notificationManager;
     @Inject private static ClientExchangeManager exchangeManager;
 
-    private final Exchange exchange;
+    private final Exchange axs;
 
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
         buttonList;
@@ -81,8 +81,8 @@ public final class ExchangeScreen extends SimpleScreen {
     public UIDynamicList<ListItem> listItemList;
     public UIDynamicList<ForSaleItem> forSaleList;
 
-    public ExchangeScreen(final Exchange exchange) {
-        this.exchange = exchange;
+    public ExchangeScreen(final Exchange axs) {
+        this.axs = axs;
     }
 
     @Override
@@ -167,7 +167,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
                 logger.info(String.format("Searching for criteria: itemname=%s, playerName=%s", itemName, username));
 
-                exchangeManager.queryForSaleItemsFor(this.exchange.getId(), "");
+                exchangeManager.queryForSaleItemsFor(this.axs.getId(), "");
             })
             .build("button.search");
 
@@ -286,7 +286,7 @@ public final class ExchangeScreen extends SimpleScreen {
                     final boolean de_list = offer.getForSaleItem().isPresent();
                     final ListStatusType type = de_list ? ListStatusType.DE_LIST : ListStatusType.LIST;
 
-                    exchangeManager.modifyListStatus(type, this.exchange.getId(), offer.getRecord(), de_list ? null : BigDecimal.valueOf(1.5f));
+                    exchangeManager.modifyListStatus(type, this.axs.getId(), offer.getRecord(), de_list ? null : BigDecimal.valueOf(1.5f));
                 }
             })
             .build("button.list");
@@ -298,7 +298,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .position(0, 0)
             .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
             .enabled(true)
-            .onClick(() -> exchangeManager.requestExchangeSpecificOfferGui(this.exchange.getId()))
+            .onClick(() -> exchangeManager.requestExchangeSpecificOfferGui(this.axs.getId()))
             .build("button.offer");
 
         inventoryArea.add(this.listItemList, this.buttonList, buttonOffer);
@@ -314,7 +314,7 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public Exchange getExchange() {
-        return this.exchange;
+        return this.axs;
     }
 
     @SuppressWarnings("deprecation")
@@ -332,7 +332,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
         this.forSaleList.setSelectedItem(null); // Clear selection
 
-        final List<ForSaleItem> forSaleItems = this.exchange.getForSaleItems().entrySet()
+        final List<ForSaleItem> forSaleItems = this.axs.getForSaleItems().entrySet()
             .stream()
             .map(Map.Entry::getValue)
             .flatMap(List::stream)
@@ -365,7 +365,7 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public List<ForSaleItem> getResults(String itemName, String username, SortType sort) {
-        return this.exchange.getForSaleItems().values()
+        return this.axs.getForSaleItems().values()
                 .stream()
                 .flatMap(List::stream)
                 .filter(o -> {
@@ -392,7 +392,7 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public void refreshListItems() {
-        final List<ListItem> listItems = this.exchange.getListItemsFor(Minecraft.getMinecraft().player.getUniqueID()).orElse(null);
+        final List<ListItem> listItems = this.axs.getListItemsFor(Minecraft.getMinecraft().player.getUniqueID()).orElse(null);
         this.listItemList.clearItems();
 
         if (listItems != null && !listItems.isEmpty()) {
@@ -403,7 +403,7 @@ public final class ExchangeScreen extends SimpleScreen {
     public void refreshForSaleItemResults() {
         this.forSaleList.clearItems();
 
-        final List<ForSaleItem> forSaleItems = this.exchange.getForSaleItems().entrySet().stream().map(Map.Entry::getValue).flatMap(List::stream)
+        final List<ForSaleItem> forSaleItems = this.axs.getForSaleItems().entrySet().stream().map(Map.Entry::getValue).flatMap(List::stream)
             .collect(Collectors.toList());
 
         if (!forSaleItems.isEmpty()) {

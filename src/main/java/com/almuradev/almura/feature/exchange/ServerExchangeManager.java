@@ -1138,7 +1138,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .execute(() -> {
                             ((BasicForSaleItem) forSaleItem).setPrice(price);
 
-                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), Lists.newArrayList(forSaleItem)));
+                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(),
+                                axs.getForSaleItemsFor(player.getUniqueId()).orElse(null)));
                             this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
                         })
                         .submit(this.container);
