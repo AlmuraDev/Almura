@@ -33,9 +33,9 @@ create table if not exists "axs_list_item_data"
 
 create table if not exists "axs_for_sale_item"
 (
-  "rec_no"             int          auto_increment,
+  "rec_no"             int          primary key auto_increment,
   "created"            timestamp    default current_timestamp not null,
-  "list_item"          int          primary key,
+  "list_item"          int          not null,
   "quantity_remaining" int          default 1 not null,
   "price"              decimal      default 0 not null,
   "is_hidden"          bit          default 0 not null,
@@ -55,6 +55,9 @@ create table if not exists "axs_transaction"
 
 drop index if exists idx_axs_list_item_axs;
 create index idx_axs_list_item_axs ON "axs_list_item"("axs");
+
+drop index if exists idx_axs_for_sale_item_list_item;
+create index idx_axs_for_sale_item_list_item ON "axs_for_sale_item"("list_item");
 
 drop index if exists idx_axs_transaction_for_sale_item;
 create index idx_axs_transaction_for_sale_item ON "axs_transaction"("for_sale_item");

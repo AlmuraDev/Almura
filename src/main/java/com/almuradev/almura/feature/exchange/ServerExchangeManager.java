@@ -983,6 +983,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 axs.putForSaleItemsFor(player.getUniqueId(), forSaleItemsRef);
                             }
 
+                            ((BasicListItem) found).setForSaleItem(basicForSaleItem);
+
                             forSaleItemsRef.add(basicForSaleItem);
 
                             this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
