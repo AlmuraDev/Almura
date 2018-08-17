@@ -60,6 +60,10 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Scheduler;
+import org.spongepowered.api.service.ServiceManager;
+import org.spongepowered.api.service.economy.Currency;
+import org.spongepowered.api.service.economy.EconomyService;
+import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
@@ -70,7 +74,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -89,19 +92,21 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     private final Logger logger;
     private final ChannelBinding.IndexedMessageChannel network;
     private final DatabaseManager databaseManager;
+    private final ServiceManager serviceManager;
     private final ServerNotificationManager notificationManager;
 
     private final Map<String, Exchange> exchanges = new HashMap<>();
 
     @Inject
     public ServerExchangeManager(final PluginContainer container, final Scheduler scheduler, final Logger logger, @ChannelId(NetworkConfig.CHANNEL)
-        final ChannelBinding.IndexedMessageChannel network, final DatabaseManager databaseManager,
+        final ChannelBinding.IndexedMessageChannel network, final DatabaseManager databaseManager, final ServiceManager serviceManager,
         final ServerNotificationManager notificationManager) {
         this.container = container;
         this.scheduler = scheduler;
         this.logger = logger;
         this.network = network;
         this.databaseManager = databaseManager;
+        this.serviceManager = serviceManager;
         this.notificationManager = notificationManager;
     }
 
@@ -452,7 +457,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     final ResourceLocation location = SerializationUtil.fromString(rawItemId);
 
                     if (location == null) {
-                        this.logger.warn("Malformed item id found when loading from database. Id is [{}] for record number [{}]. Skipping...",
+                        this.logger.warn("Malformed item id found when loading from database. Id is [{}], record number is [{}]. Skipping...",
                             rawItemId, recNo);
                         continue;
                     }
@@ -460,7 +465,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     final Item item = ForgeRegistries.ITEMS.getValue(location);
 
                     if (item == null) {
-                        this.logger.warn("Unknown item found when loading from database. Registry name is [{}] for record number [{}]. Skipping"
+                        this.logger.warn("Unknown item found when loading from database. Registry name is [{}], record number is [{}]. Skipping"
                             + "... (Did you remove a mod?)", rawItemId, recNo);
                         continue;
                     }
@@ -660,7 +665,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         if (!unknownListings.isEmpty()) {
             this.logger.warn("Player [{}] attempted to move the following item listings back to their inventory but the "
-                + "Exchange knows of no such listings. This could either be a de-sync or an attempt at an exploit. Printing stacks...",
+                + "Exchange knows of no such listings. This could be a de-sync or an exploit. Printing stacks...",
                 player.getName());
             this.logger.warn(unknownListings.toString());
         }
@@ -1000,6 +1005,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
+            // TODO Notification
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -1151,7 +1157,62 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkState(listItemRecNo >= 0);
         checkState(quantity > 0);
 
-        // TODO
+        final EconomyService economyService = this.serviceManager.provide(EconomyService.class).orElse(null);
+        if (economyService == null) {
+            // TODO Notification
+            return;
+        }
+
+        final UniqueAccount account = economyService.getOrCreateAccount(player.getUniqueId()).orElse(null);
+        if (account == null) {
+            // TODO Notification
+            return;
+        }
+
+        final Exchange axs = this.getExchange(id).orElse(null);
+        if (axs == null) {
+            // TODO Notification
+            this.syncExchangeRegistryTo(player);
+            return;
+        }
+
+        final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
+        if (listItems == null) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        final ListItem found = listItems.stream().filter(item -> item.getRecord() == listItemRecNo).findAny().orElse(null);
+
+        if (found == null) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        final ForSaleItem forSaleItem = found.getForSaleItem().orElse(null);
+
+        if (forSaleItem == null) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        if (forSaleItem.getQuantityRemaining() < quantity) {
+            // TODO Notification
+            // TODO Resync
+            return;
+        }
+
+        final BigDecimal balance = account.getBalance(economyService.getDefaultCurrency());
+        final BigDecimal price = forSaleItem.getPrice();
+        final double total = price.doubleValue() * quantity;
+
+        if (total > balance.doubleValue()) {
+            // TODO Notification
+            return;
+        }
     }
 
     private void syncExchangeRegistryTo(final Player player) {

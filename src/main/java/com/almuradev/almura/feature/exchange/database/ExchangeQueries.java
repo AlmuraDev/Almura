@@ -250,17 +250,20 @@ public final class ExchangeQueries {
      * Transaction
      */
 
-    public DatabaseQuery<InsertValuesStep4<AxsTransactionRecord, Timestamp, Integer, byte[], Integer>> createInsertTransaction(final Instant created,
-        final int forSaleItemRecNo, final UUID buyer, final int quantity) {
+    public DatabaseQuery<InsertValuesStep5<AxsTransactionRecord, Timestamp, Integer, byte[], BigDecimal, Integer>> createInsertTransaction(
+        final Instant created, final int forSaleItemRecNo, final UUID buyer, final BigDecimal price, final int quantity) {
         checkNotNull(created);
         checkState(forSaleItemRecNo >= 0);
         checkNotNull(buyer);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
         checkState(quantity > 0);
 
         final byte[] buyerData = SerializationUtil.toBytes(buyer);
 
         return context -> context
-            .insertInto(AXS_TRANSACTION, AXS_TRANSACTION.CREATED, AXS_TRANSACTION.FOR_SALE_ITEM, AXS_TRANSACTION.BUYER, AXS_TRANSACTION.QUANTITY)
-            .values(Timestamp.from(created), forSaleItemRecNo, buyerData, quantity);
+            .insertInto(AXS_TRANSACTION, AXS_TRANSACTION.CREATED, AXS_TRANSACTION.FOR_SALE_ITEM, AXS_TRANSACTION.BUYER,
+                AXS_TRANSACTION.PRICE, AXS_TRANSACTION.QUANTITY)
+            .values(Timestamp.from(created), forSaleItemRecNo, buyerData, price, quantity);
     }
 }
