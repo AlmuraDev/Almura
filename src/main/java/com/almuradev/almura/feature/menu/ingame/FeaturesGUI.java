@@ -30,6 +30,7 @@ import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -52,6 +53,7 @@ public final class FeaturesGUI extends SimpleScreen {
     private boolean isAdmin = false;
     private UILabel titleLabel;
     private UIButton guideButton, manageTitleButton, nicknameButton, exchangeButton, serverShopButton, npcShopButton, accessoriesButton, claimButton;
+    private UIFormContainer form;
 
     private World world;
     private EntityPlayerSP player;
@@ -75,7 +77,7 @@ public final class FeaturesGUI extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Main Panel
-        final UIFormContainer form = new UIFormContainer(this, 150, 230, "");
+        form = new UIFormContainer(this, 150, 230, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -89,6 +91,10 @@ public final class FeaturesGUI extends SimpleScreen {
         titleLabel = new UILabel(this, "Almura Features");
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
+
+        final UISeparator topWindowTitleSeparator = new UISeparator(this);
+        topWindowTitleSeparator.setSize(this.form.getWidth() -5, 1);
+        topWindowTitleSeparator.setPosition(0, -5, Anchor.TOP | Anchor.CENTER);
 
         // Guide button
         guideButton = new UIButtonBuilder(this)
@@ -173,7 +179,7 @@ public final class FeaturesGUI extends SimpleScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(titleLabel, guideButton, exchangeButton,  manageTitleButton, nicknameButton, accessoriesButton, serverShopButton, npcShopButton, claimButton, buttonClose);
+        form.add(titleLabel,  topWindowTitleSeparator, guideButton, exchangeButton,  manageTitleButton, nicknameButton, accessoriesButton, serverShopButton, npcShopButton, claimButton, buttonClose);
 
         addToScreen(form);
     }

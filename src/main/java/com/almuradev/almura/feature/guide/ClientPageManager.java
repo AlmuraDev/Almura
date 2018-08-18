@@ -15,9 +15,6 @@ import com.almuradev.almura.feature.guide.network.ServerboundPageOpenRequestPack
 import com.almuradev.almura.shared.client.keyboard.binder.KeyBindingEntry;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.network.ChannelBinding;
@@ -37,7 +34,6 @@ import javax.inject.Singleton;
 public final class ClientPageManager implements Witness {
 
     public final ChannelBinding.IndexedMessageChannel network;
-    private final KeyBinding guideOpenBinding;
 
     private List<PageListEntry> pageEntries = new ArrayList<>();
     private Page page;
@@ -45,17 +41,8 @@ public final class ClientPageManager implements Witness {
 
     @Inject
     public ClientPageManager(final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network, final Set<KeyBindingEntry>
-            keybindings) {
+        keybindings) {
         this.network = network;
-        this.guideOpenBinding = keybindings.stream().map(KeyBindingEntry::getKeybinding).filter((keyBinding -> keyBinding
-                .getKeyDescription().equalsIgnoreCase("key.almura.guide.open"))).findFirst().orElse(null);
-    }
-
-    @SubscribeEvent
-    public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (guideOpenBinding.isPressed()) {
-            requestGuideGUI();
-        }
     }
 
     public void requestGuideGUI() {
@@ -78,17 +65,17 @@ public final class ClientPageManager implements Witness {
         if (!this.pageEntries.isEmpty()) {
             if (oldPage != null && switchToPage == null) {
                 this.pageEntries
-                        .stream()
-                        .filter(p -> p.getId().equalsIgnoreCase(oldPage.getId()))
-                        .findFirst()
-                        .ifPresent(p -> this.requestPage(p.getId()));
+                    .stream()
+                    .filter(p -> p.getId().equalsIgnoreCase(oldPage.getId()))
+                    .findFirst()
+                    .ifPresent(p -> this.requestPage(p.getId()));
             } else if (switchToPage != null) {
                 this.requestPage(switchToPage);
             } else {
                 this.pageEntries
-                        .stream()
-                        .findFirst()
-                        .ifPresent(p -> this.requestPage(p.getId()));
+                    .stream()
+                    .findFirst()
+                    .ifPresent(p -> this.requestPage(p.getId()));
             }
         }
     }

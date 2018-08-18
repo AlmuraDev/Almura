@@ -68,8 +68,6 @@ public final class GuideModule extends AbstractModule implements CommonBinder {
                     this.requestStaticInjection(SimplePageDetails.class);
 
                     this.facet().add(ClientPageManager.class);
-
-                    this.keybinding().key(Keyboard.KEY_F12, "key.almura.guide.open", "key.categories.almura.guide");
                 }
             }
             this.install(new ClientModule());

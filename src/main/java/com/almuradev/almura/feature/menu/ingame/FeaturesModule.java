@@ -38,7 +38,7 @@ public final class FeaturesModule extends AbstractModule implements CommonBinder
 
                     this.facet().add(ClientFeaturesManager.class);
                     this.requestStaticInjection(FeaturesGUI.class);
-                    this.keybinding().key(Keyboard.KEY_G, "key.almura.features.open", "key.categories.almura.features");
+                    this.keybinding().key(Keyboard.KEY_F12, "key.almura.features.open", "key.categories.almura.features");
                 }
             }
             this.install(new ClientModule());

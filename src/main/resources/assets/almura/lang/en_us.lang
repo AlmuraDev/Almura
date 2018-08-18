@@ -132,8 +132,8 @@ almura.guide.permission.open.missing=You do not have permission to open Guide!
 almura.guide.permission.add.missing=You do not have permission to add new pages!
 almura.guide.permission.modify.missing=You do not have permission to remove this page!
 almura.guide.permission.remove.missing=You do not have permission to remove this page!
-key.almura.guide.open=Open
-key.categories.almura.guide=Guide
+key.almura.features.open=Open GUI
+key.categories.almura.features=Almura Features Menu
 
 # ---------------
 # ---- nick  ----

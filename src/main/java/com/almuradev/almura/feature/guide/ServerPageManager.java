@@ -17,6 +17,7 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.TextUtil;
 import com.almuradev.core.event.Witness;
 import com.typesafe.config.ConfigRenderOptions;
+import me.ryanhamshire.griefprevention.GriefPrevention;
 import net.malisis.core.MalisisCore;
 import net.minecraft.client.Minecraft;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -36,6 +37,8 @@ import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
+import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
@@ -69,18 +72,20 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
     private final Path pageRoot;
     private final ChannelBinding.IndexedMessageChannel network;
     private final Map<String, Page> pages = new HashMap<>();
+    private final PluginContainer container;
 
     @com.google.inject.Inject
     private static ServerNotificationManager manager;
 
     @Inject
     public ServerPageManager(final Game game, Logger logger, @ConfigDir(sharedRoot = false) final Path configRoot, final @ChannelId(NetworkConfig
-            .CHANNEL) ChannelBinding.IndexedMessageChannel network) {
+            .CHANNEL) ChannelBinding.IndexedMessageChannel network, final PluginContainer container) {
         this.game = game;
         this.logger = logger;
         this.configRoot = configRoot.resolve(GuideConfig.DIR_GUIDE);
         this.pageRoot = this.configRoot.resolve(GuideConfig.DIR_GUIDE_PAGES);
         this.network = network;
+        this.container = container;
     }
 
     @Override
@@ -93,8 +98,11 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
         if (!player.hasPermission("almura.guide.open_at_login") || player.hasPermission("almura.singleplayer") && MalisisCore.isObfEnv) {
             return;
         }
-        
-        openGuideForPlayer(player, GuideOpenType.PLAYER_LOGGED_IN, null);
+
+        Task.builder()
+            .delayTicks(100) // Give GP time to register the user as its not at tick zero.
+            .execute(t -> openGuideForPlayer(player, GuideOpenType.PLAYER_LOGGED_IN, null))
+            .submit(this.container);
     }
 
     public void openGuideForPlayer(Player player, GuideOpenType type, String pageName) {

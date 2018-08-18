@@ -47,7 +47,7 @@ import javax.vecmath.Vector4f;
 @SideOnly(Side.CLIENT)
 public class OBJBakedModel implements IBakedModel {
 
-    private static final Object2ObjectMap<String, OBJBakedModel> STATE_MODEL_CACHE = new Object2ObjectOpenHashMap<>(5);
+    private static final Object2ObjectMap<String, OBJBakedModel> STATE_MODEL_CACHE = new Object2ObjectOpenHashMap<>(2000);
 
     private final OBJModel model;
     private final IModelState state;
