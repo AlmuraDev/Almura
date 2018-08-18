@@ -92,7 +92,7 @@ public final class ComplexContentFeature implements Witness {
         modRegistry.remove(StoneBrick);
 
         GameRegistry.addShapedRecipe(new ResourceLocation("minecraft:stone_brick_stairs"), new ResourceLocation("minecraft:stone_brick_stairs"), new
-                        ItemStack(Blocks.STONE_BRICK_STAIRS),
+                        ItemStack(Blocks.STONE_BRICK_STAIRS, 4),
                 "AXX",
                 "AAX",
                 "AAA",
