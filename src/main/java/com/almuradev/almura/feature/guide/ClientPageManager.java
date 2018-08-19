@@ -12,6 +12,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.feature.guide.network.ServerboundGuideOpenRequestPacket;
 import com.almuradev.almura.feature.guide.network.ServerboundPageChangeRequestPacket;
 import com.almuradev.almura.feature.guide.network.ServerboundPageOpenRequestPacket;
+import com.almuradev.almura.feature.notification.ClientNotificationManager;
+import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.keyboard.binder.KeyBindingEntry;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
@@ -19,6 +21,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
+import org.spongepowered.api.text.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +37,7 @@ import javax.inject.Singleton;
 public final class ClientPageManager implements Witness {
 
     public final ChannelBinding.IndexedMessageChannel network;
+    private final ClientNotificationManager clientNotificationManager;
 
     private List<PageListEntry> pageEntries = new ArrayList<>();
     private Page page;
@@ -41,8 +45,9 @@ public final class ClientPageManager implements Witness {
 
     @Inject
     public ClientPageManager(final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network, final Set<KeyBindingEntry>
-        keybindings) {
+        keybindings, final ClientNotificationManager manager) {
         this.network = network;
+        this.clientNotificationManager = manager;
     }
 
     public void requestGuideGUI() {
@@ -100,7 +105,11 @@ public final class ClientPageManager implements Witness {
     }
 
     public void requestSavePage() {
-        this.network.sendToServer(new ServerboundPageChangeRequestPacket(this.page));
+        if (this.page.getContent().length() > 8190) {
+            this.clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Guide too long to save!"),5));
+        } else {
+            this.network.sendToServer(new ServerboundPageChangeRequestPacket(this.page));
+        }
     }
 
     public void requestRemovePage(String id) {
