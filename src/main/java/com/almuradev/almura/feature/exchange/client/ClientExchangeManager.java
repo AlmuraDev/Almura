@@ -214,7 +214,7 @@ public final class ClientExchangeManager implements Witness {
         final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
         if (currentScreen instanceof ExchangeScreen) {
 
-            if (axs != ((ExchangeScreen) currentScreen).getExchange()) {
+            if (axs != ((ExchangeScreen) currentScreen).getAxs()) {
                 return;
             }
 
@@ -273,7 +273,7 @@ public final class ClientExchangeManager implements Witness {
 
         final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
         if (currentScreen instanceof ExchangeScreen) {
-            if (axs != ((ExchangeScreen) currentScreen).getExchange()) {
+            if (axs != ((ExchangeScreen) currentScreen).getAxs()) {
                 return;
             }
 

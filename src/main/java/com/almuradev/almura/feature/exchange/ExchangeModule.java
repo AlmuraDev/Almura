@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.exchange;
 
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
+import com.almuradev.almura.feature.exchange.client.gui.ExchangeListPriceScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeOfferScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
@@ -95,6 +96,7 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 protected void configure() {
                     this.facet().add(ClientExchangeManager.class);
                     this.requestStaticInjection(ExchangeScreen.class);
+                    this.requestStaticInjection(ExchangeListPriceScreen.class);
                     this.requestStaticInjection(ExchangeOfferScreen.class);
                     this.requestStaticInjection(ExchangeManagementScreen.class);
                 }

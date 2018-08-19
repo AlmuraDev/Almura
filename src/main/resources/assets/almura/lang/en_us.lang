@@ -102,7 +102,7 @@ almura.button.exchange.buy.one=Buy One
 almura.button.exchange.buy.quantity=Buy Quantity
 almura.button.exchange.list=List
 almura.button.exchange.unlist=Unlist
-almura.button.exchange.price.set=Set Price
+almura.title.exchange.enter_a_price=Enter a price
 
 # ---------------
 # ---- guide ----

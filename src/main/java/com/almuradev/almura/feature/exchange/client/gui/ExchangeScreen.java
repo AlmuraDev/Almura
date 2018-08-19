@@ -34,6 +34,7 @@ import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -100,7 +101,7 @@ public final class ExchangeScreen extends SimpleScreen {
         }
 
         // Main Panel
-        final UIFormContainer form = new UIFormContainer(this, minScreenWidth, minScreenHeight, this.getExchange().getName());
+        final UIFormContainer form = new UIFormContainer(this, minScreenWidth, minScreenHeight, this.getAxs().getName());
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -282,12 +283,15 @@ public final class ExchangeScreen extends SimpleScreen {
             .text("List")
             .enabled(false)
             .onClick(() -> {
-                final ListItem offer = this.listItemList.getSelectedItem();
-                if (offer != null) {
-                    final boolean de_list = offer.getForSaleItem().isPresent();
-                    final ListStatusType type = de_list ? ListStatusType.DE_LIST : ListStatusType.LIST;
+                final ListItem item = this.listItemList.getSelectedItem();
+                if (item != null) {
+                    final boolean de_list = item.getForSaleItem().isPresent();
 
-                    exchangeManager.modifyListStatus(type, this.axs.getId(), offer.getRecord(), de_list ? null : BigDecimal.valueOf(1.5f));
+                    if (de_list) {
+                        exchangeManager.modifyListStatus(ListStatusType.DE_LIST, this.axs.getId(), item.getRecord(), null);
+                    } else {
+                        new ExchangeListPriceScreen(this, this.axs, item).display();
+                    }
                 }
             })
             .build("button.list");
@@ -317,7 +321,7 @@ public final class ExchangeScreen extends SimpleScreen {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
     }
 
-    public Exchange getExchange() {
+    public Exchange getAxs() {
         return this.axs;
     }
 
@@ -358,7 +362,7 @@ public final class ExchangeScreen extends SimpleScreen {
         final boolean isSellingItemSelected = this.listItemList.getSelectedItem() != null;
         final boolean isListed = isSellingItemSelected && this.listItemList.getSelectedItem().getForSaleItem().isPresent();
         this.buttonList.setEnabled(isSellingItemSelected);
-        this.buttonList.setText(isListed ? "Unlist" : "List");
+        this.buttonList.setText(I18n.format("almura.button.exchange." + (isListed ? "unlist" : "list")));
 
         // Update all items
         this.listItemList.getComponents()
