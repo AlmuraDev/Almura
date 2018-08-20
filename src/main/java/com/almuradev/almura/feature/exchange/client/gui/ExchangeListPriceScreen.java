@@ -8,6 +8,9 @@ import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
@@ -18,8 +21,11 @@ import net.malisis.core.client.gui.event.ComponentEvent;
 import net.minecraft.client.resources.I18n;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
 
 public class ExchangeListPriceScreen extends SimpleScreen {
+
+    private static final int maxTrailingDigits = 2;
 
     @Inject private static ClientExchangeManager exchangeManager;
 
@@ -53,8 +59,37 @@ public class ExchangeListPriceScreen extends SimpleScreen {
         this.form.setTopPadding(20);
 
         this.pricePerField = new UITextField(this, "0.00");
-        this.pricePerField.setSize(55, 0);
-        this.pricePerField.setFilter(s -> s.replaceAll("[^\\d.]", ""));
+        this.pricePerField.setSize(65, 0);
+        this.pricePerField.setFilter(s -> {
+            // TODO: Maybe make a fancy regex for some of this
+
+            // Get the current decimal separator
+            final String decimalSeparator = String.valueOf(DecimalFormatSymbols.getInstance().getDecimalSeparator());
+
+            // Filter out all non-digit and decimal separator characters
+            final String filteredValue = s.replaceAll("[^\\d" + decimalSeparator + "]", "");
+
+            // Return if empty
+            if (filteredValue.isEmpty()) {
+                return filteredValue;
+            }
+
+            // Don't allow multiple decimal separators if one is present
+            if (filteredValue.indexOf(decimalSeparator) != filteredValue.lastIndexOf(decimalSeparator)) {
+                return filteredValue.substring(0, filteredValue.length() - 1);
+            }
+
+            // Split against the decimal separator
+            final String[] values = Iterables.toArray(Splitter.on(CharMatcher.anyOf(decimalSeparator)).split(filteredValue), String.class);
+
+            // If we have more than 2 sets of values after the split or the length of the 2nd block is bigger than 2
+            // then return a value we expect to see.
+            if (values.length > 2 || values.length > 1 && values[1].length() > maxTrailingDigits) {
+                return values[0] + decimalSeparator + values[1].substring(0, maxTrailingDigits);
+            }
+
+            return filteredValue;
+        });
         this.pricePerField.setPosition(2, 0, Anchor.MIDDLE | Anchor.LEFT);
         this.pricePerField.register(this);
 
@@ -88,7 +123,6 @@ public class ExchangeListPriceScreen extends SimpleScreen {
 
         this.addToScreen(this.form);
     }
-
 
     @Subscribe
     private void onTextChange(ComponentEvent.ValueChange<UITextField, String> event) {
