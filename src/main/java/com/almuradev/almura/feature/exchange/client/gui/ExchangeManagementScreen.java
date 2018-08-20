@@ -33,6 +33,7 @@ import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -68,7 +69,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         this.guiscreenBackground = false;
 
         // Master Pane
-        this.form = new UIFormContainer(this, requiredScreenWidth, requiredScreenHeight, "Exchange - Management");
+        this.form = new UIFormContainer(this, requiredScreenWidth, requiredScreenHeight, I18n.format("almura.title.exchange.management"));
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -106,7 +107,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .setEditable(false)
                 .register(this);
         this.idField.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
-        final UILabel idLabel = new UILabel(this, TextFormatting.WHITE + "ID:")
+        final UILabel idLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.id") + ":")
                 .setPosition(0, this.idField.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Title
@@ -115,7 +116,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .setPosition(0, SimpleScreen.getPaddedY(this.idField, 2), Anchor.RIGHT | Anchor.TOP)
                 .setFontOptions(defaultTextFieldFontOptions)
                 .register(this);
-        final UILabel titleLabel = new UILabel(this, TextFormatting.WHITE + "Title:")
+        final UILabel titleLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.title") + ":")
                 .setPosition(0, this.titleField.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Permission
@@ -125,7 +126,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .setFontOptions(defaultTextFieldFontOptions)
                 .register(this);
         this.permissionField.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
-        final UILabel permissionLabel = new UILabel(this, TextFormatting.WHITE + "Permission:")
+        final UILabel permissionLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.permission") + ":")
                 .setPosition(0, this.permissionField.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created by (name)
@@ -134,7 +135,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .setPosition(0, SimpleScreen.getPaddedY(this.permissionField, 2), Anchor.RIGHT | Anchor.TOP)
                 .setFontOptions(readOnlyTextFieldFontOptions)
                 .setEditable(false);
-        this.creatorNameLabel = new UILabel(this, TextFormatting.WHITE + "Creator (name):")
+        this.creatorNameLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.creator_name") + ":")
                 .setPosition(0, this.creatorNameField.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created by (Unique ID)
@@ -143,7 +144,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .setPosition(0, SimpleScreen.getPaddedY(this.creatorNameField, 2), Anchor.RIGHT | Anchor.TOP)
                 .setFontOptions(readOnlyTextFieldFontOptions)
                 .setEditable(false);
-        this.creatorUniqueIdLabel = new UILabel(this, TextFormatting.WHITE + "Creator (uuid):")
+        this.creatorUniqueIdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.creator_uuid") + ":")
                 .setPosition(0, this.creatorUniqueIdField.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created on
@@ -152,11 +153,11 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .setPosition(0, SimpleScreen.getPaddedY(this.creatorUniqueIdField, 2), Anchor.RIGHT | Anchor.TOP)
                 .setFontOptions(readOnlyTextFieldFontOptions)
                 .setEditable(false);
-        this.createdLabel = new UILabel(this, TextFormatting.WHITE + "Created:")
+        this.createdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.created") + ":")
                 .setPosition(0, this.createdField.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         this.hiddenCheckbox = new UICheckBox(this);
-        this.hiddenCheckbox.setText(TextFormatting.WHITE + "Hidden");
+        this.hiddenCheckbox.setText(TextFormatting.WHITE + I18n.format("almura.text.exchange.hidden"));
         this.hiddenCheckbox.setPosition(0, 0, Anchor.LEFT | Anchor.BOTTOM);
         this.hiddenCheckbox.setChecked(false);
         this.hiddenCheckbox.setName("checkbox.hidden");
@@ -170,8 +171,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .onClick(() -> {
                     final boolean isNew = this.exchangeList.getSelectedItem() == null;
 
-                    UIMessageBox.showDialog(this, "Are you sure?",
-                            String.format("Are you sure you want to %s this Exchange?", isNew ? "add" : "modify"), MessageBoxButtons.YES_NO,
+                    UIMessageBox.showDialog(this, I18n.format("almura.title.exchange.are_you_sure"),
+                            I18n.format(String.format("almura.text.exchange.%s_exchange", isNew ? "add" : "modify")), MessageBoxButtons.YES_NO,
                             (result) -> {
                                 if (result != MessageBoxResult.YES) return;
 
@@ -211,8 +212,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .onClick(() -> {
                     final Exchange selectedExchange = this.exchangeList.getSelectedItem();
                     if (selectedExchange != null) {
-                        UIMessageBox.showDialog(this, "Are you sure?",
-                                String.format("Are you sure you want to delete the '%s' Exchange?", selectedExchange.getId()),
+                        UIMessageBox.showDialog(this, I18n.format("almura.title.exchange.are_you_sure"),
+                                I18n.format("almura.text.exchange.delete_exchange", selectedExchange.getId()),
                                 MessageBoxButtons.YES_NO, (result) -> {
                                    if (result != MessageBoxResult.YES) return;
 
@@ -329,8 +330,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
             // Creator by (Name)
             // This nonsense is brought to you by [sponge].
             final String name = Store.UNKNOWN_OWNER.equals(exchange.getCreator())
-                    ? "Unknown"
-                    : exchange.getCreatorName().orElse("Unknown");
+                    ? I18n.format("almura.text.exchange.unknown")
+                    : exchange.getCreatorName().orElse(I18n.format("almura.text.exchange.unknown"));
             this.creatorNameField.setText(name);
 
             // Creator by (Unique ID)

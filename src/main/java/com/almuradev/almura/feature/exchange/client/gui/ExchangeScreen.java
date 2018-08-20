@@ -121,7 +121,7 @@ public final class ExchangeScreen extends SimpleScreen {
         searchArea.setBackgroundAlpha(215);
         searchArea.setPadding(3, 3);
 
-        final UILabel itemSearchLabel = new UILabel(this, "Item Name:");
+        final UILabel itemSearchLabel = new UILabel(this, I18n.format("almura.text.exchange.item_name") + ":");
         itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         itemSearchLabel.setPosition(0, 4, Anchor.LEFT | Anchor.TOP);
 
@@ -132,7 +132,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.itemSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Seller Search Area
-        final UILabel sellerSearchLabel = new UILabel(this, "Seller:");
+        final UILabel sellerSearchLabel = new UILabel(this, I18n.format("almura.text.exchange.seller") + ":");
         sellerSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         sellerSearchLabel.setPosition(itemSearchField.getX() - sellerSearchLabel.getWidth() - 1,
             getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
@@ -162,12 +162,13 @@ public final class ExchangeScreen extends SimpleScreen {
             .width(80)
             .anchor(Anchor.RIGHT | Anchor.TOP)
             .position(-innerPadding, 1)
-            .text("Search")
+            .text(I18n.format("almura.button.exchange.search"))
             .onClick(() -> {
                 final String itemName = this.itemSearchField.getText();
                 final String username = this.sellerSearchField.getText();
 
-                logger.info(String.format("Searching for criteria: itemname=%s, playerName=%s", itemName, username));
+                logger.info(String.format(I18n.format("almura.text.exchange.searching_for_criteria")
+                        + ": itemname=%s, playerName=%s", itemName, username));
 
                 exchangeManager.queryForSaleItemsFor(this.axs.getId(), "");
             })
@@ -235,7 +236,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .width(60)
             .anchor(Anchor.LEFT | Anchor.MIDDLE)
             .position(0, 0)
-            .text("Buy Stack")
+            .text(I18n.format("almura.button.exchange.buy.stack"))
             .enabled(false)
             .build("button.buy.stack");
 
@@ -244,7 +245,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .width(60)
             .anchor(Anchor.CENTER | Anchor.MIDDLE)
             .position(0, 0)
-            .text("Buy 1")
+            .text(I18n.format("almura.button.exchange.buy.single"))
             .enabled(false)
             .build("button.buy.single");
 
@@ -253,7 +254,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .width(60)
             .anchor(Anchor.RIGHT | Anchor.MIDDLE)
             .position(0, 0)
-            .text("Buy Quantity")
+            .text(I18n.format("almura.button.exchange.buy.quantity"))
             .enabled(false)
             .build("button.buy.quantity");
 
@@ -280,7 +281,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .width(40)
             .anchor(Anchor.LEFT | Anchor.BOTTOM)
             .position(0, 0)
-            .text("List")
+            .text(I18n.format("almura.button.exchange.list"))
             .enabled(false)
             .onClick(() -> {
                 final ListItem item = this.listItemList.getSelectedItem();
@@ -529,7 +530,8 @@ public final class ExchangeScreen extends SimpleScreen {
                         TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.GOLD, forSaleDoublePrice, TextColors.GRAY, "/ea")));
                 this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
                 if (this.item.getQuantity() > 1) {
-                    this.priceLabel.setTooltip("Total: " + DEFAULT_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));
+                    this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
+                            + ": " + DEFAULT_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));
                 }
             }
         }
@@ -552,7 +554,8 @@ public final class ExchangeScreen extends SimpleScreen {
             final int maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
 
             this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                Text.of(TextColors.GRAY, TextStyles.ITALIC, this.item.getListItem().getSellerName().orElse("Unknown"))));
+                Text.of(TextColors.GRAY, TextStyles.ITALIC,
+                        this.item.getListItem().getSellerName().orElse(I18n.format("almura.text.exchange.unknown")))));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             final double price = this.item.getPrice().doubleValue();
@@ -561,7 +564,8 @@ public final class ExchangeScreen extends SimpleScreen {
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
             if (this.item.getQuantityRemaining() > 1) {
-                this.priceLabel.setTooltip("Total: " + this.item.getQuantityRemaining() * price);
+                this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
+                        + ": " + DEFAULT_DECIMAL_FORMAT.format(this.item.getQuantityRemaining() * price));
             }
 
             this.add(this.sellerLabel, this.priceLabel);
@@ -569,14 +573,18 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public enum SortType {
-        OLDEST("Oldest", (a, b) -> a.getCreated().compareTo(b.getCreated())),
-        NEWEST("Newest", (a, b) -> b.getCreated().compareTo(a.getCreated())),
-        PRICE_ASC("Price (Asc.)", (a, b) -> a.getPrice().compareTo(b.getPrice())),
-        PRICE_DESC("Price (Desc.)", (a, b) -> b.getPrice().compareTo(a.getPrice())),
-        ITEM_ASC("Item (Asc.)", (a, b) -> a.asRealStack().getDisplayName().compareTo(b.asRealStack().getDisplayName())),
-        ITEM_DESC("Item (Desc.)", (a, b) -> b.asRealStack().getDisplayName().compareTo(a.asRealStack().getDisplayName())),
-        PLAYER_ASC("Player (Asc.)", (a, b) -> a.getListItem().getSellerName().orElse("").compareTo(b.getListItem().getSellerName().orElse(""))),
-        PLAYER_DESC("Player (Desc.)", (a, b) -> b.getListItem().getSellerName().orElse("").compareTo(a.getListItem().getSellerName().orElse("")));
+        OLDEST(I18n.format("almura.text.exchange.sort.oldest"), (a, b) -> a.getCreated().compareTo(b.getCreated())),
+        NEWEST(I18n.format("almura.text.exchange.sort.newest"), (a, b) -> b.getCreated().compareTo(a.getCreated())),
+        PRICE_ASC(I18n.format("almura.text.exchange.sort.price_ascending"), (a, b) -> a.getPrice().compareTo(b.getPrice())),
+        PRICE_DESC(I18n.format("almura.text.exchange.sort.price_descending"), (a, b) -> b.getPrice().compareTo(a.getPrice())),
+        ITEM_ASC(I18n.format("almura.text.exchange.sort.item_ascending"),
+                (a, b) -> a.asRealStack().getDisplayName().compareTo(b.asRealStack().getDisplayName())),
+        ITEM_DESC(I18n.format("almura.text.exchange.sort.item_descending"),
+                (a, b) -> b.asRealStack().getDisplayName().compareTo(a.asRealStack().getDisplayName())),
+        PLAYER_ASC(I18n.format("almura.text.exchange.sort.player_ascending"),
+                (a, b) -> a.getListItem().getSellerName().orElse("").compareTo(b.getListItem().getSellerName().orElse(""))),
+        PLAYER_DESC(I18n.format("almura.text.exchange.sort.player_descending"),
+                (a, b) -> b.getListItem().getSellerName().orElse("").compareTo(a.getListItem().getSellerName().orElse("")));
 
         public final String displayName;
         public final Comparator<ForSaleItem> comparator;

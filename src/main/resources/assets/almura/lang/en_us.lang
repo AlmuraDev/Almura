@@ -97,12 +97,45 @@ almura.button.search=Search
 # ---------------
 # -- exchange ---
 # ---------------
-almura.button.exchange.buy.stack=Buy Stack
-almura.button.exchange.buy.one=Buy One
 almura.button.exchange.buy.quantity=Buy Quantity
+almura.button.exchange.buy.single=Buy Single
+almura.button.exchange.buy.stack=Buy Stack
 almura.button.exchange.list=List
+almura.button.exchange.search=Search
 almura.button.exchange.unlist=Unlist
+almura.text.exchange.add_exchange=Are you sure you want to add this Exchange?
+almura.text.exchange.created=Created
+almura.text.exchange.creator_name=Creator (name)
+almura.text.exchange.creator_uuid=Creator (uuid)
+almura.text.exchange.delete_exchange=Are you sure you want to delete the '%s' Exchange?
+almura.text.exchange.hidden=Hidden
+almura.text.exchange.id=ID
+almura.text.exchange.inventory=Inventory
+almura.text.exchange.item_name=Item Name
+almura.text.exchange.modify_exchange=Are you sure you want to modify this Exchange?
+almura.text.exchange.permission=Permission
+almura.text.exchange.searching_for_criteria=Searching for criteria
+almura.text.exchange.seller=Seller
+almura.text.exchange.sort.item_ascending=Item (Asc.)
+almura.text.exchange.sort.item_descending=Item (Desc.)
+almura.text.exchange.sort.newest=Newest
+almura.text.exchange.sort.oldest=Oldest
+almura.text.exchange.sort.player_ascending=Player (Asc.)
+almura.text.exchange.sort.player_descending=Player (Desc.)
+almura.text.exchange.sort.price_ascending=Price (Asc.)
+almura.text.exchange.sort.price_descending=Price (Desc.)
+almura.text.exchange.title=Title
+almura.text.exchange.unknown=Unknown
+almura.text.exchange.unlisted_items=Unlisted Items
+almura.title.exchange.are_you_sure=Are you sure?
 almura.title.exchange.enter_a_price=Enter a price
+almura.title.exchange.management=Exchange - Management
+almura.title.exchange.offer=Offer
+almura.tooltip.exchange.move_all=Moves all items of the selected type to the %s
+almura.tooltip.exchange.move_single=Move one of the selected item to the %s
+almura.tooltip.exchange.move_stack=Move the selected stack of items to the %s
+almura.tooltip.exchange.move_type=Moves all items of the selected type to the %s
+almura.tooltip.exchange.total=Total
 
 # ---------------
 # ---- guide ----

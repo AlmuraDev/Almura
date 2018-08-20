@@ -35,6 +35,7 @@ import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -74,7 +75,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.guiscreenBackground = false;
 
         // Form
-        final UIFormContainer form = new UIFormContainer(this, 400, 325, "Offer");
+        final UIFormContainer form = new UIFormContainer(this, 400, 325, I18n.format("almura.title.exchange.offer"));
         form.setZIndex(10); // Fixes issue with combobox behind the form drawing text over the form
         form.setMovable(true);
         form.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
@@ -86,14 +87,14 @@ public class ExchangeOfferScreen extends SimpleScreen {
         // OK/Cancel buttons
         final UIButton buttonOk = new UIButtonBuilder(this)
             .width(40)
-            .text("OK")
+            .text(I18n.format("almura.button.ok"))
             .x(1)
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
             .onClick(this::transact)
             .build("button.ok");
         final UIButton buttonCancel = new UIButtonBuilder(this)
             .width(40)
-            .text("Cancel")
+            .text(I18n.format("almura.button.cancel"))
             .x(getPaddedX(buttonOk, 2, Anchor.RIGHT))
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
             .onClick(this::close)
@@ -106,8 +107,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
         // Swap container
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
-            Text.of(TextColors.WHITE, "Inventory"),
-            Text.of(TextColors.WHITE, "Unlisted Items"),
+            Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.inventory")),
+            Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.unlisted_items")),
             OfferItemComponent::new,
             OfferItemComponent::new);
         this.offerContainer.setItemLimit(this.limit - this.getUsedLimit(), UIDualListContainer.SideType.RIGHT);

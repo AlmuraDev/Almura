@@ -18,8 +18,10 @@ import com.almuradev.almura.shared.item.VirtualStack;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -36,7 +38,8 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> {
 
-    @Nullable private UIButton buttonSingle, buttonStack, buttonType, buttonAll, buttonDirection;
+    private UIButton buttonSingle, buttonStack, buttonType, buttonAll;
+    private UILabel labelDirection;
     private int leftItemLimit = -1, rightItemLimit = -1;
     private SideType targetSide = SideType.RIGHT;
 
@@ -51,7 +54,11 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
     @Override
     protected UIContainer<?> createMiddleContainer(MalisisGui gui) {
-        final UIContainer<?> middleContainer = new UIContainer(gui, 38, 129);
+        if (this.targetSide == null) {
+            this.targetSide = SideType.RIGHT;
+        }
+
+        final UIContainer<?> middleContainer = new UIContainer(gui, 38, 111);
         middleContainer.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
         middleContainer.setBorder(FontColors.WHITE, 1, 185);
         middleContainer.setBackgroundAlpha(0);
@@ -61,7 +68,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, 3)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("1")
-                .tooltip("Move one of the selected item to the target container")
+                .tooltip(I18n.format("almura.tooltip.exchange.move_single", this.targetSide.toString().toLowerCase()))
                 .onClick(() -> TransferType.SINGLE.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.one");
@@ -71,25 +78,21 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.buttonSingle, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("S")
-                .tooltip("Move the selected stack of items to the target container")
+                .tooltip(I18n.format("almura.tooltip.exchange.move_stack", this.targetSide.toString().toLowerCase()))
                 .onClick(() -> TransferType.STACK.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.stack");
 
-        this.buttonDirection = new UIButtonBuilder(gui)
-                .size(30)
-                .position(0, SimpleScreen.getPaddedY(this.buttonStack, 4))
-                .anchor(Anchor.TOP | Anchor.CENTER)
-                .text("->")
-                .tooltip("Send items to the right")
-                .build("button.direction");
+        this.labelDirection = new UILabel(gui, "->");
+        this.labelDirection.setFontOptions(FontColors.WHITE_FO);
+        this.labelDirection.setPosition(0, SimpleScreen.getPaddedY(this.buttonStack, 6), Anchor.TOP | Anchor.CENTER);
 
         this.buttonType = new UIButtonBuilder(gui)
                 .size(20)
-                .position(0, SimpleScreen.getPaddedY(this.buttonDirection, 4))
+                .position(0, SimpleScreen.getPaddedY(this.labelDirection, 6))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("T")
-                .tooltip("Moves all items of the selected type to the target container")
+                .tooltip(I18n.format("almura.tooltip.exchange.move_type", this.targetSide.toString().toLowerCase()))
                 .onClick(() -> TransferType.TYPE.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.type");
@@ -99,19 +102,18 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.buttonType, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("A")
-                .tooltip("Moves all items of the selected type to the target container")
+                .tooltip(I18n.format("almura.tooltip.exchange.move_all", this.targetSide.toString().toLowerCase()))
                 .onClick(() -> TransferType.ALL.transfer(this, this.targetSide, null))
                 .build("button.all");
 
-        middleContainer.add(this.buttonSingle, this.buttonStack, this.buttonDirection, this.buttonType, this.buttonAll);
+        middleContainer.add(this.buttonSingle, this.buttonStack, this.labelDirection, this.buttonType, this.buttonAll);
 
         return middleContainer;
     }
 
     @Override
     protected void updateControls(@Nullable final VanillaStack selectedValue, final SideType targetSide) {
-        this.buttonDirection.setText(targetSide == SideType.LEFT ? "<-" : "->");
-        this.buttonDirection.setTooltip(String.format("Send items to the %s", this.targetSide == SideType.LEFT ? "left" : "right"));
+        this.labelDirection.setText(targetSide == SideType.LEFT ? "<-" : "->");
 
         super.updateControls(selectedValue, targetSide);
     }
@@ -154,9 +156,13 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
         final boolean isSelectionValid = event.getNewValue() != null;
 
         buttonSingle.setEnabled(isSelectionValid);
+        buttonSingle.setTooltip(I18n.format("almura.tooltip.exchange.move_single", this.targetSide.toString().toLowerCase()));
         buttonStack.setEnabled(isSelectionValid);
+        buttonStack.setTooltip(I18n.format("almura.tooltip.exchange.move_stack", this.targetSide.toString().toLowerCase()));
         buttonType.setEnabled(isSelectionValid);
+        buttonType.setTooltip(I18n.format("almura.tooltip.exchange.move_type", this.targetSide.toString().toLowerCase()));
         buttonAll.setEnabled(isSelectionValid);
+        buttonAll.setTooltip(I18n.format("almura.tooltip.exchange.move_all", this.targetSide.toString().toLowerCase()));
     }
 
     @Subscribe
@@ -206,9 +212,6 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             if (sourceStack == null) {
                 return;
             }
-
-            // Store the last stack we've touched on the target list
-            VanillaStack lastStack = null;
 
             // Store our lists
             final UIDynamicList<VanillaStack> sourceList = component.getOpposingListFromSide(targetSide);
@@ -283,8 +286,6 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
                 // Add the amount
                 stack.setQuantity(stack.getQuantity() + toAdd);
-
-                lastStack = stack;
             }
 
             final int divisor = toAddCount / limit;
@@ -300,7 +301,6 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 added += limit;
                 copyStack.setQuantity(limit);
                 toAdd.add(copyStack);
-                lastStack = copyStack;
             }
 
             if (remainder != 0) {
@@ -309,7 +309,6 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                     copyStack.setQuantity(remainder);
                     added += remainder;
                     toAdd.add(copyStack);
-                    lastStack = copyStack;
                 }
             }
 
@@ -322,7 +321,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             component.fireEvent(new UIDynamicList.ItemsChangedEvent<>(sourceList));
             component.fireEvent(new UIDynamicList.ItemsChangedEvent<>(targetList));
 
-            targetList.setSelectedItem(lastStack);
+            sourceList.setSelectedItem(sourceList.getItems().stream().findFirst().orElse(targetList.getItems().stream().findFirst().orElse(null)));
         }
 
         protected static Stream<VanillaStack> getFilteredStream(List<VanillaStack> list, @Nullable VanillaStack sourceStack) {
