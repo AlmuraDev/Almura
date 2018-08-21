@@ -37,6 +37,7 @@ import com.almuradev.generated.axs.tables.AxsListItemData;
 import com.almuradev.generated.axs.tables.records.AxsForSaleItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemDataRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -55,6 +56,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
@@ -66,6 +68,7 @@ import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
+import org.spongepowered.api.service.economy.transaction.TransferResult;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
@@ -1112,8 +1115,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        final UniqueAccount account = economyService.getOrCreateAccount(player.getUniqueId()).orElse(null);
-        if (account == null) {
+        final UniqueAccount buyerAccount = economyService.getOrCreateAccount(player.getUniqueId()).orElse(null);
+        if (buyerAccount == null) {
             // TODO Notification
             return;
         }
@@ -1125,22 +1128,27 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
-        if (listItems == null) {
+        ListItem found = null;
+
+        for (final Map.Entry<UUID, List<ListItem>> kv : axs.getListItems().entrySet()) {
+            final ListItem listItem = kv.getValue().stream().filter(item -> item.getRecord() == listItemRecNo).findAny().orElse(null);
+            if (listItem != null) {
+                found = listItem;
+                break;
+            }
+        }
+
+        if (found == null) {
             // TODO Notification
             // TODO Resync
             return;
         }
 
-        final ListItem found = listItems
-            .stream()
-            .filter(item -> item.getRecord() == listItemRecNo)
-            .findAny()
-            .orElse(null);
+        final UUID seller = found.getSeller();
 
-        if (found == null) {
-            // TODO Notification
-            // TODO Resync
+        final UniqueAccount sellerAccount = economyService.getOrCreateAccount(seller).orElse(null);
+        if (sellerAccount == null) {
+            // TODO
             return;
         }
 
@@ -1158,7 +1166,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        final BigDecimal balance = account.getBalance(economyService.getDefaultCurrency());
+        final BigDecimal balance = buyerAccount.getBalance(economyService.getDefaultCurrency());
         final BigDecimal price = forSaleItem.getPrice();
         final double total = price.doubleValue() * quantity;
 
@@ -1166,6 +1174,114 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             // TODO Notification
             return;
         }
+
+        EntityPlayerMP serverPlayer = (EntityPlayerMP) player;
+        final IItemHandler inventory = serverPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
+
+        final ListItem copyStack = found.copy();
+        copyStack.setQuantity(quantity);
+
+        final ItemStack simulatedResultStack = ItemHandlerHelper.insertItemStacked(inventory, copyStack.asRealStack(), true);
+        if (!simulatedResultStack.isEmpty()) {
+            // TODO Notification
+            // TODO We could just let them purchase to inventory limit? Dunno
+            return;
+        }
+
+        final int forSaleItemRecord = forSaleItem.getRecord();
+        final int quantityRemaining = forSaleItem.getQuantityRemaining() - quantity;
+        final UUID buyer = player.getUniqueId();
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    // Update listed quantity
+                    int result = ExchangeQueries
+                        .createUpdateForSaleItemQuantityRemaining(forSaleItemRecord, quantityRemaining, true)
+                        .build(context)
+                        .execute();
+                    if (result == 0) {
+                        // TODO Logger
+                        return;
+                    }
+
+                    if (quantityRemaining == 0) {
+                        result = ExchangeQueries
+                            .createUpdateListItemIsHidden(listItemRecNo, true)
+                            .build(context)
+                            .execute();
+
+                        if (result == 0) {
+                            // TODO Logger
+                            return;
+                        }
+                    }
+
+                    // Issue a transaction
+                    result = ExchangeQueries
+                        .createInsertTransaction(Instant.now(), forSaleItemRecord, buyer, price, quantity)
+                        .build(context)
+                        .execute();
+
+                    if (result == 0) {
+                        // TODO Logger
+                        return;
+                    }
+
+                    final Results listItemResults = ExchangeQueries
+                        .createFetchListItemsAndDataFor(seller, false)
+                        .build(context)
+                        .keepStatement(false)
+                        .fetchMany();
+
+                    final Results forSaleItemResults = ExchangeQueries
+                        .createFetchForSaleItemsFor(seller, false)
+                        .build(context)
+                        .keepStatement(false)
+                        .fetchMany();
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            final List<ListItem> listItems = new ArrayList<>();
+                            listItemResults.forEach(r -> listItems.addAll(this.parseListItemsFrom(r)));
+
+                            final List<ForSaleItem> forSaleItems = new ArrayList<>();
+                            forSaleItemResults.forEach(r -> forSaleItems.addAll(this.parseForSaleItemsFrom(context, listItems, r)));
+
+                            axs.putListItemsFor(seller, listItems);
+                            axs.putForSaleItemsFor(seller, forSaleItems);
+
+                            // Charge the buyer
+                            try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
+                                // TODO I could pass the ForSaleItem to the cause but its another lookup...maybe not worth it lol.
+                                frame.pushCause(axs);
+
+                                buyerAccount.transfer(sellerAccount, economyService.getDefaultCurrency(), price, frame.getCurrentCause());
+                            }
+
+                            final ItemStack resultStack = ItemHandlerHelper.insertItemStacked(inventory, copyStack.asRealStack(), false);
+                            if (resultStack.isEmpty()) {
+                                // TODO Inventory changed awaiting DB and now we're full...could drop it on the ground? It is an off-case
+                            }
+
+                            // If the seller is online, send them a list item update
+                            final Player sellerPlayer = Sponge.getServer().getPlayer(seller).orElse(null);
+                            if (sellerPlayer != null) {
+                                this.network.sendTo(sellerPlayer, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
+                                this.network.sendTo(sellerPlayer, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                            }
+
+                            this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                        })
+                        .submit(this.container);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     private void syncExchangeRegistryTo(final Player player) {
@@ -1280,7 +1396,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         quantityRemaining = found.getQuantity();
 
                         ExchangeQueries
-                            .createUpdateForSaleItemQuantityRemaining(recNo, dbQuantityRemaining)
+                            .createUpdateForSaleItemQuantityRemaining(recNo, dbQuantityRemaining, true)
                             .build(context)
                             .keepStatement(false)
                             .execute();

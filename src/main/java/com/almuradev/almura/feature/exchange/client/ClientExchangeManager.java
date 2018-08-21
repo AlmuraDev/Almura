@@ -25,6 +25,7 @@ import com.almuradev.almura.feature.exchange.network.ServerboundForSaleFilterRes
 import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyForSaleItemListStatusRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundTransactionRequestPacket;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
@@ -144,8 +145,7 @@ public final class ClientExchangeManager implements Witness {
         checkState(listItemRecNo >= 0);
         checkState(quantity >= 1);
 
-        // TODO Grinch
-        // TODO Send up the transaction here
+        this.network.sendToServer(new ServerboundTransactionRequestPacket(id, listItemRecNo, quantity));
     }
 
     public void modifyListStatus(ListStatusType type, String id, int recordNo, @Nullable BigDecimal price) {
@@ -214,7 +214,7 @@ public final class ClientExchangeManager implements Witness {
         final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
         if (currentScreen instanceof ExchangeScreen) {
 
-            if (axs != ((ExchangeScreen) currentScreen).getAxs()) {
+            if (axs != ((ExchangeScreen) currentScreen).getExchange()) {
                 return;
             }
 
@@ -273,7 +273,7 @@ public final class ClientExchangeManager implements Witness {
 
         final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
         if (currentScreen instanceof ExchangeScreen) {
-            if (axs != ((ExchangeScreen) currentScreen).getAxs()) {
+            if (axs != ((ExchangeScreen) currentScreen).getExchange()) {
                 return;
             }
 

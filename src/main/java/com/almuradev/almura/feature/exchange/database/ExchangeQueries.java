@@ -38,6 +38,7 @@ import org.jooq.Record;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectWhereStep;
 import org.jooq.UpdateConditionStep;
+import org.jooq.UpdateSetMoreStep;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -261,14 +262,21 @@ public final class ExchangeQueries {
     }
 
     public static DatabaseQuery<UpdateConditionStep<AxsForSaleItemRecord>> createUpdateForSaleItemQuantityRemaining(final int forSaleItemRecNo,
-        final int quantityRemaining) {
+        final int quantityRemaining, boolean setHiddenIfQuantityZero) {
         checkState(forSaleItemRecNo >= 0);
         checkState(quantityRemaining >= 0);
 
-        return context -> context
-            .update(AXS_FOR_SALE_ITEM)
-            .set(AXS_FOR_SALE_ITEM.QUANTITY_REMAINING, quantityRemaining)
-            .where(AXS_FOR_SALE_ITEM.REC_NO.eq(forSaleItemRecNo));
+        return context -> {
+            final UpdateSetMoreStep<AxsForSaleItemRecord> updateStep = context
+                .update(AXS_FOR_SALE_ITEM)
+                .set(AXS_FOR_SALE_ITEM.QUANTITY_REMAINING, quantityRemaining);
+            if (setHiddenIfQuantityZero && quantityRemaining == 0) {
+                updateStep
+                    .set(AXS_FOR_SALE_ITEM.IS_HIDDEN, true);
+            }
+            return updateStep
+                .where(AXS_FOR_SALE_ITEM.REC_NO.eq(forSaleItemRecNo));
+        };
     }
 
     public static DatabaseQuery<UpdateConditionStep<AxsForSaleItemRecord>> createUpdateForSaleItemPrice(final int forSaleItemRecNo,
@@ -287,7 +295,7 @@ public final class ExchangeQueries {
      * Transaction
      */
 
-    public DatabaseQuery<InsertValuesStep5<AxsTransactionRecord, Timestamp, Integer, byte[], BigDecimal, Integer>> createInsertTransaction(
+    public static DatabaseQuery<InsertValuesStep5<AxsTransactionRecord, Timestamp, Integer, byte[], BigDecimal, Integer>> createInsertTransaction(
         final Instant created, final int forSaleItemRecNo, final UUID buyer, final BigDecimal price, final int quantity) {
         checkNotNull(created);
         checkState(forSaleItemRecNo >= 0);

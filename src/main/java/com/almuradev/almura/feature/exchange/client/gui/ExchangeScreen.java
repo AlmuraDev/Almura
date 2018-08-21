@@ -101,7 +101,7 @@ public final class ExchangeScreen extends SimpleScreen {
         }
 
         // Main Panel
-        final UIFormContainer form = new UIFormContainer(this, minScreenWidth, minScreenHeight, this.getAxs().getName());
+        final UIFormContainer form = new UIFormContainer(this, minScreenWidth, minScreenHeight, this.getExchange().getName());
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -247,6 +247,12 @@ public final class ExchangeScreen extends SimpleScreen {
             .position(0, 0)
             .text(I18n.format("almura.button.exchange.buy.single"))
             .enabled(false)
+            .onClick(() -> {
+                final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
+                if (forSaleItem != null) {
+                    exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), 1);
+                }
+            })
             .build("button.buy.single");
 
         // Bottom Economy Pane - buyStack button
@@ -322,7 +328,7 @@ public final class ExchangeScreen extends SimpleScreen {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
     }
 
-    public Exchange getAxs() {
+    public Exchange getExchange() {
         return this.axs;
     }
 
