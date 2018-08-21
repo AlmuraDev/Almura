@@ -11,7 +11,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.feature.exchange.ListStatusType;
+import com.almuradev.almura.shared.util.ByteBufUtil;
 import com.almuradev.almura.shared.util.SerializationUtil;
+import io.netty.buffer.ByteBuf;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
@@ -53,7 +55,7 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacket implement
         this.listItemRecNo = buf.readInteger();
 
         if (this.type != ListStatusType.DE_LIST) {
-            this.price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
+            this.price = ByteBufUtil.readBigDecimal((ByteBuf) buf);
         }
     }
 
@@ -71,9 +73,7 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacket implement
             checkNotNull(this.price);
             checkState(this.price.doubleValue() >= 0);
 
-            final byte[] priceData = SerializationUtil.toBytes(this.price);
-            buf.writeInteger(priceData.length);
-            buf.writeBytes(priceData);
+            ByteBufUtil.writeBigDecimal((ByteBuf) buf, this.price);
         }
     }
 }

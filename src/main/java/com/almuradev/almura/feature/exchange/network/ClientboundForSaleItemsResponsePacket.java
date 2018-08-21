@@ -13,7 +13,9 @@ import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
+import com.almuradev.almura.shared.util.ByteBufUtil;
 import com.almuradev.almura.shared.util.SerializationUtil;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -119,7 +121,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
 
                 final int quantityRemaining = buf.readInteger();
 
-                final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
+                final BigDecimal price = ByteBufUtil.readBigDecimal((ByteBuf) buf);
 
                 final BasicForSaleItem basicForSaleItem = new BasicForSaleItem(basicListItem, forSaleItemRecNo, forSaleItemCreated,
                     quantityRemaining, price);
@@ -208,9 +210,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
 
                 buf.writeInteger(forSaleItem.getQuantityRemaining());
 
-                final byte[] priceData = SerializationUtil.toBytes(forSaleItem.getPrice());
-                buf.writeInteger(priceData.length);
-                buf.writeBytes(priceData);
+                ByteBufUtil.writeBigDecimal((ByteBuf) buf, forSaleItem.getPrice());
             }
         }
     }

@@ -783,7 +783,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
 
                             this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
-                            
+
                             Sponge.getServer().getOnlinePlayers()
                                 .stream()
                                 .filter(p -> p.getUniqueId().equals(player.getUniqueId())).forEach(p -> this.network.sendTo(p,

@@ -10,7 +10,9 @@ package com.almuradev.almura.feature.exchange.network;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
+import com.almuradev.almura.shared.util.ByteBufUtil;
 import com.almuradev.almura.shared.util.SerializationUtil;
+import io.netty.buffer.ByteBuf;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
@@ -57,7 +59,7 @@ public final class ClientboundListItemsSaleStatusPacket implements Message {
                     continue;
                 }
                 final int remainingQuantity = buf.readInteger();
-                final BigDecimal price = SerializationUtil.fromBytes(buf.readBytes(buf.readInteger()));
+                final BigDecimal price = ByteBufUtil.readBigDecimal((ByteBuf) buf);
 
                 this.fromServerItems.add(new ForSaleItemCandidate(listItemRecNo, forSaleItemRecNo, created, remainingQuantity, price));
             }
@@ -84,9 +86,7 @@ public final class ClientboundListItemsSaleStatusPacket implements Message {
                     continue;
                 }
                 buf.writeInteger(item.getQuantity());
-                final byte[] priceData = SerializationUtil.toBytes(item.getPrice());
-                buf.writeInteger(priceData.length);
-                buf.writeBytes(priceData);
+                ByteBufUtil.writeBigDecimal((ByteBuf) buf, item.getPrice());
             }
         }
     }

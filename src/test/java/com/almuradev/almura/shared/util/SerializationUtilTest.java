@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.shared.util;
 
-import static com.google.common.base.Preconditions.checkState;
 import static org.junit.Assert.assertEquals;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,7 +15,6 @@ import net.minecraft.util.ResourceLocation;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 public final class SerializationUtilTest {
 
@@ -47,20 +45,5 @@ public final class SerializationUtilTest {
         compound.setTag("test", list);
 
         assertEquals(compound, SerializationUtil.compoundFromBytes(SerializationUtil.toBytes(compound)));
-    }
-
-    @Test
-    public void testBigDecimalSerialization() {
-        BigDecimal value = BigDecimal.valueOf(5);
-        assertEquals(SerializationUtil.fromBytes(SerializationUtil.toBytes(value)).doubleValue(), value.doubleValue(), 0);
-
-        value = BigDecimal.valueOf(5.5);
-        checkState(SerializationUtil.fromBytes(SerializationUtil.toBytes(value)).doubleValue() == value.doubleValue());
-
-        value = BigDecimal.valueOf(5.23598745268957);
-        checkState(SerializationUtil.fromBytes(SerializationUtil.toBytes(value)).doubleValue() == value.doubleValue());
-
-        value = BigDecimal.valueOf(Double.MAX_VALUE);
-        checkState(SerializationUtil.fromBytes(SerializationUtil.toBytes(value)).doubleValue() == value.doubleValue());
     }
 }
