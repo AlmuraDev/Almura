@@ -509,7 +509,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             for (int j = 0; j < inventory.getSlots(); j++) {
                 final ItemStack slotStack = inventory.getStackInSlot(j);
 
-                if (this.areStacksEqualIgnoreSize(slotStack, stack.asRealStack())) {
+                if (ItemHandlerHelper.canItemStacksStack(slotStack, stack.asRealStack())) {
                     amountLeft -= inventory.extractItem(j, amountLeft, true).getCount();
                     matched = true;
                 }
@@ -564,7 +564,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     ListItem found = null;
 
                     for (final ListItem listItem : currentListItems) {
-                        if (this.areStacksEqualIgnoreSize(stack.asRealStack(), listItem.asRealStack())) {
+                        if (ItemHandlerHelper.canItemStacksStack(stack.asRealStack(), listItem.asRealStack())) {
                             found = listItem;
                             break;
                         }
@@ -633,7 +633,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         if (currentListItems != null) {
                             found = currentListItems
                                     .stream()
-                                    .filter(item -> this.areStacksEqualIgnoreSize(realStack, item.asRealStack()))
+                                    .filter(item -> ItemHandlerHelper.canItemStacksStack(realStack, item.asRealStack()))
                                     .findAny()
                                     .orElse(null);
                         }
@@ -749,7 +749,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 for (int i = 0; i < inventory.getSlots(); i++) {
                                     final ItemStack slotStack = inventory.getStackInSlot(i);
 
-                                    if (this.areStacksEqualIgnoreSize(slotStack, stack.asRealStack())) {
+                                    if (ItemHandlerHelper.canItemStacksStack(slotStack, stack.asRealStack())) {
                                         amountLeft -= inventory.extractItem(i, amountLeft, false).getCount();
                                     }
 
@@ -1301,9 +1301,5 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     private int getListingsLimit(final Player player) {
         // TODO Need to determine what controls this ultimately, 100 for now.
         return 100;
-    }
-
-    private boolean areStacksEqualIgnoreSize(final ItemStack a, final ItemStack b) {
-        return ItemStack.areItemsEqual(a, b) && ItemStack.areItemStackTagsEqual(a, b);
     }
 }
