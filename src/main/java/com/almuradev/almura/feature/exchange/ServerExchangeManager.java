@@ -489,6 +489,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
+        final UUID seller = player.getUniqueId();
         final EntityPlayerMP serverPlayer = (EntityPlayerMP) player;
         final IItemHandler inventory = serverPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
 
@@ -608,12 +609,12 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         // This may seem quite weird but we need to clear out the listing items reference for this player across the board to await what the results
         // are from the database to ensure we're 1:1 in sync. Otherwise, the Exchange would keep selling..
-        axs.putListItemsFor(player.getUniqueId(), null);
-        axs.putForSaleItemsFor(player.getUniqueId(), null);
+        axs.putListItemsFor(seller, null);
+        axs.putForSaleItemsFor(seller, null);
 
         Sponge.getServer().getOnlinePlayers()
             .stream()
-            .filter(p -> p.getUniqueId() != player.getUniqueId())
+            .filter(p -> p.getUniqueId() != seller)
             .forEach(p -> this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(axs.getId())));
 
         this.scheduler
@@ -643,7 +644,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                         if (found == null) {
                             final AxsListItemRecord itemRecord = ExchangeQueries
-                                .createInsertListItem(axs.getId(), Instant.now(), player.getUniqueId(), realStack.getItem(), stack.getQuantity(),
+                                .createInsertListItem(axs.getId(), Instant.now(), seller, realStack.getItem(), stack.getQuantity(),
                                     realStack.getMetadata(), index)
                                 .build(context)
                                 .fetchOne();
@@ -725,26 +726,27 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         }
                     }
 
-                    Results results = ExchangeQueries
+                    final Results listItemResults = ExchangeQueries
                         .createFetchListItemsAndDataFor(player.getUniqueId(), false)
                         .build(context)
                         .keepStatement(false)
                         .fetchMany();
 
-                    final List<ListItem> listItems = new ArrayList<>();
-                    results.forEach(result -> listItems.addAll(this.parseListItemsFrom(result)));
-
-                    final List<ForSaleItem> forSaleItems = new ArrayList<>();
-                    results = ExchangeQueries
+                    final Results forSaleItemResults = ExchangeQueries
                         .createFetchForSaleItemsFor(player.getUniqueId(), false)
                         .build(context)
                         .keepStatement(false)
                         .fetchMany();
-                    results.forEach(result -> forSaleItems.addAll(this.parseForSaleItemsFrom(context, listItems, result)));
 
                     this.scheduler
                         .createTaskBuilder()
                         .execute(() -> {
+                            final List<ListItem> listItems = new ArrayList<>();
+                            listItemResults.forEach(result -> listItems.addAll(this.parseListItemsFrom(result)));
+
+                            final List<ForSaleItem> forSaleItems = new ArrayList<>();
+                            forSaleItemResults.forEach(result -> forSaleItems.addAll(this.parseForSaleItemsFrom(context, listItems, result)));
+
                             // Remove stacks for listings
                             for (final VanillaStack stack : toListingStacks) {
                                 int amountLeft = stack.getQuantity();

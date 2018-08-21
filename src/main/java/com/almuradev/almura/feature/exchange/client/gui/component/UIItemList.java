@@ -10,7 +10,11 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
-public class UIItemList extends UIDynamicList<VanillaStack> implements IItemHandler {
+/**
+ * An implementation of IItemHandler for the Exchange framework. Pay careful attention to the fact that all {@link ItemStack} maniuplations
+ * MUST be resync'd back to the {@link VanillaStack} at the call site.
+ */
+public final class UIItemList extends UIDynamicList<VanillaStack> implements IItemHandler {
 
     public static final VanillaStack VANILLA_STACK_EMPTY = new BasicVanillaStack(ItemStack.EMPTY);
 
@@ -49,19 +53,6 @@ public class UIItemList extends UIDynamicList<VanillaStack> implements IItemHand
         return this.getStackFromSlot(slot).asRealStack();
     }
 
-    public VanillaStack insertItem(final int slot, final int amount, @Nonnull final VanillaStack stack) {
-        final ItemStack toInsert = stack.asRealStack();
-        toInsert.setCount(amount);
-
-        final ItemStack result = this.insertItem(slot, toInsert, false);
-        if (result.isEmpty()) {
-            final VanillaStack targetStack = this.getStackFromSlot(slot);
-            targetStack.setQuantity(targetStack.getQuantity() + (amount - result.getCount()));
-        }
-
-        return new BasicVanillaStack(result);
-    }
-
     @Override
     @Nonnull
     public ItemStack insertItem(final int slot, @Nonnull final ItemStack stack, final boolean simulate) {
@@ -82,29 +73,17 @@ public class UIItemList extends UIDynamicList<VanillaStack> implements IItemHand
 
             amountUsed += toAdd;
             stackInSlot.grow(toAdd);
+            this.markDirty();
         } else if (stackInSlot.isEmpty()) {
             final VanillaStack newStack = new BasicVanillaStack(stack);
             newStack.setQuantity(Math.min(stackInSlotLimit, stack.getCount()));
-            this.getItems().set(slot, newStack);
+            this.addItem(slot, newStack);
             amountUsed += newStack.getQuantity();
         }
 
         diffStack.setCount(stack.getCount() - amountUsed);
 
         return diffStack;
-    }
-
-    public VanillaStack extractItem(final int slot, final int amount) {
-        final ItemStack result = this.extractItem(slot, amount, false);
-
-        final VanillaStack stackInSlot = this.getStackFromSlot(slot);
-        stackInSlot.setQuantity(stackInSlot.getQuantity() - result.getCount());
-
-        if (stackInSlot.isEmpty()) {
-            this.removeItem(stackInSlot);
-        }
-
-        return new BasicVanillaStack(result);
     }
 
     @Nonnull
@@ -127,6 +106,10 @@ public class UIItemList extends UIDynamicList<VanillaStack> implements IItemHand
 
         // Shrink after a copy is made to avoid copying air
         stackInSlot.shrink(toTake);
+
+        if (stackInSlot.isEmpty()) {
+            this.removeItem(slot);
+        }
 
         return extractedItem;
     }

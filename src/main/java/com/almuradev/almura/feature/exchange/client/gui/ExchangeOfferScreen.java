@@ -38,6 +38,8 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
@@ -106,16 +108,19 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.progressBar.setText(Text.of(0, "/", this.limit));
 
         // Swap container
+        final NonNullList<ItemStack> mainInventory = Minecraft.getMinecraft().player.inventory.mainInventory;
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
-            Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.inventory")),
-            Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.unlisted_items")),
-            OfferItemComponent::new,
-            OfferItemComponent::new);
+                Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.inventory")),
+                Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.unlisted_items")),
+                OfferItemComponent::new,
+                OfferItemComponent::new,
+                mainInventory.size(),
+                this.limit);
         this.offerContainer.register(this);
 
         // Populate offer container
         final List<VanillaStack> inventoryOffers = new ArrayList<>();
-        Minecraft.getMinecraft().player.inventory.mainInventory.stream().filter(i -> !i.isEmpty()).forEach(i -> inventoryOffers.add(new BasicVanillaStack(i)));
+        mainInventory.stream().filter(i -> !i.isEmpty()).forEach(i -> inventoryOffers.add(new BasicVanillaStack(i)));
 
         this.offerContainer.setItems(this.pendingItems, UIDualListContainer.SideType.RIGHT);
         this.offerContainer.setItems(inventoryOffers, UIDualListContainer.SideType.LEFT);

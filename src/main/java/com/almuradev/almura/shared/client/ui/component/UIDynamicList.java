@@ -65,6 +65,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param index The index
      * @return The item located at the specified index
      */
+    @Nullable
     public T getItem(int index) {
         return this.items.get(index);
     }
@@ -99,6 +100,13 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         }
 
         return result;
+    }
+
+    public void addItem(final int index, T item) {
+        this.items.add(index, item);
+
+        this.isDirty = true;
+        this.fireEvent(new ItemsChangedEvent<>(this));
     }
 
     /**
