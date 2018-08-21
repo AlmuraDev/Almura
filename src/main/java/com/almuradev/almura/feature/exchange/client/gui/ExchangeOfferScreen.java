@@ -111,7 +111,6 @@ public class ExchangeOfferScreen extends SimpleScreen {
             Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.unlisted_items")),
             OfferItemComponent::new,
             OfferItemComponent::new);
-        this.offerContainer.setItemLimit(this.limit - this.getUsedLimit(), UIDualListContainer.SideType.RIGHT);
         this.offerContainer.register(this);
 
         // Populate offer container
@@ -129,7 +128,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
     }
 
     @Subscribe
-    private void onTransaction(UIExchangeOfferContainer.TransactionCompletedEvent event) {
+    private void onTransactionComplete(UIExchangeOfferContainer.TransactionCompletedEvent event) {
         final InventoryAction.Direction direction = event.targetSide == UIDualListContainer.SideType.LEFT
                 ? InventoryAction.Direction.TO_INVENTORY
                 : InventoryAction.Direction.TO_LISTING;
@@ -233,7 +232,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
             this.setSize(0, 24);
 
             // Add components
-            final net.minecraft.item.ItemStack fakeStack = this.item.asRealStack();
+            final net.minecraft.item.ItemStack fakeStack = this.item.asRealStack().copy();
             fakeStack.setCount(1);
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;

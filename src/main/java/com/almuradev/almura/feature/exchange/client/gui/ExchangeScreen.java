@@ -94,10 +94,11 @@ public final class ExchangeScreen extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Detect if screen area is large enough to display.
-        if (minScreenWidth > resolution.getScaledWidth() || minScreenHeight > resolution.getScaledHeight()) {
+        if (minScreenWidth > this.resolution.getScaledWidth() || minScreenHeight > this.resolution.getScaledHeight()) {
             notificationManager.queuePopup(new PopupNotification(Text.of("Exchange Error"),
                 Text.of("Screen area of: " + minScreenHeight + " x " + minScreenWidth + " required."), 5));
             this.close();
+            return;
         }
 
         // Main Panel
@@ -413,9 +414,13 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public void refreshListItems() {
-        final List<ListItem> listItems = this.axs.getListItemsFor(Minecraft.getMinecraft().player.getUniqueID()).orElse(null);
+        if (this.listItemList == null) {
+            return;
+        }
+
         this.listItemList.clearItems();
 
+        final List<ListItem> listItems = this.axs.getListItemsFor(Minecraft.getMinecraft().player.getUniqueID()).orElse(null);
         if (listItems != null && !listItems.isEmpty()) {
             this.listItemList.setItems(listItems);
         }
@@ -424,6 +429,10 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public void refreshForSaleItemResults() {
+        if (this.forSaleList == null) {
+            return;
+        }
+
         this.forSaleList.clearItems();
 
         final List<ForSaleItem> forSaleItems = this.axs.getForSaleItems().entrySet().stream().map(Map.Entry::getValue).flatMap(List::stream)

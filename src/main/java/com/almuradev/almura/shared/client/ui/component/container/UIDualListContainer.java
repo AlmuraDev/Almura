@@ -31,20 +31,28 @@ import javax.annotation.Nullable;
 public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> {
 
     private final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory, rightComponentFactory;
+    private final Text leftTitle, rightTitle;
     private UIContainer middleContainer;
-    protected final UIDynamicList<T> leftDynamicList, rightDynamicList;
+    protected UIDynamicList<T> leftDynamicList, rightDynamicList;
 
-    @SuppressWarnings("deprecation")
     public UIDualListContainer(final MalisisGui gui, final int width, final int height,
             final Text leftTitle, final Text rightTitle,
             final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
             final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory) {
         super(gui, width, height);
 
-        // Assign factories
+        this.leftTitle = leftTitle;
+        this.rightTitle = rightTitle;
+
+        this.leftDynamicList = new UIDynamicList<>(gui, UIComponent.INHERITED, UIComponent.INHERITED);
+        this.rightDynamicList = new UIDynamicList<>(gui, UIComponent.INHERITED, UIComponent.INHERITED);
+
         this.leftComponentFactory = leftComponentFactory;
         this.rightComponentFactory = rightComponentFactory;
+    }
 
+    @SuppressWarnings("deprecation")
+    protected void construct(final MalisisGui gui) {
         this.setBorder(FontColors.WHITE, 1, 185);
         this.setBackgroundAlpha(0);
 
@@ -61,7 +69,6 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         final UILabel leftContainerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(leftTitle));
         leftContainerLabel.setPosition(0, -15, Anchor.TOP | Anchor.CENTER);
 
-        this.leftDynamicList = new UIDynamicList<>(gui, UIComponent.INHERITED, UIComponent.INHERITED);
         this.leftDynamicList.setItemComponentFactory(this.leftComponentFactory);
         this.leftDynamicList.setItemComponentSpacing(1);
         this.leftDynamicList.setCanDeselect(false);
@@ -80,7 +87,6 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         final UILabel rightContainerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(rightTitle));
         rightContainerLabel.setPosition(0, -15, Anchor.TOP | Anchor.CENTER);
 
-        this.rightDynamicList = new UIDynamicList<>(gui, UIComponent.INHERITED, UIComponent.INHERITED);
         this.rightDynamicList.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
         this.rightDynamicList.setItemComponentFactory(this.rightComponentFactory);
         this.rightDynamicList.setItemComponentSpacing(1);
