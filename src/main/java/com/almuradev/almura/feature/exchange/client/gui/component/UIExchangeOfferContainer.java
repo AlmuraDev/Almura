@@ -328,15 +328,12 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             return list.stream().filter(s -> isStackEqualIgnoreSize(sourceStack, s));
         }
 
-        public static boolean isStackEqualIgnoreSize(@Nullable VirtualStack stack1, @Nullable VirtualStack stack2) {
-            if (stack1 == null || stack2 == null) {
+        public static boolean isStackEqualIgnoreSize(@Nullable VirtualStack a, @Nullable VirtualStack b) {
+            if (a == null || b == null) {
                 return false;
             }
-
-            final ItemStack spongeStack1 = (ItemStack) (Object) stack1.asRealStack();
-            final ItemStack spongeStack2 = (ItemStack) (Object) stack2.asRealStack();
-
-            return ItemStackComparators.IGNORE_SIZE.compare(spongeStack1, spongeStack2) == 0;
+            return net.minecraft.item.ItemStack.areItemsEqual(a.asRealStack(), b.asRealStack()) && net.minecraft.item.ItemStack
+                .areItemStackTagsEqual(a.asRealStack(), b.asRealStack());
         }
     }
 

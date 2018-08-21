@@ -172,21 +172,19 @@ public class ExchangeOfferScreen extends SimpleScreen {
         // Otherwise we'll balance to a net zero as this means that the items were once added from one direction to another.
         if (removed < event.stack.getQuantity()) { // To Inventory logic
             final int toadd = event.stack.getQuantity() - removed;
-            if (direction == InventoryAction.Direction.TO_INVENTORY) {
 
-                // Add a new action or add the quantity to an existing one.
-                final InventoryAction existingAction = this.inventoryActions.stream()
-                        .filter(a -> UIExchangeOfferContainer.TransferType.isStackEqualIgnoreSize(a.getStack(), event.stack) && a.getDirection() == direction).findAny().orElse(null);
+            // Add a new action or add the quantity to an existing one.
+            final InventoryAction existingAction = this.inventoryActions.stream()
+                .filter(a -> UIExchangeOfferContainer.TransferType.isStackEqualIgnoreSize(a.getStack(), event.stack) && a.getDirection() == direction)
+                .findAny()
+                .orElse(null);
 
-                if (existingAction == null) {
-                    final InventoryAction newAction = new InventoryAction(direction, event.stack);
-                    newAction.getStack().setQuantity(toadd);
-                    this.inventoryActions.add(newAction);
-                } else {
-                    existingAction.getStack().setQuantity(existingAction.getStack().getQuantity() + event.stack.getQuantity());
-                }
-            } else { // To Listing logic
-                this.inventoryActions.add(new InventoryAction(direction, event.stack));
+            if (existingAction == null) {
+                final InventoryAction newAction = new InventoryAction(direction, event.stack);
+                newAction.getStack().setQuantity(toadd);
+                this.inventoryActions.add(newAction);
+            } else {
+                existingAction.getStack().setQuantity(existingAction.getStack().getQuantity() + event.stack.getQuantity());
             }
         }
 

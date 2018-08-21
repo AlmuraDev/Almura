@@ -14,12 +14,12 @@ import static com.almuradev.generated.axs.Tables.AXS_LIST_ITEM_DATA;
 import static com.almuradev.generated.axs.Tables.AXS_TRANSACTION;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static org.jooq.impl.DSL.sum;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
+import com.almuradev.generated.axs.tables.AxsListItemData;
 import com.almuradev.generated.axs.tables.records.AxsForSaleItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemDataRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
@@ -30,18 +30,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import org.jooq.DeleteConditionStep;
 import org.jooq.InsertResultStep;
 import org.jooq.InsertValuesStep2;
-import org.jooq.InsertValuesStep3;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStep5;
 import org.jooq.InsertValuesStep6;
 import org.jooq.InsertValuesStep7;
 import org.jooq.Record;
-import org.jooq.Record1;
 import org.jooq.SelectConditionStep;
-import org.jooq.SelectJoinStep;
 import org.jooq.SelectWhereStep;
 import org.jooq.UpdateConditionStep;
-import org.jooq.impl.DSL;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -112,7 +108,20 @@ public final class ExchangeQueries {
             .where(AXS_LIST_ITEM.AXS.eq(id).and(AXS_LIST_ITEM.IS_HIDDEN.eq(isHidden)));
     }
 
-    public static DatabaseQuery<InsertResultStep<AxsListItemRecord>> createInsertItem(final String id, final Instant created, final UUID seller,
+    public static DatabaseQuery<SelectConditionStep<Record>> createFetchListItemsAndDataFor(final UUID seller, final boolean isHidden) {
+        checkNotNull(seller);
+
+        final byte[] sellerData = SerializationUtil.toBytes(seller);
+
+        return context -> context
+            .select()
+            .from(AXS_LIST_ITEM)
+            .leftJoin(AXS_LIST_ITEM_DATA)
+            .on(AXS_LIST_ITEM_DATA.LIST_ITEM.eq(AXS_LIST_ITEM.REC_NO))
+            .where(AXS_LIST_ITEM.SELLER.eq(sellerData).and(AXS_LIST_ITEM.IS_HIDDEN.eq(isHidden)));
+    }
+
+    public static DatabaseQuery<InsertResultStep<AxsListItemRecord>> createInsertListItem(final String id, final Instant created, final UUID seller,
         final Item item, final int quantity, final int metadata, final int index) {
         checkNotNull(id);
         checkNotNull(created);
@@ -161,19 +170,34 @@ public final class ExchangeQueries {
             .where(AXS_LIST_ITEM.REC_NO.eq(listItemRecNo));
     }
 
+    public static DatabaseQuery<DeleteConditionStep<AxsListItemRecord>> createDeleteListItem(final int listItemRecNo) {
+        checkState(listItemRecNo >= 0);
+
+        return context -> context
+            .deleteFrom(AXS_LIST_ITEM)
+            .where(AXS_LIST_ITEM.REC_NO.eq(listItemRecNo));
+    }
+
     /**
      * ItemData
      */
 
-    public static DatabaseQuery<InsertValuesStep2<AxsListItemDataRecord, Integer, byte[]>> createInsertItemData(final int listItemRecNo,
+    public static DatabaseQuery<InsertResultStep<AxsListItemDataRecord>> createInsertItemData(final int listItemRecNo,
         final NBTTagCompound compound) throws IOException {
         checkState(listItemRecNo >= 0);
         checkNotNull(compound);
 
         final byte[] compoundData = SerializationUtil.toBytes(compound);
-        return context -> context
-            .insertInto(AXS_LIST_ITEM_DATA, AXS_LIST_ITEM_DATA.LIST_ITEM, AXS_LIST_ITEM_DATA.DATA)
-            .values(listItemRecNo, compoundData);
+
+        return context -> {
+            final InsertValuesStep2<AxsListItemDataRecord, Integer, byte[]> insertionStep = context
+                .insertInto(AxsListItemData.AXS_LIST_ITEM_DATA)
+                .columns(AxsListItemData.AXS_LIST_ITEM_DATA.LIST_ITEM, AxsListItemData.AXS_LIST_ITEM_DATA.DATA);
+
+            insertionStep.values(listItemRecNo, compoundData);
+
+            return insertionStep.returning();
+        };
     }
 
     /**
@@ -191,6 +215,19 @@ public final class ExchangeQueries {
                 .join(AXS)
                 .on(AXS.ID.eq(id)))
             .where(AXS_FOR_SALE_ITEM.IS_HIDDEN.eq(isHidden));
+    }
+
+    public static DatabaseQuery<SelectConditionStep<Record>> createFetchForSaleItemsFor(final UUID seller, final boolean isHidden) {
+        checkNotNull(seller);
+
+        final byte[] sellerData = SerializationUtil.toBytes(seller);
+
+        return context -> context
+            .select()
+            .from(AXS_FOR_SALE_ITEM
+                .join(AXS_LIST_ITEM)
+                .onKey())
+            .where(AXS_LIST_ITEM.SELLER.eq(sellerData).and(AXS_FOR_SALE_ITEM.IS_HIDDEN.eq(isHidden)));
     }
 
     public static DatabaseQuery<InsertResultStep<AxsForSaleItemRecord>> createInsertForSaleItem(

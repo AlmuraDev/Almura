@@ -35,16 +35,19 @@ import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
 import com.almuradev.generated.axs.tables.AxsListItemData;
 import com.almuradev.generated.axs.tables.records.AxsForSaleItemRecord;
+import com.almuradev.generated.axs.tables.records.AxsListItemDataRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
-import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.jooq.DSLContext;
-import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.Results;
@@ -61,7 +64,6 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.service.ServiceManager;
-import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.text.Text;
@@ -449,58 +451,16 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .fetchMany();
 
             results.forEach(result -> {
-                for (final Record record : result) {
-                    final Integer recNo = record.getValue(AxsListItem.AXS_LIST_ITEM.REC_NO);
-
-                    final String rawItemId = record.getValue(AxsListItem.AXS_LIST_ITEM.ITEM_TYPE);
-
-                    final ResourceLocation location = SerializationUtil.fromString(rawItemId);
-
-                    if (location == null) {
-                        this.logger.warn("Malformed item id found when loading from database. Id is [{}], record number is [{}]. Skipping...",
-                            rawItemId, recNo);
-                        continue;
-                    }
-
-                    final Item item = ForgeRegistries.ITEMS.getValue(location);
-
-                    if (item == null) {
-                        this.logger.warn("Unknown item found when loading from database. Registry name is [{}], record number is [{}]. Skipping"
-                            + "... (Did you remove a mod?)", rawItemId, recNo);
-                        continue;
-                    }
-
-                    final Timestamp created = record.getValue(AxsListItem.AXS_LIST_ITEM.CREATED);
-                    final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsListItem.AXS_LIST_ITEM.SELLER));
-                    final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
-                    final Integer metadata = record.getValue(AxsListItem.AXS_LIST_ITEM.METADATA);
-                    final Integer index = record.getValue(AxsListItem.AXS_LIST_ITEM.INDEX);
-                    final byte[] compoundData = record.getValue(AxsListItemData.AXS_LIST_ITEM_DATA.DATA);
-
-                    NBTTagCompound compound = null;
-                    if (compoundData != null) {
-                        try {
-                            compound = SerializationUtil.compoundFromBytes(compoundData);
-                        } catch (IOException e) {
-                            this.logger.error("Malformed item data found when loading from database. Record number is [{}]. Skipping...",
-                                recNo);
-                            continue;
-                        }
-                    }
-
-                    final BasicListItem basicListItem =
-                        new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, index, compound);
-
-                    basicListItem.refreshSellerName();
-
-                    items.add(basicListItem);
-                }
+                items.addAll(this.parseListItemsFrom(result));
             });
 
             axs.clearListItems();
             axs.clearForSaleItems();
 
-            final Map<UUID, List<ListItem>> itemsByOwner = items.stream().collect(Collectors.groupingBy(ListItem::getSeller));
+            final Map<UUID, List<ListItem>> itemsByOwner = items
+                .stream()
+                .collect(Collectors.groupingBy(ListItem::getSeller));
+
             itemsByOwner.forEach((key, value) -> value.sort(Comparator.comparingInt(ListItem::getIndex)));
 
             axs.putListItems(itemsByOwner.isEmpty() ? null : itemsByOwner);
@@ -527,162 +487,131 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
 
         final EntityPlayerMP serverPlayer = (EntityPlayerMP) player;
-
-        List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
+        final IItemHandler inventory = serverPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
 
         // Inventory -> Listing
-        final List<InventoryAction> toListingActions =
-            actions.stream().filter(a -> a.getDirection() == InventoryAction.Direction.TO_LISTING).collect(Collectors.toList());
+        final List<InventoryAction> toListingActions = actions
+            .stream()
+            .filter(a -> a.getDirection() == InventoryAction.Direction.TO_LISTING)
+            .collect(Collectors.toList());
 
-        // TODO Listing limits (listing amounts)
-        for (int i = 0; i < toListingActions.size(); i++) {
-            final VanillaStack stack = toListingActions.get(i).getStack();
+        final List<VanillaStack> toListingStacks = new ArrayList<>();
+        final List<VanillaStack> unknownInventoryStacks = new ArrayList<>();
+        final List<VanillaStack> leftoverToListingStacks = new ArrayList<>();
+
+        for (InventoryAction toListingAction : toListingActions) {
+            final VanillaStack stack = toListingAction.getStack();
 
             int amountLeft = stack.getQuantity();
 
-            for (int j = 0; j < serverPlayer.inventory.mainInventory.size(); j++) {
-                final ItemStack next = serverPlayer.inventory.getStackInSlot(j);
+            boolean matched = false;
 
-                if (ItemStack.areItemsEqual(stack.asRealStack(), next)) {
-                    final int toRemove = Math.min(next.getCount(), amountLeft);
-                    next.setCount(next.getCount() - toRemove);
-                    amountLeft -= toRemove;
+            for (int j = 0; j < inventory.getSlots(); j++) {
+                final ItemStack slotStack = inventory.getStackInSlot(j);
 
-                    if (next.getCount() <= 0) {
-                        serverPlayer.inventory.removeStackFromSlot(j);
-                    }
+                if (this.areStacksEqualIgnoreSize(slotStack, stack.asRealStack())) {
+                    amountLeft -= inventory.extractItem(j, amountLeft, true).getCount();
+                    matched = true;
                 }
 
-                if (amountLeft == 0) {
+                if (amountLeft <= 0) {
                     break;
                 }
             }
 
-            if (amountLeft > 0) {
-                // TODO Player asked to create a listing for an amount they do not have so we have taken what we could. Maybe send them a
-                // TODO notification and tell them what we didn't take.
-            }
-
-            final int listingQuantity = stack.getQuantity() - amountLeft;
-
-            if (listItems == null) {
-                listItems = new ArrayList<>();
-                axs.putListItemsFor(player.getUniqueId(), listItems);
-            }
-
-            ListItem found = null;
-
-            for (final ListItem listItem : listItems) {
-                if (ItemStack.areItemsEqual(stack.asRealStack(), listItem.asRealStack()) && ItemStack.areItemStackTagsEqual(stack.asRealStack(),
-                    listItem.asRealStack())) {
-                    found = listItem;
-                    break;
-                }
-            }
-
-            if (found != null) {
-                found.setQuantity(found.getQuantity() + listingQuantity);
+            if (!matched) {
+                unknownInventoryStacks.add(stack);
             } else {
-                found = new BasicListItem(BasicListItem.NEW_ROW, Instant.now(), player.getUniqueId(), stack.getItem(), listingQuantity,
-                    stack.getMetadata(), i, stack.getCompound());
-                ((BasicListItem) found).refreshSellerName();
-                listItems.add(found);
+                if (amountLeft > 0) {
+                    final VanillaStack copyStack = stack.copy();
+                    copyStack.setQuantity(amountLeft);
+                    leftoverToListingStacks.add(copyStack);
+                }
+
+                final VanillaStack copyStack = stack.copy();
+                copyStack.setQuantity(stack.getQuantity() - amountLeft);
+
+                if (copyStack.getQuantity() != 0) {
+                    toListingStacks.add(copyStack);
+                }
             }
         }
 
         // Listing -> Inventory
-        final List<InventoryAction> toInventoryActions =
-            actions.stream().filter(a -> a.getDirection() == InventoryAction.Direction.TO_INVENTORY).collect(Collectors.toList());
+        final List<InventoryAction> toInventoryActions = actions
+            .stream()
+            .filter(a -> a.getDirection() == InventoryAction.Direction.TO_INVENTORY)
+            .collect(Collectors.toList());
 
-        if ((listItems == null || listItems.isEmpty()) && !toInventoryActions.isEmpty()) {
-            this.logger.warn("Player [{}] attempted to move listings back to the inventory but the server knows of no listings for them. This could"
-                + " be a de-sync or an exploit. Printing stacks...", player.getName());
-            this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), null));
-            return;
-        }
+        final List<VanillaStack> listingNotFoundStacks = new ArrayList<>();
+        final List<ListItem> desyncToInventoryStacks = new ArrayList<>();
+        final List<ListItem> toInventoryStacks = new ArrayList<>();
+        final List<ListItem> partialToInventoryStacks = new ArrayList<>();
 
-        final List<VanillaStack> unknownListings = new ArrayList<>();
-        final List<VanillaStack> inventoryRejections = new ArrayList<>();
-        final List<ListItem> listingRemovals = new ArrayList<>();
+        final List<ListItem> currentListItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
 
-        for (final InventoryAction action : toInventoryActions) {
-            final VanillaStack stack = action.getStack();
+        if (!toInventoryActions.isEmpty()) {
 
-            ListItem found = null;
+            if (currentListItems == null || currentListItems.isEmpty()) {
+                this.logger.warn("Player '{}' attempted to move listings back to the inventory but the server knows of no listings for them. This "
+                    + "could be a de-sync or an exploit. Printing stacks...", player.getName());
+                // TODO Print stacks
+                this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), null));
+            } else {
+                for (final InventoryAction action : toInventoryActions) {
+                    final VanillaStack stack = action.getStack();
 
-            for (final ListItem listItem : listItems) {
-                if (ItemStack.areItemsEqual(stack.asRealStack(), listItem.asRealStack()) && ItemStack.areItemStackTagsEqual(stack.asRealStack(),
-                    listItem.asRealStack())) {
-                    found = listItem;
-                    break;
+                    ListItem found = null;
+
+                    for (final ListItem listItem : currentListItems) {
+                        if (this.areStacksEqualIgnoreSize(stack.asRealStack(), listItem.asRealStack())) {
+                            found = listItem;
+                            break;
+                        }
+                    }
+
+                    // Unknown listing
+                    if (found == null) {
+                        listingNotFoundStacks.add(stack);
+                        continue;
+                    }
+
+                    ListItem toRemove = found.copy();
+
+                    // Listing quantity mismatch (tracking this to let the user know)
+                    if (found.getQuantity() < stack.getQuantity()) {
+                        desyncToInventoryStacks.add(found);
+                        toRemove.setQuantity(found.getQuantity());
+                    } else {
+                        toRemove.setQuantity(stack.getQuantity());
+                    }
+
+                    final ItemStack resultStack = ItemHandlerHelper.insertItemStacked(inventory, toRemove.asRealStack(), true);
+
+                    // Simulated a partial stack insertion
+                    if (!resultStack.isEmpty()) {
+                        final ListItem copyStack = toRemove.copy();
+                        copyStack.setQuantity(resultStack.getCount());
+                        partialToInventoryStacks.add(copyStack);
+                    }
+
+                    final ListItem copyStack = toRemove.copy();
+                    copyStack.setQuantity(toRemove.getQuantity() - resultStack.getCount());
+
+                    toInventoryStacks.add(copyStack);
                 }
             }
-
-            if (found == null) {
-                unknownListings.add(stack);
-                continue;
-            }
-
-            if (found.getQuantity() < stack.getQuantity()) {
-                inventoryRejections.add(stack);
-                continue;
-            }
-
-            final int limit = stack.getItem().getItemStackLimit(stack.asRealStack());
-            final int divisor = stack.getQuantity() / limit;
-            final int remainder = stack.getQuantity() % limit;
-
-            int amountAdded = 0;
-
-            for (int i = 0; i < divisor; i++) {
-                final VanillaStack copyStack = stack.copy();
-                copyStack.setQuantity(limit);
-                final ItemStack realCopyStack = copyStack.asRealStack().copy();
-                serverPlayer.inventory.addItemStackToInventory(realCopyStack);
-                amountAdded += copyStack.getQuantity() - realCopyStack.getCount();
-            }
-
-            if (remainder > 0) {
-                final VanillaStack copyStack = stack.copy();
-                copyStack.setQuantity(remainder);
-                final ItemStack realCopyStack = copyStack.asRealStack().copy();
-                serverPlayer.inventory.addItemStackToInventory(realCopyStack);
-                amountAdded += copyStack.getQuantity() - realCopyStack.getCount();
-            }
-
-            final int amountRejected = stack.getQuantity() - amountAdded;
-            if (amountRejected <= 0) {
-                listingRemovals.add(found);
-                listItems.remove(found);
-            } else {
-                found.setQuantity(amountRejected);
-
-                final VanillaStack rejectedStack = stack.copy();
-                rejectedStack.setQuantity(amountAdded);
-                inventoryRejections.add(rejectedStack);
-            }
         }
 
-        if (!unknownListings.isEmpty()) {
-            this.logger.warn("Player [{}] attempted to move the following item listings back to their inventory but the "
-                + "Exchange knows of no such listings. This could be a de-sync or an exploit. Printing stacks...",
-                player.getName());
-            this.logger.warn(unknownListings.toString());
-        }
+        // This may seem quite weird but we need to clear out the listing items reference for this player across the board to await what the results
+        // are from the database to ensure we're 1:1 in sync. Otherwise, the Exchange would keep selling..
+        axs.putListItemsFor(player.getUniqueId(), null);
+        axs.putForSaleItemsFor(player.getUniqueId(), null);
 
-        if (!inventoryRejections.isEmpty()) {
-            // TODO Send down a notification explaining their inventory ran out of space and the remaining remained a listing
-        }
-
-        final List<ListItem> listItemsRef = listItems;
-
-        // TODO Unsure if I want to do this here but it is quite necessary to cap for sale quantities..
-        listItemsRef
+        Sponge.getServer().getOnlinePlayers()
             .stream()
-            .filter(item -> item.getForSaleItem().isPresent())
-            .map(item -> item.getForSaleItem().get())
-            .forEach(forSaleItem -> ((BasicForSaleItem) forSaleItem).setQuantityRemaining(Math.min(forSaleItem.getQuantityRemaining(),
-                forSaleItem.getListItem().getQuantity())));
+            .filter(p -> p.getUniqueId() != player.getUniqueId())
+            .forEach(p -> this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(axs.getId())));
 
         this.scheduler
             .createTaskBuilder()
@@ -690,105 +619,174 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             .execute(() -> {
                 try (final DSLContext context = this.databaseManager.createContext(true)) {
 
-                    // Insertions/Updates
-                    final List<Query> batchUpdates = new ArrayList<>();
+                    final Iterator<VanillaStack> listingIter = toListingStacks.iterator();
 
-                    final Iterator<ListItem> iter = listItemsRef.iterator();
-                    while (iter.hasNext()) {
+                    int index = 0;
 
-                        final ListItem item = iter.next();
+                    // New listing
+                    while (listingIter.hasNext()) {
+                        final VanillaStack stack = listingIter.next();
+                        final ItemStack realStack = stack.asRealStack();
 
-                        // Insertions
-                        if (item.getRecord() == BasicListItem.NEW_ROW) {
+                        ListItem found = null;
 
-                            // TODO Can't keepstatement this, need to make sure it doesn't cache connections.
-                            final Result<AxsListItemRecord> result = ExchangeQueries
-                                .createInsertItem(axs.getId(), item.getCreated(), item.getSeller(), item.getItem(), item.getQuantity(),
-                                    item.getMetadata(), item.getIndex())
+                        if (currentListItems != null) {
+                            found = currentListItems
+                                    .stream()
+                                    .filter(item -> this.areStacksEqualIgnoreSize(realStack, item.asRealStack()))
+                                    .findAny()
+                                    .orElse(null);
+                        }
+
+                        if (found == null) {
+                            final AxsListItemRecord itemRecord = ExchangeQueries
+                                .createInsertListItem(axs.getId(), Instant.now(), player.getUniqueId(), realStack.getItem(), stack.getQuantity(),
+                                    realStack.getMetadata(), index)
                                 .build(context)
-                                .fetch();
+                                .fetchOne();
 
-                            if (result.isEmpty()) {
-                                this.logger.error("Failed to submit an item listing to the database and therefore it will be discarded. This "
-                                    + "generally means there is an issue connecting to the database or an issue with the database itself. Printing "
-                                    + "contents of the listing...");
-                                this.logger.error(item.toString());
-                                iter.remove();
+                            if (itemRecord == null) {
+                                // TODO Notification
                                 continue;
                             }
 
-                            final Integer recNo = result.getValue(0, AxsListItem.AXS_LIST_ITEM.REC_NO);
-
-                            ((BasicListItem) item).setRecord(recNo);
-
-                            final NBTTagCompound compound = item.getCompound();
+                            final NBTTagCompound compound = stack.getCompound();
                             if (compound == null) {
                                 continue;
                             }
 
-                            ExchangeQueries
-                                .createInsertItemData(recNo, compound)
+                            final AxsListItemDataRecord dataRecord = ExchangeQueries
+                                .createInsertItemData(itemRecord.getRecNo(), compound)
                                 .build(context)
-                                .keepStatement(false)
-                                .execute();
+                                .fetchOne();
+
+                            if (dataRecord == null) {
+                                // TODO Notification
+
+                                ExchangeQueries
+                                    .createDeleteListItem(itemRecord.getRecNo())
+                                    .build(context)
+                                    .execute();
+                            }
+
                         } else {
-
-                            batchUpdates.add(ExchangeQueries
-                                .createUpdateListItem(item.getRecord(), item.getQuantity(), item.getIndex())
+                            final int result = ExchangeQueries
+                                .createUpdateListItem(found.getRecord(), stack.getQuantity() + found.getQuantity(), index)
                                 .build(context)
-                                .keepStatement(false)
-                            );
+                                .execute();
+
+                            if (result == 0) {
+                                // TODO Notification
+
+                                listingIter.remove();
+                            }
+                        }
+
+                        index++;
+                    }
+
+                    // Update/Delete listings
+
+                    for (final ListItem next : toInventoryStacks) {
+                        ListItem existingStack = null;
+
+                        for (final ListItem stack : currentListItems) {
+                            if (next.getRecord() == stack.getRecord()) {
+                                existingStack = stack;
+                                break;
+                            }
+                        }
+
+                        final int diff = existingStack.getQuantity() - next.getQuantity();
+
+                        if (diff == 0) {
+                            final int result = ExchangeQueries
+                                .createUpdateListItemIsHidden(next.getRecord(), true)
+                                .build(context)
+                                .execute();
+
+                            if (result == 0) {
+                                // TODO Notification
+                            }
+
+                        // Update partial listings
+                        } else {
+                            final int result = ExchangeQueries
+                                .createUpdateListItem(next.getRecord(), diff, next.getIndex())
+                                .build(context)
+                                .execute();
+
+                            if (result == 0) {
+                                // TODO Notification
+                            }
                         }
                     }
 
-                    // Updates
-                    int[] batchedResults = context
-                        .batch(batchUpdates)
-                        .execute();
-
-                    for (int i = 0; i < batchedResults.length; i++) {
-                        if (batchedResults[i] == 0) {
-                            this.logger.warn("A query apart of a batch returned a 0 result which means the listing was not found. "
-                                + "Normally this means a de-sync between the server and the database. Please report the query contents as follows to"
-                                + " an AlmuraDev developer.");
-                            this.logger.warn(batchUpdates.get(i).getSQL());
-                        }
-                    }
-
-                    final List<Query> batchRemovals = new ArrayList<>();
-
-                    // Deletions (soft)
-                    listingRemovals.forEach(item -> batchRemovals.add(ExchangeQueries
-                        .createUpdateListItemIsHidden(item.getRecord(), true)
+                    Results results = ExchangeQueries
+                        .createFetchListItemsAndDataFor(player.getUniqueId(), false)
                         .build(context)
-                        .keepStatement(false))
-                    );
+                        .keepStatement(false)
+                        .fetchMany();
 
-                    batchedResults = context
-                        .batch(batchRemovals).execute();
+                    final List<ListItem> listItems = new ArrayList<>();
+                    results.forEach(result -> listItems.addAll(this.parseListItemsFrom(result)));
 
-                    for (int i = 0; i < batchedResults.length; i++) {
-                        if (batchedResults[i] == 0) {
-                            this.logger.warn("A soft removal query apart of a batch returned a 0 result which means the listing was not found. "
-                                + "Normally this means a de-sync between the server and the database. Please report the query contents as follows to"
-                                + " an AlmuraDev developer.");
-                            this.logger.warn(batchRemovals.get(i).getSQL());
-                        }
-                    }
+                    final List<ForSaleItem> forSaleItems = new ArrayList<>();
+                    results = ExchangeQueries
+                        .createFetchForSaleItemsFor(player.getUniqueId(), false)
+                        .build(context)
+                        .keepStatement(false)
+                        .fetchMany();
+                    results.forEach(result -> forSaleItems.addAll(this.parseForSaleItemsFrom(context, listItems, result)));
 
                     this.scheduler
                         .createTaskBuilder()
                         .execute(() -> {
-                            this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItemsRef));
+                            // Remove stacks for listings
+                            for (final VanillaStack stack : toListingStacks) {
+                                int amountLeft = stack.getQuantity();
 
-                            if (!listItemsRef.isEmpty()) {
-                                final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
-                                if (forSaleItems != null && !forSaleItems.isEmpty()) {
-                                    this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                                for (int i = 0; i < inventory.getSlots(); i++) {
+                                    final ItemStack slotStack = inventory.getStackInSlot(i);
+
+                                    if (this.areStacksEqualIgnoreSize(slotStack, stack.asRealStack())) {
+                                        amountLeft -= inventory.extractItem(i, amountLeft, false).getCount();
+                                    }
+
+                                    if (amountLeft <= 0) {
+                                        break;
+                                    }
+                                }
+
+                                if (amountLeft > 0) {
+                                    // TODO Their inventory changed since simulation. Need to track inventory changes and get the amount back somehow
                                 }
                             }
 
-                            this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                            // Add stacks from listings
+                            for (final ListItem stack : toInventoryStacks) {
+                                final ItemStack resultStack = ItemHandlerHelper.insertItemStacked(inventory, stack.asRealStack(), false);
+
+                                if (!resultStack.isEmpty()) {
+                                    // TODO Their inventory changed since simulation. Best case scenario we toss it on the ground
+                                }
+                            }
+
+                            // TODO Build a notification that says...
+                            // TODO  - Stacks requested to go to a listing but inventory can't fulfill it
+                            // TODO  - Stacks requested to go to the inventory but listings aren't found
+                            // TODO  - Stacks requested to go to the inventory but the listing couldn't fulfill it so we took what we could
+
+                            axs.putListItemsFor(player.getUniqueId(), listItems);
+                            axs.putForSaleItemsFor(player.getUniqueId(), forSaleItems);
+
+                            this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
+
+                            Sponge.getServer().getOnlinePlayers()
+                                .stream()
+                                .filter(p -> p.getUniqueId().equals(player.getUniqueId())).forEach(p -> this.network.sendTo(p,
+                                new ClientboundForSaleFilterRequestPacket(axs.getId())));
+
                         })
                         .submit(this.container);
                 } catch (SQLException | IOException e) {
@@ -807,7 +805,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         this.logger.info("Querying for sale items for Exchange [{}], please wait...", axs.getId());
 
-        final List<ForSaleItem> items = new ArrayList<>();
+        final List<ForSaleItem> forSaleItems = new ArrayList<>();
+
+        final List<ListItem> listItems = axs.getListItems().entrySet()
+            .stream()
+            .map(Map.Entry::getValue)
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
 
         try (final DSLContext context = this.databaseManager.createContext(true)) {
             final Results results = ExchangeQueries
@@ -816,78 +820,15 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .keepStatement(false)
                 .fetchMany();
 
-            // We're async here, we have to get a copy of the map else iteration will be synchronized for the entirety of the below..
-            final Map<UUID, List<ListItem>> listItems = new HashMap<>(axs.getListItems());
-
-            results.forEach(result -> result.forEach(record -> {
-                final Integer recNo = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.REC_NO);
-                final Integer itemRecNo = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.LIST_ITEM);
-                ListItem found = null;
-
-                for (final List<ListItem> itemList : listItems.values()) {
-
-                    found = itemList
-                        .stream()
-                        .filter(item -> item.getRecord() == itemRecNo)
-                        .findAny()
-                        .orElse(null);
-
-                    if (found != null) {
-                        break;
-                    }
-                }
-
-                if (found == null) {
-                    this.logger.error("A for sale listing is being loaded but the listing no longer exists. This is a de-sync between the database "
-                        + "and the server or somehow an entity has tampered with the structure of the database. The item list id is [{}] and the "
-                        + "record number is [{}]. Report to an AlmuraDev developer ASAP.", itemRecNo, recNo);
-                } else {
-                    final Timestamp created = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED);
-                    int quantityRemaining = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.QUANTITY_REMAINING);
-                    final BigDecimal price = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
-
-                    if (quantityRemaining <= 0) {
-                        this.logger.error("A for sale listing is being loaded but the quantity remaining is zero or below. An entity has tampered "
-                            + "with the contents of the database. The record number is [{}]. This row will be set to hidden.", recNo);
-
-                        ExchangeQueries
-                            .createUpdateForSaleItemIsHidden(recNo, true)
-                            .build(context)
-                            .keepStatement(false)
-                            .execute();
-
-                    } else {
-                        if (quantityRemaining > found.getQuantity()) {
-                            this.logger.warn("A for sale listing is being loaded but the quantity remaining is less than the actual listing. An "
-                                    + "entity has tampered with the contents of the database. The record number is [{}], the quantity remaining is "
-                                    + "[{}] and the listing's quantity is [{}]. The quantity remaining will be adjusted to match.", recNo,
-                                quantityRemaining, found.getQuantity());
-
-                            final int dbQuantityRemaining = quantityRemaining;
-                            quantityRemaining = found.getQuantity();
-
-                            ExchangeQueries
-                                .createUpdateForSaleItemQuantityRemaining(recNo, dbQuantityRemaining)
-                                .build(context)
-                                .keepStatement(false)
-                                .execute();
-                        }
-
-                        final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, recNo, created.toInstant(),
-                            quantityRemaining, price);
-                        ((BasicListItem) found).setForSaleItem(basicForSaleItem);
-
-                        items.add(basicForSaleItem);
-                    }
-                }
-            }));
+            results.forEach(result -> forSaleItems.addAll(this.parseForSaleItemsFrom(context, listItems, result)));
 
             axs.clearForSaleItems();
 
-            axs.putForSaleItems(items.isEmpty() ? null : items.stream().collect(Collectors.groupingBy(forSaleItem -> forSaleItem
-                .getListItem().getSeller())));
+            axs.putForSaleItems(forSaleItems.isEmpty() ? null : forSaleItems
+                .stream()
+                .collect(Collectors.groupingBy(forSaleItem -> forSaleItem.getListItem().getSeller())));
 
-            this.logger.info("Loaded [{}] for sale item(s) for Exchange [{}].", items.size(), axs.getId());
+            this.logger.info("Loaded [{}] for sale item(s) for Exchange [{}].", forSaleItems.size(), axs.getId());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -909,7 +850,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         // TODO TEST CODE
         this.network.sendTo(player, new ClientboundForSaleItemsResponsePacket(axs.getId(),
-            axs.getForSaleItems().entrySet().stream().map(Map.Entry::getValue).flatMap(List::stream).collect(Collectors.toList())));
+            axs.getForSaleItems().entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .flatMap(List::stream)
+                .collect(Collectors.toList())));
     }
 
     public void handleListForSaleItem(final Player player, final String id, final int listItemRecNo, final BigDecimal price) {
@@ -1185,7 +1130,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        final ListItem found = listItems.stream().filter(item -> item.getRecord() == listItemRecNo).findAny().orElse(null);
+        final ListItem found = listItems
+            .stream()
+            .filter(item -> item.getRecord() == listItemRecNo)
+            .findAny()
+            .orElse(null);
 
         if (found == null) {
             // TODO Notification
@@ -1234,8 +1183,125 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         );
     }
 
+    private List<ListItem> parseListItemsFrom(final Result<Record> result) {
+        final List<ListItem> items = new ArrayList<>();
+
+        for (final Record record : result) {
+            final Integer recNo = record.getValue(AxsListItem.AXS_LIST_ITEM.REC_NO);
+
+            final String rawItemId = record.getValue(AxsListItem.AXS_LIST_ITEM.ITEM_TYPE);
+
+            final ResourceLocation location = SerializationUtil.fromString(rawItemId);
+
+            if (location == null) {
+                this.logger.warn("Malformed item id found when loading from database. Id is [{}], record number is [{}]. Skipping...",
+                    rawItemId, recNo);
+                continue;
+            }
+
+            final Item item = ForgeRegistries.ITEMS.getValue(location);
+
+            if (item == null) {
+                this.logger.warn("Unknown item found when loading from database. Registry name is [{}], record number is [{}]. Skipping"
+                    + "... (Did you remove a mod?)", rawItemId, recNo);
+                continue;
+            }
+
+            final Timestamp created = record.getValue(AxsListItem.AXS_LIST_ITEM.CREATED);
+            final UUID seller = SerializationUtil.uniqueIdFromBytes(record.getValue(AxsListItem.AXS_LIST_ITEM.SELLER));
+            final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
+            final Integer metadata = record.getValue(AxsListItem.AXS_LIST_ITEM.METADATA);
+            final Integer index = record.getValue(AxsListItem.AXS_LIST_ITEM.INDEX);
+            final byte[] compoundData = record.getValue(AxsListItemData.AXS_LIST_ITEM_DATA.DATA);
+
+            NBTTagCompound compound = null;
+            if (compoundData != null) {
+                try {
+                    compound = SerializationUtil.compoundFromBytes(compoundData);
+                } catch (IOException e) {
+                    this.logger.error("Malformed item data found when loading from database. Record number is [{}]. Skipping...",
+                        recNo);
+                    continue;
+                }
+            }
+
+            final BasicListItem basicListItem = new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, index, compound);
+
+            basicListItem.refreshSellerName();
+
+            items.add(basicListItem);
+        }
+
+        return items;
+    }
+
+    private List<ForSaleItem> parseForSaleItemsFrom(final DSLContext context, final List<ListItem> listItems, final Result<Record> result) {
+        final List<ForSaleItem> forSaleItems = new ArrayList<>();
+
+        result.forEach(record -> {
+            final Integer recNo = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.REC_NO);
+            final Integer itemRecNo = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.LIST_ITEM);
+
+            final ListItem found = listItems
+                .stream()
+                .filter(item -> item.getRecord() == itemRecNo)
+                .findAny()
+                .orElse(null);
+
+            if (found == null) {
+                this.logger.error("A for sale listing is being loaded but the listing no longer exists. This is a de-sync between the database "
+                    + "and the server or somehow an entity has tampered with the structure of the database. The item list id is [{}] and the "
+                    + "record number is [{}]. Report to an AlmuraDev developer ASAP.", itemRecNo, recNo);
+            } else {
+                final Timestamp created = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED);
+                int quantityRemaining = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.QUANTITY_REMAINING);
+                final BigDecimal price = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
+
+                if (quantityRemaining <= 0) {
+                    this.logger.error("A for sale listing is being loaded but the quantity remaining is zero or below. An entity has tampered "
+                        + "with the contents of the database. The record number is [{}]. This row will be set to hidden.", recNo);
+
+                    ExchangeQueries
+                        .createUpdateForSaleItemIsHidden(recNo, true)
+                        .build(context)
+                        .keepStatement(false)
+                        .execute();
+
+                } else {
+                    if (quantityRemaining > found.getQuantity()) {
+                        this.logger.warn("A for sale listing is being loaded but the quantity remaining is less than the actual listing. An "
+                                + "entity has tampered with the contents of the database. The record number is [{}], the quantity remaining is "
+                                + "[{}] and the listing's quantity is [{}]. The quantity remaining will be adjusted to match.", recNo,
+                            quantityRemaining, found.getQuantity());
+
+                        final int dbQuantityRemaining = quantityRemaining;
+                        quantityRemaining = found.getQuantity();
+
+                        ExchangeQueries
+                            .createUpdateForSaleItemQuantityRemaining(recNo, dbQuantityRemaining)
+                            .build(context)
+                            .keepStatement(false)
+                            .execute();
+                    }
+
+                    final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, recNo, created.toInstant(),
+                        quantityRemaining, price);
+                    ((BasicListItem) found).setForSaleItem(basicForSaleItem);
+
+                    forSaleItems.add(basicForSaleItem);
+                }
+            }
+        });
+
+        return forSaleItems;
+    }
+
     private int getListingsLimit(final Player player) {
         // TODO Need to determine what controls this ultimately, 100 for now.
         return 100;
+    }
+
+    private boolean areStacksEqualIgnoreSize(final ItemStack a, final ItemStack b) {
+        return ItemStack.areItemsEqual(a, b) && ItemStack.areItemStackTagsEqual(a, b);
     }
 }
