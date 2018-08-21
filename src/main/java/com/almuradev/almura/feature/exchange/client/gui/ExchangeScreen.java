@@ -357,7 +357,9 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Results list
         final boolean isResultSelected = this.forSaleList.getSelectedItem() != null;
-        // TODO: Logic for buying buttons
+        this.buttonBuySingle.setEnabled(isResultSelected);
+        this.buttonBuyQuantity.setEnabled(isResultSelected);
+        this.buttonBuyStack.setEnabled(isResultSelected);
 
         // Selling list
         final boolean isSellingItemSelected = this.listItemList.getSelectedItem() != null;

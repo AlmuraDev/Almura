@@ -170,8 +170,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
         // If the items we've removed is less than the items we need to add then continue
         // Otherwise we'll balance to a net zero as this means that the items were once added from one direction to another.
-        if (removed < event.stack.getQuantity()) { // To Inventory logic
-            final int toadd = event.stack.getQuantity() - removed;
+        if (removed < event.stack.getQuantity()) {
+            final int toAdd = event.stack.getQuantity() - removed;
 
             // Add a new action or add the quantity to an existing one.
             final InventoryAction existingAction = this.inventoryActions.stream()
@@ -181,7 +181,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
             if (existingAction == null) {
                 final InventoryAction newAction = new InventoryAction(direction, event.stack);
-                newAction.getStack().setQuantity(toadd);
+                newAction.getStack().setQuantity(toAdd);
                 this.inventoryActions.add(newAction);
             } else {
                 existingAction.getStack().setQuantity(existingAction.getStack().getQuantity() + event.stack.getQuantity());

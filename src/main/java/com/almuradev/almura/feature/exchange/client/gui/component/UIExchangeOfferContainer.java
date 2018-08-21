@@ -321,7 +321,12 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             component.fireEvent(new UIDynamicList.ItemsChangedEvent<>(sourceList));
             component.fireEvent(new UIDynamicList.ItemsChangedEvent<>(targetList));
 
-            sourceList.setSelectedItem(sourceList.getItems().stream().findFirst().orElse(targetList.getItems().stream().findFirst().orElse(null)));
+            // See if we can reselect the same stack
+            if (!sourceStack.isEmpty()) {
+                sourceList.setSelectedItem(sourceStack);
+            } else { // Otherwise select the first in the source list or the target list if none are available in the source
+                sourceList.setSelectedItem(sourceList.getItems().stream().findFirst().orElse(targetList.getItems().stream().findFirst().orElse(null)));
+            }
         }
 
         protected static Stream<VanillaStack> getFilteredStream(List<VanillaStack> list, @Nullable VanillaStack sourceStack) {
