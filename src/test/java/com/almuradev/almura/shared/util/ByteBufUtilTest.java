@@ -28,10 +28,6 @@ public final class ByteBufUtilTest {
         checkState(ByteBufUtil.readBigDecimal(ByteBufUtil.writeBigDecimal(buf, value)).doubleValue() == value.doubleValue());
 
         buf = Unpooled.buffer();
-        value = BigDecimal.valueOf(5);
-        checkState(ByteBufUtil.readBigDecimal(ByteBufUtil.writeBigDecimal(buf, value)).doubleValue() == value.doubleValue());
-
-        buf = Unpooled.buffer();
         value = BigDecimal.valueOf(5.5);
         checkState(ByteBufUtil.readBigDecimal(ByteBufUtil.writeBigDecimal(buf, value)).doubleValue() == value.doubleValue());
 
@@ -41,6 +37,10 @@ public final class ByteBufUtilTest {
 
         buf = Unpooled.buffer();
         value = BigDecimal.valueOf(Double.MAX_VALUE);
+        checkState(ByteBufUtil.readBigDecimal(ByteBufUtil.writeBigDecimal(buf, value)).doubleValue() == value.doubleValue());
+
+        buf = Unpooled.buffer();
+        value = BigDecimal.valueOf(Double.MIN_VALUE);
         checkState(ByteBufUtil.readBigDecimal(ByteBufUtil.writeBigDecimal(buf, value)).doubleValue() == value.doubleValue());
 
         buf = Unpooled.buffer();
