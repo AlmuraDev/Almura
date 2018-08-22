@@ -32,7 +32,7 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
 
     private final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory, rightComponentFactory;
     private final Text leftTitle, rightTitle;
-    private UIContainer middleContainer;
+    protected UIContainer<?> leftContainer, middleContainer, rightContainer;
     protected UIDynamicList<T> leftDynamicList, rightDynamicList;
 
     public UIDualListContainer(final MalisisGui gui, final int width, final int height,
@@ -61,10 +61,10 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         final int middleContainerWidth = this.middleContainer == null ? 0 : this.middleContainer.getWidth();
 
         // Create left container
-        final UIContainer<?> leftContainer = new UIContainer(gui, (this.width - middleContainerWidth - 5) / 2, UIComponent.INHERITED);
-        leftContainer.setBackgroundAlpha(0);
-        leftContainer.setPadding(4, 4);
-        leftContainer.setTopPadding(20);
+        this.leftContainer = new UIContainer(gui, (this.width - middleContainerWidth - 5) / 2, UIComponent.INHERITED);
+        this.leftContainer.setBackgroundAlpha(0);
+        this.leftContainer.setPadding(4, 4);
+        this.leftContainer.setTopPadding(20);
 
         final UILabel leftContainerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(leftTitle));
         leftContainerLabel.setPosition(0, -15, Anchor.TOP | Anchor.CENTER);
@@ -75,14 +75,14 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         this.leftDynamicList.setName("list.left");
         this.leftDynamicList.register(this);
 
-        leftContainer.add(leftContainerLabel, this.leftDynamicList);
+        this.leftContainer.add(leftContainerLabel, this.leftDynamicList);
 
         // Create right container
-        final UIContainer<?> rightContainer = new UIContainer(gui, (this.width - middleContainerWidth - 5) / 2, UIComponent.INHERITED);
-        rightContainer.setBackgroundAlpha(0);
-        rightContainer.setPadding(4, 4);
-        rightContainer.setTopPadding(20);
-        rightContainer.setAnchor(Anchor.TOP | Anchor.RIGHT);
+        this.rightContainer = new UIContainer(gui, (this.width - middleContainerWidth - 5) / 2, UIComponent.INHERITED);
+        this.rightContainer.setBackgroundAlpha(0);
+        this.rightContainer.setPadding(4, 4);
+        this.rightContainer.setTopPadding(20);
+        this.rightContainer.setAnchor(Anchor.TOP | Anchor.RIGHT);
 
         final UILabel rightContainerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(rightTitle));
         rightContainerLabel.setPosition(0, -15, Anchor.TOP | Anchor.CENTER);
@@ -96,7 +96,7 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
 
         rightContainer.add(rightContainerLabel, this.rightDynamicList);
 
-        this.add(leftContainer, this.middleContainer, rightContainer);
+        this.add(this.leftContainer, this.middleContainer, this.rightContainer);
     }
 
     @Override

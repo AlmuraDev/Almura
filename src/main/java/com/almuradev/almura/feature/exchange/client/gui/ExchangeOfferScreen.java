@@ -62,7 +62,6 @@ public class ExchangeOfferScreen extends SimpleScreen {
     private final List<InventoryAction> inventoryActions = new ArrayList<>();
     private final int limit;
     private UIExchangeOfferContainer offerContainer;
-    private UIPropertyBar progressBar;
     private List<VanillaStack> pendingItems;
 
     public ExchangeOfferScreen(final ExchangeScreen parent, final Exchange exchange, final List<VanillaStack> pendingItems, final int limit) {
@@ -102,11 +101,6 @@ public class ExchangeOfferScreen extends SimpleScreen {
             .onClick(this::close)
             .build("button.cancel");
 
-        this.progressBar = new UIPropertyBar(this, getPaddedWidth(form) - buttonOk.getWidth() - buttonCancel.getWidth() - 4, 15);
-        this.progressBar.setColor(Color.ofRgb(0, 130, 0).getRgb());
-        this.progressBar.setPosition(-1, -1, Anchor.BOTTOM | Anchor.LEFT);
-        this.progressBar.setText(Text.of(0, "/", this.limit));
-
         // Swap container
         final NonNullList<ItemStack> mainInventory = Minecraft.getMinecraft().player.inventory.mainInventory;
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
@@ -115,7 +109,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
                 OfferItemComponent::new,
                 OfferItemComponent::new,
                 mainInventory.size(),
-                this.limit);
+                this.limit,
+                this.exchange.getForSaleItems().size());
         this.offerContainer.register(this);
 
         // Populate offer container
@@ -125,9 +120,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.offerContainer.setItems(this.pendingItems, UIDualListContainer.SideType.RIGHT);
         this.offerContainer.setItems(inventoryOffers, UIDualListContainer.SideType.LEFT);
 
-        this.updateProgressBar();
-
-        form.add(this.progressBar, this.offerContainer, buttonOk, buttonCancel);
+        form.add(this.offerContainer, buttonOk, buttonCancel);
 
         addToScreen(form);
     }
@@ -191,8 +184,6 @@ public class ExchangeOfferScreen extends SimpleScreen {
                 existingAction.getStack().setQuantity(existingAction.getStack().getQuantity() + event.stack.getQuantity());
             }
         }
-
-        this.updateProgressBar();
     }
 
     private void transact() {
@@ -200,23 +191,6 @@ public class ExchangeOfferScreen extends SimpleScreen {
             clientExchangeManager.updateListItems(this.exchange.getId(), this.inventoryActions);
         }
         this.close();
-    }
-
-    private int getForSaleCount() {
-        return ((ExchangeScreen) this.parent.get()).listItemList.getItems()
-                .stream()
-                .filter(i -> i.getForSaleItem().isPresent())
-                .collect(Collectors.toList()).size();
-    }
-
-    private int getUsedLimit() {
-        return this.offerContainer.getItems(UIDualListContainer.SideType.RIGHT).size() + this.getForSaleCount();
-    }
-
-    private void updateProgressBar() {
-        final int size = this.getUsedLimit();
-        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.limit, 0f, 1f));
-        this.progressBar.setText(Text.of(size, "/", this.limit));
     }
 
     private static class OfferItemComponent extends UIDynamicList.ItemComponent<VanillaStack> {

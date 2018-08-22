@@ -59,7 +59,7 @@ import javax.inject.Inject;
 @SideOnly(Side.CLIENT)
 public final class ExchangeScreen extends SimpleScreen {
 
-    public static final DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("#,##0.##");
+    public static final DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("#,###.##");
     public static final double MILLION = 1000000.0;
     private static final double BILLION = 1000000000.0;
     private static final int minScreenWidth = 600;
@@ -238,6 +238,12 @@ public final class ExchangeScreen extends SimpleScreen {
             .anchor(Anchor.LEFT | Anchor.MIDDLE)
             .position(0, 0)
             .text(I18n.format("almura.button.exchange.buy.stack"))
+            .onClick(() -> {
+                final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
+                if (forSaleItem != null) {
+                    exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), forSaleItem.getQuantity());
+                }
+            })
             .enabled(false)
             .build("button.buy.stack");
 
@@ -418,11 +424,22 @@ public final class ExchangeScreen extends SimpleScreen {
             return;
         }
 
+        final ListItem currentItem = this.listItemList.getSelectedItem() == null ? null : this.listItemList.getSelectedItem().copy();
+
         this.listItemList.clearItems();
 
         final List<ListItem> listItems = this.axs.getListItemsFor(Minecraft.getMinecraft().player.getUniqueID()).orElse(null);
         if (listItems != null && !listItems.isEmpty()) {
             this.listItemList.setItems(listItems);
+        }
+
+        // Attempt to re-select the same item
+        if (currentItem != null) {
+            this.listItemList.setSelectedItem(this.listItemList.getItems()
+                    .stream()
+                    .filter(i -> i.getRecord() == currentItem.getRecord())
+                    .findFirst()
+                    .orElse(null));
         }
 
         this.updateControls();
@@ -432,6 +449,8 @@ public final class ExchangeScreen extends SimpleScreen {
         if (this.forSaleList == null) {
             return;
         }
+
+        final ForSaleItem currentItem = this.forSaleList.getSelectedItem() == null ? null : this.forSaleList.getSelectedItem().copy();
 
         this.forSaleList.clearItems();
 
@@ -446,6 +465,15 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // If we can go back to the same page, try it. Otherwise default back to the first.
         this.setPage(this.currentPage <= this.pages ? this.currentPage : 1);
+
+        // Attempt to re-select the same item
+        if (currentItem != null) {
+            this.forSaleList.setSelectedItem(this.forSaleList.getItems()
+                    .stream()
+                    .filter(i -> i.getRecord() == currentItem.getRecord())
+                    .findFirst()
+                    .orElse(null));
+        }
 
         this.updateControls();
     }
@@ -543,8 +571,8 @@ public final class ExchangeScreen extends SimpleScreen {
                 final BigDecimal forSalePrice = this.item.getForSaleItem().map(ForSaleItem::getPrice).orElse(BigDecimal.valueOf(0));
                 final double forSaleDoublePrice = forSalePrice.doubleValue();
 
-                this.priceLabel.setText(
-                        TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.GOLD, forSaleDoublePrice, TextColors.GRAY, "/ea")));
+                this.priceLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE
+                        .serialize(Text.of(TextColors.GOLD, DEFAULT_DECIMAL_FORMAT.format(forSaleDoublePrice), TextColors.GRAY, "/ea")));
                 this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
                 if (this.item.getQuantity() > 1) {
                     this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
@@ -577,7 +605,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
             final double price = this.item.getPrice().doubleValue();
 
-            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, price, TextColors.GRAY, "/ea"));
+            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, DEFAULT_DECIMAL_FORMAT.format(price), TextColors.GRAY, "/ea"));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
             if (this.item.getListItem().getQuantity() > 1) {

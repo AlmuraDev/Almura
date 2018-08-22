@@ -7,15 +7,16 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui.component;
 
+import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.item.VirtualStack;
+import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
@@ -39,21 +40,24 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> {
 
-    private final int leftLimit, rightLimit;
+    private final int leftLimit, rightLimit, listedItems;
 
     private UIButton buttonSingle, buttonStack, buttonType, buttonAll;
     private UILabel labelDirection;
+    private UIPropertyBar leftPropertyBar, rightPropertyBar;
     private SideType targetSide = SideType.RIGHT;
 
     public UIExchangeOfferContainer(final MalisisGui gui, final int width, final int height, final Text leftTitle, final Text rightTitle,
             final BiFunction<MalisisGui, VanillaStack, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
             final BiFunction<MalisisGui, VanillaStack, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory,
             final int leftLimit,
-            final int rightLimit) {
+            final int rightLimit,
+            final int listedItems) {
         super(gui, width, height, leftTitle, rightTitle, leftComponentFactory, rightComponentFactory);
 
         this.leftLimit = leftLimit;
         this.rightLimit = rightLimit;
+        this.listedItems = listedItems;
 
         this.construct(gui);
     }
@@ -65,11 +69,29 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
         this.leftDynamicList.register(this);
 
         // Unlisted Items
-        this.rightDynamicList = new UIItemList(gui, false, this.rightLimit, Integer.MAX_VALUE, UIComponent.INHERITED, UIComponent.INHERITED);
-
+        this.rightDynamicList = new UIItemList(gui, false, this.rightLimit, Integer.MAX_VALUE, 0, 0);
         this.rightDynamicList.register(this);
 
+        // Call our parent construct
         super.construct(gui);
+
+        // Set the sizes
+        this.leftDynamicList.setSize(UIComponent.INHERITED, SimpleScreen.getPaddedHeight(this.leftContainer) - 22);
+        this.rightDynamicList.setSize(UIComponent.INHERITED, SimpleScreen.getPaddedHeight(this.rightContainer) - 22);
+
+        // Add property bars
+        this.leftPropertyBar = new UIPropertyBar(gui, SimpleScreen.getPaddedWidth(this.leftContainer), 15);
+        this.leftPropertyBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 130, 0).getRgb());
+        this.leftPropertyBar.setPosition(-1, -1, Anchor.BOTTOM | Anchor.LEFT);
+        this.leftPropertyBar.setText(Text.of(0, "/", this.leftLimit));
+
+        this.rightPropertyBar = new UIPropertyBar(gui, SimpleScreen.getPaddedWidth(this.rightContainer), 15);
+        this.rightPropertyBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 130, 0).getRgb());
+        this.rightPropertyBar.setPosition(-1, -1, Anchor.BOTTOM | Anchor.LEFT);
+        this.rightPropertyBar.setText(Text.of(0, "/", this.rightLimit));
+
+        this.leftContainer.add(this.leftPropertyBar);
+        this.rightContainer.add(this.rightPropertyBar);
     }
 
     @Override
@@ -124,6 +146,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .text("A")
                 .tooltip(I18n.format("almura.tooltip.exchange.move_all", this.targetSide.toString().toLowerCase()))
                 .onClick(() -> TransferType.ALL.transfer(this, this.targetSide, null))
+                .enabled(false)
                 .build("button.all");
 
         middleContainer.add(this.buttonSingle, this.buttonStack, this.labelDirection, this.buttonType, this.buttonAll);
@@ -134,6 +157,16 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
     @Override
     protected void updateControls(@Nullable final VanillaStack selectedValue, final SideType targetSide) {
         this.labelDirection.setText(targetSide == SideType.LEFT ? "<-" : "->");
+
+        // Left property bar
+        final int leftSize = this.leftDynamicList.getSize();
+        this.leftPropertyBar.setAmount(MathUtil.convertToRange(leftSize, 0, this.leftLimit, 0f, 1f));
+        this.leftPropertyBar.setText(Text.of(leftSize, "/", this.leftLimit));
+
+        // Right progress bar
+        final int rightSize = this.rightDynamicList.getSize();
+        this.rightPropertyBar.setAmount(MathUtil.convertToRange(rightSize, 0, this.rightLimit, 0f, 1f));
+        this.rightPropertyBar.setText(Text.of(rightSize + this.listedItems, "/", this.rightLimit));
 
         super.updateControls(selectedValue, targetSide);
     }
@@ -146,12 +179,11 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
     @Subscribe
     private void onItemSelect(final UIDynamicList.SelectEvent<VanillaStack> event) {
-        if (event.getNewValue() != null) {
+        final boolean isSelectionValid = event.getNewValue() != null;
+        if (isSelectionValid) {
             // Target the opposite list when selecting an item
             this.setDirection(this.getOpposingSideFromList(event.getComponent()));
         }
-
-        final boolean isSelectionValid = event.getNewValue() != null;
 
         buttonSingle.setEnabled(isSelectionValid);
         buttonSingle.setTooltip(I18n.format("almura.tooltip.exchange.move_single", this.targetSide.toString().toLowerCase()));
@@ -165,9 +197,10 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
     @Subscribe
     private void onPopulate(final UIDualListContainer.PopulateEvent<VanillaStack> event) {
-        if (event.side == SideType.LEFT) {
-            final UIDynamicList<VanillaStack> currentList = this.getListFromSide(event.side);
-            currentList.setSelectedItem(currentList.getItems().stream().findFirst().orElse(null));
+        if (this.leftDynamicList.getSize() > 0) {
+            this.leftDynamicList.setSelectedItem(this.leftDynamicList.getItems().get(0));
+        } else if (this.rightDynamicList.getSize() > 0) {
+            this.rightDynamicList.setSelectedItem(this.rightDynamicList.getItems().get(0));
         }
     }
 
@@ -231,6 +264,11 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             int amountLeft = toTransferCount;
             // Attempt to insert the item into the target list
             for (int i = 0; i < targetList.getSlots(); i++) {
+                // Ensure we aren't going over the limit
+                if (targetList.getSize() >= component.rightLimit - component.listedItems) {
+                    break;
+                }
+
                 final ItemStack resultStack = targetList.insertItem(i, toInsertStack.asRealStack(), false);
 
                 amountLeft -= toInsertStack.getQuantity() - resultStack.getCount();

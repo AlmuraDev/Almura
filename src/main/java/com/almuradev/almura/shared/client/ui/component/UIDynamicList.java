@@ -167,6 +167,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      */
     public UIDynamicList<T> clearItems() {
         this.items.clear();
+        this.setSelectedItem(null);
         this.isDirty = true;
         this.fireEvent(new ItemsChangedEvent<>(this));
 
