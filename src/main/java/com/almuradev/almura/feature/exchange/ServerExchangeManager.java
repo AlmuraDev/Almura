@@ -238,7 +238,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null) {
-            this.logger.warn("Player '{}' attempted to open exchange '{}' but the server has no knowledge of it. Syncing exchange registry...",
+            this.logger.error("Player '{}' attempted to open exchange '{}' but the server has no knowledge of it. Syncing exchange registry...",
                 player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
@@ -310,7 +310,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            this.logger.warn("Player '{}' attempted to open an offer screen for exchange '{}' but the server has no knowledge of it. Syncing "
+            this.logger.error("Player '{}' attempted to open an offer screen for exchange '{}' but the server has no knowledge of it. Syncing "
                     + "exchange registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
@@ -332,7 +332,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
 
         if (this.getExchange(id).isPresent()) {
-            this.logger.warn("Player '{}' attempted to add exchange '{}' but it already exists. Syncing exchange registry...", player.getName(),
+            this.logger.error("Player '{}' attempted to add exchange '{}' but it already exists. Syncing exchange registry...", player.getName(),
                 id);
             this.syncExchangeRegistryTo(player);
             return;
@@ -351,7 +351,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .execute();
 
                     if (result == 0) {
-                        this.logger.warn("Player '{}' submitted a new exchange '{}' to the database but it failed. Discarding changes...",
+                        this.logger.error("Player '{}' submitted a new exchange '{}' to the database but it failed. Discarding changes...",
                             player.getName(), id);
                         return;
                     }
@@ -384,7 +384,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null) {
-            this.logger.warn("Player '{}' attempted to modify exchange '{}' but the server has no knowledge of it. Syncing exchange registry...",
+            this.logger.error("Player '{}' attempted to modify exchange '{}' but the server has no knowledge of it. Syncing exchange registry...",
                 player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
@@ -402,7 +402,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .execute();
 
                     if (result == 0) {
-                        this.logger.warn("Player '{}' submitted a modified exchange '{}' to the database but it failed. Discarding changes...",
+                        this.logger.error("Player '{}' submitted a modified exchange '{}' to the database but it failed. Discarding changes...",
                             player.getName(), id);
                         return;
                     }
@@ -427,7 +427,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
 
         if (!this.getExchange(id).isPresent()) {
-            this.logger.warn("Player '{}' attempted to delete exchange '{}' but the server has no knowledge of it. Syncing exchange registry...",
+            this.logger.error("Player '{}' attempted to delete exchange '{}' but the server has no knowledge of it. Syncing exchange registry...",
                 player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
@@ -507,7 +507,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null) {
-            this.logger.warn("Player '{}' attempted to list items for exchange '{}' but the server has no knowledge of it. Syncing exchange "
+            this.logger.error("Player '{}' attempted to list items for exchange '{}' but the server has no knowledge of it. Syncing exchange "
                     + "registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
@@ -581,7 +581,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         if (!toInventoryActions.isEmpty()) {
 
             if (currentListItems == null || currentListItems.isEmpty()) {
-                this.logger.warn("Player '{}' attempted to move listings back to the inventory for exchange '{}' but the server knows of no "
+                this.logger.error("Player '{}' attempted to move listings back to the inventory for exchange '{}' but the server knows of no "
                     + "listings for them. This could be a de-sync or an exploit. Printing stacks...", player.getName(), axs.getId());
                 this.printStacksToConsole(toInventoryActions.stream().map(InventoryAction::getStack).collect(Collectors.toList()));
                 this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), null));
@@ -1347,7 +1347,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             final ResourceLocation location = SerializationUtil.fromString(rawItemId);
 
             if (location == null) {
-                this.logger.warn("Malformed item id found when loading from database. Id is [{}], record number is [{}]. Skipping...",
+                this.logger.error("Malformed item id '{}' found at record number '{}'. Skipping...",
                     rawItemId, recNo);
                 continue;
             }
@@ -1355,8 +1355,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             final Item item = ForgeRegistries.ITEMS.getValue(location);
 
             if (item == null) {
-                this.logger.warn("Unknown item found when loading from database. Registry name is [{}], record number is [{}]. Skipping"
-                    + "... (Did you remove a mod?)", rawItemId, recNo);
+                this.logger.error("Unknown item '{}' found at record number '{}'. Skipping... (Did you remove a mod?)", rawItemId, recNo);
                 continue;
             }
 
@@ -1372,7 +1371,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 try {
                     compound = SerializationUtil.compoundFromBytes(compoundData);
                 } catch (IOException e) {
-                    this.logger.error("Malformed item data found when loading from database. Record number is [{}]. Skipping...",
+                    this.logger.error("Malformed item data found at record number '{}'. Skipping...",
                         recNo);
                     continue;
                 }
@@ -1402,9 +1401,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .orElse(null);
 
             if (found == null) {
-                this.logger.error("A for sale listing is being loaded but the listing no longer exists. This is a de-sync between the database "
-                    + "and the server or somehow an entity has tampered with the structure of the database. The item list id is [{}] and the "
-                    + "record number is [{}]. Report to an AlmuraDev developer ASAP.", itemRecNo, recNo);
+                this.logger.error("A for sale listing at record number '{}' is being loaded but the listing no longer exists. Somehow an entity has"
+                    + " tampered with the structure of the database. Report to an AlmuraDev developer ASAP.", recNo);
             } else {
                 final Timestamp created = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED);
                 final BigDecimal price = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
