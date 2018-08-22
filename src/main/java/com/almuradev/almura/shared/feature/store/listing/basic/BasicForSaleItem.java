@@ -31,23 +31,19 @@ public final class BasicForSaleItem implements ForSaleItem {
     private final Collection<Transaction> transactions = new ArrayList<>();
 
     private int record;
-    private int quantityRemaining;
     private BigDecimal price;
 
     private ItemStack cacheStack;
 
-    public BasicForSaleItem(final BasicListItem listItem, final int record, final Instant created, final int quantityRemaining,
-        final BigDecimal price) {
+    public BasicForSaleItem(final BasicListItem listItem, final int record, final Instant created, final BigDecimal price) {
         checkNotNull(listItem);
         checkState(record >= 0);
-        checkState(quantityRemaining > 0);
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
 
         this.listItem = listItem;
         this.record = record;
         this.created = created;
-        this.quantityRemaining = quantityRemaining;
         this.price = price;
     }
 
@@ -91,18 +87,8 @@ public final class BasicForSaleItem implements ForSaleItem {
     }
 
     @Override
-    public int getQuantity() {
-        return this.quantityRemaining;
-    }
-
-    public void setQuantityRemaining(final int quantityRemaining) {
-        checkState(quantityRemaining >= 0);
-        this.quantityRemaining = quantityRemaining;
-    }
-
-    @Override
     public ForSaleItem copy() {
-        return new BasicForSaleItem(this.listItem.copy(), this.record, this.created, this.getQuantity(), this.price);
+        return new BasicForSaleItem(this.listItem.copy(), this.record, this.created, this.price);
     }
 
     @Override
@@ -123,7 +109,6 @@ public final class BasicForSaleItem implements ForSaleItem {
             .add("listItem", this.listItem)
             .add("record", this.record)
             .add("created", this.created)
-            .add("quantityRemaining", this.quantityRemaining)
             .add("price", this.price)
             .toString();
     }

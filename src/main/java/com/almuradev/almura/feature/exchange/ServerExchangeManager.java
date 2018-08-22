@@ -491,7 +491,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final UUID seller = player.getUniqueId();
         final EntityPlayerMP serverPlayer = (EntityPlayerMP) player;
-        final IItemHandler inventory = serverPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
+        final IItemHandler simulatedInventory = serverPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
 
         // Inventory -> Listing
         final List<InventoryAction> toListingActions = actions
@@ -510,11 +510,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
             boolean matched = false;
 
-            for (int j = 0; j < inventory.getSlots(); j++) {
-                final ItemStack slotStack = inventory.getStackInSlot(j);
+            for (int j = 0; j < simulatedInventory.getSlots(); j++) {
+                final ItemStack slotStack = simulatedInventory.getStackInSlot(j);
 
                 if (ItemHandlerHelper.canItemStacksStack(slotStack, stack.asRealStack())) {
-                    amountLeft -= inventory.extractItem(j, amountLeft, true).getCount();
+                    amountLeft -= simulatedInventory.extractItem(j, amountLeft, true).getCount();
                     matched = true;
                 }
 
@@ -557,7 +557,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         if (!toInventoryActions.isEmpty()) {
 
             if (currentListItems == null || currentListItems.isEmpty()) {
-                this.logger.warn("Player '{}' attempted to move listings back to the inventory but the server knows of no listings for them. This "
+                this.logger.warn("Player '{}' attempted to move listings back to the simulatedInventory but the server knows of no listings for them. This "
                     + "could be a de-sync or an exploit. Printing stacks...", player.getName());
                 // TODO Print stacks
                 this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), null));
@@ -590,7 +590,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         toRemove.setQuantity(stack.getQuantity());
                     }
 
-                    final ItemStack resultStack = ItemHandlerHelper.insertItemStacked(inventory, toRemove.asRealStack(), true);
+                    final ItemStack resultStack = ItemHandlerHelper.insertItemStacked(simulatedInventory, toRemove.asRealStack(), true);
 
                     // Simulated a partial stack insertion
                     if (!resultStack.isEmpty()) {
@@ -727,13 +727,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     }
 
                     final Results listItemResults = ExchangeQueries
-                        .createFetchListItemsAndDataFor(player.getUniqueId(), false)
+                        .createFetchListItemsAndDataFor(seller, false)
                         .build(context)
                         .keepStatement(false)
                         .fetchMany();
 
                     final Results forSaleItemResults = ExchangeQueries
-                        .createFetchForSaleItemsFor(player.getUniqueId(), false)
+                        .createFetchForSaleItemsFor(seller, false)
                         .build(context)
                         .keepStatement(false)
                         .fetchMany();
@@ -741,11 +741,19 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     this.scheduler
                         .createTaskBuilder()
                         .execute(() -> {
+                            final Player sellerPlayer = Sponge.getServer().getPlayer(seller).orElse(null);
+                            if (sellerPlayer == null) {
+                                // TODO They went offline on us, handle this
+                                return;
+                            }
+                            final IItemHandler inventory = ((EntityPlayerMP) sellerPlayer).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
+                                , EnumFacing.UP);
+
                             final List<ListItem> listItems = new ArrayList<>();
                             listItemResults.forEach(result -> listItems.addAll(this.parseListItemsFrom(result)));
 
                             final List<ForSaleItem> forSaleItems = new ArrayList<>();
-                            forSaleItemResults.forEach(result -> forSaleItems.addAll(this.parseForSaleItemsFrom(context, listItems, result)));
+                            forSaleItemResults.forEach(result -> forSaleItems.addAll(this.parseForSaleItemsFrom(listItems, result)));
 
                             // Remove stacks for listings
                             for (final VanillaStack stack : toListingStacks) {
@@ -782,17 +790,15 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             // TODO  - Stacks requested to go to the inventory but listings aren't found
                             // TODO  - Stacks requested to go to the inventory but the listing couldn't fulfill it so we took what we could
 
-                            axs.putListItemsFor(player.getUniqueId(), listItems);
-                            axs.putForSaleItemsFor(player.getUniqueId(), forSaleItems);
+                            axs.putListItemsFor(seller, listItems);
+                            axs.putForSaleItemsFor(seller, forSaleItems);
 
-                            this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
+                            this.network.sendTo(sellerPlayer, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
 
-                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                            this.network.sendTo(sellerPlayer, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
 
-                            Sponge.getServer().getOnlinePlayers()
-                                .stream()
-                                .filter(p -> p.getUniqueId().equals(player.getUniqueId())).forEach(p -> this.network.sendTo(p,
-                                new ClientboundForSaleFilterRequestPacket(axs.getId())));
+                            Sponge.getServer().getOnlinePlayers().forEach(p -> this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(
+                                axs.getId())));
 
                         })
                         .submit(this.container);
@@ -827,7 +833,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .keepStatement(false)
                 .fetchMany();
 
-            results.forEach(result -> forSaleItems.addAll(this.parseForSaleItemsFrom(context, listItems, result)));
+            results.forEach(result -> forSaleItems.addAll(this.parseForSaleItemsFrom(listItems, result)));
 
             axs.clearForSaleItems();
 
@@ -914,7 +920,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                     // TODO Can't keepstatement this, need to make sure it doesn't cache connections.
                     final AxsForSaleItemRecord record = ExchangeQueries
-                        .createInsertForSaleItem(created, found.getRecord(), found.getQuantity(), price)
+                        .createInsertForSaleItem(created, found.getRecord(), price)
                         .build(context)
                         .fetchOne();
 
@@ -927,7 +933,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .createTaskBuilder()
                         .execute(() -> {
                             final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, record.getRecNo(),
-                                created, record.getQuantityRemaining(), record.getPrice());
+                                created, record.getPrice());
 
                             List<ForSaleItem> forSaleItemsRef = forSaleItems;
                             if (forSaleItemsRef == null) {
@@ -1162,7 +1168,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        if (forSaleItem.getQuantityRemaining() < quantity) {
+        if (found.getQuantity() < quantity) {
             // TODO Notification
             // TODO Resync
             return;
@@ -1190,8 +1196,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
+        final int quantityRemaining = found.getQuantity() - (quantity - simulatedResultStack.getCount());
         final int forSaleItemRecord = forSaleItem.getRecord();
-        final int quantityRemaining = forSaleItem.getQuantityRemaining() - quantity;
         final UUID buyer = player.getUniqueId();
 
         this.scheduler
@@ -1201,7 +1207,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 try (final DSLContext context = this.databaseManager.createContext(true)) {
                     // Update listed quantity
                     int result = ExchangeQueries
-                        .createUpdateForSaleItemQuantityRemaining(forSaleItemRecord, quantityRemaining, true)
+                        .createUpdateListItemQuantity(listItemRecNo, quantityRemaining, true)
                         .build(context)
                         .execute();
                     if (result == 0) {
@@ -1211,7 +1217,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                     if (quantityRemaining == 0) {
                         result = ExchangeQueries
-                            .createUpdateListItemIsHidden(listItemRecNo, true)
+                            .createUpdateForSaleItemIsHidden(forSaleItemRecord, true)
                             .build(context)
                             .execute();
 
@@ -1251,7 +1257,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             listItemResults.forEach(r -> listItems.addAll(this.parseListItemsFrom(r)));
 
                             final List<ForSaleItem> forSaleItems = new ArrayList<>();
-                            forSaleItemResults.forEach(r -> forSaleItems.addAll(this.parseForSaleItemsFrom(context, listItems, r)));
+                            forSaleItemResults.forEach(r -> forSaleItems.addAll(this.parseForSaleItemsFrom(listItems, r)));
 
                             axs.putListItemsFor(seller, listItems);
                             axs.putForSaleItemsFor(seller, forSaleItems);
@@ -1355,7 +1361,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         return items;
     }
 
-    private List<ForSaleItem> parseForSaleItemsFrom(final DSLContext context, final List<ListItem> listItems, final Result<Record> result) {
+    private List<ForSaleItem> parseForSaleItemsFrom(final List<ListItem> listItems, final Result<Record> result) {
         final List<ForSaleItem> forSaleItems = new ArrayList<>();
 
         result.forEach(record -> {
@@ -1374,42 +1380,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     + "record number is [{}]. Report to an AlmuraDev developer ASAP.", itemRecNo, recNo);
             } else {
                 final Timestamp created = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED);
-                int quantityRemaining = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.QUANTITY_REMAINING);
                 final BigDecimal price = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
 
-                if (quantityRemaining <= 0) {
-                    this.logger.error("A for sale listing is being loaded but the quantity remaining is zero or below. An entity has tampered "
-                        + "with the contents of the database. The record number is [{}]. This row will be set to hidden.", recNo);
 
-                    ExchangeQueries
-                        .createUpdateForSaleItemIsHidden(recNo, true)
-                        .build(context)
-                        .keepStatement(false)
-                        .execute();
+                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, recNo, created.toInstant(), price);
+                ((BasicListItem) found).setForSaleItem(basicForSaleItem);
 
-                } else {
-                    if (quantityRemaining > found.getQuantity()) {
-                        this.logger.warn("A for sale listing is being loaded but the quantity remaining is less than the actual listing. An "
-                                + "entity has tampered with the contents of the database. The record number is [{}], the quantity remaining is "
-                                + "[{}] and the listing's quantity is [{}]. The quantity remaining will be adjusted to match.", recNo,
-                            quantityRemaining, found.getQuantity());
-
-                        final int dbQuantityRemaining = quantityRemaining;
-                        quantityRemaining = found.getQuantity();
-
-                        ExchangeQueries
-                            .createUpdateForSaleItemQuantityRemaining(recNo, dbQuantityRemaining, true)
-                            .build(context)
-                            .keepStatement(false)
-                            .execute();
-                    }
-
-                    final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, recNo, created.toInstant(),
-                        quantityRemaining, price);
-                    ((BasicListItem) found).setForSaleItem(basicForSaleItem);
-
-                    forSaleItems.add(basicForSaleItem);
-                }
+                forSaleItems.add(basicForSaleItem);
             }
         });
 

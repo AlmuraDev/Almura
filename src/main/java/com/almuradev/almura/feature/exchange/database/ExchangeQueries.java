@@ -30,6 +30,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import org.jooq.DeleteConditionStep;
 import org.jooq.InsertResultStep;
 import org.jooq.InsertValuesStep2;
+import org.jooq.InsertValuesStep3;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStep5;
 import org.jooq.InsertValuesStep6;
@@ -151,7 +152,8 @@ public final class ExchangeQueries {
 
     public static DatabaseQuery<UpdateConditionStep<AxsListItemRecord>> createUpdateListItem(final int listItemRecNo, final int quantity,
         final int index) {
-        checkState(quantity > 0);
+        checkState(listItemRecNo >= 0);
+        checkState(quantity >= 0);
         checkState(index >= 0);
 
         return context -> context
@@ -169,6 +171,25 @@ public final class ExchangeQueries {
             .update(AXS_LIST_ITEM)
             .set(AXS_LIST_ITEM.IS_HIDDEN, isHidden)
             .where(AXS_LIST_ITEM.REC_NO.eq(listItemRecNo));
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<AxsListItemRecord>> createUpdateListItemQuantity(final int listItemRecNo, final int quantity,
+        boolean setHiddenIfQuantityZero) {
+        checkState(listItemRecNo >= 0);
+        checkState(quantity >= 0);
+
+        return context -> {
+            final UpdateSetMoreStep<AxsListItemRecord> updateStep = context
+                .update(AXS_LIST_ITEM)
+                .set(AXS_LIST_ITEM.QUANTITY, quantity);
+            if (quantity == 0 && setHiddenIfQuantityZero) {
+                updateStep
+                    .set(AXS_LIST_ITEM.IS_HIDDEN, true);
+            }
+
+            return updateStep
+                .where(AXS_LIST_ITEM.REC_NO.eq(listItemRecNo));
+        };
     }
 
     public static DatabaseQuery<DeleteConditionStep<AxsListItemRecord>> createDeleteListItem(final int listItemRecNo) {
@@ -232,20 +253,18 @@ public final class ExchangeQueries {
     }
 
     public static DatabaseQuery<InsertResultStep<AxsForSaleItemRecord>> createInsertForSaleItem(
-        final Instant created, final int listItemRecNo, final int quantityRemaining, final BigDecimal price) {
+        final Instant created, final int listItemRecNo, final BigDecimal price) {
         checkNotNull(created);
         checkState(listItemRecNo >= 0);
-        checkState(quantityRemaining > 0);
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
 
         return context -> {
-            final InsertValuesStep4<AxsForSaleItemRecord, Timestamp, Integer, Integer, BigDecimal> insertionStep = context
+            final InsertValuesStep3<AxsForSaleItemRecord, Timestamp, Integer, BigDecimal> insertionStep = context
                 .insertInto(AxsForSaleItem.AXS_FOR_SALE_ITEM)
-                .columns(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED, AxsForSaleItem.AXS_FOR_SALE_ITEM.LIST_ITEM,
-                    AxsForSaleItem.AXS_FOR_SALE_ITEM.QUANTITY_REMAINING, AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
+                .columns(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED, AxsForSaleItem.AXS_FOR_SALE_ITEM.LIST_ITEM, AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
 
-            insertionStep.values(Timestamp.from(created), listItemRecNo, quantityRemaining, price);
+            insertionStep.values(Timestamp.from(created), listItemRecNo, price);
 
             return insertionStep.returning();
         };
@@ -259,24 +278,6 @@ public final class ExchangeQueries {
             .update(AXS_FOR_SALE_ITEM)
             .set(AXS_FOR_SALE_ITEM.IS_HIDDEN, isHidden)
             .where(AXS_FOR_SALE_ITEM.REC_NO.eq(forSaleItemRecNo));
-    }
-
-    public static DatabaseQuery<UpdateConditionStep<AxsForSaleItemRecord>> createUpdateForSaleItemQuantityRemaining(final int forSaleItemRecNo,
-        final int quantityRemaining, boolean setHiddenIfQuantityZero) {
-        checkState(forSaleItemRecNo >= 0);
-        checkState(quantityRemaining >= 0);
-
-        return context -> {
-            final UpdateSetMoreStep<AxsForSaleItemRecord> updateStep = context
-                .update(AXS_FOR_SALE_ITEM)
-                .set(AXS_FOR_SALE_ITEM.QUANTITY_REMAINING, quantityRemaining);
-            if (setHiddenIfQuantityZero && quantityRemaining == 0) {
-                updateStep
-                    .set(AXS_FOR_SALE_ITEM.IS_HIDDEN, true);
-            }
-            return updateStep
-                .where(AXS_FOR_SALE_ITEM.REC_NO.eq(forSaleItemRecNo));
-        };
     }
 
     public static DatabaseQuery<UpdateConditionStep<AxsForSaleItemRecord>> createUpdateForSaleItemPrice(final int forSaleItemRecNo,

@@ -248,7 +248,7 @@ public final class ClientExchangeManager implements Witness {
                 listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
                     .ifPresent(listItem -> ((BasicListItem) listItem)
                         .setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, itemCandidate.forSaleItemRecNo,
-                            itemCandidate.created, itemCandidate.quantityRemaining, itemCandidate.price)));
+                            itemCandidate.created, itemCandidate.price)));
             }
         }
     }

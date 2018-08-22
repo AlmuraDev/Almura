@@ -8,7 +8,6 @@
 package com.almuradev.almura.shared.feature.store.listing;
 
 import com.almuradev.almura.shared.item.DynamicCompoundStack;
-import com.almuradev.almura.shared.item.VirtualStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,8 +35,9 @@ public interface ForSaleItem extends DynamicCompoundStack {
         return this.getListItem().getItem();
     }
 
-    default int getQuantityRemaining() {
-        return this.getQuantity();
+    @Override
+    default int getQuantity() {
+        return this.getListItem().getQuantity();
     }
 
     @Override

@@ -36,7 +36,6 @@ create table if not exists "axs_for_sale_item"
   "rec_no"             int          primary key auto_increment,
   "created"            timestamp    default current_timestamp not null,
   "list_item"          int          not null,
-  "quantity_remaining" int          default 1 not null,
   "price"              decimal      default 0 not null,
   "is_hidden"          bit          default 0 not null,
   foreign key ("list_item") references "axs_list_item"("rec_no") on update cascade on delete cascade

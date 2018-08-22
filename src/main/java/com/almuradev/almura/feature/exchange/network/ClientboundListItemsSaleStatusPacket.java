@@ -58,10 +58,9 @@ public final class ClientboundListItemsSaleStatusPacket implements Message {
                     e.printStackTrace();
                     continue;
                 }
-                final int remainingQuantity = buf.readInteger();
                 final BigDecimal price = ByteBufUtil.readBigDecimal((ByteBuf) buf);
 
-                this.fromServerItems.add(new ForSaleItemCandidate(listItemRecNo, forSaleItemRecNo, created, remainingQuantity, price));
+                this.fromServerItems.add(new ForSaleItemCandidate(listItemRecNo, forSaleItemRecNo, created, price));
             }
         }
     }
@@ -85,7 +84,6 @@ public final class ClientboundListItemsSaleStatusPacket implements Message {
                     e.printStackTrace();
                     continue;
                 }
-                buf.writeInteger(item.getQuantity());
                 ByteBufUtil.writeBigDecimal((ByteBuf) buf, item.getPrice());
             }
         }
@@ -95,15 +93,12 @@ public final class ClientboundListItemsSaleStatusPacket implements Message {
         public final int listItemRecNo;
         public final int forSaleItemRecNo;
         public final Instant created;
-        public final int quantityRemaining;
         public final BigDecimal price;
 
-        ForSaleItemCandidate(final int listItemRecNo, final int forSaleItemRecNo, final Instant created, final int quantityRemaining,
-            final BigDecimal price) {
+        ForSaleItemCandidate(final int listItemRecNo, final int forSaleItemRecNo, final Instant created, final BigDecimal price) {
             this.listItemRecNo = listItemRecNo;
             this.forSaleItemRecNo = forSaleItemRecNo;
             this.created = created;
-            this.quantityRemaining = quantityRemaining;
             this.price = price;
         }
     }

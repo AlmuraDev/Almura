@@ -580,9 +580,9 @@ public final class ExchangeScreen extends SimpleScreen {
             this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, price, TextColors.GRAY, "/ea"));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
-            if (this.item.getQuantityRemaining() > 1) {
+            if (this.item.getListItem().getQuantity() > 1) {
                 this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
-                        + ": " + DEFAULT_DECIMAL_FORMAT.format(this.item.getQuantityRemaining() * price));
+                        + ": " + DEFAULT_DECIMAL_FORMAT.format(this.item.getListItem().getQuantity() * price));
             }
 
             this.add(this.sellerLabel, this.priceLabel);

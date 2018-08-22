@@ -119,12 +119,9 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                     continue;
                 }
 
-                final int quantityRemaining = buf.readInteger();
-
                 final BigDecimal price = ByteBufUtil.readBigDecimal((ByteBuf) buf);
 
-                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem(basicListItem, forSaleItemRecNo, forSaleItemCreated,
-                    quantityRemaining, price);
+                final BasicForSaleItem basicForSaleItem = new BasicForSaleItem(basicListItem, forSaleItemRecNo, forSaleItemCreated, price);
                 this.forSaleItems.add(basicForSaleItem);
             }
         }
@@ -207,8 +204,6 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 buf.writeInteger(forSaleItem.getRecord());
                 buf.writeInteger(forSaleItemCreatedData.length);
                 buf.writeBytes(forSaleItemCreatedData);
-
-                buf.writeInteger(forSaleItem.getQuantityRemaining());
 
                 ByteBufUtil.writeBigDecimal((ByteBuf) buf, forSaleItem.getPrice());
             }
