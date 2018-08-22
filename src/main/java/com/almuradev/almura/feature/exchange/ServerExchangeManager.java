@@ -1143,6 +1143,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final EconomyService economyService = this.serviceManager.provide(EconomyService.class).orElse(null);
         if (economyService == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
+                + "server console for more details!"));
             this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the economy service no longer exists. This is a "
                 + "critical error that should be reported to your economy plugin ASAP.", player.getName(), id);
             return;
@@ -1150,6 +1152,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final UniqueAccount buyerAccount = economyService.getOrCreateAccount(player.getUniqueId()).orElse(null);
         if (buyerAccount == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
+                + "server console for more details!"));
             this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the economy service returned no account for them. "
                 + "This is a critical error that should be reported to your economy plugin ASAP.", player.getName(), id);
             return;
@@ -1157,6 +1161,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
+                + "server console for more details!"));
             this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the server has no knowledge of it. Syncing exchange "
                 + "registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
@@ -1174,8 +1180,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
 
         if (found == null) {
-            // TODO Notification
-            // TODO Resync
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("This item is no longer for sale!"));
+            this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the listing is unknown. This could be a de-sync "
+                + "or an exploit. Syncing for sale items...", player.getName(), id);
+            this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
             return;
         }
 
@@ -1183,21 +1191,25 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final UniqueAccount sellerAccount = economyService.getOrCreateAccount(seller).orElse(null);
         if (sellerAccount == null) {
-            // TODO
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the economy service returned no account for seller"
+                + " '{}'. This is a critical error that should be reported to your economy plugin ASAP.", player.getName(), id, seller);
             return;
         }
 
         final ForSaleItem forSaleItem = found.getForSaleItem().orElse(null);
 
         if (forSaleItem == null) {
-            // TODO Notification
-            // TODO Resync
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("This item is no longer for sale!"));
+            this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
             return;
         }
 
         if (found.getQuantity() < quantity) {
-            // TODO Notification
-            // TODO Resync
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("There is not enough quantity left to "
+                + "purchase this item!"));
+            this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
             return;
         }
 
