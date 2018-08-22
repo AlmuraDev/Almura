@@ -57,7 +57,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
     @Inject private static ClientExchangeManager exchangeManager;
     @Inject private static ClientNotificationManager notificationManager;
 
-    private UIButton buttonAdd, buttonDelete, buttonSave;
+    private UIButton buttonAdd, buttonDelete, buttonOpen, buttonSave;
     private UICheckBox hiddenCheckbox;
     private UIDynamicList<Exchange> exchangeList;
     private UILabel creatorNameLabel, creatorUniqueIdLabel, createdLabel;
@@ -164,8 +164,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         this.hiddenCheckbox.register(this);
 
         this.buttonSave = new UIButtonBuilder(this)
-                .width(30)
-                .text(Text.of("almura.button.save"))
+                .width(40)
+                .text(I18n.format("almura.button.save"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .enabled(false)
                 .onClick(() -> {
@@ -187,13 +187,28 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 })
                 .build("button.save");
 
+        this.buttonOpen = new UIButtonBuilder(this)
+                .width(40)
+                .text(I18n.format("almura.button.open"))
+                .position(SimpleScreen.getPaddedX(this.buttonSave, 2, Anchor.RIGHT), 0)
+                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+                .enabled(false)
+                .onClick(() -> {
+                    if (this.exchangeList.getSelectedItem() == null) {
+                        return;
+                    }
+
+                    exchangeManager.requestExchangeSpecificGui(this.exchangeList.getSelectedItem().getId());
+                })
+                .build("button.open");
+
         container.add(this.idField, idLabel,
                       this.titleField, titleLabel,
                       this.permissionField, permissionLabel,
                       this.creatorNameField, creatorNameLabel,
                       this.creatorUniqueIdField, creatorUniqueIdLabel,
                       this.createdField, createdLabel,
-                      this.hiddenCheckbox, this.buttonSave);
+                      this.hiddenCheckbox, this.buttonOpen, this.buttonSave);
 
         // Add button
         this.buttonAdd = new UIButtonBuilder(this)
@@ -288,6 +303,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         // Hidden
         this.hiddenCheckbox.setChecked(false);
 
+        this.buttonOpen.setEnabled(false);
+
         this.validate("");
     }
 
@@ -346,6 +363,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
             // Hidden
             this.hiddenCheckbox.setChecked(exchange.isHidden());
+
+            this.buttonOpen.setEnabled(true);
         }
     }
 
