@@ -878,7 +878,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            // TODO Notification
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to filter for sale items for exchange '{}' but the server has no knowledge of it. Syncing "
+                + "exchange registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -903,7 +906,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            // TODO Notification
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to list an item for sale for exchange '{}' but the server has no knowledge of it. Syncing "
+                + "exchange registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -988,7 +994,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            // TODO Notification
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to de-list a for sale item for exchange '{}' but the server has no knowledge of it. Syncing "
+                + "exchange registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -1071,7 +1080,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            // TODO Notification
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to adjust a price for a list item for exchange '{}' but the server has no knowledge of it. "
+                + "Syncing exchange registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -1141,6 +1153,16 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkState(listItemRecNo >= 0);
         checkState(quantity > 0);
 
+        final Exchange axs = this.getExchange(id).orElse(null);
+        if (axs == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the server has no knowledge of it. Syncing exchange "
+                + "registry...", player.getName(), id);
+            this.syncExchangeRegistryTo(player);
+            return;
+        }
+
         final EconomyService economyService = this.serviceManager.provide(EconomyService.class).orElse(null);
         if (economyService == null) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
@@ -1156,16 +1178,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 + "server console for more details!"));
             this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the economy service returned no account for them. "
                 + "This is a critical error that should be reported to your economy plugin ASAP.", player.getName(), id);
-            return;
-        }
-
-        final Exchange axs = this.getExchange(id).orElse(null);
-        if (axs == null) {
-            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical Error encountered, check the "
-                + "server console for more details!"));
-            this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the server has no knowledge of it. Syncing exchange "
-                + "registry...", player.getName(), id);
-            this.syncExchangeRegistryTo(player);
             return;
         }
 
@@ -1384,8 +1396,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 try {
                     compound = SerializationUtil.compoundFromBytes(compoundData);
                 } catch (IOException e) {
-                    this.logger.error("Malformed item data found at record number '{}'. Skipping...",
-                        recNo);
+                    this.logger.error("Malformed item data found at record number '{}'. Skipping...", recNo);
                     continue;
                 }
             }
