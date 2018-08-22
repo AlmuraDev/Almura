@@ -121,6 +121,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
     @Listener
     public void onServerStarting(final GameStartingServerEvent event) {
+        this.logger.info("Querying database for exchanges, please wait...");
+
         this.scheduler
             .createTaskBuilder()
             .async()
@@ -144,8 +146,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
      */
 
     private void loadExchanges() {
-
-        this.logger.info("Querying database for exchanges, please wait...");
 
         final Map<String, Exchange> exchanges = new HashMap<>();
 
@@ -1206,7 +1206,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final double total = price.doubleValue() * quantity;
 
         if (total > balance.doubleValue()) {
-            // TODO Notification
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Insufficient funds!"));
             return;
         }
 
@@ -1342,20 +1342,16 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         for (final Record record : result) {
             final Integer recNo = record.getValue(AxsListItem.AXS_LIST_ITEM.REC_NO);
 
-            final String rawItemId = record.getValue(AxsListItem.AXS_LIST_ITEM.ITEM_TYPE);
+            final String domain = record.getValue(AxsListItem.AXS_LIST_ITEM.DOMAIN);
+            final String path = record.getValue(AxsListItem.AXS_LIST_ITEM.PATH);
 
-            final ResourceLocation location = SerializationUtil.fromString(rawItemId);
-
-            if (location == null) {
-                this.logger.error("Malformed item id '{}' found at record number '{}'. Skipping...",
-                    rawItemId, recNo);
-                continue;
-            }
+            final ResourceLocation location = new ResourceLocation(domain, path);
 
             final Item item = ForgeRegistries.ITEMS.getValue(location);
 
             if (item == null) {
-                this.logger.error("Unknown item '{}' found at record number '{}'. Skipping... (Did you remove a mod?)", rawItemId, recNo);
+                this.logger.error("Unknown item for domain '{}' and path '{}' found at record number '{}'. Skipping... (Did you remove a mod?)",
+                    domain, path, recNo);
                 continue;
             }
 

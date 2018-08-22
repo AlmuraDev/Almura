@@ -31,10 +31,9 @@ import org.jooq.DeleteConditionStep;
 import org.jooq.InsertResultStep;
 import org.jooq.InsertValuesStep2;
 import org.jooq.InsertValuesStep3;
-import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStep5;
 import org.jooq.InsertValuesStep6;
-import org.jooq.InsertValuesStep7;
+import org.jooq.InsertValuesStep8;
 import org.jooq.Record;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectWhereStep;
@@ -129,22 +128,22 @@ public final class ExchangeQueries {
         checkNotNull(created);
         checkNotNull(seller);
         checkNotNull(item);
+        checkNotNull(item.getRegistryName());
         checkState(quantity >= -1);
         checkState(metadata >= 0);
         checkState(index >= 0);
 
-        final Timestamp sqlCreated = Timestamp.from(created);
-        final String itemId = SerializationUtil.toString(item.getRegistryName());
         final byte[] sellerData = SerializationUtil.toBytes(seller);
 
         return context -> {
-            final InsertValuesStep7<AxsListItemRecord, String, Timestamp, byte[], String, Integer, Integer, Integer> insertionStep = context
+            final InsertValuesStep8<AxsListItemRecord, String, Timestamp, byte[], String, String, Integer, Integer, Integer> insertionStep = context
                 .insertInto(AxsListItem.AXS_LIST_ITEM)
                 .columns(AxsListItem.AXS_LIST_ITEM.AXS, AxsListItem.AXS_LIST_ITEM.CREATED, AxsListItem.AXS_LIST_ITEM.SELLER,
-                    AxsListItem.AXS_LIST_ITEM.ITEM_TYPE, AxsListItem.AXS_LIST_ITEM.QUANTITY, AxsListItem.AXS_LIST_ITEM.METADATA,
-                    AxsListItem.AXS_LIST_ITEM.INDEX);
+                    AxsListItem.AXS_LIST_ITEM.DOMAIN, AxsListItem.AXS_LIST_ITEM.PATH, AxsListItem.AXS_LIST_ITEM.QUANTITY,
+                    AxsListItem.AXS_LIST_ITEM.METADATA, AxsListItem.AXS_LIST_ITEM.INDEX);
 
-            insertionStep.values(id, sqlCreated, sellerData, itemId, quantity, metadata, index);
+            insertionStep.values(id, Timestamp.from(created), sellerData, item.getRegistryName().getResourceDomain(), item.getRegistryName()
+                    .getResourcePath(), quantity, metadata, index);
 
             return insertionStep.returning();
         };
@@ -262,7 +261,8 @@ public final class ExchangeQueries {
         return context -> {
             final InsertValuesStep3<AxsForSaleItemRecord, Timestamp, Integer, BigDecimal> insertionStep = context
                 .insertInto(AxsForSaleItem.AXS_FOR_SALE_ITEM)
-                .columns(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED, AxsForSaleItem.AXS_FOR_SALE_ITEM.LIST_ITEM, AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
+                .columns(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED, AxsForSaleItem.AXS_FOR_SALE_ITEM.LIST_ITEM,
+                    AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
 
             insertionStep.values(Timestamp.from(created), listItemRecNo, price);
 

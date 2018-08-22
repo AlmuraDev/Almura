@@ -47,12 +47,12 @@ public final class ClientNotificationManager implements Witness {
     }
 
     @SubscribeEvent
-    public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+    public void onClientConnectedToServer(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.popupNotifications.clear();
     }
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
+    public void onClientTick(final TickEvent.ClientTickEvent event) {
 
         final AbstractHUD hud = this.manager.getHUDDirect();
 
@@ -72,7 +72,8 @@ public final class ClientNotificationManager implements Witness {
                     this.nextPoll = this.current.getSecondsToLive() * 20L; // Best guess, we don't care about extreme accuracy.
 
                     if (hud == null) {
-                        Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(SpongeTexts.toComponent(this.current.getMessage()));
+                        Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(SpongeTexts.toComponent(SpongeTexts.fromLegacy(this.current
+                            .getMessage())));
                     } else {
                         final OriginHUD originHUD = (OriginHUD) hud;
                         originHUD.notificationPanel.displayPopup();
@@ -91,7 +92,7 @@ public final class ClientNotificationManager implements Witness {
         }
     }
 
-    public void queuePopup(PopupNotification notification) {
+    public void queuePopup(final PopupNotification notification) {
         checkNotNull(notification);
 
         this.popupNotifications.offer(notification);

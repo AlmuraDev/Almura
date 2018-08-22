@@ -39,7 +39,8 @@ public class ClientboundPlayerNotificationPacketHandler implements MessageHandle
 
             if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
                 if (message.inWindow) {
-                    UIMessageBox.showDialog(null, message.title.toPlain(), message.message.toPlain(), MessageBoxButtons.OK, null);
+                    UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, message.title, message.message,
+                        MessageBoxButtons.OK, null);
                 } else {
                     this.manager.queuePopup(new PopupNotification(message.title, message.message, message.timeToLive));
                 }

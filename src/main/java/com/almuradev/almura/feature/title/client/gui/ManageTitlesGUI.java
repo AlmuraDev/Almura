@@ -482,14 +482,14 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 break;
 
             case "button.apply":
-                notificationManager.queuePopup(new PopupNotification(Text.of("Title"), Text.of("Setting Title on server..."), 2));
+                notificationManager.queuePopup(new PopupNotification("Title", "Setting Title on server...", 2));
                 titleManager.setTitleContentForDisplay(null);
                 titleManager.requestSelectedTitle(this.titleList.getSelectedItem());
                 this.close();
                 break;
 
             case "button.remove":
-                notificationManager.queuePopup(new PopupNotification(Text.of("Title"), Text.of("Removing Title on server..."), 2));
+                notificationManager.queuePopup(new PopupNotification("Title", "Removing Title on server...", 2));
                 titleManager.setTitleContentForDisplay(null);
                 titleManager.requestSelectedTitle(null);
                 this.close();
@@ -520,7 +520,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
             case "button.delete":
                 this.mode = TitleModifyType.DELETE;
-                notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Removing selected title"), 2));
+                notificationManager.queuePopup(new PopupNotification("Title Manager", "Removing selected title", 2));
                 if (this.idField.getText().toLowerCase().trim().equalsIgnoreCase(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()).getId())) {
                     titleManager.requestSelectedTitle(null); // remove the title as the selected title from the user if its the one begin deleted.
                 }
@@ -533,11 +533,11 @@ public final class ManageTitlesGUI extends SimpleScreen {
             case "button.save":
                 switch (this.mode) {
                     case ADD:
-                        notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Adding new Title"), 2));
+                        notificationManager.queuePopup(new PopupNotification("Title Manager", "Adding new Title", 2));
                         titleManager.addTitle(this.idField.getText().toLowerCase().trim(), this.permissionField.getText().toLowerCase().trim(), this.contentField.getText().trim(), this.hiddenCheckbox.isChecked());
                         break;
                     case MODIFY:
-                        notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Saving Title Changes"), 2));
+                        notificationManager.queuePopup(new PopupNotification("Title Manager", "Saving Title Changes", 2));
                         titleManager.modifyTitle(this.idField.getText().toLowerCase().trim(), this.permissionField.getText().toLowerCase().trim(), this.contentField.getText().trim(), this.hiddenCheckbox.isChecked());
                         break;
                 }

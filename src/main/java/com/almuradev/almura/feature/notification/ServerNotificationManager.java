@@ -13,7 +13,6 @@ import static com.google.common.base.Preconditions.checkState;
 import com.almuradev.almura.feature.notification.network.ClientboundPlayerNotificationPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.network.ChannelBinding;
@@ -26,21 +25,19 @@ import javax.inject.Singleton;
 @Singleton
 public final class ServerNotificationManager extends Witness.Impl implements Witness.Lifecycle {
 
-    public final Game game;
     private final ChannelBinding.IndexedMessageChannel network;
 
     @Inject
-    public ServerNotificationManager(final Game game, @ChannelId(NetworkConfig.CHANNEL)ChannelBinding.IndexedMessageChannel network) {
-        this.game = game;
+    public ServerNotificationManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
         this.network = network;
     }
 
     @Override
-    public boolean lifecycleSubscribable(GameState state) {
+    public boolean lifecycleSubscribable(final GameState state) {
         return state == GameState.SERVER_STARTING;
     }
 
-    public void sendPopupNotification(Player player, Text title, Text message, int secondsToLive) {
+    public void sendPopupNotification(final Player player, final Text title, final Text message, final int secondsToLive) {
         checkNotNull(player);
         checkNotNull(title);
         checkNotNull(message);
@@ -49,7 +46,7 @@ public final class ServerNotificationManager extends Witness.Impl implements Wit
         this.network.sendTo(player, new ClientboundPlayerNotificationPacket(title, message, secondsToLive));
     }
 
-    public void sendWindowMessage(Player player, Text title, Text message) {
+    public void sendWindowMessage(final Player player, final Text title, final Text message) {
         checkNotNull(player);
         checkNotNull(title);
         checkNotNull(message);

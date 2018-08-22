@@ -236,7 +236,7 @@ public final class NicknameGUI extends SimpleScreen {
 
             case "button.remove":
                 this.update = false; // Stop automatic update of name based on textbox
-                notificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Removing Nickname from server...."),2));
+                notificationManager.queuePopup(new PopupNotification("Nickname", "Removing Nickname from server....", 2));
                 nickManager.requestNicknameChange(null);
 
                 this.close();
@@ -246,27 +246,27 @@ public final class NicknameGUI extends SimpleScreen {
                 final Text validateText = Text.of(this.nicknameTextbox.getText());
 
                 if (this.nicknameTextbox.getText().isEmpty()) {
-                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have blank title!"),5));
+                    notificationManager.queuePopup(new PopupNotification("Error", "Cannot have blank title!",5));
                     break;
                 }
 
                 if (validateText.toPlain().length() <= 1) {
-                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname < 3 characters!"),5));
+                    notificationManager.queuePopup(new PopupNotification("Error", "Cannot have nickname < 3 characters!", 5));
                     break;
                 }
 
                 if (validateText.toPlain().length() > 20) {
-                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname > 20 characters!"),5));
+                    notificationManager.queuePopup(new PopupNotification("Error", "Cannot have nickname > 20 characters!",5));
                     break;
                 }
 
                 if (!NickUtil.nickNameRegex.matcher(validateText.toPlain()).matches()) {
-                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Invalid Character in Nickname!"), 5));
+                    notificationManager.queuePopup(new PopupNotification("Error", "Invalid Character in Nickname!", 5));
                     break;
                 }
                 this.update = false; // Stop automatic update of name based on textbox
 
-                notificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Updating Nickname on server...."),2));
+                notificationManager.queuePopup(new PopupNotification("Nickname", "Updating Nickname on server....",2));
                 nickManager.requestNicknameChange(this.nicknameTextbox.getText().trim());
 
                 this.close();

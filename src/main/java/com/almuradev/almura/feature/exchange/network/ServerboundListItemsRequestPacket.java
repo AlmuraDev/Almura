@@ -56,18 +56,12 @@ public final class ServerboundListItemsRequestPacket implements Message {
 
         for (int i = 0; i < count; i++) {
             final InventoryAction.Direction direction = InventoryAction.Direction.valueOf(buf.readString());
-            final String rawItemId = buf.readString();
-            final ResourceLocation location = SerializationUtil.fromString(rawItemId);
-
-            if (location == null) {
-                new IOException("Malformed item id when receiving list item! Id [" + rawItemId + "]. Skipping...").printStackTrace();
-                continue;
-            }
+            final ResourceLocation location = new ResourceLocation(buf.readString(), buf.readString());
 
             final Item item = ForgeRegistries.ITEMS.getValue(location);
 
             if (item == null) {
-                new IOException("Unknown item id when receiving list item! Id [" + rawItemId + "]. Skipping...").printStackTrace();
+                new IOException("Unknown item id '" + location.toString() + "' when receiving list item! . Skipping...").printStackTrace();
                 continue;
             }
 
@@ -103,7 +97,7 @@ public final class ServerboundListItemsRequestPacket implements Message {
 
             final ResourceLocation location = stack.getItem().getRegistryName();
             if (location == null) {
-                new IOException("Malformed location when sending list item! Item [" + stack.getItem() + "].").printStackTrace();
+                new IOException("Malformed resource location for Item '" + stack + "' when sending list item!").printStackTrace();
                 continue;
             }
 
@@ -121,8 +115,11 @@ public final class ServerboundListItemsRequestPacket implements Message {
 
             buf.writeString(action.getDirection().name().toUpperCase());
 
-            buf.writeString(SerializationUtil.toString(location));
+            buf.writeString(location.getResourceDomain());
+            buf.writeString(location.getResourcePath());
+
             buf.writeInteger(stack.getQuantity());
+
             buf.writeInteger(stack.getMetadata());
 
             if (compoundData == null) {

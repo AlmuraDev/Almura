@@ -9,7 +9,6 @@ package com.almuradev.almura.feature.exchange.network;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
 import com.almuradev.almura.shared.util.SerializationUtil;
@@ -54,17 +53,12 @@ public final class ClientboundListItemsResponsePacket implements Message {
             this.listItems = new ArrayList<>();
             for (int i = 0; i < count; i++) {
                 final int record = buf.readInteger();
-                final String rawItemId = buf.readString();
-                final ResourceLocation location = SerializationUtil.fromString(rawItemId);
-                if (location == null) {
-                    new IOException("Malformed item id when receiving list item! Id [" + rawItemId + "]. Skipping...").printStackTrace();
-                    continue;
-                }
+                final ResourceLocation location = new ResourceLocation(buf.readString(), buf.readString());
 
                 final Item item = ForgeRegistries.ITEMS.getValue(location);
 
                 if (item == null) {
-                    new IOException("Unknown item id when receiving list item! Id [" + rawItemId + "]. Skipping...").printStackTrace();
+                    new IOException("Unknown item id '" + location.toString() + "' when receiving list item! . Skipping...").printStackTrace();
                     continue;
                 }
 
@@ -118,7 +112,7 @@ public final class ClientboundListItemsResponsePacket implements Message {
             for (final ListItem item : this.listItems) {
                 final ResourceLocation location = item.getItem().getRegistryName();
                 if (location == null) {
-                    new IOException("Malformed location when sending list item! Item [" + item.getItem() + "].").printStackTrace();
+                    new IOException("Malformed resource location for Item '" + item + "' when sending list item!").printStackTrace();
                     continue;
                 }
 
@@ -144,7 +138,8 @@ public final class ClientboundListItemsResponsePacket implements Message {
 
                 buf.writeInteger(item.getRecord());
 
-                buf.writeString(SerializationUtil.toString(location));
+                buf.writeString(location.getResourceDomain());
+                buf.writeString(location.getResourcePath());
 
                 buf.writeInteger(item.getQuantity());
                 buf.writeInteger(item.getMetadata());

@@ -15,7 +15,8 @@ create table if not exists "axs_list_item"
   "created"            timestamp    default current_timestamp not null,
   "axs"                varchar(255) not null,
   "seller"             binary(16)   not null,
-  "item_type"          varchar(255) not null,
+  "domain"             varchar(255) not null,
+  "path"               varchar(255) not null,
   "quantity"           int          default 1 not null,
   "metadata"           int          default 0 not null,
   "index"              int          default 0 not null,
@@ -54,6 +55,9 @@ create table if not exists "axs_transaction"
 
 drop index if exists idx_axs_list_item_axs;
 create index idx_axs_list_item_axs ON "axs_list_item"("axs");
+
+drop index if exists idx_axs_list_item_domain;
+create index idx_axs_list_item_domain ON "axs_list_item"("domain");
 
 drop index if exists idx_axs_for_sale_item_list_item;
 create index idx_axs_for_sale_item_list_item ON "axs_for_sale_item"("list_item");
