@@ -37,7 +37,6 @@ import com.almuradev.generated.axs.tables.AxsListItemData;
 import com.almuradev.generated.axs.tables.records.AxsForSaleItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemDataRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -68,8 +67,8 @@ import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
-import org.spongepowered.api.service.economy.transaction.TransferResult;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -144,7 +143,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
      * Exchange
      */
 
-    public void loadExchanges() {
+    private void loadExchanges() {
 
         this.logger.info("Querying database for exchanges, please wait...");
 
@@ -183,7 +182,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 this.exchanges.putAll(exchanges);
 
                 if (this.exchanges.isEmpty()) {
-                    // TODO Begin Test Code
                     // TODO I might automatically create the Global Exchange (almura.exchange.global) by default (if no others are found when loading from db).
                     final BasicExchange exchange = new BasicExchange("almura.exchange.global", Instant.now(), Store.UNKNOWN_OWNER, "Global "
                         + "Exchange", "almura.exchange.global", false);
@@ -217,7 +215,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(player);
 
         if (!player.hasPermission(Almura.ID + ".exchange.manage")) {
-            // TODO Notification
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission"
+                    + " to manage exchanges!"), 5);
             return;
         }
 
@@ -231,14 +230,23 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(id);
 
         if (!player.hasPermission(Almura.ID + ".exchange.open")) {
-            // TODO Notification
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission"
+                + " to open an exchange!"), 5);
             return;
         }
 
         final Exchange axs = this.getExchange(id).orElse(null);
 
-        if (axs == null || !player.hasPermission(axs.getPermission())) {
-            // TODO Notification
+        if (axs == null) {
+            this.logger.warn("Player '{}' attempted to open exchange '{}' but the server has no knowledge of it. Syncing exchange registry...",
+                player.getName(), id);
+            this.syncExchangeRegistryTo(player);
+            return;
+        }
+
+        if (!player.hasPermission(axs.getPermission())) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission"
+                + " to open '", axs.getName(), "'!"), 5);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -302,6 +310,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
+            this.logger.warn("Player '{}' attempted to open an offer screen for exchange '{}' but the server has no knowledge of it. Syncing "
+                    + "exchange registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -315,16 +325,15 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(name);
         checkNotNull(permission);
 
-        if (!player.hasPermission(Almura.ID + ".exchange.create")) {
-            this.notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("Insufficient Permission!, "
-                + "Exchange addition failed."), 5);
+        if (!player.hasPermission(Almura.ID + ".exchange.add")) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission "
+                + "to add exchanges!"), 5);
             return;
         }
 
         if (this.getExchange(id).isPresent()) {
-            this.notificationManager.sendPopupNotification(player, Text.of("Exchange Manager"), Text.of("This Exchange already "
-                + "exists!"), 5);
-
+            this.logger.warn("Player '{}' attempted to add exchange '{}' but it already exists. Syncing exchange registry...", player.getName(),
+                id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -342,7 +351,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .execute();
 
                     if (result == 0) {
-                        // TODO Notification
+                        this.logger.warn("Player '{}' submitted a new exchange '{}' to the database but it failed. Discarding changes...",
+                            player.getName(), id);
                         return;
                     }
 
@@ -366,14 +376,16 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(permission);
 
         if (!player.hasPermission(Almura.ID + ".exchange.modify")) {
-            // TODO Send Notification
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission "
+                + "to modify exchanges!"), 5);
             return;
         }
 
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null) {
-            // TODO Notification
+            this.logger.warn("Player '{}' attempted to modify exchange '{}' but the server has no knowledge of it. Syncing exchange registry...",
+                player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -390,10 +402,12 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .execute();
 
                     if (result == 0) {
-                        // TODO Notification
-                    } else {
-                        this.loadExchanges();
+                        this.logger.warn("Player '{}' submitted a modified exchange '{}' to the database but it failed. Discarding changes...",
+                            player.getName(), id);
+                        return;
                     }
+
+                    this.loadExchanges();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -406,8 +420,15 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(player);
         checkNotNull(id);
 
+        if (!player.hasPermission(Almura.ID + ".exchange.delete")) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission "
+                + "to delete exchanges!"), 5);
+            return;
+        }
+
         if (!this.getExchange(id).isPresent()) {
-            // TODO Notification
+            this.logger.warn("Player '{}' attempted to delete exchange '{}' but the server has no knowledge of it. Syncing exchange registry...",
+                player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -424,10 +445,12 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .execute();
 
                     if (result == 0) {
-                        // TODO Notification
-                    } else {
-                        this.loadExchanges();
+                        this.logger.error("Player '{}' submitted a deleted exchange '{}' to the database but it failed. Discarding changes...",
+                            player.getName(), id);
+                        return;
                     }
+
+                    this.loadExchanges();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -442,7 +465,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     public void loadListItems(final Exchange axs) {
         checkNotNull(axs);
 
-        this.logger.info("Querying items for Exchange [{}], please wait...", axs.getId());
+        this.logger.info("Querying items for exchange '{}' ({}), please wait...", axs.getName(), axs.getId());
 
         final List<ListItem> items = new ArrayList<>();
 
@@ -468,7 +491,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
             axs.putListItems(itemsByOwner.isEmpty() ? null : itemsByOwner);
 
-            this.logger.info("Loaded [{}] list item(s) for Exchange [{}].", items.size(), axs.getId());
+            this.logger.info("Loaded [{}] list item(s) for exchange '{}' ({}).", items.size(), axs.getName(), axs.getId());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -484,7 +507,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final Exchange axs = this.getExchange(id).orElse(null);
 
         if (axs == null) {
-            // TODO Notification
+            this.logger.warn("Player '{}' attempted to list items for exchange '{}' but the server has no knowledge of it. Syncing exchange "
+                    + "registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -557,9 +581,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         if (!toInventoryActions.isEmpty()) {
 
             if (currentListItems == null || currentListItems.isEmpty()) {
-                this.logger.warn("Player '{}' attempted to move listings back to the simulatedInventory but the server knows of no listings for them. This "
-                    + "could be a de-sync or an exploit. Printing stacks...", player.getName());
-                // TODO Print stacks
+                this.logger.warn("Player '{}' attempted to move listings back to the inventory for exchange '{}' but the server knows of no "
+                    + "listings for them. This could be a de-sync or an exploit. Printing stacks...", player.getName(), axs.getId());
+                this.printStacksToConsole(toInventoryActions.stream().map(InventoryAction::getStack).collect(Collectors.toList()));
                 this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), null));
             } else {
                 for (final InventoryAction action : toInventoryActions) {
@@ -816,7 +840,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     public void loadForSaleItems(final Exchange axs) {
         checkNotNull(axs);
 
-        this.logger.info("Querying for sale items for Exchange [{}], please wait...", axs.getId());
+        this.logger.info("Querying for sale items for exchange '{}' ({}), please wait...", axs.getName(), axs.getId());
 
         final List<ForSaleItem> forSaleItems = new ArrayList<>();
 
@@ -841,7 +865,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .stream()
                 .collect(Collectors.groupingBy(forSaleItem -> forSaleItem.getListItem().getSeller())));
 
-            this.logger.info("Loaded [{}] for sale item(s) for Exchange [{}].", forSaleItems.size(), axs.getId());
+            this.logger.info("Loaded [{}] for sale item(s) for exchange '{}' ({}).", forSaleItems.size(), axs.getName(), axs.getId());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1119,19 +1143,22 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final EconomyService economyService = this.serviceManager.provide(EconomyService.class).orElse(null);
         if (economyService == null) {
-            // TODO Notification
+            this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the economy service no longer exists. This is a "
+                + "critical error that should be reported to your economy plugin ASAP.", player.getName(), id);
             return;
         }
 
         final UniqueAccount buyerAccount = economyService.getOrCreateAccount(player.getUniqueId()).orElse(null);
         if (buyerAccount == null) {
-            // TODO Notification
+            this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the economy service returned no account for them. "
+                + "This is a critical error that should be reported to your economy plugin ASAP.", player.getName(), id);
             return;
         }
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            // TODO Notification
+            this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the server has no knowledge of it. Syncing exchange "
+                + "registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -1396,5 +1423,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     private int getListingsLimit(final Player player) {
         // TODO Need to determine what controls this ultimately, 100 for now.
         return 100;
+    }
+
+    private void printStacksToConsole(final List<VanillaStack> stacks) {
+        // TODO
     }
 }
