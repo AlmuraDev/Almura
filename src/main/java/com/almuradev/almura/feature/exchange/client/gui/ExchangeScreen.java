@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
@@ -47,7 +48,6 @@ import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -59,9 +59,6 @@ import javax.inject.Inject;
 @SideOnly(Side.CLIENT)
 public final class ExchangeScreen extends SimpleScreen {
 
-    public static final DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("#,###.##");
-    public static final double MILLION = 1000000.0;
-    private static final double BILLION = 1000000000.0;
     private static final int minScreenWidth = 600;
     private static final int minScreenHeight = 370;
     private static final int innerPadding = 2;
@@ -410,14 +407,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .collect(Collectors.toList());
     }
 
-    public static String withSuffix(double value) {
-        if (value < MILLION) {
-            return DEFAULT_DECIMAL_FORMAT.format(value);
-        } else if (value < BILLION) {
-            return DEFAULT_DECIMAL_FORMAT.format(value / MILLION) + "m";
-        }
-        return DEFAULT_DECIMAL_FORMAT.format(value / BILLION) + "t";
-    }
+
 
     public void refreshListItems() {
         if (this.listItemList == null) {
@@ -522,12 +512,12 @@ public final class ExchangeScreen extends SimpleScreen {
                 displayName = displayNameBuilder.toString();
             }
             this.itemLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                Text.of(TextColors.WHITE, displayName, TextColors.GRAY, " x ", withSuffix(item.getQuantity()))));
+                Text.of(TextColors.WHITE, displayName, TextColors.GRAY, " x ", ExchangeConstants.withSuffix(item.getQuantity()))));
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             // Exact value
-            if (item.getQuantity() >= (int) MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, DEFAULT_DECIMAL_FORMAT.format(item.getQuantity())));
+            if (item.getQuantity() >= (int) ExchangeConstants.MILLION) {
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
             }
 
             this.add(this.image, this.itemLabel);
@@ -573,12 +563,12 @@ public final class ExchangeScreen extends SimpleScreen {
                 final double forSaleDoublePrice = forSalePrice.doubleValue();
 
                 this.priceLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE
-                        .serialize(Text.of(TextColors.GOLD, withSuffix(forSaleDoublePrice), TextColors.GRAY, "/ea")));
+                        .serialize(Text.of(TextColors.GOLD, ExchangeConstants.withSuffix(forSaleDoublePrice), TextColors.GRAY, "/ea")));
                 this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
                 // Exact value
                 this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
-                        + ": " + DEFAULT_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));
+                        + ": " + ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));
             }
         }
     }
@@ -606,13 +596,13 @@ public final class ExchangeScreen extends SimpleScreen {
 
             final double price = this.item.getPrice().doubleValue();
 
-            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, withSuffix(price), TextColors.GRAY, "/ea"));
+            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, ExchangeConstants.withSuffix(price), TextColors.GRAY, "/ea"));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             // Exact value
             this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
-                    + ": " + DEFAULT_DECIMAL_FORMAT.format(this.item.getListItem().getQuantity() * price));
+                    + ": " + ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getListItem().getQuantity() * price));
 
             this.add(this.sellerLabel, this.priceLabel);
         }

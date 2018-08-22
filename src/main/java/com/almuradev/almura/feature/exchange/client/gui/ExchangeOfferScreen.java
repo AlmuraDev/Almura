@@ -7,10 +7,9 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
-import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.DEFAULT_DECIMAL_FORMAT;
-import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.MILLION;
-import static com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen.withSuffix;
+import static com.almuradev.almura.feature.exchange.ExchangeConstants.MILLION;
 
+import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.InventoryAction;
@@ -240,13 +239,13 @@ public class ExchangeOfferScreen extends SimpleScreen {
             this.itemLabelText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
                     Text.of(TextColors.WHITE, displayName));
             this.itemQuantityText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GRAY, " x ", withSuffix(this.item.getQuantity())));
+                    Text.of(TextColors.GRAY, " x ", ExchangeConstants.withSuffix(this.item.getQuantity())));
 
             this.itemLabel = new UIExpandingLabel(gui, this.itemLabelText + this.itemQuantityText);
             this.itemLabel.setPosition(SimpleScreen.getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             if (this.item.getQuantity() >= (int) MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, DEFAULT_DECIMAL_FORMAT.format(item.getQuantity())));
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
             }
 
             this.lastKnownQuantity = this.item.getQuantity();
@@ -260,7 +259,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
             // Update the item label if the quantity has changed to reflect the new quantity
             if (this.lastKnownQuantity != this.item.getQuantity()) {
                 this.itemQuantityText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                        Text.of(TextColors.GRAY, " x ", withSuffix(this.item.getQuantity())));
+                        Text.of(TextColors.GRAY, " x ", ExchangeConstants.withSuffix(this.item.getQuantity())));
                 this.itemLabel.setText(this.itemLabelText + this.itemQuantityText);
                 this.lastKnownQuantity = this.item.getQuantity();
             }

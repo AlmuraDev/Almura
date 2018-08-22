@@ -11,6 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
@@ -1236,7 +1237,14 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final double total = price.doubleValue() * quantity;
 
         if (total > balance.doubleValue()) {
-            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Insufficient funds!"));
+            final String formattedTotal = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(total);
+            final String formattedBalance = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(balance.doubleValue());
+            final String formattedDifference = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(total - balance.doubleValue());
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange - Insufficient Funds"),
+                    Text.of("You attempted to purchase items totalling to '", formattedTotal, "' while you only had '", formattedBalance, "'.",
+                            Text.NEW_LINE,
+                            Text.NEW_LINE,
+                            "You need '", formattedDifference, "' more!"));
             return;
         }
 
