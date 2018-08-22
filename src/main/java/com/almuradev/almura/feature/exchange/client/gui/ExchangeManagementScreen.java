@@ -12,7 +12,7 @@ import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
@@ -62,14 +62,14 @@ public final class ExchangeManagementScreen extends SimpleScreen {
     private UIDynamicList<Exchange> exchangeList;
     private UILabel creatorNameLabel, creatorUniqueIdLabel, createdLabel;
     private UITextField idField, permissionField, creatorNameField, creatorUniqueIdField, createdField, titleField;
-    private UIFormContainer form;
+    private UIForm form;
 
     @Override
     public void construct() {
         this.guiscreenBackground = false;
 
         // Master Pane
-        this.form = new UIFormContainer(this, requiredScreenWidth, requiredScreenHeight, I18n.format("almura.title.exchange.management"));
+        this.form = new UIForm(this, requiredScreenWidth, requiredScreenHeight, I18n.format("almura.title.exchange.management"));
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);

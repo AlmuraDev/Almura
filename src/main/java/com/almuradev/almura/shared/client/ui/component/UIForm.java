@@ -9,35 +9,52 @@ package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.button.UISimpleButton;
+import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
-import net.malisis.core.client.gui.component.container.UIContainer;
-import net.malisis.core.client.gui.component.container.UIWindow;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.util.MouseButton;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Collection;
+
 @SideOnly(Side.CLIENT)
-public class UIForm extends UIWindow {
+public class UIForm extends UIContainer<UIForm> {
     private UISimpleButton closeButton;
-    private boolean closable, movable;
+    private boolean closable, movable, dragging;
 
     public UIForm(MalisisGui gui, int width, int height) {
-        super(gui, width, height);
-        this.construct();
+        this(gui, width, height, "");
     }
 
     public UIForm(MalisisGui gui, int width, int height, String title) {
         super(gui, title, width, height);
-        this.construct();
+
+        // Defaults
+        this.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
+        this.setMovable(true);
+        this.setClosable(true);
+        this.setBorder(FontColors.WHITE, 1, 185);
+        this.setBackgroundAlpha(215);
+        this.setColor(Integer.MIN_VALUE);
+        this.setPadding(3, 3);
+        this.setTopPadding(20);
+
+        this.construct(gui);
     }
 
-    private void construct() {
-        setTopPadding(20);
+    private void construct(MalisisGui gui) {
+        final UIContainer<?> separator = new UIContainer<>(gui);
+        separator.setPosition(-(this.getLeftBorderedPadding()), -4);
+        separator.setSize(this.getWidth() - (borderSize * 2), 1);
+        separator.setBackgroundAlpha(215);
+        separator.setColor(FontColors.WHITE);
+
+        this.add(separator);
 
         this.closeButton = new UISimpleButton(getGui(), "x");
         this.closeButton.setName("button.form.close");
@@ -45,6 +62,7 @@ public class UIForm extends UIWindow {
         this.closeButton.register(this);
 
         if (this.titleLabel != null) {
+            this.titleLabel.setFontOptions(FontColors.WHITE_FO.toBuilder().shadow(false).build());
             this.titleLabel.setPosition(0, -getTopPadding() + 5, Anchor.TOP | Anchor.CENTER);
         }
     }
@@ -85,15 +103,38 @@ public class UIForm extends UIWindow {
         }
     }
 
+    private int getLeftBorderedPadding() {
+        return this.getLeftPadding() - this.borderSize;
+    }
+
+    private int getRightBorderedPadding() {
+        return this.getRightPadding() - this.borderSize;
+    }
+
+    @Override
+    public boolean onButtonPress(int x, int y, MouseButton button) {
+        final int relativeY = relativeY(y);
+        this.dragging = !this.closeButton.isInsideBounds(x, y) && relativeY >= 0 && relativeY < this.getTopPadding() - 4;
+        return super.onButtonPress(x, y, button);
+    }
+
+    @Override
+    public boolean onButtonRelease(int x, int y, MouseButton button) {
+        if (button == MouseButton.LEFT && this.dragging) {
+            this.dragging = false;
+        }
+        return super.onButtonRelease(x, y, button);
+    }
+
     @Override
     public boolean onDrag(int lastX, int lastY, int x, int y, MouseButton button) {
-        if (!this.movable || button != MouseButton.LEFT || this.closeButton.isInsideBounds(x, y)) {
-            return false;
+        if (!this.movable || !this.dragging) {
+            return super.onDrag(lastX, lastY, x, y, button);
         }
 
         final UIComponent<?> parentContainer = getParent();
         if (parentContainer == null) {
-            return false;
+            return super.onDrag(lastX, lastY, x, y, button);
         }
 
         final int xPos = getParent().relativeX(x) - relativeX(lastX);
@@ -127,5 +168,9 @@ public class UIForm extends UIWindow {
     public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
         this.closeButton.setFontOptions(this.closeButton.isInsideBounds(mouseX, mouseY) ? FontColors.WHITE_FO : FontColors.GRAY_FO);
+    }
+
+    public Collection<UIComponent<?>> getComponents() {
+        return this.components;
     }
 }

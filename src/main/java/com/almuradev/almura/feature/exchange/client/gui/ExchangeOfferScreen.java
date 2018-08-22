@@ -15,19 +15,17 @@ import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.feature.exchange.client.gui.component.UIExchangeOfferContainer;
-import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.item.VanillaStack;
-import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -45,7 +43,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.util.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +73,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.guiscreenBackground = false;
 
         // Form
-        final UIFormContainer form = new UIFormContainer(this, 400, 325, I18n.format("almura.title.exchange.offer"));
+        final UIForm form = new UIForm(this, 400, 325, I18n.format("almura.title.exchange.offer"));
         form.setZIndex(10); // Fixes issue with combobox behind the form drawing text over the form
         form.setMovable(true);
         form.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);

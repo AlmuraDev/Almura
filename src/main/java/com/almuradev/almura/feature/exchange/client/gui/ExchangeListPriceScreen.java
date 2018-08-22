@@ -11,7 +11,7 @@ import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
@@ -42,7 +42,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
     private UIButton buttonList, buttonCancel;
     private UILabel eaLabel;
     private UITextField pricePerField;
-    private UIFormContainer form;
+    private UIForm form;
 
     public ExchangeListPriceScreen(ExchangeScreen parent, Exchange axs, ListItem toList) {
         super(parent, true);
@@ -55,7 +55,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new UIFormContainer(this, 120, 65, "");
+        this.form = new UIForm(this, 120, 65, "");
         this.form.setTitle(I18n.format("almura.title.exchange.enter_a_price"));
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);

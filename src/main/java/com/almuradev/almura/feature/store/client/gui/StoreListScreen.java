@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.store.client.gui;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -38,7 +38,7 @@ public class StoreListScreen extends SimpleScreen {
     private boolean update = true;
     private UILabel titleLabel, nameLabel, idLabel;
     private UIButton buttonAdd, buttonRemove, buttonDetails;
-    private UIFormContainer form;
+    private UIForm form;
     private UIPanel panel;
     private int screenWidth = 300;
     private int screenHeight = 300;
@@ -58,7 +58,7 @@ public class StoreListScreen extends SimpleScreen {
             this.close();
         }
 
-        form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
+        form = new UIForm(this, this.screenWidth, this.screenHeight, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -73,7 +73,7 @@ public class StoreListScreen extends SimpleScreen {
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Tab Area
-        final UIFormContainer storeListArea = new UIFormContainer(this, 285, 260, "");
+        final UIForm storeListArea = new UIForm(this, 285, 260, "");
         storeListArea.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
         storeListArea.setMovable(false);
         storeListArea.setClosable(false);
@@ -130,7 +130,7 @@ public class StoreListScreen extends SimpleScreen {
 
     private UIContainer buyTab() {
         UIContainer buyTab = new UIContainer<>(this);
-        final UIFormContainer buyItemArea = new UIFormContainer(this, 215, 200, "");
+        final UIForm buyItemArea = new UIForm(this, 215, 200, "");
         buyItemArea.setPosition(0, -3, Anchor.CENTER | Anchor.TOP);
         buyItemArea.setMovable(false);
         buyItemArea.setClosable(false);
@@ -146,7 +146,7 @@ public class StoreListScreen extends SimpleScreen {
     private UIContainer sellTab() {
         UIContainer sellTab = new UIContainer<>(this);
 
-        final UIFormContainer sellItemArea = new UIFormContainer(this, 215, 200, "");
+        final UIForm sellItemArea = new UIForm(this, 215, 200, "");
         sellItemArea.setPosition(0, -3, Anchor.CENTER | Anchor.TOP);
         sellItemArea.setMovable(false);
         sellItemArea.setClosable(false);

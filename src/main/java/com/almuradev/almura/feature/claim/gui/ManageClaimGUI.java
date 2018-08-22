@@ -23,7 +23,7 @@ import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleVisua
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -62,7 +62,7 @@ public final class ManageClaimGUI extends SimpleScreen {
     private boolean unlockMouse = true;
     private boolean update = true;
 
-    private UIFormContainer form, functionsArea, econArea;
+    private UIForm form, functionsArea, econArea;
     private UITextField claimNameField, claimOwnerField, claimGreetingField, claimFarewellField, claimSizeField, claimValueField, claimTaxField;
     private UILabel claimNameLabel, claimForSaleLabel, claimOwnerLabel, claimGreetingLabel, claimFarewellLabel, claimSizeLabel, claimTaxLabel;
     private UICheckBox showWarningsCheckbox;
@@ -84,7 +84,7 @@ public final class ManageClaimGUI extends SimpleScreen {
 
         final DecimalFormat dFormat = new DecimalFormat("###,###,##0.00");
 
-        this.form = new UIFormContainer(this, 400, 250, "");
+        this.form = new UIForm(this, 400, 250, "");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -159,7 +159,7 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.claimFarewellField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Economy Container
-        this.econArea = new UIFormContainer(this, 252, 125, "");
+        this.econArea = new UIForm(this, 252, 125, "");
         this.econArea.setPosition(7, claimFarewellLabel.getY() + 20, Anchor.LEFT | Anchor.TOP);
         this.econArea.setMovable(false);
         this.econArea.setClosable(false);
@@ -214,7 +214,7 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.econArea.add(econSeparator, econSeparator, econTitleLabel, claimValueLabel, this.claimValueField, this.claimTaxLabel, this.claimTaxField, this.claimForSaleLabel);
 
         // Functions Container
-        this.functionsArea = new UIFormContainer(this, 110, 200, "");
+        this.functionsArea = new UIForm(this, 110, 200, "");
         this.functionsArea.setPosition(-10, 5, Anchor.RIGHT | Anchor.TOP);
         this.functionsArea.setMovable(false);
         this.functionsArea.setClosable(false);

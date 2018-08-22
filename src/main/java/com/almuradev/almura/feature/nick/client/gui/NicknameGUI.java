@@ -18,11 +18,10 @@ package com.almuradev.almura.feature.nick.client.gui;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.nick.NickUtil;
 import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
-import com.almuradev.almura.feature.nick.network.ServerboundNucleusNameChangePacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -44,7 +43,6 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
 
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -55,7 +53,7 @@ public final class NicknameGUI extends SimpleScreen {
     private boolean unlockMouse = true;
     private boolean update = true;
     private String originalNickname;
-    private UIFormContainer form;
+    private UIForm form;
     private UITextField nicknameTextbox;
     private UISelect colorSelector;
 
@@ -90,7 +88,7 @@ public final class NicknameGUI extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Master Panel
-        this.form = new UIFormContainer(this, 300, 125, "");
+        this.form = new UIForm(this, 300, 125, "");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -106,7 +104,7 @@ public final class NicknameGUI extends SimpleScreen {
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Player Render Area
-        final UIFormContainer playerArea = new UIFormContainer(this, 75, 85, "");
+        final UIForm playerArea = new UIForm(this, 75, 85, "");
         playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.MIDDLE);
         playerArea.setMovable(false);
         playerArea.setClosable(false);
@@ -118,7 +116,7 @@ public final class NicknameGUI extends SimpleScreen {
         playerArea.setLeftPadding(3);
 
         // Nickname List Area
-        final UIFormContainer listArea = new UIFormContainer(this, 217, 85, "");
+        final UIForm listArea = new UIForm(this, 217, 85, "");
         listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         listArea.setMovable(false);
         listArea.setClosable(false);

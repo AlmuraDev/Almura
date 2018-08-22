@@ -16,7 +16,7 @@ import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
@@ -102,7 +102,7 @@ public final class ExchangeScreen extends SimpleScreen {
         }
 
         // Main Panel
-        final UIFormContainer form = new UIFormContainer(this, minScreenWidth, minScreenHeight, this.getExchange().getName());
+        final UIForm form = new UIForm(this, minScreenWidth, minScreenHeight, this.getExchange().getName());
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -114,7 +114,7 @@ public final class ExchangeScreen extends SimpleScreen {
         form.setLeftPadding(3);
 
         // Item Search Area
-        final UIFormContainer searchArea = new UIFormContainer(this, 295, 323, "");
+        final UIForm searchArea = new UIForm(this, 295, 323, "");
         searchArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         searchArea.setMovable(false);
         searchArea.setClosable(false);
@@ -224,7 +224,7 @@ public final class ExchangeScreen extends SimpleScreen {
             this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList, this.labelSearchPage);
 
         // Economy Pane
-        final UIFormContainer economyActionArea = new UIFormContainer(this, 295, 20, "");
+        final UIForm economyActionArea = new UIForm(this, 295, 20, "");
         economyActionArea.setPosition(0, getPaddedY(searchArea, innerPadding), Anchor.LEFT | Anchor.TOP);
         economyActionArea.setMovable(false);
         economyActionArea.setClosable(false);
@@ -274,7 +274,7 @@ public final class ExchangeScreen extends SimpleScreen {
         economyActionArea.add(this.buttonBuyStack, this.buttonBuySingle, this.buttonBuyQuantity);
 
         // Inventory Area Section (right pane)
-        final UIFormContainer inventoryArea = new UIFormContainer(this, 295, 345, "");
+        final UIForm inventoryArea = new UIForm(this, 295, 345, "");
         inventoryArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         inventoryArea.setMovable(false);
         inventoryArea.setClosable(false);
