@@ -67,13 +67,13 @@ final class ExchangeCommandsCreator {
 
                 final Exchange axs = exchangeManager.getExchange(id).orElse(null);
                 if (axs == null) {
-                    notificationManager.sendPopupNotification(player, Text.of("Exchange"), Text.of(TextColors.RED, id, TextColors.RESET, " does not"
-                            + " exist!"), 5);
+                    notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of(TextColors.RED, id,
+                            TextColors.RESET, " does not exist!"), 5);
                     return CommandResult.success();
                 }
 
                 if (!player.hasPermission(axs.getPermission())) {
-                    notificationManager.sendPopupNotification(player, Text.of("Exchange"), Text.of("You do not have permission!"), 5);
+                    notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission!"), 5);
                     return CommandResult.success();
                 }
 
