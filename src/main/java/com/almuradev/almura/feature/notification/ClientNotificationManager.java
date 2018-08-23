@@ -104,8 +104,15 @@ public final class ClientNotificationManager implements Witness {
     public void handleWindow(final WindowNotification notification) {
         checkNotNull(notification);
 
-        UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, notification.getTitle(), notification.getMessage(), MessageBoxButtons.OK,
-            null);
+        final AbstractHUD hud = this.manager.getHUDDirect();
+
+        if (hud != null) {
+            UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, notification.getTitle(), notification.getMessage(), MessageBoxButtons.OK,
+                null);
+        } else {
+            Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(SpongeTexts.toComponent(SpongeTexts.fromLegacy(notification.getMessage()
+            )));
+        }
     }
 
     @Nullable
