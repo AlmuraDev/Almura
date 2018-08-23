@@ -11,7 +11,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
@@ -23,6 +22,7 @@ import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
 import com.almuradev.almura.shared.feature.store.Store;
+import com.almuradev.almura.shared.feature.store.filter.FilterRegistry;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
@@ -85,7 +85,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -463,7 +465,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
      * ListItem
      */
 
-    public void loadListItems(final Exchange axs) {
+    private void loadListItems(final Exchange axs) {
         checkNotNull(axs);
 
         this.logger.info("Querying items for exchange '{}' ({}), please wait...", axs.getName(), axs.getId());
@@ -477,9 +479,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .keepStatement(false)
                 .fetchMany();
 
-            results.forEach(result -> {
-                items.addAll(this.parseListItemsFrom(result));
-            });
+            results.forEach(result -> items.addAll(this.parseListItemsFrom(result)));
 
             axs.clearListItems();
             axs.clearForSaleItems();
@@ -838,7 +838,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
      * ForSaleItem
      */
 
-    public void loadForSaleItems(final Exchange axs) {
+    private void loadForSaleItems(final Exchange axs) {
         checkNotNull(axs);
 
         this.logger.info("Querying for sale items for exchange '{}' ({}), please wait...", axs.getName(), axs.getId());
@@ -873,9 +873,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
     }
 
-    public void handleForSaleFilter(final Player player, final String id, final String filter) {
+    public void handleForSaleFilter(final Player player, final String id, @Nullable final String filter, @Nullable final String sort,
+        final int skip, final int limit) {
         checkNotNull(player);
         checkNotNull(id);
+        checkState(skip >= 0);
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
@@ -887,15 +889,30 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        // TODO Parse filter or more determine filter format
+        Stream<ForSaleItem> stream = axs.getForSaleItems().entrySet()
+            .stream()
+            .map(Map.Entry::getValue)
+            .flatMap(List::stream);
 
-        // TODO TEST CODE
-        this.network.sendTo(player, new ClientboundForSaleItemsResponsePacket(axs.getId(),
-            axs.getForSaleItems().entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .flatMap(List::stream)
-                .collect(Collectors.toList())));
+        if (filter != null) {
+            final List<FilterRegistry.FilterElement<ListItem>> elements = FilterRegistry.instance.getElements(filter);
+            stream = stream
+                .filter(forSaleItem -> elements
+                    .stream()
+                    .allMatch(element -> element.getFilter().test(forSaleItem.getListItem(), element.getValue())));
+        }
+
+        if (sort != null) {
+            // TODO sorting
+        }
+
+        stream = stream.skip(skip);
+
+        if (limit > -1) {
+            stream = stream.limit(limit);
+        }
+
+        this.network.sendTo(player, new ClientboundForSaleItemsResponsePacket(axs.getId(), stream.collect(Collectors.toList())));
     }
 
     public void handleListForSaleItem(final Player player, final String id, final int listItemRecNo, final BigDecimal price) {
@@ -949,7 +966,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 try (final DSLContext context = this.databaseManager.createContext(true)) {
                     final Instant created = Instant.now();
 
-                    // TODO Can't keepstatement this, need to make sure it doesn't cache connections.
                     final AxsForSaleItemRecord record = ExchangeQueries
                         .createInsertForSaleItem(created, found.getRecord(), price)
                         .build(context)
@@ -1241,10 +1257,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             final String formattedBalance = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(balance.doubleValue());
             final String formattedDifference = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(total - balance.doubleValue());
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange - Insufficient Funds"),
-                    Text.of("You attempted to purchase items totalling to '", formattedTotal, "' while you only had '", formattedBalance, "'.",
-                            Text.NEW_LINE,
-                            Text.NEW_LINE,
-                            "You need '", formattedDifference, "' more!"));
+                    Text.of("You attempted to purchase items totalling to ", TextColors.RED, formattedTotal, TextColors.RESET, " while you only have"
+                            + " ", TextColors.GREEN, formattedBalance, TextColors.RESET, ".", Text.NEW_LINE, Text.NEW_LINE, "You need ",
+                        TextColors.LIGHT_PURPLE, formattedDifference, TextColors.RESET, " more!"));
             return;
         }
 
@@ -1328,7 +1343,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                             // Charge the buyer
                             try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
-                                // TODO I could pass the ForSaleItem to the cause but its another lookup...maybe not worth it lol.
                                 frame.pushCause(axs);
 
                                 buyerAccount.transfer(sellerAccount, economyService.getDefaultCurrency(), price, frame.getCurrentCause());

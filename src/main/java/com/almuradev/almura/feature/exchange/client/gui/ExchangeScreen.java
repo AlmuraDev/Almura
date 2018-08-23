@@ -174,7 +174,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 logger.info(String.format(I18n.format("almura.text.exchange.searching_for_criteria")
                         + ": itemname=%s, playerName=%s", itemName, username));
 
-                exchangeManager.queryForSaleItemsFor(this.axs.getId(), "");
+                exchangeManager.queryForSaleItemsFor(this.axs.getId(), null, null, 0, -1);
             })
             .build("button.search");
 

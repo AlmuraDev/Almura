@@ -18,13 +18,20 @@ public final class ServerboundForSaleFilterResponsePacket implements Message {
 
     @Nullable public String id;
     @Nullable public String filter;
+    @Nullable public String sort;
+    public int skip;
+    public int limit;
 
     public ServerboundForSaleFilterResponsePacket() {
     }
 
-    public ServerboundForSaleFilterResponsePacket(@Nullable final String id, @Nullable final String filter) {
+    public ServerboundForSaleFilterResponsePacket(@Nullable final String id, @Nullable final String filter, @Nullable final String sort,
+        final int skip, final int limit) {
         this.id = id;
         this.filter = filter;
+        this.sort = sort;
+        this.skip = skip;
+        this.limit = limit;
     }
 
     @Override
@@ -34,6 +41,13 @@ public final class ServerboundForSaleFilterResponsePacket implements Message {
         if (buf.readBoolean()) {
             this.filter = buf.readString();
         }
+
+        if (buf.readBoolean()) {
+            this.sort = buf.readString();
+        }
+
+        this.skip = buf.readInteger();
+        this.limit = buf.readInteger();
     }
 
     @Override
@@ -46,5 +60,14 @@ public final class ServerboundForSaleFilterResponsePacket implements Message {
         if (this.filter != null) {
             buf.writeString(this.filter);
         }
+
+        buf.writeBoolean(this.sort != null);
+
+        if (this.sort != null) {
+            buf.writeString(this.sort);
+        }
+
+        buf.writeInteger(this.skip);
+        buf.writeInteger(this.limit);
     }
 }

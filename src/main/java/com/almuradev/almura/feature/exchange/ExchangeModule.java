@@ -37,6 +37,8 @@ import com.almuradev.almura.feature.exchange.network.handler.ServerboundTransact
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundListItemsRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyExchangePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyForSaleItemListStatusRequestPacketHandler;
+import com.almuradev.almura.shared.feature.store.filter.FilterRegistry;
+import com.almuradev.almura.shared.feature.store.filter.ListItemFilter;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -44,8 +46,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 
-public final class ExchangeModule extends AbstractModule implements CommonBinder {
+import javax.inject.Inject;
 
+public final class ExchangeModule extends AbstractModule implements CommonBinder {
+    
     @Override
     protected void configure() {
         this.packet()
@@ -86,6 +90,10 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 binder -> binder.handler(ServerboundTransactionRequestPacketHandler.class, Platform.Type.SERVER));
 
         this.facet().add(ServerExchangeManager.class);
+
+        FilterRegistry.instance.register("display_name", (ListItemFilter) (target, value) -> target.asRealStack().getDisplayName().contains(value));
+        FilterRegistry.instance.register("seller_name", (ListItemFilter) (target, value) -> target.getSellerName().isPresent() && target
+            .getSellerName().get().contains(value));
 
         this.on(Platform.Type.CLIENT, () -> {
 

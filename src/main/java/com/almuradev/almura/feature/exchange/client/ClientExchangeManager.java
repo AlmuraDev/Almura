@@ -128,10 +128,10 @@ public final class ClientExchangeManager implements Witness {
         this.network.sendToServer(new ServerboundModifyExchangePacket(id));
     }
 
-    public void queryForSaleItemsFor(final String id, @Nullable final String filter) {
+    public void queryForSaleItemsFor(final String id, @Nullable final String filter, @Nullable final String sort, final int skip, final int limit) {
         checkNotNull(id);
 
-        this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, filter));
+        this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, filter, sort, skip, limit));
     }
 
     public void updateListItems(final String id, final List<InventoryAction> actions) {
@@ -257,10 +257,10 @@ public final class ClientExchangeManager implements Witness {
         checkNotNull(id);
 
         // TODO Grinch
-        // TODO Clear out for sale listings, call updateForSaleItemsFor with the filter
+        // TODO Clear out for sale listings
 
         // TODO TEST CODE
-        this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, ""));
+        this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, null, null, 0, -1));
     }
 
     public void handleForSaleItems(final String id, @Nullable final List<ForSaleItem> forSaleItems) {
