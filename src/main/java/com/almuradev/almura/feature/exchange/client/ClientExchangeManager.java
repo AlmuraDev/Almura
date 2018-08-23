@@ -13,7 +13,6 @@ import static com.google.common.base.Preconditions.checkState;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.ExchangeConstants;
-import com.almuradev.almura.feature.exchange.ExchangeGuiType;
 import com.almuradev.almura.feature.exchange.ExchangeModifyType;
 import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.feature.exchange.ListStatusType;
@@ -27,6 +26,10 @@ import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequest
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyForSaleItemListStatusRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundTransactionRequestPacket;
+import com.almuradev.almura.feature.notification.ClientNotificationManager;
+import com.almuradev.almura.feature.notification.type.PopupNotification;
+import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
+import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
@@ -58,8 +61,9 @@ import javax.inject.Singleton;
 @SideOnly(Side.CLIENT)
 public final class ClientExchangeManager implements Witness {
 
-    private final ChannelBinding.IndexedMessageChannel network;
+    @Inject private static ClientNotificationManager notificationManager;
 
+    private final ChannelBinding.IndexedMessageChannel network;
     private final List<Exchange> exchanges = new ArrayList<>();
 
     @Nullable private String currentFilter, currentSort;
@@ -197,14 +201,14 @@ public final class ClientExchangeManager implements Witness {
     public void handleExchangeSpecificOffer(final String id) {
         checkNotNull(id);
 
-        final Exchange axs = this.getExchange(id);
-        if (axs == null) {
-            // TODO Close main screen
+        final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+        if (!(currentScreen instanceof ExchangeScreen)) {
             return;
         }
 
-        final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-        if (!(currentScreen instanceof ExchangeScreen)) {
+        final Exchange axs = this.getExchange(id);
+        if (axs == null) {
+            ((ExchangeScreen) currentScreen).close();
             return;
         }
 
@@ -257,7 +261,7 @@ public final class ClientExchangeManager implements Witness {
         listItems.forEach(item -> ((BasicListItem) item).setForSaleItem(null));
 
         if (itemCandidates == null) {
-            // TODO Grinch, you got nothing back
+            UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, "Exchange", "No results found for that query", MessageBoxButtons.OK);
         } else {
             for (final ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate itemCandidate : itemCandidates) {
                 listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
@@ -270,9 +274,6 @@ public final class ClientExchangeManager implements Witness {
 
     public void handleForSaleFilter(final String id) {
         checkNotNull(id);
-
-        // TODO Grinch
-        // TODO Clear out for sale listings
 
         // TODO TEST CODE
         this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, this.currentFilter, this.currentSort, this.currentSkip,
