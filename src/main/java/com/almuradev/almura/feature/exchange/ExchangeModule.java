@@ -113,7 +113,7 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                     }
                     return item.getPrice();
                 }))
-            .<ListItem>registerComparator("age", Comparator.comparing(l -> {
+            .<ListItem>registerComparator("created", Comparator.comparing(l -> {
                 final ForSaleItem item = l.getForSaleItem().orElse(null);
                 if (item == null) {
                     return null;

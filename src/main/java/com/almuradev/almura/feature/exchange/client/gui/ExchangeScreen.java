@@ -624,8 +624,8 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public enum SortType {
-        OLDEST(I18n.format("almura.text.exchange.sort.oldest"), "age", "asc"),
-        NEWEST(I18n.format("almura.text.exchange.sort.newest"), "age", "desc"),
+        OLDEST(I18n.format("almura.text.exchange.sort.oldest"), "created", "asc"),
+        NEWEST(I18n.format("almura.text.exchange.sort.newest"), "created", "desc"),
         PRICE_ASC(I18n.format("almura.text.exchange.sort.price_ascending"), "price", "asc"),
         PRICE_DESC(I18n.format("almura.text.exchange.sort.price_descending"), "price", "desc"),
         DISPLAY_NAME_ASC(I18n.format("almura.text.exchange.sort.item_ascending"), "display_name", "asc"),
