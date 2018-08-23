@@ -34,7 +34,7 @@ public final class ClientboundForSaleItemsResponsePacketHandler implements Messa
     @Override
     public void handleMessage(final ClientboundForSaleItemsResponsePacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-            this.exchangeManager.handleForSaleItems(message.id, message.forSaleItems);
+            this.exchangeManager.handleForSaleItems(message.id, message.forSaleItems, message.preLimitCount);
         }
     }
 }

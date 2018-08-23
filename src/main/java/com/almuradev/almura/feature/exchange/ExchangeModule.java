@@ -38,6 +38,7 @@ import com.almuradev.almura.feature.exchange.network.handler.ServerboundListItem
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyExchangePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyForSaleItemListStatusRequestPacketHandler;
 import com.almuradev.almura.shared.feature.store.filter.FilterRegistry;
+import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
@@ -46,7 +47,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.Optional;
 
 public final class ExchangeModule extends AbstractModule implements CommonBinder {
     
@@ -97,11 +100,26 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
             .child(ExchangeCommandsCreator.createCommand(), "exchange", "axs");
 
         FilterRegistry.instance
-            .<ListItem>registerFilter("display_name", (target, value) -> target.asRealStack().getDisplayName().contains(value))
-            .<ListItem>registerFilter("seller_name", (target, value) -> target.getSellerName().isPresent() && target.getSellerName().get()
-                .contains(value))
-            .<ListItem>registerComparator("display_name", Comparator.comparing(k -> k.asRealStack().getDisplayName()))
-            .<ListItem>registerComparator("seller_name", Comparator.comparing(v -> v.getSellerName().orElse(null)));
+            .<ListItem>registerFilter("display_name", (target, value) ->
+                    target.asRealStack().getDisplayName().toLowerCase().contains(value.toLowerCase()))
+            .<ListItem>registerFilter("seller_name", (target, value) ->
+                    target.getSellerName().isPresent() && target.getSellerName().get().toLowerCase().contains(value.toLowerCase()))
+            .<ListItem>registerComparator("display_name", Comparator.comparing(k -> k.asRealStack().getDisplayName().toLowerCase()))
+            .<ListItem>registerComparator("seller_name", Comparator.comparing(v -> v.getSellerName().orElse("").toLowerCase()))
+            .<ListItem>registerComparator("price", Comparator.comparing(l -> {
+                    final ForSaleItem item = l.getForSaleItem().orElse(null);
+                    if (item == null) {
+                        return null;
+                    }
+                    return item.getPrice();
+                }))
+            .<ListItem>registerComparator("age", Comparator.comparing(l -> {
+                final ForSaleItem item = l.getForSaleItem().orElse(null);
+                if (item == null) {
+                    return null;
+                }
+                return item.getCreated();
+            }));
 
         this.on(Platform.Type.CLIENT, () -> {
 

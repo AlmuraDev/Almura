@@ -10,6 +10,8 @@ package com.almuradev.almura.shared.feature.store.filter;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.shared.feature.store.StoreConstants;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -24,9 +26,6 @@ public final class FilterRegistry {
 
     // TODO Fix this better when I care
     public static final FilterRegistry instance = new FilterRegistry();
-
-    private static final String DELIMETER = ";";
-    private static final String EQUALITY = "=";
 
     private final Map<String, Filter<?>> filters = new HashMap<>();
     private final Map<String, Comparator<?>> comparators = new HashMap<>();
@@ -70,10 +69,10 @@ public final class FilterRegistry {
 
         final List<FilterElement<T>> elements = new ArrayList<>();
 
-        final String[] elementsSplit = filter.split(DELIMETER);
+        final String[] elementsSplit = filter.split(StoreConstants.DELIMETER);
 
         for (final String rawElement : elementsSplit) {
-            final int index = rawElement.indexOf(EQUALITY);
+            final int index = rawElement.indexOf(StoreConstants.EQUALITY);
             if (index == -1) {
                 continue;
             }
@@ -84,7 +83,7 @@ public final class FilterRegistry {
                 continue;
             }
 
-            final String value = rawElement.substring(index);
+            final String value = rawElement.substring(index + 1);
             elements.add(new FilterElement(found, value));
         }
 
@@ -97,10 +96,10 @@ public final class FilterRegistry {
 
         final List<SorterElement<T>> elements = new ArrayList<>();
 
-        final String[] elementsSplit = sorter.split(DELIMETER);
+        final String[] elementsSplit = sorter.split(StoreConstants.DELIMETER);
 
         for (final String rawElement : elementsSplit) {
-            final int index = rawElement.indexOf(EQUALITY);
+            final int index = rawElement.indexOf(StoreConstants.EQUALITY);
             if (index == -1) {
                 continue;
             }
@@ -111,7 +110,7 @@ public final class FilterRegistry {
                 continue;
             }
 
-            final String value = rawElement.substring(index);
+            final String value = rawElement.substring(index + 1);
             final Direction direction = Direction.getDirection(value).orElse(null);
             if (direction == null) {
                 continue;

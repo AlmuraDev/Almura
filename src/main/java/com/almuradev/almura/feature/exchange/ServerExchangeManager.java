@@ -861,15 +861,18 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             }
         }
 
-        stream = stream.skip(skip);
+        final List<ForSaleItem> result = stream.collect(Collectors.toList());
 
-        final long count = stream.count();
+        final Stream<ForSaleItem> adjustedStream = result.stream().skip(skip);
 
+        final List<ForSaleItem> limitedResult;
         if (limit > -1) {
-            stream = stream.limit(limit);
+            limitedResult = adjustedStream.limit(limit).collect(Collectors.toList());
+        } else {
+            limitedResult = adjustedStream.collect(Collectors.toList());
         }
 
-        this.network.sendTo(player, new ClientboundForSaleItemsResponsePacket(axs.getId(), stream.collect(Collectors.toList()), (int) count));
+        this.network.sendTo(player, new ClientboundForSaleItemsResponsePacket(axs.getId(), limitedResult, result.size()));
     }
 
     public void handleListForSaleItem(final Player player, final String id, final int listItemRecNo, final BigDecimal price) {
@@ -1214,8 +1217,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             final String formattedBalance = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(balance.doubleValue());
             final String formattedDifference = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(total - balance.doubleValue());
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange - Insufficient Funds"),
-                    Text.of("You attempted to purchase items totalling to ", TextColors.RED, formattedTotal, TextColors.RESET, " while you only have"
-                            + " ", TextColors.GREEN, formattedBalance, TextColors.RESET, ".", Text.NEW_LINE, Text.NEW_LINE, "You need ",
+                    Text.of("You attempted to purchase items totalling to ", TextColors.RED, formattedTotal, TextColors.RESET, " while you only have ",
+                            TextColors.GREEN, formattedBalance, TextColors.RESET, ".", Text.NEW_LINE, Text.NEW_LINE, "You need ",
                         TextColors.LIGHT_PURPLE, formattedDifference, TextColors.RESET, " more!"));
             return;
         }

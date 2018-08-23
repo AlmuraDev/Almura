@@ -62,6 +62,10 @@ public final class ClientExchangeManager implements Witness {
 
     private final List<Exchange> exchanges = new ArrayList<>();
 
+    @Nullable private String currentFilter, currentSort;
+    private int currentSkip = 0;
+    private int currentLimit = -1;
+
     @Inject
     public ClientExchangeManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
         this.network = network;
@@ -132,7 +136,16 @@ public final class ClientExchangeManager implements Witness {
     public void queryForSaleItemsFor(final String id, @Nullable final String filter, @Nullable final String sort, final int skip, final int limit) {
         checkNotNull(id);
 
+        this.currentFilter = filter;
+        this.currentSort = sort;
+        this.currentSkip = skip;
+        this.currentLimit = limit;
+
         this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, filter, sort, skip, limit));
+    }
+
+    public void queryForSaleItemsCached(final String id, final int skip, final int limit) {
+        this.queryForSaleItemsFor(id, this.currentFilter, this.currentSort, skip, limit);
     }
 
     public void updateListItems(final String id, final List<InventoryAction> actions) {
@@ -176,6 +189,7 @@ public final class ClientExchangeManager implements Witness {
         final Exchange axs = this.getExchange(id);
 
         if (axs != null) {
+            this.clearCache();
             new ExchangeScreen(axs, limit).display();
         }
     }
@@ -261,10 +275,11 @@ public final class ClientExchangeManager implements Witness {
         // TODO Clear out for sale listings
 
         // TODO TEST CODE
-        this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, null, null, 0, -1));
+        this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, this.currentFilter, this.currentSort, this.currentSkip,
+                this.currentLimit));
     }
 
-    public void handleForSaleItems(final String id, @Nullable final List<ForSaleItem> forSaleItems) {
+    public void handleForSaleItems(final String id, @Nullable final List<ForSaleItem> forSaleItems, int preLimitCount) {
         checkNotNull(id);
 
         final Exchange axs = this.getExchange(id);
@@ -286,7 +301,14 @@ public final class ClientExchangeManager implements Witness {
                     .collect(Collectors.groupingBy(k -> k.getListItem().getSeller(), ConcurrentHashMap::new,
                         Collectors.toCollection(ArrayList::new))));
             }
-            ((ExchangeScreen) currentScreen).refreshForSaleItemResults();
+            ((ExchangeScreen) currentScreen).refreshForSaleItemResults(preLimitCount);
         }
+    }
+
+    private void clearCache() {
+        this.currentFilter = null;
+        this.currentSort = null;
+        this.currentSkip = 0;
+        this.currentLimit = -1;
     }
 }

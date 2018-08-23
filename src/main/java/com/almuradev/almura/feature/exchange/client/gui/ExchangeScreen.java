@@ -22,6 +22,7 @@ import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.feature.store.StoreConstants;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.item.VirtualStack;
@@ -49,7 +50,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,8 +74,8 @@ public final class ExchangeScreen extends SimpleScreen {
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
         buttonList;
     private UILabel labelSearchPage, labelLimit;
-    private UITextField itemSearchField, sellerSearchField;
-    private int currentPage;
+    private UITextField displayNameSearchField, sellerSearchField;
+    private int currentPage = 1;
     private int pages;
 
     public UIDynamicList<ListItem> listItemList;
@@ -123,21 +124,21 @@ public final class ExchangeScreen extends SimpleScreen {
         itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         itemSearchLabel.setPosition(0, 4, Anchor.LEFT | Anchor.TOP);
 
-        this.itemSearchField = new UITextField(this, "", false);
-        this.itemSearchField.setSize(145, 0);
-        this.itemSearchField.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
-        this.itemSearchField.setEditable(true);
-        this.itemSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
+        this.displayNameSearchField = new UITextField(this, "", false);
+        this.displayNameSearchField.setSize(145, 0);
+        this.displayNameSearchField.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
+        this.displayNameSearchField.setEditable(true);
+        this.displayNameSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Seller Search Area
         final UILabel sellerSearchLabel = new UILabel(this, I18n.format("almura.text.exchange.seller") + ":");
         sellerSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
-        sellerSearchLabel.setPosition(itemSearchField.getX() - sellerSearchLabel.getWidth() - 1,
+        sellerSearchLabel.setPosition(displayNameSearchField.getX() - sellerSearchLabel.getWidth() - 1,
             getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
 
         this.sellerSearchField = new UITextField(this, "", false);
         this.sellerSearchField.setSize(145, 0);
-        this.sellerSearchField.setPosition(this.itemSearchField.getX(), getPaddedY(this.itemSearchField, 4), Anchor.LEFT | Anchor.TOP);
+        this.sellerSearchField.setPosition(this.displayNameSearchField.getX(), getPaddedY(this.displayNameSearchField, 4), Anchor.LEFT | Anchor.TOP);
         this.sellerSearchField.setEditable(true);
         this.sellerSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -168,13 +169,32 @@ public final class ExchangeScreen extends SimpleScreen {
             .position(-innerPadding, 1)
             .text(I18n.format("almura.button.exchange.search"))
             .onClick(() -> {
-                final String itemName = this.itemSearchField.getText();
-                final String username = this.sellerSearchField.getText();
+                final Map<String, Object> filterQueryMap = new HashMap<>();
+                filterQueryMap.put("display_name", this.displayNameSearchField.getText());
+                filterQueryMap.put("seller_name", this.sellerSearchField.getText());
 
-                logger.info(String.format(I18n.format("almura.text.exchange.searching_for_criteria")
-                        + ": itemname=%s, playerName=%s", itemName, username));
+                final Map<String, String> sortQueryMap = new HashMap<>();
+                sortQueryMap.put(comboBoxSortType.getSelectedValue().id, comboBoxSortType.getSelectedValue().direction);
 
-                exchangeManager.queryForSaleItemsFor(this.axs.getId(), null, null, 0, -1);
+                final StringBuilder filterQueryBuilder = new StringBuilder();
+                for (Map.Entry<String, Object> entry : filterQueryMap.entrySet()) {
+                    if (entry.getValue().toString().isEmpty()) {
+                        continue;
+                    }
+                    filterQueryBuilder.append(entry.getKey()).append(StoreConstants.EQUALITY).append(entry.getValue()).append(StoreConstants.DELIMETER);
+                }
+
+                // Not needed to be done this way in current form but adds native support if we allow multiple sorting patterns
+                final StringBuilder sortQueryBuilder = new StringBuilder();
+                for (Map.Entry<String, String> entry : sortQueryMap.entrySet()) {
+                    if (entry.getValue().isEmpty()) {
+                        continue;
+                    }
+                    sortQueryBuilder.append(entry.getKey()).append(StoreConstants.EQUALITY).append(entry.getValue()).append(StoreConstants.DELIMETER);
+                }
+
+                exchangeManager.queryForSaleItemsFor(this.axs.getId(), filterQueryBuilder.toString(), sortQueryBuilder.toString(),
+                        (this.currentPage - 1) * 10, 10);
             })
             .build("button.search");
 
@@ -229,7 +249,7 @@ public final class ExchangeScreen extends SimpleScreen {
         bottomSeparator.setPosition(0, SimpleScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         // Add Elements of Search Area
-        searchArea.add(itemSearchLabel, this.itemSearchField, sellerSearchLabel, this.sellerSearchField, buttonSearch, comboBoxSortType,
+        searchArea.add(itemSearchLabel, this.displayNameSearchField, sellerSearchLabel, this.sellerSearchField, buttonSearch, comboBoxSortType,
                 this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList, this.labelSearchPage,
                 topSeparator, bottomSeparator);
 
@@ -359,26 +379,14 @@ public final class ExchangeScreen extends SimpleScreen {
     private void setPage(int page) {
         page = MathUtil.squashi(page, 1, this.pages);
 
+        this.axs.clearForSaleItems();
+        this.forSaleList.clearItems();
+
         this.currentPage = page;
-
-        this.buttonFirstPage.setEnabled(page != 1);
-        this.buttonPreviousPage.setEnabled(page != 1);
-        this.buttonNextPage.setEnabled(page != this.pages);
-        this.buttonLastPage.setEnabled(page != this.pages);
-
-        this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, page, "/", this.pages)));
 
         this.forSaleList.setSelectedItem(null); // Clear selection
 
-        final List<ForSaleItem> forSaleItems = this.axs.getForSaleItems().entrySet()
-            .stream()
-            .map(Map.Entry::getValue)
-            .flatMap(List::stream)
-            .skip((page - 1) * 10)
-            .limit(10)
-            .collect(Collectors.toList());
-
-        this.forSaleList.setItems(forSaleItems);
+        exchangeManager.queryForSaleItemsCached(this.axs.getId(), (this.currentPage - 1) * 10, 10);
     }
 
     @SuppressWarnings("deprecation")
@@ -396,6 +404,14 @@ public final class ExchangeScreen extends SimpleScreen {
         this.buttonList.setEnabled(isSellingItemSelected);
         this.buttonList.setText(I18n.format("almura.button.exchange." + (isListed ? "unlist" : "list")));
 
+        // Update page buttons/labels
+        this.buttonFirstPage.setEnabled(this.currentPage != 1);
+        this.buttonPreviousPage.setEnabled(this.currentPage != 1);
+        this.buttonNextPage.setEnabled(this.currentPage != this.pages);
+        this.buttonLastPage.setEnabled(this.currentPage != this.pages);
+
+        this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, this.currentPage, "/", this.pages)));
+
         // Update all items
         this.listItemList.getComponents()
                 .stream()
@@ -407,26 +423,6 @@ public final class ExchangeScreen extends SimpleScreen {
         this.labelLimit.setText(TextSerializers.LEGACY_FORMATTING_CODE
                 .serialize(Text.of(TextColors.WHITE, this.listItemList.getItems().size(), "/", this.limit)));
     }
-
-    public List<ForSaleItem> getResults(String itemName, String username, SortType sort) {
-        return this.axs.getForSaleItems().values()
-                .stream()
-                .flatMap(List::stream)
-                .filter(o -> {
-                    final String itemDisplayName = o.asRealStack().getDisplayName().toLowerCase();
-                    final String itemSellerName = o.getListItem().getSellerName().orElse("").toLowerCase();
-
-                    if (!itemName.isEmpty() && !itemDisplayName.contains(itemName.toLowerCase())) {
-                        return false;
-                    }
-
-                    return username.isEmpty() || itemSellerName.contains(username.toLowerCase());
-                })
-                .sorted(sort.comparator)
-                .collect(Collectors.toList());
-    }
-
-
 
     public void refreshListItems() {
         if (this.listItemList == null) {
@@ -454,7 +450,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.updateControls();
     }
 
-    public void refreshForSaleItemResults() {
+    public void refreshForSaleItemResults(int preLimitCount) {
         if (this.forSaleList == null) {
             return;
         }
@@ -470,10 +466,10 @@ public final class ExchangeScreen extends SimpleScreen {
             this.forSaleList.addItems(forSaleItems);
         }
 
-        this.pages = (Math.max(this.forSaleList.getSize() - 1, 1) / 10) + 1;
+        this.pages = (Math.max(preLimitCount - 1, 1) / 10) + 1;
 
         // If we can go back to the same page, try it. Otherwise default back to the first.
-        this.setPage(this.currentPage <= this.pages ? this.currentPage : 1);
+        this.currentPage = this.currentPage <= this.pages ? this.currentPage : 1;
 
         // Attempt to re-select the same item
         if (currentItem != null) {
@@ -628,24 +624,20 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public enum SortType {
-        OLDEST(I18n.format("almura.text.exchange.sort.oldest"), (a, b) -> a.getCreated().compareTo(b.getCreated())),
-        NEWEST(I18n.format("almura.text.exchange.sort.newest"), (a, b) -> b.getCreated().compareTo(a.getCreated())),
-        PRICE_ASC(I18n.format("almura.text.exchange.sort.price_ascending"), (a, b) -> a.getPrice().compareTo(b.getPrice())),
-        PRICE_DESC(I18n.format("almura.text.exchange.sort.price_descending"), (a, b) -> b.getPrice().compareTo(a.getPrice())),
-        ITEM_ASC(I18n.format("almura.text.exchange.sort.item_ascending"),
-                (a, b) -> a.asRealStack().getDisplayName().compareTo(b.asRealStack().getDisplayName())),
-        ITEM_DESC(I18n.format("almura.text.exchange.sort.item_descending"),
-                (a, b) -> b.asRealStack().getDisplayName().compareTo(a.asRealStack().getDisplayName())),
-        PLAYER_ASC(I18n.format("almura.text.exchange.sort.player_ascending"),
-                (a, b) -> a.getListItem().getSellerName().orElse("").compareTo(b.getListItem().getSellerName().orElse(""))),
-        PLAYER_DESC(I18n.format("almura.text.exchange.sort.player_descending"),
-                (a, b) -> b.getListItem().getSellerName().orElse("").compareTo(a.getListItem().getSellerName().orElse("")));
+        OLDEST(I18n.format("almura.text.exchange.sort.oldest"), "age", "asc"),
+        NEWEST(I18n.format("almura.text.exchange.sort.newest"), "age", "desc"),
+        PRICE_ASC(I18n.format("almura.text.exchange.sort.price_ascending"), "price", "asc"),
+        PRICE_DESC(I18n.format("almura.text.exchange.sort.price_descending"), "price", "desc"),
+        DISPLAY_NAME_ASC(I18n.format("almura.text.exchange.sort.item_ascending"), "display_name", "asc"),
+        DISPLAY_NAME_DESC(I18n.format("almura.text.exchange.sort.item_descending"), "display_name", "desc"),
+        SELLER_NAME_ASC(I18n.format("almura.text.exchange.sort.player_ascending"), "seller_name", "asc"),
+        SELLER_NAME_DESC(I18n.format("almura.text.exchange.sort.player_descending"), "seller_name", "desc");
 
-        public final String displayName;
-        public final Comparator<ForSaleItem> comparator;
-        SortType(final String displayName, final Comparator<ForSaleItem> comparator) {
+        public final String displayName, id, direction;
+        SortType(final String displayName, final String id, final String direction) {
             this.displayName = displayName;
-            this.comparator = comparator;
+            this.id = id;
+            this.direction = direction;
         }
     }
 }

@@ -16,7 +16,7 @@ public enum Direction {
     public static Optional<Direction> getDirection(final String id) {
         Direction direction = null;
 
-        switch (id.toLowerCase()) {
+        switch (id.toUpperCase()) {
             case "ASC":
                 direction = ASCENDING;
                 break;
