@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.notification.network.handler;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.network.ClientboundPlayerNotificationPacket;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
+import com.almuradev.almura.feature.notification.type.WindowNotification;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.util.PacketUtil;
@@ -39,10 +40,9 @@ public class ClientboundPlayerNotificationPacketHandler implements MessageHandle
 
             if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
                 if (message.inWindow) {
-                    UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, message.title, message.message,
-                        MessageBoxButtons.OK, null);
+                    this.manager.handleWindow(new WindowNotification(message.title, message.message));
                 } else {
-                    this.manager.queuePopup(new PopupNotification(message.title, message.message, message.timeToLive));
+                    this.manager.handlePopup(new PopupNotification(message.title, message.message, message.timeToLive));
                 }
             }
         }

@@ -13,6 +13,9 @@ import com.almuradev.almura.feature.hud.ClientHeadUpDisplayManager;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
+import com.almuradev.almura.feature.notification.type.WindowNotification;
+import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
+import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -92,10 +95,17 @@ public final class ClientNotificationManager implements Witness {
         }
     }
 
-    public void queuePopup(final PopupNotification notification) {
+    public void handlePopup(final PopupNotification notification) {
         checkNotNull(notification);
 
         this.popupNotifications.offer(notification);
+    }
+
+    public void handleWindow(final WindowNotification notification) {
+        checkNotNull(notification);
+
+        UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, notification.getTitle(), notification.getMessage(), MessageBoxButtons.OK,
+            null);
     }
 
     @Nullable

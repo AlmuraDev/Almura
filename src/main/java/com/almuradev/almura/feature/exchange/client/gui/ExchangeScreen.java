@@ -92,7 +92,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Detect if screen area is large enough to display.
         if (minScreenWidth > this.resolution.getScaledWidth() || minScreenHeight > this.resolution.getScaledHeight()) {
-            notificationManager.queuePopup(new PopupNotification("Exchange Error", "Screen area of: " + minScreenHeight + " x " +
+            notificationManager.handlePopup(new PopupNotification("Exchange Error", "Screen area of: " + minScreenHeight + " x " +
                 minScreenWidth + " required.", 5));
             this.close();
             return;
