@@ -59,7 +59,6 @@ public final class ClientNotificationManager implements Witness {
 
         final AbstractHUD hud = this.manager.getHUDDirect();
 
-        // TODO Null screen means in-game but unsure if we want the notifications to pop up in the background
         if (event.phase == TickEvent.Phase.START && Minecraft.getMinecraft().ingameGUI != null) {
 
             if (this.fadeout >= 0) {

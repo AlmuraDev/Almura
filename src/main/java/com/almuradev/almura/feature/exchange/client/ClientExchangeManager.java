@@ -27,7 +27,7 @@ import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePa
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyForSaleItemListStatusRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundTransactionRequestPacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
-import com.almuradev.almura.feature.notification.type.PopupNotification;
+import com.almuradev.almura.feature.notification.type.WindowNotification;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
@@ -61,9 +61,8 @@ import javax.inject.Singleton;
 @SideOnly(Side.CLIENT)
 public final class ClientExchangeManager implements Witness {
 
-    @Inject private static ClientNotificationManager notificationManager;
-
     private final ChannelBinding.IndexedMessageChannel network;
+    private final ClientNotificationManager notificationManager;
     private final List<Exchange> exchanges = new ArrayList<>();
 
     @Nullable private String currentFilter, currentSort;
@@ -71,8 +70,11 @@ public final class ClientExchangeManager implements Witness {
     private int currentLimit = -1;
 
     @Inject
-    public ClientExchangeManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
+    public ClientExchangeManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network,
+        final ClientNotificationManager notificationManager) {
+
         this.network = network;
+        this.notificationManager = notificationManager;
     }
 
     @SubscribeEvent
@@ -81,7 +83,7 @@ public final class ClientExchangeManager implements Witness {
     }
 
     @Nullable
-    public Exchange getExchange(final String id) {
+    private Exchange getExchange(final String id) {
         checkNotNull(id);
 
         return this.exchanges.stream().filter(axs -> axs.getId().equalsIgnoreCase(id)).findAny().orElse(null);
@@ -91,7 +93,7 @@ public final class ClientExchangeManager implements Witness {
         return this.exchanges;
     }
 
-    public void putExchanges(@Nullable final Set<Exchange> exchanges) {
+    private void putExchanges(@Nullable final Set<Exchange> exchanges) {
         this.exchanges.clear();
 
         if (exchanges != null) {
@@ -193,7 +195,7 @@ public final class ClientExchangeManager implements Witness {
         final Exchange axs = this.getExchange(id);
 
         if (axs != null) {
-            this.clearCache();
+            this.clearFilterCache();
             new ExchangeScreen(axs, limit).display();
         }
     }
@@ -243,8 +245,8 @@ public final class ClientExchangeManager implements Witness {
         }
     }
 
-    public void handleListItemsSaleStatus(final String id,
-        @Nullable final List<ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate> itemCandidates) {
+    public void handleListItemsSaleStatus(final String id, @Nullable final List<ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate>
+        itemCandidates) {
         checkNotNull(id);
 
         final Exchange axs = this.getExchange(id);
@@ -261,7 +263,7 @@ public final class ClientExchangeManager implements Witness {
         listItems.forEach(item -> ((BasicListItem) item).setForSaleItem(null));
 
         if (itemCandidates == null) {
-            UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, "Exchange", "No results found for that query", MessageBoxButtons.OK);
+            this.notificationManager.handleWindow(new WindowNotification("Exchange", "No results found for that query"));
         } else {
             for (final ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate itemCandidate : itemCandidates) {
                 listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
@@ -275,7 +277,6 @@ public final class ClientExchangeManager implements Witness {
     public void handleForSaleFilter(final String id) {
         checkNotNull(id);
 
-        // TODO TEST CODE
         this.network.sendToServer(new ServerboundForSaleFilterResponsePacket(id, this.currentFilter, this.currentSort, this.currentSkip,
                 this.currentLimit));
     }
@@ -306,7 +307,7 @@ public final class ClientExchangeManager implements Witness {
         }
     }
 
-    private void clearCache() {
+    private void clearFilterCache() {
         this.currentFilter = null;
         this.currentSort = null;
         this.currentSkip = 0;

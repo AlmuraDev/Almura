@@ -17,7 +17,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-public final class ExchangeCommandsCreator {
+final class ExchangeCommandsCreator {
 
     @Inject private static ServerExchangeManager exchangeManager;
     @Inject private static ServerNotificationManager notificationManager;
@@ -31,7 +31,7 @@ public final class ExchangeCommandsCreator {
             .build();
     }
 
-    static CommandSpec createManageCommand() {
+    private static CommandSpec createManageCommand() {
         return CommandSpec.builder()
             .description(Text.of("Request to manage exchanges"))
             .arguments(GenericArguments.playerOrSource(Text.of("player")))
@@ -49,7 +49,7 @@ public final class ExchangeCommandsCreator {
             .build();
     }
 
-    static CommandSpec createOpenCommand() {
+    private static CommandSpec createOpenCommand() {
         return CommandSpec.builder()
             .description(Text.of("Request to open an exchange"))
             .arguments(GenericArguments.seq(GenericArguments.playerOrSource(Text.of("player")), GenericArguments.string(Text.of("id"))))
@@ -68,12 +68,12 @@ public final class ExchangeCommandsCreator {
                 final Exchange axs = exchangeManager.getExchange(id).orElse(null);
                 if (axs == null) {
                     notificationManager.sendPopupNotification(player, Text.of("Exchange"), Text.of(TextColors.RED, id, TextColors.RESET, " does not"
-                            + " exist!"), 10);
+                            + " exist!"), 5);
                     return CommandResult.success();
                 }
 
                 if (!player.hasPermission(axs.getPermission())) {
-                    notificationManager.sendPopupNotification(player, Text.of("Exchange"), Text.of("You do not have permission!"), 10);
+                    notificationManager.sendPopupNotification(player, Text.of("Exchange"), Text.of("You do not have permission!"), 5);
                     return CommandResult.success();
                 }
 

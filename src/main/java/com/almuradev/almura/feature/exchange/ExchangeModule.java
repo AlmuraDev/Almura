@@ -130,6 +130,7 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 @Override
                 protected void configure() {
                     this.facet().add(ClientExchangeManager.class);
+
                     this.requestStaticInjection(ExchangeBuyQuantityScreen.class);
                     this.requestStaticInjection(ExchangeListPriceScreen.class);
                     this.requestStaticInjection(ExchangeOfferScreen.class);
