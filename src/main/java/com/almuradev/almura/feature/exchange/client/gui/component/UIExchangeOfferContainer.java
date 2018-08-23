@@ -92,6 +92,8 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
         this.leftContainer.add(this.leftPropertyBar);
         this.rightContainer.add(this.rightPropertyBar);
+
+        this.updateControls(null, SideType.RIGHT);
     }
 
     @Override
@@ -164,9 +166,9 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
         this.leftPropertyBar.setText(Text.of(leftSize, "/", this.leftLimit));
 
         // Right progress bar
-        final int rightSize = this.rightDynamicList.getSize();
+        final int rightSize = this.rightDynamicList.getSize() + this.listedItems;
         this.rightPropertyBar.setAmount(MathUtil.convertToRange(rightSize, 0, this.rightLimit, 0f, 1f));
-        this.rightPropertyBar.setText(Text.of(rightSize + this.listedItems, "/", this.rightLimit));
+        this.rightPropertyBar.setText(Text.of(rightSize, "/", this.rightLimit));
 
         super.updateControls(selectedValue, targetSide);
     }

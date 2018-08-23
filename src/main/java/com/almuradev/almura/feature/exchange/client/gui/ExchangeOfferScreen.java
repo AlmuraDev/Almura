@@ -73,7 +73,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
         // Form
         final UIForm form = new UIForm(this, 400, 325, I18n.format("almura.title.exchange.offer"));
-        form.setZIndex(10); // Fixes issue with combobox behind the form drawing text over the form
+        form.setZIndex(10); // Fixes issue overlapping draws from parent
         form.setMovable(true);
         form.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
         form.setBackgroundAlpha(255);
@@ -99,6 +99,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
         // Swap container
         final NonNullList<ItemStack> mainInventory = Minecraft.getMinecraft().player.inventory.mainInventory;
+        final int totalItemsForSale = this.exchange.getForSaleItemsFor(Minecraft.getMinecraft().player.getUniqueID()).map(List::size).orElse(0);
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
                 Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.inventory")),
                 Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.unlisted_items")),
@@ -106,7 +107,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
                 OfferItemComponent::new,
                 mainInventory.size(),
                 this.limit,
-                this.exchange.getForSaleItems().size());
+                totalItemsForSale);
         this.offerContainer.register(this);
 
         // Populate offer container

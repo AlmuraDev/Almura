@@ -56,13 +56,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
         this.guiscreenBackground = false;
 
         this.form = new UIForm(this, 120, 65, I18n.format("almura.title.exchange.enter_a_price"));
-        this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        this.form.setMovable(true);
-        this.form.setClosable(true);
-        this.form.setBorder(FontColors.WHITE, 1, 185);
-        this.form.setBackgroundAlpha(215);
-        this.form.setPadding(3, 3);
-        this.form.setTopPadding(20);
+        this.form.setZIndex(10); // Fixes issue overlapping draws from parent
 
         this.pricePerField = new UITextField(this, "0.00");
         this.pricePerField.setSize(65, 0);

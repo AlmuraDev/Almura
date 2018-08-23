@@ -147,6 +147,12 @@ public final class ExchangeScreen extends SimpleScreen {
         comboBoxSortType.select(SortType.PRICE_ASC);
         comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchField.getY(), Anchor.RIGHT | Anchor.TOP);
 
+        // Separator
+        final UIContainer<?> topSeparator = new UIContainer<>(this, searchArea.getRawWidth() - 2, 1);
+        topSeparator.setColor(FontColors.WHITE);
+        topSeparator.setBackgroundAlpha(185);
+        topSeparator.setPosition(0, SimpleScreen.getPaddedY(this.sellerSearchField, 4), Anchor.CENTER | Anchor.TOP);
+
         this.forSaleList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 250);
         this.forSaleList.setPosition(innerPadding, getPaddedY(this.sellerSearchField, 8));
         this.forSaleList.setItemComponentFactory((g, e) -> new ForSaleItemComponent(this, e));
@@ -216,9 +222,16 @@ public final class ExchangeScreen extends SimpleScreen {
             .onClick(() -> setPage(++this.currentPage))
             .build("button.next");
 
+        // Separator
+        final UIContainer<?> bottomSeparator = new UIContainer<>(this, searchArea.getRawWidth() - 2, 1);
+        bottomSeparator.setColor(FontColors.WHITE);
+        bottomSeparator.setBackgroundAlpha(185);
+        bottomSeparator.setPosition(0, SimpleScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
+
         // Add Elements of Search Area
         searchArea.add(itemSearchLabel, this.itemSearchField, sellerSearchLabel, this.sellerSearchField, buttonSearch, comboBoxSortType,
-            this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList, this.labelSearchPage);
+                this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList, this.labelSearchPage,
+                topSeparator, bottomSeparator);
 
         // Economy Pane
         final UIForm economyActionArea = new UIForm(this, 295, 20, "");
