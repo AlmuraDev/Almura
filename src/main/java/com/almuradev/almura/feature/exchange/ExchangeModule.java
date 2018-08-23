@@ -19,7 +19,7 @@ import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterReq
 import com.almuradev.almura.feature.exchange.network.ClientboundForSaleItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundExchangeSpecificOfferRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundForSaleFilterResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundTransactionRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequestPacket;
@@ -31,7 +31,7 @@ import com.almuradev.almura.feature.exchange.network.handler.ClientboundForSaleF
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundForSaleItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundListItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundListItemsSaleStatusPacketHandler;
-import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeGuiRequestPacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeSpecificOfferPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundForSaleFilterResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundTransactionRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundListItemsRequestPacketHandler;
@@ -52,12 +52,14 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
     
     @Override
     protected void configure() {
+        this.requestStaticInjection(ExchangeCommandsCreator.class);
+
         this.packet()
             .bind(ClientboundExchangeRegistryPacket.class,
                 binder -> binder.handler(ClientboundExchangesRegistryPacketHandler.class, Platform.Type.CLIENT))
 
-            .bind(ServerboundExchangeGuiRequestPacket.class,
-                binder -> binder.handler(ServerboundExchangeGuiRequestPacketHandler.class, Platform.Type.SERVER))
+            .bind(ServerboundExchangeSpecificOfferRequestPacket.class,
+                binder -> binder.handler(ServerboundExchangeSpecificOfferPacketHandler.class, Platform.Type.SERVER))
 
             .bind(ClientboundExchangeGuiResponsePacket.class,
                 binder -> binder.handler(ClientboundExchangeGuiResponsePacketHandler.class, Platform.Type.CLIENT))
@@ -90,6 +92,9 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 binder -> binder.handler(ServerboundTransactionRequestPacketHandler.class, Platform.Type.SERVER));
 
         this.facet().add(ServerExchangeManager.class);
+
+        this.command()
+            .child(ExchangeCommandsCreator.createCommand(), "exchange", "axs");
 
         FilterRegistry.instance
             .<ListItem>registerFilter("display_name", (target, value) -> target.asRealStack().getDisplayName().contains(value))

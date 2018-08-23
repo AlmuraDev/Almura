@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.exchange.client;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.ExchangeGuiType;
@@ -20,7 +21,7 @@ import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeOfferScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeGuiRequestPacket;
+import com.almuradev.almura.feature.exchange.network.ServerboundExchangeSpecificOfferRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundForSaleFilterResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
@@ -91,19 +92,19 @@ public final class ClientExchangeManager implements Witness {
     }
 
     public void requestExchangeManageGui() {
-        this.network.sendToServer(new ServerboundExchangeGuiRequestPacket(ExchangeGuiType.MANAGE, null));
+        Minecraft.getMinecraft().player.sendChatMessage("/" + Almura.ID + " exchange manage");
     }
 
     public void requestExchangeSpecificGui(final String id) {
         checkNotNull(id);
 
-        this.network.sendToServer(new ServerboundExchangeGuiRequestPacket(ExchangeGuiType.SPECIFIC, id));
+        Minecraft.getMinecraft().player.sendChatMessage("/" + Almura.ID + " exchange open " + id);
     }
 
     public void requestExchangeSpecificOfferGui(final String id) {
         checkNotNull(id);
 
-        this.network.sendToServer(new ServerboundExchangeGuiRequestPacket(ExchangeGuiType.SPECIFIC_OFFER, id));
+        this.network.sendToServer(new ServerboundExchangeSpecificOfferRequestPacket(id));
     }
 
     public void addExchange(final String id, final String name, final String permission, final boolean isHidden) {

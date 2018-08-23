@@ -214,52 +214,18 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             .submit(this.container);
     }
 
-    public void handleExchangeManage(final Player player) {
-        checkNotNull(player);
-
-        if (!player.hasPermission(Almura.ID + ".exchange.manage")) {
-            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission"
-                    + " to manage exchanges!"), 5);
-            return;
-        }
-
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.MANAGE));
-    }
-
     private final List<UUID> playerSpecificInitiatorIds = new ArrayList<>();
 
-    public void handleExchangeSpecific(final Player player, final String id) {
+    public void openExchangeSpecific(final Player player, final Exchange axs) {
         checkNotNull(player);
-        checkNotNull(id);
+        checkNotNull(axs);
 
-        if (!player.hasPermission(Almura.ID + ".exchange.open")) {
-            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission"
-                + " to open an exchange!"), 5);
-            return;
-        }
-
-        final Exchange axs = this.getExchange(id).orElse(null);
-
-        if (axs == null) {
-            this.logger.error("Player '{}' attempted to open exchange '{}' but the server has no knowledge of it. Syncing exchange registry...",
-                player.getName(), id);
-            this.syncExchangeRegistryTo(player);
-            return;
-        }
-
-        if (!player.hasPermission(axs.getPermission())) {
-            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission"
-                + " to open '", axs.getName(), "'!"), 5);
-            this.syncExchangeRegistryTo(player);
-            return;
-        }
-
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, id, this.getListingsLimit(player)));
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, axs.getId(), this.getListingsLimit(player)));
 
         if (!axs.isLoaded()) {
             this.playerSpecificInitiatorIds.add(player.getUniqueId());
 
-            this.databaseManager.getQueue().queue(DatabaseQueue.ActionType.FETCH_IGNORE_DUPLICATES, id, () -> {
+            this.databaseManager.getQueue().queue(DatabaseQueue.ActionType.FETCH_IGNORE_DUPLICATES, axs.getId(), () -> {
                 this.loadListItems(axs);
 
                 this.loadForSaleItems(axs);
@@ -305,6 +271,12 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
             this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
         }
+    }
+
+    public void openExchangeManage(final Player player) {
+        checkNotNull(player);
+
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.MANAGE));
     }
 
     public void handleExchangeSpecificOffer(final Player player, final String id) {
