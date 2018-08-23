@@ -539,7 +539,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 final ItemStack slotStack = simulatedInventory.getStackInSlot(j);
 
                 if (ItemHandlerHelper.canItemStacksStack(slotStack, stack.asRealStack())) {
-                    amountLeft -= simulatedInventory.extractItem(j, amountLeft, true).getCount();
+                    amountLeft -= simulatedInventory.extractItem(j, amountLeft, false).getCount();
                     matched = true;
                 }
 
@@ -779,27 +779,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                             final List<ForSaleItem> forSaleItems = new ArrayList<>();
                             forSaleItemResults.forEach(result -> forSaleItems.addAll(this.parseForSaleItemsFrom(listItems, result)));
-
-                            // Remove stacks for listings
-                            for (final VanillaStack stack : toListingStacks) {
-                                int amountLeft = stack.getQuantity();
-
-                                for (int i = 0; i < inventory.getSlots(); i++) {
-                                    final ItemStack slotStack = inventory.getStackInSlot(i);
-
-                                    if (ItemHandlerHelper.canItemStacksStack(slotStack, stack.asRealStack())) {
-                                        amountLeft -= inventory.extractItem(i, amountLeft, false).getCount();
-                                    }
-
-                                    if (amountLeft <= 0) {
-                                        break;
-                                    }
-                                }
-
-                                if (amountLeft > 0) {
-                                    // TODO Their inventory changed since simulation. Need to track inventory changes and get the amount back somehow
-                                }
-                            }
 
                             // Add stacks from listings
                             for (final ListItem stack : toInventoryStacks) {
