@@ -38,6 +38,7 @@ import com.almuradev.generated.axs.tables.AxsListItemData;
 import com.almuradev.generated.axs.tables.records.AxsForSaleItemRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemDataRecord;
 import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
+import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -647,7 +648,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 .fetchOne();
 
                             if (itemRecord == null) {
-                                // TODO Notification
+                                this.notificationManager.sendWindowMessage(player, Text.of(TextColors.RED, "Exchange"),
+                                        Text.of("Critical error encountered, check the server console for more details!"));
+                                this.logger.error("Player '{}' submitted a new list item for exchange '{}' to the database but it failed. "
+                                        + "Discarding changes and printing stack...", player.getName(), id);
+                                this.printStacksToConsole(Lists.newArrayList(stack));
                                 continue;
                             }
 
@@ -662,7 +667,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 .fetchOne();
 
                             if (dataRecord == null) {
-                                // TODO Notification
+                                this.notificationManager.sendWindowMessage(player, Text.of(TextColors.RED, "Exchange"),
+                                        Text.of("Critical error encountered, check the server console for more details!"));
+                                this.logger.error("Player '{}' submitted data for item record '{}' for exchange '{}' but it failed. "
+                                        + "Discarding changes...", player.getName(), itemRecord.getRecNo(), id);
 
                                 ExchangeQueries
                                     .createDeleteListItem(itemRecord.getRecNo())
@@ -677,7 +685,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 .execute();
 
                             if (result == 0) {
-                                // TODO Notification
+                                this.notificationManager.sendWindowMessage(player, Text.of(TextColors.RED, "Exchange"),
+                                        Text.of("Critical error encountered, check the server console for more details!"));
+                                this.logger.error("Player '{}' attempted to add quantity to list item '{}' for exchange '{}' but it failed. "
+                                        + "Discarding changes...", player.getName(), found.getRecord(), id);
 
                                 listingIter.remove();
                             }
@@ -707,7 +718,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 .execute();
 
                             if (result == 0) {
-                                // TODO Notification
+                                this.notificationManager.sendWindowMessage(player, Text.of(TextColors.RED, "Exchange"),
+                                        Text.of("Critical error encountered, check the server console for more details!"));
+                                this.logger.error("Player '{}' attempted to remove list item '{}' for exchange '{}' but it failed. Discarding "
+                                        + "changes...", player.getName(), next.getRecord(), id);
                             }
 
                         // Update partial listings
@@ -718,7 +732,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 .execute();
 
                             if (result == 0) {
-                                // TODO Notification
+                                this.notificationManager.sendWindowMessage(player, Text.of(TextColors.RED, "Exchange"),
+                                        Text.of("Critical error encountered, check the server console for more details!"));
+                                this.logger.error("Player '{}' removed quantity from list item '{}' for exchange '{}' to the database but it "
+                                        + "failed. Discarding changes...",
+                                        player.getName(), next.getRecord(), id);
                             }
                         }
                     }
@@ -1037,11 +1055,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     this.scheduler
                         .createTaskBuilder()
                         .execute(() -> {
-                            if (!forSaleItems.remove(forSaleItem)) {
-                                // TODO Notification
-                                // TODO Resync
-                                return;
-                            }
+                            forSaleItems.remove(forSaleItem);
 
                             ((BasicListItem) found).setForSaleItem(null);
 
