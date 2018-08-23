@@ -37,7 +37,6 @@ public class UIForm extends UIContainer<UIForm> {
         // Defaults
         this.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.setMovable(true);
-        this.setClosable(true);
         this.setBorder(FontColors.WHITE, 1, 185);
         this.setBackgroundAlpha(215);
         this.setColor(Integer.MIN_VALUE);
@@ -45,6 +44,9 @@ public class UIForm extends UIContainer<UIForm> {
         this.setTopPadding(20);
 
         this.construct(gui);
+
+        // Needs to happen after construct
+        this.setClosable(true);
     }
 
     private void construct(MalisisGui gui) {

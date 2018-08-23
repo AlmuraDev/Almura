@@ -231,42 +231,48 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Bottom Economy Pane - buyStack button
         this.buttonBuyStack = new UIButtonBuilder(this)
-            .width(60)
-            .anchor(Anchor.LEFT | Anchor.MIDDLE)
-            .position(0, 0)
-            .text(I18n.format("almura.button.exchange.buy.stack"))
-            .onClick(() -> {
-                final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
-                if (forSaleItem != null) {
-                    exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), forSaleItem.getQuantity());
-                }
-            })
-            .enabled(false)
-            .build("button.buy.stack");
+                .width(60)
+                .anchor(Anchor.LEFT | Anchor.MIDDLE)
+                .position(0, 0)
+                .text(I18n.format("almura.button.exchange.buy.stack"))
+                .enabled(false)
+                .onClick(() -> {
+                    final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
+                    if (forSaleItem != null) {
+                        exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), forSaleItem.getQuantity());
+                    }
+                })
+                .build("button.buy.stack");
 
         // Bottom Economy Pane - buyStack button
         this.buttonBuySingle = new UIButtonBuilder(this)
-            .width(60)
-            .anchor(Anchor.CENTER | Anchor.MIDDLE)
-            .position(0, 0)
-            .text(I18n.format("almura.button.exchange.buy.single"))
-            .enabled(false)
-            .onClick(() -> {
-                final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
-                if (forSaleItem != null) {
-                    exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), 1);
-                }
-            })
-            .build("button.buy.single");
+                .width(60)
+                .anchor(Anchor.CENTER | Anchor.MIDDLE)
+                .position(0, 0)
+                .text(I18n.format("almura.button.exchange.buy.single"))
+                .enabled(false)
+                .onClick(() -> {
+                    final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
+                    if (forSaleItem != null) {
+                        exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), 1);
+                    }
+                })
+                .build("button.buy.single");
 
         // Bottom Economy Pane - buyStack button
         this.buttonBuyQuantity = new UIButtonBuilder(this)
-            .width(60)
-            .anchor(Anchor.RIGHT | Anchor.MIDDLE)
-            .position(0, 0)
-            .text(I18n.format("almura.button.exchange.buy.quantity"))
-            .enabled(false)
-            .build("button.buy.quantity");
+                .width(60)
+                .anchor(Anchor.RIGHT | Anchor.MIDDLE)
+                .position(0, 0)
+                .text(I18n.format("almura.button.exchange.buy.quantity"))
+                .enabled(false)
+                .onClick(() -> {
+                    final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
+                    if (forSaleItem != null) {
+                        new ExchangeBuyQuantityScreen(this, this.axs, forSaleItem).display();
+                    }
+                })
+                .build("button.buy.quantity");
 
         economyActionArea.add(this.buttonBuyStack, this.buttonBuySingle, this.buttonBuyQuantity);
 

@@ -55,8 +55,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new UIForm(this, 120, 65, "");
-        this.form.setTitle(I18n.format("almura.title.exchange.enter_a_price"));
+        this.form = new UIForm(this, 120, 65, I18n.format("almura.title.exchange.enter_a_price"));
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
