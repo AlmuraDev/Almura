@@ -1008,32 +1008,43 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
         if (listItems == null || listItems.isEmpty()) {
-            // TODO Notification
-            // TODO Resync
+            this.notificationManager.sendWindowMessage(player, Text.of(TextColors.RED, "Exchange"), Text.of("Critical error encountered, check the "
+                    + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to de-list a for sale item for '{}' exchange '{}' but the server has no "
+                    + "record of any list items for that player. Syncing list items...", player.getName(), id, listItemRecNo);
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItems));
             return;
         }
 
         final ListItem found = listItems.stream().filter(item -> item.getRecord() == listItemRecNo).findAny().orElse(null);
 
         if (found == null) {
-            // TODO Notification
-            // TODO Resync
+            this.notificationManager.sendWindowMessage(player, Text.of(TextColors.RED, "Exchange"), Text.of("Critical error encountered, check the "
+                    + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to de-list a for sale item '{}' for exchange '{}' but the server has no "
+                    + "record of the listing. Syncing list items...", player.getName(), id, listItemRecNo);
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItems));
             return;
         }
 
         final ForSaleItem forSaleItem = found.getForSaleItem().orElse(null);
 
+        final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
         if (forSaleItem == null) {
-            // TODO Notification
-            // TODO Resync
+            this.notificationManager.sendWindowMessage(player, Text.of(TextColors.RED, "Exchange"), Text.of("Critical error encountered, check the "
+                    + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to de-list a for sale item '{}' for exchange '{}' but the server doesn't "
+                    + "have a listing for that item. Syncing list items sale status...", player.getName(), id, listItemRecNo);
+            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, forSaleItems));
             return;
         }
 
-        final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
         if (forSaleItems == null) {
-            // TODO Notification
-            // TODO Resync
-            return;
+            this.notificationManager.sendWindowMessage(player, Text.of(TextColors.RED, "Exchange"), Text.of("Critical error encountered, check the "
+                    + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to de-list a for sale item '{}' for exchange '{}' but the server has no "
+                    + "record of any listings for that player. Syncing list items sale status...", player.getName(), id, listItemRecNo);
+            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, null));
         }
 
         this.scheduler
