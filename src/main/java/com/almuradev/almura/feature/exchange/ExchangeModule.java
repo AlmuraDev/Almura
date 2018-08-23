@@ -38,7 +38,7 @@ import com.almuradev.almura.feature.exchange.network.handler.ServerboundListItem
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyExchangePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyForSaleItemListStatusRequestPacketHandler;
 import com.almuradev.almura.shared.feature.store.filter.FilterRegistry;
-import com.almuradev.almura.shared.feature.store.filter.ListItemFilter;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -46,7 +46,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 
-import javax.inject.Inject;
+import java.util.Comparator;
 
 public final class ExchangeModule extends AbstractModule implements CommonBinder {
     
@@ -91,9 +91,12 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
 
         this.facet().add(ServerExchangeManager.class);
 
-        FilterRegistry.instance.register("display_name", (ListItemFilter) (target, value) -> target.asRealStack().getDisplayName().contains(value));
-        FilterRegistry.instance.register("seller_name", (ListItemFilter) (target, value) -> target.getSellerName().isPresent() && target
-            .getSellerName().get().contains(value));
+        FilterRegistry.instance
+            .<ListItem>registerFilter("display_name", (target, value) -> target.asRealStack().getDisplayName().contains(value))
+            .<ListItem>registerFilter("seller_name", (target, value) -> target.getSellerName().isPresent() && target.getSellerName().get()
+                .contains(value))
+            .<ListItem>registerComparator("display_name", Comparator.comparing(k -> k.asRealStack().getDisplayName()))
+            .<ListItem>registerComparator("seller_name", Comparator.comparing(v -> v.getSellerName().orElse(null)));
 
         this.on(Platform.Type.CLIENT, () -> {
 

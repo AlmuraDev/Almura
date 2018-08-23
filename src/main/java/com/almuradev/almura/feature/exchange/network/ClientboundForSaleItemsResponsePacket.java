@@ -37,16 +37,18 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
 
     @Nullable public String id;
     @Nullable public List<ForSaleItem> forSaleItems;
+    public int preLimitCount;
 
     public ClientboundForSaleItemsResponsePacket() {
     }
 
-    public ClientboundForSaleItemsResponsePacket(final String id, @Nullable final List<ForSaleItem> forSaleItems) {
+    public ClientboundForSaleItemsResponsePacket(final String id, @Nullable final List<ForSaleItem> forSaleItems, final int preLimitCount) {
         checkNotNull(id);
         checkNotNull(forSaleItems);
 
         this.id = id;
         this.forSaleItems = forSaleItems;
+        this.preLimitCount = preLimitCount;
     }
 
     @Override
@@ -125,6 +127,8 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 this.forSaleItems.add(basicForSaleItem);
             }
         }
+
+        this.preLimitCount = buf.readInteger();
     }
 
     @Override
@@ -208,5 +212,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 ByteBufUtil.writeBigDecimal((ByteBuf) buf, forSaleItem.getPrice());
             }
         }
+
+        buf.writeInteger(this.preLimitCount);
     }
 }

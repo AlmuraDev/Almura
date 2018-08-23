@@ -873,7 +873,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
     }
 
-    public void handleForSaleFilter(final Player player, final String id, @Nullable final String filter, @Nullable final String sort,
+    public void handleForSaleFilter(final Player player, final String id, @Nullable final String filter, @Nullable final String sorter,
         final int skip, final int limit) {
         checkNotNull(player);
         checkNotNull(id);
@@ -895,24 +895,30 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             .flatMap(List::stream);
 
         if (filter != null) {
-            final List<FilterRegistry.FilterElement<ListItem>> elements = FilterRegistry.instance.getElements(filter);
+            final List<FilterRegistry.FilterElement<ListItem>> elements = FilterRegistry.instance.getFilterElements(filter);
             stream = stream
                 .filter(forSaleItem -> elements
                     .stream()
                     .allMatch(element -> element.getFilter().test(forSaleItem.getListItem(), element.getValue())));
         }
 
-        if (sort != null) {
-            // TODO sorting
+        if (sorter != null) {
+            final List<FilterRegistry.SorterElement<ListItem>> elements = FilterRegistry.instance.getSortingElements(sorter);
+            final Comparator<ListItem> comparator = FilterRegistry.instance.buildSortingComparator(elements).orElse(null);
+            if (comparator != null) {
+                stream = stream.map(ForSaleItem::getListItem).sorted(comparator).map(k -> k.getForSaleItem().orElse(null));
+            }
         }
 
         stream = stream.skip(skip);
+
+        final long count = stream.count();
 
         if (limit > -1) {
             stream = stream.limit(limit);
         }
 
-        this.network.sendTo(player, new ClientboundForSaleItemsResponsePacket(axs.getId(), stream.collect(Collectors.toList())));
+        this.network.sendTo(player, new ClientboundForSaleItemsResponsePacket(axs.getId(), stream.collect(Collectors.toList()), (int) count));
     }
 
     public void handleListForSaleItem(final Player player, final String id, final int listItemRecNo, final BigDecimal price) {
