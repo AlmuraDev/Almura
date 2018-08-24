@@ -10,6 +10,7 @@ package com.almuradev.content.type.block.mixin.impl;
 import com.almuradev.content.type.block.AbstractBlockStateDefinition;
 import com.almuradev.content.type.block.ContentBlock;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
+import com.almuradev.content.type.block.type.flower.FlowerBlockImpl;
 import com.almuradev.content.type.block.type.leaf.LeafBlockImpl;
 import com.almuradev.content.type.block.type.log.LogBlockImpl;
 import com.almuradev.content.type.block.type.normal.NormalBlockImpl;
@@ -30,6 +31,7 @@ import javax.annotation.Nullable;
 @Mixin({
     // horizontal is special
     CropBlockImpl.class,
+    FlowerBlockImpl.class,
     LeafBlockImpl.class,
     LogBlockImpl.class,
     NormalBlockImpl.class,
