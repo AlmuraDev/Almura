@@ -27,6 +27,7 @@ import com.almuradev.content.type.block.processor.ResistanceProcessor;
 import com.almuradev.content.type.block.processor.SoundProcessor;
 import com.almuradev.content.type.block.type.container.ContainerBlockModule;
 import com.almuradev.content.type.block.type.crop.CropBlockModule;
+import com.almuradev.content.type.block.type.flower.FlowerBlockModule;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlockModule;
 import com.almuradev.content.type.block.type.leaf.LeafBlockModule;
 import com.almuradev.content.type.block.type.log.LogBlockModule;
@@ -45,6 +46,7 @@ public final class BlockModule extends AbstractModule implements CoreBinder {
         this.facet().add(BlockContentTypeLoader.class);
         this.install(new ContainerBlockModule());
         this.install(new CropBlockModule());
+        this.install(new FlowerBlockModule());
         this.install(new HorizontalBlockModule());
         this.install(new LeafBlockModule());
         this.install(new LogBlockModule());
