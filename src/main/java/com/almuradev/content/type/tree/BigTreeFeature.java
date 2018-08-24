@@ -149,12 +149,37 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
             for (int z = -rad; z <= rad; z++) {
                 if (Math.pow((double) Math.abs(x) + 0.5d, 2d) + Math.pow((double) Math.abs(z) + 0.5d, 2d) <= (double) (radius * radius)) {
                     BlockPos pos = origin.add(x, 0, z);
+                    if (pos == null) {
+                        System.out.println("POS was null in Almura-BigTreeFeature");
+                        continue;
+                    }
+
+                    if (this.world == null) {
+                        System.out.println("WORLD is null in Almura-BigTreeFeature");
+                        continue;
+
+                    }
                     final IBlockState state = this.world.getBlockState(pos);
 
                     if (state.getBlock().isAir(state, this.world, pos) || state.getBlock().isLeaves(state, this.world, pos)) {
                         this.setBlockAndNotifyAdequately(this.world, pos, targetState);
 
                         // Enforce hanging only hanging from a leaves or fruit
+                        if (this.biome == null) {
+                            System.out.println("ERROR: biome is null in Almura-BigTreeFeature");
+                            continue;
+                        }
+
+                        if (this.random == null) {
+                            System.out.println(" Error: random is null in Almura-BigTreeFeature");
+                            continue;
+                        }
+
+                        if (targetState == null) {
+                            System.out.println(" Error targetState is null in Almura-BigTreeFeature");
+                            continue;
+                        }
+
                         if (this.world.getBlockState(pos).equals(targetState) && AbstractTreeFeature.shouldPlaceHanging(this.hanging, this.biome, this.random)) {
                             pos = pos.down();
 
