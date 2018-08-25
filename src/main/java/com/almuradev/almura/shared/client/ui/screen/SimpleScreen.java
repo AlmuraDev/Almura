@@ -8,16 +8,22 @@
 package com.almuradev.almura.shared.client.ui.screen;
 
 import com.almuradev.almura.shared.client.GuiConfig;
+import net.malisis.core.MalisisCore;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.control.IScrollable;
+import net.malisis.core.inventory.MalisisInventoryContainer;
+import net.malisis.core.util.MouseButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -99,15 +105,48 @@ public abstract class SimpleScreen extends MalisisGui {
         setFocusedComponent(null, true);
         setHoveredComponent(null, true);
         Keyboard.enableRepeatEvents(false);
-        if (this.mc.player != null) {
-            this.mc.player.closeScreen();
-        }
 
         this.onClose();
 
         this.mc.displayGuiScreen(this.parent.orElse(null));
-        if (!this.parent.isPresent()) {
-            this.mc.setIngameFocus();
+    }
+
+    @Override
+    protected void mouseClicked(int x, int y, int button) {
+        try {
+            long time = System.currentTimeMillis();
+
+            UIComponent<?> component = getComponentAt(x, y);
+            if (component != null && component.isEnabled()) {
+                component.setFocused(true);
+
+                boolean regularClick = true;
+                boolean doubleClick = button == this.lastClickButton && time - this.lastClickTime < 250 && component == this.focusedComponent;
+
+                if (doubleClick) {
+                    regularClick = !component.onDoubleClick(x, y, MouseButton.getButton(button));
+                    this.lastClickTime = 0;
+                }
+
+                if (regularClick) {
+                    component.onButtonPress(x, y, MouseButton.getButton(button));
+                    if (this.draggedComponent == null)
+                        this.draggedComponent = component;
+                }
+            } else {
+                setFocusedComponent(null, true);
+                if (this.inventoryContainer != null && !this.inventoryContainer.getPickedItemStack().isEmpty()) {
+                    MalisisInventoryContainer.ActionType
+                            action = button == 1 ? MalisisInventoryContainer.ActionType.DROP_ONE : MalisisInventoryContainer.ActionType.DROP_STACK;
+                    MalisisGui.sendAction(action, null, button);
+                }
+            }
+
+            this.lastClickTime = time;
+            this.lastClickButton = button;
+        } catch (Exception e) {
+            MalisisCore.message("A problem occurred : " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            e.printStackTrace(new PrintStream(new FileOutputStream(FileDescriptor.out)));
         }
     }
 

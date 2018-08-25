@@ -316,6 +316,11 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     }
 
     private void createItemComponents() {
+        final Integer focusedX = MalisisGui.getFocusedComponent() == null ? null : MalisisGui.getFocusedComponent().screenX();
+        final Integer focusedY = MalisisGui.getFocusedComponent() == null ? null : MalisisGui.getFocusedComponent().screenY();
+
+        final boolean wasItemFocused = focusedX != null && focusedY != null && this.getComponentAt(focusedX, focusedY) != null;
+
         this.removeAll();
 
         int startY = 0;
@@ -324,6 +329,10 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
             component.attachData(item);
             component.setParent(this);
             component.setPosition(0, startY);
+
+            if (wasItemFocused && component.screenX() == focusedX && component.screenY() == focusedY) {
+                component.setFocused(true);
+            }
 
             this.add(component);
 
@@ -428,10 +437,6 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
                 super.drawBackground(renderer, mouseX, mouseY, partialTick);
             }
-        }
-
-        protected void setParent(UIDynamicList<T> parent) {
-            this.parent = parent;
         }
 
         private static boolean hasParent(UIComponent parent, UIComponent component) {

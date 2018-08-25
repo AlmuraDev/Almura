@@ -36,6 +36,7 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.util.MouseButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
@@ -231,7 +232,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .onClick(() -> {
                     final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
                     if (forSaleItem != null) {
-                        exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), forSaleItem.getQuantity());
+                        this.buy(forSaleItem.getQuantity());
                     }
                 })
                 .build("button.buy.stack");
@@ -242,12 +243,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .position(0, 0)
                 .text(I18n.format("almura.button.exchange.buy.single"))
                 .enabled(false)
-                .onClick(() -> {
-                    final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
-                    if (forSaleItem != null) {
-                        exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), 1);
-                    }
-                })
+                .onClick(() -> this.buy(1))
                 .build("button.buy.single");
 
         this.buttonBuyQuantity = new UIButtonBuilder(this)
@@ -293,18 +289,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .position(0, 0)
             .text(I18n.format("almura.button.exchange.list"))
             .enabled(false)
-            .onClick(() -> {
-                final ListItem item = this.listItemList.getSelectedItem();
-                if (item != null) {
-                    final boolean de_list = item.getForSaleItem().isPresent();
-
-                    if (de_list) {
-                        exchangeManager.modifyListStatus(ListStatusType.DE_LIST, this.axs.getId(), item.getRecord(), null);
-                    } else {
-                        new ExchangeListPriceScreen(this, this.axs, item).display();
-                    }
-                }
-            })
+            .onClick(this::list)
             .build("button.list");
 
         this.labelLimit = new UILabel(this, "");
@@ -421,6 +406,26 @@ public final class ExchangeScreen extends SimpleScreen {
         final String sortQuery = sortQueryBuilder.toString().isEmpty() ? null : sortQueryBuilder.toString();
 
         exchangeManager.queryForSaleItemsFor(this.axs.getId(), filterQuery, sortQuery, (this.currentPage - 1) * 10, 10);
+    }
+
+    private void buy(final int value) {
+        final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
+        if (forSaleItem != null) {
+            exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), value);
+        }
+    }
+
+    private void list() {
+        final ListItem item = this.listItemList.getSelectedItem();
+        if (item != null) {
+            final boolean de_list = item.getForSaleItem().isPresent();
+
+            if (de_list) {
+                exchangeManager.modifyListStatus(ListStatusType.DE_LIST, this.axs.getId(), item.getRecord(), null);
+            } else {
+                new ExchangeListPriceScreen(this, this.axs, item).display();
+            }
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -621,6 +626,22 @@ public final class ExchangeScreen extends SimpleScreen {
                         + ": " + ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));
             }
         }
+
+        @Override
+        public boolean onDoubleClick(int x, int y, MouseButton button) {
+            if (button != MouseButton.LEFT) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            final UIComponent<?> componentAt = this.getComponentAt(x, y);
+            if (!(componentAt instanceof UIDynamicList.ItemComponent)) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            ((ExchangeScreen) getGui()).list();
+
+            return true;
+        }
     }
 
     public static final class ForSaleItemComponent extends ExchangeItemComponent<ForSaleItem> {
@@ -655,6 +676,22 @@ public final class ExchangeScreen extends SimpleScreen {
                     + ": " + ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getListItem().getQuantity() * price));
 
             this.add(this.sellerLabel, this.priceLabel);
+        }
+
+        @Override
+        public boolean onDoubleClick(int x, int y, MouseButton button) {
+            if (button != MouseButton.LEFT) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            final UIComponent<?> componentAt = this.getComponentAt(x, y);
+            if (!(componentAt instanceof UIDynamicList.ItemComponent)) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            ((ExchangeScreen) getGui()).buy(1);
+
+            return true;
         }
     }
 
