@@ -78,7 +78,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
         buttonList;
-    private UILabel labelSearchPage, labelLimit;
+    private UILabel labelSearchPage, labelLimit, noResultsLabel;
     private UISelect<SortType> comboBoxSortType;
     private UITextBox displayNameSearchTextBox, sellerSearchTextBox;
     private int currentPage = 1;
@@ -159,6 +159,12 @@ public final class ExchangeScreen extends SimpleScreen {
         this.forSaleList.setItemComponentSpacing(1);
         this.forSaleList.setSelectConsumer((i) -> this.updateControls());
 
+        // No results label
+        this.noResultsLabel = new UILabel(this, "No results found.");
+        this.noResultsLabel.setPosition(0, this.forSaleList.getY() + 8, Anchor.TOP | Anchor.CENTER);
+        this.noResultsLabel.setFontOptions(FontColors.GRAY_FO);
+        this.noResultsLabel.setVisible(false);
+
         // Search button
         final UIButton buttonSearch = new UIButtonBuilder(this)
             .width(80)
@@ -217,9 +223,9 @@ public final class ExchangeScreen extends SimpleScreen {
         forSaleBottomLine.setPosition(0, SimpleScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         // Add Elements of Search Area
-        searchContainer.add(itemSearchLabel, this.displayNameSearchTextBox, sellerSearchLabel, this.sellerSearchTextBox, buttonSearch, comboBoxSortType,
-                this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList, this.labelSearchPage,
-                forSaleTopLine, forSaleBottomLine);
+        searchContainer.add(itemSearchLabel, this.displayNameSearchTextBox, sellerSearchLabel, this.sellerSearchTextBox, buttonSearch,
+                this.comboBoxSortType, this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList,
+                this.noResultsLabel, this.labelSearchPage, forSaleTopLine, forSaleBottomLine);
 
         // Buy container
         final UIContainer<?> buyContainer = new UIContainer(this, 295, 21);
@@ -431,6 +437,11 @@ public final class ExchangeScreen extends SimpleScreen {
         // Update the limit label
         this.labelLimit.setText(TextSerializers.LEGACY_FORMATTING_CODE
                 .serialize(Text.of(TextColors.WHITE, this.listItemList.getItems().size(), "/", this.limit)));
+
+        // Hide the list and show the label if there are no items to present
+        final boolean isEmpty = this.forSaleList.getItems().isEmpty();
+        this.forSaleList.setVisible(!isEmpty);
+        this.noResultsLabel.setVisible(isEmpty);
     }
 
     public void refreshListItems() {
