@@ -15,6 +15,7 @@ import static com.almuradev.generated.axs.Tables.AXS_TRANSACTION;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.generated.axs.tables.AxsForSaleItem;
@@ -129,7 +130,7 @@ public final class ExchangeQueries {
         checkNotNull(seller);
         checkNotNull(item);
         checkNotNull(item.getRegistryName());
-        checkState(quantity >= -1);
+        checkState(quantity >= ExchangeConstants.UNLIMITED);
         checkState(metadata >= 0);
         checkState(index >= 0);
 
@@ -152,7 +153,7 @@ public final class ExchangeQueries {
     public static DatabaseQuery<UpdateConditionStep<AxsListItemRecord>> createUpdateListItem(final int listItemRecNo, final int quantity,
         final int index) {
         checkState(listItemRecNo >= 0);
-        checkState(quantity >= 0);
+        checkState(quantity >= ExchangeConstants.UNLIMITED);
         checkState(index >= 0);
 
         return context -> context
