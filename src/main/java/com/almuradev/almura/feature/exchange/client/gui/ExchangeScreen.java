@@ -121,6 +121,8 @@ public final class ExchangeScreen extends SimpleScreen {
         itemSearchLabel.setPosition(0, 4, Anchor.LEFT | Anchor.TOP);
 
         this.displayNameSearchTextBox = new UITextBox(this, "");
+        this.displayNameSearchTextBox.setTabIndex(0);
+        this.displayNameSearchTextBox.setOnEnter((tb) -> this.search());
         this.displayNameSearchTextBox.setSize(145, 0);
         this.displayNameSearchTextBox.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
         this.displayNameSearchTextBox.setEditable(true);
@@ -132,6 +134,8 @@ public final class ExchangeScreen extends SimpleScreen {
             getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
 
         this.sellerSearchTextBox = new UITextBox(this, "");
+        this.sellerSearchTextBox.setTabIndex(1);
+        this.sellerSearchTextBox.setOnEnter((tb) -> this.search());
         this.sellerSearchTextBox.setSize(145, 0);
         this.sellerSearchTextBox.setPosition(this.displayNameSearchTextBox.getX(), getPaddedY(this.displayNameSearchTextBox, 4), Anchor.LEFT | Anchor.TOP);
         this.sellerSearchTextBox.setEditable(true);
@@ -322,43 +326,6 @@ public final class ExchangeScreen extends SimpleScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
-    }
-
-    @Override
-    protected void keyTyped(char keyChar, int keyCode) {
-        if (keyCode == Keyboard.KEY_TAB) {
-            final UITextBox currentTextBox;
-            final UITextBox nextTextBox;
-            if (this.displayNameSearchTextBox.isFocused()) {
-                currentTextBox = this.displayNameSearchTextBox;
-                nextTextBox = this.sellerSearchTextBox;
-            } else if (this.sellerSearchTextBox.isFocused()) {
-                currentTextBox = this.sellerSearchTextBox;
-                nextTextBox = this.displayNameSearchTextBox;
-            } else {
-                currentTextBox = null;
-                nextTextBox = null;
-            }
-
-            if (currentTextBox != null) {
-                currentTextBox.deselectAll();
-            }
-
-            if (nextTextBox != null) {
-                nextTextBox.focus();
-                nextTextBox.selectAll();
-            }
-            return;
-        }
-
-        if (keyCode != Keyboard.KEY_RETURN) {
-            super.keyTyped(keyChar, keyCode);
-            return;
-        }
-
-        if (this.displayNameSearchTextBox.isFocused() || this.sellerSearchTextBox.isFocused()) {
-            this.search();
-        }
     }
 
     public Exchange getExchange() {

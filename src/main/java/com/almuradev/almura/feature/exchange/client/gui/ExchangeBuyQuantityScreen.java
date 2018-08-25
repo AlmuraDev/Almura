@@ -59,6 +59,7 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
         this.quantityLabel.setPosition(0, 2);
 
         this.quantityTextBox = new UITextBox(this, "1");
+        this.quantityTextBox.setOnEnter(tb -> this.buy());
         this.quantityTextBox.setSize(45, 0);
         this.quantityTextBox.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
         this.quantityTextBox.setFilter(s -> s = String.valueOf(
@@ -114,18 +115,6 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
     @Subscribe
     private void onTextChange(ComponentEvent.ValueChange<UITextField, String> event) {
         this.updateControls(event.getNewValue());
-    }
-
-    @Override
-    protected void keyTyped(char keyChar, int keyCode) {
-        if (keyCode != Keyboard.KEY_RETURN) {
-            super.keyTyped(keyChar, keyCode);
-            return;
-        }
-
-        if (this.quantityTextBox.isFocused() && this.validate(this.quantityTextBox.getText())) {
-            this.buy();
-        }
     }
 
     private boolean validate(String rawValue) {

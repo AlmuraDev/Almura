@@ -94,6 +94,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
             return filteredValue;
         });
         this.pricePerTextBox.setPosition(2, 0, Anchor.MIDDLE | Anchor.LEFT);
+        this.pricePerTextBox.setOnEnter(tb -> this.list());
         this.pricePerTextBox.register(this);
 
         this.eaLabel = new UILabel(this, "/ea");
@@ -122,18 +123,6 @@ public class ExchangeListPriceScreen extends SimpleScreen {
 
         this.pricePerTextBox.focus();
         this.pricePerTextBox.selectAll();
-    }
-
-    @Override
-    protected void keyTyped(char keyChar, int keyCode) {
-        if (keyCode != Keyboard.KEY_RETURN) {
-            super.keyTyped(keyChar, keyCode);
-            return;
-        }
-
-        if (this.pricePerTextBox.isFocused() && this.validate(this.pricePerTextBox.getText())) {
-            this.list();
-        }
     }
 
     @Subscribe

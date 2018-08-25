@@ -63,7 +63,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
     private UICheckBox hiddenCheckbox;
     private UIDynamicList<Exchange> exchangeList;
     private UILabel creatorNameLabel, creatorUniqueIdLabel, createdLabel;
-    private UITextField idField, permissionField, creatorNameField, creatorUniqueIdField, createdField, titleField;
+    private UITextBox idTextBox, permissionTextBox, creatorNameTextBox, creatorUniqueIdTextBox, createdTextBox, titleTextBox;
     private UIForm form;
 
     @Override
@@ -96,61 +96,73 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         container.setBackgroundAlpha(0);
 
         // ID
-        this.idField = new UITextField(this, "", false)
-                .setSize(140, 0)
-                .setPosition(0, 0, Anchor.RIGHT | Anchor.TOP)
-                .setFontOptions(readOnlyTextFieldFontOptions)
-                .setEditable(false)
-                .register(this);
-        this.idField.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
+        this.idTextBox = new UITextBox(this, "");
+        this.idTextBox.setTabIndex(0);
+        this.idTextBox.setOnEnter(tb -> this.save());
+        this.idTextBox.setSize(140, 0);
+        this.idTextBox.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
+        this.idTextBox.setFontOptions(readOnlyTextFieldFontOptions);
+        this.idTextBox.setEditable(false);
+        this.idTextBox.register(this);
+        this.idTextBox.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
+
         final UILabel idLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.id") + ":")
-                .setPosition(0, this.idField.getY() + 3, Anchor.LEFT | Anchor.TOP);
+                .setPosition(0, this.idTextBox.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Title
-        this.titleField = new UITextField(this, "", false)
-                .setSize(140, 0)
-                .setPosition(0, SimpleScreen.getPaddedY(this.idField, 2), Anchor.RIGHT | Anchor.TOP)
-                .setFontOptions(defaultTextFieldFontOptions)
-                .register(this);
+        this.titleTextBox = new UITextBox(this, "");
+        this.titleTextBox.setTabIndex(1);
+        this.titleTextBox.setOnEnter(tb -> this.save());
+        this.titleTextBox.setSize(140, 0);
+        this.titleTextBox.setPosition(0, SimpleScreen.getPaddedY(this.idTextBox, 2), Anchor.RIGHT | Anchor.TOP);
+        this.titleTextBox.setFontOptions(defaultTextFieldFontOptions);
+        this.titleTextBox.register(this);
+
         final UILabel titleLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.title") + ":")
-                .setPosition(0, this.titleField.getY() + 3, Anchor.LEFT | Anchor.TOP);
+                .setPosition(0, this.titleTextBox.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Permission
-        this.permissionField = new UITextField(this, "", false)
-                .setSize(140, 0)
-                .setPosition(0, SimpleScreen.getPaddedY(this.titleField, 2), Anchor.RIGHT | Anchor.TOP)
-                .setFontOptions(defaultTextFieldFontOptions)
-                .register(this);
-        this.permissionField.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
+        this.permissionTextBox = new UITextBox(this, "");
+        this.permissionTextBox.setTabIndex(2);
+        this.permissionTextBox.setOnEnter(tb -> this.save());
+        this.permissionTextBox.setSize(140, 0);
+        this.permissionTextBox.setPosition(0, SimpleScreen.getPaddedY(this.titleTextBox, 2), Anchor.RIGHT | Anchor.TOP);
+        this.permissionTextBox.setFontOptions(defaultTextFieldFontOptions);
+        this.permissionTextBox.register(this);
+        this.permissionTextBox.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
+
         final UILabel permissionLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.permission") + ":")
-                .setPosition(0, this.permissionField.getY() + 3, Anchor.LEFT | Anchor.TOP);
+                .setPosition(0, this.permissionTextBox.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created by (name)
-        this.creatorNameField = new UITextField(this, "", false)
-                .setSize(140, 0)
-                .setPosition(0, SimpleScreen.getPaddedY(this.permissionField, 2), Anchor.RIGHT | Anchor.TOP)
-                .setFontOptions(readOnlyTextFieldFontOptions)
-                .setEditable(false);
+        this.creatorNameTextBox = new UITextBox(this, "");
+        this.creatorNameTextBox.setSize(140, 0);
+        this.creatorNameTextBox.setPosition(0, SimpleScreen.getPaddedY(this.permissionTextBox, 2), Anchor.RIGHT | Anchor.TOP);
+        this.creatorNameTextBox.setFontOptions(readOnlyTextFieldFontOptions);
+        this.creatorNameTextBox.setEditable(false);
+
         this.creatorNameLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.creator_name") + ":")
-                .setPosition(0, this.creatorNameField.getY() + 3, Anchor.LEFT | Anchor.TOP);
+                .setPosition(0, this.creatorNameTextBox.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created by (Unique ID)
-        this.creatorUniqueIdField = new UITextField(this, "", false)
-                .setSize(140, 0)
-                .setPosition(0, SimpleScreen.getPaddedY(this.creatorNameField, 2), Anchor.RIGHT | Anchor.TOP)
-                .setFontOptions(readOnlyTextFieldFontOptions)
-                .setEditable(false);
+        this.creatorUniqueIdTextBox = new UITextBox(this, "");
+        this.creatorUniqueIdTextBox.setSize(140, 0);
+        this.creatorUniqueIdTextBox.setPosition(0, SimpleScreen.getPaddedY(this.creatorNameTextBox, 2), Anchor.RIGHT | Anchor.TOP);
+        this.creatorUniqueIdTextBox.setFontOptions(readOnlyTextFieldFontOptions);
+        this.creatorUniqueIdTextBox.setEditable(false);
+
         this.creatorUniqueIdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.creator_uuid") + ":")
-                .setPosition(0, this.creatorUniqueIdField.getY() + 3, Anchor.LEFT | Anchor.TOP);
+                .setPosition(0, this.creatorUniqueIdTextBox.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created on
-        this.createdField = new UITextField(this, "", false)
-                .setSize(140, 0)
-                .setPosition(0, SimpleScreen.getPaddedY(this.creatorUniqueIdField, 2), Anchor.RIGHT | Anchor.TOP)
-                .setFontOptions(readOnlyTextFieldFontOptions)
-                .setEditable(false);
+        this.createdTextBox = new UITextBox(this, "");
+        this.createdTextBox.setSize(140, 0);
+        this.createdTextBox.setPosition(0, SimpleScreen.getPaddedY(this.creatorUniqueIdTextBox, 2), Anchor.RIGHT | Anchor.TOP);
+        this.createdTextBox.setFontOptions(readOnlyTextFieldFontOptions);
+        this.createdTextBox.setEditable(false);
+
         this.createdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.exchange.created") + ":")
-                .setPosition(0, this.createdField.getY() + 3, Anchor.LEFT | Anchor.TOP);
+                .setPosition(0, this.createdTextBox.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         this.hiddenCheckbox = new UICheckBox(this);
         this.hiddenCheckbox.setText(TextFormatting.WHITE + I18n.format("almura.text.exchange.hidden"));
@@ -164,23 +176,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .text(I18n.format("almura.button.save"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .enabled(false)
-                .onClick(() -> {
-                    final boolean isNew = this.exchangeList.getSelectedItem() == null;
-
-                    UIMessageBox.showDialog(this, I18n.format("almura.title.exchange.are_you_sure"),
-                            I18n.format(String.format("almura.text.exchange.%s_exchange", isNew ? "add" : "modify")), MessageBoxButtons.YES_NO,
-                            (result) -> {
-                                if (result != MessageBoxResult.YES) return;
-
-                                if (this.exchangeList.getSelectedItem() == null) { // It's a new listing if true
-                                    exchangeManager.addExchange(this.idField.getText(), this.titleField.getText(), this.permissionField.getText(),
-                                            this.hiddenCheckbox.isChecked());
-                                } else {
-                                    exchangeManager.modifyExchange(this.idField.getText(), this.titleField.getText(), this.permissionField.getText(),
-                                            this.hiddenCheckbox.isChecked());
-                                }
-                            });
-                })
+                .onClick(this::save)
                 .build("button.save");
 
         this.buttonOpen = new UIButtonBuilder(this)
@@ -198,12 +194,12 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 })
                 .build("button.open");
 
-        container.add(this.idField, idLabel,
-                      this.titleField, titleLabel,
-                      this.permissionField, permissionLabel,
-                      this.creatorNameField, creatorNameLabel,
-                      this.creatorUniqueIdField, creatorUniqueIdLabel,
-                      this.createdField, createdLabel,
+        container.add(this.idTextBox, idLabel,
+                      this.titleTextBox, titleLabel,
+                      this.permissionTextBox, permissionLabel,
+                      this.creatorNameTextBox, creatorNameLabel,
+                      this.creatorUniqueIdTextBox, creatorUniqueIdLabel,
+                      this.createdTextBox, createdLabel,
                       this.hiddenCheckbox, this.buttonOpen, this.buttonSave);
 
         // Add button
@@ -211,7 +207,10 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .text(Text.of(TextColors.GREEN, "+"))
                 .width(15)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
-                .onClick(() -> this.exchangeList.setSelectedItem(null))
+                .onClick(() -> {
+                    this.exchangeList.setSelectedItem(null);
+                    this.idTextBox.focus();
+                })
                 .build("button.add");
 
         // Remove button
@@ -254,14 +253,14 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         if (event.getComponent() instanceof UITextField) {
             this.validate(((String) event.getNewValue()));
         } else if (event.getComponent() instanceof UICheckBox) {
-            this.validate(this.idField.getText());
+            this.validate(this.idTextBox.getText());
         }
     }
 
     public void refresh() {
         final String lastSelectedId = this.exchangeList.getSelectedItem() != null
                 ? this.exchangeList.getSelectedItem().getId()
-                : this.idField.getText().toLowerCase();
+                : this.idTextBox.getText().toLowerCase();
 
         this.exchangeList.setItems(exchangeManager.getExchanges());
 
@@ -276,33 +275,33 @@ public final class ExchangeManagementScreen extends SimpleScreen {
     private void reset(boolean forNewExchange) {
 
         // ID
-        this.idField.setText("");
-        this.idField.setEditable(forNewExchange);
-        this.idField.setFontOptions(forNewExchange ? defaultTextFieldFontOptions : readOnlyTextFieldFontOptions);
+        this.idTextBox.setText("");
+        this.idTextBox.setEditable(forNewExchange);
+        this.idTextBox.setFontOptions(forNewExchange ? defaultTextFieldFontOptions : readOnlyTextFieldFontOptions);
 
         // Title
-        this.titleField.setText("");
+        this.titleTextBox.setText("");
 
         // Permission
-        this.permissionField.setText("");
+        this.permissionTextBox.setText("");
 
         // Creator by (name)
-        this.creatorNameField.setText("");
-        this.creatorNameField.setEditable(false);
-        this.creatorNameField.setFontOptions(readOnlyTextFieldFontOptions);
-        this.creatorNameField.setVisible(!forNewExchange);
+        this.creatorNameTextBox.setText("");
+        this.creatorNameTextBox.setEditable(false);
+        this.creatorNameTextBox.setFontOptions(readOnlyTextFieldFontOptions);
+        this.creatorNameTextBox.setVisible(!forNewExchange);
         this.creatorNameLabel.setVisible(!forNewExchange);
 
         // Creator by (Unique ID)
-        this.creatorUniqueIdField.setText("");
-        this.creatorUniqueIdField.setEditable(false);
-        this.creatorUniqueIdField.setFontOptions(readOnlyTextFieldFontOptions);
-        this.creatorUniqueIdField.setVisible(!forNewExchange);
+        this.creatorUniqueIdTextBox.setText("");
+        this.creatorUniqueIdTextBox.setEditable(false);
+        this.creatorUniqueIdTextBox.setFontOptions(readOnlyTextFieldFontOptions);
+        this.creatorUniqueIdTextBox.setVisible(!forNewExchange);
         this.creatorUniqueIdLabel.setVisible(!forNewExchange);
 
         // Created on
-        this.createdField.setText("");
-        this.createdField.setVisible(!forNewExchange);
+        this.createdTextBox.setText("");
+        this.createdTextBox.setVisible(!forNewExchange);
         this.createdLabel.setVisible(!forNewExchange);
 
         // Hidden
@@ -311,22 +310,43 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         this.buttonOpen.setEnabled(false);
 
         this.buttonSave.setEnabled(false);
-
-        this.validate("");
     }
 
-    private void validate(String newValue) {
-        boolean isValid = !this.idField.getText().isEmpty()
-                && !this.titleField.getText().isEmpty()
-                && !this.permissionField.getText().isEmpty()
+    private boolean validate(String newValue) {
+        boolean isValid = !this.idTextBox.getText().isEmpty()
+                && !this.titleTextBox.getText().isEmpty()
+                && !this.permissionTextBox.getText().isEmpty()
                 && !newValue.isEmpty(); // Because we don't have a post event
 
         // If this is a new project then ensure another with that ID doesn't exist
         if (this.exchangeList.getSelectedItem() == null && isValid) {
-            isValid = this.exchangeList.getItems().stream().noneMatch(i -> i.getId().equalsIgnoreCase(this.idField.getText()));
+            isValid = this.exchangeList.getItems().stream().noneMatch(i -> i.getId().equalsIgnoreCase(this.idTextBox.getText()));
         }
 
         this.buttonSave.setEnabled(isValid);
+        return isValid;
+    }
+
+    private void save() {
+        if (!this.buttonSave.isEnabled()) {
+            return;
+        }
+
+        final boolean isNew = this.exchangeList.getSelectedItem() == null;
+
+        UIMessageBox.showDialog(this, I18n.format("almura.title.exchange.are_you_sure"),
+                I18n.format(String.format("almura.text.exchange.%s_exchange", isNew ? "add" : "modify")), MessageBoxButtons.YES_NO,
+                (result) -> {
+                    if (result != MessageBoxResult.YES) return;
+
+                    if (this.exchangeList.getSelectedItem() == null) { // It's a new listing if true
+                        exchangeManager.addExchange(this.idTextBox.getText(), this.titleTextBox.getText(), this.permissionTextBox.getText(),
+                                this.hiddenCheckbox.isChecked());
+                    } else {
+                        exchangeManager.modifyExchange(this.idTextBox.getText(), this.titleTextBox.getText(), this.permissionTextBox.getText(),
+                                this.hiddenCheckbox.isChecked());
+                    }
+                });
     }
 
     private Consumer<Exchange> onSelect() {
@@ -339,32 +359,32 @@ public final class ExchangeManagementScreen extends SimpleScreen {
             }
 
             // ID
-            this.idField.setText(exchange.getId());
-            this.idField.setFontOptions(readOnlyTextFieldFontOptions);
-            this.idField.setEditable(false);
+            this.idTextBox.setText(exchange.getId());
+            this.idTextBox.setFontOptions(readOnlyTextFieldFontOptions);
+            this.idTextBox.setEditable(false);
 
             // Title
-            this.titleField.setText(exchange.getName());
+            this.titleTextBox.setText(exchange.getName());
 
             // Permission
-            this.permissionField.setText(exchange.getPermission());
+            this.permissionTextBox.setText(exchange.getPermission());
 
             // Creator by (Name)
             // This nonsense is brought to you by [sponge].
             final String name = Store.UNKNOWN_OWNER.equals(exchange.getCreator())
                     ? I18n.format("almura.text.exchange.unknown")
                     : exchange.getCreatorName().orElse(I18n.format("almura.text.exchange.unknown"));
-            this.creatorNameField.setText(name);
+            this.creatorNameTextBox.setText(name);
 
             // Creator by (Unique ID)
-            this.creatorUniqueIdField.setText(exchange.getCreator().toString());
+            this.creatorUniqueIdTextBox.setText(exchange.getCreator().toString());
 
             // Created on
             final DateTimeFormatter formatter = DateTimeFormatter
                     .ofLocalizedDateTime(FormatStyle.SHORT)
                     .withLocale(Locale.getDefault())
                     .withZone(ZoneId.systemDefault());
-            this.createdField.setText(formatter.format(exchange.getCreated()));
+            this.createdTextBox.setText(formatter.format(exchange.getCreated()));
 
             // Hidden
             this.hiddenCheckbox.setChecked(exchange.isHidden());

@@ -11,6 +11,7 @@ import com.almuradev.almura.shared.client.GuiConfig;
 import net.malisis.core.MalisisCore;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.IKeyListener;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.control.IScrollable;
 import net.malisis.core.inventory.MalisisInventoryContainer;
@@ -150,6 +151,46 @@ public abstract class SimpleScreen extends MalisisGui {
             this.lastClickButton = button;
         } catch (Exception e) {
             MalisisCore.message("A problem occurred : " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            e.printStackTrace(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        }
+    }
+
+    @Override
+    protected void keyTyped(char keyChar, int keyCode) {
+        try {
+            boolean ret = false;
+            for (IKeyListener listener : keyListeners) {
+                ret |= listener.onKeyTyped(keyChar, keyCode);
+            }
+
+            if (ret) {
+                return;
+            }
+
+            if (focusedComponent != null && !keyListeners.contains(focusedComponent) && focusedComponent.onKeyTyped(keyChar, keyCode)) {
+                return;
+            }
+
+            // Removed logic from parent that attempts to fire onKeyTyped on the hovered component. This causes issues with a tab indexing system.
+
+            if (isGuiCloseKey(keyCode) && mc.currentScreen == this) {
+                close();
+            }
+
+            if (!MalisisCore.isObfEnv && isCtrlKeyDown() && (currentGui() != null || isOverlay)) {
+                if (keyCode == Keyboard.KEY_R) {
+                    clearScreen();
+                    setResolution();
+                    construct();
+                }
+
+                // Woo private access without getter/setters
+                //if (keyCode == Keyboard.KEY_D) {
+                //    debug = !debug;
+                //}
+            }
+        } catch (Exception e) {
+            MalisisCore.message("A problem occurred while handling key typed for " + e.getClass().getSimpleName() + ": " + e.getMessage());
             e.printStackTrace(new PrintStream(new FileOutputStream(FileDescriptor.out)));
         }
     }
