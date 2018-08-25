@@ -9,6 +9,8 @@ package com.almuradev.almura.shared.client.ui.component.container;
 
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
+import com.almuradev.almura.shared.client.ui.component.UILine;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -94,9 +96,12 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         this.rightDynamicList.setName("list.right");
         this.rightDynamicList.register(this);
 
-        rightContainer.add(rightContainerLabel, this.rightDynamicList);
+        this.rightContainer.add(rightContainerLabel, this.rightDynamicList);
 
-        this.add(this.leftContainer, this.middleContainer, this.rightContainer);
+        final UILine titleLine = new UILine(gui, this.getRawWidth() - (this.borderSize * 2));
+        titleLine.setPosition(0, SimpleScreen.getPaddedY(leftContainerLabel, 2));
+
+        this.add(this.leftContainer, this.middleContainer, this.rightContainer, titleLine);
     }
 
     @Override
@@ -107,6 +112,10 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         final int middleContainerHeight = this.middleContainer == null ? 0 : this.middleContainer.getHeight();
         final int halfHeight = (this.height - middleContainerHeight - (this.borderSize * 2)) / 2;
         int startY = 1;
+
+        // Draw: top-left -> top-right (title line)
+        renderer.drawRectangle(this.borderSize, this.leftContainer.getTopPadding() - 4, 1, this.getRawWidth() - (this.borderSize * 2), 1,
+                FontColors.WHITE, 185);
 
         // Draw: top -> middle_section
         renderer.drawRectangle(startX, startY, 50, 1, halfHeight, FontColors.WHITE, 185);

@@ -18,6 +18,7 @@ import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
+import com.almuradev.almura.shared.client.ui.component.UILine;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
@@ -102,15 +103,6 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Main Panel
         final UIForm form = new UIForm(this, minScreenWidth, minScreenHeight, this.getExchange().getName());
-        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        form.setMovable(true);
-        form.setClosable(true);
-        form.setBorder(FontColors.WHITE, 1, 185);
-        form.setBackgroundAlpha(215);
-        form.setBottomPadding(3);
-        form.setRightPadding(3);
-        form.setTopPadding(20);
-        form.setLeftPadding(3);
 
         // Item Search Area
         final UIForm searchArea = new UIForm(this, 295, 322, "");
@@ -215,24 +207,22 @@ public final class ExchangeScreen extends SimpleScreen {
             .build("button.next");
 
         // Separator
-        final UIContainer<?> forSaleBottomSeparator = new UIContainer<>(this, searchArea.getRawWidth() - 2, 1);
-        forSaleBottomSeparator.setColor(FontColors.WHITE);
-        forSaleBottomSeparator.setBackgroundAlpha(185);
-        forSaleBottomSeparator.setPosition(0, SimpleScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
+        final UILine forSaleBottomLine = new UILine(this, searchArea.getRawWidth() - 2);
+        forSaleBottomLine.setPosition(0, SimpleScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         // Add Elements of Search Area
         searchArea.add(itemSearchLabel, this.displayNameSearchTextBox, sellerSearchLabel, this.sellerSearchTextBox, buttonSearch, comboBoxSortType,
                 this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList, this.labelSearchPage,
-                forSaleTopSeparator, forSaleBottomSeparator);
+                forSaleTopSeparator, forSaleBottomLine);
 
         // Economy Pane
-        final UIForm economyActionArea = new UIForm(this, 295, 21, "");
-        economyActionArea.setPosition(0, getPaddedY(searchArea, innerPadding), Anchor.LEFT | Anchor.TOP);
-        economyActionArea.setMovable(false);
-        economyActionArea.setClosable(false);
-        economyActionArea.setBorder(FontColors.WHITE, 1, 185);
-        economyActionArea.setBackgroundAlpha(215);
-        economyActionArea.setPadding(2, 0);
+        final UIForm buyArea = new UIForm(this, 295, 21, "");
+        buyArea.setPosition(0, getPaddedY(searchArea, innerPadding), Anchor.LEFT | Anchor.TOP);
+        buyArea.setMovable(false);
+        buyArea.setClosable(false);
+        buyArea.setBorder(FontColors.WHITE, 1, 185);
+        buyArea.setBackgroundAlpha(215);
+        buyArea.setPadding(2, 0);
 
         // Bottom Economy Pane - buyStack button
         this.buttonBuyStack = new UIButtonBuilder(this)
@@ -279,16 +269,16 @@ public final class ExchangeScreen extends SimpleScreen {
                 })
                 .build("button.buy.quantity");
 
-        economyActionArea.add(this.buttonBuyStack, this.buttonBuySingle, this.buttonBuyQuantity);
+        buyArea.add(this.buttonBuyStack, this.buttonBuySingle, this.buttonBuyQuantity);
 
         // Inventory Area Section (right pane)
-        final UIForm inventoryArea = new UIForm(this, 295, 345, "");
-        inventoryArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
-        inventoryArea.setMovable(false);
-        inventoryArea.setClosable(false);
-        inventoryArea.setBorder(FontColors.WHITE, 1, 185);
-        inventoryArea.setBackgroundAlpha(215);
-        inventoryArea.setPadding(3, 3);
+        final UIForm listArea = new UIForm(this, 295, 345, "");
+        listArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
+        listArea.setMovable(false);
+        listArea.setClosable(false);
+        listArea.setBorder(FontColors.WHITE, 1, 185);
+        listArea.setBackgroundAlpha(215);
+        listArea.setPadding(3, 3);
 
         this.listItemList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 315);
         this.listItemList.setPosition(innerPadding, innerPadding);
@@ -331,14 +321,12 @@ public final class ExchangeScreen extends SimpleScreen {
             .build("button.offer");
 
         // Separator
-        final UIContainer<?> listBottomSeparator = new UIContainer<>(this, searchArea.getRawWidth() - 2, 1);
-        listBottomSeparator.setColor(FontColors.WHITE);
-        listBottomSeparator.setBackgroundAlpha(185);
-        listBottomSeparator.setPosition(0, SimpleScreen.getPaddedY(this.buttonList, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
+        final UILine listBottomLine = new UILine(this, searchArea.getRawWidth() - 2);
+        listBottomLine.setPosition(0, SimpleScreen.getPaddedY(this.buttonList, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
-        inventoryArea.add(this.listItemList, this.buttonList, this.labelLimit, buttonOffer, listBottomSeparator);
+        listArea.add(this.listItemList, this.buttonList, this.labelLimit, buttonOffer, listBottomLine);
 
-        form.add(searchArea, economyActionArea, inventoryArea);
+        form.add(searchArea, buyArea, listArea);
 
         addToScreen(form);
 

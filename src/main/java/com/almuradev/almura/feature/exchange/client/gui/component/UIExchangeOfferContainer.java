@@ -19,6 +19,7 @@ import com.almuradev.almura.shared.item.VirtualStack;
 import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -80,20 +81,29 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
         this.rightDynamicList.setSize(UIComponent.INHERITED, SimpleScreen.getPaddedHeight(this.rightContainer) - 22);
 
         // Add property bars
-        this.leftPropertyBar = new UIPropertyBar(gui, SimpleScreen.getPaddedWidth(this.leftContainer), 15);
+        this.leftPropertyBar = new UIPropertyBar(gui, SimpleScreen.getPaddedWidth(this.leftContainer), 14);
         this.leftPropertyBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 130, 0).getRgb());
-        this.leftPropertyBar.setPosition(-1, -1, Anchor.BOTTOM | Anchor.LEFT);
+        this.leftPropertyBar.setPosition(-1, 0, Anchor.BOTTOM | Anchor.LEFT);
         this.leftPropertyBar.setText(Text.of(0, "/", this.leftLimit));
 
-        this.rightPropertyBar = new UIPropertyBar(gui, SimpleScreen.getPaddedWidth(this.rightContainer), 15);
+        this.rightPropertyBar = new UIPropertyBar(gui, SimpleScreen.getPaddedWidth(this.rightContainer), 14);
         this.rightPropertyBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 130, 0).getRgb());
-        this.rightPropertyBar.setPosition(-1, -1, Anchor.BOTTOM | Anchor.LEFT);
+        this.rightPropertyBar.setPosition(-1, 0, Anchor.BOTTOM | Anchor.LEFT);
         this.rightPropertyBar.setText(Text.of(0, "/", this.rightLimit));
 
         this.leftContainer.add(this.leftPropertyBar);
         this.rightContainer.add(this.rightPropertyBar);
 
         this.updateControls(null, SideType.RIGHT);
+    }
+
+    @Override
+    public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+        super.drawBackground(renderer, mouseX, mouseY, partialTick);
+
+        // Draw: bottom-left -> bottom-right (title line)
+        renderer.drawRectangle(this.borderSize, this.leftContainer.getHeight() - this.leftPropertyBar.getHeight() - 6, 1,
+                this.getRawWidth() - (this.borderSize * 2), 1, FontColors.WHITE, 185);
     }
 
     @Override

@@ -74,12 +74,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
         // Form
         final UIForm form = new UIForm(this, 400, 325, I18n.format("almura.title.exchange.offer"));
         form.setZIndex(10); // Fixes issue overlapping draws from parent
-        form.setMovable(true);
-        form.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
         form.setBackgroundAlpha(255);
-        form.setBorder(FontColors.WHITE, 1, 185);
-        form.setPadding(4, 4);
-        form.setTopPadding(20);
 
         // OK/Cancel buttons
         final UIButton buttonOk = new UIButtonBuilder(this)
