@@ -155,7 +155,9 @@ public class UIForm extends UIContainer<UIForm> {
             case "button.form.close":
                 if (this.closeButton.isInsideBounds(event.getX(), event.getY())) {
                     this.onClose();
-                    ((UIContainer) this.getParent()).remove(this);
+                    if (getParent() instanceof net.malisis.core.client.gui.component.container.UIContainer) {
+                        ((net.malisis.core.client.gui.component.container.UIContainer) this.getParent()).remove(this);
+                    }
                 }
                 break;
         }
