@@ -425,7 +425,7 @@ public final class ExchangeScreen extends SimpleScreen {
         }
 
         final String filterQuery = filterQueryBuilder.toString().isEmpty() ? null : filterQueryBuilder.toString();
-        final String sortQuery = filterQueryBuilder.toString().isEmpty() ? null : sortQueryBuilder.toString();
+        final String sortQuery = sortQueryBuilder.toString().isEmpty() ? null : sortQueryBuilder.toString();
 
         exchangeManager.queryForSaleItemsFor(this.axs.getId(), filterQuery, sortQuery, (this.currentPage - 1) * 10, 10);
     }

@@ -30,6 +30,7 @@ import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.WindowNotification;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
+import com.almuradev.almura.shared.feature.store.StoreConstants;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
@@ -61,20 +62,23 @@ import javax.inject.Singleton;
 @SideOnly(Side.CLIENT)
 public final class ClientExchangeManager implements Witness {
 
+    @Nullable private static final String defaultFilter = null;
+    private static final String defaultSort = "price" + StoreConstants.EQUALITY + "asc" + StoreConstants.DELIMETER;
+    private static final int defaultSkip = 0;
+    private static final int defaultLimit = -1;
+
     private final ChannelBinding.IndexedMessageChannel network;
-    private final ClientNotificationManager notificationManager;
     private final List<Exchange> exchanges = new ArrayList<>();
 
-    @Nullable private String currentFilter, currentSort;
-    private int currentSkip = 0;
-    private int currentLimit = -1;
+    @Nullable private String currentFilter = defaultFilter;
+    @Nullable private String currentSort = defaultSort;
+    private int currentSkip = defaultSkip;
+    private int currentLimit = defaultLimit;
 
     @Inject
-    public ClientExchangeManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network,
-        final ClientNotificationManager notificationManager) {
+    public ClientExchangeManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
 
         this.network = network;
-        this.notificationManager = notificationManager;
     }
 
     @SubscribeEvent
@@ -306,9 +310,9 @@ public final class ClientExchangeManager implements Witness {
     }
 
     private void clearFilterCache() {
-        this.currentFilter = null;
-        this.currentSort = null;
-        this.currentSkip = 0;
-        this.currentLimit = -1;
+        this.currentFilter = defaultFilter;
+        this.currentSort = defaultSort;
+        this.currentSkip = defaultSkip;
+        this.currentLimit = defaultLimit;
     }
 }
