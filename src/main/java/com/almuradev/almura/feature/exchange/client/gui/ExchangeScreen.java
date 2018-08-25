@@ -160,8 +160,6 @@ public final class ExchangeScreen extends SimpleScreen {
         this.forSaleList.setPosition(innerPadding, getPaddedY(this.sellerSearchTextBox, 8));
         this.forSaleList.setItemComponentFactory((g, e) -> new ForSaleItemComponent(this, e));
         this.forSaleList.setItemComponentSpacing(1);
-        this.forSaleList.setCanDeselect(true);
-
         this.forSaleList.setSelectConsumer((i) -> this.updateControls());
 
         // Search button
@@ -297,7 +295,6 @@ public final class ExchangeScreen extends SimpleScreen {
         this.listItemList.setPosition(innerPadding, innerPadding);
         this.listItemList.setItemComponentFactory(ListItemComponent::new);
         this.listItemList.setItemComponentSpacing(1);
-        this.listItemList.setCanDeselect(true);
         this.listItemList.setSelectConsumer((i) -> this.updateControls());
 
         // Bottom Economy Pane - buyStack button
@@ -438,10 +435,11 @@ public final class ExchangeScreen extends SimpleScreen {
     private void updateControls() {
 
         // Results list
-        final boolean isResultSelected = this.forSaleList.getSelectedItem() != null;
+        final ForSaleItem currentForSaleItem = this.forSaleList.getSelectedItem();
+        final boolean isResultSelected = currentForSaleItem != null;
         this.buttonBuySingle.setEnabled(isResultSelected);
-        this.buttonBuyQuantity.setEnabled(isResultSelected);
-        this.buttonBuyStack.setEnabled(isResultSelected);
+        this.buttonBuyQuantity.setEnabled(isResultSelected && currentForSaleItem.getQuantity() > 1);
+        this.buttonBuyStack.setEnabled(isResultSelected && currentForSaleItem.getQuantity() > 1);
 
         // Selling list
         final boolean isSellingItemSelected = this.listItemList.getSelectedItem() != null;
