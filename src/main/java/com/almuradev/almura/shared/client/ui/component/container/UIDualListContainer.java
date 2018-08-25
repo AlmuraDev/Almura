@@ -110,7 +110,7 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
 
         final int startX = this.width / 2;
         final int middleContainerHeight = this.middleContainer == null ? 0 : this.middleContainer.getHeight();
-        final int halfHeight = (this.height - middleContainerHeight - (this.borderSize * 2)) / 2;
+        final int halfHeight = (this.height - middleContainerHeight - this.borderSize) / 2;
         int startY = 1;
 
         // Draw: top-left -> top-right (title line)
@@ -122,7 +122,7 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
         startY += halfHeight;
 
         // Skip: middle_section
-        startY += middleContainerHeight;
+        startY += middleContainerHeight - 1;
 
         // Draw: middle_section -> bottom
         renderer.drawRectangle(startX, startY, 50, 1, halfHeight, FontColors.WHITE, 185);
