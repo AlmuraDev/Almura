@@ -12,22 +12,20 @@ import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
+import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.minecraft.client.resources.I18n;
-
-import java.math.BigDecimal;
+import org.lwjgl.input.Keyboard;
 
 public class ExchangeBuyQuantityScreen extends SimpleScreen {
 
@@ -38,7 +36,7 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
 
     private UIButton buttonBuy, buttonCancel;
     private UILabel quantityLabel, perItemLabel, perItemValueLabel, totalLabel, totalValueLabel;
-    private UITextField quantityField;
+    private UITextBox quantityTextBox;
     private UIForm form;
 
     public ExchangeBuyQuantityScreen(ExchangeScreen parent, Exchange axs, ForSaleItem toBuyItem) {
@@ -59,16 +57,16 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
         this.quantityLabel.setFontOptions(FontColors.WHITE_FO);
         this.quantityLabel.setPosition(0, 2);
 
-        this.quantityField = new UITextField(this, "1");
-        this.quantityField.setSize(45, 0);
-        this.quantityField.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
-        this.quantityField.setFilter(s -> s = String.valueOf(
+        this.quantityTextBox = new UITextBox(this, "1");
+        this.quantityTextBox.setSize(45, 0);
+        this.quantityTextBox.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
+        this.quantityTextBox.setFilter(s -> s = String.valueOf(
                 MathUtil.squashi(Integer.valueOf(s.replaceAll("[^\\d]", "")), 1, toBuyItem.getQuantity())));
-        this.quantityField.setPosition(0, 0);
-        this.quantityField.register(this);
+        this.quantityTextBox.setPosition(0, 0);
+        this.quantityTextBox.register(this);
 
         this.perItemLabel = new UILabel(this, "Per:");
-        this.perItemLabel.setPosition(0, SimpleScreen.getPaddedY(this.quantityField, 8));
+        this.perItemLabel.setPosition(0, SimpleScreen.getPaddedY(this.quantityTextBox, 8));
         this.perItemLabel.setFontOptions(FontColors.WHITE_FO);
 
         this.perItemValueLabel = new UILabel(this, "");
@@ -88,11 +86,7 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
                 .width(40)
                 .position(-2, -2)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .onClick(() -> {
-                    exchangeManager.purchase(this.axs.getId(), this.toBuyItem.getListItem().getRecord(),
-                            Integer.valueOf(this.quantityField.getText()));
-                    this.close();
-                })
+                .onClick(this::buy)
                 .build("button.buy");
 
         this.buttonCancel = new UIButtonBuilder(this)
@@ -103,38 +97,57 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
                 .onClick(this::close)
                 .build("button.cancel");
 
-        this.form.add(this.quantityLabel, this.quantityField,
+        this.form.add(this.quantityLabel, this.quantityTextBox,
                       this.perItemLabel, this.perItemValueLabel,
                       this.totalLabel, this.totalValueLabel,
                       this.buttonCancel, this.buttonBuy);
 
-        this.updateControls(this.quantityField.getText());
+        this.updateControls(this.quantityTextBox.getText());
 
         this.addToScreen(this.form);
-    }
 
-    private void updateControls(String rawValue) {
-        try {
-            final int value = Integer.parseInt(rawValue);
-
-            // Update controls
-            this.perItemValueLabel.setText(ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.toBuyItem.getPrice()));
-            this.totalValueLabel.setText(ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(
-                    this.toBuyItem.getPrice().doubleValue() * value));
-
-            this.buttonBuy.setEnabled(value > 0 && value <= this.toBuyItem.getQuantity());
-        } catch (NumberFormatException e) {
-            this.buttonBuy.setEnabled(false);
-        }
+        this.quantityTextBox.focus();
+        this.quantityTextBox.selectAll();
     }
 
     @Subscribe
     private void onTextChange(ComponentEvent.ValueChange<UITextField, String> event) {
-        if (event.getNewValue().isEmpty()) {
-            this.buttonBuy.setEnabled(false);
+        this.updateControls(event.getNewValue());
+    }
+
+    @Override
+    protected void keyTyped(char keyChar, int keyCode) {
+        if (keyCode != Keyboard.KEY_RETURN) {
+            super.keyTyped(keyChar, keyCode);
             return;
         }
 
-        this.updateControls(event.getNewValue());
+        if (this.quantityTextBox.isFocused() && this.validate(this.quantityTextBox.getText())) {
+            this.buy();
+        }
+    }
+
+    private boolean validate(String rawValue) {
+        try {
+            final int value = Integer.parseInt(rawValue);
+
+            this.perItemValueLabel.setText(ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.toBuyItem.getPrice()));
+            this.totalValueLabel.setText(ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(
+                    this.toBuyItem.getPrice().doubleValue() * value));
+
+            return value > 0 && value <= this.toBuyItem.getQuantity();
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private void updateControls(String rawValue) {
+        this.buttonBuy.setEnabled(this.validate(rawValue));
+    }
+
+    private void buy() {
+        exchangeManager.purchase(this.axs.getId(), this.toBuyItem.getListItem().getRecord(),
+                Integer.valueOf(this.quantityTextBox.getText()));
+        this.close();
     }
 }

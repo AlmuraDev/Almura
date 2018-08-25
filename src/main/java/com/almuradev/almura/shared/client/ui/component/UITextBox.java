@@ -24,29 +24,41 @@ public class UITextBox extends UITextField {
         super(screen, multiLine);
     }
 
-    public void focus() {
+    /**
+     * Focuses on the {@link UITextBox}
+     * @return The textbox
+     */
+    public UITextBox focus() {
         if (!isEnabled()) {
-            return;
+            return this;
         }
         this.setFocused(true);
         ((SimpleScreen) getGui()).setFocusedComponent(this);
+
+        return this;
     }
 
     /**
      * Selects all the text in the component
+     * @return The textbox
      */
-    public void selectAll() {
+    public UITextBox selectAll() {
         this.selectingText = true;
         this.selectionPosition.jumpToBeginning();
         this.cursorPosition.jumpToEnd();
+
+        return this;
     }
 
     /**
      * Deselect all the text in the component
+     * @return The textbox
      */
-    public void deselectAll() {
-        selectingText = false;
-        selectionPosition.jumpTo(0);
-        cursorPosition.jumpTo(text.length());
+    public UITextBox deselectAll() {
+        this.selectingText = false;
+        this.selectionPosition.jumpTo(0);
+        this.cursorPosition.jumpTo(this.text.length());
+
+        return this;
     }
 }
