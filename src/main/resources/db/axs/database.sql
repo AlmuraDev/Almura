@@ -20,6 +20,7 @@ create table if not exists "axs_list_item"
   "quantity"           int          default 1 not null,
   "metadata"           int          default 0 not null,
   "index"              int          default 0 not null,
+  "last_known_price"   decimal      null,
   "is_hidden"          bit          default 0 not null,
   foreign key ("axs") references "axs"("id") on update cascade on delete cascade
 );
