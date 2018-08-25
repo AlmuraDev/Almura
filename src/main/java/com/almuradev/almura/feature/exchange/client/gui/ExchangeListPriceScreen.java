@@ -27,7 +27,6 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.minecraft.client.resources.I18n;
-import org.lwjgl.input.Keyboard;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;

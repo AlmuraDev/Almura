@@ -8,20 +8,18 @@
 package com.almuradev.almura.feature.menu.ingame;
 
 import com.almuradev.almura.feature.claim.ClientClaimManager;
+import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreListScreen;
 import com.almuradev.almura.feature.title.ClientTitleManager;
-import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -36,18 +34,15 @@ import javax.inject.Inject;
 @SideOnly(Side.CLIENT)
 public final class FeaturesGUI extends SimpleScreen {
 
-  private static final int innerPadding = 2;
   private int lastUpdate = 0;
   private boolean unlockMouse = true;
-  private boolean isAdmin = false;
-  private UILabel titleLabel;
-  private UIButton guideButton, manageTitleButton, nicknameButton, exchangeButton, serverShopButton, npcShopButton, accessoriesButton, claimButton;
-  private UIFormContainer form;
+  private boolean isAdmin;
+  private UIButton guideButton, manageTitleButton, nicknameButton, manageExchangeButton, specificExchangeButton, serverShopButton, npcShopButton,
+    accessoriesButton, claimButton;
 
   private World world;
   private EntityPlayerSP player;
 
-  @Inject private static PluginContainer container;
   @Inject private static ClientExchangeManager exchangeManager;
   @Inject private static ClientPageManager guideManager;
   @Inject private static ClientNickManager nickManager;
@@ -66,24 +61,7 @@ public final class FeaturesGUI extends SimpleScreen {
     Keyboard.enableRepeatEvents(true);
 
     // Main Panel
-    form = new UIFormContainer(this, 150, 230, "");
-    form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-    form.setMovable(true);
-    form.setClosable(true);
-    form.setBorder(FontColors.WHITE, 1, 185);
-    form.setBackgroundAlpha(215);
-    form.setBottomPadding(3);
-    form.setRightPadding(3);
-    form.setTopPadding(20);
-    form.setLeftPadding(3);
-
-    titleLabel = new UILabel(this, "Almura Features");
-    titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-    titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
-
-    final UISeparator topWindowTitleSeparator = new UISeparator(this);
-    topWindowTitleSeparator.setSize(this.form.getWidth() -5, 1);
-    topWindowTitleSeparator.setPosition(0, -5, Anchor.TOP | Anchor.CENTER);
+    final UIForm form = new UIForm(this, 150, 230, "Almura Features");
 
     // Guide button
     guideButton = new UIButtonBuilder(this)
@@ -111,21 +89,31 @@ public final class FeaturesGUI extends SimpleScreen {
       .listener(this)
       .build("button.title.manage");
 
-    // Exchange button
-    exchangeButton = new UIButtonBuilder(this)
+    // Manage Exchange button
+    manageExchangeButton = new UIButtonBuilder(this)
       .width(100)
       .anchor(Anchor.TOP | Anchor.CENTER)
       .position(0, manageTitleButton.getY() + 18)
       .visible(isAdmin)
-      .text("Exchange")
+      .text("Manage Exchanges")
       .listener(this)
-      .build("button.exchange");
+      .build("button.exchange.manage");
+
+    // Specific Exchange button
+    specificExchangeButton = new UIButtonBuilder(this)
+      .width(100)
+      .anchor(Anchor.TOP | Anchor.CENTER)
+      .position(0, manageExchangeButton.getY() + 18)
+      .visible(isAdmin)
+      .text("Global Exchange")
+      .listener(this)
+      .build("button.exchange.specific");
 
     // Server Shop Configuration GUI button
     serverShopButton = new UIButtonBuilder(this)
       .width(100)
       .anchor(Anchor.TOP | Anchor.CENTER)
-      .position(0, exchangeButton.getY() + 18)
+      .position(0, specificExchangeButton.getY() + 18)
       .visible(isAdmin)
       .text("Server Shops")
       .listener(this)
@@ -168,7 +156,8 @@ public final class FeaturesGUI extends SimpleScreen {
       .listener(this)
       .build("button.close");
 
-    form.add(titleLabel,  topWindowTitleSeparator, guideButton, exchangeButton,  manageTitleButton, nicknameButton, accessoriesButton, serverShopButton, npcShopButton, claimButton, buttonClose);
+    form.add(guideButton, specificExchangeButton, manageExchangeButton, manageTitleButton, nicknameButton, accessoriesButton,
+      serverShopButton, npcShopButton, claimButton, buttonClose);
 
     addToScreen(form);
   }
@@ -176,8 +165,11 @@ public final class FeaturesGUI extends SimpleScreen {
   @Subscribe
   public void onUIButtonClickEvent(UIButton.ClickEvent event) {
     switch (event.getComponent().getName().toLowerCase()) {
-      case "button.exchange":
-        exchangeManager.requestExchangeGUI();
+      case "button.exchange.manage":
+        exchangeManager.requestExchangeManageGui();
+        break;
+      case "button.exchange.specific":
+        exchangeManager.requestExchangeSpecificGui("almura.exchange.global");
         break;
       case "button.npcshop":
         // Todo: need packet based request here.
@@ -188,7 +180,7 @@ public final class FeaturesGUI extends SimpleScreen {
         new StoreListScreen().display();
         break;
       case "button.title.manage":
-        titleManager.requestManageTitlesGUI();
+        titleManager.requestManageTitlesGui();
         break;
       case "button.guide":
         guideManager.requestGuideGUI();

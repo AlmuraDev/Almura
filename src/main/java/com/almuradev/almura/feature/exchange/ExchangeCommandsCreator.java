@@ -77,6 +77,11 @@ final class ExchangeCommandsCreator {
                     return CommandResult.success();
                 }
 
+                if (axs.isHidden() && !player.hasPermission(Almura.ID + ".exchange.admin")) {
+                    notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission!"), 5);
+                    return CommandResult.success();
+                }
+
                 exchangeManager.openExchangeSpecific(player, axs);
 
                 return CommandResult.success();
