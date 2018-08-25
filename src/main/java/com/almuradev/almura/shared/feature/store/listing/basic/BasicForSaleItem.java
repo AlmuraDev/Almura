@@ -37,9 +37,9 @@ public final class BasicForSaleItem implements ForSaleItem {
 
     public BasicForSaleItem(final BasicListItem listItem, final int record, final Instant created, final BigDecimal price) {
         checkNotNull(listItem);
-        checkState(record >= 0);
+        checkState(record >= 0, "Record must be greater than or equal to 0");
         checkNotNull(price);
-        checkState(price.doubleValue() >= 0);
+        checkState(price.doubleValue() >= 0, "Price must be greater than or equal to 0");
 
         this.listItem = listItem;
         this.record = record;

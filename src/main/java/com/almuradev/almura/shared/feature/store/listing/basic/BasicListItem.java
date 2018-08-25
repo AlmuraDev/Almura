@@ -49,9 +49,9 @@ public final class BasicListItem implements ListItem {
         checkNotNull(created);
         checkNotNull(seller);
         checkNotNull(item);
-        checkState(quantity >= 0);
-        checkState(metadata >= 0 && metadata <= 15);
-        checkState(index >= 0);
+        checkState(quantity > 0, "Quantity must be greater than 0.");
+        checkState(metadata >= 0, "Metadata must be greater than or equal to 0.");
+        checkState(index >= 0, "Index must be greater than or equal to 0.");
 
         this.record = record;
         this.created = created;
