@@ -7,9 +7,15 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui.component;
 
+import static com.almuradev.almura.feature.exchange.ExchangeConstants.MILLION;
+
+import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
+import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
+import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
@@ -25,15 +31,21 @@ import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.malisis.core.util.MouseButton;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.ArrayList;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -49,12 +61,10 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
     private SideType targetSide = SideType.RIGHT;
 
     public UIExchangeOfferContainer(final MalisisGui gui, final int width, final int height, final Text leftTitle, final Text rightTitle,
-            final BiFunction<MalisisGui, VanillaStack, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
-            final BiFunction<MalisisGui, VanillaStack, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory,
             final int leftLimit,
             final int rightLimit,
             final int listedItems) {
-        super(gui, width, height, leftTitle, rightTitle, leftComponentFactory, rightComponentFactory);
+        super(gui, width, height, leftTitle, rightTitle, OfferItemComponent::new, OfferItemComponent::new);
 
         this.leftLimit = leftLimit;
         this.rightLimit = rightLimit;
@@ -365,6 +375,104 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             super(component);
             this.targetSide = targetSide;
             this.stack = stack;
+        }
+    }
+
+    private static class OfferItemComponent extends UIDynamicList.ItemComponent<VanillaStack> {
+
+        private UIComplexImage image;
+        private UIExpandingLabel itemLabel;
+        private int lastKnownQuantity;
+        private String itemLabelText;
+        private String itemQuantityText;
+
+        public OfferItemComponent(final MalisisGui gui, final VanillaStack stack) {
+            super(gui, stack);
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        protected void construct(final MalisisGui gui) {
+            this.setSize(0, 24);
+
+            // Add components
+            final net.minecraft.item.ItemStack fakeStack = this.item.asRealStack().copy();
+            fakeStack.setCount(1);
+            final EntityPlayer player = Minecraft.getMinecraft().player;
+            final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
+
+            this.image = new UIComplexImage(gui, fakeStack);
+            this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
+            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+                    ? ITooltipFlag.TooltipFlags.ADVANCED
+                    : ITooltipFlag.TooltipFlags.NORMAL))));
+
+            final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+            final int maxItemTextWidth = fontRenderer.getStringWidth("999999999999999999") + 4;
+
+            // Limit item name to prevent over drawing
+            String displayName = fakeStack.getDisplayName();
+            if (fontRenderer.getStringWidth(displayName) > maxItemTextWidth) {
+                final StringBuilder displayNameBuilder = new StringBuilder();
+                for (char c : fakeStack.getDisplayName().toCharArray()) {
+                    final int textWidth = fontRenderer.getStringWidth(displayNameBuilder.toString() + c);
+                    if (textWidth > maxItemTextWidth) {
+                        displayNameBuilder.replace(displayNameBuilder.length() - 3, displayNameBuilder.length(), "...");
+                        break;
+                    }
+                    displayNameBuilder.append(c);
+                }
+                displayName = displayNameBuilder.toString();
+            }
+
+            this.itemLabelText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.WHITE, displayName));
+            this.itemQuantityText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.GRAY, " x ", ExchangeConstants.withSuffix(this.item.getQuantity())));
+
+            this.itemLabel = new UIExpandingLabel(gui, this.itemLabelText + this.itemQuantityText);
+            this.itemLabel.setPosition(SimpleScreen.getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
+
+            if (this.item.getQuantity() >= (int) MILLION) {
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
+            }
+
+            this.lastKnownQuantity = this.item.getQuantity();
+
+            this.add(this.image, this.itemLabel);
+        }
+
+        @Override
+        public boolean onDoubleClick(int x, int y, MouseButton button) {
+            if (button != MouseButton.LEFT) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            final UIComponent<?> componentAt = this.getComponentAt(x, y);
+            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
+            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            // This should always be present
+            final UIExchangeOfferContainer offerContainer = (UIExchangeOfferContainer) this.parent.getParent().getParent();
+
+            TransferType.STACK.transfer(offerContainer, offerContainer.targetSide, this.item);
+
+            return true;
+        }
+
+        @Override
+        @SuppressWarnings("deprecation")
+        public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+            // Update the item label if the quantity has changed to reflect the new quantity
+            if (this.lastKnownQuantity != this.item.getQuantity()) {
+                this.itemQuantityText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                        Text.of(TextColors.GRAY, " x ", ExchangeConstants.withSuffix(this.item.getQuantity())));
+                this.itemLabel.setText(this.itemLabelText + this.itemQuantityText);
+                this.lastKnownQuantity = this.item.getQuantity();
+            }
+            super.drawForeground(renderer, mouseX, mouseY, partialTick);
         }
     }
 }

@@ -316,6 +316,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     }
 
     private void createItemComponents() {
+        final float scrollPoint = this.getScrollBar().getOffset();
         final Integer focusedX = MalisisGui.getFocusedComponent() == null ? null : MalisisGui.getFocusedComponent().screenX();
         final Integer focusedY = MalisisGui.getFocusedComponent() == null ? null : MalisisGui.getFocusedComponent().screenY();
 
@@ -338,6 +339,8 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
             startY += component.getHeight() + this.itemSpacing;
         }
+
+        this.getScrollBar().scrollTo(scrollPoint);
 
         this.isDirty = false;
     }

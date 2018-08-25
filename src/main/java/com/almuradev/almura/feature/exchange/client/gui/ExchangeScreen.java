@@ -634,7 +634,8 @@ public final class ExchangeScreen extends SimpleScreen {
             }
 
             final UIComponent<?> componentAt = this.getComponentAt(x, y);
-            if (!(componentAt instanceof UIDynamicList.ItemComponent)) {
+            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
+            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
                 return super.onDoubleClick(x, y, button);
             }
 
@@ -685,7 +686,8 @@ public final class ExchangeScreen extends SimpleScreen {
             }
 
             final UIComponent<?> componentAt = this.getComponentAt(x, y);
-            if (!(componentAt instanceof UIDynamicList.ItemComponent)) {
+            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
+            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
                 return super.onDoubleClick(x, y, button);
             }
 

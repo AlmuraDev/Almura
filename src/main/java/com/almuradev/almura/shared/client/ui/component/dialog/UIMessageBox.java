@@ -237,6 +237,7 @@ public class UIMessageBox extends UIForm {
                     .setMovable(true)
                     .setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER)
                     .setZIndex(50)
+                    .setBackgroundAlpha(255)
             );
         }
 
