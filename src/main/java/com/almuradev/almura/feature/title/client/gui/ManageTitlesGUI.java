@@ -661,16 +661,15 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
         private UIExpandingLabel titleLabel;
 
-        TitleItemComponent(final MalisisGui gui, final Title title) {
-            super(gui, title);
-
-            // Set size
-            this.setSize(UIComponent.INHERITED, 20);
+        public TitleItemComponent(MalisisGui gui, UIDynamicList<Title> parent, Title item) {
+            super(gui, parent, item);
         }
 
         @SuppressWarnings("deprecation")
         @Override
         protected void construct(final MalisisGui gui) {
+            this.setSize(UIComponent.INHERITED, 20);
+
             this.titleLabel = new UIExpandingLabel(gui, Text.of(TextColors.WHITE, item.getContent()));
             if (item.isHidden()) {
                 this.titleLabel.setText(this.titleLabel.getText() + TextFormatting.WHITE + " [HIDDEN]");

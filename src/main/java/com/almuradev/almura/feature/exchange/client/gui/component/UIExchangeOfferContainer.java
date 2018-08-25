@@ -386,8 +386,8 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
         private String itemLabelText;
         private String itemQuantityText;
 
-        public OfferItemComponent(final MalisisGui gui, final VanillaStack stack) {
-            super(gui, stack);
+        public OfferItemComponent(MalisisGui gui, UIDynamicList<VanillaStack> parent, VanillaStack item) {
+            super(gui, parent, item);
         }
 
         @SuppressWarnings("deprecation")

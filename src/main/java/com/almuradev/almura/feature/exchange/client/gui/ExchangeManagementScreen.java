@@ -375,8 +375,12 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
     private static final class ExchangeItemComponent extends UIDynamicList.ItemComponent<Exchange> {
 
-        public ExchangeItemComponent(MalisisGui gui, Exchange item) {
-            super(gui, item);
+        public ExchangeItemComponent(MalisisGui gui, UIDynamicList<Exchange> parent, Exchange item) {
+            super(gui, parent, item);
+        }
+
+        @Override
+        public void construct(MalisisGui gui) {
             this.setSize(UIComponent.INHERITED, 20);
         }
 

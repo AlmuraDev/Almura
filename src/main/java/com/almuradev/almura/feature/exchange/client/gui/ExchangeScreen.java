@@ -32,6 +32,7 @@ import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
@@ -42,6 +43,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
@@ -149,7 +151,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
         this.forSaleList = new UIDynamicList<>(this, UIComponent.INHERITED, 254);
         this.forSaleList.setPosition(0, SimpleScreen.getPaddedY(forSaleTopLine, 2));
-        this.forSaleList.setItemComponentFactory((g, e) -> new ForSaleItemComponent(this, e));
+        this.forSaleList.setItemComponentFactory((s, t, u) -> new ForSaleItemComponent(this, this.forSaleList, u));
         this.forSaleList.setItemComponentSpacing(1);
         this.forSaleList.setSelectConsumer((i) -> this.updateControls());
 
@@ -525,20 +527,23 @@ public final class ExchangeScreen extends SimpleScreen {
 
     public static class ExchangeItemComponent<T extends VirtualStack> extends UIDynamicList.ItemComponent<T> {
 
-        private UIComplexImage image;
-        private UIExpandingLabel itemLabel;
+        protected UIImage image;
+        protected UIExpandingLabel itemLabel;
+        protected int itemNameSpaceAvailable;
 
-        public ExchangeItemComponent(final MalisisGui gui, final T stack) {
-            super(gui, stack);
+        public ExchangeItemComponent(MalisisGui gui, UIDynamicList<T> parent, T item) {
+            super(gui, parent, item);
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         protected void construct(final MalisisGui gui) {
             this.setSize(0, 24);
 
+            // Default available space
+            this.itemNameSpaceAvailable = this.getWidth();
+
             // Add components
-            final net.minecraft.item.ItemStack fakeStack = item.asRealStack().copy();
+            final ItemStack fakeStack = this.item.asRealStack().copy();
             fakeStack.setCount(1);
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
@@ -549,33 +554,35 @@ public final class ExchangeScreen extends SimpleScreen {
                 ? ITooltipFlag.TooltipFlags.ADVANCED
                 : ITooltipFlag.TooltipFlags.NORMAL))));
 
-            final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-            final int maxItemTextWidth = fontRenderer.getStringWidth("999999999999999999") + 4;
-
-            // Limit item name to prevent over drawing
-            String displayName = fakeStack.getDisplayName();
-            if (fontRenderer.getStringWidth(displayName) > maxItemTextWidth) {
-                final StringBuilder displayNameBuilder = new StringBuilder();
-                for (char c : fakeStack.getDisplayName().toCharArray()) {
-                    final int textWidth = fontRenderer.getStringWidth(displayNameBuilder.toString() + c);
-                    if (textWidth > maxItemTextWidth) {
-                        displayNameBuilder.replace(displayNameBuilder.length() - 3, displayNameBuilder.length(), "...");
-                        break;
-                    }
-                    displayNameBuilder.append(c);
-                }
-                displayName = displayNameBuilder.toString();
-            }
-            this.itemLabel = new UIExpandingLabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                Text.of(TextColors.WHITE, displayName, TextColors.GRAY, " x ", ExchangeConstants.withSuffix(item.getQuantity()))));
+            this.itemLabel = new UIExpandingLabel(gui, "");
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             // Exact value
-            if (item.getQuantity() >= (int) ExchangeConstants.MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
+            if (this.item.getQuantity() >= (int) ExchangeConstants.MILLION) {
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
             }
 
             this.add(this.image, this.itemLabel);
+        }
+
+        @SuppressWarnings("deprecation")
+        protected void refreshDisplayName() {
+            // Limit item name to prevent over drawing
+            final ItemStack fakeStack = this.item.asRealStack().copy();
+            final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+
+            StringBuilder displayName = new StringBuilder();
+            for (char c : fakeStack.getDisplayName().toCharArray()) {
+                if (fontRenderer.getStringWidth(displayName.toString() + c + " x " + this.item.getQuantity()) > this.itemNameSpaceAvailable) {
+                    displayName = new StringBuilder(displayName.toString().substring(0, Math.max(displayName.length() - 3, 0)) + "...");
+                    break;
+                }
+                displayName.append(c);
+            }
+
+            this.itemLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.WHITE, displayName.toString(), TextColors.GRAY, " x ",
+                            ExchangeConstants.withSuffix(this.item.getQuantity()))));
         }
     }
 
@@ -584,8 +591,8 @@ public final class ExchangeScreen extends SimpleScreen {
         private UIContainer<?> listedIndicatorContainer;
         private UIExpandingLabel priceLabel;
 
-        private ListItemComponent(final MalisisGui gui, final ListItem item) {
-            super(gui, item);
+        public ListItemComponent(MalisisGui gui, UIDynamicList<ListItem> parent, ListItem item) {
+            super(gui, parent, item);
         }
 
         @Override
@@ -593,10 +600,12 @@ public final class ExchangeScreen extends SimpleScreen {
             super.construct(gui);
 
             this.listedIndicatorContainer = new UIContainer<>(gui, 5, this.height - (this.borderSize * 2));
+            this.listedIndicatorContainer.setVisible(false);
             this.listedIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.listedIndicatorContainer.setColor(FontColors.DARK_GREEN);
 
             this.priceLabel = new UIExpandingLabel(gui, "");
+            this.priceLabel.setVisible(false);
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
@@ -625,6 +634,14 @@ public final class ExchangeScreen extends SimpleScreen {
                 this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
                         + ": " + ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));
             }
+
+            this.itemNameSpaceAvailable = this.getWidth()
+                    - (this.priceLabel.isVisible() ? this.priceLabel.getWidth() : 0)
+                    - (this.image.isVisible() ? this.image.getWidth() : 0)
+                    - (this.listedIndicatorContainer.isVisible() ? this.listedIndicatorContainer.getWidth() : 0)
+                    - 12;
+
+            this.refreshDisplayName();
         }
 
         @Override
@@ -650,8 +667,8 @@ public final class ExchangeScreen extends SimpleScreen {
         private UILabel sellerLabel;
         private UIExpandingLabel priceLabel;
 
-        private ForSaleItemComponent(final MalisisGui gui, final ForSaleItem forSaleItem) {
-            super(gui, forSaleItem);
+        public ForSaleItemComponent(MalisisGui gui, UIDynamicList<ForSaleItem> parent, ForSaleItem item) {
+            super(gui, parent, item);
         }
 
         @SuppressWarnings("deprecation")
@@ -676,7 +693,15 @@ public final class ExchangeScreen extends SimpleScreen {
             this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
                     + ": " + ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getListItem().getQuantity() * price));
 
+            this.itemNameSpaceAvailable = this.getWidth()
+                    - (this.priceLabel.isVisible() ? this.priceLabel.getWidth() : 0)
+                    - (this.image.isVisible() ? this.image.getWidth() : 0)
+                    - maxPlayerTextWidth
+                    - 6;
+
             this.add(this.sellerLabel, this.priceLabel);
+
+            this.refreshDisplayName();
         }
 
         @Override

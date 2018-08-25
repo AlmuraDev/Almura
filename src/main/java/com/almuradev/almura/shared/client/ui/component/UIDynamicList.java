@@ -8,6 +8,7 @@
 package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
+import com.almuradev.almura.shared.util.TriFunction;
 import net.malisis.core.client.gui.ClipArea;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -35,7 +35,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     private List<T> items = new ArrayList<>();
     private boolean canDeselect, canInternalClick, isDirty, readOnly;
     private int itemSpacing = 0;
-    private BiFunction<MalisisGui, T, ? extends ItemComponent<?>> itemComponentFactory = DefaultItemComponent::new;
+    private TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends ItemComponent<?>> itemComponentFactory = DefaultItemComponent::new;
     @Nullable private T selectedItem;
     @Nullable private Consumer<T> onSelectConsumer;
 
@@ -186,13 +186,14 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     /**
      * Sets the selected item (if list is not read-only)
      * @param item The item to select
+     * @param markDirty Mark the list as dirty
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setSelectedItem(@Nullable T item) {
+    public UIDynamicList<T> setSelectedItem(@Nullable T item, boolean markDirty) {
         if (!this.readOnly) {
             if (this.fireEvent(new SelectEvent<>(this, this.selectedItem, item))) {
                 this.selectedItem = item;
-                this.isDirty = true;
+                this.isDirty = markDirty;
                 if (this.onSelectConsumer != null) {
                     this.onSelectConsumer.accept(item);
                 }
@@ -200,6 +201,15 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         }
 
         return this;
+    }
+
+    /**
+     * Sets the selected item (if list is not read-only)
+     * @param item The item to select
+     * @return The {@link UIDynamicList<T>}
+     */
+    public UIDynamicList<T> setSelectedItem(@Nullable T item) {
+        return this.setSelectedItem(item, true);
     }
 
     /**
@@ -279,7 +289,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * Gets the item component factory
      * @return The item component factory
      */
-    public BiFunction<MalisisGui, T, ? extends ItemComponent<?>> getItemComponentFactory() {
+    public TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends ItemComponent<?>> getItemComponentFactory() {
         return this.itemComponentFactory;
     }
 
@@ -288,7 +298,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param factory The component factory
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setItemComponentFactory(BiFunction<MalisisGui, T, ? extends ItemComponent<?>> factory) {
+    public UIDynamicList<T> setItemComponentFactory(TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends ItemComponent<?>> factory) {
         this.itemComponentFactory = factory;
         return this;
     }
@@ -326,9 +336,8 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
         int startY = 0;
         for (T item : this.items) {
-            final ItemComponent<?> component = this.itemComponentFactory.apply(this.getGui(), item);
+            final ItemComponent<?> component = this.itemComponentFactory.apply(this.getGui(), this, item);
             component.attachData(item);
-            component.setParent(this);
             component.setPosition(0, startY);
 
             if (wasItemFocused && component.screenX() == focusedX && component.screenY() == focusedY) {
@@ -376,8 +385,11 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
         protected T item;
 
-        public ItemComponent(MalisisGui gui, T item) {
+        public ItemComponent(MalisisGui gui, UIDynamicList<T> parent, T item) {
             super(gui);
+
+            // Set the parent
+            this.setParent(parent);
 
             // Set the item
             this.item = item;
@@ -411,9 +423,9 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
                 }
 
                 if (parent.canDeselect()) {
-                    parent.setSelectedItem(parent.getSelectedItem() == this.item ? null : this.item);
+                    parent.setSelectedItem(parent.getSelectedItem() == this.item ? null : this.item, false);
                 } else {
-                    parent.setSelectedItem(this.item);
+                    parent.setSelectedItem(this.item, false);
                 }
             }
 
@@ -462,8 +474,8 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
     public static class DefaultItemComponent<T> extends ItemComponent<T> {
 
-        public DefaultItemComponent(MalisisGui gui, T item) {
-            super(gui, item);
+        public DefaultItemComponent(MalisisGui gui, UIDynamicList<T> parent, T item) {
+            super(gui, parent, item);
         }
 
         @Override

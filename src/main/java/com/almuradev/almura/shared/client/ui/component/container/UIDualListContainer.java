@@ -11,6 +11,7 @@ import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UILine;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.util.TriFunction;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -25,22 +26,21 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
 public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> {
 
-    private final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory, rightComponentFactory;
+    private final TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory, rightComponentFactory;
     private final Text leftTitle, rightTitle;
     protected UIContainer<?> leftContainer, middleContainer, rightContainer;
     protected UIDynamicList<T> leftDynamicList, rightDynamicList;
 
     public UIDualListContainer(final MalisisGui gui, final int width, final int height,
             final Text leftTitle, final Text rightTitle,
-            final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
-            final BiFunction<MalisisGui, T, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory) {
+            final TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
+            final TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory) {
         super(gui, width, height);
 
         this.leftTitle = leftTitle;
