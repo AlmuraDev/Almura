@@ -45,7 +45,7 @@ public final class ServerboundTransactionRequestPacket implements Message {
     public void writeTo(final ChannelBuf buf) {
         checkNotNull(this.id);
         checkState(this.listItemRecNo >= 0);
-        checkState(this.quantity >= 0);
+        checkState(this.quantity > 0);
 
         buf.writeString(this.id);
         buf.writeInteger(this.listItemRecNo);
