@@ -113,7 +113,7 @@ public final class ExchangeScreen extends SimpleScreen {
         form.setLeftPadding(3);
 
         // Item Search Area
-        final UIForm searchArea = new UIForm(this, 295, 323, "");
+        final UIForm searchArea = new UIForm(this, 295, 322, "");
         searchArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         searchArea.setMovable(false);
         searchArea.setClosable(false);
@@ -150,10 +150,10 @@ public final class ExchangeScreen extends SimpleScreen {
         this.comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchTextBox.getY(), Anchor.RIGHT | Anchor.TOP);
 
         // Separator
-        final UIContainer<?> topSeparator = new UIContainer<>(this, searchArea.getRawWidth() - 2, 1);
-        topSeparator.setColor(FontColors.WHITE);
-        topSeparator.setBackgroundAlpha(185);
-        topSeparator.setPosition(0, SimpleScreen.getPaddedY(this.sellerSearchTextBox, 4), Anchor.CENTER | Anchor.TOP);
+        final UIContainer<?> forSaleTopSeparator = new UIContainer<>(this, searchArea.getRawWidth() - 2, 1);
+        forSaleTopSeparator.setColor(FontColors.WHITE);
+        forSaleTopSeparator.setBackgroundAlpha(185);
+        forSaleTopSeparator.setPosition(0, SimpleScreen.getPaddedY(this.sellerSearchTextBox, 4), Anchor.CENTER | Anchor.TOP);
 
         this.forSaleList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 250);
         this.forSaleList.setPosition(innerPadding, getPaddedY(this.sellerSearchTextBox, 8));
@@ -215,18 +215,18 @@ public final class ExchangeScreen extends SimpleScreen {
             .build("button.next");
 
         // Separator
-        final UIContainer<?> bottomSeparator = new UIContainer<>(this, searchArea.getRawWidth() - 2, 1);
-        bottomSeparator.setColor(FontColors.WHITE);
-        bottomSeparator.setBackgroundAlpha(185);
-        bottomSeparator.setPosition(0, SimpleScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
+        final UIContainer<?> forSaleBottomSeparator = new UIContainer<>(this, searchArea.getRawWidth() - 2, 1);
+        forSaleBottomSeparator.setColor(FontColors.WHITE);
+        forSaleBottomSeparator.setBackgroundAlpha(185);
+        forSaleBottomSeparator.setPosition(0, SimpleScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         // Add Elements of Search Area
         searchArea.add(itemSearchLabel, this.displayNameSearchTextBox, sellerSearchLabel, this.sellerSearchTextBox, buttonSearch, comboBoxSortType,
                 this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList, this.labelSearchPage,
-                topSeparator, bottomSeparator);
+                forSaleTopSeparator, forSaleBottomSeparator);
 
         // Economy Pane
-        final UIForm economyActionArea = new UIForm(this, 295, 20, "");
+        final UIForm economyActionArea = new UIForm(this, 295, 21, "");
         economyActionArea.setPosition(0, getPaddedY(searchArea, innerPadding), Anchor.LEFT | Anchor.TOP);
         economyActionArea.setMovable(false);
         economyActionArea.setClosable(false);
@@ -318,7 +318,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .build("button.list");
 
         this.labelLimit = new UILabel(this, "");
-        this.labelLimit.setPosition(0, -4, Anchor.CENTER | Anchor.BOTTOM);
+        this.labelLimit.setPosition(0, -2, Anchor.CENTER | Anchor.BOTTOM);
 
         // Bottom Economy Pane - buyStack button
         final UIButton buttonOffer = new UIButtonBuilder(this)
@@ -330,7 +330,13 @@ public final class ExchangeScreen extends SimpleScreen {
             .onClick(() -> exchangeManager.requestExchangeSpecificOfferGui(this.axs.getId()))
             .build("button.offer");
 
-        inventoryArea.add(this.listItemList, this.buttonList, this.labelLimit, buttonOffer);
+        // Separator
+        final UIContainer<?> listBottomSeparator = new UIContainer<>(this, searchArea.getRawWidth() - 2, 1);
+        listBottomSeparator.setColor(FontColors.WHITE);
+        listBottomSeparator.setBackgroundAlpha(185);
+        listBottomSeparator.setPosition(0, SimpleScreen.getPaddedY(this.buttonList, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
+
+        inventoryArea.add(this.listItemList, this.buttonList, this.labelLimit, buttonOffer, listBottomSeparator);
 
         form.add(searchArea, economyActionArea, inventoryArea);
 
