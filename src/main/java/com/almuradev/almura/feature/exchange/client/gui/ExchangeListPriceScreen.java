@@ -143,6 +143,9 @@ public class ExchangeListPriceScreen extends SimpleScreen {
     }
 
     private void list() {
+        if (!this.buttonList.isEnabled()) {
+            return;
+        }
         exchangeManager.modifyListStatus(ListStatusType.LIST, this.axs.getId(), toList.getRecord(),
                 new BigDecimal(this.pricePerTextBox.getText()));
         ((ExchangeScreen) this.parent.get()).refreshListItems();
