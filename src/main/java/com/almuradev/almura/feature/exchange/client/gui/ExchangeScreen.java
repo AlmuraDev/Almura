@@ -33,7 +33,6 @@ import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
-import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

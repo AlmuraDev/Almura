@@ -117,7 +117,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
                 .build("button.cancel");
 
         this.form.add(this.pricePerTextBox, this.eaLabel, this.buttonCancel, this.buttonList);
-        this.pricePerTextBox.setFocused(true);
+        this.pricePerTextBox.focus();
         this.pricePerTextBox.selectAll();
 
         this.addToScreen(this.form);

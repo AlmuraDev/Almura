@@ -262,9 +262,7 @@ public final class ClientExchangeManager implements Witness {
         // Null out all for sale items, our candidates will have what we currently have
         listItems.forEach(item -> ((BasicListItem) item).setForSaleItem(null));
 
-        if (itemCandidates == null) {
-            this.notificationManager.handleWindow(new WindowNotification("Exchange", "No results found for that query"));
-        } else {
+        if (itemCandidates != null) {
             for (final ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate itemCandidate : itemCandidates) {
                 listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
                     .ifPresent(listItem -> ((BasicListItem) listItem)
