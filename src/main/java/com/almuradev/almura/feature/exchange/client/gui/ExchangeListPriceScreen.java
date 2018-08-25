@@ -12,6 +12,7 @@ import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
+import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
@@ -26,6 +27,7 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.minecraft.client.resources.I18n;
+import org.lwjgl.input.Keyboard;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
@@ -41,7 +43,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
 
     private UIButton buttonList, buttonCancel;
     private UILabel eaLabel;
-    private UITextField pricePerField;
+    private UITextBox pricePerTextBox;
     private UIForm form;
 
     public ExchangeListPriceScreen(ExchangeScreen parent, Exchange axs, ListItem toList) {
@@ -58,9 +60,9 @@ public class ExchangeListPriceScreen extends SimpleScreen {
         this.form = new UIForm(this, 120, 65, I18n.format("almura.title.exchange.enter_a_price"));
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
 
-        this.pricePerField = new UITextField(this, "0.00");
-        this.pricePerField.setSize(65, 0);
-        this.pricePerField.setFilter(s -> {
+        this.pricePerTextBox = new UITextBox(this, "0.00");
+        this.pricePerTextBox.setSize(65, 0);
+        this.pricePerTextBox.setFilter(s -> {
             // TODO: Maybe make a fancy regex for some of this
 
             // Get the current decimal separator
@@ -90,12 +92,12 @@ public class ExchangeListPriceScreen extends SimpleScreen {
 
             return filteredValue;
         });
-        this.pricePerField.setPosition(2, 0, Anchor.MIDDLE | Anchor.LEFT);
-        this.pricePerField.register(this);
+        this.pricePerTextBox.setPosition(2, 0, Anchor.MIDDLE | Anchor.LEFT);
+        this.pricePerTextBox.register(this);
 
         this.eaLabel = new UILabel(this, "/ea");
         this.eaLabel.setFontOptions(FontColors.WHITE_FO);
-        this.eaLabel.setPosition(SimpleScreen.getPaddedX(this.pricePerField, 2), 1, Anchor.MIDDLE | Anchor.LEFT);
+        this.eaLabel.setPosition(SimpleScreen.getPaddedX(this.pricePerTextBox, 2), 1, Anchor.MIDDLE | Anchor.LEFT);
 
         this.buttonList = new UIButtonBuilder(this)
                 .text(I18n.format("almura.button.exchange.list"))
@@ -103,12 +105,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
                 .position(-2, -2)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
                 .enabled(false)
-                .onClick(() -> {
-                    exchangeManager.modifyListStatus(ListStatusType.LIST, this.axs.getId(), toList.getRecord(),
-                            new BigDecimal(this.pricePerField.getText()));
-                    ((ExchangeScreen) this.parent.get()).refreshListItems();
-                    this.close();
-                })
+                .onClick(this::list)
                 .build("button.list");
 
         this.buttonCancel = new UIButtonBuilder(this)
@@ -119,22 +116,46 @@ public class ExchangeListPriceScreen extends SimpleScreen {
                 .onClick(this::close)
                 .build("button.cancel");
 
-        this.form.add(this.pricePerField, this.eaLabel, this.buttonCancel, this.buttonList);
+        this.form.add(this.pricePerTextBox, this.eaLabel, this.buttonCancel, this.buttonList);
+        this.pricePerTextBox.setFocused(true);
+        this.pricePerTextBox.selectAll();
 
         this.addToScreen(this.form);
     }
 
-    @Subscribe
-    private void onTextChange(ComponentEvent.ValueChange<UITextField, String> event) {
-        if (event.getNewValue().isEmpty()) {
-            this.buttonList.setEnabled(false);
+    @Override
+    protected void keyTyped(char keyChar, int keyCode) {
+        if (keyCode != Keyboard.KEY_RETURN) {
+            super.keyTyped(keyChar, keyCode);
             return;
         }
 
-        try {
-            this.buttonList.setEnabled(new BigDecimal(event.getNewValue()).doubleValue() > 0);
-        } catch (NumberFormatException e) {
-            this.buttonList.setEnabled(false);
+        if (this.pricePerTextBox.isFocused() && this.validate(this.pricePerTextBox.getText())) {
+            this.list();
         }
+    }
+
+    @Subscribe
+    private void onTextChange(ComponentEvent.ValueChange<UITextField, String> event) {
+        this.buttonList.setEnabled(this.validate(event.getNewValue()));
+    }
+
+    private boolean validate(String value) {
+        if (value.isEmpty()) {
+            return false;
+        }
+
+        try {
+            return new BigDecimal(value).doubleValue() > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private void list() {
+        exchangeManager.modifyListStatus(ListStatusType.LIST, this.axs.getId(), toList.getRecord(),
+                new BigDecimal(this.pricePerTextBox.getText()));
+        ((ExchangeScreen) this.parent.get()).refreshListItems();
+        this.close();
     }
 }

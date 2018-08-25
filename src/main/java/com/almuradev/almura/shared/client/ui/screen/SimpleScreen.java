@@ -111,12 +111,15 @@ public abstract class SimpleScreen extends MalisisGui {
         }
     }
 
+    public void setFocusedComponent(UIComponent<?> component) {
+        this.focusedComponent = component;
+    }
+
     public void addToScreen(UIComponent... components) {
         Arrays.stream(components).forEach(this::addToScreen);
     }
 
-    protected void onClose() {
-    }
+    protected void onClose() {}
 
     /**
      * Gets the X position after applying padding against another component, uses {@link Anchor#LEFT} by default

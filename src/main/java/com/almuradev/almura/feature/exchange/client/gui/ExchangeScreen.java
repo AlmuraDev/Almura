@@ -19,6 +19,7 @@ import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
+import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
@@ -74,7 +75,8 @@ public final class ExchangeScreen extends SimpleScreen {
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
         buttonList;
     private UILabel labelSearchPage, labelLimit;
-    private UITextField displayNameSearchField, sellerSearchField;
+    private UISelect<SortType> comboBoxSortType;
+    private UITextBox displayNameSearchTextBox, sellerSearchTextBox;
     private int currentPage = 1;
     private int pages;
 
@@ -124,38 +126,38 @@ public final class ExchangeScreen extends SimpleScreen {
         itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         itemSearchLabel.setPosition(0, 4, Anchor.LEFT | Anchor.TOP);
 
-        this.displayNameSearchField = new UITextField(this, "", false);
-        this.displayNameSearchField.setSize(145, 0);
-        this.displayNameSearchField.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
-        this.displayNameSearchField.setEditable(true);
-        this.displayNameSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
+        this.displayNameSearchTextBox = new UITextBox(this, "");
+        this.displayNameSearchTextBox.setSize(145, 0);
+        this.displayNameSearchTextBox.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
+        this.displayNameSearchTextBox.setEditable(true);
+        this.displayNameSearchTextBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Seller Search Area
         final UILabel sellerSearchLabel = new UILabel(this, I18n.format("almura.text.exchange.seller") + ":");
         sellerSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
-        sellerSearchLabel.setPosition(displayNameSearchField.getX() - sellerSearchLabel.getWidth() - 1,
+        sellerSearchLabel.setPosition(displayNameSearchTextBox.getX() - sellerSearchLabel.getWidth() - 1,
             getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
 
-        this.sellerSearchField = new UITextField(this, "", false);
-        this.sellerSearchField.setSize(145, 0);
-        this.sellerSearchField.setPosition(this.displayNameSearchField.getX(), getPaddedY(this.displayNameSearchField, 4), Anchor.LEFT | Anchor.TOP);
-        this.sellerSearchField.setEditable(true);
-        this.sellerSearchField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
+        this.sellerSearchTextBox = new UITextBox(this, "");
+        this.sellerSearchTextBox.setSize(145, 0);
+        this.sellerSearchTextBox.setPosition(this.displayNameSearchTextBox.getX(), getPaddedY(this.displayNameSearchTextBox, 4), Anchor.LEFT | Anchor.TOP);
+        this.sellerSearchTextBox.setEditable(true);
+        this.sellerSearchTextBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Sort combobox
-        final UISelect<SortType> comboBoxSortType = new UISelect<>(this, 78, Arrays.asList(SortType.values()));
-        comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.displayName); // Because that's reasonable.
-        comboBoxSortType.select(SortType.PRICE_ASC);
-        comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchField.getY(), Anchor.RIGHT | Anchor.TOP);
+        this.comboBoxSortType = new UISelect<>(this, 78, Arrays.asList(SortType.values()));
+        this.comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.displayName); // Because that's reasonable.
+        this.comboBoxSortType.select(SortType.PRICE_ASC);
+        this.comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchTextBox.getY(), Anchor.RIGHT | Anchor.TOP);
 
         // Separator
         final UIContainer<?> topSeparator = new UIContainer<>(this, searchArea.getRawWidth() - 2, 1);
         topSeparator.setColor(FontColors.WHITE);
         topSeparator.setBackgroundAlpha(185);
-        topSeparator.setPosition(0, SimpleScreen.getPaddedY(this.sellerSearchField, 4), Anchor.CENTER | Anchor.TOP);
+        topSeparator.setPosition(0, SimpleScreen.getPaddedY(this.sellerSearchTextBox, 4), Anchor.CENTER | Anchor.TOP);
 
         this.forSaleList = new UIDynamicList<>(this, searchArea.getWidth() - 10, 250);
-        this.forSaleList.setPosition(innerPadding, getPaddedY(this.sellerSearchField, 8));
+        this.forSaleList.setPosition(innerPadding, getPaddedY(this.sellerSearchTextBox, 8));
         this.forSaleList.setItemComponentFactory((g, e) -> new ForSaleItemComponent(this, e));
         this.forSaleList.setItemComponentSpacing(1);
         this.forSaleList.setCanDeselect(true);
@@ -168,34 +170,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .anchor(Anchor.RIGHT | Anchor.TOP)
             .position(-innerPadding, 1)
             .text(I18n.format("almura.button.exchange.search"))
-            .onClick(() -> {
-                final Map<String, Object> filterQueryMap = new HashMap<>();
-                filterQueryMap.put("display_name", this.displayNameSearchField.getText());
-                filterQueryMap.put("seller_name", this.sellerSearchField.getText());
-
-                final Map<String, String> sortQueryMap = new HashMap<>();
-                sortQueryMap.put(comboBoxSortType.getSelectedValue().id, comboBoxSortType.getSelectedValue().direction);
-
-                final StringBuilder filterQueryBuilder = new StringBuilder();
-                for (Map.Entry<String, Object> entry : filterQueryMap.entrySet()) {
-                    if (entry.getValue().toString().isEmpty()) {
-                        continue;
-                    }
-                    filterQueryBuilder.append(entry.getKey()).append(StoreConstants.EQUALITY).append(entry.getValue()).append(StoreConstants.DELIMETER);
-                }
-
-                // Not needed to be done this way in current form but adds native support if we allow multiple sorting patterns
-                final StringBuilder sortQueryBuilder = new StringBuilder();
-                for (Map.Entry<String, String> entry : sortQueryMap.entrySet()) {
-                    if (entry.getValue().isEmpty()) {
-                        continue;
-                    }
-                    sortQueryBuilder.append(entry.getKey()).append(StoreConstants.EQUALITY).append(entry.getValue()).append(StoreConstants.DELIMETER);
-                }
-
-                exchangeManager.queryForSaleItemsFor(this.axs.getId(), filterQueryBuilder.toString(), sortQueryBuilder.toString(),
-                        (this.currentPage - 1) * 10, 10);
-            })
+            .onClick(this::search)
             .build("button.search");
 
         // Bottom Page Control - first button
@@ -249,7 +224,7 @@ public final class ExchangeScreen extends SimpleScreen {
         bottomSeparator.setPosition(0, SimpleScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         // Add Elements of Search Area
-        searchArea.add(itemSearchLabel, this.displayNameSearchField, sellerSearchLabel, this.sellerSearchField, buttonSearch, comboBoxSortType,
+        searchArea.add(itemSearchLabel, this.displayNameSearchTextBox, sellerSearchLabel, this.sellerSearchTextBox, buttonSearch, comboBoxSortType,
                 this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList, this.labelSearchPage,
                 topSeparator, bottomSeparator);
 
@@ -364,11 +339,50 @@ public final class ExchangeScreen extends SimpleScreen {
         form.add(searchArea, economyActionArea, inventoryArea);
 
         addToScreen(form);
+
+        this.displayNameSearchTextBox.focus();
     }
 
     @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
+    }
+
+    @Override
+    protected void keyTyped(char keyChar, int keyCode) {
+        if (keyCode == Keyboard.KEY_TAB) {
+            final UITextBox currentTextBox;
+            final UITextBox nextTextBox;
+            if (this.displayNameSearchTextBox.isFocused()) {
+                currentTextBox = this.displayNameSearchTextBox;
+                nextTextBox = this.sellerSearchTextBox;
+            } else if (this.sellerSearchTextBox.isFocused()) {
+                currentTextBox = this.sellerSearchTextBox;
+                nextTextBox = this.displayNameSearchTextBox;
+            } else {
+                currentTextBox = null;
+                nextTextBox = null;
+            }
+
+            if (currentTextBox != null) {
+                currentTextBox.deselectAll();
+            }
+
+            if (nextTextBox != null) {
+                nextTextBox.focus();
+                nextTextBox.selectAll();
+            }
+            return;
+        }
+
+        if (keyCode != Keyboard.KEY_RETURN) {
+            super.keyTyped(keyChar, keyCode);
+            return;
+        }
+
+        if (this.displayNameSearchTextBox.isFocused() || this.sellerSearchTextBox.isFocused()) {
+            this.search();
+        }
     }
 
     public Exchange getExchange() {
@@ -387,6 +401,37 @@ public final class ExchangeScreen extends SimpleScreen {
         this.forSaleList.setSelectedItem(null); // Clear selection
 
         exchangeManager.queryForSaleItemsCached(this.axs.getId(), (this.currentPage - 1) * 10, 10);
+    }
+
+    private void search() {
+        final Map<String, Object> filterQueryMap = new HashMap<>();
+        filterQueryMap.put("display_name", this.displayNameSearchTextBox.getText());
+        filterQueryMap.put("seller_name", this.sellerSearchTextBox.getText());
+
+        final Map<String, String> sortQueryMap = new HashMap<>();
+        sortQueryMap.put(this.comboBoxSortType.getSelectedValue().id, this.comboBoxSortType.getSelectedValue().direction);
+
+        final StringBuilder filterQueryBuilder = new StringBuilder();
+        for (Map.Entry<String, Object> entry : filterQueryMap.entrySet()) {
+            if (entry.getValue().toString().isEmpty()) {
+                continue;
+            }
+            filterQueryBuilder.append(entry.getKey()).append(StoreConstants.EQUALITY).append(entry.getValue()).append(StoreConstants.DELIMETER);
+        }
+
+        // Not needed to be done this way in current form but adds native support if we allow multiple sorting patterns
+        final StringBuilder sortQueryBuilder = new StringBuilder();
+        for (Map.Entry<String, String> entry : sortQueryMap.entrySet()) {
+            if (entry.getValue().isEmpty()) {
+                continue;
+            }
+            sortQueryBuilder.append(entry.getKey()).append(StoreConstants.EQUALITY).append(entry.getValue()).append(StoreConstants.DELIMETER);
+        }
+
+        final String filterQuery = filterQueryBuilder.toString().isEmpty() ? null : filterQueryBuilder.toString();
+        final String sortQuery = filterQueryBuilder.toString().isEmpty() ? null : sortQueryBuilder.toString();
+
+        exchangeManager.queryForSaleItemsFor(this.axs.getId(), filterQuery, sortQuery, (this.currentPage - 1) * 10, 10);
     }
 
     @SuppressWarnings("deprecation")
