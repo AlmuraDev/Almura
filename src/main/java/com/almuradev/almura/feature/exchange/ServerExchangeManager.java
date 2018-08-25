@@ -313,6 +313,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             this.syncExchangeRegistryTo(player);
             return;
         }
+
+        final UUID creator = player.getUniqueId();
+        
         this.scheduler
             .createTaskBuilder()
             .async()
@@ -321,7 +324,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     final Instant created = Instant.now();
 
                     final int result = ExchangeQueries
-                        .createInsertExchange(created, player.getUniqueId(), id, name, permission, isHidden)
+                        .createInsertExchange(created, creator, id, name, permission, isHidden)
                         .build(context)
                         .keepStatement(false)
                         .execute();
@@ -332,12 +335,17 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         return;
                     }
 
-                    final BasicExchange basicExchange = new BasicExchange(id, created, player.getUniqueId(), name, permission, isHidden);
-                    basicExchange.refreshCreatorName();
+                    this.scheduler
+                      .createTaskBuilder()
+                      .execute(() -> {
+                          final BasicExchange basicExchange = new BasicExchange(id, created, creator, name, permission, isHidden);
+                          basicExchange.refreshCreatorName();
 
-                    this.exchanges.put(id, basicExchange);
+                          this.exchanges.put(id, basicExchange);
 
-                    Sponge.getServer().getOnlinePlayers().forEach(this::syncExchangeRegistryTo);
+                          Sponge.getServer().getOnlinePlayers().forEach(this::syncExchangeRegistryTo);
+                      })
+                      .submit(this.container);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
