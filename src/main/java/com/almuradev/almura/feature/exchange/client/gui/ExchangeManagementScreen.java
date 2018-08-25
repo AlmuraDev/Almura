@@ -13,6 +13,7 @@ import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
+import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
@@ -44,6 +45,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
 public final class ExchangeManagementScreen extends SimpleScreen {
@@ -80,6 +82,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         // LIST
         this.exchangeList = new UIDynamicList<>(this, 120, requiredScreenHeight - 40);
+        this.exchangeList.setSelectConsumer(this.onSelect());
         this.exchangeList.setItemComponentFactory(ExchangeItemComponent::new);
         this.exchangeList.setItemComponentSpacing(1);
         this.exchangeList.setCanDeselect(false);
@@ -253,6 +256,15 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         this.refresh();
     }
 
+    @Subscribe
+    private void onValueChange(ComponentEvent.ValueChange event) {
+        if (event.getComponent() instanceof UITextField) {
+            this.validate(((String) event.getNewValue()));
+        } else if (event.getComponent() instanceof UICheckBox) {
+            this.validate(this.idField.getText());
+        }
+    }
+
     public void refresh() {
         final String lastSelectedId = this.exchangeList.getSelectedItem() != null
                 ? this.exchangeList.getSelectedItem().getId()
@@ -305,6 +317,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         this.buttonOpen.setEnabled(false);
 
+        this.buttonSave.setEnabled(false);
+
         this.validate("");
     }
 
@@ -313,25 +327,23 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 && !this.titleField.getText().isEmpty()
                 && !this.permissionField.getText().isEmpty()
                 && !newValue.isEmpty(); // Because we don't have a post event
-        if (this.exchangeList.getSelectedItem() == null) {
+
+        // If this is a new project then ensure another with that ID doesn't exist
+        if (this.exchangeList.getSelectedItem() == null && isValid) {
             isValid = this.exchangeList.getItems().stream().noneMatch(i -> i.getId().equalsIgnoreCase(this.idField.getText()));
         }
+
         this.buttonSave.setEnabled(isValid);
     }
 
-    @Subscribe
-    private void onValueChange(ComponentEvent.ValueChange event) {
-        if (event.getComponent() instanceof UITextField) {
-            this.validate(((String) event.getNewValue()));
-        }
-    }
+    private Consumer<Exchange> onSelect() {
+        return exchange -> {
 
-    @Subscribe
-    private void onExchangeSelect(UIDynamicList.SelectEvent event) {
-        this.reset(event.getNewValue() == null);
+            this.reset(exchange == null);
 
-        if (event.getNewValue() != null) {
-            final Exchange exchange = (Exchange) event.getNewValue();
+            if (exchange == null) {
+                return;
+            }
 
             // ID
             this.idField.setText(exchange.getId());
@@ -365,7 +377,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
             this.hiddenCheckbox.setChecked(exchange.isHidden());
 
             this.buttonOpen.setEnabled(true);
-        }
+        };
     }
 
     private static final class ExchangeItemComponent extends UIDynamicList.ItemComponent<Exchange> {
