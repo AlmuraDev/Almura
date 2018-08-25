@@ -112,7 +112,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
         // Populate offer container
         final List<VanillaStack> inventoryOffers = new ArrayList<>();
-        mainInventory.stream().filter(i -> !i.isEmpty()).forEach(i -> inventoryOffers.add(new BasicVanillaStack(i)));
+        mainInventory.stream().filter(i -> !i.isEmpty() && i.getItem() != null).forEach(i -> inventoryOffers.add(new BasicVanillaStack(i)));
 
         this.offerContainer.setItems(this.pendingItems, UIDualListContainer.SideType.RIGHT);
         this.offerContainer.setItems(inventoryOffers, UIDualListContainer.SideType.LEFT);
