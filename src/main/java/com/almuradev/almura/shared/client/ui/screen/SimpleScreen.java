@@ -106,6 +106,10 @@ public abstract class SimpleScreen extends MalisisGui {
         setHoveredComponent(null, true);
         Keyboard.enableRepeatEvents(false);
 
+        if (this.mc.player != null && this.mc.player.openContainer != this.mc.player.inventoryContainer) {
+            this.mc.player.closeScreen();
+        }
+
         this.onClose();
 
         this.mc.displayGuiScreen(this.parent.orElse(null));
