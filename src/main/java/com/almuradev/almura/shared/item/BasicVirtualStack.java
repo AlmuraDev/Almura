@@ -27,7 +27,7 @@ public class BasicVirtualStack implements VirtualStack {
 
     public BasicVirtualStack(final Item item, final int quantity, final int metadata, @Nullable final NBTTagCompound compound) {
         checkNotNull(item);
-        checkState(metadata >= 0 && metadata <= 15);
+        checkState(metadata >= 0, "Metadata must be greater than or equal to 0!");
 
         this.item = item;
         this.quantity = quantity;
