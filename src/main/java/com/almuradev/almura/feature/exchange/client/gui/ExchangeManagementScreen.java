@@ -72,13 +72,6 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         // Master Pane
         this.form = new UIForm(this, requiredScreenWidth, requiredScreenHeight, I18n.format("almura.title.exchange.management"));
-        this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        this.form.setMovable(true);
-        this.form.setClosable(true);
-        this.form.setBorder(FontColors.WHITE, 1, 185);
-        this.form.setBackgroundAlpha(215);
-        this.form.setPadding(3, 3);
-        this.form.setTopPadding(20);
 
         // LIST
         this.exchangeList = new UIDynamicList<>(this, 120, requiredScreenHeight - 40);
