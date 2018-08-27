@@ -305,7 +305,7 @@ public final class ClientExchangeManager implements Witness {
                     .collect(Collectors.groupingBy(k -> k.getListItem().getSeller(), ConcurrentHashMap::new,
                         Collectors.toCollection(ArrayList::new))));
             }
-            ((ExchangeScreen) currentScreen).refreshForSaleItemResults(preLimitCount);
+            ((ExchangeScreen) currentScreen).refreshForSaleItemResults(forSaleItems, preLimitCount);
         }
     }
 

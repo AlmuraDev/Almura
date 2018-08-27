@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
@@ -494,7 +495,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.updateControls();
     }
 
-    public void refreshForSaleItemResults(int preLimitCount) {
+    public void refreshForSaleItemResults(@Nullable final List<ForSaleItem> forSaleItems, final int preLimitCount) {
         if (this.forSaleList == null) {
             return;
         }
@@ -503,10 +504,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
         this.forSaleList.clearItems();
 
-        final List<ForSaleItem> forSaleItems = this.axs.getForSaleItems().entrySet().stream().map(Map.Entry::getValue).flatMap(List::stream)
-            .collect(Collectors.toList());
-
-        if (!forSaleItems.isEmpty()) {
+        if (forSaleItems != null) {
             this.forSaleList.addItems(forSaleItems);
         }
 
