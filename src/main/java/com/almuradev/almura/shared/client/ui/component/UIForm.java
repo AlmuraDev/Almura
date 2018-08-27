@@ -16,14 +16,18 @@ import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.MouseButton;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Collection;
 
 @SideOnly(Side.CLIENT)
 public class UIForm extends UIContainer<UIForm> {
+    private UIContainer<?> titleContainer;
     private UISimpleButton closeButton;
     private boolean closable, movable, dragging;
 
@@ -40,8 +44,7 @@ public class UIForm extends UIContainer<UIForm> {
         this.setBorder(FontColors.WHITE, 1, 185);
         this.setBackgroundAlpha(215);
         this.setColor(Integer.MIN_VALUE);
-        this.setPadding(3, 3);
-        this.setTopPadding(20);
+        this.setPadding(3, 20, 3, 3);
 
         this.construct(gui);
 
@@ -50,22 +53,28 @@ public class UIForm extends UIContainer<UIForm> {
     }
 
     private void construct(MalisisGui gui) {
-        final UIContainer<?> separator = new UIContainer<>(gui);
-        separator.setPosition(-(this.getLeftBorderedPadding()), -4);
-        separator.setSize(this.getWidth() - (borderSize * 2), 1);
-        separator.setBackgroundAlpha(215);
-        separator.setColor(FontColors.WHITE);
+        this.titleContainer = new UIContainer<>(gui);
+        this.titleContainer.setPosition(-this.getLeftBorderedPadding(), -19, Anchor.TOP | Anchor.LEFT);
+        this.titleContainer.setSize(this.getWidth() - this.getRightBorderedPadding(), 15);
+        this.titleContainer.setColor(0x363636);
 
-        this.add(separator);
+        this.add(this.titleContainer);
+
+        final UILine line = new UILine(gui, this.getWidth() + this.getLeftBorderedPadding() + this.getRightBorderedPadding());
+        line.setPosition(-(this.getLeftBorderedPadding()), -4);
+
+        this.add(line);
 
         this.closeButton = new UISimpleButton(getGui(), "x");
         this.closeButton.setName("button.form.close");
-        this.closeButton.setPosition(2, -(getTopPadding() - 1), Anchor.TOP | Anchor.RIGHT);
+        this.closeButton.setPosition(2, 1, Anchor.MIDDLE | Anchor.RIGHT);
         this.closeButton.register(this);
 
         if (this.titleLabel != null) {
+            this.remove(this.titleLabel);
+            this.titleContainer.add(this.titleLabel);
             this.titleLabel.setFontOptions(FontColors.WHITE_FO.toBuilder().shadow(false).build());
-            this.titleLabel.setPosition(0, -getTopPadding() + 5, Anchor.TOP | Anchor.CENTER);
+            this.titleLabel.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
         }
     }
 
@@ -77,9 +86,9 @@ public class UIForm extends UIContainer<UIForm> {
         this.closable = closable;
 
         if (closable) {
-            add(this.closeButton);
+            this.titleContainer.add(this.closeButton);
         } else {
-            this.remove(this.closeButton);
+            this.titleContainer.remove(this.closeButton);
         }
 
         return this;
@@ -92,6 +101,16 @@ public class UIForm extends UIContainer<UIForm> {
     public UIForm setMovable(boolean movable) {
         this.movable = movable;
         return this;
+    }
+
+    public void setTitle(String text, FontOptions options) {
+        super.setTitle(text);
+        this.titleLabel.setFontOptions(options);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void setTitle(Text text) {
+        super.setTitle(TextSerializers.LEGACY_FORMATTING_CODE.serialize(text));
     }
 
     public void onClose() {
@@ -115,8 +134,7 @@ public class UIForm extends UIContainer<UIForm> {
 
     @Override
     public boolean onButtonPress(int x, int y, MouseButton button) {
-        final int relativeY = relativeY(y);
-        this.dragging = !this.closeButton.isInsideBounds(x, y) && relativeY >= 0 && relativeY < this.getTopPadding() - 4;
+        this.dragging = !this.closeButton.isInsideBounds(x, y) && this.titleContainer.isInsideBounds(x, y);
         return super.onButtonPress(x, y, button);
     }
 
