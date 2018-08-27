@@ -150,7 +150,16 @@ public final class ExchangeScreen extends SimpleScreen {
         this.comboBoxSortType = new UISelect<>(this, 78, Arrays.asList(SortType.values()));
         this.comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.displayName); // Because that's reasonable.
         this.comboBoxSortType.select(SortType.PRICE_ASC);
-        this.comboBoxSortType.setPosition(-(innerPadding + 1), this.sellerSearchTextBox.getY(), Anchor.RIGHT | Anchor.TOP);
+        this.comboBoxSortType.setPosition(-(innerPadding + 1), 2, Anchor.RIGHT | Anchor.TOP);
+
+        // Search button
+        final UIButton buttonSearch = new UIButtonBuilder(this)
+                .width(80)
+                .anchor(Anchor.RIGHT | Anchor.TOP)
+                .position(-innerPadding, this.sellerSearchTextBox.getY() - 1)
+                .text(I18n.format("almura.button.exchange.search"))
+                .onClick(this::search)
+                .build("button.search");
 
         // Separator
         final UIContainer<?> forSaleTopLine = new UIContainer<>(this, searchContainer.getRawWidth() - 2, 1);
@@ -169,15 +178,6 @@ public final class ExchangeScreen extends SimpleScreen {
         this.noResultsLabel.setPosition(0, this.forSaleList.getY() + 8, Anchor.TOP | Anchor.CENTER);
         this.noResultsLabel.setFontOptions(FontColors.GRAY_FO);
         this.noResultsLabel.setVisible(false);
-
-        // Search button
-        final UIButton buttonSearch = new UIButtonBuilder(this)
-            .width(80)
-            .anchor(Anchor.RIGHT | Anchor.TOP)
-            .position(-innerPadding, 1)
-            .text(I18n.format("almura.button.exchange.search"))
-            .onClick(this::search)
-            .build("button.search");
 
         // Bottom Page Control - first button
         this.buttonFirstPage = new UIButtonBuilder(this)
