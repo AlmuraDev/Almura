@@ -22,6 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.user.UserStorageService;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,8 +30,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 public final class BasicListItem implements ListItem {
-
-    public static final int NEW_ROW = -1;
 
     private int record;
     private final Instant created;
@@ -43,6 +42,7 @@ public final class BasicListItem implements ListItem {
     @Nullable private ItemStack cacheStack;
     @Nullable NBTTagCompound compound;
     @Nullable private ForSaleItem forSaleItem;
+    @Nullable private BigDecimal lastKnownPrice;
 
     public BasicListItem(final int record, final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
         final int index, @Nullable final NBTTagCompound compound) {
@@ -85,6 +85,24 @@ public final class BasicListItem implements ListItem {
     @Override
     public Optional<String> getSellerName() {
         return Optional.ofNullable(this.sellerName);
+    }
+
+    @Override
+    public void setSellerName(@Nullable final String sellerName) {
+        this.sellerName = sellerName;
+    }
+
+    @Override
+    public void setForSaleItem(@Nullable ForSaleItem forSaleItem) {
+        this.forSaleItem = forSaleItem;
+    }
+
+    @Override
+    public void syncSellerNameToUniqueId() {
+        if (this.seller != Store.UNKNOWN_OWNER) {
+            Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.seller)
+              .ifPresent(user -> this.sellerName = user.getName());
+        }
     }
 
     @Override
@@ -135,6 +153,16 @@ public final class BasicListItem implements ListItem {
     }
 
     @Override
+    public Optional<BigDecimal> getLastKnownPrice() {
+        return Optional.ofNullable(this.lastKnownPrice);
+    }
+
+    @Override
+    public void setLastKnownPrice(@Nullable BigDecimal lastKnownPrice) {
+        this.lastKnownPrice = lastKnownPrice;
+    }
+
+    @Override
     public BasicListItem copy() {
         return new BasicListItem(this.record, this.created, this.seller, this.item, this.quantity, this.metadata, this.index,
           this.compound == null ? null : this.compound.copy());
@@ -150,22 +178,6 @@ public final class BasicListItem implements ListItem {
         }
 
         return this.cacheStack;
-    }
-
-    public void refreshSellerName() {
-        if (this.seller != Store.UNKNOWN_OWNER) {
-            Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.seller)
-                .ifPresent(user -> this.sellerName = user.getName());
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void setSellerName(@Nullable final String sellerName) {
-        this.sellerName = sellerName;
-    }
-
-    public void setForSaleItem(@Nullable final ForSaleItem forSaleItem) {
-        this.forSaleItem = forSaleItem;
     }
 
     @Override

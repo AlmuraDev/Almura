@@ -45,6 +45,8 @@ public final class BasicForSaleItem implements ForSaleItem {
         this.record = record;
         this.created = created;
         this.price = price;
+
+        listItem.setForSaleItem(this);
     }
 
     @Override

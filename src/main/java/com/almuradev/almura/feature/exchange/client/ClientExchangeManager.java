@@ -264,13 +264,12 @@ public final class ClientExchangeManager implements Witness {
         }
 
         // Null out all for sale items, our candidates will have what we currently have
-        listItems.forEach(item -> ((BasicListItem) item).setForSaleItem(null));
+        listItems.forEach(item -> item.setForSaleItem(null));
 
         if (itemCandidates != null) {
             for (final ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate itemCandidate : itemCandidates) {
                 listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
-                    .ifPresent(listItem -> ((BasicListItem) listItem)
-                        .setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, itemCandidate.forSaleItemRecNo,
+                    .ifPresent(listItem -> listItem.setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, itemCandidate.forSaleItemRecNo,
                             itemCandidate.created, itemCandidate.price)));
             }
         }

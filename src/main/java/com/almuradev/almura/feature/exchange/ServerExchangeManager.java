@@ -988,7 +988,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 axs.putForSaleItemsFor(player.getUniqueId(), forSaleItemsRef);
                             }
 
-                            ((BasicListItem) found).setForSaleItem(basicForSaleItem);
+                            found.setForSaleItem(basicForSaleItem);
 
                             forSaleItemsRef.add(basicForSaleItem);
 
@@ -1083,7 +1083,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .execute(() -> {
                             forSaleItems.remove(forSaleItem);
 
-                            ((BasicListItem) found).setForSaleItem(null);
+                            found.setForSaleItem(null);
 
                             this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
 
@@ -1468,7 +1468,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
             final BasicListItem basicListItem = new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, index, compound);
 
-            basicListItem.refreshSellerName();
+            basicListItem.syncSellerNameToUniqueId();
 
             items.add(basicListItem);
         }
@@ -1496,9 +1496,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 final Timestamp created = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED);
                 final BigDecimal price = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
 
-
                 final BasicForSaleItem basicForSaleItem = new BasicForSaleItem((BasicListItem) found, recNo, created.toInstant(), price);
-                ((BasicListItem) found).setForSaleItem(basicForSaleItem);
 
                 forSaleItems.add(basicForSaleItem);
             }

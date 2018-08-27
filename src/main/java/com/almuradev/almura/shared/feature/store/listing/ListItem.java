@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 public interface ListItem extends VanillaStack {
 
     int getRecord();
@@ -32,10 +34,29 @@ public interface ListItem extends VanillaStack {
      */
     Optional<String> getSellerName();
 
+    void syncSellerNameToUniqueId();
+
     int getIndex();
 
     Optional<ForSaleItem> getForSaleItem();
 
+    Optional<BigDecimal> getLastKnownPrice();
+
     @Override
     ListItem copy();
+
+    /**
+     * INTERNAL USE ONLY
+     */
+    void setSellerName(@Nullable final String sellerName);
+
+    /**
+     * INTERNAL USE ONLY
+     */
+    void setForSaleItem(@Nullable final ForSaleItem forSaleItem);
+
+    /**
+     * INTERNAL USE ONLY
+     */
+    void setLastKnownPrice(@Nullable final BigDecimal lastKnownPrice);
 }
