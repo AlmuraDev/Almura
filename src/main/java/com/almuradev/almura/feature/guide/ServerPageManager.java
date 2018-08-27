@@ -17,9 +17,7 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.TextUtil;
 import com.almuradev.core.event.Witness;
 import com.typesafe.config.ConfigRenderOptions;
-import me.ryanhamshire.griefprevention.GriefPrevention;
 import net.malisis.core.MalisisCore;
-import net.minecraft.client.Minecraft;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -79,7 +77,7 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
 
     @Inject
     public ServerPageManager(final Game game, Logger logger, @ConfigDir(sharedRoot = false) final Path configRoot, final @ChannelId(NetworkConfig
-            .CHANNEL) ChannelBinding.IndexedMessageChannel network, final PluginContainer container) {
+        .CHANNEL) ChannelBinding.IndexedMessageChannel network, final PluginContainer container) {
         this.game = game;
         this.logger = logger;
         this.configRoot = configRoot.resolve(GuideConfig.DIR_GUIDE);
@@ -107,10 +105,10 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
 
     public void openGuideForPlayer(Player player, GuideOpenType type, String pageName) {
         this.network.sendTo(player, new ClientboundGuideOpenResponsePacket(
-                type, // Specifies what called the open request.
-                player.hasPermission("almura.guide.add"),
-                player.hasPermission("almura.guide.remove"),
-                player.hasPermission("almura.guide.modify")));
+            type, // Specifies what called the open request.
+            player.hasPermission("almura.guide.add"),
+            player.hasPermission("almura.guide.remove"),
+            player.hasPermission("almura.guide.modify")));
 
         final Map<String, Page> pagesToSend = this.getAvailablePagesFor(player);
         if (pagesToSend.size() > 0) {
@@ -220,28 +218,28 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
         checkNotNull(path);
 
         return HoconConfigurationLoader.builder()
-                .setPath(path)
-                .setDefaultOptions(ConfigurationOptions.defaults())
-                .setRenderOptions(
-                        ConfigRenderOptions.defaults()
-                                .setFormatted(true)
-                                .setComments(true)
-                                .setOriginComments(false)
-                )
-                .build();
+            .setPath(path)
+            .setDefaultOptions(ConfigurationOptions.defaults())
+            .setRenderOptions(
+                ConfigRenderOptions.defaults()
+                    .setFormatted(true)
+                    .setComments(true)
+                    .setOriginComments(false)
+            )
+            .build();
     }
 
     public Map<String, Page> getAvailablePagesFor(Player player) {
         checkNotNull(player);
 
         return this.pages.entrySet()
-                .stream()
-                .filter(entry -> player.hasPermission("almura.guide.page." + entry.getKey()))
-                .sorted(Comparator.comparingInt(p -> p.getValue().getIndex()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k, v) ->
-                {
-                    throw new IllegalStateException(String.format("Duplicate key %s", k));
-                }, LinkedHashMap::new));
+            .stream()
+            .filter(entry -> player.hasPermission("almura.guide.page." + entry.getKey()))
+            .sorted(Comparator.comparingInt(p -> p.getValue().getIndex()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k, v) ->
+            {
+                throw new IllegalStateException(String.format("Duplicate key %s", k));
+            }, LinkedHashMap::new));
     }
 
     public Optional<Page> getPage(String id) {
@@ -253,7 +251,7 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
         if (loaded) {
             this.game.getServer().getOnlinePlayers().forEach((player) -> {
                 this.network.sendTo(player, new ClientboundPageListingsPacket(this.getAvailablePagesFor(player).entrySet().stream().map(entry ->
-                        new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toList()), null));
+                    new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toList()), null));
             });
         }
 

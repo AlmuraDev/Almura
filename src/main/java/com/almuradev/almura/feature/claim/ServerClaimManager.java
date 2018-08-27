@@ -67,6 +67,7 @@ public final class ServerClaimManager implements Witness {
                     boolean isClaim = true;
                     boolean hasWECUI = false;
                     boolean isForSale = false;
+                    boolean showWarnings = true;
 
                     String claimName = "";
                     String claimGreeting = "";
@@ -89,7 +90,9 @@ public final class ServerClaimManager implements Witness {
                         isForSale = claim.getEconomyData().isForSale();
                     }
 
-                    final boolean showWarnings = claim.getData().allowDenyMessages();
+                    if (claim.getData() != null) {
+                        showWarnings = claim.getData().allowDenyMessages();
+                    }
 
                     if (player != null) {
                         hasWECUI = GriefPreventionPlugin.instance.worldEditProvider.hasCUISupport(player);
@@ -99,11 +102,11 @@ public final class ServerClaimManager implements Witness {
                         claimOwner = claim.getOwnerName().toPlain();
                     }
 
-                    if (claim.getData().getGreeting().isPresent()) {
+                    if (claim.getData() != null && claim.getData().getGreeting().isPresent()) {
                         claimGreeting = claim.getData().getGreeting().get().toPlain();
                     }
 
-                    if (claim.getData().getFarewell().isPresent()) {
+                    if (claim.getData() != null &&claim.getData().getFarewell().isPresent()) {
                         claimFarewell = claim.getData().getFarewell().get().toPlain();
                     }
 
@@ -157,32 +160,61 @@ public final class ServerClaimManager implements Witness {
     @Listener()
     public void onEnterExitClaim(final BorderClaimEvent event, @Getter("getTargetEntity") Player player) {
         // Notes:  this event does NOT fire when a player logs into the server.
-        this.sendUpdate(player, event.getEnterClaim(), false);
+        Task.builder()
+            .delayTicks(10) // Give GP time to finish event
+            .execute(t -> this.sendUpdate(player, GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(player.getLocation()), false))
+            .submit(this.container);
     }
 
     @Listener()
     public void onChangeClaim(final ChangeClaimEvent event) {
-        this.sendUpdate(null, event.getClaim(), false);
+        for (final Player players : event.getClaim().getPlayers()) {
+            Task.builder()
+                .delayTicks(10) // Give GP time to finish event
+                .execute(t -> this.sendUpdate(players, GriefPrevention.getApi().getClaimManager(players.getWorld()).getClaimAt(players.getLocation()), false))
+                .submit(this.container);
+        }
     }
 
     @Listener()
     public void onCreateClaim(final CreateClaimEvent event) {
-        this.sendUpdate(null, event.getClaim(), true);
+        for (final Player players : event.getClaim().getPlayers()) {
+            Task.builder()
+                .delayTicks(10) // Give GP time to finish event
+                .execute(t -> this.sendUpdate(players, GriefPrevention.getApi().getClaimManager(players.getWorld()).getClaimAt(players.getLocation()), false))
+                .submit(this.container);
+        }
     }
 
     @Listener()
     public void onDeleteClaim(final DeleteClaimEvent event) {
-        this.sendUpdate(null, event.getClaim(), true);
+        for (final Player players : event.getClaim().getPlayers()) {
+            Task.builder()
+                .delayTicks(10) // Give GP time to finish event
+                .execute(t -> this.sendUpdate(players, GriefPrevention.getApi().getClaimManager(players.getWorld()).getClaimAt(players.getLocation()), false))
+                .submit(this.container);
+        }
     }
 
     @Listener()
     public void onTaxClaim(final TaxClaimEvent event) {
-        //this.sendUpdate(null, event.getClaim(), false);
+        /*
+        for (final Player players : event.getClaim().getPlayers()) {
+            Task.builder()
+                .delayTicks(10) // Give GP time to finish event
+                .execute(t -> this.sendUpdate(players, GriefPrevention.getApi().getClaimManager(players.getWorld()).getClaimAt(players.getLocation()), false))
+                .submit(this.container);
+        } */
     }
 
     @Listener()
     public void onClaimFlagChange(final FlagClaimEvent event) {
-        this.sendUpdate(null, event.getClaim(), true);
+        for (final Player players : event.getClaim().getPlayers()) {
+            Task.builder()
+                .delayTicks(10) // Give GP time to finish event
+                .execute(t -> this.sendUpdate(players, GriefPrevention.getApi().getClaimManager(players.getWorld()).getClaimAt(players.getLocation()), false))
+                .submit(this.container);
+        }
     }
 
     public final boolean isGPEnabled(final Player player) {

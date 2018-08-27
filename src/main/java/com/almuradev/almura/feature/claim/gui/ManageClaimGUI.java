@@ -65,9 +65,10 @@ public final class ManageClaimGUI extends SimpleScreen {
     private UIFormContainer form, functionsArea, econArea;
     private UITextField claimNameField, claimOwnerField, claimGreetingField, claimFarewellField, claimSizeField, claimValueField, claimTaxField;
     private UILabel claimNameLabel, claimForSaleLabel, claimOwnerLabel, claimGreetingLabel, claimFarewellLabel, claimSizeLabel, claimTaxLabel;
-    private UICheckBox showWarningsCheckbox, showVisualsCheckbox;
+    private UICheckBox showWarningsCheckbox;
+    private UIButton buttonVisuals, buttonHideVisuals;
 
-    private boolean isOwner, isTrusted, isAdmin;
+    private boolean isOwner, isTrusted, isAdmin, toggleVisuals;
 
     public ManageClaimGUI(boolean isOwner, boolean isTrusted, boolean isAdmin) {
         this.isOwner = isOwner;
@@ -233,9 +234,17 @@ public final class ManageClaimGUI extends SimpleScreen {
         functionsSeparator.setSize(this.functionsArea.getWidth() - 15, 1);
         functionsSeparator.setPosition(0, 15, Anchor.TOP | Anchor.CENTER);
 
+        this.buttonVisuals = new UIButton(this);
+        this.buttonVisuals.setText(TextFormatting.WHITE + "Toggle Visuals");
+        this.buttonVisuals.setPosition(0, 20, Anchor.CENTER | Anchor.TOP);
+        this.buttonVisuals.setEnabled(this.isOwner || this.isAdmin);
+        this.buttonVisuals.setName("button.visuals");
+        // this.buttonVisuals.setVisible(this.clientClaimManager.hasWECUI);
+        this.buttonVisuals.register(this);
+
         final UIButton buttonAbandon = new UIButtonBuilder(this)
                 .width(40)
-                .y(20)
+                .y(buttonVisuals.getY() + 20)
                 .anchor(Anchor.CENTER | Anchor.TOP)
                 .text("Abandon Claim")
                 .listener(this)
@@ -262,20 +271,7 @@ public final class ManageClaimGUI extends SimpleScreen {
                 .visible(false)
                 .build("button.setSpawnLocation");
 
-        this.functionsArea.add(claimFunctionsLabel, functionsSeparator, buttonAbandon, buttonSetForSale, buttonSetSpawnLocation);
-
-        this.showVisualsCheckbox = new UICheckBox(this);
-        this.showVisualsCheckbox.setText(TextFormatting.WHITE + "Show Visuals");
-        this.showVisualsCheckbox.setPosition(7, -11, Anchor.LEFT | Anchor.BOTTOM);
-        this.showVisualsCheckbox.setChecked(false);
-        this.showVisualsCheckbox.setEnabled(this.isOwner || this.isAdmin);
-        this.showVisualsCheckbox.setName("checkbox.showvisuals");
-        if (this.clientClaimManager.isWilderness) {
-            this.showVisualsCheckbox.setVisible(!this.clientClaimManager.isWilderness);
-        } else {
-            this.showVisualsCheckbox.setVisible(this.clientClaimManager.hasWECUI);
-        }
-        this.showVisualsCheckbox.register(this);
+        this.functionsArea.add(claimFunctionsLabel, functionsSeparator, buttonAbandon, buttonSetForSale, buttonSetSpawnLocation, buttonVisuals);
 
         this.showWarningsCheckbox = new UICheckBox(this);
         this.showWarningsCheckbox.setText(TextFormatting.WHITE + "Show Permission Denied Messages");
@@ -285,6 +281,13 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.showWarningsCheckbox.setName("checkbox.showwarnings");
         this.showWarningsCheckbox.setVisible(!this.clientClaimManager.isWilderness);
         this.showWarningsCheckbox.register(this);
+
+        this.buttonHideVisuals = new UIButton(this);
+        this.buttonHideVisuals.setText(TextFormatting.WHITE + "Hide Visuals");
+        this.buttonHideVisuals.setPosition(0, 0, Anchor.LEFT | Anchor.BOTTOM);
+        this.buttonHideVisuals.setEnabled(this.isOwner || this.isAdmin);
+        this.buttonHideVisuals.setName("button.visuals");
+        this.buttonHideVisuals.register(this);
 
         final UIButton buttonSave = new UIButtonBuilder(this)
                 .width(40)
@@ -304,7 +307,7 @@ public final class ManageClaimGUI extends SimpleScreen {
                 .build("button.close");
 
         this.form.add(titleLabel, separator, claimNameLabel, this.claimNameField, this.claimSizeLabel, this.claimSizeField, claimGreetingLabel, this.claimGreetingField, claimFarewellLabel, this.claimFarewellField, this.econArea, this
-                        .functionsArea, this.showWarningsCheckbox, this.showVisualsCheckbox, buttonSave, buttonClose);
+                        .functionsArea, this.showWarningsCheckbox, buttonHideVisuals, buttonSave, buttonClose);
 
         updateValues();
 
@@ -319,18 +322,21 @@ public final class ManageClaimGUI extends SimpleScreen {
                 this.network.sendToServer(new ServerboundClaimGuiToggleDenyMessagesRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc
                     .player.posZ, hudData.worldName, !this.showWarningsCheckbox.isChecked()));
                 break;
-
-            case "checkbox.showvisuals":
-                System.out.println("Showing Visuals");
-                this.network.sendToServer(new ServerboundClaimGuiToggleVisualsRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc
-                    .player.posZ, hudData.worldName, !this.showVisualsCheckbox.isChecked()));
-                break;
         }
     }
 
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
+            case "button.visuals":
+                this.toggleVisuals = !this.toggleVisuals;
+                if (this.clientClaimManager.isWilderness) {
+                    this.toggleVisuals = false;  // Forces disable.
+                }
+                System.out.println("Toggle: " + this.toggleVisuals);
+                this.network.sendToServer(new ServerboundClaimGuiToggleVisualsRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName, this.toggleVisuals));
+                break;
+
             case "button.abandon":
                 this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
 
@@ -372,14 +378,24 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.claimTaxField.setText("$ " + TextFormatting.YELLOW + dFormat.format(this.clientClaimManager.claimTaxes));
         this.econArea.setVisible(!this.clientClaimManager.isWilderness);
         this.functionsArea.setVisible(!this.clientClaimManager.isWilderness);
+        if (this.clientClaimManager.hasWECUI) {
+            if (this.functionsArea.isVisible()) {
+                this.buttonHideVisuals.setVisible(false);
+                this.buttonVisuals.setEnabled(true);
+            } else {
+                this.buttonHideVisuals.setVisible(true);
+            }
+        } else {
+            this.buttonHideVisuals.setVisible(false);
+            this.buttonVisuals.setEnabled(false);
+        }
+
         if (this.clientClaimManager.isWilderness) {
             this.form.setSize(300, 125);
             this.claimSizeField.setText(" -- Unlimited -- ");
-            this.showVisualsCheckbox.setVisible(false);
         } else {
             this.form.setSize(400, 250);
             this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(this.clientClaimManager.claimSize));
-            this.showVisualsCheckbox.setVisible(this.clientClaimManager.hasWECUI);
         }
     }
 
