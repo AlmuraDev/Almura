@@ -57,6 +57,7 @@ public class UIForm extends UIContainer<UIForm> {
         this.titleContainer.setPosition(-this.getLeftBorderedPadding(), -19, Anchor.TOP | Anchor.LEFT);
         this.titleContainer.setSize(this.getWidth() - this.getRightBorderedPadding(), 15);
         this.titleContainer.setColor(0x363636);
+        this.titleContainer.setBackgroundAlpha(215);
 
         this.add(this.titleContainer);
 
@@ -67,7 +68,7 @@ public class UIForm extends UIContainer<UIForm> {
 
         this.closeButton = new UISimpleButton(getGui(), "x");
         this.closeButton.setName("button.form.close");
-        this.closeButton.setPosition(2, 1, Anchor.MIDDLE | Anchor.RIGHT);
+        this.closeButton.setPosition(0, 0, Anchor.MIDDLE | Anchor.RIGHT);
         this.closeButton.register(this);
 
         if (this.titleLabel != null) {
