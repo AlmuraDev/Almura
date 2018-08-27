@@ -25,7 +25,6 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.minecraft.client.resources.I18n;
-import org.lwjgl.input.Keyboard;
 
 public class ExchangeBuyQuantityScreen extends SimpleScreen {
 
@@ -59,6 +58,7 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
         this.quantityLabel.setPosition(0, 2);
 
         this.quantityTextBox = new UITextBox(this, "1");
+        this.quantityTextBox.setAcceptsReturn(false);
         this.quantityTextBox.setOnEnter(tb -> this.buy());
         this.quantityTextBox.setSize(45, 0);
         this.quantityTextBox.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);

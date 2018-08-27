@@ -98,9 +98,10 @@ almura.button.open=Open
 # ---------------
 # -- exchange ---
 # ---------------
+almura.button.exchange.buy.all=Buy All
 almura.button.exchange.buy.quantity=Buy Quantity
-almura.button.exchange.buy.single=Buy Single
-almura.button.exchange.buy.stack=Buy Stack
+almura.button.exchange.buy.one=Buy 1
+almura.button.exchange.buy.stack=Buy %d
 almura.button.exchange.buy=Buy
 almura.button.exchange.list=List
 almura.button.exchange.search=Search

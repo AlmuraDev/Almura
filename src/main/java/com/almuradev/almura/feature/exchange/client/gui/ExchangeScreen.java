@@ -76,8 +76,8 @@ public final class ExchangeScreen extends SimpleScreen {
     private final Exchange axs;
     public final int limit;
 
-    private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuySingle, buttonBuyQuantity,
-        buttonList;
+    private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuyOne,
+    buttonBuyAll, buttonBuyQuantity, buttonList;
     private UILabel labelSearchPage, labelLimit, noResultsLabel;
     private UISelect<SortType> comboBoxSortType;
     private UITextBox displayNameSearchTextBox, sellerSearchTextBox;
@@ -121,6 +121,8 @@ public final class ExchangeScreen extends SimpleScreen {
         itemSearchLabel.setPosition(0, 4, Anchor.LEFT | Anchor.TOP);
 
         this.displayNameSearchTextBox = new UITextBox(this, "");
+        this.displayNameSearchTextBox.setAcceptsReturn(false);
+        this.displayNameSearchTextBox.setAcceptsTab(false);
         this.displayNameSearchTextBox.setTabIndex(0);
         this.displayNameSearchTextBox.setOnEnter((tb) -> this.search());
         this.displayNameSearchTextBox.setSize(145, 0);
@@ -134,6 +136,8 @@ public final class ExchangeScreen extends SimpleScreen {
             getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
 
         this.sellerSearchTextBox = new UITextBox(this, "");
+        this.sellerSearchTextBox.setAcceptsReturn(false);
+        this.sellerSearchTextBox.setAcceptsTab(false);
         this.sellerSearchTextBox.setTabIndex(1);
         this.sellerSearchTextBox.setOnEnter((tb) -> this.search());
         this.sellerSearchTextBox.setSize(145, 0);
@@ -235,11 +239,34 @@ public final class ExchangeScreen extends SimpleScreen {
         buyContainer.setBackgroundAlpha(215);
         buyContainer.setPadding(3, 0);
 
-        this.buttonBuyStack = new UIButtonBuilder(this)
+        this.buttonBuyOne = new UIButtonBuilder(this)
                 .width(60)
                 .anchor(Anchor.LEFT | Anchor.MIDDLE)
                 .position(0, 0)
-                .text(I18n.format("almura.button.exchange.buy.stack"))
+                .text(I18n.format("almura.button.exchange.buy.one"))
+                .enabled(false)
+                .onClick(() -> this.buy(1))
+                .build("button.buy.single");
+
+        this.buttonBuyStack = new UIButtonBuilder(this)
+                .width(60)
+                .anchor(Anchor.LEFT | Anchor.MIDDLE)
+                .position(SimpleScreen.getPaddedX(this.buttonBuyOne, 10), 0)
+                .text(I18n.format("almura.button.exchange.buy.stack", 0))
+                .enabled(false)
+                .onClick(() -> {
+                    final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
+                    if (forSaleItem != null) {
+                        this.buy(forSaleItem.asRealStack().getMaxStackSize());
+                    }
+                })
+                .build("button.buy.stack");
+
+        this.buttonBuyAll = new UIButtonBuilder(this)
+                .width(50)
+                .anchor(Anchor.RIGHT | Anchor.MIDDLE)
+                .position(0, 0)
+                .text(I18n.format("almura.button.exchange.buy.all"))
                 .enabled(false)
                 .onClick(() -> {
                     final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
@@ -247,21 +274,12 @@ public final class ExchangeScreen extends SimpleScreen {
                         this.buy(forSaleItem.getQuantity());
                     }
                 })
-                .build("button.buy.stack");
-
-        this.buttonBuySingle = new UIButtonBuilder(this)
-                .width(60)
-                .anchor(Anchor.CENTER | Anchor.MIDDLE)
-                .position(0, 0)
-                .text(I18n.format("almura.button.exchange.buy.single"))
-                .enabled(false)
-                .onClick(() -> this.buy(1))
-                .build("button.buy.single");
+                .build("button.buy.all");
 
         this.buttonBuyQuantity = new UIButtonBuilder(this)
                 .width(60)
                 .anchor(Anchor.RIGHT | Anchor.MIDDLE)
-                .position(0, 0)
+                .position(SimpleScreen.getPaddedX(this.buttonBuyAll, 10, Anchor.RIGHT), 0)
                 .text(I18n.format("almura.button.exchange.buy.quantity"))
                 .enabled(false)
                 .onClick(() -> {
@@ -272,7 +290,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 })
                 .build("button.buy.quantity");
 
-        buyContainer.add(this.buttonBuyStack, this.buttonBuySingle, this.buttonBuyQuantity);
+        buyContainer.add(this.buttonBuyOne, this.buttonBuyStack, this.buttonBuyQuantity, this.buttonBuyAll);
 
         // Listable Items section
         final UIContainer<?> listableItemsContainer = new UIContainer(this, 295, 345);
@@ -409,9 +427,15 @@ public final class ExchangeScreen extends SimpleScreen {
         // Results list
         final ForSaleItem currentForSaleItem = this.forSaleList.getSelectedItem();
         final boolean isResultSelected = currentForSaleItem != null;
-        this.buttonBuySingle.setEnabled(isResultSelected);
+        this.buttonBuyOne.setEnabled(isResultSelected);
         this.buttonBuyQuantity.setEnabled(isResultSelected && currentForSaleItem.getQuantity() > 1);
-        this.buttonBuyStack.setEnabled(isResultSelected && currentForSaleItem.getQuantity() > 1);
+
+        final int maxStackSize = currentForSaleItem != null ? currentForSaleItem.asRealStack().getMaxStackSize() : 0;
+        this.buttonBuyStack.setEnabled(isResultSelected
+                && currentForSaleItem.getQuantity() > 1
+                && currentForSaleItem.getQuantity() >= maxStackSize);
+        this.buttonBuyStack.setText(I18n.format("almura.button.exchange.buy.stack", maxStackSize));
+        this.buttonBuyAll.setEnabled(isResultSelected && currentForSaleItem.getQuantity() > 1);
 
         // Selling list
         final boolean isSellingItemSelected = this.listItemList.getSelectedItem() != null;

@@ -97,6 +97,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         // ID
         this.idTextBox = new UITextBox(this, "");
+        this.idTextBox.setAcceptsReturn(false);
+        this.idTextBox.setAcceptsTab(false);
         this.idTextBox.setTabIndex(0);
         this.idTextBox.setOnEnter(tb -> this.save());
         this.idTextBox.setSize(140, 0);
@@ -111,6 +113,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         // Title
         this.titleTextBox = new UITextBox(this, "");
+        this.titleTextBox.setAcceptsReturn(false);
+        this.titleTextBox.setAcceptsTab(false);
         this.titleTextBox.setTabIndex(1);
         this.titleTextBox.setOnEnter(tb -> this.save());
         this.titleTextBox.setSize(140, 0);
@@ -123,6 +127,8 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         // Permission
         this.permissionTextBox = new UITextBox(this, "");
+        this.permissionTextBox.setAcceptsReturn(false);
+        this.permissionTextBox.setAcceptsTab(false);
         this.permissionTextBox.setTabIndex(2);
         this.permissionTextBox.setOnEnter(tb -> this.save());
         this.permissionTextBox.setSize(140, 0);

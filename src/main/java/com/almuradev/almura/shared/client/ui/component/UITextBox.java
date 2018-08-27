@@ -19,7 +19,8 @@ import javax.annotation.Nullable;
 public class UITextBox extends UITextField {
 
     @Nullable private Consumer<UITextBox> onEnter;
-    private boolean acceptsTab, acceptsReturn;
+    private boolean acceptsTab = true;
+    private boolean acceptsReturn = true;
     private int tabIndex = 0;
 
     public UITextBox(SimpleScreen screen, String text) {

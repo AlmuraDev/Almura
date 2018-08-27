@@ -93,6 +93,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
             return filteredValue;
         });
         this.pricePerTextBox.setPosition(2, 0, Anchor.MIDDLE | Anchor.LEFT);
+        this.pricePerTextBox.setAcceptsReturn(false);
         this.pricePerTextBox.setOnEnter(tb -> this.list());
         this.pricePerTextBox.register(this);
 
