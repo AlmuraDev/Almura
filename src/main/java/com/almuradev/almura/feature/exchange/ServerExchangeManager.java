@@ -912,8 +912,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         if (axs == null) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
                 + "server console for more details!"));
-            this.logger.error("Player '{}' attempted to list an item for sale for exchange '{}' but the server has no knowledge of it. Syncing "
-                + "exchange registry...", player.getName(), id);
+            this.logger.error("Player '{}' attempted to mark list item '{}' for sale for exchange '{}' but the server has no knowledge of that "
+              + "exchange. Syncing exchange registry...", player.getName(), listItemRecNo, id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -922,8 +922,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         if (listItems == null || listItems.isEmpty()) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
                     + "server console for more details!"));
-            this.logger.error("Player '{}' attempted to list an item for sale for exchange '{}' with record number '{}' but the server has no "
-                    + "record of any list items for that player. Syncing list items...", player.getName(), id, listItemRecNo);
+            this.logger.error("Player '{}' attempted to mark list item '{}' for sale for exchange '{}' but the server has no record of any list "
+              + "items for that player. Syncing list items...", player.getName(), listItemRecNo, id);
             this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItems));
             return;
         }
@@ -933,8 +933,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         if (found == null) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
                     + "server console for more details!"));
-            this.logger.error("Player '{}' attempted to list an item for sale for exchange '{}' with record number '{}' but the server has no "
-                    + "record of the listing. Syncing list items...", player.getName(), id, listItemRecNo);
+            this.logger.error("Player '{}' attempted to mark list item '{}' for sale for exchange '{}' but the server has no record of the listing. "
+              + "Syncing list items...", player.getName(), listItemRecNo, id);
             this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItems));
             return;
         }
@@ -943,8 +943,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         if (found.getForSaleItem().isPresent()) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
                     + "server console for more details!"));
-            this.logger.error("Player '{}' attempted to list an item for sale for exchange '{}' with record number '{}' but the server already has "
-                    + "a listing for that item. Syncing list items sale status...", player.getName(), id, listItemRecNo);
+            this.logger.error("Player '{}' attempted to mark list item '{}' for sale for exchange '{}' but the "
+              + "server already has a listing for that item. Syncing list items sale status...", player.getName(), listItemRecNo, id);
             this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, forSaleItems));
             return;
         }
@@ -967,7 +967,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .fetchOne();
 
                     if (record == null) {
-                        // TODO Logger
+                        this.logger.error("Player '{}' attempted to mark list item '{}' for sale for exchange '{}' to the database but it failed. "
+                          + "Discarding changes...", player.getName(), listItemRecNo, id);
                         return;
                     }
 
@@ -1008,8 +1009,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         if (axs == null) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
                 + "server console for more details!"));
-            this.logger.error("Player '{}' attempted to de-list a for sale item for exchange '{}' but the server has no knowledge of it. Syncing "
-                + "exchange registry...", player.getName(), id);
+            this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no knowledge of it. Syncing "
+                + "exchange registry...", player.getName(), listItemRecNo, id);
             this.syncExchangeRegistryTo(player);
             return;
         }
@@ -1017,9 +1018,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
         if (listItems == null || listItems.isEmpty()) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
-                    + "server console for more details!"));
-            this.logger.error("Player '{}' attempted to de-list a for sale item for '{}' exchange '{}' but the server has no "
-                    + "record of any list items for that player. Syncing list items...", player.getName(), id, listItemRecNo);
+              + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no record of any list items for "
+              + "that player. Syncing list items...", player.getName(), listItemRecNo, id);
             this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItems));
             return;
         }
@@ -1028,9 +1029,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         if (found == null) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
-                    + "server console for more details!"));
-            this.logger.error("Player '{}' attempted to de-list a for sale item '{}' for exchange '{}' but the server has no "
-                    + "record of the listing. Syncing list items...", player.getName(), id, listItemRecNo);
+              + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no record of the listing. "
+              + "Syncing list items...", player.getName(), listItemRecNo, id);
             this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItems));
             return;
         }
@@ -1040,19 +1041,20 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
         if (forSaleItem == null) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
-                    + "server console for more details!"));
-            this.logger.error("Player '{}' attempted to de-list a for sale item '{}' for exchange '{}' but the server doesn't "
-                    + "have a listing for that item. Syncing list items sale status...", player.getName(), id, listItemRecNo);
+              + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server doesn't have a listing for "
+              + "that item. Syncing list items sale status...", player.getName(), listItemRecNo, id);
             this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, forSaleItems));
             return;
         }
 
         if (forSaleItems == null) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
-                    + "server console for more details!"));
-            this.logger.error("Player '{}' attempted to de-list a for sale item '{}' for exchange '{}' but the server has no "
-                    + "record of any listings for that player. Syncing list items sale status...", player.getName(), id, listItemRecNo);
+              + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no record of any listings for "
+              + "that player. Syncing list items sale status...", player.getName(), listItemRecNo, id);
             this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, null));
+            return;
         }
 
         this.scheduler
@@ -1067,7 +1069,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .execute();
 
                     if (result == 0) {
-                        // TODO Logger
+                        this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' to the database but it failed. "
+                            + "Discarding changes...", player.getName(), listItemRecNo, id);
                         return;
                     }
 
@@ -1109,24 +1112,35 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
         if (listItems == null) {
-            // TODO Notification
-            // TODO Resync
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+              + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to adjust the price for list item '{}' for exchange '{}' but the server has no knowledge "
+              + "of any list items for them. Syncing list items...", player.getName(), listItemRecNo, id);
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), null));
             return;
         }
 
         final ListItem found = listItems.stream().filter(item -> item.getRecord() == listItemRecNo).findAny().orElse(null);
 
         if (found == null) {
-            // TODO Notification
-            // TODO Resync
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+              + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to adjust the price for list item '{}' for exchange '{}' but the server has no knowledge "
+              + "of it. Syncing list items...", player.getName(), listItemRecNo, id);
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
             return;
         }
 
         final ForSaleItem forSaleItem = found.getForSaleItem().orElse(null);
 
         if (forSaleItem == null) {
-            // TODO Notification
-            // TODO Resync
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+              + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to adjust the price for list item '{}' for exchange '{}' but the server has no knowledge "
+              + "of it being for sale. Syncing list items...", player.getName(), listItemRecNo, id);
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
+            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(),
+              axs.getForSaleItemsFor(player.getUniqueId()).orElse(null)));
             return;
         }
 
@@ -1141,7 +1155,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .execute();
 
                     if (result == 0) {
-                        // TODO Logger
+                        this.logger.error("Player '{}' attempted to adjust the price for list item '{}' for exchange '{}' to the database but it "
+                          + "failed. Discarding changes...", player.getName(), listItemRecNo, id);
                         return;
                     }
 
@@ -1258,7 +1273,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             final String formattedTotal = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(total);
             final String formattedBalance = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(balance.doubleValue());
             final String formattedDifference = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(total - balance.doubleValue());
-            this.notificationManager.sendWindowMessage(player, Text.of("Exchange - Insufficient Funds"),
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"),
                     Text.of("You attempted to purchase items totalling to ", TextColors.RED, formattedTotal, TextColors.RESET, " while you only have ",
                             TextColors.GREEN, formattedBalance, TextColors.RESET, ".", Text.NEW_LINE, Text.NEW_LINE, "You need ",
                         TextColors.LIGHT_PURPLE, formattedDifference, TextColors.RESET, " more!"));
@@ -1273,12 +1288,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         final ItemStack simulatedResultStack = ItemHandlerHelper.insertItemStacked(inventory, copyStack.asRealStack(), true);
         if (!simulatedResultStack.isEmpty()) {
-            // TODO Notification
-            // TODO We could just let them purchase to inventory limit? Dunno
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("You lack sufficient inventory space to "
+              + "purchase these item(s)!"));
             return;
         }
 
-        final int quantityRemaining = found.getQuantity() - (quantity - simulatedResultStack.getCount());
+        final int originalQuantity = found.getQuantity();
+        final int quantityRemaining = originalQuantity - (quantity - simulatedResultStack.getCount());
         final int forSaleItemRecord = forSaleItem.getRecord();
 
         this.scheduler
@@ -1286,13 +1302,15 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             .async()
             .execute(() -> {
                 try (final DSLContext context = this.databaseManager.createContext(true)) {
+
                     // Update listed quantity
                     int result = ExchangeQueries
                         .createUpdateListItemQuantity(listItemRecNo, quantityRemaining, true)
                         .build(context)
                         .execute();
                     if (result == 0) {
-                        // TODO Logger
+                        this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' to the database but it failed. Discarding "
+                          + "changes...", player.getName(), id);
                         return;
                     }
 
@@ -1303,7 +1321,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             .execute();
 
                         if (result == 0) {
-                            // TODO Logger
+                            this.logger.error("Player '{}' attempted to make a transaction in-which was the entire listing for exchange '{}' to the "
+                              + "database but it failed. Discarding changes...", player.getName(), id);
+
+                            ExchangeQueries
+                              .createUpdateListItemQuantity(listItemRecNo, originalQuantity, true)
+                              .build(context)
+                              .execute();
                             return;
                         }
                     }
@@ -1315,7 +1339,20 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         .execute();
 
                     if (result == 0) {
-                        // TODO Logger
+
+                        this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' to the database but it failed. Discarding "
+                          + "changes...", player.getName(), id);
+
+                        ExchangeQueries
+                          .createUpdateListItemQuantity(listItemRecNo, originalQuantity, false)
+                          .build(context)
+                          .execute();
+
+                        ExchangeQueries
+                          .createUpdateForSaleItemIsHidden(forSaleItemRecord, false)
+                          .build(context)
+                          .execute();
+
                         return;
                     }
 
