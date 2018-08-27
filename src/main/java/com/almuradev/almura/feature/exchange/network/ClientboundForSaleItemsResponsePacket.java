@@ -86,6 +86,11 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
 
                 final int index = buf.readInteger();
 
+                BigDecimal lastKnownPrice = null;
+                if (buf.readBoolean()) {
+                    lastKnownPrice = ByteBufUtil.readBigDecimal((ByteBuf) buf);
+                }
+
                 final int compoundDataLength = buf.readInteger();
                 NBTTagCompound compound = null;
 
@@ -99,7 +104,7 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 }
 
                 final BasicListItem basicListItem =
-                    new BasicListItem(listItemRecNo, listItemCreated, seller, item, quantity, metadata, index, compound);
+                    new BasicListItem(listItemRecNo, listItemCreated, seller, item, quantity, metadata, index, lastKnownPrice, compound);
 
                 if (Sponge.getPlatform().getExecutionType().isClient()) {
                     basicListItem.setSellerName(sellerName);
@@ -192,6 +197,11 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 }
 
                 buf.writeInteger(listItem.getIndex());
+
+                buf.writeBoolean(listItem.getLastKnownPrice().isPresent());
+                if (listItem.getLastKnownPrice().isPresent()) {
+                    ByteBufUtil.writeBigDecimal((ByteBuf) buf, listItem.getLastKnownPrice().get());
+                }
 
                 if (compoundData == null) {
                     buf.writeInteger(0);

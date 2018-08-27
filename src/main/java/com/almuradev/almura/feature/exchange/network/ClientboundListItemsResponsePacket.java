@@ -11,7 +11,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
+import com.almuradev.almura.shared.util.ByteBufUtil;
 import com.almuradev.almura.shared.util.SerializationUtil;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -21,6 +23,7 @@ import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +81,11 @@ public final class ClientboundListItemsResponsePacket implements Message {
 
                 final int index = buf.readInteger();
 
+                BigDecimal lastKnownPrice = null;
+                if (buf.readBoolean()) {
+                    lastKnownPrice = ByteBufUtil.readBigDecimal((ByteBuf) buf);
+                }
+
                 final int compoundDataLength = buf.readInteger();
                 NBTTagCompound compound = null;
 
@@ -90,7 +98,8 @@ public final class ClientboundListItemsResponsePacket implements Message {
                     }
                 }
 
-                final BasicListItem basicListItem = new BasicListItem(record, created, seller, item, quantity, metadata, index, compound);
+                final BasicListItem basicListItem = new BasicListItem(record, created, seller, item, quantity, metadata, index, lastKnownPrice,
+                  compound);
 
                 if (Sponge.getPlatform().getExecutionType().isClient()) {
                     basicListItem.setSellerName(sellerName);
@@ -157,6 +166,11 @@ public final class ClientboundListItemsResponsePacket implements Message {
                 }
 
                 buf.writeInteger(item.getIndex());
+
+                buf.writeBoolean(item.getLastKnownPrice().isPresent());
+                if (item.getLastKnownPrice().isPresent()) {
+                    ByteBufUtil.writeBigDecimal((ByteBuf) buf, item.getLastKnownPrice().get())       ;
+                }
 
                 if (compoundData == null) {
                     buf.writeInteger(0);

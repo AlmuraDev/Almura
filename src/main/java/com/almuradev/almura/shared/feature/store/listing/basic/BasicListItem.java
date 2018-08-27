@@ -45,13 +45,17 @@ public final class BasicListItem implements ListItem {
     @Nullable private BigDecimal lastKnownPrice;
 
     public BasicListItem(final int record, final Instant created, final UUID seller, final Item item, final int quantity, final int metadata,
-        final int index, @Nullable final NBTTagCompound compound) {
+        final int index, @Nullable BigDecimal lastKnownPrice, @Nullable final NBTTagCompound compound) {
         checkNotNull(created);
         checkNotNull(seller);
         checkNotNull(item);
         checkState(quantity > 0, "Quantity must be greater than 0.");
         checkState(metadata >= 0, "Metadata must be greater than or equal to 0.");
         checkState(index >= 0, "Index must be greater than or equal to 0.");
+
+        if (lastKnownPrice != null) {
+            checkState(lastKnownPrice.doubleValue() >= 0, "Last known price must be greater than or equal to 0.");
+        }
 
         this.record = record;
         this.created = created;
@@ -60,6 +64,7 @@ public final class BasicListItem implements ListItem {
         this.quantity = quantity;
         this.metadata = metadata;
         this.index = index;
+        this.lastKnownPrice = lastKnownPrice;
         this.compound = compound;
     }
 
@@ -68,6 +73,7 @@ public final class BasicListItem implements ListItem {
         return this.record;
     }
 
+    @Override
     public void setRecord(final Integer record) {
         this.record = record;
     }
@@ -164,7 +170,7 @@ public final class BasicListItem implements ListItem {
 
     @Override
     public BasicListItem copy() {
-        return new BasicListItem(this.record, this.created, this.seller, this.item, this.quantity, this.metadata, this.index,
+        return new BasicListItem(this.record, this.created, this.seller, this.item, this.quantity, this.metadata, this.index, this.lastKnownPrice,
           this.compound == null ? null : this.compound.copy());
     }
 
@@ -191,6 +197,7 @@ public final class BasicListItem implements ListItem {
             .add("quantity", this.quantity)
             .add("metadata", this.metadata)
             .add("index", this.index)
+            .add("lastKnownPrice", this.lastKnownPrice)
             .add("compound", this.compound)
             .toString();
     }

@@ -248,7 +248,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 if (listItems != null && !listItems.isEmpty()) {
                                     final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(p.getUniqueId()).orElse(null);
                                     if (forSaleItems != null && !forSaleItems.isEmpty()) {
-                                        this.network.sendTo(p, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                                        this.network.sendTo(p, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems, null));
                                     }
                                 }
 
@@ -265,7 +265,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             if (listItems != null && !listItems.isEmpty()) {
                 final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
                 if (forSaleItems != null && !forSaleItems.isEmpty()) {
-                    this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                    this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems, null));
                 }
             }
 
@@ -800,7 +800,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                             if (sellerPlayer != null) {
                                 this.network.sendTo(sellerPlayer, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
-                                this.network.sendTo(sellerPlayer, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                                this.network.sendTo(sellerPlayer, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems, null));
                             }
 
                             Sponge.getServer().getOnlinePlayers().forEach(p -> this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(
@@ -949,7 +949,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     + "server console for more details!"));
             this.logger.error("Player '{}' attempted to mark list item '{}' for sale for exchange '{}' but the "
               + "server already has a listing for that item. Syncing list items sale status...", player.getName(), listItemRecNo, id);
-            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, forSaleItems));
+            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, forSaleItems, null));
             return;
         }
 
@@ -992,7 +992,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                             forSaleItemsRef.add(basicForSaleItem);
 
-                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems, null));
 
                             this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
                         })
@@ -1048,7 +1048,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
               + "server console for more details!"));
             this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server doesn't have a listing for "
               + "that item. Syncing list items sale status...", player.getName(), listItemRecNo, id);
-            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, forSaleItems));
+            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, forSaleItems, null));
             return;
         }
 
@@ -1057,7 +1057,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
               + "server console for more details!"));
             this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no record of any listings for "
               + "that player. Syncing list items sale status...", player.getName(), listItemRecNo, id);
-            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, null));
+            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, null, null));
             return;
         }
 
@@ -1078,14 +1078,21 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         return;
                     }
 
+                    ExchangeQueries
+                      .createUpdateListItemLastKnownPrice(listItemRecNo, forSaleItem.getPrice())
+                      .build(context)
+                      .execute();
+
                     this.scheduler
                         .createTaskBuilder()
                         .execute(() -> {
+                            found.setLastKnownPrice(forSaleItem.getPrice());
+
                             forSaleItems.remove(forSaleItem);
 
                             found.setForSaleItem(null);
 
-                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems, Lists.newArrayList(found)));
 
                             this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
                         })
@@ -1144,7 +1151,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
               + "of it being for sale. Syncing list items...", player.getName(), listItemRecNo, id);
             this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
             this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(),
-              axs.getForSaleItemsFor(player.getUniqueId()).orElse(null)));
+              axs.getForSaleItemsFor(player.getUniqueId()).orElse(null), null));
             return;
         }
 
@@ -1164,13 +1171,20 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                         return;
                     }
 
+                    ExchangeQueries
+                      .createUpdateListItemLastKnownPrice(found.getRecord(), forSaleItem.getPrice())
+                      .build(context)
+                      .execute();
+
                     this.scheduler
                         .createTaskBuilder()
                         .execute(() -> {
+                            found.setLastKnownPrice(forSaleItem.getPrice());
+
                             ((BasicForSaleItem) forSaleItem).setPrice(price);
 
                             this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(),
-                                axs.getForSaleItemsFor(player.getUniqueId()).orElse(null)));
+                                axs.getForSaleItemsFor(player.getUniqueId()).orElse(null), Lists.newArrayList(found)));
                             this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
                         })
                         .submit(this.container);
@@ -1400,7 +1414,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             final Player sellerPlayer = Sponge.getServer().getPlayer(seller).orElse(null);
                             if (sellerPlayer != null) {
                                 this.network.sendTo(sellerPlayer, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
-                                this.network.sendTo(sellerPlayer, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                                this.network.sendTo(sellerPlayer, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems, null));
                             }
 
                             this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
@@ -1454,6 +1468,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             final Integer quantity = record.getValue(AxsListItem.AXS_LIST_ITEM.QUANTITY);
             final Integer metadata = record.getValue(AxsListItem.AXS_LIST_ITEM.METADATA);
             final Integer index = record.getValue(AxsListItem.AXS_LIST_ITEM.INDEX);
+            final BigDecimal lastKnownPrice = record.getValue(AxsListItem.AXS_LIST_ITEM.LAST_KNOWN_PRICE);
             final byte[] compoundData = record.getValue(AxsListItemData.AXS_LIST_ITEM_DATA.DATA);
 
             NBTTagCompound compound = null;
@@ -1466,7 +1481,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 }
             }
 
-            final BasicListItem basicListItem = new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, index, compound);
+            final BasicListItem basicListItem = new BasicListItem(recNo, created.toInstant(), seller, item, quantity, metadata, index,
+              lastKnownPrice, compound);
 
             basicListItem.syncSellerNameToUniqueId();
 

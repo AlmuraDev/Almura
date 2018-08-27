@@ -26,10 +26,6 @@ import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequest
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyForSaleItemListStatusRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundTransactionRequestPacket;
-import com.almuradev.almura.feature.notification.ClientNotificationManager;
-import com.almuradev.almura.feature.notification.type.WindowNotification;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
-import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.feature.store.StoreConstants;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
@@ -249,7 +245,7 @@ public final class ClientExchangeManager implements Witness {
         }
     }
 
-    public void handleListItemsSaleStatus(final String id, @Nullable final List<ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate>
+    public void handleListItemsSaleStatus(final String id, @Nullable final List<ClientboundListItemsSaleStatusPacket.ListedItemUpdate>
         itemCandidates) {
         checkNotNull(id);
 
@@ -267,7 +263,7 @@ public final class ClientExchangeManager implements Witness {
         listItems.forEach(item -> item.setForSaleItem(null));
 
         if (itemCandidates != null) {
-            for (final ClientboundListItemsSaleStatusPacket.ForSaleItemCandidate itemCandidate : itemCandidates) {
+            for (final ClientboundListItemsSaleStatusPacket.ListedItemUpdate itemCandidate : itemCandidates) {
                 listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
                     .ifPresent(listItem -> listItem.setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, itemCandidate.forSaleItemRecNo,
                             itemCandidate.created, itemCandidate.price)));

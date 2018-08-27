@@ -48,6 +48,11 @@ public interface ListItem extends VanillaStack {
     /**
      * INTERNAL USE ONLY
      */
+    void setRecord(final Integer record);
+
+    /**
+     * INTERNAL USE ONLY
+     */
     void setSellerName(@Nullable final String sellerName);
 
     /**

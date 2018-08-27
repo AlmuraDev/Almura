@@ -47,6 +47,8 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 public final class ExchangeQueries {
 
     private ExchangeQueries() {
@@ -190,6 +192,16 @@ public final class ExchangeQueries {
             return updateStep
                 .where(AXS_LIST_ITEM.REC_NO.eq(listItemRecNo));
         };
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<AxsListItemRecord>> createUpdateListItemLastKnownPrice(final int listItemRecNo,
+      final BigDecimal lastKnownPrice) {
+        checkState(listItemRecNo >= 0);
+        checkNotNull(lastKnownPrice);
+        checkState(lastKnownPrice.doubleValue() >= 0);
+
+        return context -> context.update(AXS_LIST_ITEM).set(AXS_LIST_ITEM.LAST_KNOWN_PRICE, lastKnownPrice).where(AXS_LIST_ITEM.REC_NO
+          .eq(listItemRecNo));
     }
 
     public static DatabaseQuery<DeleteConditionStep<AxsListItemRecord>> createDeleteListItem(final int listItemRecNo) {

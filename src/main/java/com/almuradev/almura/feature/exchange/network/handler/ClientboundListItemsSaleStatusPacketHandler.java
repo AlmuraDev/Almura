@@ -31,7 +31,7 @@ public final class ClientboundListItemsSaleStatusPacketHandler implements Messag
     @Override
     public void handleMessage(final ClientboundListItemsSaleStatusPacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-            this.exchangeManager.handleListItemsSaleStatus(message.id, message.fromServerItems);
+            this.exchangeManager.handleListItemsSaleStatus(message.id, message.serverListedItems);
         }
     }
 }

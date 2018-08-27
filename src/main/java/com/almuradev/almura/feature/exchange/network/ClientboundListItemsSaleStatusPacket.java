@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.exchange.network;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
+import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.util.ByteBufUtil;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import io.netty.buffer.ByteBuf;
@@ -27,26 +28,30 @@ import javax.annotation.Nullable;
 public final class ClientboundListItemsSaleStatusPacket implements Message {
 
     @Nullable public String id;
-    @Nullable public List<ForSaleItem> toClientItems;
-    @Nullable public List<ForSaleItemCandidate> fromServerItems;
+    @Nullable public List<ForSaleItem> listedItems;
+    @Nullable public List<ListItem> lastKnownPriceItems;
+    @Nullable public List<ListedItemUpdate> serverListedItems;
+    @Nullable public List<LastKnownPriceUpdate> serverLastKnownPriceItems;
 
     public ClientboundListItemsSaleStatusPacket() {
     }
 
-    public ClientboundListItemsSaleStatusPacket(final String id, @Nullable final List<ForSaleItem> toClientItems) {
+    public ClientboundListItemsSaleStatusPacket(final String id, @Nullable final List<ForSaleItem> listedItems, @Nullable final List<ListItem>
+      lastKnownPriceItems) {
         checkNotNull(id);
 
         this.id = id;
-        this.toClientItems = toClientItems;
+        this.listedItems = listedItems;
+        this.lastKnownPriceItems = lastKnownPriceItems;
     }
 
     @Override
     public void readFrom(final ChannelBuf buf) {
         this.id = buf.readString();
-        final int count = buf.readInteger();
+        int count = buf.readInteger();
 
         if (count > 0) {
-            this.fromServerItems = new ArrayList<>();
+            this.serverListedItems = new ArrayList<>();
 
             for (int i = 0; i < count; i++) {
                 final int listItemRecNo = buf.readInteger();
@@ -60,7 +65,19 @@ public final class ClientboundListItemsSaleStatusPacket implements Message {
                 }
                 final BigDecimal price = ByteBufUtil.readBigDecimal((ByteBuf) buf);
 
-                this.fromServerItems.add(new ForSaleItemCandidate(listItemRecNo, forSaleItemRecNo, created, price));
+                this.serverListedItems.add(new ListedItemUpdate(listItemRecNo, forSaleItemRecNo, created, price));
+            }
+        }
+
+        count = buf.readInteger();
+        if (count > 0) {
+            this.serverLastKnownPriceItems = new ArrayList<>();
+
+            for (int i = 0; i < count; i++) {
+                final int listItemRecNo = buf.readInteger();
+                final BigDecimal lastKnownPrice = ByteBufUtil.readBigDecimal((ByteBuf) buf);
+
+                this.serverLastKnownPriceItems.add(new LastKnownPriceUpdate(listItemRecNo, lastKnownPrice));
             }
         }
     }
@@ -70,36 +87,56 @@ public final class ClientboundListItemsSaleStatusPacket implements Message {
         checkNotNull(this.id);
 
         buf.writeString(this.id);
-        buf.writeInteger(this.toClientItems == null ? 0 : this.toClientItems.size());
+        buf.writeInteger(this.listedItems == null ? 0 : this.listedItems.size());
 
-        if (this.toClientItems != null) {
-            for (final ForSaleItem item : this.toClientItems) {
-                buf.writeInteger(item.getListItem().getRecord());
-                buf.writeInteger(item.getRecord());
+        if (this.listedItems != null) {
+            for (final ForSaleItem listedItem : this.listedItems) {
+                buf.writeInteger(listedItem.getListItem().getRecord());
+                buf.writeInteger(listedItem.getRecord());
                 try {
-                    final byte[] createdData = SerializationUtil.objectToBytes(item.getCreated());
+                    final byte[] createdData = SerializationUtil.objectToBytes(listedItem.getCreated());
                     buf.writeInteger(createdData.length);
                     buf.writeBytes(createdData);
                 } catch (IOException e) {
                     e.printStackTrace();
                     continue;
                 }
-                ByteBufUtil.writeBigDecimal((ByteBuf) buf, item.getPrice());
+                ByteBufUtil.writeBigDecimal((ByteBuf) buf, listedItem.getPrice());
+            }
+        }
+
+        buf.writeInteger(this.lastKnownPriceItems == null ? 0 : this.lastKnownPriceItems.size());
+        if (this.lastKnownPriceItems != null) {
+            for (final ListItem delistedItem : this.lastKnownPriceItems) {
+                delistedItem.getLastKnownPrice().ifPresent(lastKnownPrice -> {
+                    buf.writeInteger(delistedItem.getRecord());
+                    ByteBufUtil.writeBigDecimal((ByteBuf) buf, lastKnownPrice);
+                });
             }
         }
     }
 
-    public static class ForSaleItemCandidate {
+    public static class ListedItemUpdate {
         public final int listItemRecNo;
         public final int forSaleItemRecNo;
         public final Instant created;
         public final BigDecimal price;
 
-        ForSaleItemCandidate(final int listItemRecNo, final int forSaleItemRecNo, final Instant created, final BigDecimal price) {
+        ListedItemUpdate(final int listItemRecNo, final int forSaleItemRecNo, final Instant created, final BigDecimal price) {
             this.listItemRecNo = listItemRecNo;
             this.forSaleItemRecNo = forSaleItemRecNo;
             this.created = created;
             this.price = price;
+        }
+    }
+
+    public static class LastKnownPriceUpdate {
+        public final int listItemRecNo;
+        public final BigDecimal lastKnownPrice;
+
+        public LastKnownPriceUpdate(final int listItemRecNo, final BigDecimal lastKnownPrice) {
+            this.listItemRecNo = listItemRecNo;
+            this.lastKnownPrice = lastKnownPrice;
         }
     }
 }
