@@ -378,16 +378,12 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.claimTaxField.setText("$ " + TextFormatting.YELLOW + dFormat.format(this.clientClaimManager.claimTaxes));
         this.econArea.setVisible(!this.clientClaimManager.isWilderness);
         this.functionsArea.setVisible(!this.clientClaimManager.isWilderness);
-        if (this.clientClaimManager.hasWECUI) {
-            if (this.functionsArea.isVisible()) {
-                this.buttonHideVisuals.setVisible(false);
-                this.buttonVisuals.setEnabled(true);
-            } else {
-                this.buttonHideVisuals.setVisible(true);
-            }
-        } else {
+
+        if (this.functionsArea.isVisible()) {
             this.buttonHideVisuals.setVisible(false);
-            this.buttonVisuals.setEnabled(false);
+            this.buttonVisuals.setEnabled(true);
+        } else {
+            this.buttonHideVisuals.setVisible(true);
         }
 
         if (this.clientClaimManager.isWilderness) {
