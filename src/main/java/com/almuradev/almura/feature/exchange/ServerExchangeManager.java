@@ -186,7 +186,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 this.exchanges.putAll(exchanges);
 
                 if (this.exchanges.isEmpty()) {
-                    // TODO I might automatically create the Global Exchange (almura.exchange.global) by default (if no others are found when loading from db).
                     final BasicExchange exchange = new BasicExchange("almura.exchange.global", Instant.now(), Store.UNKNOWN_OWNER, "Global "
                         + "Exchange", "almura.exchange.global", false);
                     this.exchanges.put("almura.exchange.global", exchange);
@@ -217,7 +216,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
     private final List<UUID> playerSpecificInitiatorIds = new ArrayList<>();
 
-    public void openExchangeSpecific(final Player player, final Exchange axs) {
+    void openExchangeSpecific(final Player player, final Exchange axs) {
         checkNotNull(player);
         checkNotNull(axs);
 
@@ -274,7 +273,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         }
     }
 
-    public void openExchangeManage(final Player player) {
+    void openExchangeManage(final Player player) {
         checkNotNull(player);
 
         this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.MANAGE));
@@ -565,8 +564,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             if (currentListItems == null || currentListItems.isEmpty()) {
                 this.logger.error("Player '{}' attempted to move listings back to the inventory for exchange '{}' but the server knows of no "
                     + "listings for them. This could be a de-sync or an exploit. Printing stacks...", player.getName(), axs.getId());
-                this.printStacksToConsole(toInventoryActions.stream().map(InventoryAction::getStack).collect(Collectors.toList()));
                 this.network.sendTo(player, new ClientboundListItemsResponsePacket(axs.getId(), null));
+                this.printStacksToConsole(toInventoryActions.stream().map(InventoryAction::getStack).collect(Collectors.toList()));
             } else {
                 for (final InventoryAction action : toInventoryActions) {
                     final VanillaStack stack = action.getStack();
@@ -764,28 +763,32 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     this.scheduler
                         .createTaskBuilder()
                         .execute(() -> {
+
                             final Player sellerPlayer = Sponge.getServer().getPlayer(seller).orElse(null);
-                            if (sellerPlayer == null) {
-                                // TODO They went offline on us, handle this
-                                return;
+                            if (sellerPlayer != null) {
+
+                                final IItemHandler inventory =
+                                  ((EntityPlayerMP) sellerPlayer).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
+                                    , EnumFacing.UP);
+
+                                // Add stacks from listings
+                                for (final ListItem stack : toInventoryStacks) {
+                                    final ItemStack resultStack = ItemHandlerHelper.insertItemStacked(inventory, stack.asRealStack(), false);
+
+                                    if (!resultStack.isEmpty()) {
+                                        // TODO Their inventory changed since simulation. Best case scenario we toss it on the ground
+                                    }
+                                }
+                            } else {
+                                // TODO They went offline on us. It is a very rare off-case. Half tempted to print what they should have got and let
+                                // TODO an admin deal with it
                             }
-                            final IItemHandler inventory = ((EntityPlayerMP) sellerPlayer).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
-                                , EnumFacing.UP);
 
                             final List<ListItem> listItems = new ArrayList<>();
                             listItemResults.forEach(result -> listItems.addAll(this.parseListItemsFrom(result)));
 
                             final List<ForSaleItem> forSaleItems = new ArrayList<>();
                             forSaleItemResults.forEach(result -> forSaleItems.addAll(this.parseForSaleItemsFrom(listItems, result)));
-
-                            // Add stacks from listings
-                            for (final ListItem stack : toInventoryStacks) {
-                                final ItemStack resultStack = ItemHandlerHelper.insertItemStacked(inventory, stack.asRealStack(), false);
-
-                                if (!resultStack.isEmpty()) {
-                                    // TODO Their inventory changed since simulation. Best case scenario we toss it on the ground
-                                }
-                            }
 
                             // TODO Build a notification that says...
                             // TODO  - Stacks requested to go to a listing but inventory can't fulfill it
@@ -795,9 +798,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             axs.putListItemsFor(seller, listItems);
                             axs.putForSaleItemsFor(seller, forSaleItems);
 
-                            this.network.sendTo(sellerPlayer, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
-
-                            this.network.sendTo(sellerPlayer, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                            if (sellerPlayer != null) {
+                                this.network.sendTo(sellerPlayer, new ClientboundListItemsResponsePacket(axs.getId(), listItems));
+                                this.network.sendTo(sellerPlayer, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems));
+                            }
 
                             Sponge.getServer().getOnlinePlayers().forEach(p -> this.network.sendTo(p, new ClientboundForSaleFilterRequestPacket(
                                 axs.getId())));
@@ -1297,6 +1301,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final int quantityRemaining = originalQuantity - (quantity - simulatedResultStack.getCount());
         final int forSaleItemRecord = forSaleItem.getRecord();
 
+        // Charge the buyer
+        try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
+            frame.pushCause(axs);
+
+            buyerAccount.transfer(sellerAccount, economyService.getDefaultCurrency(), price, frame.getCurrentCause());
+        }
+
         this.scheduler
             .createTaskBuilder()
             .async()
@@ -1379,13 +1390,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                             axs.putListItemsFor(seller, listItems);
                             axs.putForSaleItemsFor(seller, forSaleItems);
-
-                            // Charge the buyer
-                            try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
-                                frame.pushCause(axs);
-
-                                buyerAccount.transfer(sellerAccount, economyService.getDefaultCurrency(), price, frame.getCurrentCause());
-                            }
 
                             final ItemStack resultStack = ItemHandlerHelper.insertItemStacked(inventory, copyStack.asRealStack(), false);
                             if (resultStack.isEmpty()) {
