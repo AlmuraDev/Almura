@@ -88,7 +88,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
     public void construct() {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
-        
+
         this.form = new UIForm(this, 50, 200, "You have died.");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(false);

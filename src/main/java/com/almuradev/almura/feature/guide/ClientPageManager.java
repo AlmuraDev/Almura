@@ -21,7 +21,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
-import org.spongepowered.api.text.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -106,7 +105,7 @@ public final class ClientPageManager implements Witness {
 
     public void requestSavePage() {
         if (this.page.getContent().length() > 8190) {
-            this.clientNotificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Guide too long to save!"),5));
+            this.clientNotificationManager.handlePopup(new PopupNotification("Error", "Guide too long to save!",5));
         } else {
             this.network.sendToServer(new ServerboundPageChangeRequestPacket(this.page));
         }
