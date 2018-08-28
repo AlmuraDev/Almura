@@ -246,7 +246,7 @@ public final class ClientExchangeManager implements Witness {
     }
 
     public void handleListItemsSaleStatus(final String id, @Nullable final List<ClientboundListItemsSaleStatusPacket.ListedItemUpdate>
-        itemCandidates) {
+        itemCandidates, @Nullable final List<ClientboundListItemsSaleStatusPacket.LastKnownPriceUpdate> lastKnowPriceItemCandidates) {
         checkNotNull(id);
 
         final Exchange axs = this.getExchange(id);
@@ -264,9 +264,22 @@ public final class ClientExchangeManager implements Witness {
 
         if (itemCandidates != null) {
             for (final ClientboundListItemsSaleStatusPacket.ListedItemUpdate itemCandidate : itemCandidates) {
-                listItems.stream().filter(item -> item.getRecord() == itemCandidate.listItemRecNo).findAny()
-                    .ifPresent(listItem -> listItem.setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, itemCandidate.forSaleItemRecNo,
+                listItems
+                        .stream()
+                        .filter(item -> item.getRecord() == itemCandidate.listItemRecNo)
+                        .findAny()
+                        .ifPresent(listItem -> listItem.setForSaleItem(new BasicForSaleItem((BasicListItem) listItem, itemCandidate.forSaleItemRecNo,
                             itemCandidate.created, itemCandidate.price)));
+            }
+        }
+
+        if (lastKnowPriceItemCandidates != null) {
+            for (final ClientboundListItemsSaleStatusPacket.LastKnownPriceUpdate lastKnownPriceItemCandidate : lastKnowPriceItemCandidates) {
+                listItems
+                        .stream()
+                        .filter(item -> item.getRecord() == lastKnownPriceItemCandidate.listItemRecNo)
+                        .findAny()
+                        .ifPresent(listItem -> listItem.setLastKnownPrice(lastKnownPriceItemCandidate.lastKnownPrice));
             }
         }
     }

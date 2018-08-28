@@ -140,7 +140,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.sellerSearchTextBox.setAcceptsReturn(false);
         this.sellerSearchTextBox.setAcceptsTab(false);
         this.sellerSearchTextBox.setTabIndex(1);
-        this.sellerSearchTextBox.setOnEnter((tb) -> this.search());
+        this.sellerSearchTextBox.setOnEnter(tb -> this.search());
         this.sellerSearchTextBox.setSize(145, 0);
         this.sellerSearchTextBox.setPosition(this.displayNameSearchTextBox.getX(), getPaddedY(this.displayNameSearchTextBox, 4), Anchor.LEFT | Anchor.TOP);
         this.sellerSearchTextBox.setEditable(true);

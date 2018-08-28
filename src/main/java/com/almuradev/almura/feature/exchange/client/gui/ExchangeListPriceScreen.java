@@ -60,7 +60,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
-        this.pricePerTextBox = new UITextBox(this, "0.00");
+        this.pricePerTextBox = new UITextBox(this, this.toList.getLastKnownPrice().orElse(BigDecimal.ZERO).toString());
         this.pricePerTextBox.setSize(65, 0);
         this.pricePerTextBox.setFilter(s -> {
             // TODO: Maybe make a fancy regex for some of this
@@ -106,7 +106,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
                 .width(40)
                 .position(-2, -2)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .enabled(false)
+                .enabled(this.toList.getLastKnownPrice().isPresent())
                 .onClick(this::list)
                 .build("button.list");
 
