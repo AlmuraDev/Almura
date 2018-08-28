@@ -18,10 +18,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.input.Keyboard;
 
-import java.awt.AWTException;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import javax.annotation.Nullable;
 
 public class SimpleConfirmRemove extends SimpleScreen {

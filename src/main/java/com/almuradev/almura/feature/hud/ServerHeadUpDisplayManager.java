@@ -161,7 +161,7 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
             .delayTicks(20)
             .execute(t -> {
                 final String displayName = serverNickManager.getNickname(player);
-                final String playerTitle = serverTitleManager.getSelectedTitleForFormatted(player);
+                final String playerTitle = serverTitleManager.getSelectedTitleFormattedFor(player);
 
                 for (final Player players : Sponge.getServer().getOnlinePlayers()) {
                     if (players.equals(player)) {
@@ -183,7 +183,7 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
         checkNotNull(player);
 
         final String displayName = serverNickManager.getNickname(player);
-        final String playerTitle = serverTitleManager.getSelectedTitleForFormatted(player);
+        final String playerTitle = serverTitleManager.getSelectedTitleFormattedFor(player);
 
         for (final Player players : Sponge.getServer().getOnlinePlayers()) {
             if (players.equals(player)) {

@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.title.network;
 
 import com.almuradev.almura.feature.title.Title;
 import com.almuradev.almura.shared.util.PacketUtil;
+import com.almuradev.almura.shared.util.SerializationUtil;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
@@ -39,7 +40,7 @@ public final class ClientboundAvailableTitlesResponsePacket implements Message {
             for (int i = 0; i < count; i++) {
                 final int length = buf.readVarInt();
                 try {
-                    this.titles.add(PacketUtil.fromBytes(buf.readBytes(length)));
+                    this.titles.add(SerializationUtil.bytesToObject(buf.readBytes(length)));
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -54,7 +55,7 @@ public final class ClientboundAvailableTitlesResponsePacket implements Message {
         if (this.titles != null) {
             for (Title title : this.titles) {
                 try {
-                    final byte[] data = PacketUtil.asBytes(title);
+                    final byte[] data = SerializationUtil.objectToBytes(title);
                     buf.writeVarInt(data.length);
                     buf.writeBytes(data);
                 } catch (IOException e) {

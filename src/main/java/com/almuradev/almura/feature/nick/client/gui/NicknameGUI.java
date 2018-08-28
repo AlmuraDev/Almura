@@ -18,11 +18,10 @@ package com.almuradev.almura.feature.nick.client.gui;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.nick.NickUtil;
 import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
-import com.almuradev.almura.feature.nick.network.ServerboundNucleusNameChangePacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -33,7 +32,13 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.renderer.font.FontOptions;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -44,7 +49,6 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
 
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -55,7 +59,7 @@ public final class NicknameGUI extends SimpleScreen {
     private boolean unlockMouse = true;
     private boolean update = true;
     private String originalNickname;
-    private UIFormContainer form;
+    private UIForm form;
     private UITextField nicknameTextbox;
     private UISelect colorSelector;
 
@@ -90,7 +94,7 @@ public final class NicknameGUI extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Master Panel
-        this.form = new UIFormContainer(this, 300, 125, "");
+        this.form = new UIForm(this, 400, 225, "");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -106,7 +110,7 @@ public final class NicknameGUI extends SimpleScreen {
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Player Render Area
-        final UIFormContainer playerArea = new UIFormContainer(this, 75, 85, "");
+        final UIForm playerArea = new UIForm(this, 175, 185, "");
         playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.MIDDLE);
         playerArea.setMovable(false);
         playerArea.setClosable(false);
@@ -118,7 +122,7 @@ public final class NicknameGUI extends SimpleScreen {
         playerArea.setLeftPadding(3);
 
         // Nickname List Area
-        final UIFormContainer listArea = new UIFormContainer(this, 217, 85, "");
+        final UIForm listArea = new UIForm(this, 217, 85, "");
         listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         listArea.setMovable(false);
         listArea.setClosable(false);
@@ -168,6 +172,10 @@ public final class NicknameGUI extends SimpleScreen {
        );
         this.colorSelector.setPosition(7, 50, Anchor.LEFT | Anchor.TOP);
         this.colorSelector.setOptionsWidth(UISelect.SELECT_WIDTH);
+        this.colorSelector.setFontOptions(FontOptions.builder()
+            .shadow(false)
+            .build()
+        );
         this.colorSelector.select("§1Dark Blue");
 
         // Add Color character button
@@ -236,7 +244,7 @@ public final class NicknameGUI extends SimpleScreen {
 
             case "button.remove":
                 this.update = false; // Stop automatic update of name based on textbox
-                notificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Removing Nickname from server...."),2));
+                notificationManager.handlePopup(new PopupNotification("Nickname", "Removing Nickname from server....", 2));
                 nickManager.requestNicknameChange(null);
 
                 this.close();
@@ -246,27 +254,27 @@ public final class NicknameGUI extends SimpleScreen {
                 final Text validateText = Text.of(this.nicknameTextbox.getText());
 
                 if (this.nicknameTextbox.getText().isEmpty()) {
-                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have blank title!"),5));
+                    notificationManager.handlePopup(new PopupNotification("Error", "Cannot have blank title!",5));
                     break;
                 }
 
                 if (validateText.toPlain().length() <= 1) {
-                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname < 3 characters!"),5));
+                    notificationManager.handlePopup(new PopupNotification("Error", "Cannot have nickname < 3 characters!", 5));
                     break;
                 }
 
                 if (validateText.toPlain().length() > 20) {
-                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Cannot have nickname > 20 characters!"),5));
+                    notificationManager.handlePopup(new PopupNotification("Error", "Cannot have nickname > 20 characters!",5));
                     break;
                 }
 
                 if (!NickUtil.nickNameRegex.matcher(validateText.toPlain()).matches()) {
-                    notificationManager.queuePopup(new PopupNotification(Text.of("Error"), Text.of("Invalid Character in Nickname!"), 5));
+                    notificationManager.handlePopup(new PopupNotification("Error", "Invalid Character in Nickname!", 5));
                     break;
                 }
                 this.update = false; // Stop automatic update of name based on textbox
 
-                notificationManager.queuePopup(new PopupNotification(Text.of("Nickname"), Text.of("Updating Nickname on server...."),2));
+                notificationManager.handlePopup(new PopupNotification("Nickname", "Updating Nickname on server....",2));
                 nickManager.requestNicknameChange(this.nicknameTextbox.getText().trim());
 
                 this.close();
@@ -294,7 +302,7 @@ public final class NicknameGUI extends SimpleScreen {
         int j = this.form.screenY()+25;
 
         // Draw Player
-        GuiInventory.drawEntityOnScreen(i + 51, j + 75, 30, (float)(i + 51) - mouseX, (float)(j + 75 - 50) - mouseY, this.entityPlayer);
+        this.drawEntityOnScreen(i + 100, j + 150, 60, (float)(i + 51) - mouseX, (float) (j + 75 - 50) - j - 25, this.entityPlayer);
 
         if (this.unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
@@ -323,5 +331,46 @@ public final class NicknameGUI extends SimpleScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
+    }
+
+    private static void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase ent) {
+        GlStateManager.enableColorMaterial();
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float)posX, (float)posY, 50.0F);
+        GlStateManager.scale((float)(-scale), (float)scale, (float)scale);
+        GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+        float f = ent.renderYawOffset;
+        float f1 = ent.rotationYaw;
+        float f2 = ent.rotationPitch;
+        float f3 = ent.prevRotationYawHead;
+        float f4 = ent.rotationYawHead;
+        GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
+        ent.renderYawOffset = (float)Math.atan((double)(mouseX / 40.0F)) * 20.0F;
+        ent.rotationYaw = (float)Math.atan((double)(mouseX / 40.0F)) * 40.0F;
+        ent.rotationPitch = -((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F;
+        ent.rotationYawHead = ent.rotationYaw;
+        ent.prevRotationYawHead = ent.rotationYaw;
+        GlStateManager.translate(0.0F, 0.0F, 0.0F);
+        RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
+        rendermanager.setPlayerViewY(180.0F);
+        // Fix player model being dependent on environmental lighting.
+        GlStateManager.disableLighting();
+        rendermanager.setRenderShadow(false);
+        rendermanager.renderEntity(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+        rendermanager.setRenderShadow(true);
+        ent.renderYawOffset = f;
+        ent.rotationYaw = f1;
+        ent.rotationPitch = f2;
+        ent.prevRotationYawHead = f3;
+        ent.rotationYawHead = f4;
+        GlStateManager.popMatrix();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GlStateManager.disableTexture2D();
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 }

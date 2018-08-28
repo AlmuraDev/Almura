@@ -15,7 +15,7 @@ import com.almuradev.almura.feature.title.TitleModifyType;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
@@ -23,7 +23,6 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.TextUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -65,7 +64,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
     private UIDynamicList<Title> titleList;
     private UICheckBox hiddenCheckbox, formattedCheckbox, editModeCheckbox;
     private UISelect<String> colorSelector;
-    private UIFormContainer form, listArea, editArea, playerArea;
+    private UIForm form, listArea, editArea, playerArea;
 
     private int screenWidth = 450;
     private int screenHeight = 300;
@@ -87,7 +86,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
 
         // Master Pane
-        this.form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
+        this.form = new UIForm(this, this.screenWidth, this.screenHeight, "Title Manager");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -98,17 +97,8 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.form.setTopPadding(20);
         this.form.setLeftPadding(3);
 
-        final UILabel titleLabel = new UILabel(this, "Title Manager")
-            .setFontOptions(FontOptions.builder()
-                .from(FontColors.WHITE_FO)
-                .shadow(true)
-                .scale(1.1F)
-                .build()
-            )
-            .setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
-
         // Title List Area
-        this.listArea = new UIFormContainer(this, 220, 260, "");
+        this.listArea = new UIForm(this, 220, 260, "");
         this.listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         this.listArea.setMovable(false);
         this.listArea.setClosable(false);
@@ -147,7 +137,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.listArea.add(titleContainer);
 
         // Edit Container
-        this.editArea = new UIFormContainer(this, 220, 260, "");
+        this.editArea = new UIForm(this, 220, 260, "");
         this.editArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         this.editArea.setMovable(false);
         this.editArea.setClosable(false);
@@ -302,7 +292,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
             this.colorSelector, this.buttonColor, this.formattedCheckbox, this.hiddenCheckbox, saveChangesButton);
 
         // Edit Container
-        this.playerArea = new UIFormContainer(this, 220, 260, "");
+        this.playerArea = new UIForm(this, 220, 260, "");
         this.playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         this.playerArea.setMovable(false);
         this.playerArea.setClosable(false);
@@ -392,7 +382,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
             .listener(this)
             .build("button.close");
 
-        this.form.add(titleLabel, this.listArea, this.editArea, this.playerArea, this.titleSelectionLabel, this.buttonAdd, this.buttonDelete, this
+        this.form.add(this.listArea, this.editArea, this.playerArea, this.titleSelectionLabel, this.buttonAdd, this.buttonDelete, this
             .editModeCheckbox, buttonClose);
 
         this.addToScreen(this.form);
@@ -482,14 +472,14 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 break;
 
             case "button.apply":
-                notificationManager.queuePopup(new PopupNotification(Text.of("Title"), Text.of("Setting Title on server..."), 2));
+                notificationManager.handlePopup(new PopupNotification("Title", "Setting Title on server...", 2));
                 titleManager.setTitleContentForDisplay(null);
                 titleManager.requestSelectedTitle(this.titleList.getSelectedItem());
                 this.close();
                 break;
 
             case "button.remove":
-                notificationManager.queuePopup(new PopupNotification(Text.of("Title"), Text.of("Removing Title on server..."), 2));
+                notificationManager.handlePopup(new PopupNotification("Title", "Removing Title on server...", 2));
                 titleManager.setTitleContentForDisplay(null);
                 titleManager.requestSelectedTitle(null);
                 this.close();
@@ -520,7 +510,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
             case "button.delete":
                 this.mode = TitleModifyType.DELETE;
-                notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Removing selected title"), 2));
+                notificationManager.handlePopup(new PopupNotification("Title Manager", "Removing selected title", 2));
                 if (this.idField.getText().toLowerCase().trim().equalsIgnoreCase(titleManager.getSelectedTitleFor(this.mc.player.getUniqueID()).getId())) {
                     titleManager.requestSelectedTitle(null); // remove the title as the selected title from the user if its the one begin deleted.
                 }
@@ -533,11 +523,11 @@ public final class ManageTitlesGUI extends SimpleScreen {
             case "button.save":
                 switch (this.mode) {
                     case ADD:
-                        notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Adding new Title"), 2));
+                        notificationManager.handlePopup(new PopupNotification("Title Manager", "Adding new Title", 2));
                         titleManager.addTitle(this.idField.getText().toLowerCase().trim(), this.permissionField.getText().toLowerCase().trim(), this.contentField.getText().trim(), this.hiddenCheckbox.isChecked());
                         break;
                     case MODIFY:
-                        notificationManager.queuePopup(new PopupNotification(Text.of("Title Manager"), Text.of("Saving Title Changes"), 2));
+                        notificationManager.handlePopup(new PopupNotification("Title Manager", "Saving Title Changes", 2));
                         titleManager.modifyTitle(this.idField.getText().toLowerCase().trim(), this.permissionField.getText().toLowerCase().trim(), this.contentField.getText().trim(), this.hiddenCheckbox.isChecked());
                         break;
                 }
@@ -671,16 +661,15 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
         private UIExpandingLabel titleLabel;
 
-        TitleItemComponent(final MalisisGui gui, final Title title) {
-            super(gui, title);
-
-            // Set size
-            this.setSize(UIComponent.INHERITED, 20);
+        public TitleItemComponent(MalisisGui gui, UIDynamicList<Title> parent, Title item) {
+            super(gui, parent, item);
         }
 
         @SuppressWarnings("deprecation")
         @Override
         protected void construct(final MalisisGui gui) {
+            this.setSize(UIComponent.INHERITED, 20);
+
             this.titleLabel = new UIExpandingLabel(gui, Text.of(TextColors.WHITE, item.getContent()));
             if (item.isHidden()) {
                 this.titleLabel.setText(this.titleLabel.getText() + TextFormatting.WHITE + " [HIDDEN]");

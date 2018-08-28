@@ -15,7 +15,7 @@ import org.spongepowered.api.text.Text;
 @SideOnly(Side.CLIENT)
 public final class WindowNotification extends Notification {
 
-    public WindowNotification(Text title, Text message) {
+    public WindowNotification(final String title, final String message) {
         super(title, message);
     }
 

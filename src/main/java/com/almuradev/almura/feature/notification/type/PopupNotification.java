@@ -7,18 +7,21 @@
  */
 package com.almuradev.almura.feature.notification.type;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import com.google.common.base.MoreObjects;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.text.Text;
 
 @SideOnly(Side.CLIENT)
 public final class PopupNotification extends Notification {
 
     private final int secondsToLive;
 
-    public PopupNotification(Text title, Text message, int secondsToLive) {
+    public PopupNotification(final String title, final String message, final int secondsToLive) {
         super(title, message);
+
+        checkState(secondsToLive >= 0);
 
         this.secondsToLive = secondsToLive;
     }

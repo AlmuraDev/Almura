@@ -19,7 +19,7 @@ import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -46,12 +46,10 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import javax.inject.Inject;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -63,7 +61,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
     private boolean unlockMouse = true;
     private boolean update = true;
     private UILabel messageLabel, droppedLabel, deathTaxLabel;
-    private UIFormContainer form;
+    private UIForm form;
     private UIButton buttonRespawn, buttonRevive, buttonRagequit;
 
     private EntityPlayer player;
@@ -91,7 +89,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        this.form = new UIFormContainer(this, 50, 200, "You have died.");
+        this.form = new UIForm(this, 50, 200, "You have died.");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(false);
         this.form.setClosable(false);

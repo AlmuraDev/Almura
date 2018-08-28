@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.store.client.gui;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -45,7 +45,7 @@ public class StoreScreen extends SimpleScreen {
     private boolean update = true;
     private UILabel titleLabel, storeFunctionTitle;
     private UIButton buttonAdd, buttonRemove, buttonDetails;
-    private UIFormContainer form;
+    private UIForm form;
     private UIPanel panel;
 
     private EntityPlayer player;
@@ -68,12 +68,12 @@ public class StoreScreen extends SimpleScreen {
 
         // Detect if screen area is large enough to display.
         if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
-            clientNotificationManager.queuePopup(new PopupNotification(Text.of("NPC Store Error"),
-                    Text.of("Screen area of: " + screenHeight + " x " + screenWidth + " required."), 5));
+            clientNotificationManager.handlePopup(new PopupNotification("NPC Store Error",
+                "Screen area of: " + screenHeight + " x " + screenWidth + " required.", 5));
             this.close();
         }
 
-        form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
+        form = new UIForm(this, this.screenWidth, this.screenHeight, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -88,7 +88,7 @@ public class StoreScreen extends SimpleScreen {
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Tab Area
-        final UIFormContainer tabArea = new UIFormContainer(this, 285, 260, "");
+        final UIForm tabArea = new UIForm(this, 285, 260, "");
         tabArea.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
         tabArea.setMovable(false);
         tabArea.setClosable(false);
@@ -159,7 +159,7 @@ public class StoreScreen extends SimpleScreen {
 
     private UIContainer buyTab() {
         UIContainer buyTab = new UIContainer<>(this);
-        final UIFormContainer buyItemArea = new UIFormContainer(this, 215, 200, "");
+        final UIForm buyItemArea = new UIForm(this, 215, 200, "");
         buyItemArea.setPosition(0, -3, Anchor.CENTER | Anchor.TOP);
         buyItemArea.setMovable(false);
         buyItemArea.setClosable(false);
@@ -174,7 +174,7 @@ public class StoreScreen extends SimpleScreen {
     private UIContainer sellTab() {
         UIContainer sellTab = new UIContainer<>(this);
 
-        final UIFormContainer sellItemArea = new UIFormContainer(this, 215, 200, "");
+        final UIForm sellItemArea = new UIForm(this, 215, 200, "");
         sellItemArea.setPosition(0, -3, Anchor.CENTER | Anchor.TOP);
         sellItemArea.setMovable(false);
         sellItemArea.setClosable(false);

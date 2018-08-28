@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.complex.item.almanac.gui;
 import com.almuradev.almura.feature.complex.item.almanac.asm.interfaces.IMixinBlockCrops;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
@@ -41,7 +41,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import org.lwjgl.input.Mouse;
@@ -88,7 +87,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     public void construct() {
         guiscreenBackground = false;
 
-        final UIFormContainer form = new UIFormContainer(this, formWidth, formHeight, formTitle);
+        final UIForm form = new UIForm(this, formWidth, formHeight, formTitle);
 
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);

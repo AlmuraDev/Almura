@@ -8,6 +8,7 @@
 package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
+import com.almuradev.almura.shared.util.TriFunction;
 import net.malisis.core.client.gui.ClipArea;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
@@ -15,13 +16,14 @@ import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -33,7 +35,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     private List<T> items = new ArrayList<>();
     private boolean canDeselect, canInternalClick, isDirty, readOnly;
     private int itemSpacing = 0;
-    private BiFunction<MalisisGui, T, ? extends ItemComponent<?>> itemComponentFactory = DefaultItemComponent::new;
+    private TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends ItemComponent<?>> itemComponentFactory = DefaultItemComponent::new;
     @Nullable private T selectedItem;
     @Nullable private Consumer<T> onSelectConsumer;
 
@@ -44,6 +46,10 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         this.scrollbar.setAutoHide(true);
 
         this.setBackgroundAlpha(0);
+    }
+
+    public int getSize() {
+        return this.getItems().size();
     }
 
     /**
@@ -59,6 +65,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param index The index
      * @return The item located at the specified index
      */
+    @Nullable
     public T getItem(int index) {
         return this.items.get(index);
     }
@@ -93,6 +100,13 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         }
 
         return result;
+    }
+
+    public void addItem(final int index, T item) {
+        this.items.add(index, item);
+
+        this.isDirty = true;
+        this.fireEvent(new ItemsChangedEvent<>(this));
     }
 
     /**
@@ -153,6 +167,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      */
     public UIDynamicList<T> clearItems() {
         this.items.clear();
+        this.setSelectedItem(null);
         this.isDirty = true;
         this.fireEvent(new ItemsChangedEvent<>(this));
 
@@ -171,13 +186,14 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     /**
      * Sets the selected item (if list is not read-only)
      * @param item The item to select
+     * @param markDirty Mark the list as dirty
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setSelectedItem(@Nullable T item) {
+    public UIDynamicList<T> setSelectedItem(@Nullable T item, boolean markDirty) {
         if (!this.readOnly) {
             if (this.fireEvent(new SelectEvent<>(this, this.selectedItem, item))) {
                 this.selectedItem = item;
-                this.isDirty = true;
+                this.isDirty = markDirty;
                 if (this.onSelectConsumer != null) {
                     this.onSelectConsumer.accept(item);
                 }
@@ -185,6 +201,15 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         }
 
         return this;
+    }
+
+    /**
+     * Sets the selected item (if list is not read-only)
+     * @param item The item to select
+     * @return The {@link UIDynamicList<T>}
+     */
+    public UIDynamicList<T> setSelectedItem(@Nullable T item) {
+        return this.setSelectedItem(item, true);
     }
 
     /**
@@ -264,7 +289,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * Gets the item component factory
      * @return The item component factory
      */
-    public BiFunction<MalisisGui, T, ? extends ItemComponent<?>> getItemComponentFactory() {
+    public TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends ItemComponent<?>> getItemComponentFactory() {
         return this.itemComponentFactory;
     }
 
@@ -273,7 +298,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param factory The component factory
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setItemComponentFactory(BiFunction<MalisisGui, T, ? extends ItemComponent<?>> factory) {
+    public UIDynamicList<T> setItemComponentFactory(TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends ItemComponent<?>> factory) {
         this.itemComponentFactory = factory;
         return this;
     }
@@ -292,22 +317,39 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         return this.scrollbar;
     }
 
-    private void createItemComponents()
-    {
+    public Set<UIComponent<?>> getComponents() {
+        return Collections.unmodifiableSet(this.components);
+    }
+
+    public void markDirty() {
+        this.isDirty = true;
+    }
+
+    private void createItemComponents() {
+        final float scrollPoint = this.getScrollBar().getOffset();
+        final Integer focusedX = MalisisGui.getFocusedComponent() == null ? null : MalisisGui.getFocusedComponent().screenX();
+        final Integer focusedY = MalisisGui.getFocusedComponent() == null ? null : MalisisGui.getFocusedComponent().screenY();
+
+        final boolean wasItemFocused = focusedX != null && focusedY != null && this.getComponentAt(focusedX, focusedY) != null;
+
         this.removeAll();
 
         int startY = 0;
-        for (T item : this.items)
-        {
-            final ItemComponent<?> component = this.itemComponentFactory.apply(this.getGui(), item);
+        for (T item : this.items) {
+            final ItemComponent<?> component = this.itemComponentFactory.apply(this.getGui(), this, item);
             component.attachData(item);
-            component.setParent(this);
             component.setPosition(0, startY);
+
+            if (wasItemFocused && component.screenX() == focusedX && component.screenY() == focusedY) {
+                component.setFocused(true);
+            }
 
             this.add(component);
 
             startY += component.getHeight() + this.itemSpacing;
         }
+
+        this.getScrollBar().scrollTo(scrollPoint);
 
         this.isDirty = false;
     }
@@ -343,8 +385,11 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
         protected T item;
 
-        public ItemComponent(MalisisGui gui, T item) {
+        public ItemComponent(MalisisGui gui, UIDynamicList<T> parent, T item) {
             super(gui);
+
+            // Set the parent
+            this.setParent(parent);
 
             // Set the item
             this.item = item;
@@ -378,9 +423,9 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
                 }
 
                 if (parent.canDeselect()) {
-                    parent.setSelectedItem(parent.getSelectedItem() == this.item ? null : this.item);
+                    parent.setSelectedItem(parent.getSelectedItem() == this.item ? null : this.item, false);
                 } else {
-                    parent.setSelectedItem(this.item);
+                    parent.setSelectedItem(this.item, false);
                 }
             }
 
@@ -392,7 +437,8 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
             if (this.parent instanceof UIDynamicList) {
                 final UIDynamicList parent = (UIDynamicList) this.parent;
 
-                final int width = parent.getWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
+                final int width = parent.getRawWidth() - parent.getLeftPadding() - parent.getRightPadding()
+                        - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
 
                 this.setSize(width, getHeight());
 
@@ -406,10 +452,6 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
                 super.drawBackground(renderer, mouseX, mouseY, partialTick);
             }
-        }
-
-        protected void setParent(UIDynamicList<T> parent) {
-            this.parent = parent;
         }
 
         private static boolean hasParent(UIComponent parent, UIComponent component) {
@@ -432,13 +474,13 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
     public static class DefaultItemComponent<T> extends ItemComponent<T> {
 
-        public DefaultItemComponent(MalisisGui gui, T item) {
-            super(gui, item);
+        public DefaultItemComponent(MalisisGui gui, UIDynamicList<T> parent, T item) {
+            super(gui, parent, item);
         }
 
         @Override
         public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            renderer.drawText(item.toString(), 2, 3, 0);
+            renderer.drawText(TextFormatting.WHITE + item.toString(), 2, 3, 0);
         }
     }
 
