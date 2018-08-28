@@ -1523,7 +1523,33 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
     private int getListingsLimit(final Player player) {
         // TODO Need to determine what controls this ultimately, 100 for now.
-        return 100;
+        int slots = 0;
+
+        if (player.hasPermission("almura.exchange.admin")) {
+            return 1000;
+        }
+
+        if (player.hasPermission("almura.exchange.slots.500")) {
+            return 500;
+        }
+
+        if (player.hasPermission("almura.exchange.slots.100")) {
+            return 100;
+        }
+
+        if (player.hasPermission("almura.exchange.slots.50")) {
+            return 50;
+        }
+
+        if (player.hasPermission("almura.exchange.slots.25")) {
+            return 25;
+        }
+
+        if (player.hasPermission("almura.exchange.slots.10")) {
+            return 10;
+        }
+
+        return slots;
     }
 
     private void printStacksToConsole(final List<VanillaStack> stacks) {
