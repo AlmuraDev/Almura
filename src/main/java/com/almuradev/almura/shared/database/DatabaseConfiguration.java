@@ -11,21 +11,21 @@ import org.jooq.SQLDialect;
 
 public interface DatabaseConfiguration {
 
-  SQLDialect getDialect();
+    SQLDialect getDialect();
 
-  String getDatabase();
+    String getDatabase();
 
-  String getPath();
+    String getPath();
 
-  String getServer();
+    String getServer();
 
-  int getPort();
+    int getPort();
 
-  String getUsername();
+    String getUsername();
 
-  String getPassword();
+    String getPassword();
 
-  String getConnectionString();
+    String getConnectionString();
 
-  String getConnectionStringWithoutSchema();
+    String getConnectionStringWithoutSchema();
 }

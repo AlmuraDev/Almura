@@ -13,5 +13,5 @@ import org.jooq.Query;
 @FunctionalInterface
 public interface DatabaseQuery<Q extends Query> {
 
-  Q build(DSLContext context);
+    Q build(DSLContext context);
 }

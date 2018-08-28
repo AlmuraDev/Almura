@@ -13,6 +13,9 @@ import com.almuradev.almura.feature.hud.ClientHeadUpDisplayManager;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
+import com.almuradev.almura.feature.notification.type.WindowNotification;
+import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
+import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -47,16 +50,15 @@ public final class ClientNotificationManager implements Witness {
     }
 
     @SubscribeEvent
-    public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+    public void onClientConnectedToServer(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.popupNotifications.clear();
     }
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
+    public void onClientTick(final TickEvent.ClientTickEvent event) {
 
         final AbstractHUD hud = this.manager.getHUDDirect();
 
-        // TODO Null screen means in-game but unsure if we want the notifications to pop up in the background
         if (event.phase == TickEvent.Phase.START && Minecraft.getMinecraft().ingameGUI != null) {
 
             if (this.fadeout >= 0) {
@@ -72,7 +74,8 @@ public final class ClientNotificationManager implements Witness {
                     this.nextPoll = this.current.getSecondsToLive() * 20L; // Best guess, we don't care about extreme accuracy.
 
                     if (hud == null) {
-                        Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(SpongeTexts.toComponent(this.current.getMessage()));
+                        Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(SpongeTexts.toComponent(SpongeTexts.fromLegacy(this.current
+                            .getMessage())));
                     } else {
                         final OriginHUD originHUD = (OriginHUD) hud;
                         originHUD.notificationPanel.displayPopup();
@@ -91,10 +94,24 @@ public final class ClientNotificationManager implements Witness {
         }
     }
 
-    public void queuePopup(PopupNotification notification) {
+    public void handlePopup(final PopupNotification notification) {
         checkNotNull(notification);
 
         this.popupNotifications.offer(notification);
+    }
+
+    public void handleWindow(final WindowNotification notification) {
+        checkNotNull(notification);
+
+        final AbstractHUD hud = this.manager.getHUDDirect();
+
+        if (hud != null) {
+            UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, notification.getTitle(), notification.getMessage(), MessageBoxButtons.OK,
+                null);
+        } else {
+            Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(SpongeTexts.toComponent(SpongeTexts.fromLegacy(notification.getMessage()
+            )));
+        }
     }
 
     @Nullable

@@ -7,263 +7,472 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui.component;
 
-import com.almuradev.almura.feature.exchange.MockOffer;
+import static com.almuradev.almura.feature.exchange.ExchangeConstants.MILLION;
+
+import com.almuradev.almura.feature.exchange.ExchangeConstants;
+import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
+import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
+import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
+import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.item.VanillaStack;
+import com.almuradev.almura.shared.item.VirtualStack;
+import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.malisis.core.util.MouseButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.item.inventory.ItemStackComparators;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public class UIExchangeOfferContainer extends UIDualListContainer<MockOffer> {
+public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> {
 
-    protected UIButton buttonOne, buttonStack, buttonItem, buttonAll, buttonDirection;
-    protected long leftItemLimit = -1, rightItemLimit = -1;
-    private ContainerSide targetSide = ContainerSide.RIGHT;
+    private final int leftLimit, rightLimit, listedItems;
 
-    public UIExchangeOfferContainer(MalisisGui gui, int width, int height, Text leftTitle, Text rightTitle,
-            BiFunction<MalisisGui, MockOffer, ? extends UIDynamicList.ItemComponent<?>> leftComponentFactory,
-            BiFunction<MalisisGui, MockOffer, ? extends UIDynamicList.ItemComponent<?>> rightComponentFactory) {
-        super(gui, width, height, leftTitle, rightTitle, leftComponentFactory, rightComponentFactory);
+    private UIButton buttonSingle, buttonStack, buttonType, buttonAll;
+    private UILabel labelDirection;
+    private UIPropertyBar leftPropertyBar, rightPropertyBar;
+    private SideType targetSide = SideType.RIGHT;
 
+    public UIExchangeOfferContainer(final MalisisGui gui, final int width, final int height, final Text leftTitle, final Text rightTitle,
+            final int leftLimit,
+            final int rightLimit,
+            final int listedItems) {
+        super(gui, width, height, leftTitle, rightTitle, OfferItemComponent::new, OfferItemComponent::new);
+
+        this.leftLimit = leftLimit;
+        this.rightLimit = rightLimit;
+        this.listedItems = listedItems;
+
+        this.construct(gui);
+    }
+
+    @Override
+    protected void construct(final MalisisGui gui) {
+        // Inventory
+        this.leftDynamicList = new UIItemList(gui, true, this.leftLimit, 64, UIComponent.INHERITED, UIComponent.INHERITED);
         this.leftDynamicList.register(this);
+
+        // Unlisted Items
+        this.rightDynamicList = new UIItemList(gui, false, this.rightLimit, Integer.MAX_VALUE, 0, 0);
         this.rightDynamicList.register(this);
+
+        // Call our parent construct
+        super.construct(gui);
+
+        // Set the sizes
+        this.leftDynamicList.setSize(UIComponent.INHERITED, SimpleScreen.getPaddedHeight(this.leftContainer) - 22);
+        this.rightDynamicList.setSize(UIComponent.INHERITED, SimpleScreen.getPaddedHeight(this.rightContainer) - 22);
+
+        // Add property bars
+        this.leftPropertyBar = new UIPropertyBar(gui, SimpleScreen.getPaddedWidth(this.leftContainer), 14);
+        this.leftPropertyBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 130, 0).getRgb());
+        this.leftPropertyBar.setPosition(-1, 0, Anchor.BOTTOM | Anchor.LEFT);
+        this.leftPropertyBar.setText(Text.of(0, "/", this.leftLimit));
+
+        this.rightPropertyBar = new UIPropertyBar(gui, SimpleScreen.getPaddedWidth(this.rightContainer), 14);
+        this.rightPropertyBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 130, 0).getRgb());
+        this.rightPropertyBar.setPosition(-1, 0, Anchor.BOTTOM | Anchor.LEFT);
+        this.rightPropertyBar.setText(Text.of(0, "/", this.rightLimit));
+
+        this.leftContainer.add(this.leftPropertyBar);
+        this.rightContainer.add(this.rightPropertyBar);
+
+        this.updateControls(null, SideType.RIGHT);
+    }
+
+    @Override
+    public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+        super.drawBackground(renderer, mouseX, mouseY, partialTick);
+
+        // Draw: bottom-left -> bottom-right (title line)
+        renderer.drawRectangle(this.borderSize, this.leftContainer.getHeight() - this.leftPropertyBar.getHeight() - 6, 1,
+                this.getRawWidth() - (this.borderSize * 2), 1, FontColors.WHITE, 185);
     }
 
     @Override
     protected UIContainer<?> createMiddleContainer(MalisisGui gui) {
-        final UIContainer<?> middleContainer = new UIContainer(gui, 38, 129);
+        if (this.targetSide == null) {
+            this.targetSide = SideType.RIGHT;
+        }
+
+        final UIContainer<?> middleContainer = new UIContainer(gui, 38, 111);
         middleContainer.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
         middleContainer.setBorder(FontColors.WHITE, 1, 185);
         middleContainer.setBackgroundAlpha(0);
 
-        this.buttonOne = new UIButtonBuilder(gui)
+        this.buttonSingle = new UIButtonBuilder(gui)
                 .size(20)
                 .position(0, 3)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("1")
-                .tooltip("Move one of the selected item to the target container")
-                .onClick(() -> this.transfer(this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem(), TransferType.SINGLE))
+                .tooltip(I18n.format("almura.tooltip.exchange.move_single", this.targetSide.toString().toLowerCase()))
+                .onClick(() -> TransferType.SINGLE.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.one");
 
         this.buttonStack = new UIButtonBuilder(gui)
                 .size(20)
-                .position(0, SimpleScreen.getPaddedY(this.buttonOne, 2))
+                .position(0, SimpleScreen.getPaddedY(this.buttonSingle, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("S")
-                .tooltip("Move the selected stack of items to the target container")
-                .onClick(() -> this.transfer(this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem(), TransferType.STACK))
+                .tooltip(I18n.format("almura.tooltip.exchange.move_stack", this.targetSide.toString().toLowerCase()))
+                .onClick(() -> TransferType.STACK.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.stack");
 
-        this.buttonDirection = new UIButtonBuilder(gui)
-                .size(30)
-                .position(0, SimpleScreen.getPaddedY(this.buttonStack, 4))
-                .anchor(Anchor.TOP | Anchor.CENTER)
-                .text("->")
-                .tooltip("Send items to the right")
-                .onClick(this::changeDirections)
-                .build("button.direction");
+        this.labelDirection = new UILabel(gui, "->");
+        this.labelDirection.setFontOptions(FontColors.WHITE_FO);
+        this.labelDirection.setPosition(0, SimpleScreen.getPaddedY(this.buttonStack, 6), Anchor.TOP | Anchor.CENTER);
 
-        this.buttonItem = new UIButtonBuilder(gui)
+        this.buttonType = new UIButtonBuilder(gui)
                 .size(20)
-                .position(0, SimpleScreen.getPaddedY(this.buttonDirection, 4))
+                .position(0, SimpleScreen.getPaddedY(this.labelDirection, 6))
                 .anchor(Anchor.TOP | Anchor.CENTER)
-                .text("I")
-                .tooltip("Moves all items of the selected type to the target container")
-                .onClick(() -> this.transfer(this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem(), TransferType.ITEM))
+                .text("T")
+                .tooltip(I18n.format("almura.tooltip.exchange.move_type", this.targetSide.toString().toLowerCase()))
+                .onClick(() -> TransferType.TYPE.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
-                .build("button.item");
+                .build("button.type");
 
         this.buttonAll = new UIButtonBuilder(gui)
                 .size(20)
-                .position(0, SimpleScreen.getPaddedY(this.buttonItem, 2))
+                .position(0, SimpleScreen.getPaddedY(this.buttonType, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("A")
-                .tooltip("Moves all items of the selected type to the target container")
-                .onClick(() -> this.transfer(this.targetSide, null, TransferType.ALL))
+                .tooltip(I18n.format("almura.tooltip.exchange.move_all", this.targetSide.toString().toLowerCase()))
+                .onClick(() -> TransferType.ALL.transfer(this, this.targetSide, null))
+                .enabled(false)
                 .build("button.all");
 
-        middleContainer.add(this.buttonOne, this.buttonStack, this.buttonDirection, this.buttonItem, this.buttonAll);
+        middleContainer.add(this.buttonSingle, this.buttonStack, this.labelDirection, this.buttonType, this.buttonAll);
 
         return middleContainer;
     }
 
     @Override
-    protected void updateControls(@Nullable MockOffer selectedValue, ContainerSide containerSide) {
+    protected void updateControls(@Nullable final VanillaStack selectedValue, final SideType targetSide) {
+        this.labelDirection.setText(targetSide == SideType.LEFT ? "<-" : "->");
 
-        this.buttonDirection.setText(this.targetSide == ContainerSide.LEFT ? "<-" : "->");
-        this.buttonDirection.setTooltip(String.format("Send items to the %s", this.targetSide == ContainerSide.LEFT ? "left" : "right"));
+        // Left property bar
+        final int leftSize = this.leftDynamicList.getSize();
+        this.leftPropertyBar.setAmount(MathUtil.convertToRange(leftSize, 0, this.leftLimit, 0f, 1f));
+        this.leftPropertyBar.setText(Text.of(leftSize, "/", this.leftLimit));
 
-        this.buttonOne.setEnabled(false);
-        this.buttonStack.setEnabled(false);
-        this.buttonItem.setEnabled(false);
+        // Right progress bar
+        final int rightSize = this.rightDynamicList.getSize() + this.listedItems;
+        this.rightPropertyBar.setAmount(MathUtil.convertToRange(rightSize, 0, this.rightLimit, 0f, 1f));
+        this.rightPropertyBar.setText(Text.of(rightSize, "/", this.rightLimit));
 
-        super.updateControls(selectedValue, containerSide);
+        super.updateControls(selectedValue, targetSide);
     }
 
-    public UIExchangeOfferContainer setItemLimit(long limit, ContainerSide target) {
-        if (target == ContainerSide.LEFT) {
-            this.leftItemLimit = limit;
-        } else {
-            this.rightItemLimit = limit;
-        }
-
-        return this;
-    }
-
-    protected void transfer(ContainerSide target, @Nullable MockOffer offer, TransferType type) {
-        final UIDynamicList<MockOffer> sourceList = this.getOpposingListFromSide(target);
-
-        switch (type) {
-            case SINGLE:
-                this.transferQuantity(target, offer, 1);
-                break;
-            case STACK:
-                if (offer == null) break;
-                this.transferQuantity(target, offer, offer.quantity);
-                break;
-            case ITEM:
-                if (offer == null) break;
-                final List<MockOffer> toCopy = sourceList.getItems().stream()
-                        .filter(o -> ItemStackComparators.IGNORE_SIZE.compare(offer.item, o.item) == 0)
-                        .collect(Collectors.toList());
-                toCopy.forEach(o -> this.transfer(target, o, TransferType.STACK));
-                break;
-            case ALL:
-                this.transferAll(target);
-                break;
-        }
-    }
-
-    private void transferQuantity(ContainerSide target, MockOffer offer, long quantity) {
-        final UIDynamicList<MockOffer> targetList = this.getListFromSide(target);
-        final UIDynamicList<MockOffer> sourceList = this.getOpposingListFromSide(target);
-        final long targetSideLimit = this.getLimitFromSide(target);
-
-        if (offer == null
-                || targetList.getItems().stream().noneMatch(o -> ItemStackComparators.IGNORE_SIZE.compare(o.item, offer.item) == 0)
-                && targetSideLimit > -1
-                && targetList.getItems().size() >= targetSideLimit) {
-            return;
-        }
-
-        final long targetStackMaxQuantity = target == ContainerSide.LEFT ? offer.item.getMaxStackQuantity() : Long.MAX_VALUE;
-
-        final MockOffer targetOffer = targetList.getItems().stream()
-                .filter(o -> ItemStackComparators.IGNORE_SIZE.compare(o.item, offer.item) == 0 && o.quantity < targetStackMaxQuantity)
-                .findFirst()
-                .orElseGet(() -> {
-                    final MockOffer newOffer = new MockOffer(offer.slotId, offer.item.copy(), Minecraft.getMinecraft().player);
-                    newOffer.quantity = 0;
-                    targetList.addItem(newOffer);
-                    return newOffer;
-                });
-
-        final long remainder;
-        remainder = this.addQuantity(targetList, offer.slotId, targetOffer, quantity, targetStackMaxQuantity);
-        this.removeQuantity(sourceList, offer.slotId, offer, quantity - remainder);
-        if (remainder > 0) {
-            this.transferQuantity(target, offer, remainder);
-        }
-    }
-
-    private void transferAll(ContainerSide target) {
-        final List<MockOffer> toCopy = new ArrayList<>(this.getOpposingListFromSide(target).getItems());
-        toCopy.forEach(o -> this.transferQuantity(target, o, o.quantity));
-    }
-
-    private long getLimitFromSide(ContainerSide side) {
-        if (side == ContainerSide.LEFT) {
-            return this.leftItemLimit;
-        }
-
-        return this.rightItemLimit;
-    }
-
-    private long addQuantity(UIDynamicList<MockOffer> list, int originatingSlotId, MockOffer offer, long quantity, long max) {
-        final long initialQuantity = offer.quantity;
-        final long rawTotalQuantity = initialQuantity + quantity;
-        final long newQuantity = Math.min(rawTotalQuantity, max);
-        final long remainder = rawTotalQuantity - newQuantity;
-
-        offer.quantity = newQuantity;
-
-        this.fireEvent(new TransactionEvent<>(this, getTargetFromList(list), originatingSlotId, offer, quantity - remainder));
-        this.fireEvent(new UIDynamicList.ItemsChangedEvent<>(list));
-
-        return remainder;
-    }
-
-    private long removeQuantity(UIDynamicList<MockOffer> list, int originatingSlotId, MockOffer offer, long quantity) {
-        final long newQuantity = offer.quantity - quantity;
-        offer.quantity = newQuantity;
-
-        if (newQuantity <= 0) {
-            list.removeItem(offer);
-        }
-
-        this.fireEvent(new TransactionEvent<>(this, getTargetFromList(list), originatingSlotId, offer, -quantity));
-        this.fireEvent(new UIDynamicList.ItemsChangedEvent<>(list));
-
-        return newQuantity < 0 ? Math.abs(newQuantity) : 0;
-    }
-
-    private void changeDirections() {
-        // Invert the target side
-        this.targetSide = this.targetSide == ContainerSide.LEFT ? ContainerSide.RIGHT : ContainerSide.LEFT;
+    private void setDirection(final SideType targetSide) {
+        // Invert the target targetSide
+        this.targetSide = targetSide;
         this.updateControls(null, this.targetSide);
     }
 
     @Subscribe
-    private void onItemSelect(UIDynamicList.SelectEvent<MockOffer> event) {
-        final boolean isValidTarget = this.getTargetFromList(event.getComponent()) != this.targetSide;
+    private void onItemSelect(final UIDynamicList.SelectEvent<VanillaStack> event) {
+        final boolean isSelectionValid = event.getNewValue() != null;
+        if (isSelectionValid) {
+            // Target the opposite list when selecting an item
+            this.setDirection(this.getOpposingSideFromList(event.getComponent()));
+        }
 
-        this.buttonOne.setEnabled(isValidTarget);
-        this.buttonStack.setEnabled(isValidTarget);
-        this.buttonItem.setEnabled(isValidTarget);
-        this.buttonAll.setEnabled(isValidTarget);
+        buttonSingle.setEnabled(isSelectionValid);
+        buttonSingle.setTooltip(I18n.format("almura.tooltip.exchange.move_single", this.targetSide.toString().toLowerCase()));
+        buttonStack.setEnabled(isSelectionValid);
+        buttonStack.setTooltip(I18n.format("almura.tooltip.exchange.move_stack", this.targetSide.toString().toLowerCase()));
+        buttonType.setEnabled(isSelectionValid);
+        buttonType.setTooltip(I18n.format("almura.tooltip.exchange.move_type", this.targetSide.toString().toLowerCase()));
+        buttonAll.setEnabled(isSelectionValid);
+        buttonAll.setTooltip(I18n.format("almura.tooltip.exchange.move_all", this.targetSide.toString().toLowerCase()));
     }
 
-    public static class TransactionEvent<T> extends ComponentEvent<UIDualListContainer<T>> {
-
-        public final ContainerSide side;
-        public final MockOffer offer;
-        public final int originatingSlotId;
-        public final long quantity;
-
-        public TransactionEvent(UIDualListContainer<T> component, ContainerSide side, int originatingSlotId, MockOffer offer, long quantity) {
-            super(component);
-            this.side = side;
-            this.originatingSlotId = originatingSlotId;
-            this.offer = offer;
-            this.quantity = quantity;
+    @Subscribe
+    private void onPopulate(final UIDualListContainer.PopulateEvent<VanillaStack> event) {
+        if (this.leftDynamicList.getSize() > 0) {
+            this.leftDynamicList.setSelectedItem(this.leftDynamicList.getItems().get(0));
+        } else if (this.rightDynamicList.getSize() > 0) {
+            this.rightDynamicList.setSelectedItem(this.rightDynamicList.getItems().get(0));
         }
     }
 
-    public enum TransferType {
-        SINGLE,
-        STACK,
-        ITEM,
-        ALL
+    interface ITransferType {
+        void transfer(final UIExchangeOfferContainer component, final SideType targetSide, @Nullable final VanillaStack sourceStack);
+    }
+
+    public enum TransferType implements ITransferType {
+        SINGLE {
+            @Override
+            public void transfer(final UIExchangeOfferContainer component, final SideType targetSide, @Nullable final VanillaStack sourceStack) {
+                this.transfer(component, targetSide, sourceStack, 1);
+            }
+        },
+        STACK {
+            @Override
+            public void transfer(final UIExchangeOfferContainer component, final SideType targetSide, @Nullable final VanillaStack sourceStack) {
+                if (sourceStack == null) {
+                    return;
+                }
+                this.transfer(component, targetSide, sourceStack, sourceStack.getQuantity());
+            }
+        },
+        TYPE {
+            @Override
+            public void transfer(final UIExchangeOfferContainer component, final SideType targetSide, @Nullable final VanillaStack sourceStack) {
+                if (sourceStack == null) {
+                    return;
+                }
+
+                component.getOpposingListFromSide(targetSide).getItems()
+                        .stream()
+                        .filter(i -> i != null && !i.isEmpty() && ItemHandlerHelper.canItemStacksStack(i.asRealStack(), sourceStack.asRealStack()))
+                        .collect(Collectors.toList())
+                        .forEach(i -> STACK.transfer(component, targetSide, i));
+            }
+        },
+        ALL {
+            @Override
+            public void transfer(final UIExchangeOfferContainer component, final SideType targetSide, @Nullable final VanillaStack sourceStack) {
+                new ArrayList<>(component.getOpposingListFromSide(targetSide).getItems()).forEach(i -> STACK.transfer(component, targetSide, i));
+            }
+        };
+
+        protected void transfer(final UIExchangeOfferContainer component, final SideType targetSide, @Nullable final VanillaStack sourceStack,
+                final int toTransferCount) {
+            if (sourceStack == null) {
+                return;
+            }
+
+            // Store our lists
+            final UIItemList sourceList = (UIItemList) component.getOpposingListFromSide(targetSide);
+            final UIItemList targetList = (UIItemList) component.getListFromSide(targetSide);
+
+            // Store a copy of the source stack before we modify it
+            final VanillaStack transactionStack = sourceStack.copy();
+
+            final VanillaStack toInsertStack = sourceStack.copy();
+            toInsertStack.setQuantity(toTransferCount);
+
+            int amountLeft = toTransferCount;
+            // Attempt to insert the item into the target list
+            for (int i = 0; i < targetList.getSlots(); i++) {
+                // Ensure we aren't going over the limit
+                if (targetList.getSize() >= component.rightLimit - component.listedItems) {
+                    break;
+                }
+
+                final ItemStack resultStack = targetList.insertItem(i, toInsertStack.asRealStack(), false);
+
+                amountLeft -= toInsertStack.getQuantity() - resultStack.getCount();
+                toInsertStack.setQuantity(amountLeft);
+
+                final VanillaStack slotStack = targetList.getItem(i);
+
+                if (slotStack != null) {
+                    slotStack.setQuantity(slotStack.asRealStack().getCount());
+                }
+
+                if (amountLeft <= 0) {
+                    break;
+                }
+            }
+
+            final VanillaStack insertResultStack = toInsertStack.copy();
+            insertResultStack.setQuantity(amountLeft);
+
+            // Attempt to extract the items from the source list
+            int amountToExtract = toTransferCount - insertResultStack.getQuantity();
+
+            if (amountToExtract > 0) {
+                final int sourceSlot = sourceList.getItems().indexOf(sourceStack);
+                amountToExtract -= sourceList.extractItem(sourceSlot, amountToExtract, false).getCount();
+
+                sourceStack.setQuantity(sourceStack.asRealStack().getCount());
+
+                // Check again if we still need to continue
+                if (amountToExtract > 0) {
+                    for (int i = 0; i < sourceList.getSize(); i++) {
+                        if (!ItemHandlerHelper.canItemStacksStack(sourceList.getStackInSlot(i), sourceStack.asRealStack())) {
+                            continue;
+                        }
+
+                        amountToExtract -= sourceList.extractItem(i, amountToExtract, false).getCount();
+
+                        // Update the vanilla stack
+                        final VanillaStack slotStack = sourceList.getStackFromSlot(i);
+                        slotStack.setQuantity(slotStack.asRealStack().getCount());
+
+                        if (amountToExtract <= 0) {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            transactionStack.setQuantity(toTransferCount - amountLeft);
+
+            component.fireEvent(new TransactionCompletedEvent<>(component, targetSide, transactionStack));
+            component.fireEvent(new UIDynamicList.ItemsChangedEvent<>(sourceList));
+            component.fireEvent(new UIDynamicList.ItemsChangedEvent<>(targetList));
+
+            // See if we can reselect the same stack
+            if (!sourceStack.isEmpty()) {
+                sourceList.setSelectedItem(sourceStack);
+            } else { // Otherwise select the first in the source list or the target list if none are available in the source
+                if (sourceList.getSize() > 0) {
+                    sourceList.setSelectedItem(sourceList.getItems().get(0));
+                } else if (targetList.getSize() > 0) {
+                    targetList.setSelectedItem(targetList.getItems().get(0));
+                }
+            }
+        }
+
+        public static boolean isStackEqualIgnoreSize(@Nullable VirtualStack a, @Nullable VirtualStack b) {
+            if (a == null || b == null) {
+                return false;
+            }
+            return net.minecraft.item.ItemStack.areItemsEqual(a.asRealStack(), b.asRealStack()) && net.minecraft.item.ItemStack
+                .areItemStackTagsEqual(a.asRealStack(), b.asRealStack());
+        }
+    }
+
+    public static class TransactionCompletedEvent<T> extends ComponentEvent<UIDualListContainer<T>> {
+
+        public final SideType targetSide;
+        public final VanillaStack stack;
+
+        TransactionCompletedEvent(final UIDualListContainer<T> component, final SideType targetSide, final VanillaStack stack) {
+            super(component);
+            this.targetSide = targetSide;
+            this.stack = stack;
+        }
+    }
+
+    private static class OfferItemComponent extends UIDynamicList.ItemComponent<VanillaStack> {
+
+        private UIComplexImage image;
+        private UIExpandingLabel itemLabel;
+        private int lastKnownQuantity;
+        private String itemLabelText;
+        private String itemQuantityText;
+
+        public OfferItemComponent(MalisisGui gui, UIDynamicList<VanillaStack> parent, VanillaStack item) {
+            super(gui, parent, item);
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        protected void construct(final MalisisGui gui) {
+            this.setSize(0, 24);
+
+            // Add components
+            final net.minecraft.item.ItemStack fakeStack = this.item.asRealStack().copy();
+            fakeStack.setCount(1);
+            final EntityPlayer player = Minecraft.getMinecraft().player;
+            final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
+
+            this.image = new UIComplexImage(gui, fakeStack);
+            this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
+            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+                    ? ITooltipFlag.TooltipFlags.ADVANCED
+                    : ITooltipFlag.TooltipFlags.NORMAL))));
+
+            final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+            final int maxItemTextWidth = fontRenderer.getStringWidth("999999999999999999") + 4;
+
+            // Limit item name to prevent over drawing
+            String displayName = fakeStack.getDisplayName();
+            if (fontRenderer.getStringWidth(displayName) > maxItemTextWidth) {
+                final StringBuilder displayNameBuilder = new StringBuilder();
+                for (char c : fakeStack.getDisplayName().toCharArray()) {
+                    final int textWidth = fontRenderer.getStringWidth(displayNameBuilder.toString() + c);
+                    if (textWidth > maxItemTextWidth) {
+                        displayNameBuilder.replace(displayNameBuilder.length() - 3, displayNameBuilder.length(), "...");
+                        break;
+                    }
+                    displayNameBuilder.append(c);
+                }
+                displayName = displayNameBuilder.toString();
+            }
+
+            this.itemLabelText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.WHITE, displayName));
+            this.itemQuantityText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                    Text.of(TextColors.GRAY, " x ", ExchangeConstants.withSuffix(this.item.getQuantity())));
+
+            this.itemLabel = new UIExpandingLabel(gui, this.itemLabelText + this.itemQuantityText);
+            this.itemLabel.setPosition(SimpleScreen.getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
+
+            if (this.item.getQuantity() >= (int) MILLION) {
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
+            }
+
+            this.lastKnownQuantity = this.item.getQuantity();
+
+            this.add(this.image, this.itemLabel);
+        }
+
+        @Override
+        public boolean onDoubleClick(int x, int y, MouseButton button) {
+            if (button != MouseButton.LEFT) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            final UIComponent<?> componentAt = this.getComponentAt(x, y);
+            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
+            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            // This should always be present
+            final UIExchangeOfferContainer offerContainer = (UIExchangeOfferContainer) this.parent.getParent().getParent();
+
+            TransferType.STACK.transfer(offerContainer, offerContainer.targetSide, this.item);
+
+            return true;
+        }
+
+        @Override
+        @SuppressWarnings("deprecation")
+        public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+            // Update the item label if the quantity has changed to reflect the new quantity
+            if (this.lastKnownQuantity != this.item.getQuantity()) {
+                this.itemQuantityText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
+                        Text.of(TextColors.GRAY, " x ", ExchangeConstants.withSuffix(this.item.getQuantity())));
+                this.itemLabel.setText(this.itemLabelText + this.itemQuantityText);
+                this.lastKnownQuantity = this.item.getQuantity();
+            }
+            super.drawForeground(renderer, mouseX, mouseY, partialTick);
+        }
     }
 }

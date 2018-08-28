@@ -54,8 +54,8 @@ public final class UINotificationPanel extends AbstractPanel {
     public void displayPopup() {
         final PopupNotification notification = manager.getCurrent();
         if (notification != null) {
-            this.notificationTitle.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.manager.getCurrent().getTitle()));
-            this.notificationLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.manager.getCurrent().getMessage()));
+            this.notificationTitle.setText(this.manager.getCurrent().getTitle());
+            this.notificationLabel.setText(this.manager.getCurrent().getMessage());
         }
     }
 

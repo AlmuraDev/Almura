@@ -7,49 +7,50 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
-import com.almuradev.almura.feature.exchange.MockOffer;
+import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
+import com.almuradev.almura.feature.exchange.Exchange;
+import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.feature.exchange.client.gui.component.UIExchangeOfferContainer;
-import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.almura.shared.util.MathUtil;
-import com.google.common.base.MoreObjects;
+import com.almuradev.almura.shared.item.BasicVanillaStack;
+import com.almuradev.almura.shared.item.VanillaStack;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.ItemStackComparators;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.Color;
-import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
 public class ExchangeOfferScreen extends SimpleScreen {
 
-    private final Map<Integer, TransactionRecord> toTakeMap = new HashMap<>();
-    private final List<TransactionRecord> toRegainList = new ArrayList<>();
-    private final int maxOfferSlots = ThreadLocalRandom.current().nextInt(2, 5);
-    private UIExchangeOfferContainer offerContainer;
-    private UIPropertyBar progressBar;
+    @Inject private static ClientExchangeManager clientExchangeManager;
 
-    public ExchangeOfferScreen(ExchangeScreen parent) {
+    private final Exchange exchange;
+    private final List<InventoryAction> inventoryActions = new ArrayList<>();
+    private final int limit;
+    private UIExchangeOfferContainer offerContainer;
+    private List<VanillaStack> pendingItems;
+
+    public ExchangeOfferScreen(final ExchangeScreen parent, final Exchange exchange, final List<VanillaStack> pendingItems, final int limit) {
         super(parent, true);
+        this.exchange = exchange;
+        this.pendingItems = pendingItems;
+        this.limit = limit;
     }
 
     @Override
@@ -57,134 +58,114 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.guiscreenBackground = false;
 
         // Form
-        final UIFormContainer form = new UIFormContainer(this, 400, 325, "Offer");
-        form.setZIndex(10); // Fixes issue with combobox behind the form drawing text over the form
-        form.setMovable(true);
-        form.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
+        final UIForm form = new UIForm(this, 400, 325, I18n.format("almura.title.exchange.offer"));
+        form.setZIndex(10); // Fixes issue overlapping draws from parent
         form.setBackgroundAlpha(255);
-        form.setBorder(FontColors.WHITE, 1, 185);
-        form.setPadding(4, 4);
-        form.setTopPadding(20);
 
         // OK/Cancel buttons
         final UIButton buttonOk = new UIButtonBuilder(this)
-                .width(40)
-                .text("OK")
-                .x(1)
-                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .onClick(this::transact)
-                .build("button.ok");
+            .width(40)
+            .text(I18n.format("almura.button.ok"))
+            .x(1)
+            .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+            .onClick(this::transact)
+            .build("button.ok");
         final UIButton buttonCancel = new UIButtonBuilder(this)
-                .width(40)
-                .text("Cancel")
-                .x(getPaddedX(buttonOk, 2, Anchor.RIGHT))
-                .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .onClick(this::close)
-                .build("button.cancel");
-
-        this.progressBar = new UIPropertyBar(this, getPaddedWidth(form) - buttonOk.getWidth() - buttonCancel.getWidth() - 4, 15);
-        this.progressBar.setColor(Color.ofRgb(0, 130, 0).getRgb());
-        this.progressBar.setPosition(-1, -1, Anchor.BOTTOM | Anchor.LEFT);
-        this.progressBar.setText(Text.of(0, "/", this.maxOfferSlots));
+            .width(40)
+            .text(I18n.format("almura.button.cancel"))
+            .x(getPaddedX(buttonOk, 2, Anchor.RIGHT))
+            .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+            .onClick(this::close)
+            .build("button.cancel");
 
         // Swap container
+        final NonNullList<ItemStack> mainInventory = Minecraft.getMinecraft().player.inventory.mainInventory;
+        final int totalItemsForSale = this.exchange.getForSaleItemsFor(Minecraft.getMinecraft().player.getUniqueID()).map(List::size).orElse(0);
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
-                Text.of(TextColors.WHITE, "Inventory"),
-                Text.of(TextColors.WHITE, "Held Items"),
-                ExchangeScreen.ExchangeItemComponent::new,
-                ExchangeScreen.ExchangeItemComponent::new);
-        this.offerContainer.setItemLimit(this.maxOfferSlots, UIDualListContainer.ContainerSide.RIGHT);
+                Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.inventory")),
+                Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.unlisted_items")),
+                mainInventory.size(),
+                this.limit,
+                totalItemsForSale);
         this.offerContainer.register(this);
 
-        // Populate swap container
-        final List<MockOffer> inventoryOffers = new ArrayList<>();
-        final EntityPlayer player = Minecraft.getMinecraft().player;
-        for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
-            final ItemStack stack = ItemStackUtil.fromNative(player.inventory.mainInventory.get(i));
-            if (stack.isEmpty()) continue;
-            inventoryOffers.add(new MockOffer(i, stack, player));
-        }
-        this.offerContainer.setItems(inventoryOffers, UIDualListContainer.ContainerSide.LEFT);
-        final int size = this.offerContainer.getItems(UIDualListContainer.ContainerSide.RIGHT).size();
-        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
-        this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
+        // Populate offer container
+        final List<VanillaStack> inventoryOffers = new ArrayList<>();
+        mainInventory.stream().filter(i -> !i.isEmpty() && i.getItem() != null).forEach(i -> inventoryOffers.add(new BasicVanillaStack(i)));
 
-        form.add(this.progressBar, this.offerContainer, buttonOk, buttonCancel);
+        this.offerContainer.setItems(this.pendingItems, UIDualListContainer.SideType.RIGHT);
+        this.offerContainer.setItems(inventoryOffers, UIDualListContainer.SideType.LEFT);
+
+        form.add(this.offerContainer, buttonOk, buttonCancel);
 
         addToScreen(form);
     }
 
     @Subscribe
-    private void onUpdate(UIDualListContainer.UpdateEvent<UIDualListContainer<MockOffer>> event) {
-        final int size = event.getComponent().getItems(UIDualListContainer.ContainerSide.RIGHT).size();
-        this.progressBar.setAmount(MathUtil.convertToRange(size, 0, this.maxOfferSlots, 0f, 1f));
-        this.progressBar.setText(Text.of(size, "/", this.maxOfferSlots));
-    }
+    private void onTransactionComplete(UIExchangeOfferContainer.TransactionCompletedEvent event) {
+        final InventoryAction.Direction direction = event.targetSide == UIDualListContainer.SideType.LEFT
+                ? InventoryAction.Direction.TO_INVENTORY
+                : InventoryAction.Direction.TO_LISTING;
+        final InventoryAction.Direction oppositeDirection = event.targetSide == UIDualListContainer.SideType.LEFT
+                ? InventoryAction.Direction.TO_LISTING
+                : InventoryAction.Direction.TO_INVENTORY;
 
-    @Subscribe
-    private void onTransaction(UIExchangeOfferContainer.TransactionEvent event) {
-        if (event.side == UIDualListContainer.ContainerSide.RIGHT) {
-            final TransactionRecord record = Optional.ofNullable(this.toTakeMap.putIfAbsent(event.originatingSlotId,
-                                                        new TransactionRecord(event.offer.item.copy(), 0)))
-                                                     .orElse(this.toTakeMap.get(event.originatingSlotId));
+        // Filter out relevant actions
+        final List<InventoryAction> filteredActions = this.inventoryActions.stream()
+                .filter(a -> UIExchangeOfferContainer.TransferType.isStackEqualIgnoreSize(a.getStack(), event.stack) &&
+                        a.getDirection() == oppositeDirection)
+                .collect(Collectors.toList());
 
-            record.quantity += event.quantity;
+        // Determine what we need to remove
+        int removed = 0;
+        int toRemoveCount = event.stack.getQuantity();
 
-            if (record.quantity <= 0) {
-                this.toTakeMap.remove(event.originatingSlotId);
+        // If we can still remove more, iterate through all remaining stacks and attempt to pull what we can
+        if (toRemoveCount > 0) {
+            for (InventoryAction action : filteredActions) {
+                // Stop if we don't have anymore to remove
+                if (toRemoveCount <= 0) {
+                    break;
+                }
+
+                // Determine how much we are taking
+                final int toTake = Math.min(action.getStack().getQuantity(), toRemoveCount);
+                removed += toTake;
+                toRemoveCount -= toTake;
+
+                // Take the amount
+                action.getStack().setQuantity(action.getStack().getQuantity() - toTake);
+                if (action.getStack().isEmpty()) {
+                    this.inventoryActions.remove(action);
+                }
             }
-
-            System.out.println(">>> Side: " + event.side);
-            System.out.println(Arrays.toString(this.toTakeMap.entrySet().toArray()));
-            System.out.println("==========");
-        } else {
-            Optional<TransactionRecord> optRecord = this.toRegainList.stream()
-                    .filter(r -> ItemStackComparators.IGNORE_SIZE.compare(r.itemStack, event.offer.item) == 0)
-                    .findFirst();
-            if (!optRecord.isPresent()) {
-                optRecord = Optional.of(new TransactionRecord(event.offer.item.copy(), 0));
-                this.toRegainList.add(optRecord.get());
-            }
-
-            optRecord.get().quantity += event.quantity;
-
-            if (optRecord.get().quantity >= 0) {
-                this.toRegainList.remove(optRecord.get());
-            }
-
-            System.out.println(">>> Side: " + event.side);
-            System.out.println(Arrays.toString(this.toRegainList.toArray()));
-            System.out.println("==========");
         }
 
+        // If the items we've removed is less than the items we need to add then continue
+        // Otherwise we'll balance to a net zero as this means that the items were once added from one direction to another.
+        if (removed < event.stack.getQuantity()) {
+            final int toAdd = event.stack.getQuantity() - removed;
+
+            // Add a new action or add the quantity to an existing one.
+            final InventoryAction existingAction = this.inventoryActions.stream()
+                .filter(a -> UIExchangeOfferContainer.TransferType.isStackEqualIgnoreSize(a.getStack(), event.stack) && a.getDirection() == direction)
+                .findAny()
+                .orElse(null);
+
+            if (existingAction == null) {
+                final InventoryAction newAction = new InventoryAction(direction, event.stack);
+                newAction.getStack().setQuantity(toAdd);
+                this.inventoryActions.add(newAction);
+            } else {
+                existingAction.getStack().setQuantity(existingAction.getStack().getQuantity() + event.stack.getQuantity());
+            }
+        }
     }
 
     private void transact() {
-        // Only add for now
-        if (parent.isPresent() && parent.get() instanceof ExchangeScreen) {
-            final ExchangeScreen excParent = (ExchangeScreen) parent.get();
-
-            excParent.sellingList.clearItems();
-            excParent.sellingList.setItems(new ArrayList<>(this.offerContainer.getItems(UIDualListContainer.ContainerSide.RIGHT)));
+        if (!this.inventoryActions.isEmpty()) {
+            clientExchangeManager.updateListItems(this.exchange.getId(), this.inventoryActions);
         }
         this.close();
-    }
-
-    private static class TransactionRecord {
-        public final ItemStack itemStack;
-        public long quantity;
-
-        public TransactionRecord(final ItemStack itemStack, final long quantity) {
-            this.itemStack = itemStack;
-            this.quantity = quantity;
-        }
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .addValue(this.itemStack.getType().getName())
-                    .addValue(this.quantity)
-                    .toString();
-        }
     }
 }

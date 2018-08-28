@@ -27,6 +27,7 @@ public interface GuiConfig {
         int WIDTH_LONG = 200;
 
         int HEIGHT = 20;
+        int HEIGHT_TINY = 15;
         int HEIGHT_ICON = 24;
     }
 

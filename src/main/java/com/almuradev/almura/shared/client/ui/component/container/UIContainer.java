@@ -7,8 +7,11 @@
  */
 package com.almuradev.almura.shared.client.ui.component.container;
 
+import com.almuradev.almura.shared.client.ui.component.UITextBox;
+import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.client.gui.element.XYResizableGuiShape;
 import net.malisis.core.renderer.RenderParameters;
@@ -17,53 +20,24 @@ import net.malisis.core.renderer.element.Face;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @SideOnly(Side.CLIENT)
 public class UIContainer<T extends UIContainer<T>> extends net.malisis.core.client.gui.component.container.UIContainer<T>
         implements ITransformable.Color {
 
-    /**
-     * Top left corner color
-     **/
     protected int topLeftColor = -1;
-    /**
-     * Top right corner color
-     **/
     protected int topRightColor = -1;
-    /**
-     * Bottom left corner color
-     */
     protected int bottomLeftColor = -1;
-    /**
-     * Bottom right corner color
-     */
     protected int bottomRightColor = -1;
-    /**
-     * Top left corner alpha
-     **/
     protected int topLeftAlpha = 255;
-    /**
-     * Top right corner alpha
-     **/
     protected int topRightAlpha = 255;
-    /**
-     * Bottom left corner alpha
-     */
     protected int bottomLeftAlpha = 255;
-    /**
-     * Bottom right corner alpha
-     */
     protected int bottomRightAlpha = 255;
-    /**
-     * Border size
-     **/
     protected int borderSize = 0;
-    /**
-     * Border color
-     **/
     protected int borderColor = 0;
-    /**
-     * Border alpha
-     **/
     protected int borderAlpha = 0;
 
     /**
@@ -391,6 +365,159 @@ public class UIContainer<T extends UIContainer<T>> extends net.malisis.core.clie
         setTopAlpha(alpha);
         setBottomAlpha(alpha);
         return this;
+    }
+
+    /**
+     * Sets the padding for all sides of the container
+     *
+     * @param left The left padding
+     * @param top The top padding
+     * @param right The right padding
+     * @param bottom The bottom padding
+     * @return The container
+     */
+    public UIContainer<T> setPadding(int left, int top, int right, int bottom) {
+        this.setLeftPadding(left);
+        this.setTopPadding(top);
+        this.setRightPadding(right);
+        this.setBottomPadding(bottom);
+        return this;
+    }
+
+    public void tabToLastControl() {
+        final UITextBox currentTextbox = SimpleScreen.getFocusedComponent() instanceof UITextBox
+                ? ((UITextBox) SimpleScreen.getFocusedComponent())
+                : null;
+        UITextBox toFocus = null;
+        final int lastTabIndex = currentTextbox == null ? 0 : currentTextbox.getTabIndex();
+
+        // Attempt to find the next control in line
+        final List<UITextBox> filteredComponents = this.components
+                .stream()
+                .filter(c -> c.isEnabled() && c.isVisible() && c instanceof UITextBox)
+                .map(c -> (UITextBox) c)
+                .filter(UITextField::isEditable)
+                .sorted(Comparator.comparingInt(UITextBox::getTabIndex).reversed())
+                .collect(Collectors.toList());
+
+        // Attempt 1: See if we can find an index that is higher than our current
+        for (UITextBox tb : filteredComponents) {
+            if (tb == currentTextbox) {
+                continue;
+            }
+
+            if (tb.getTabIndex() < lastTabIndex) {
+                toFocus = tb;
+                break;
+            }
+        }
+
+        // Attempt 2: See if we can find an index with the same value
+        if (toFocus == null) {
+            for (UITextBox tb : filteredComponents) {
+                if (tb == currentTextbox) {
+                    continue;
+                }
+
+                if (tb.getTabIndex() == lastTabIndex) {
+                    toFocus = tb;
+                    break;
+                }
+            }
+        }
+
+        // Attempt 3: We attempt to find the rollover point and start there
+        if (toFocus == null) {
+            UITextBox highestIndexTextBox = currentTextbox;
+            for (UITextBox tb : filteredComponents) {
+
+                if (tb == currentTextbox) {
+                    continue;
+                }
+
+                if (highestIndexTextBox == null || tb.getTabIndex() > highestIndexTextBox.getTabIndex()) {
+                    highestIndexTextBox = tb;
+                }
+            }
+
+            if (highestIndexTextBox != null) {
+                toFocus = highestIndexTextBox;
+            }
+        }
+
+        if (toFocus != null && currentTextbox != null) {
+            currentTextbox.deselectAll();
+            toFocus.focus();
+            toFocus.selectAll();
+        }
+    }
+
+    public void tabToNextControl() {
+        final UITextBox currentTextbox = SimpleScreen.getFocusedComponent() instanceof UITextBox
+                ? ((UITextBox) SimpleScreen.getFocusedComponent())
+                : null;
+        UITextBox toFocus = null;
+        final int lastTabIndex = currentTextbox == null ? 0 : currentTextbox.getTabIndex();
+
+        // Attempt to find the next control in line
+        final List<UITextBox> filteredComponents = this.components
+                .stream()
+                .filter(c -> c.isEnabled() && c.isVisible() && c instanceof UITextBox)
+                .map(c -> (UITextBox) c)
+                .filter(UITextField::isEditable)
+                .sorted(Comparator.comparingInt(UITextBox::getTabIndex))
+                .collect(Collectors.toList());
+
+        // Attempt 1: See if we can find an index that is higher than our current
+        for (UITextBox tb : filteredComponents) {
+            if (tb == currentTextbox) {
+                continue;
+            }
+
+            if (tb.getTabIndex() > lastTabIndex) {
+                toFocus = tb;
+                break;
+            }
+        }
+
+        // Attempt 2: See if we can find an index with the same value
+        if (toFocus == null) {
+            for (UITextBox tb : filteredComponents) {
+                if (tb == currentTextbox) {
+                    continue;
+                }
+
+                if (tb.getTabIndex() == lastTabIndex) {
+                    toFocus = tb;
+                    break;
+                }
+            }
+        }
+
+        // Attempt 3: We attempt to find the rollover point and start there
+        if (toFocus == null) {
+            UITextBox lowestIndexTextBox = currentTextbox;
+            for (UITextBox tb : filteredComponents) {
+
+                if (tb == currentTextbox) {
+                    continue;
+                }
+
+                if (lowestIndexTextBox == null || tb.getTabIndex() < lowestIndexTextBox.getTabIndex()) {
+                    lowestIndexTextBox = tb;
+                }
+            }
+
+            if (lowestIndexTextBox != null) {
+                toFocus = lowestIndexTextBox;
+            }
+        }
+
+        if (toFocus != null && currentTextbox != null) {
+            currentTextbox.deselectAll();
+            toFocus.focus();
+            toFocus.selectAll();
+        }
     }
 
     @Override

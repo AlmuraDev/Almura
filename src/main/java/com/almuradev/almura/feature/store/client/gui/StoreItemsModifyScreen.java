@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.store.client.gui;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -29,7 +29,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
-import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
 
@@ -40,7 +39,7 @@ public class StoreItemsModifyScreen extends SimpleScreen {
     private boolean update = true;
     private UILabel titleLabel, itemNameLabel;
     private UIButton buttonCancel, buttonOk;
-    private UIFormContainer form;
+    private UIForm form;
     private MalisisInventoryContainer container;
 
     private int screenWidth = 300;
@@ -72,12 +71,12 @@ public class StoreItemsModifyScreen extends SimpleScreen {
 
         // Detect if screen area is large enough to display.
         if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
-            clientNotificationManager.queuePopup(new PopupNotification(Text.of("NPC Store Error"),
-                    Text.of("Screen area of: " + screenHeight + " x " + screenWidth + " required."), 5));
+            clientNotificationManager.handlePopup(new PopupNotification("NPC Store Error",
+                "Screen area of: " + screenHeight + " x " + screenWidth + " required.", 5));
             this.close();
         }
 
-        form = new UIFormContainer(this, this.screenWidth, this.screenHeight, "");
+        form = new UIForm(this, this.screenWidth, this.screenHeight, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);
@@ -93,7 +92,7 @@ public class StoreItemsModifyScreen extends SimpleScreen {
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Tab Area
-        final UIFormContainer itemArea = new UIFormContainer(this, 285, 60, "");
+        final UIForm itemArea = new UIForm(this, 285, 60, "");
         itemArea.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
         itemArea.setMovable(false);
         itemArea.setClosable(false);

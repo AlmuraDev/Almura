@@ -8,10 +8,9 @@
 package com.almuradev.almura.feature.guide.client.gui;
 
 import com.almuradev.almura.feature.guide.ClientPageManager;
-import com.almuradev.almura.feature.guide.Page;
 import com.almuradev.almura.feature.guide.PageListEntry;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIFormContainer;
+import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxConsumer;
@@ -72,7 +71,7 @@ public class SimplePageView extends SimpleScreen {
 
         Keyboard.enableRepeatEvents(true);
 
-        final UIFormContainer form = new UIFormContainer(this, 420, 225, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
+        final UIForm form = new UIForm(this, 420, 225, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(true);
         form.setClosable(true);

@@ -56,10 +56,6 @@ public final class ClientTitleManager implements Witness {
         this.selectedTitles.clear();
     }
 
-    public void requestManageTitlesGUI() {
-        this.network.sendToServer(new ServerboundTitleGuiRequestPacket());
-    }
-
     @Nullable
     public Title getTitle(final String id) {
         return this.titles.stream().filter(title -> title.getId().equalsIgnoreCase(id)).findAny().orElse(null);
@@ -137,6 +133,10 @@ public final class ClientTitleManager implements Witness {
 
     public void setTitleContentForDisplay(@Nullable final Title titleContentForDisplay) {
         this.titleContentForDisplay = titleContentForDisplay;
+    }
+
+    public void requestManageTitlesGui() {
+        this.network.sendToServer(new ServerboundTitleGuiRequestPacket());
     }
 
     public void addTitle(final String id, final String permission, final String content, final boolean isHidden) {
