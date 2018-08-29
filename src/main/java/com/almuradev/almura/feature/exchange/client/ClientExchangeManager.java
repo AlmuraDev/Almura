@@ -61,7 +61,7 @@ public final class ClientExchangeManager implements Witness {
     @Nullable private static final String defaultFilter = null;
     private static final String defaultSort = "price" + StoreConstants.EQUALITY + "asc" + StoreConstants.DELIMETER;
     private static final int defaultSkip = 0;
-    private static final int defaultLimit = -1;
+    private static final int defaultLimit = 10;
 
     private final ChannelBinding.IndexedMessageChannel network;
     private final List<Exchange> exchanges = new ArrayList<>();
