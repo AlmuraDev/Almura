@@ -209,7 +209,7 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
             }
         });
 
-        this.logger.info("Loaded " + this.pages.size() + " page(s).");
+        this.logger.info("Loaded [" + this.pages.size() + "] page(s).");
 
         return true;
     }

@@ -53,7 +53,7 @@ public final class DatabaseInstaller implements Witness {
         }
     }
 
-    private void setupTablesForFeature(DSLContext context, final String feature) throws Exception {
+    private void setupTablesForFeature(final DSLContext context, final String feature) throws Exception {
         FileSystem fileSystem = null;
 
         try {
