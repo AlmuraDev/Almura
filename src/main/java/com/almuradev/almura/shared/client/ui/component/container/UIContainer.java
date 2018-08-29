@@ -11,6 +11,7 @@ import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.client.gui.element.XYResizableGuiShape;
@@ -20,8 +21,10 @@ import net.malisis.core.renderer.element.Face;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
@@ -370,6 +373,20 @@ public class UIContainer<T extends UIContainer<T>> extends net.malisis.core.clie
     /**
      * Sets the padding for all sides of the container
      *
+     * @param padding The padding
+     * @return The container
+     */
+    public UIContainer<T> setPadding(int padding) {
+        this.setLeftPadding(padding);
+        this.setTopPadding(padding);
+        this.setRightPadding(padding);
+        this.setBottomPadding(padding);
+        return this;
+    }
+
+    /**
+     * Sets the padding for all sides of the container
+     *
      * @param left The left padding
      * @param top The top padding
      * @param right The right padding
@@ -382,6 +399,37 @@ public class UIContainer<T extends UIContainer<T>> extends net.malisis.core.clie
         this.setRightPadding(right);
         this.setBottomPadding(bottom);
         return this;
+    }
+
+    /**
+     * Sets the width of the container
+     *
+     * @param width The width
+     * @return The container
+     */
+    public UIContainer<T> setWidth(final int width) {
+        this.setSize(width, this.getHeight());
+        return this;
+    }
+
+    /**
+     * Sets the height of the container
+     *
+     * @param height The height
+     * @return The container
+     */
+    public UIContainer<T> setHeight(final int height) {
+        this.setSize(this.getWidth(), height);
+        return this;
+    }
+
+    /**
+     * Gets an unmodifiable set of components
+     *
+     * @return The components
+     */
+    public Set<UIComponent<?>> getComponents() {
+        return Collections.unmodifiableSet(this.components);
     }
 
     public void tabToLastControl() {

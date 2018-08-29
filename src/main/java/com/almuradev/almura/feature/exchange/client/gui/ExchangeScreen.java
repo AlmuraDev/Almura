@@ -128,7 +128,6 @@ public final class ExchangeScreen extends SimpleScreen {
         this.displayNameSearchTextBox.setOnEnter((tb) -> this.search());
         this.displayNameSearchTextBox.setSize(145, 0);
         this.displayNameSearchTextBox.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
-        this.displayNameSearchTextBox.setEditable(true);
         this.displayNameSearchTextBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         final UILabel sellerSearchLabel = new UILabel(this, I18n.format("almura.text.exchange.seller") + ":");
@@ -143,7 +142,6 @@ public final class ExchangeScreen extends SimpleScreen {
         this.sellerSearchTextBox.setOnEnter(tb -> this.search());
         this.sellerSearchTextBox.setSize(145, 0);
         this.sellerSearchTextBox.setPosition(this.displayNameSearchTextBox.getX(), getPaddedY(this.displayNameSearchTextBox, 4), Anchor.LEFT | Anchor.TOP);
-        this.sellerSearchTextBox.setEditable(true);
         this.sellerSearchTextBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Sort combobox
@@ -169,7 +167,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
         this.forSaleList = new UIDynamicList<>(this, UIComponent.INHERITED, 254);
         this.forSaleList.setPosition(0, SimpleScreen.getPaddedY(forSaleTopLine, 2));
-        this.forSaleList.setItemComponentFactory((s, t, u) -> new ForSaleItemComponent(this, this.forSaleList, u));
+        this.forSaleList.setItemComponentFactory(ForSaleItemComponent::new);
         this.forSaleList.setItemComponentSpacing(1);
         this.forSaleList.setSelectConsumer((i) -> this.updateControls());
 

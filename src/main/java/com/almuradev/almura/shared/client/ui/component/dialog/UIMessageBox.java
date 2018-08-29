@@ -32,6 +32,7 @@ import org.spongepowered.api.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
@@ -41,10 +42,10 @@ public class UIMessageBox extends UIForm {
     private static final int bottomPadding = 23;
     private final MessageBoxButtons messageBoxButtons;
     private final String message;
-    @Nullable private final MessageBoxConsumer consumer;
+    @Nullable private final Consumer<MessageBoxResult> consumer;
     @Nullable private MessageBoxResult result;
 
-    private UIMessageBox(MalisisGui gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer consumer) {
+    private UIMessageBox(MalisisGui gui, String title, String message, MessageBoxButtons buttons, @Nullable Consumer<MessageBoxResult> consumer) {
         super(gui, 300, 115, title);
         this.messageBoxButtons = buttons;
         this.message = message;
@@ -204,8 +205,8 @@ public class UIMessageBox extends UIForm {
         showDialog(gui, title, message, buttons, null);
     }
 
-    public static void showDialog(@Nullable GuiScreen gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer
-            consumer) {
+    public static void showDialog(@Nullable GuiScreen gui, String title, String message, MessageBoxButtons buttons,
+            @Nullable Consumer<MessageBoxResult> consumer) {
         final MessageBoxDialogScreen screen = new MessageBoxDialogScreen(gui, title, message, buttons, consumer);
         screen.display();
     }
@@ -216,10 +217,10 @@ public class UIMessageBox extends UIForm {
         private final String title;
         private final String message;
         private final MessageBoxButtons buttons;
-        @Nullable private final MessageBoxConsumer consumer;
+        @Nullable private final Consumer<MessageBoxResult> consumer;
 
-        public MessageBoxDialogScreen(@Nullable GuiScreen gui, String title, String message, MessageBoxButtons buttons, @Nullable MessageBoxConsumer
-                consumer) {
+        public MessageBoxDialogScreen(@Nullable GuiScreen gui, String title, String message, MessageBoxButtons buttons,
+                @Nullable Consumer<MessageBoxResult> consumer) {
             super(gui, true);
             this.gui = gui;
             this.title = title;
