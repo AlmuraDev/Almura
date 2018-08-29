@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.feature.store.listing;
+package com.almuradev.almura.feature.exchange.listing;
 
 import java.time.Instant;
 import java.util.UUID;

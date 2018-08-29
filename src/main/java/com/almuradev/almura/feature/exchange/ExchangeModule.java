@@ -39,9 +39,9 @@ import com.almuradev.almura.feature.exchange.network.handler.ServerboundTransact
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundListItemsRequestPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyExchangePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundModifyForSaleItemListStatusRequestPacketHandler;
-import com.almuradev.almura.shared.feature.store.filter.FilterRegistry;
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.feature.filter.FilterRegistry;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -49,9 +49,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 
-import java.math.BigDecimal;
 import java.util.Comparator;
-import java.util.Optional;
 
 public final class ExchangeModule extends AbstractModule implements CommonBinder {
     

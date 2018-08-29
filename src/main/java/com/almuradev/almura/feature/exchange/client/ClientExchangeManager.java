@@ -12,7 +12,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.Exchange;
-import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.ExchangeModifyType;
 import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.feature.exchange.ListStatusType;
@@ -26,11 +25,11 @@ import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequest
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyForSaleItemListStatusRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundTransactionRequestPacket;
-import com.almuradev.almura.shared.feature.store.StoreConstants;
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
-import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
+import com.almuradev.almura.shared.feature.FeatureConstants;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
+import com.almuradev.almura.feature.exchange.basic.listing.BasicForSaleItem;
+import com.almuradev.almura.feature.exchange.basic.listing.BasicListItem;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
@@ -61,7 +60,7 @@ import javax.inject.Singleton;
 public final class ClientExchangeManager implements Witness {
 
     @Nullable private static final String defaultFilter = null;
-    private static final String defaultSort = "price" + StoreConstants.EQUALITY + "asc" + StoreConstants.DELIMETER;
+    private static final String defaultSort = "price" + FeatureConstants.EQUALITY + "asc" + FeatureConstants.DELIMITER;
     private static final int defaultSkip = 0;
     private static final int defaultLimit = 10;
 
@@ -193,7 +192,7 @@ public final class ClientExchangeManager implements Witness {
     }
 
     public void handleExchangeSpecific(final String id, final int limit) {
-        checkState(limit >= ExchangeConstants.UNLIMITED);
+        checkState(limit >= FeatureConstants.UNLIMITED);
         final Exchange axs = this.getExchange(id);
 
         if (axs != null) {

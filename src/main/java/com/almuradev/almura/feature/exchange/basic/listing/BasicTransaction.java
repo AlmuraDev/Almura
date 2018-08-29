@@ -5,10 +5,10 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.feature.store.listing.basic;
+package com.almuradev.almura.feature.exchange.basic.listing;
 
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.Transaction;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.Transaction;
 import com.google.common.base.MoreObjects;
 
 import java.time.Instant;

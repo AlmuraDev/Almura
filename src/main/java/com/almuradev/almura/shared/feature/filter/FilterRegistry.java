@@ -5,12 +5,12 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.feature.store.filter;
+package com.almuradev.almura.shared.feature.filter;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.shared.feature.store.StoreConstants;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -69,10 +69,10 @@ public final class FilterRegistry {
 
         final List<FilterElement<T>> elements = new ArrayList<>();
 
-        final String[] elementsSplit = filter.split(StoreConstants.DELIMETER);
+        final String[] elementsSplit = filter.split(FeatureConstants.DELIMITER);
 
         for (final String rawElement : elementsSplit) {
-            final int index = rawElement.indexOf(StoreConstants.EQUALITY);
+            final int index = rawElement.indexOf(FeatureConstants.EQUALITY);
             if (index == -1) {
                 continue;
             }
@@ -96,10 +96,10 @@ public final class FilterRegistry {
 
         final List<SorterElement<T>> elements = new ArrayList<>();
 
-        final String[] elementsSplit = sorter.split(StoreConstants.DELIMETER);
+        final String[] elementsSplit = sorter.split(FeatureConstants.DELIMITER);
 
         for (final String rawElement : elementsSplit) {
-            final int index = rawElement.indexOf(StoreConstants.EQUALITY);
+            final int index = rawElement.indexOf(FeatureConstants.EQUALITY);
             if (index == -1) {
                 continue;
             }

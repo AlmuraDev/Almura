@@ -5,20 +5,19 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.feature.store.listing;
+package com.almuradev.almura.feature.exchange.listing;
 
-import com.almuradev.almura.shared.item.DynamicCompoundStack;
+import com.almuradev.almura.shared.item.VanillaStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Collection;
 
 import javax.annotation.Nullable;
 
-public interface ForSaleItem extends DynamicCompoundStack {
+public interface ForSaleItem extends VanillaStack {
 
     int getRecord();
 
@@ -28,8 +27,6 @@ public interface ForSaleItem extends DynamicCompoundStack {
 
     BigDecimal getPrice();
 
-    Collection<Transaction> getTransactions();
-
     @Override
     default Item getItem() {
         return this.getListItem().getItem();
@@ -38,6 +35,11 @@ public interface ForSaleItem extends DynamicCompoundStack {
     @Override
     default int getQuantity() {
         return this.getListItem().getQuantity();
+    }
+
+    @Override
+    default void setQuantity(final int value) {
+        this.getListItem().setQuantity(value);
     }
 
     @Override

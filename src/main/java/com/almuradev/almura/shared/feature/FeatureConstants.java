@@ -5,11 +5,14 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange;
+package com.almuradev.almura.shared.feature;
 
 import java.text.DecimalFormat;
 
-public interface ExchangeConstants {
+public interface FeatureConstants {
+
+    String DELIMITER = ";";
+    String EQUALITY = "=";
 
     int UNLIMITED = -1;
     double MILLION = 1000000.0;
@@ -19,13 +22,13 @@ public interface ExchangeConstants {
 
     static String withSuffix(double value) {
         if (value < MILLION) {
-            return ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(value);
+            return FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(value);
         } else if (value < BILLION) {
-            return ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(value / MILLION) + "m";
+            return FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(value / MILLION) + "m";
         } else if (value < TRILLION) {
-            return ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(value / BILLION) + "b";
+            return FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(value / BILLION) + "b";
         } else {
-            return ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(value / TRILLION) + "t";
+            return FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(value / TRILLION) + "t";
         }
     }
 }

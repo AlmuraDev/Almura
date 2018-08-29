@@ -5,20 +5,18 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange;
+package com.almuradev.almura.feature.exchange.basic;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.shared.feature.store.Store;
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.feature.exchange.Exchange;
+import com.almuradev.almura.shared.feature.IngameFeature;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.google.common.base.MoreObjects;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.user.UserStorageService;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +38,6 @@ public final class BasicExchange implements Exchange {
 
     @Nullable private String creatorName;
     private boolean loaded = false;
-    private boolean dirty = false;
 
     public BasicExchange(final String id, final Instant created, final UUID creator, final String name, final String permission, final boolean
         isHidden) {
@@ -78,6 +75,14 @@ public final class BasicExchange implements Exchange {
     }
 
     @Override
+    public void syncCreatorNameToUniqueId() {
+        if (this.creator != IngameFeature.UNKNOWN_OWNER && Sponge.getPlatform().getExecutionType().isServer()) {
+            Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.creator)
+              .ifPresent(user -> this.creatorName = user.getName());
+        }
+    }
+
+    @Override
     public String getPermission() {
         return this.permission;
     }
@@ -104,7 +109,7 @@ public final class BasicExchange implements Exchange {
     }
 
     @Override
-    public void putListItemsFor(final UUID uuid, @Nullable List<ListItem> listItems) {
+    public void putListItemsFor(final UUID uuid, @Nullable final List<ListItem> listItems) {
         checkNotNull(uuid);
 
         this.listItems.remove(uuid);
@@ -132,7 +137,7 @@ public final class BasicExchange implements Exchange {
     }
 
     @Override
-    public void putForSaleItems(@Nullable Map<UUID, List<ForSaleItem>> forSaleItems) {
+    public void putForSaleItems(@Nullable final Map<UUID, List<ForSaleItem>> forSaleItems) {
         this.clearForSaleItems();
 
         if (forSaleItems != null) {
@@ -162,18 +167,8 @@ public final class BasicExchange implements Exchange {
     }
 
     @Override
-    public void setLoaded(boolean loaded) {
+    public void setLoaded(final boolean loaded) {
         this.loaded = loaded;
-    }
-
-    @Override
-    public boolean isDirty() {
-        return this.dirty;
-    }
-
-    @Override
-    public void setDirty(final boolean dirty) {
-        this.dirty = dirty;
     }
 
     @Override
@@ -181,20 +176,13 @@ public final class BasicExchange implements Exchange {
         return this.isHidden;
     }
 
-    public void refreshCreatorName() {
-        if (this.creator != Store.UNKNOWN_OWNER && Sponge.getPlatform().getExecutionType().isServer()) {
-            Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.creator)
-                .ifPresent(user -> this.creatorName = user.getName());
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void setCreatorName(@Nullable final String creatorName) {
-        this.creatorName = creatorName;
+    @Override
+    public void setCreatorName(@Nullable final String value) {
+        this.creatorName = value;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -202,12 +190,12 @@ public final class BasicExchange implements Exchange {
             return false;
         }
         final BasicExchange other = (BasicExchange) o;
-        return Objects.equals(id, other.id);
+        return Objects.equals(this.id, other.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(this.id);
     }
 
     @Override

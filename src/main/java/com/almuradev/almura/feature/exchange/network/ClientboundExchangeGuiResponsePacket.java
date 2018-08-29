@@ -10,8 +10,8 @@ package com.almuradev.almura.feature.exchange.network;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.ExchangeGuiType;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
@@ -46,7 +46,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
         }
 
         if (this.type == ExchangeGuiType.SPECIFIC) {
-            checkState(limit >= ExchangeConstants.UNLIMITED);
+            checkState(limit >= FeatureConstants.UNLIMITED);
             this.limit = limit;
         }
     }

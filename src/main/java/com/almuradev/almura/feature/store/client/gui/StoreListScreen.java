@@ -53,7 +53,7 @@ public class StoreListScreen extends SimpleScreen {
 
         // Detect if screen area is large enough to display.
         if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
-            clientNotificationManager.handlePopup(new PopupNotification("NPC Store Error",
+            clientNotificationManager.handlePopup(new PopupNotification("NPC IngameFeature Error",
                 "Screen area of: " + screenHeight + " x " + screenWidth + " required.", 5));
             this.close();
         }
@@ -81,11 +81,11 @@ public class StoreListScreen extends SimpleScreen {
         storeListArea.setBackgroundAlpha(215);
         storeListArea.setPadding(3, 3);
 
-        nameLabel = new UILabel(this, "Store Name");
+        nameLabel = new UILabel(this, "IngameFeature Name");
         nameLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         nameLabel.setPosition(-50, 10, Anchor.CENTER | Anchor.TOP);
 
-        idLabel = new UILabel(this, "Store ID");
+        idLabel = new UILabel(this, "IngameFeature ID");
         idLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         idLabel.setPosition(50, 10, Anchor.CENTER | Anchor.TOP);
 

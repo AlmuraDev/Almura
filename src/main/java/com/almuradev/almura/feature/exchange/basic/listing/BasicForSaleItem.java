@@ -5,23 +5,20 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.feature.store.listing.basic;
+package com.almuradev.almura.feature.exchange.basic.listing;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.feature.exchange.ExchangeConstants;
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
-import com.almuradev.almura.shared.feature.store.listing.Transaction;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.google.common.base.MoreObjects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.annotation.Nullable;
 
@@ -29,7 +26,6 @@ public final class BasicForSaleItem implements ForSaleItem {
 
     private final BasicListItem listItem;
     private final Instant created;
-    private final Collection<Transaction> transactions = new ArrayList<>();
 
     private int record;
     private BigDecimal price;
@@ -41,7 +37,7 @@ public final class BasicForSaleItem implements ForSaleItem {
         checkState(record >= 0, "Record must be greater than or equal to 0.");
         checkNotNull(price);
         checkState(price.doubleValue() >= 0, "Price must be greater than or equal to 0.");
-        checkState(price.doubleValue() <= ExchangeConstants.TRILLION, "Price must be lesser than or equal to 1 trillion.");
+        checkState(price.doubleValue() <= FeatureConstants.TRILLION, "Price must be lesser than or equal to 1 trillion.");
 
         this.listItem = listItem;
         this.record = record;
@@ -83,11 +79,6 @@ public final class BasicForSaleItem implements ForSaleItem {
     public void setCompound(@Nullable NBTTagCompound compound) {
         this.listItem.setCompound(compound);
         this.cacheStack = null;
-    }
-
-    @Override
-    public Collection<Transaction> getTransactions() {
-        return this.transactions;
     }
 
     @Override

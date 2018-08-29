@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.exchange.client.gui;
 
 import com.almuradev.almura.feature.exchange.Exchange;
-import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
@@ -16,7 +15,8 @@ import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
@@ -138,7 +138,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
 
         try {
             final BigDecimal newValue = new BigDecimal(value);
-            return newValue.doubleValue() > 0 && newValue.doubleValue() <= ExchangeConstants.TRILLION;
+            return newValue.doubleValue() > 0 && newValue.doubleValue() <= FeatureConstants.TRILLION;
         } catch (NumberFormatException e) {
             return false;
         }

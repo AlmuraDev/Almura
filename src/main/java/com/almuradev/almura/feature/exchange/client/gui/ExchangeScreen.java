@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
-import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
@@ -23,9 +22,9 @@ import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.almura.shared.feature.store.StoreConstants;
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.feature.FeatureConstants;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.almuradev.almura.shared.item.VirtualStack;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
@@ -57,7 +56,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -381,7 +379,7 @@ public final class ExchangeScreen extends SimpleScreen {
             if (entry.getValue().toString().isEmpty()) {
                 continue;
             }
-            filterQueryBuilder.append(entry.getKey()).append(StoreConstants.EQUALITY).append(entry.getValue()).append(StoreConstants.DELIMETER);
+            filterQueryBuilder.append(entry.getKey()).append(FeatureConstants.EQUALITY).append(entry.getValue()).append(FeatureConstants.DELIMITER);
         }
 
         // Not needed to be done this way in current form but adds native support if we allow multiple sorting patterns
@@ -390,7 +388,7 @@ public final class ExchangeScreen extends SimpleScreen {
             if (entry.getValue().isEmpty()) {
                 continue;
             }
-            sortQueryBuilder.append(entry.getKey()).append(StoreConstants.EQUALITY).append(entry.getValue()).append(StoreConstants.DELIMETER);
+            sortQueryBuilder.append(entry.getKey()).append(FeatureConstants.EQUALITY).append(entry.getValue()).append(FeatureConstants.DELIMITER);
         }
 
         final String filterQuery = filterQueryBuilder.toString().isEmpty() ? null : filterQueryBuilder.toString();
@@ -555,8 +553,8 @@ public final class ExchangeScreen extends SimpleScreen {
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             // Exact value
-            if (this.item.getQuantity() >= (int) ExchangeConstants.MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
+            if (this.item.getQuantity() >= (int) FeatureConstants.MILLION) {
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
             }
 
             this.add(this.image, this.itemLabel);
@@ -579,7 +577,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
             this.itemLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(
                     Text.of(TextColors.WHITE, displayName.toString(), TextColors.GRAY, " x ",
-                            ExchangeConstants.withSuffix(this.item.getQuantity()))));
+                        FeatureConstants.withSuffix(this.item.getQuantity()))));
         }
     }
 
@@ -624,12 +622,12 @@ public final class ExchangeScreen extends SimpleScreen {
                 final double forSaleDoublePrice = forSalePrice.doubleValue();
 
                 this.priceLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE
-                        .serialize(Text.of(TextColors.GOLD, ExchangeConstants.withSuffix(forSaleDoublePrice), TextColors.GRAY, "/ea")));
+                        .serialize(Text.of(TextColors.GOLD, FeatureConstants.withSuffix(forSaleDoublePrice), TextColors.GRAY, "/ea")));
                 this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
                 // Exact value
                 this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
-                        + ": " + ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));
+                        + ": " + FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));
             }
 
             this.itemNameSpaceAvailable = this.getWidth()
@@ -682,13 +680,13 @@ public final class ExchangeScreen extends SimpleScreen {
 
             final double price = this.item.getPrice().doubleValue();
 
-            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, ExchangeConstants.withSuffix(price), TextColors.GRAY, "/ea"));
+            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, FeatureConstants.withSuffix(price), TextColors.GRAY, "/ea"));
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             // Exact value
             this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
-                    + ": " + ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getListItem().getQuantity() * price));
+                    + ": " + FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getListItem().getQuantity() * price));
 
             this.itemNameSpaceAvailable = this.getWidth()
                     - (this.priceLabel.isVisible() ? this.priceLabel.getWidth() : 0)

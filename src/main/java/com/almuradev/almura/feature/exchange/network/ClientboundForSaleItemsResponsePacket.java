@@ -9,10 +9,10 @@ package com.almuradev.almura.feature.exchange.network;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
-import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
+import com.almuradev.almura.feature.exchange.basic.listing.BasicForSaleItem;
+import com.almuradev.almura.feature.exchange.basic.listing.BasicListItem;
 import com.almuradev.almura.shared.util.ByteBufUtil;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import io.netty.buffer.ByteBuf;

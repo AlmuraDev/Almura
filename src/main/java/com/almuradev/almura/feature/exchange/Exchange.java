@@ -7,8 +7,9 @@
  */
 package com.almuradev.almura.feature.exchange;
 
-import com.almuradev.almura.shared.feature.store.Store;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.feature.IngameFeature;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-public interface Exchange extends Store {
+public interface Exchange extends IngameFeature {
 
     Map<UUID, List<ListItem>> getListItems();
 
@@ -28,4 +29,14 @@ public interface Exchange extends Store {
     void putListItemsFor(final UUID uuid, @Nullable final List<ListItem> listItems);
 
     void clearListItems();
+
+    Map<UUID, List<ForSaleItem>> getForSaleItems();
+
+    Optional<List<ForSaleItem>> getForSaleItemsFor(final UUID uuid);
+
+    void putForSaleItems(@Nullable final Map<UUID, List<ForSaleItem>> forSaleItems);
+
+    void putForSaleItemsFor(final UUID uuid, @Nullable final List<ForSaleItem> forSaleItems);
+
+    void clearForSaleItems();
 }

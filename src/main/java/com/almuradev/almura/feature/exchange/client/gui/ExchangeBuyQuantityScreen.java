@@ -8,14 +8,14 @@
 package com.almuradev.almura.feature.exchange.client.gui;
 
 import com.almuradev.almura.feature.exchange.Exchange;
-import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
+import com.almuradev.almura.shared.feature.FeatureConstants;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -121,8 +121,8 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
         try {
             final int value = Integer.parseInt(rawValue);
 
-            this.perItemValueLabel.setText(ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(this.toBuyItem.getPrice()));
-            this.totalValueLabel.setText(ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(
+            this.perItemValueLabel.setText(FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.toBuyItem.getPrice()));
+            this.totalValueLabel.setText(FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(
                     this.toBuyItem.getPrice().doubleValue() * value));
 
             return value > 0 && value <= this.toBuyItem.getQuantity();

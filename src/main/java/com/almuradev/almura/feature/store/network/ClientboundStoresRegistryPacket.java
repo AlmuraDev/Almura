@@ -5,10 +5,10 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.exchange.network;
+package com.almuradev.almura.feature.store.network;
 
-import com.almuradev.almura.feature.exchange.basic.BasicExchange;
-import com.almuradev.almura.feature.exchange.Exchange;
+import com.almuradev.almura.feature.store.Store;
+import com.almuradev.almura.feature.store.basic.BasicStore;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
@@ -21,15 +21,15 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-public final class ClientboundExchangeRegistryPacket implements Message {
+public final class ClientboundStoresRegistryPacket implements Message {
 
-    @Nullable public Set<Exchange> exchanges;
+    @Nullable public Set<Store> stores;
 
-    public ClientboundExchangeRegistryPacket() {
+    public ClientboundStoresRegistryPacket() {
     }
 
-    public ClientboundExchangeRegistryPacket(@Nullable final Set<Exchange> exchanges) {
-        this.exchanges = exchanges;
+    public ClientboundStoresRegistryPacket(@Nullable final Set<Store> stores) {
+        this.stores = stores;
     }
 
     @Override
@@ -37,7 +37,7 @@ public final class ClientboundExchangeRegistryPacket implements Message {
         final int count = buf.readInteger();
 
         if (count > 0) {
-            this.exchanges = new HashSet<>();
+            this.stores = new HashSet<>();
 
             for (int i = 0; i < count; i++) {
                 final String id = buf.readString();
@@ -55,25 +55,25 @@ public final class ClientboundExchangeRegistryPacket implements Message {
                 final String creatorName = buf.readBoolean() ? buf.readString() : null;
                 final String permission = buf.readString();
                 final boolean isHidden = buf.readBoolean();
-                final BasicExchange axs = new BasicExchange(id, created, creator, name, permission, isHidden);
-                axs.setCreatorName(creatorName);
+                final BasicStore store = new BasicStore(id, created, creator, name, permission, isHidden);
+                store.setCreatorName(creatorName);
 
-                this.exchanges.add(axs);
+                this.stores.add(store);
             }
         }
     }
 
     @Override
     public void writeTo(final ChannelBuf buf) {
-        buf.writeInteger(this.exchanges == null ? 0 : this.exchanges.size());
+        buf.writeInteger(this.stores == null ? 0 : this.stores.size());
 
-        if (this.exchanges != null) {
-            for (final Exchange axs : this.exchanges) {
-                buf.writeString(axs.getId());
-                buf.writeString(axs.getName());
+        if (this.stores != null) {
+            for (final Store store : this.stores) {
+                buf.writeString(store.getId());
+                buf.writeString(store.getName());
 
                 try {
-                    final byte[] createdData = SerializationUtil.objectToBytes(axs.getCreated());
+                    final byte[] createdData = SerializationUtil.objectToBytes(store.getCreated());
                     buf.writeInteger(createdData.length);
                     buf.writeBytes(createdData);
                 } catch (IOException e) {
@@ -81,18 +81,18 @@ public final class ClientboundExchangeRegistryPacket implements Message {
                     continue;
                 }
 
-                final byte[] creatorData = SerializationUtil.toBytes(axs.getCreator());
+                final byte[] creatorData = SerializationUtil.toBytes(store.getCreator());
                 buf.writeInteger(creatorData.length);
                 buf.writeBytes(creatorData);
 
-                final String creatorName = axs.getCreatorName().orElse(null);
+                final String creatorName = store.getCreatorName().orElse(null);
                 buf.writeBoolean(creatorName != null);
                 if (creatorName != null) {
                     buf.writeString(creatorName);
                 }
 
-                buf.writeString(axs.getPermission());
-                buf.writeBoolean(axs.isHidden());
+                buf.writeString(store.getPermission());
+                buf.writeBoolean(store.isHidden());
             }
         }
     }

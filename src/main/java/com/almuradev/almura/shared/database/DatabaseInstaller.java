@@ -44,9 +44,8 @@ public final class DatabaseInstaller implements Witness {
         }
 
         try (final DSLContext context = this.manager.createContext(true)) {
-            // TODO DO NOT UNCOMMENT THESE UNTIL ZIDANE SAYS SO
             this.setupTablesForFeature(context, "axs");
-            //this.setupTablesForFeature("shop");
+            this.setupTablesForFeature(context, "store");
             this.setupTablesForFeature(context, "title");
         } catch (Exception ex) {
             throw new RuntimeException(ex);

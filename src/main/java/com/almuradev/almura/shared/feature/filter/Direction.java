@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.feature.store.filter;
+package com.almuradev.almura.shared.feature.filter;
 
 import java.util.Optional;
 

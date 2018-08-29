@@ -5,20 +5,18 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.feature.store.listing.basic;
+package com.almuradev.almura.feature.exchange.basic.listing;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.shared.feature.store.Store;
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
+import com.almuradev.almura.shared.feature.IngameFeature;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.google.common.base.MoreObjects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.user.UserStorageService;
 
@@ -74,11 +72,6 @@ public final class BasicListItem implements ListItem {
     }
 
     @Override
-    public void setRecord(final Integer record) {
-        this.record = record;
-    }
-
-    @Override
     public Instant getCreated() {
         return this.created;
     }
@@ -94,18 +87,13 @@ public final class BasicListItem implements ListItem {
     }
 
     @Override
-    public void setSellerName(@Nullable final String sellerName) {
-        this.sellerName = sellerName;
-    }
-
-    @Override
     public void setForSaleItem(@Nullable ForSaleItem forSaleItem) {
         this.forSaleItem = forSaleItem;
     }
 
     @Override
     public void syncSellerNameToUniqueId() {
-        if (this.seller != Store.UNKNOWN_OWNER) {
+        if (this.seller != IngameFeature.UNKNOWN_OWNER) {
             Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.seller)
               .ifPresent(user -> this.sellerName = user.getName());
         }
@@ -184,6 +172,11 @@ public final class BasicListItem implements ListItem {
         }
 
         return this.cacheStack;
+    }
+
+    @Override
+    public void setSellerName(@Nullable final String sellerName) {
+        this.sellerName = sellerName;
     }
 
     @Override

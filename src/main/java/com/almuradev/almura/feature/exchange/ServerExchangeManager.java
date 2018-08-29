@@ -11,6 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.exchange.basic.BasicExchange;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
@@ -22,12 +23,13 @@ import com.almuradev.almura.feature.exchange.network.ClientboundTransactionCompl
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
-import com.almuradev.almura.shared.feature.store.Store;
-import com.almuradev.almura.shared.feature.store.filter.FilterRegistry;
-import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.ListItem;
-import com.almuradev.almura.shared.feature.store.listing.basic.BasicForSaleItem;
-import com.almuradev.almura.shared.feature.store.listing.basic.BasicListItem;
+import com.almuradev.almura.shared.feature.IngameFeature;
+import com.almuradev.almura.shared.feature.FeatureConstants;
+import com.almuradev.almura.shared.feature.filter.FilterRegistry;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
+import com.almuradev.almura.feature.exchange.basic.listing.BasicForSaleItem;
+import com.almuradev.almura.feature.exchange.basic.listing.BasicListItem;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.SerializationUtil;
@@ -106,6 +108,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     private final ServerNotificationManager notificationManager;
 
     private final Map<String, Exchange> exchanges = new HashMap<>();
+    private final List<UUID> playerSpecificInitiatorIds = new ArrayList<>();
 
     @Inject
     public ServerExchangeManager(final PluginContainer container, final Scheduler scheduler, final Logger logger, @ChannelId(NetworkConfig.CHANNEL)
@@ -188,7 +191,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 this.exchanges.putAll(exchanges);
 
                 if (this.exchanges.isEmpty()) {
-                    final BasicExchange exchange = new BasicExchange("almura.exchange.global", Instant.now(), Store.UNKNOWN_OWNER, "Global "
+                    final BasicExchange exchange = new BasicExchange("almura.exchange.global", Instant.now(), IngameFeature.UNKNOWN_OWNER, "Global "
                         + "Exchange", "almura.exchange.global", false);
                     this.exchanges.put("almura.exchange.global", exchange);
 
@@ -209,14 +212,18 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                 this.logger.info("Loaded [{}] exchange(s).", this.exchanges.size());
 
-                this.exchanges.values().forEach(axs -> ((BasicExchange) axs).refreshCreatorName());
+                this.exchanges.values().forEach(IngameFeature::syncCreatorNameToUniqueId);
 
                 Sponge.getServer().getOnlinePlayers().forEach(this::syncExchangeRegistryTo);
             })
             .submit(this.container);
     }
 
-    private final List<UUID> playerSpecificInitiatorIds = new ArrayList<>();
+    void openExchangeManage(final Player player) {
+        checkNotNull(player);
+
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.MANAGE));
+    }
 
     void openExchangeSpecific(final Player player, final Exchange axs) {
         checkNotNull(player);
@@ -273,12 +280,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
             this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
         }
-    }
-
-    void openExchangeManage(final Player player) {
-        checkNotNull(player);
-
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.MANAGE));
     }
 
     public void handleExchangeSpecificOffer(final Player player, final String id) {
@@ -340,7 +341,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                       .createTaskBuilder()
                       .execute(() -> {
                           final BasicExchange basicExchange = new BasicExchange(id, created, creator, name, permission, isHidden);
-                          basicExchange.refreshCreatorName();
+                          basicExchange.syncCreatorNameToUniqueId();
 
                           this.exchanges.put(id, basicExchange);
 
@@ -398,7 +399,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 }
             })
             .submit(this.container);
-
     }
 
     public void handleExchangeDelete(final Player player, final String id) {
@@ -990,8 +990,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                 axs.putForSaleItemsFor(player.getUniqueId(), forSaleItemsRef);
                             }
 
-                            found.setForSaleItem(basicForSaleItem);
-
                             forSaleItemsRef.add(basicForSaleItem);
 
                             this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems, null));
@@ -1081,9 +1079,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     }
 
                     ExchangeQueries
-                      .createUpdateListItemLastKnownPrice(listItemRecNo, forSaleItem.getPrice())
-                      .build(context)
-                      .execute();
+                        .createUpdateListItemLastKnownPrice(listItemRecNo, forSaleItem.getPrice())
+                        .build(context)
+                        .execute();
 
                     this.scheduler
                         .createTaskBuilder()
@@ -1288,9 +1286,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final double total = price.doubleValue() * quantity;
 
         if (total > balance.doubleValue()) {
-            final String formattedTotal = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(total);
-            final String formattedBalance = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(balance.doubleValue());
-            final String formattedDifference = ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(total - balance.doubleValue());
+            final String formattedTotal = FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total);
+            final String formattedBalance = FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(balance.doubleValue());
+            final String formattedDifference = FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total - balance.doubleValue());
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"),
                     Text.of("You attempted to purchase items totalling to ", TextColors.RED, formattedTotal, TextColors.RESET, " while you only have ",
                             TextColors.GREEN, formattedBalance, TextColors.RESET, ".", Text.NEW_LINE, Text.NEW_LINE, "You need ",
@@ -1525,7 +1523,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     }
 
     private int getListingsLimit(final Player player) {
-        // TODO Need to determine what controls this ultimately, 100 for now.
+        // TODO Do this better when released standalone
         int slots = 0;
 
         if (player.hasPermission("almura.exchange.admin")) {

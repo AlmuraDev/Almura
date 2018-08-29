@@ -18,7 +18,7 @@ import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
 import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
 import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
-import com.almuradev.almura.shared.feature.store.Store;
+import com.almuradev.almura.shared.feature.IngameFeature;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
@@ -361,7 +361,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
             // Creator by (Name)
             // This nonsense is brought to you by [sponge].
-            final String name = Store.UNKNOWN_OWNER.equals(exchange.getCreator())
+            final String name = IngameFeature.UNKNOWN_OWNER.equals(exchange.getCreator())
                     ? I18n.format("almura.text.exchange.unknown")
                     : exchange.getCreatorName().orElse(I18n.format("almura.text.exchange.unknown"));
             this.tbCreatorName.setText(name);

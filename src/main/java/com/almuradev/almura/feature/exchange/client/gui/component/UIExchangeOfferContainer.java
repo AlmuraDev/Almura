@@ -7,9 +7,8 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui.component;
 
-import static com.almuradev.almura.feature.exchange.ExchangeConstants.MILLION;
+import static com.almuradev.almura.shared.feature.FeatureConstants.MILLION;
 
-import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
@@ -19,6 +18,7 @@ import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.item.VirtualStack;
 import com.almuradev.almura.shared.util.MathUtil;
@@ -428,13 +428,13 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             this.itemLabelText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
                     Text.of(TextColors.WHITE, displayName));
             this.itemQuantityText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GRAY, " x ", ExchangeConstants.withSuffix(this.item.getQuantity())));
+                    Text.of(TextColors.GRAY, " x ", FeatureConstants.withSuffix(this.item.getQuantity())));
 
             this.itemLabel = new UIExpandingLabel(gui, this.itemLabelText + this.itemQuantityText);
             this.itemLabel.setPosition(SimpleScreen.getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             if (this.item.getQuantity() >= (int) MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, ExchangeConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
+                this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
             }
 
             this.lastKnownQuantity = this.item.getQuantity();
@@ -468,7 +468,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             // Update the item label if the quantity has changed to reflect the new quantity
             if (this.lastKnownQuantity != this.item.getQuantity()) {
                 this.itemQuantityText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                        Text.of(TextColors.GRAY, " x ", ExchangeConstants.withSuffix(this.item.getQuantity())));
+                        Text.of(TextColors.GRAY, " x ", FeatureConstants.withSuffix(this.item.getQuantity())));
                 this.itemLabel.setText(this.itemLabelText + this.itemQuantityText);
                 this.lastKnownQuantity = this.item.getQuantity();
             }

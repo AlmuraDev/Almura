@@ -15,8 +15,8 @@ import static com.almuradev.generated.axs.Tables.AXS_TRANSACTION;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.shared.database.DatabaseQuery;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
@@ -46,8 +46,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 public final class ExchangeQueries {
 
@@ -132,7 +130,7 @@ public final class ExchangeQueries {
         checkNotNull(seller);
         checkNotNull(item);
         checkNotNull(item.getRegistryName());
-        checkState(quantity >= ExchangeConstants.UNLIMITED);
+        checkState(quantity >= 0);
         checkState(metadata >= 0);
         checkState(index >= 0);
 
@@ -155,7 +153,7 @@ public final class ExchangeQueries {
     public static DatabaseQuery<UpdateConditionStep<AxsListItemRecord>> createUpdateListItem(final int listItemRecNo, final int quantity,
         final int index) {
         checkState(listItemRecNo >= 0);
-        checkState(quantity >= ExchangeConstants.UNLIMITED);
+        checkState(quantity >= 0);
         checkState(index >= 0);
 
         return context -> context
@@ -199,7 +197,7 @@ public final class ExchangeQueries {
         checkState(listItemRecNo >= 0);
         checkNotNull(lastKnownPrice);
         checkState(lastKnownPrice.doubleValue() >= 0);
-        checkState(lastKnownPrice.doubleValue() <= ExchangeConstants.TRILLION);
+        checkState(lastKnownPrice.doubleValue() <= FeatureConstants.TRILLION);
 
         return context -> context.update(AXS_LIST_ITEM).set(AXS_LIST_ITEM.LAST_KNOWN_PRICE, lastKnownPrice).where(AXS_LIST_ITEM.REC_NO
           .eq(listItemRecNo));
@@ -271,7 +269,7 @@ public final class ExchangeQueries {
         checkState(listItemRecNo >= 0);
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
-        checkState(price.doubleValue() <= ExchangeConstants.TRILLION);
+        checkState(price.doubleValue() <= FeatureConstants.TRILLION);
 
         return context -> {
             final InsertValuesStep3<AxsForSaleItemRecord, Timestamp, Integer, BigDecimal> insertionStep = context
@@ -300,7 +298,7 @@ public final class ExchangeQueries {
         checkState(forSaleItemRecNo >= 0);
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
-        checkState(price.doubleValue() <= ExchangeConstants.TRILLION);
+        checkState(price.doubleValue() <= FeatureConstants.TRILLION);
 
         return context -> context
             .update(AXS_FOR_SALE_ITEM)
@@ -319,7 +317,7 @@ public final class ExchangeQueries {
         checkNotNull(buyer);
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
-        checkState(price.doubleValue() <= ExchangeConstants.TRILLION);
+        checkState(price.doubleValue() <= FeatureConstants.TRILLION);
         checkState(quantity > 0);
 
         final byte[] buyerData = SerializationUtil.toBytes(buyer);

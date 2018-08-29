@@ -5,13 +5,12 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.feature.store.listing;
+package com.almuradev.almura.feature.exchange.listing;
 
 import com.almuradev.almura.shared.item.VanillaStack;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,11 +43,6 @@ public interface ListItem extends VanillaStack {
 
     @Override
     ListItem copy();
-
-    /**
-     * INTERNAL USE ONLY
-     */
-    void setRecord(final Integer record);
 
     /**
      * INTERNAL USE ONLY

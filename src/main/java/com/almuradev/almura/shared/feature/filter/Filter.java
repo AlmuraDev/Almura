@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.shared.feature.store.filter;
+package com.almuradev.almura.shared.feature.filter;
 
 @FunctionalInterface
 public interface Filter<T> {
