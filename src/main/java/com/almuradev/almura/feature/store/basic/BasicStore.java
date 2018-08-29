@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.store.basic;
 import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import com.almuradev.almura.feature.store.listing.SellingItem;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.feature.IngameFeature;
 import com.google.common.base.MoreObjects;
 import org.spongepowered.api.Sponge;
@@ -73,7 +74,7 @@ public final class BasicStore implements Store {
 
     @Override
     public void syncCreatorNameToUniqueId() {
-        if (this.creator != IngameFeature.UNKNOWN_OWNER && Sponge.getPlatform().getExecutionType().isServer()) {
+        if (this.creator != FeatureConstants.UNKNOWN_OWNER && Sponge.getPlatform().getExecutionType().isServer()) {
             Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.creator)
                 .ifPresent(user -> this.creatorName = user.getName());
         }

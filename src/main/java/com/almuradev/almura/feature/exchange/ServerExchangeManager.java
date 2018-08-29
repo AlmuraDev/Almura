@@ -191,7 +191,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 this.exchanges.putAll(exchanges);
 
                 if (this.exchanges.isEmpty()) {
-                    final BasicExchange exchange = new BasicExchange("almura.exchange.global", Instant.now(), IngameFeature.UNKNOWN_OWNER, "Global "
+                    final BasicExchange exchange = new BasicExchange("almura.exchange.global", Instant.now(), FeatureConstants.UNKNOWN_OWNER, "Global "
                         + "Exchange", "almura.exchange.global", false);
                     this.exchanges.put("almura.exchange.global", exchange);
 

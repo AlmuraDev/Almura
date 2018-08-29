@@ -15,8 +15,6 @@ import javax.annotation.Nullable;
 
 public interface IngameFeature {
 
-    UUID UNKNOWN_OWNER = new UUID(0, 0);
-
     String getId();
 
     String getName();

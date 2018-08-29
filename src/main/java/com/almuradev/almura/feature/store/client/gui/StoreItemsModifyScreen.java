@@ -71,7 +71,7 @@ public class StoreItemsModifyScreen extends SimpleScreen {
 
         // Detect if screen area is large enough to display.
         if (screenWidth > resolution.getScaledWidth() || screenHeight > resolution.getScaledHeight()) {
-            clientNotificationManager.handlePopup(new PopupNotification("NPC IngameFeature Error",
+            clientNotificationManager.handlePopup(new PopupNotification("Store Error",
                 "Screen area of: " + screenHeight + " x " + screenWidth + " required.", 5));
             this.close();
         }

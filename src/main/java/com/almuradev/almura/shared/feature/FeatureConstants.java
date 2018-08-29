@@ -8,16 +8,24 @@
 package com.almuradev.almura.shared.feature;
 
 import java.text.DecimalFormat;
+import java.util.UUID;
 
 public interface FeatureConstants {
 
+    UUID UNKNOWN_OWNER = new UUID(0, 0);
+
     String DELIMITER = ";";
+
     String EQUALITY = "=";
 
     int UNLIMITED = -1;
+
     double MILLION = 1000000.0;
+
     double BILLION = 1000000000.0;
+
     double TRILLION = 1000000000000.0;
+
     DecimalFormat CURRENCY_DECIMAL_FORMAT = new DecimalFormat("#,###.##");
 
     static String withSuffix(double value) {

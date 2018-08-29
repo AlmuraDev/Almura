@@ -37,7 +37,7 @@ create table if not exists "store_buying_item"
   "created"      timestamp    default current_timestamp not null,
   "store"        varchar(255) not null,
   "item_type"    varchar(255) not null,
-  "quantity"     int          default -1 not null,
+  "quantity"     int          default 1 not null,
   "metadata"     int          default 0 not null,
   "price"        decimal      default 0 not null,
   "index"        int          default 0 not null,

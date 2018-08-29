@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.exchange.basic.listing;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.feature.IngameFeature;
 import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.feature.exchange.listing.ListItem;
@@ -93,7 +94,7 @@ public final class BasicListItem implements ListItem {
 
     @Override
     public void syncSellerNameToUniqueId() {
-        if (this.seller != IngameFeature.UNKNOWN_OWNER) {
+        if (this.seller != FeatureConstants.UNKNOWN_OWNER) {
             Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.seller)
               .ifPresent(user -> this.sellerName = user.getName());
         }

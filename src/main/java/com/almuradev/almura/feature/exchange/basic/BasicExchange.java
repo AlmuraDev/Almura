@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.exchange.basic;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.exchange.Exchange;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.feature.IngameFeature;
 import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.feature.exchange.listing.ListItem;
@@ -76,7 +77,7 @@ public final class BasicExchange implements Exchange {
 
     @Override
     public void syncCreatorNameToUniqueId() {
-        if (this.creator != IngameFeature.UNKNOWN_OWNER && Sponge.getPlatform().getExecutionType().isServer()) {
+        if (this.creator != FeatureConstants.UNKNOWN_OWNER && Sponge.getPlatform().getExecutionType().isServer()) {
             Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(this.creator)
               .ifPresent(user -> this.creatorName = user.getName());
         }

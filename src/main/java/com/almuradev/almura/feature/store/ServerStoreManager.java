@@ -17,6 +17,7 @@ import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePac
 import com.almuradev.almura.feature.store.network.ClientboundStoresRegistryPacket;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.feature.IngameFeature;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.SerializationUtil;
@@ -151,7 +152,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
 
                 if (this.stores.isEmpty()) {
                     // TODO TEST CODE, remove before going live
-                    final BasicStore store = new BasicStore("almura.store.test", Instant.now(), IngameFeature.UNKNOWN_OWNER, "Test "
+                    final BasicStore store = new BasicStore("almura.store.test", Instant.now(), FeatureConstants.UNKNOWN_OWNER, "Test "
                         + "Store", "almura.store.test", false);
                     this.stores.put("almura.store.test", store);
 

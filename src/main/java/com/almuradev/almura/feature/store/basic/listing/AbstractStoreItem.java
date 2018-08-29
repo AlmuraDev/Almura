@@ -40,7 +40,6 @@ public abstract class AbstractStoreItem implements StoreItem {
         checkNotNull(created);
         checkNotNull(item);
         checkState(metadata >= 0);
-        checkState(quantity >= 1);
         checkNotNull(price);
         checkState(index >= 0);
 
