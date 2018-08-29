@@ -27,14 +27,10 @@ import org.spongepowered.api.registry.CatalogRegistryModule;
 import org.spongepowered.api.registry.RegistrationPhase;
 import org.spongepowered.api.registry.util.DelayedRegistration;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,108 +43,19 @@ public final class AccessoryTypeRegistryModule implements CatalogRegistryModule<
     private final Path configRoot;
     private final Logger logger;
 
-    private final Map<String, Class<? extends Accessory>> parentTypeByClass = new HashMap<>();
     private Map<String, AccessoryType> accessoryTypes = new HashMap<>();
 
     @Inject
     public AccessoryTypeRegistryModule(@ConfigDir(sharedRoot = false) final Path configRoot, final Logger logger) {
         this.configRoot = configRoot;
         this.logger = logger;
-
-        // TODO I dislike this but it is better than having them provide the full classpath in config :/.
-        this.parentTypeByClass.put("almura:halo", HaloAccessory.class);
-        this.parentTypeByClass.put("almura:wings", WingsAccessory.class);
     }
 
     @DelayedRegistration(RegistrationPhase.PRE_INIT)
     @Override
     public void registerDefaults() {
-        final Path accessoryPath = this.configRoot.resolve(AccessoryConfig.CONFIG_NAME);
-
-        boolean canContinue = true;
-        boolean exists = true;
-        if (Files.notExists(accessoryPath)) {
-            try {
-                Files.createDirectories(accessoryPath.getParent());
-            } catch (IOException e) {
-                canContinue = false;
-                e.printStackTrace();
-            }
-
-            exists = false;
-        }
-
-        if (canContinue) {
-            final ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
-                    .setPath(accessoryPath)
-                    .setRenderOptions(
-                            ConfigRenderOptions.defaults()
-                                    .setFormatted(true)
-                                    .setComments(true)
-                                    .setOriginComments(false)
-                    )
-                    .build();
-
-            if (!exists) {
-                try {
-                    loader.save(loader.createEmptyNode());
-                } catch (IOException e) {
-                    canContinue = false;
-                    e.printStackTrace();
-                }
-            }
-
-            if (canContinue) {
-                ConfigurationNode rootNode = null;
-                try {
-                    rootNode = loader.load();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                if (rootNode != null) {
-                    final ConfigurationNode accessoriesNode = rootNode.getNode(AccessoryConfig.ACCESSORIES);
-                    if (!accessoriesNode.isVirtual()) {
-                        accessoriesNode.getChildrenMap().forEach((namespace, types) -> {
-
-                            String parentId = String.valueOf(namespace);
-                            String parentDomain = parentId.split(":")[0];
-
-                            final Class<? extends Accessory> typeClass = this.parentTypeByClass.get(parentId);
-                            if (typeClass == null) {
-                                this.logger.error("Unknown accessory type '{}' in configuration.", parentId);
-
-                            } else {
-                                types.getChildrenMap().forEach((subtype, properties) -> {
-
-                                    final String id = parentId + "_" + subtype;
-                                    final String name = properties.getNode(AccessoryConfig.NAME).getString(id);
-                                    List<String> textures = null;
-                                    try {
-                                        textures = properties.getNode(AccessoryConfig.TEXTURES).getList(TypeToken.of(String.class));
-                                    } catch (ObjectMappingException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    if (textures == null || textures.isEmpty()) {
-                                        this.logger.warn("No textures were provided for '{}'. Will render with a missing texture...", id);
-                                    }
-
-                                    final List<ResourceLocation> textureLayers = new ArrayList<>();
-
-                                    if (textures != null) {
-                                        textures.forEach((texture) -> textureLayers.add(new ResourceLocation(parentDomain, texture)));
-                                    }
-
-                                    this.accessoryTypes.put(id, new AlmuraAccessoryType(id, name, typeClass, textureLayers.toArray(new
-                                            ResourceLocation[textureLayers.size()])));
-                                });
-                            }
-                        });
-                    }
-                }
-            }
-        }
+        this.accessoryTypes.put("almura:halo_test", new AlmuraAccessoryType("almura:halo_test", "Halo Test", HaloAccessory.class));
+        this.accessoryTypes.put("almura:wings_test", new AlmuraAccessoryType("almura:wings_test", "Wings Test", WingsAccessory.class));
     }
 
     @Override

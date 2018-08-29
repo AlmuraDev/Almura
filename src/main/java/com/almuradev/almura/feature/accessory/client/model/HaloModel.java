@@ -51,14 +51,19 @@ public final class HaloModel extends ModelBase {
     public void render(final Entity entityIn, final float limbSwing, final float limbSwingAmount, final float ageInTicks, final float netHeadYaw,
         final float headPitch, final float scale) {
 
+        this.right.mirror = false;
+        this.front.mirror = false;
+        this.left.mirror = false;
+        this.back.mirror = false;
+
         if (this.rootModel instanceof ModelBiped) {
-            this.right.rotateAngleX = -((ModelBiped) this.rootModel).bipedHead.rotateAngleX;
-
-            this.front.rotateAngleX = -((ModelBiped) this.rootModel).bipedHead.rotateAngleX;
-
-            this.left.rotateAngleX = -((ModelBiped) this.rootModel).bipedHead.rotateAngleX;
-
-            this.back.rotateAngleX = -((ModelBiped) this.rootModel).bipedHead.rotateAngleX;
+//            this.right.rotateAngleX = -((ModelBiped) this.rootModel).bipedHead.rotateAngleX;
+//
+//            this.front.rotateAngleX = -((ModelBiped) this.rootModel).bipedHead.rotateAngleX;
+//
+//            this.left.rotateAngleX = -((ModelBiped) this.rootModel).bipedHead.rotateAngleX;
+//
+//            this.back.rotateAngleX = -((ModelBiped) this.rootModel).bipedHead.rotateAngleX;
 
             GlStateManager.pushMatrix();
 
@@ -71,8 +76,8 @@ public final class HaloModel extends ModelBase {
 
             Minecraft.getMinecraft().getTextureManager().bindTexture(textureLocation);
 
-            GlStateManager.scale(0.75F, 0.75F, 0.75F);
-            GlStateManager.translate(0.0F, 16.0F * scale, 0.0F);
+            //GlStateManager.scale(0.75F, 0.75F, 0.75F);
+            GlStateManager.translate(0.0F, 0.75F, 0.0F);
 
             this.right.render(scale);
             this.front.render(scale);

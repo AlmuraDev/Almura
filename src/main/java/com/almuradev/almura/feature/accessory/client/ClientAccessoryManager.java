@@ -71,7 +71,8 @@ public final class ClientAccessoryManager implements Witness {
 
         final Map<AccessoryType, Accessory> accessories = this.selectedAccessories.get(player.getUniqueID());
         if (accessories != null) {
-            accessories.values().forEach(accessory -> accessory.getModel(model).render(player, 0f, 0f, 0f, 0f, 0f, 0.0625f));
+            accessories.values().forEach(accessory -> accessory.getModel(model).render(player, 0f, 0f, 0f, player.rotationYawHead, player.rotationPitch,
+              0.0625f));
         }
     }
 

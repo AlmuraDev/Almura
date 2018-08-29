@@ -53,13 +53,13 @@ public abstract class Accessory {
             return false;
         }
         final Accessory other = (Accessory) o;
-        return Objects.equals(holderUniqueId, other.holderUniqueId) &&
-                Objects.equals(type, other.type);
+        return Objects.equals(this.holderUniqueId, other.holderUniqueId) &&
+                Objects.equals(this.type, other.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(holderUniqueId, type);
+        return Objects.hash(this.holderUniqueId, type);
     }
 
     @Override
