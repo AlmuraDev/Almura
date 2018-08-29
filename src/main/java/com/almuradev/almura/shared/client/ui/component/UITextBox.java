@@ -9,6 +9,7 @@ package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import org.lwjgl.input.Keyboard;
 
@@ -114,6 +115,11 @@ public class UITextBox extends UITextField {
             return false;
         }
 
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            this.closeDeep(this);
+            return false;
+        }
+
         if (keyCode == Keyboard.KEY_TAB && !this.acceptsTab) {
             if (this.parent instanceof UIContainer) {
                 if (SimpleScreen.isShiftKeyDown()) {
@@ -175,5 +181,16 @@ public class UITextBox extends UITextField {
     public UITextBox setOnEnter(Consumer<UITextBox> onEnter) {
         this.onEnter = onEnter;
         return this;
+    }
+
+    private void closeDeep(final UIComponent component) {
+        if (component.getParent() instanceof UIForm) {
+            ((UIForm) component.getParent()).onClose();
+            return;
+        }
+
+        if (component.getParent() != null) {
+            this.closeDeep(component.getParent());
+        }
     }
 }
