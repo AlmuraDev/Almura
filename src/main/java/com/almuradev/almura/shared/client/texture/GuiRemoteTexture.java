@@ -77,19 +77,4 @@ public class GuiRemoteTexture extends GuiTexture {
         Minecraft.getMinecraft().getTextureManager().loadTexture(location, new BufferedTexture(location, image));
         return location;
     }
-
-    private final class BufferedTexture extends SimpleTexture {
-
-        private final BufferedImage image;
-
-        BufferedTexture(ResourceLocation key, BufferedImage image) {
-            super(key);
-            this.image = image;
-        }
-
-        @Override
-        public void loadTexture(IResourceManager resourceManager) throws IOException {
-            TextureUtil.uploadTextureImageAllocate(getGlTextureId(), this.image, false, false);
-        }
-    }
 }
