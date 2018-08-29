@@ -21,6 +21,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.Collections;
 
 import javax.inject.Inject;
@@ -42,20 +43,26 @@ public final class DatabaseInstaller implements Witness {
             throw new RuntimeException(ex);
         }
 
-        // TODO DO NOT UNCOMMENT THESE UNTIL ZIDANE SAYS SO
-        this.setupTablesForFeature("axs");
-        //this.setupTablesForFeature("shop");
-        this.setupTablesForFeature("title");
+        try (final DSLContext context = this.manager.createContext(true)) {
+            // TODO DO NOT UNCOMMENT THESE UNTIL ZIDANE SAYS SO
+            this.setupTablesForFeature(context, "axs");
+            //this.setupTablesForFeature("shop");
+            this.setupTablesForFeature(context, "title");
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
-    private void setupTablesForFeature(final String feature) {
-        try (final DSLContext context = this.manager.createContext(true)) {
+    private void setupTablesForFeature(DSLContext context, final String feature) throws Exception {
+        FileSystem fileSystem = null;
+
+        try {
             final URI uri = Almura.class.getResource("/db/" + feature + "/database.sql").toURI();
 
             Path path;
 
             if (uri.getScheme().equals("jar")) {
-                final FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+                fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
                 path = fileSystem.getPath("/db/" + feature + "/database.sql");
             } else {
                 path = Paths.get(uri);
@@ -67,8 +74,10 @@ public final class DatabaseInstaller implements Witness {
                 final String sql = new String(encoded, Charsets.UTF_8);
                 context.execute(sql);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } finally {
+            if (fileSystem != null) {
+                fileSystem.close();
+            }
         }
     }
 }
