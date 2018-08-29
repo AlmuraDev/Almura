@@ -1245,8 +1245,6 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         if (found == null) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("This item is no longer for sale!"));
-            this.logger.error("Player '{}' attempted to make a transaction for exchange '{}' but the listing is unknown. This could be a de-sync "
-                + "or an exploit. Syncing for sale items...", player.getName(), id);
             this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
             return;
         }
