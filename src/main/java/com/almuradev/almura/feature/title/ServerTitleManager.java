@@ -211,7 +211,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                             this.titles.putAll(titles);
                         }
 
-                        this.logger.info("Loaded {} title(s).", this.titles.size());
+                        this.logger.info("Loaded [{}] title(s).", this.titles.size());
 
                         // Re-send titles to everyone
                         this.network.sendToAll(new ClientboundTitlesRegistryPacket(this.titles.isEmpty() ? null : new HashSet<>(this.titles
