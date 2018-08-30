@@ -10,6 +10,7 @@ package com.almuradev.almura.shared.feature.store.listing.basic;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.shared.feature.store.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.store.listing.ListItem;
 import com.almuradev.almura.shared.feature.store.listing.Transaction;
@@ -40,6 +41,7 @@ public final class BasicForSaleItem implements ForSaleItem {
         checkState(record >= 0, "Record must be greater than or equal to 0.");
         checkNotNull(price);
         checkState(price.doubleValue() >= 0, "Price must be greater than or equal to 0.");
+        checkState(price.doubleValue() <= ExchangeConstants.TRILLION, "Price must be lesser than or equal to 1 trillion.");
 
         this.listItem = listItem;
         this.record = record;

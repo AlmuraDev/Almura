@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.exchange.client.gui;
 
 import com.almuradev.almura.feature.exchange.Exchange;
+import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
@@ -136,7 +137,8 @@ public class ExchangeListPriceScreen extends SimpleScreen {
         }
 
         try {
-            return new BigDecimal(value).doubleValue() > 0;
+            final BigDecimal newValue = new BigDecimal(value);
+            return newValue.doubleValue() > 0 && newValue.doubleValue() <= ExchangeConstants.TRILLION;
         } catch (NumberFormatException e) {
             return false;
         }
