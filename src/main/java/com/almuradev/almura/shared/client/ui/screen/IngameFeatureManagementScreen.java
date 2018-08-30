@@ -27,7 +27,6 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
-import net.malisis.core.util.MouseButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
@@ -44,27 +43,28 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
-public class IngameFeatureManagementScreen extends SimpleScreen {
+public class IngameFeatureManagementScreen<T extends IngameFeature> extends SimpleScreen {
 
     private static final int requiredScreenWidth = 375;
     private static final int requiredScreenHeight = 260;
     private static final String filter = "[^A-Za-z0-9_.]";
 
     private final String title, name;
-    private final BiConsumer<IngameFeatureManagementScreen, IngameFeature> onDelete, onOpen, onSave;
-    private final Consumer<IngameFeatureManagementScreen> onRefresh;
+    private final BiConsumer<IngameFeatureManagementScreen<T>, T> onDelete, onOpen, onSave;
+    private final Consumer<IngameFeatureManagementScreen<T>> onRefresh;
 
     private UIButton buttonAdd, buttonDelete, buttonOpen, buttonSave;
     private UICheckBox hiddenCheckbox;
-    private UIDynamicList<IngameFeature> featureList;
+    private UIDynamicList<T> featureList;
     private UIForm form;
     private UILabel creatorNameLabel, creatorUniqueIdLabel, createdLabel;
     private UITextBox tbId, tbPermission, tbCreatorName, tbCreatorUniqueId, tbCreated, tbTitle;
 
-    public IngameFeatureManagementScreen(String title, String name, final Consumer<IngameFeatureManagementScreen> onRefresh,
-            final BiConsumer<IngameFeatureManagementScreen, IngameFeature> onDelete,
-            final BiConsumer<IngameFeatureManagementScreen, IngameFeature> onOpen,
-            final BiConsumer<IngameFeatureManagementScreen, IngameFeature> onSave) {
+    public IngameFeatureManagementScreen(final String title, final String name,
+            final Consumer<IngameFeatureManagementScreen<T>> onRefresh,
+            final BiConsumer<IngameFeatureManagementScreen<T>, T> onDelete,
+            final BiConsumer<IngameFeatureManagementScreen<T>, T> onOpen,
+            final BiConsumer<IngameFeatureManagementScreen<T>, T> onSave) {
         this.title = title;
         this.name = name;
         this.onRefresh = onRefresh;
@@ -216,10 +216,10 @@ public class IngameFeatureManagementScreen extends SimpleScreen {
                 .text(Text.of(TextColors.RED, "-"))
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .onClick(() -> {
-                    final IngameFeature selectedExchange = this.featureList.getSelectedItem();
-                    if (selectedExchange != null) {
+                    final IngameFeature selectedFeature = this.featureList.getSelectedItem();
+                    if (selectedFeature != null) {
                         UIMessageBox.showDialog(this, I18n.format("almura.title.ingame_feature.are_you_sure"),
-                                I18n.format("almura.text.ingame_feature.delete_ingame_feature", selectedExchange.getId(), name),
+                                I18n.format("almura.text.ingame_feature.delete_ingame_feature", selectedFeature.getId(), name),
                                 MessageBoxButtons.YES_NO, (result) -> {
                                     if (result != MessageBoxResult.YES) return;
 
@@ -269,7 +269,7 @@ public class IngameFeatureManagementScreen extends SimpleScreen {
         return this.hiddenCheckbox.isChecked();
     }
 
-    public void setItems(final List<IngameFeature> features) {
+    public void setItems(final List<T> features) {
         this.featureList.setItems(features);
     }
 
@@ -280,9 +280,9 @@ public class IngameFeatureManagementScreen extends SimpleScreen {
 
         this.onRefresh.accept(this);
 
-        final IngameFeature toSelect = this.featureList.getItems()
+        final T toSelect = this.featureList.getItems()
                 .stream()
-                .filter(exchange -> exchange.getId().equalsIgnoreCase(lastSelectedId))
+                .filter(feature -> feature.getId().equalsIgnoreCase(lastSelectedId))
                 .findAny()
                 .orElse(this.featureList.getItems().stream().findFirst().orElse(null));
         this.featureList.setSelectedItem(toSelect);
@@ -296,11 +296,11 @@ public class IngameFeatureManagementScreen extends SimpleScreen {
         this.onOpen.accept(this, this.featureList.getSelectedItem());
     }
 
-    private void reset(final boolean forNewExchange) {
+    private void reset(final boolean forNewFeature) {
 
         // ID
         this.tbId.setText("");
-        this.tbId.setEditable(forNewExchange);
+        this.tbId.setEditable(forNewFeature);
 
         // Title
         this.tbTitle.setText("");
@@ -311,19 +311,19 @@ public class IngameFeatureManagementScreen extends SimpleScreen {
         // Creator by (name)
         this.tbCreatorName.setText("");
         this.tbCreatorName.setEditable(false);
-        this.tbCreatorName.setVisible(!forNewExchange);
-        this.creatorNameLabel.setVisible(!forNewExchange);
+        this.tbCreatorName.setVisible(!forNewFeature);
+        this.creatorNameLabel.setVisible(!forNewFeature);
 
         // Creator by (Unique ID)
         this.tbCreatorUniqueId.setText("");
         this.tbCreatorUniqueId.setEditable(false);
-        this.tbCreatorUniqueId.setVisible(!forNewExchange);
-        this.creatorUniqueIdLabel.setVisible(!forNewExchange);
+        this.tbCreatorUniqueId.setVisible(!forNewFeature);
+        this.creatorUniqueIdLabel.setVisible(!forNewFeature);
 
         // Created on
         this.tbCreated.setText("");
-        this.tbCreated.setVisible(!forNewExchange);
-        this.createdLabel.setVisible(!forNewExchange);
+        this.tbCreated.setVisible(!forNewFeature);
+        this.createdLabel.setVisible(!forNewFeature);
 
         // Hidden
         this.hiddenCheckbox.setChecked(false);
@@ -364,7 +364,7 @@ public class IngameFeatureManagementScreen extends SimpleScreen {
                 });
     }
 
-    private Consumer<IngameFeature> onSelect() {
+    private Consumer<T> onSelect() {
         return feature -> {
 
             this.reset(feature == null);
@@ -407,9 +407,9 @@ public class IngameFeatureManagementScreen extends SimpleScreen {
         };
     }
 
-    private static final class IngameFeatureItemComponent extends UIDynamicList.ItemComponent<IngameFeature> {
+    private static final class IngameFeatureItemComponent<T extends IngameFeature> extends UIDynamicList.ItemComponent<T> {
 
-        IngameFeatureItemComponent(final MalisisGui gui, final UIDynamicList<IngameFeature> parent, final IngameFeature item) {
+        IngameFeatureItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item) {
             super(gui, parent, item);
             this.setOnDoubleClickConsumer(i -> ((IngameFeatureManagementScreen) gui).open());
         }

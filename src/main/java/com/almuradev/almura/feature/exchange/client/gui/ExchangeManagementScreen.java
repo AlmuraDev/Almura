@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.shared.client.ui.screen.IngameFeatureManagementScreen;
 import com.google.inject.Inject;
@@ -17,7 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.Collections;
 
 @SideOnly(Side.CLIENT)
-public final class ExchangeManagementScreen extends IngameFeatureManagementScreen {
+public final class ExchangeManagementScreen extends IngameFeatureManagementScreen<Exchange> {
 
     @Inject private static ClientExchangeManager exchangeManager;
 
